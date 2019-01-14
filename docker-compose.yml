@@ -1,0 +1,26 @@
+version: '3.1'
+
+services:
+  dc:
+    build: streamsets
+    ports:
+      - "18630:18630"
+    restart: on-failure
+    volumes:
+      - ./volumes/sdc-data:/data
+
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_DATABASE: adtech
+    volumes:
+      - "./volumes/mongo-data:/data/db"
+      - "./volumes/mongo-imports:/home"
+
+  agent:
+    build: .
+    volumes:
+      - "./agent:/usr/src/app"
