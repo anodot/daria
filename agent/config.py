@@ -1,6 +1,8 @@
 streamsets_username = ''
 streamsets_password = ''
 
+log_file_path = 'agent.log'
+
 pipeline_config = {
     'source': 'mongo',
     'source_config': {

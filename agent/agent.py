@@ -2,8 +2,12 @@ import config
 import json
 import os
 import time
+
+from logger import get_logger
 from streamsets_api_client import StreamSetsApiClient
 
+
+logger = get_logger(__name__)
 api_client = StreamSetsApiClient(config.streamsets_username, config.streamsets_password)
 pipeline = api_client.create_pipeline('test impressions')
 
