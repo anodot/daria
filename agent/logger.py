@@ -9,6 +9,6 @@ def get_logger(name, level=logging.DEBUG):
     logger.setLevel(level)
 
     file_handler = RotatingFileHandler(config.log_file_path, maxBytes=2000)
-    file_handler.setFormatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
     logger.addHandler(file_handler)
     return logger
