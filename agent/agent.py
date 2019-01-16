@@ -1,9 +1,9 @@
-import config
 import time
 
-from logger import get_logger
-from pipeline_config import PipelineConfigHandler
-from streamsets_api_client import StreamSetsApiClient
+from . import config
+from .logger import get_logger
+from .pipeline_config_handler import PipelineConfigHandler
+from .streamsets_api_client import StreamSetsApiClient
 
 time.sleep(20)
 logger = get_logger(__name__)

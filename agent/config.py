@@ -5,7 +5,8 @@ streamsets_api_base_url = 'http://localhost:18630'
 log_file_path = 'agent.log'
 
 pipelines_config = [{
-    'source': 'mongo',
+    'name': 'test',
+    'source_name': 'mongo',
     'source_config': {
         'configBean.mongoConfig.connectionString': 'mongodb://mongo:27017',
         'configBean.mongoConfig.username': 'username',

@@ -1,7 +1,7 @@
 import json
 import os
 
-from logger import get_logger
+from .logger import get_logger
 
 logger = get_logger(__name__)
 
@@ -71,7 +71,3 @@ class PipelineConfigHandler:
     def override_base_rules(self, new_uuid):
         self.rules['uuid'] = new_uuid
         return self.rules
-
-
-class PipelineConfigHandlerException(Exception):
-    pass

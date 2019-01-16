@@ -1,6 +1,6 @@
-import config
 import logging
 
+from . import config
 from logging.handlers import RotatingFileHandler
 
 
