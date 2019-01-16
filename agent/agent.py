@@ -5,21 +5,24 @@ from logger import get_logger
 from pipeline_config import PipelineConfigHandler
 from streamsets_api_client import StreamSetsApiClient
 
-
+time.sleep(20)
 logger = get_logger(__name__)
-config_handler = PipelineConfigHandler(config.pipeline_config)
+api_client = StreamSetsApiClient(config.streamsets_username, config.streamsets_password,
+                                 config.streamsets_api_base_url)
 
-api_client = StreamSetsApiClient(config.streamsets_username, config.streamsets_password)
-pipeline = api_client.create_pipeline('test impressions')
+for pipeline_config in config.pipelines_config:
+    config_handler = PipelineConfigHandler(pipeline_config)
 
-new_config = config_handler.override_base_config(pipeline['uuid'], pipeline['title'])
-api_client.update_pipeline(pipeline['pipelineId'], new_config)
+    pipeline = api_client.create_pipeline(pipeline_config['name'])
 
-pipeline_rules = api_client.get_pipeline_rules(pipeline['pipelineId'])
-new_rules = config_handler.override_base_rules(pipeline_rules['uuid'])
-api_client.update_pipeline_rules(pipeline['pipelineId'], new_rules)
+    new_config = config_handler.override_base_config(pipeline['uuid'], pipeline['title'])
+    api_client.update_pipeline(pipeline['pipelineId'], new_config)
 
-api_client.start_pipeline(pipeline['pipelineId'])
+    pipeline_rules = api_client.get_pipeline_rules(pipeline['pipelineId'])
+    new_rules = config_handler.override_base_rules(pipeline_rules['uuid'])
+    api_client.update_pipeline_rules(pipeline['pipelineId'], new_rules)
 
-time.sleep(13)
-api_client.stop_pipeline(pipeline['pipelineId'])
+    api_client.start_pipeline(pipeline['pipelineId'])
+
+    time.sleep(13)
+    api_client.stop_pipeline(pipeline['pipelineId'])

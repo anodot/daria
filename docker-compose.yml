@@ -2,7 +2,10 @@ version: '3.1'
 
 services:
   dc:
-    build: streamsets
+    build:
+      context: streamsets
+      args:
+        SDC_LIBS: 'streamsets-datacollector-mongodb_3-lib'
     ports:
       - "18630:18630"
     restart: on-failure
@@ -22,5 +25,6 @@ services:
 
   agent:
     build: .
-    volumes:
-      - "./agent:/usr/src/app"
+    depends_on:
+      - dc
+      - mongo

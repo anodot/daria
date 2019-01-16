@@ -11,18 +11,12 @@ class PipelineConfigHandler:
 
     def __init__(self, client_config):
         self.client_config = client_config
-        if not self.validate():
-            logger.error('Validation errors')
-            raise PipelineConfigHandlerException('Validation errors')
 
         base_path = self.PIPELINES_BASE_CONFIGS_PATH.format(**{'source_name': client_config['source_name']})
         with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), base_path), 'r') as f:
             data = json.load(f)
             self.config = data['pipelineConfig']
             self.rules = data['pipelineRules']
-
-    def validate(self):
-        return True
 
     def update_source_configs(self):
         for conf in self.config['stages'][0]['configuration']:

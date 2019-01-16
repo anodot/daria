@@ -17,7 +17,9 @@ def endpoint(func):
         try:
             res = func(*args, **kwargs)
             res.raise_for_status()
-            return res.json()
+            if res.text:
+                return res.json()
+            return
         except Exception:
             logger.exception('Exception')
             raise
