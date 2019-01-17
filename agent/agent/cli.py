@@ -5,6 +5,7 @@ import os
 
 from .pipeline_config_handler import PipelineConfigHandler
 from .streamsets_api_client import StreamSetsApiClient
+from texttable import Texttable
 
 # https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.5.3
 pipeline_config_schema = {
@@ -64,4 +65,52 @@ def create(config_file):
         click.echo('Created pipeline {}'.format(pipeline_config['name']))
 
 
+@click.command(name='list')
+def list_pipelines():
+    pipelines = api_client.get_pipelines()
+    pipelines_status = api_client.get_pipelines_status()
+
+    table = Texttable()
+    table.set_deco(Texttable.HEADER)
+    header = ['Title', 'Status', 'ID']
+    table.header(header)
+    table.set_header_align(['l' for i in range(len(header))])
+
+    max_widths = [0 for i in range(len(header))]
+    for p in pipelines:
+        row = [p['title'], pipelines_status[p['pipelineId']]['status'], p['pipelineId']]
+        table.add_row(row)
+        for idx, item in enumerate(row):
+            max_widths[idx] = max(max_widths[idx], len(item))
+
+    table.set_cols_width(max_widths)
+
+    click.echo(table.draw())
+
+
+@click.command()
+@click.argument('pipeline_id')
+def start(pipeline_id):
+    api_client.start_pipeline(pipeline_id)
+    click.echo('Pipeline starting')
+
+
+@click.command()
+@click.argument('pipeline_id')
+def stop(pipeline_id):
+    api_client.stop_pipeline(pipeline_id)
+    click.echo('Pipeline stopping')
+
+
+@click.command()
+@click.argument('pipeline_id')
+def delete(pipeline_id):
+    api_client.delete_pipeline(pipeline_id)
+    click.echo('Pipeline delete')
+
+
 pipeline.add_command(create)
+pipeline.add_command(list_pipelines)
+pipeline.add_command(start)
+pipeline.add_command(stop)
+pipeline.add_command(delete)

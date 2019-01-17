@@ -13,6 +13,7 @@ def endpoint(func):
     :param func:
     :return:
     """
+
     def wrapper(*args, **kwargs):
         try:
             res = func(*args, **kwargs)
@@ -23,6 +24,7 @@ def endpoint(func):
         except Exception:
             logger.exception('Exception')
             raise
+
     return wrapper
 
 
@@ -111,3 +113,21 @@ class StreamSetsApiClient:
         """
         logger.info(f'Stop pipeline: {pipeline_id}')
         return self.session.post(self.build_url('pipeline', pipeline_id, 'stop'))
+
+    @endpoint
+    def get_pipelines(self):
+        return self.session.get(self.build_url('pipelines'))
+
+    @endpoint
+    def get_pipelines_status(self):
+        return self.session.get(self.build_url('pipelines', 'status'))
+
+    @endpoint
+    def delete_pipeline(self, pipeline_id):
+        """
+
+        :param pipeline_id: string
+        :return:
+        """
+        logger.info(f'Delete pipeline: {pipeline_id}')
+        return self.session.delete(self.build_url('pipeline', pipeline_id))
