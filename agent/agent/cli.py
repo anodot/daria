@@ -1,4 +1,4 @@
-import time
+import click
 import json
 import jsonschema
 import os
@@ -7,7 +7,7 @@ from .pipeline_config_handler import PipelineConfigHandler
 from .streamsets_api_client import StreamSetsApiClient
 
 # https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.5.3
-schema = {
+pipeline_config_schema = {
     'type': 'array',
     'items': {
         'type': 'object',
@@ -33,30 +33,35 @@ schema = {
                      'timestamp_field_name', 'destination_url']},
 }
 
+api_client = StreamSetsApiClient(os.environ.get('STREAMSETS_USERNAME', 'admin'),
+                                 os.environ.get('STREAMSETS_PASSWORD', 'admin'),
+                                 os.environ.get('STREAMSETS_URL', 'http://localhost:18630'))
 
-def run():
-    api_client = StreamSetsApiClient(os.environ.get('STREAMSETS_USERNAME', 'admin'),
-                                     os.environ.get('STREAMSETS_PASSWORD', 'admin'),
-                                     os.environ.get('STREAMSETS_URL', 'http://localhost:18630'))
 
-    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'pipeline_config_example.json'), 'r') as f:
-        pipelines_configs = json.load(f)
+@click.group()
+def pipeline():
+    pass
 
-    jsonschema.validate(pipelines_configs, schema)
+
+@click.command()
+@click.argument('config_file', type=click.File('r'))
+def create(config_file):
+    pipelines_configs = json.load(config_file)
+
+    jsonschema.validate(pipelines_configs, pipeline_config_schema)
 
     for pipeline_config in pipelines_configs:
         config_handler = PipelineConfigHandler(pipeline_config)
 
-        pipeline = api_client.create_pipeline(pipeline_config['name'])
+        pipeline_obj = api_client.create_pipeline(pipeline_config['name'])
 
-        new_config = config_handler.override_base_config(pipeline['uuid'], pipeline['title'])
-        api_client.update_pipeline(pipeline['pipelineId'], new_config)
+        new_config = config_handler.override_base_config(pipeline_obj['uuid'], pipeline_obj['title'])
+        api_client.update_pipeline(pipeline_obj['pipelineId'], new_config)
 
-        pipeline_rules = api_client.get_pipeline_rules(pipeline['pipelineId'])
+        pipeline_rules = api_client.get_pipeline_rules(pipeline_obj['pipelineId'])
         new_rules = config_handler.override_base_rules(pipeline_rules['uuid'])
-        api_client.update_pipeline_rules(pipeline['pipelineId'], new_rules)
+        api_client.update_pipeline_rules(pipeline_obj['pipelineId'], new_rules)
+        click.echo('Created pipeline {}'.format(pipeline_config['name']))
 
-        api_client.start_pipeline(pipeline['pipelineId'])
 
-        time.sleep(13)
-        api_client.stop_pipeline(pipeline['pipelineId'])
+pipeline.add_command(create)
