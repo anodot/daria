@@ -7,6 +7,9 @@ logger = get_logger(__name__)
 
 
 class PipelineConfigHandler:
+    """
+    Overrides base config file
+    """
     PIPELINES_BASE_CONFIGS_PATH = 'pipelines/{source_name}.json'
 
     def __init__(self, client_config):

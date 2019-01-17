@@ -1,0 +1,38 @@
+[
+    {
+        "name": "mongo test bid_failures",
+        "source_name": "mongo",
+        "source_config": {
+            "configBean.mongoConfig.connectionString": "mongodb://mongo:27017",
+            "configBean.mongoConfig.username": "root",
+            "configBean.mongoConfig.password": "root",
+            "configBean.mongoConfig.database": "adtech",
+            "configBean.mongoConfig.collection": "adtech",
+            "configBean.isCapped": "false",
+            "configBean.initialOffset": "2015-01-01 00:00:00"
+        },
+        "measurement_name": "bid_failures",
+        "value_field_name": "Bids_Failures",
+        "timestamp_field_name": "timestamp",
+        "dimensions": ["AdSize", "AdType", "Country", "Exchange", "ver"],
+        "destination_url": "http://daria-test2/api/v1/metrics?token=06599f200eccbf0ea2dbb29312c41424&protocol=anodot20"
+    },
+    {
+        "name": "mongo test bid_lost",
+        "source_name": "mongo",
+        "source_config": {
+            "configBean.mongoConfig.connectionString": "mongodb://mongo:27017",
+            "configBean.mongoConfig.username": "root",
+            "configBean.mongoConfig.password": "root",
+            "configBean.mongoConfig.database": "adtech",
+            "configBean.mongoConfig.collection": "adtech",
+            "configBean.isCapped": "false",
+            "configBean.initialOffset": "2015-01-01 00:00:00"
+        },
+        "measurement_name": "bid_lost",
+        "value_field_name": "Bids_Lost",
+        "timestamp_field_name": "timestamp",
+        "dimensions": ["AdSize", "AdType", "Country", "Exchange", "ver"],
+        "destination_url": "http://daria-test2/api/v1/metrics?token=06599f200eccbf0ea2dbb29312c41424&protocol=anodot20"
+    }
+]
