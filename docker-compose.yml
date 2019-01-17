@@ -24,7 +24,12 @@ services:
       - "./volumes/mongo-imports:/home"
 
   agent:
-    build: .
+    build: agent
+    environment:
+      STREAMSETS_USERNAME: 'admin'
+      STREAMSETS_PASSWORD: 'admin'
+      STREAMSETS_URL: 'http://dc:18630'
+      LOG_FILE_PATH: '/var/log/agent.log'
     depends_on:
       - dc
       - mongo

@@ -3,8 +3,6 @@ import json
 import jsonschema
 import os
 
-from . import config
-from .logger import get_logger
 from .pipeline_config_handler import PipelineConfigHandler
 from .streamsets_api_client import StreamSetsApiClient
 
@@ -37,8 +35,9 @@ schema = {
 
 
 def run():
-    api_client = StreamSetsApiClient(config.streamsets_username, config.streamsets_password,
-                                     config.streamsets_api_base_url)
+    api_client = StreamSetsApiClient(os.environ.get('STREAMSETS_USERNAME', 'admin'),
+                                     os.environ.get('STREAMSETS_PASSWORD', 'admin'),
+                                     os.environ.get('STREAMSETS_URL', 'http://localhost:18630'))
 
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'pipeline_config_example.json'), 'r') as f:
         pipelines_configs = json.load(f)

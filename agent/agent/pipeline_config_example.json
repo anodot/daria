@@ -8,7 +8,7 @@
             "configBean.mongoConfig.password": "root",
             "configBean.mongoConfig.database": "adtech",
             "configBean.mongoConfig.collection": "adtech",
-            "configBean.isCapped": "false",
+            "configBean.isCapped": false,
             "configBean.initialOffset": "2015-01-01 00:00:00"
         },
         "measurement_name": "bid_failures",
@@ -26,7 +26,7 @@
             "configBean.mongoConfig.password": "root",
             "configBean.mongoConfig.database": "adtech",
             "configBean.mongoConfig.collection": "adtech",
-            "configBean.isCapped": "false",
+            "configBean.isCapped": false,
             "configBean.initialOffset": "2015-01-01 00:00:00"
         },
         "measurement_name": "bid_lost",
