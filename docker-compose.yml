@@ -25,6 +25,7 @@ services:
 
   agent:
     build: agent
+    restart: always
     environment:
       STREAMSETS_USERNAME: 'admin'
       STREAMSETS_PASSWORD: 'admin'

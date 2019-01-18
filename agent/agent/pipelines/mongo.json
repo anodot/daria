@@ -736,7 +736,7 @@
         "value" : "/data"
       }, {
         "name" : "uniquePrefix",
-        "value" : "error-sdc-${sdc:id()}"
+        "value" : "error-${pipeline:id()}-sdc-${sdc:id()}"
       }, {
         "name" : "rotationIntervalSecs",
         "value" : "${1 * HOURS}"

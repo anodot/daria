@@ -39,6 +39,33 @@ api_client = StreamSetsApiClient(os.environ.get('STREAMSETS_USERNAME', 'admin'),
                                  os.environ.get('STREAMSETS_URL', 'http://localhost:18630'))
 
 
+def build_table(header, data, get_row, *args):
+    """
+
+    :param header: list
+    :param data: list
+    :param get_row: function - accepts item as first argument and *args; return false if row is needed to be skipped
+    :param args: list
+    :return:
+    """
+    table = Texttable()
+    table.set_deco(Texttable.HEADER)
+    table.header(header)
+    table.set_header_align(['l' for i in range(len(header))])
+
+    max_widths = [0 for i in range(len(header))]
+    for item in data:
+        row = get_row(item, *args)
+        if not row:
+            continue
+        table.add_row(row)
+        for idx, i in enumerate(row):
+            max_widths[idx] = max(max_widths[idx], len(i))
+
+    table.set_cols_width([min(i, 100) for i in max_widths])
+    return table
+
+
 @click.group()
 def pipeline():
     pass
@@ -70,20 +97,10 @@ def list_pipelines():
     pipelines = api_client.get_pipelines()
     pipelines_status = api_client.get_pipelines_status()
 
-    table = Texttable()
-    table.set_deco(Texttable.HEADER)
-    header = ['Title', 'Status', 'ID']
-    table.header(header)
-    table.set_header_align(['l' for i in range(len(header))])
+    def get_row(item, statuses):
+        return [item['title'], statuses[item['pipelineId']]['status'], item['pipelineId']]
 
-    max_widths = [0 for i in range(len(header))]
-    for p in pipelines:
-        row = [p['title'], pipelines_status[p['pipelineId']]['status'], p['pipelineId']]
-        table.add_row(row)
-        for idx, item in enumerate(row):
-            max_widths[idx] = max(max_widths[idx], len(item))
-
-    table.set_cols_width(max_widths)
+    table = build_table(['Title', 'Status', 'ID'], pipelines, get_row, pipelines_status)
 
     click.echo(table.draw())
 
@@ -109,8 +126,24 @@ def delete(pipeline_id):
     click.echo('Pipeline delete')
 
 
+@click.command()
+@click.argument('pipeline_id')
+@click.option('-s', '--severity', type=click.Choice(['INFO', 'ERROR']), default=None)
+def logs(pipeline_id, severity):
+    res = api_client.get_pipeline_logs(pipeline_id, severity=severity)
+
+    def get_row(item):
+        if 'message' not in item:
+            return False
+        return [item['timestamp'], item['severity'], item['category'], item['message']]
+
+    table = build_table(['Timestamp', 'Severity', 'Category', 'Message'], res, get_row)
+    click.echo(table.draw())
+
+
 pipeline.add_command(create)
 pipeline.add_command(list_pipelines)
 pipeline.add_command(start)
 pipeline.add_command(stop)
 pipeline.add_command(delete)
+pipeline.add_command(logs)
