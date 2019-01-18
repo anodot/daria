@@ -4,7 +4,7 @@ import jsonschema
 import os
 
 from .pipeline_config_handler import PipelineConfigHandler
-from .streamsets_api_client import StreamSetsApiClient
+from .streamsets_api_client import StreamSetsApiClient, StreamSetsApiClientException
 from datetime import datetime
 from texttable import Texttable
 
@@ -82,7 +82,11 @@ def create(config_file):
     for pipeline_config in pipelines_configs:
         config_handler = PipelineConfigHandler(pipeline_config)
 
-        pipeline_obj = api_client.create_pipeline(pipeline_config['name'])
+        try:
+            pipeline_obj = api_client.create_pipeline(pipeline_config['name'])
+        except StreamSetsApiClientException as e:
+            click.secho(str(e), err=True, fg='red')
+            return
 
         new_config = config_handler.override_base_config(pipeline_obj['uuid'], pipeline_obj['title'])
         api_client.update_pipeline(pipeline_obj['pipelineId'], new_config)
@@ -109,21 +113,33 @@ def list_pipelines():
 @click.command()
 @click.argument('pipeline_id')
 def start(pipeline_id):
-    api_client.start_pipeline(pipeline_id)
+    try:
+        api_client.start_pipeline(pipeline_id)
+    except StreamSetsApiClientException as e:
+        click.secho(str(e), err=True, fg='red')
+        return
     click.echo('Pipeline starting')
 
 
 @click.command()
 @click.argument('pipeline_id')
 def stop(pipeline_id):
-    api_client.stop_pipeline(pipeline_id)
+    try:
+        api_client.stop_pipeline(pipeline_id)
+    except StreamSetsApiClientException as e:
+        click.secho(str(e), err=True, fg='red')
+        return
     click.echo('Pipeline stopping')
 
 
 @click.command()
 @click.argument('pipeline_id')
 def delete(pipeline_id):
-    api_client.delete_pipeline(pipeline_id)
+    try:
+        api_client.delete_pipeline(pipeline_id)
+    except StreamSetsApiClientException as e:
+        click.secho(str(e), err=True, fg='red')
+        return
     click.echo('Pipeline delete')
 
 
@@ -131,7 +147,11 @@ def delete(pipeline_id):
 @click.argument('pipeline_id')
 @click.option('-s', '--severity', type=click.Choice(['INFO', 'ERROR']), default=None)
 def logs(pipeline_id, severity):
-    res = api_client.get_pipeline_logs(pipeline_id, severity=severity)
+    try:
+        res = api_client.get_pipeline_logs(pipeline_id, severity=severity)
+    except StreamSetsApiClientException as e:
+        click.secho(str(e), err=True, fg='red')
+        return
 
     def get_row(item):
         if 'message' not in item:
@@ -146,7 +166,11 @@ def logs(pipeline_id, severity):
 @click.argument('pipeline_id')
 def info(pipeline_id):
     # status
-    status = api_client.get_pipeline_status(pipeline_id)
+    try:
+        status = api_client.get_pipeline_status(pipeline_id)
+    except StreamSetsApiClientException as e:
+        click.secho(str(e), err=True, fg='red')
+        return
     click.secho('=== STATUS ===', fg='green')
     click.echo('{status} {message}'.format(**status))
 

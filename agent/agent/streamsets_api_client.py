@@ -15,17 +15,24 @@ def endpoint(func):
     """
 
     def wrapper(*args, **kwargs):
+        res = func(*args, **kwargs)
         try:
-            res = func(*args, **kwargs)
             res.raise_for_status()
             if res.text:
                 return res.json()
             return
-        except Exception:
-            logger.exception('Exception')
+        except requests.exceptions.HTTPError:
+            if res.text:
+                response = res.json()
+                logger.exception(response['RemoteException'])
+                raise StreamSetsApiClientException(response['RemoteException']['message'])
             raise
 
     return wrapper
+
+
+class StreamSetsApiClientException(Exception):
+    pass
 
 
 class StreamSetsApiClient:
@@ -58,7 +65,7 @@ class StreamSetsApiClient:
         :return:
         """
         logger.info(f'Creating pipeline: {name}')
-        return self.session.put(self.build_url('pipeline', name), params={'autoGeneratePipelineId': 'true'})
+        return self.session.put(self.build_url('pipeline', name))
 
     @endpoint
     def update_pipeline(self, pipeline_id, pipeline):
