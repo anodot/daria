@@ -14,7 +14,7 @@ pipeline_config_schema = {
     'items': {
         'type': 'object',
         'properties': {
-            'name': {'type': 'string'},  # name of the pipeline
+            'pipeline_id': {'type': 'string'},  # name of the pipeline
             'source_name': {'type': 'string', 'enum': ['mongo']},
             'source_config': {'type': 'object', 'properties': {
                 'configBean.mongoConfig.connectionString': {'type': 'string'},
@@ -83,7 +83,7 @@ def create(config_file):
         config_handler = PipelineConfigHandler(pipeline_config)
 
         try:
-            pipeline_obj = api_client.create_pipeline(pipeline_config['name'])
+            pipeline_obj = api_client.create_pipeline(pipeline_config['pipeline_id'])
         except StreamSetsApiClientException as e:
             click.secho(str(e), err=True, fg='red')
             return
@@ -94,7 +94,7 @@ def create(config_file):
         pipeline_rules = api_client.get_pipeline_rules(pipeline_obj['pipelineId'])
         new_rules = config_handler.override_base_rules(pipeline_rules['uuid'])
         api_client.update_pipeline_rules(pipeline_obj['pipelineId'], new_rules)
-        click.echo('Created pipeline {}'.format(pipeline_config['name']))
+        click.echo('Created pipeline {}'.format(pipeline_config['pipeline_id']))
 
 
 @click.command(name='list')
