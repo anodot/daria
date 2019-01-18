@@ -147,3 +147,43 @@ class StreamSetsApiClient:
         if severity:
             params['severity'] = severity
         return self.session.get(self.build_url('system', 'logs'), params=params)
+
+    @endpoint
+    def get_pipeline(self, pipeline_id):
+        """
+
+        :param pipeline_id: string
+        :return:
+        """
+        logger.info(f'Get pipeline {pipeline_id}')
+        return self.session.get(self.build_url('pipeline', pipeline_id))
+
+    @endpoint
+    def get_pipeline_status(self, pipeline_id):
+        """
+
+        :param pipeline_id: string
+        :return:
+        """
+        logger.info(f'Get pipeline status {pipeline_id}')
+        return self.session.get(self.build_url('pipeline', pipeline_id, 'status'))
+
+    @endpoint
+    def get_pipeline_history(self, pipeline_id):
+        """
+
+        :param pipeline_id: string
+        :return:
+        """
+        logger.info(f'Get pipeline history {pipeline_id}')
+        return self.session.get(self.build_url('pipeline', pipeline_id, 'history'))
+
+    @endpoint
+    def get_pipeline_metrics(self, pipeline_id):
+        """
+
+        :param pipeline_id: string
+        :return:
+        """
+        logger.info(f'Get pipeline metrics {pipeline_id}')
+        return self.session.get(self.build_url('pipeline', pipeline_id, 'metrics'))
