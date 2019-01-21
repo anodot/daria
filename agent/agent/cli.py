@@ -31,8 +31,8 @@ pipeline_config_schema = {
             'dimensions': {'type': 'array', 'items': {'type': 'string'}},
             'destination_url': {'type': 'string'},  # anodot metric api url with token and protocol params
         },
-        'required': ['name', 'source_name', 'source_config', 'measurement_name', 'value_field_name', 'dimensions',
-                     'timestamp_field_name', 'destination_url']},
+        'required': ['pipeline_id', 'source_name', 'source_config', 'measurement_name', 'value_field_name',
+                     'dimensions', 'timestamp_field_name', 'destination_url']},
 }
 
 api_client = StreamSetsApiClient(os.environ.get('STREAMSETS_USERNAME', 'admin'),

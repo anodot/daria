@@ -66,6 +66,7 @@ docker-compose up -d
 ###Troubleshooting
 Pipelines may not work as expected for several reasons, for example wrong configuration, 
 or some issues connecting to destination etc. You can look for errors in three locations:
+
 1. `pipeline info PIPELINE_ID`
     This command will show some issues if pipeline is misconfigured
 2. `pipeline logs -s ERROR PIPELINE_ID`
@@ -73,6 +74,7 @@ or some issues connecting to destination etc. You can look for errors in three l
 3. Also sometimes records may not reach destination because errors
 happened in one of data processing and transformation stages. In that case you can find them in error 
 files in streamsets conatainer
+
     1. Connect to streamsets container
         ```
         docker exec -it dir_name_dc_1 bash
