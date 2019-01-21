@@ -77,7 +77,12 @@ def pipeline():
 def create(config_file):
     pipelines_configs = json.load(config_file)
 
-    jsonschema.validate(pipelines_configs, pipeline_config_schema)
+    try:
+        jsonschema.validate(pipelines_configs, pipeline_config_schema)
+    except jsonschema.exceptions.ValidationError as e:
+        click.secho('Validation error', fg='red')
+        click.echo(str(e), err=True)
+        return
 
     for pipeline_config in pipelines_configs:
         config_handler = PipelineConfigHandler(pipeline_config)

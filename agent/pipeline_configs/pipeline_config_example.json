@@ -1,6 +1,6 @@
 [
     {
-        "pipeline_id": "mongo test bid_failures",
+        "pipeline_i": "mongo test bid_failures",
         "source_name": "mongo",
         "source_config": {
             "configBean.mongoConfig.connectionString": "mongodb://mongo:27017",
