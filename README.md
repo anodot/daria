@@ -26,7 +26,7 @@ docker-compose up -d
         "items": {
             "type": "object",
             "properties": {
-                "pipeline_id": {"type": "string"}, 
+                "pipeline_id": {"type": "string"},
                 "source_name": {"type": "string", "enum": ["mongo"]},
                 "source_config": {"type": "object", "properties": {
                     "configBean.mongoConfig.connectionString": {"type": "string"},
@@ -39,16 +39,38 @@ docker-compose up -d
                 }},
                 "measurement_name": {"type": "string"},
                 "value_field_name": {"type": "string"},
-                "timestamp_field_name": {"type": "string"},
-                "dimensions": {"type": "array", "items": {"type": "string"}},
+                "timestamp": {
+                    "type": "object",
+                    "properties": {
+                        "name": {"type": "string"},
+                        "type": {"type": "string", "enum": ["string", "datetime", "unix", "unix_ms"]},
+                        "format": {"type": "string"}
+                    },
+                    "required": ["name", "type"]
+                },
+                "dimensions": {
+                    "type": "object",
+                    "properties": {
+                        "required": {"type": "array", "items": {"type": "string"}},
+                        "optional": {"type": "array", "items": {"type": "string"}}
+                    },
+                    "required": ["required"]},
                 "destination_url": {"type": "string"}
             },
-            "required": ["name", "source_name", "source_config", "measurement_name", "value_field_name", "dimensions",
-                         "timestamp_field_name", "destination_url"]}
+            "required": ["pipeline_id", "source_name", "source_config", "measurement_name", "value_field_name",
+                         "dimensions", "timestamp", "destination_url"]}
     }
     ```
-    - `name` - unique pipeline identifier
-    - `timestamp_field_name` - timestamp field must be usix timestamp
+    - `pipeline_id` - unique pipeline identifier
+    - `timestamp` - `name`: column name, `type`: column type, `format`: datetime string format if type is string 
+        ([string format spec](https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html))
+    
+        possible types: 
+        - `string` (must specify format)
+        - `datetime` (if column has database specific datetime type like `Date` in mongo)
+        - `unix_ms` (unix timestamp in milliseconds)
+        - `unix` (unix timestamp in seconds)
+    - `dimensions` - `required` columns must exist in a record
     - `destination_url` - anodot metric api url with token and protocol params
     
     Config example is in `agent/pipeline_configs/pipeline_config_example.json`
@@ -62,6 +84,7 @@ docker-compose up -d
     Shows current pipeline status, amount of records worked, issues with 
     pipeline configuration if any and history of execution
 8. Pipeline logs `pipeline logs --help`
+9. Reset pipeline offset `pipeline reset PIPELINE_ID`
 
 ###Troubleshooting
 Pipelines may not work as expected for several reasons, for example wrong configuration, 
