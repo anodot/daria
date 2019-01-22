@@ -5,7 +5,7 @@
     "pipelineId" : "mongotest27f06b73-e191-48cb-a000-05d79bb64092",
     "title" : "mongo test",
     "description" : "",
-    "uuid" : "ea0340c5-1c0a-44c5-8fa5-22dc314aa124",
+    "uuid" : "17336f36-fb6c-4c25-b6e1-45dbdeb94a30",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -192,7 +192,7 @@
         "value" : "adtech"
       }, {
         "name" : "configBean.mongoConfig.collection",
-        "value" : "adtech"
+        "value" : "adtech_timestamp"
       }, {
         "name" : "configBean.mongoConfig.authenticationType",
         "value" : "USER_PASS"
@@ -290,8 +290,8 @@
       "uiInfo" : {
         "description" : "",
         "label" : "MongoDB 1",
-        "xPos" : 125,
-        "yPos" : 142,
+        "xPos" : 126.35859680175781,
+        "yPos" : 142.04315185546875,
         "stageType" : "SOURCE"
       },
       "inputLanes" : [ ],
@@ -334,7 +334,7 @@
         "description" : "",
         "label" : "create empty field for properties",
         "xPos" : 346,
-        "yPos" : 142,
+        "yPos" : 143,
         "stageType" : "PROCESSOR"
       },
       "inputLanes" : [ "MongoDB_01OutputLane15471337464250" ],
@@ -418,12 +418,117 @@
       "uiInfo" : {
         "description" : "",
         "label" : "keep only needed fields",
-        "xPos" : 786,
-        "yPos" : 138,
+        "xPos" : 784.6845703125,
+        "yPos" : 141.94638061523438,
         "stageType" : "PROCESSOR"
       },
       "inputLanes" : [ "FieldRenamer_01OutputLane15472004343510" ],
       "outputLanes" : [ "FieldRemover_01OutputLane15472007149530" ],
+      "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
+      "instanceName" : "ExpressionEvaluator_02",
+      "library" : "streamsets-datacollector-basic-lib",
+      "stageName" : "com_streamsets_pipeline_stage_processor_expression_ExpressionDProcessor",
+      "stageVersion" : "2",
+      "configuration" : [ {
+        "name" : "expressionProcessorConfigs",
+        "value" : [ {
+          "fieldToSet" : "/timestamp",
+          "expression" : "${record:type('/timestamp')==\"STRING\"?time:dateTimeToMilliseconds(time:extractDateFromString(record:value('/timestamp'), 'M/d/yyyy HH:mm:ss'))/1000:(record:type('/timestamp')==\"DATETIME\"?time:dateTimeToMilliseconds(record:value('/timestamp'))/1000:record:value('/timestamp'))}"
+        } ]
+      }, {
+        "name" : "headerAttributeConfigs",
+        "value" : [ { } ]
+      }, {
+        "name" : "fieldAttributeConfigs",
+        "value" : [ {
+          "fieldToSet" : "/"
+        } ]
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "description" : "",
+        "label" : "Convert timestamp to long",
+        "xPos" : 992.7861328125,
+        "yPos" : 141.73619079589844,
+        "stageType" : "PROCESSOR"
+      },
+      "inputLanes" : [ "FieldRemover_01OutputLane15472007149530" ],
+      "outputLanes" : [ "ExpressionEvaluator_02OutputLane15480856372920" ],
+      "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
+      "instanceName" : "FieldTypeConverter_01",
+      "library" : "streamsets-datacollector-basic-lib",
+      "stageName" : "com_streamsets_pipeline_stage_processor_fieldtypeconverter_FieldTypeConverterDProcessor",
+      "stageVersion" : "2",
+      "configuration" : [ {
+        "name" : "convertBy",
+        "value" : "BY_FIELD"
+      }, {
+        "name" : "fieldTypeConverterConfigs",
+        "value" : [ {
+          "fields" : [ "/value" ],
+          "targetType" : "FLOAT",
+          "treatInputFieldAsDate" : false,
+          "dataLocale" : "en,US",
+          "scale" : -1,
+          "decimalScaleRoundingStrategy" : "ROUND_UNNECESSARY",
+          "dateFormat" : "OTHER",
+          "zonedDateTimeFormat" : "ISO_ZONED_DATE_TIME",
+          "encoding" : "UTF-8"
+        }, {
+          "fields" : [ "/timestamp" ],
+          "targetType" : "INTEGER",
+          "treatInputFieldAsDate" : false,
+          "dataLocale" : "en,US",
+          "scale" : -1,
+          "decimalScaleRoundingStrategy" : "ROUND_UNNECESSARY",
+          "dateFormat" : "YYYY_MM_DD",
+          "zonedDateTimeFormat" : "ISO_ZONED_DATE_TIME",
+          "encoding" : "UTF-8"
+        } ]
+      }, {
+        "name" : "wholeTypeConverterConfigs",
+        "value" : [ {
+          "sourceType" : "INTEGER",
+          "targetType" : "INTEGER",
+          "treatInputFieldAsDate" : false,
+          "dataLocale" : "en,US",
+          "scale" : -1,
+          "decimalScaleRoundingStrategy" : "ROUND_UNNECESSARY",
+          "dateFormat" : "YYYY_MM_DD",
+          "zonedDateTimeFormat" : "ISO_ZONED_DATE_TIME",
+          "encoding" : "UTF-8"
+        } ]
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "description" : "Convert value to float and timestamp to int",
+        "label" : "Convert value and timestamp",
+        "xPos" : 1202,
+        "yPos" : 138.55711364746094,
+        "stageType" : "PROCESSOR"
+      },
+      "inputLanes" : [ "ExpressionEvaluator_02OutputLane15480856372920" ],
+      "outputLanes" : [ "FieldTypeConverter_01OutputLane15480748187410" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -717,11 +822,11 @@
       "uiInfo" : {
         "description" : "",
         "label" : "HTTP Client 1",
-        "xPos" : 1019,
-        "yPos" : 138,
+        "xPos" : 1402.58251953125,
+        "yPos" : 135.9935302734375,
         "stageType" : "TARGET"
       },
-      "inputLanes" : [ "FieldRemover_01OutputLane15472007149530" ],
+      "inputLanes" : [ "FieldTypeConverter_01OutputLane15480748187410" ],
       "outputLanes" : [ ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -761,11 +866,11 @@
       "title" : "mongo test",
       "description" : "",
       "created" : 1547131665447,
-      "lastModified" : 1547468087574,
+      "lastModified" : 1548147839993,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "ea0340c5-1c0a-44c5-8fa5-22dc314aa124",
+      "uuid" : "17336f36-fb6c-4c25-b6e1-45dbdeb94a30",
       "valid" : true,
       "metadata" : {
         "labels" : [ ]

@@ -9,6 +9,7 @@ from datetime import datetime
 from texttable import Texttable
 
 # https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.5.3
+# https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html
 pipeline_config_schema = {
     'type': 'array',
     'items': {
@@ -27,12 +28,20 @@ pipeline_config_schema = {
             }},
             'measurement_name': {'type': 'string'},
             'value_field_name': {'type': 'string'},
-            'timestamp_field_name': {'type': 'string'},  # unix timestamp
+            'timestamp': {
+                'type': 'object',
+                'properties': {
+                    'name': {'type': 'string'},
+                    'type': {'type': 'string', 'enum': ['string', 'datetime', 'unix', 'unix_ms']},
+                    'format': {'type': 'string'}  # if string specify date format
+                },
+                'required': ['name', 'type'],
+            },
             'dimensions': {'type': 'array', 'items': {'type': 'string'}},
             'destination_url': {'type': 'string'},  # anodot metric api url with token and protocol params
         },
         'required': ['pipeline_id', 'source_name', 'source_config', 'measurement_name', 'value_field_name',
-                     'dimensions', 'timestamp_field_name', 'destination_url']},
+                     'dimensions', 'timestamp', 'destination_url']},
 }
 
 api_client = StreamSetsApiClient(os.environ.get('STREAMSETS_USERNAME', 'admin'),

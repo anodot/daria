@@ -15,7 +15,7 @@ def pipeline_config_handler():
         },
         'measurement_name': 'impressions',
         'value_field_name': 'Impressions',
-        'timestamp_field_name': 'timestamp_t',
+        'timestamp': {'name': 'timestamp_t', 'type': 'unix'},
         'dimensions': ['Country', 'ver'],
         'destination_url': 'http://anodot.com'
     }
@@ -86,6 +86,7 @@ def test_override_base_config(pipeline_config_handler, mocker):
     mocker.patch.object(pipeline_config_handler, 'update_measurement_name')
     mocker.patch.object(pipeline_config_handler, 'rename_fields_for_anodot_protocol')
     mocker.patch.object(pipeline_config_handler, 'update_http_client')
+    mocker.patch.object(pipeline_config_handler, 'convert_timestamp_to_unix')
 
     res = pipeline_config_handler.override_base_config('12345', 'title test')
 
@@ -94,4 +95,5 @@ def test_override_base_config(pipeline_config_handler, mocker):
     pipeline_config_handler.update_measurement_name.assert_called_once()
     pipeline_config_handler.rename_fields_for_anodot_protocol.assert_called_once()
     pipeline_config_handler.update_http_client.assert_called_once()
+    pipeline_config_handler.convert_timestamp_to_unix.assert_called_once()
 

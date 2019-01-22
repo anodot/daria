@@ -30,6 +30,7 @@ class PipelineConfigHandler:
         for conf in stage['configuration']:
             if conf['name'] == 'expressionProcessorConfigs':
                 conf['value'][1]['expression'] = self.client_config['measurement_name']
+                return
 
     def rename_fields_for_anodot_protocol(self, stage):
         for conf in stage['configuration']:
@@ -41,8 +42,8 @@ class PipelineConfigHandler:
                  'toFieldExpression': '/value'}
             ]
 
-            if self.client_config['timestamp_field_name'] != 'timestamp':
-                rename_mapping.append({'fromFieldExpression': '/' + self.client_config['timestamp_field_name'],
+            if self.client_config['timestamp']['name'] != 'timestamp':
+                rename_mapping.append({'fromFieldExpression': '/' + self.client_config['timestamp']['name'],
                                        'toFieldExpression': '/timestamp'})
 
             for dim in self.client_config['dimensions']:
@@ -53,6 +54,23 @@ class PipelineConfigHandler:
         for conf in self.config['stages'][len(self.config['stages']) - 1]['configuration']:
             if conf['name'] == 'conf.resourceUrl':
                 conf['value'] = self.client_config['destination_url']
+
+    def convert_timestamp_to_unix(self, stage):
+        for conf in stage['configuration']:
+            if conf['name'] != 'expressionProcessorConfigs':
+                continue
+
+            if self.client_config['timestamp']['type'] == 'string':
+                expression = f"time:dateTimeToMilliseconds(time:extractDateFromString(record:value('/timestamp'), '{self.client_config['timestamp']['format']}'))/1000"
+            elif self.client_config['timestamp']['type'] == 'datetime':
+                expression = "time:dateTimeToMilliseconds(record:value('/timestamp'))/1000"
+            elif self.client_config['timestamp']['type'] == 'unix_ms':
+                expression = "record:value('/timestamp')/1000"
+            else:
+                expression = "record:value('/timestamp')"
+
+            conf['value'][0]['expression'] = '${' + expression + '}'
+            return
 
     def override_base_config(self, new_uuid, new_pipeline_title):
         self.config['uuid'] = new_uuid
@@ -66,6 +84,9 @@ class PipelineConfigHandler:
 
             if stage['instanceName'] == 'FieldRenamer_01':
                 self.rename_fields_for_anodot_protocol(stage)
+
+            if stage['instanceName'] == 'ExpressionEvaluator_02':
+                self.convert_timestamp_to_unix(stage)
 
         self.update_http_client()
 
