@@ -311,6 +311,9 @@
         }, {
           "fieldToSet" : "/properties/what",
           "expression" : "Clicks"
+        }, {
+          "fieldToSet" : "/properties/target_type",
+          "expression" : "gauge"
         } ]
       }, {
         "name" : "headerAttributeConfigs",

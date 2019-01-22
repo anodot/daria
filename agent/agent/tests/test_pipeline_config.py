@@ -43,20 +43,6 @@ def test_update_http_client(pipeline_config_handler):
     pytest.fail('No config found')
 
 
-def test_update_measurement_name(pipeline_config_handler):
-    for stage in pipeline_config_handler.config['stages']:
-        if stage['instanceName'] != 'ExpressionEvaluator_01':
-            continue
-
-        pipeline_config_handler.update_measurement_name(stage)
-        for conf in stage['configuration']:
-            if conf['name'] != 'expressionProcessorConfigs':
-                continue
-            assert conf['value'][1]['expression'] == 'impressions'
-            return
-    pytest.fail('No config found')
-
-
 def test_override_base_rules(pipeline_config_handler):
     res = pipeline_config_handler.override_base_rules('12345')
     assert res['uuid'] == '12345'
@@ -64,7 +50,7 @@ def test_override_base_rules(pipeline_config_handler):
 
 def test_override_base_config(pipeline_config_handler, mocker):
     mocker.patch.object(pipeline_config_handler, 'update_source_configs')
-    mocker.patch.object(pipeline_config_handler, 'update_measurement_name')
+    mocker.patch.object(pipeline_config_handler, 'update_properties')
     mocker.patch.object(pipeline_config_handler, 'rename_fields_for_anodot_protocol')
     mocker.patch.object(pipeline_config_handler, 'update_http_client')
     mocker.patch.object(pipeline_config_handler, 'convert_timestamp_to_unix')
@@ -73,7 +59,7 @@ def test_override_base_config(pipeline_config_handler, mocker):
 
     assert res['uuid'] == '12345' and res['title'] == 'title test'
     pipeline_config_handler.update_source_configs.assert_called_once()
-    pipeline_config_handler.update_measurement_name.assert_called_once()
+    pipeline_config_handler.update_properties.assert_called_once()
     pipeline_config_handler.rename_fields_for_anodot_protocol.assert_called_once()
     pipeline_config_handler.update_http_client.assert_called_once()
     pipeline_config_handler.convert_timestamp_to_unix.assert_called_once()

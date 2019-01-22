@@ -28,6 +28,7 @@ pipeline_config_schema = {
             }},
             'measurement_name': {'type': 'string'},
             'value_field_name': {'type': 'string'},
+            'target_type': {'type': 'string', 'enum': ['counter', 'gauge']},  # default gauge
             'timestamp': {
                 'type': 'object',
                 'properties': {

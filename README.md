@@ -39,6 +39,7 @@ docker-compose up -d
                 }},
                 "measurement_name": {"type": "string"},
                 "value_field_name": {"type": "string"},
+                "target_type": {"type": "string", "enum": ["counter", "gauge"]},
                 "timestamp": {
                     "type": "object",
                     "properties": {
@@ -62,6 +63,7 @@ docker-compose up -d
     }
     ```
     - `pipeline_id` - unique pipeline identifier
+    - `target_type` - if `gauge` aggregation will be performed using average (default), if `counter` - using sum
     - `timestamp` - `name`: column name, `type`: column type, `format`: datetime string format if type is string 
         ([string format spec](https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html))
     

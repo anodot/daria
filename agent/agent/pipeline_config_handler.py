@@ -26,10 +26,13 @@ class PipelineConfigHandler:
             if conf['name'] in self.client_config['source_config']:
                 conf['value'] = self.client_config['source_config'][conf['name']]
 
-    def update_measurement_name(self, stage):
+    def update_properties(self, stage):
         for conf in stage['configuration']:
             if conf['name'] == 'expressionProcessorConfigs':
                 conf['value'][1]['expression'] = self.client_config['measurement_name']
+
+                if 'target_type' in self.client_config:
+                    conf['value'][2]['expression'] = self.client_config['target_type']
                 return
 
     def get_rename_mapping(self):
@@ -87,7 +90,7 @@ class PipelineConfigHandler:
 
         for stage in self.config['stages']:
             if stage['instanceName'] == 'ExpressionEvaluator_01':
-                self.update_measurement_name(stage)
+                self.update_properties(stage)
 
             if stage['instanceName'] == 'FieldRenamer_01':
                 self.rename_fields_for_anodot_protocol(stage)
