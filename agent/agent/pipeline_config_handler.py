@@ -28,18 +28,24 @@ class PipelineConfigHandler:
 
     def update_properties(self, stage):
         for conf in stage['configuration']:
-            if conf['name'] == 'expressionProcessorConfigs':
-                conf['value'][1]['expression'] = self.client_config['measurement_name']
+            if conf['name'] != 'expressionProcessorConfigs':
+                continue
 
-                if 'target_type' in self.client_config:
-                    conf['value'][2]['expression'] = self.client_config['target_type']
-                return
+            conf['value'][1]['expression'] = self.client_config['measurement_name']
+
+            if 'target_type' in self.client_config:
+                conf['value'][2]['expression'] = self.client_config['target_type']
+
+            if self.client_config['value']['type'] == 'column':
+                expression = f"record:value('/{self.client_config['value']['value']}')"
+                conf['value'][3]['expression'] = '${' + expression + '}'
+            else:
+                conf['value'][3]['expression'] = self.client_config['value']['value']
+
+            return
 
     def get_rename_mapping(self):
-        rename_mapping = [
-            {'fromFieldExpression': '/' + self.client_config['value_field_name'],
-             'toFieldExpression': '/value'}
-        ]
+        rename_mapping = []
 
         if self.client_config['timestamp']['name'] != 'timestamp':
             rename_mapping.append({'fromFieldExpression': '/' + self.client_config['timestamp']['name'],

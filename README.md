@@ -38,7 +38,14 @@ docker-compose up -d
                     "configBean.mongoConfig.initialOffset": {"type": "string"}
                 }},
                 "measurement_name": {"type": "string"},
-                "value_field_name": {"type": "string"},
+                "value": {
+                    "type": "object",
+                    "properties": {
+                        "type": {"type": "string", "enum": ["column", "constant"]},
+                        "value": {"type": "string"}
+                    },
+                    "required": ["type", "value"]
+                },
                 "target_type": {"type": "string", "enum": ["counter", "gauge"]},
                 "timestamp": {
                     "type": "object",

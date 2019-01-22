@@ -27,7 +27,14 @@ pipeline_config_schema = {
                 'configBean.mongoConfig.initialOffset': {'type': 'string'},  # date
             }},
             'measurement_name': {'type': 'string'},
-            'value_field_name': {'type': 'string'},
+            'value': {
+                'type': 'object',
+                'properties': {
+                    'type': {'type': 'string', 'enum': ['column', 'constant']},
+                    'value': {'type': 'string'}
+                },
+                'required': ['type', 'value']
+            },
             'target_type': {'type': 'string', 'enum': ['counter', 'gauge']},  # default gauge
             'timestamp': {
                 'type': 'object',
@@ -47,7 +54,7 @@ pipeline_config_schema = {
                 'required': ['required']},
             'destination_url': {'type': 'string'},  # anodot metric api url with token and protocol params
         },
-        'required': ['pipeline_id', 'source_name', 'source_config', 'measurement_name', 'value_field_name',
+        'required': ['pipeline_id', 'source_name', 'source_config', 'measurement_name', 'value',
                      'dimensions', 'timestamp', 'destination_url']},
 }
 
