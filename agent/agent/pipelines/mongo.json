@@ -369,7 +369,7 @@
         } ]
       }, {
         "name" : "errorHandler.nonExistingFromFieldHandling",
-        "value" : "TO_ERROR"
+        "value" : "CONTINUE"
       }, {
         "name" : "errorHandler.existingToFieldHandling",
         "value" : "TO_ERROR"

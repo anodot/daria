@@ -16,7 +16,7 @@ def pipeline_config_handler():
         'measurement_name': 'impressions',
         'value_field_name': 'Impressions',
         'timestamp': {'name': 'timestamp_t', 'type': 'unix'},
-        'dimensions': ['Country', 'ver'],
+        'dimensions': {'required': ['Country', 'ver']},
         'destination_url': 'http://anodot.com'
     }
     return PipelineConfigHandler(client_config)
@@ -53,25 +53,6 @@ def test_update_measurement_name(pipeline_config_handler):
             if conf['name'] != 'expressionProcessorConfigs':
                 continue
             assert conf['value'][1]['expression'] == 'impressions'
-            return
-    pytest.fail('No config found')
-
-
-def test_rename_fields_for_anodot_protocol(pipeline_config_handler):
-    for stage in pipeline_config_handler.config['stages']:
-        if stage['instanceName'] != 'FieldRenamer_01':
-            continue
-
-        pipeline_config_handler.rename_fields_for_anodot_protocol(stage)
-        for conf in stage['configuration']:
-            if conf['name'] != 'renameMapping':
-                continue
-            assert conf['value'] == [
-                {'fromFieldExpression': '/Impressions', 'toFieldExpression': '/value'},
-                {'fromFieldExpression': '/timestamp_t', 'toFieldExpression': '/timestamp'},
-                {'fromFieldExpression': '/Country', 'toFieldExpression': '/properties/Country'},
-                {'fromFieldExpression': '/ver', 'toFieldExpression': '/properties/ver'},
-            ]
             return
     pytest.fail('No config found')
 

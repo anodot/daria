@@ -37,7 +37,13 @@ pipeline_config_schema = {
                 },
                 'required': ['name', 'type'],
             },
-            'dimensions': {'type': 'array', 'items': {'type': 'string'}},
+            'dimensions': {
+                'type': 'object',
+                'properties': {
+                    'required': {'type': 'array', 'items': {'type': 'string'}},
+                    'optional': {'type': 'array', 'items': {'type': 'string'}}
+                },
+                'required': ['required']},
             'destination_url': {'type': 'string'},  # anodot metric api url with token and protocol params
         },
         'required': ['pipeline_id', 'source_name', 'source_config', 'measurement_name', 'value_field_name',

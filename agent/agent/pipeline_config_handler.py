@@ -32,23 +32,30 @@ class PipelineConfigHandler:
                 conf['value'][1]['expression'] = self.client_config['measurement_name']
                 return
 
+    def get_rename_mapping(self):
+        rename_mapping = [
+            {'fromFieldExpression': '/' + self.client_config['value_field_name'],
+             'toFieldExpression': '/value'}
+        ]
+
+        if self.client_config['timestamp']['name'] != 'timestamp':
+            rename_mapping.append({'fromFieldExpression': '/' + self.client_config['timestamp']['name'],
+                                   'toFieldExpression': '/timestamp'})
+
+        dimensions = self.client_config['dimensions']['required']
+        if 'optional' in self.client_config['dimensions']:
+            dimensions = self.client_config['dimensions']['required'] + self.client_config['dimensions']['optional']
+        for dim in dimensions:
+            rename_mapping.append({'fromFieldExpression': '/' + dim, 'toFieldExpression': '/properties/' + dim})
+        return rename_mapping
+
     def rename_fields_for_anodot_protocol(self, stage):
         for conf in stage['configuration']:
-            if conf['name'] != 'renameMapping':
-                continue
+            if conf['name'] == 'renameMapping':
+                conf['value'] = self.get_rename_mapping()
 
-            rename_mapping = [
-                {'fromFieldExpression': '/' + self.client_config['value_field_name'],
-                 'toFieldExpression': '/value'}
-            ]
-
-            if self.client_config['timestamp']['name'] != 'timestamp':
-                rename_mapping.append({'fromFieldExpression': '/' + self.client_config['timestamp']['name'],
-                                       'toFieldExpression': '/timestamp'})
-
-            for dim in self.client_config['dimensions']:
-                rename_mapping.append({'fromFieldExpression': '/' + dim, 'toFieldExpression': '/properties/' + dim})
-            conf['value'] = rename_mapping
+            if conf['name'] == 'stageRequiredFields':
+                conf['value'] = ['/' + d for d in self.client_config['dimensions']['required']]
 
     def update_http_client(self):
         for conf in self.config['stages'][len(self.config['stages']) - 1]['configuration']:
