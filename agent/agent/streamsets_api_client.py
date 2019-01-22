@@ -194,3 +194,13 @@ class StreamSetsApiClient:
         """
         logger.info(f'Get pipeline metrics {pipeline_id}')
         return self.session.get(self.build_url('pipeline', pipeline_id, 'metrics'))
+
+    @endpoint
+    def reset_pipeline(self, pipeline_id):
+        """
+
+        :param pipeline_id: string
+        :return:
+        """
+        logger.info(f'Reset pipeline offset {pipeline_id}')
+        return self.session.post(self.build_url('pipeline', pipeline_id, 'resetOffset'))

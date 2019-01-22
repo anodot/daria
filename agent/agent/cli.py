@@ -160,7 +160,7 @@ def delete(pipeline_id):
     except StreamSetsApiClientException as e:
         click.secho(str(e), err=True, fg='red')
         return
-    click.echo('Pipeline delete')
+    click.echo('Pipeline deleted')
 
 
 @click.command()
@@ -235,6 +235,17 @@ def info(pipeline_id):
     click.echo(table.draw())
 
 
+@click.command()
+@click.argument('pipeline_id')
+def reset(pipeline_id):
+    try:
+        api_client.reset_pipeline(pipeline_id)
+    except StreamSetsApiClientException as e:
+        click.secho(str(e), err=True, fg='red')
+        return
+    click.echo('Pipeline offset reset')
+
+
 pipeline.add_command(create)
 pipeline.add_command(list_pipelines)
 pipeline.add_command(start)
@@ -242,3 +253,4 @@ pipeline.add_command(stop)
 pipeline.add_command(delete)
 pipeline.add_command(logs)
 pipeline.add_command(info)
+pipeline.add_command(reset)
