@@ -15,28 +15,34 @@ docker-compose up -d
     ```
     pipeline --help
     ```
-3. Create pipelines with `pipeline create [CONFIG_FILE]`
+3. Create pipelines with `pipeline create -f CONFIG_FILE`
     
     config file format - `json`
     
     [schema](https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.5.3):
     ```json
     {
-        "type": "array",
+     "type": "array",
         "items": {
             "type": "object",
             "properties": {
                 "pipeline_id": {"type": "string"},
-                "source_name": {"type": "string", "enum": ["mongo"]},
-                "source_config": {"type": "object", "properties": {
-                    "configBean.mongoConfig.connectionString": {"type": "string"},
-                    "configBean.mongoConfig.username": {"type": "string"},
-                    "configBean.mongoConfig.password": {"type": "string"},
-                    "configBean.mongoConfig.database": {"type": "string"},
-                    "configBean.mongoConfig.collection": {"type": "string"},
-                    "configBean.mongoConfig.isCapped": {"type": "boolean"},
-                    "configBean.mongoConfig.initialOffset": {"type": "string"}
-                }},
+                "source": {
+                    "type": "object",
+                    "properties": {
+                        "name": {"type": "string", "enum": ["mongo"]},
+                        "config": {"type": "object", "properties": {
+                            "configBean.mongoConfig.connectionString": {"type": "string"},
+                            "configBean.mongoConfig.username": {"type": "string"},
+                            "configBean.mongoConfig.password": {"type": "string"},
+                            "configBean.mongoConfig.database": {"type": "string"},
+                            "configBean.mongoConfig.collection": {"type": "string"},
+                            "configBean.isCapped": {"type": "boolean"},
+                            "configBean.initialOffset": {"type": "string"}
+                        }}
+                    },
+                    "required": ["name", "config"]
+                },
                 "measurement_name": {"type": "string"},
                 "value": {
                     "type": "object",
@@ -63,10 +69,18 @@ docker-compose up -d
                         "optional": {"type": "array", "items": {"type": "string"}}
                     },
                     "required": ["required"]},
-                "destination_url": {"type": "string"}
+                "destination": {
+                    "type": "object",
+                    "properties": {
+                        "name": {"type": "string", "enum": ["http"]},
+                        "config": {"type": "object", "properties": {
+                            "conf.resourceUrl": {"type": "string"}
+                        }}
+                    },
+                    "required": ["name", "config"]
+                }
             },
-            "required": ["pipeline_id", "source_name", "source_config", "measurement_name", "value_field_name",
-                         "dimensions", "timestamp", "destination_url"]}
+            "required": ["pipeline_id", "source", "measurement_name", "value", "dimensions", "timestamp", "destination"]}
     }
     ```
     - `pipeline_id` - unique pipeline identifier
@@ -80,9 +94,11 @@ docker-compose up -d
         - `unix_ms` (unix timestamp in milliseconds)
         - `unix` (unix timestamp in seconds)
     - `dimensions` - `required` columns must exist in a record
-    - `destination_url` - anodot metric api url with token and protocol params
+    - `destination` - `conf.resourceUrl` - anodot metric api url with token and protocol params
     
     Config example is in `agent/pipeline_configs/pipeline_config_example.json`
+    
+    If no file is specified config will be prompted in the console
     
 3. List pipelines `pipeline list`
 4. Start pipeline `pipeline start PIPELINE_ID`
