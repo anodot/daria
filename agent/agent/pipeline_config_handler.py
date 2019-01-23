@@ -5,17 +5,85 @@ from .logger import get_logger
 
 logger = get_logger(__name__)
 
+# https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.5.3
+# https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html
+config_schema = {
+    'type': 'array',
+    'items': {
+        'type': 'object',
+        'properties': {
+            'pipeline_id': {'type': 'string'},  # name of the pipeline
+            'source': {
+                'type': 'object',
+                'properties': {
+                    'name': {'type': 'string', 'enum': ['mongo']},
+                    'config': {'type': 'object', 'properties': {
+                        'configBean.mongoConfig.connectionString': {'type': 'string'},
+                        'configBean.mongoConfig.username': {'type': 'string'},
+                        'configBean.mongoConfig.password': {'type': 'string'},
+                        'configBean.mongoConfig.database': {'type': 'string'},
+                        'configBean.mongoConfig.collection': {'type': 'string'},
+                        'configBean.mongoConfig.isCapped': {'type': 'boolean'},
+                        'configBean.mongoConfig.initialOffset': {'type': 'string'},  # date
+                    }},
+                },
+                'required': ['name', 'config']
+            },
+            'measurement_name': {'type': 'string'},
+            'value': {
+                'type': 'object',
+                'properties': {
+                    'type': {'type': 'string', 'enum': ['column', 'constant']},
+                    'value': {'type': 'string'}
+                },
+                'required': ['type', 'value']
+            },
+            'target_type': {'type': 'string', 'enum': ['counter', 'gauge']},  # default gauge
+            'timestamp': {
+                'type': 'object',
+                'properties': {
+                    'name': {'type': 'string'},
+                    'type': {'type': 'string', 'enum': ['string', 'datetime', 'unix', 'unix_ms']},
+                    'format': {'type': 'string'}  # if string specify date format
+                },
+                'required': ['name', 'type'],
+            },
+            'dimensions': {
+                'type': 'object',
+                'properties': {
+                    'required': {'type': 'array', 'items': {'type': 'string'}},
+                    'optional': {'type': 'array', 'items': {'type': 'string'}}
+                },
+                'required': ['required']},
+            'destination': {
+                'type': 'object',
+                'properties': {
+                    'name': {'type': 'string', 'enum': ['http']},
+                    'config': {'type': 'object', 'properties': {
+                        'conf.resourceUrl': {'type': 'string'},  # anodot metric api url with token and protocol params
+                    }},
+                },
+                'required': ['name', 'config']
+            },
+        },
+        'required': ['pipeline_id', 'source', 'measurement_name', 'value',
+                     'dimensions', 'timestamp', 'destination']},
+}
+
 
 class PipelineConfigHandler:
     """
     Overrides base config file
     """
-    PIPELINES_BASE_CONFIGS_PATH = 'pipelines/{source_name}.json'
+    PIPELINES_BASE_CONFIGS_PATH = 'pipelines/{source_name}_{destination_name}.json'
 
     def __init__(self, client_config):
         self.client_config = client_config
 
-        base_path = self.PIPELINES_BASE_CONFIGS_PATH.format(**{'source_name': client_config['source_name']})
+        base_path = self.PIPELINES_BASE_CONFIGS_PATH.format(**{
+            'source_name': client_config['source']['name'],
+            'destination_name': client_config['destination']['name']
+        })
         with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), base_path), 'r') as f:
             data = json.load(f)
             self.config = data['pipelineConfig']
@@ -23,8 +91,8 @@ class PipelineConfigHandler:
 
     def update_source_configs(self):
         for conf in self.config['stages'][0]['configuration']:
-            if conf['name'] in self.client_config['source_config']:
-                conf['value'] = self.client_config['source_config'][conf['name']]
+            if conf['name'] in self.client_config['source']['config']:
+                conf['value'] = self.client_config['source']['config'][conf['name']]
 
     def update_properties(self, stage):
         for conf in stage['configuration']:
@@ -66,10 +134,10 @@ class PipelineConfigHandler:
             if conf['name'] == 'stageRequiredFields':
                 conf['value'] = ['/' + d for d in self.client_config['dimensions']['required']]
 
-    def update_http_client(self):
+    def update_destination_config(self):
         for conf in self.config['stages'][len(self.config['stages']) - 1]['configuration']:
-            if conf['name'] == 'conf.resourceUrl':
-                conf['value'] = self.client_config['destination_url']
+            if conf['name'] in self.client_config['destination']['config']:
+                conf['value'] = self.client_config['destination']['config'][conf['name']]
 
     def convert_timestamp_to_unix(self, stage):
         for conf in stage['configuration']:
@@ -77,7 +145,9 @@ class PipelineConfigHandler:
                 continue
 
             if self.client_config['timestamp']['type'] == 'string':
-                expression = f"time:dateTimeToMilliseconds(time:extractDateFromString(record:value('/timestamp'), '{self.client_config['timestamp']['format']}'))/1000"
+                dt_format = self.client_config['timestamp']['format']
+                get_timestamp_exp = f"time:extractDateFromString(record:value('/timestamp'), '{dt_format}')"
+                expression = f"time:dateTimeToMilliseconds({get_timestamp_exp})/1000"
             elif self.client_config['timestamp']['type'] == 'datetime':
                 expression = "time:dateTimeToMilliseconds(record:value('/timestamp'))/1000"
             elif self.client_config['timestamp']['type'] == 'unix_ms':
@@ -104,7 +174,7 @@ class PipelineConfigHandler:
             if stage['instanceName'] == 'ExpressionEvaluator_02':
                 self.convert_timestamp_to_unix(stage)
 
-        self.update_http_client()
+        self.update_destination_config()
 
         return self.config
 

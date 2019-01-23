@@ -3,60 +3,10 @@ import json
 import jsonschema
 import os
 
-from .pipeline_config_handler import PipelineConfigHandler
+from .pipeline_config_handler import PipelineConfigHandler, config_schema
 from .streamsets_api_client import StreamSetsApiClient, StreamSetsApiClientException
 from datetime import datetime
 from texttable import Texttable
-
-# https://json-schema.org/latest/json-schema-validation.html#rfc.section.6.5.3
-# https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html
-pipeline_config_schema = {
-    'type': 'array',
-    'items': {
-        'type': 'object',
-        'properties': {
-            'pipeline_id': {'type': 'string'},  # name of the pipeline
-            'source_name': {'type': 'string', 'enum': ['mongo']},
-            'source_config': {'type': 'object', 'properties': {
-                'configBean.mongoConfig.connectionString': {'type': 'string'},
-                'configBean.mongoConfig.username': {'type': 'string'},
-                'configBean.mongoConfig.password': {'type': 'string'},
-                'configBean.mongoConfig.database': {'type': 'string'},
-                'configBean.mongoConfig.collection': {'type': 'string'},
-                'configBean.mongoConfig.isCapped': {'type': 'boolean'},
-                'configBean.mongoConfig.initialOffset': {'type': 'string'},  # date
-            }},
-            'measurement_name': {'type': 'string'},
-            'value': {
-                'type': 'object',
-                'properties': {
-                    'type': {'type': 'string', 'enum': ['column', 'constant']},
-                    'value': {'type': 'string'}
-                },
-                'required': ['type', 'value']
-            },
-            'target_type': {'type': 'string', 'enum': ['counter', 'gauge']},  # default gauge
-            'timestamp': {
-                'type': 'object',
-                'properties': {
-                    'name': {'type': 'string'},
-                    'type': {'type': 'string', 'enum': ['string', 'datetime', 'unix', 'unix_ms']},
-                    'format': {'type': 'string'}  # if string specify date format
-                },
-                'required': ['name', 'type'],
-            },
-            'dimensions': {
-                'type': 'object',
-                'properties': {
-                    'required': {'type': 'array', 'items': {'type': 'string'}},
-                    'optional': {'type': 'array', 'items': {'type': 'string'}}
-                },
-                'required': ['required']},
-            'destination_url': {'type': 'string'},  # anodot metric api url with token and protocol params
-        },
-        'required': ['pipeline_id', 'source_name', 'source_config', 'measurement_name', 'value',
-                     'dimensions', 'timestamp', 'destination_url']},
-}
 
 api_client = StreamSetsApiClient(os.environ.get('STREAMSETS_USERNAME', 'admin'),
                                  os.environ.get('STREAMSETS_PASSWORD', 'admin'),
@@ -96,12 +46,18 @@ def pipeline():
 
 
 @click.command()
-@click.argument('config_file', type=click.File('r'))
-def create(config_file):
-    pipelines_configs = json.load(config_file)
+@click.option('-f', '--file', type=click.File('r'), default=None)
+def create(file):
+    if file:
+        pipelines_configs = json.load(file)
+    else:
+        pipelines_configs = []
+        # ask source config
+        # ask destination config
+        # continue asking pipeline config until user says no
 
     try:
-        jsonschema.validate(pipelines_configs, pipeline_config_schema)
+        jsonschema.validate(pipelines_configs, config_schema)
     except jsonschema.exceptions.ValidationError as e:
         click.secho('Validation error', fg='red')
         click.echo(str(e), err=True)

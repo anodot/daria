@@ -7,17 +7,18 @@ from ..pipeline_config_handler import PipelineConfigHandler
 def pipeline_config_handler():
     client_config = {
         'name': 'test',
-        'source_name': 'mongo',
-        'source': 'mongo',
-        'source_config': {
-            'configBean.mongoConfig.username': 'username',
-            'configBean.mongoConfig.password': 'password',
+        'source': {
+            'name': 'mongo',
+            'config': {
+                'configBean.mongoConfig.username': 'username',
+                'configBean.mongoConfig.password': 'password',
+            },
         },
         'measurement_name': 'impressions',
         'value_field_name': 'Impressions',
         'timestamp': {'name': 'timestamp_t', 'type': 'unix'},
         'dimensions': {'required': ['Country', 'ver']},
-        'destination_url': 'http://anodot.com'
+        'destination': {'name': 'http', 'config': {'conf.resourceUrl': 'http://anodot.com'}}
     }
     return PipelineConfigHandler(client_config)
 
@@ -34,7 +35,7 @@ def test_update_source_config(pipeline_config_handler):
 
 
 def test_update_http_client(pipeline_config_handler):
-    pipeline_config_handler.update_http_client()
+    pipeline_config_handler.update_destination_config()
     stages_count = len(pipeline_config_handler.config['stages'])
     for conf in pipeline_config_handler.config['stages'][stages_count - 1]['configuration']:
         if conf['name'] == 'conf.resourceUrl':
@@ -52,7 +53,7 @@ def test_override_base_config(pipeline_config_handler, mocker):
     mocker.patch.object(pipeline_config_handler, 'update_source_configs')
     mocker.patch.object(pipeline_config_handler, 'update_properties')
     mocker.patch.object(pipeline_config_handler, 'rename_fields_for_anodot_protocol')
-    mocker.patch.object(pipeline_config_handler, 'update_http_client')
+    mocker.patch.object(pipeline_config_handler, 'update_destination_config')
     mocker.patch.object(pipeline_config_handler, 'convert_timestamp_to_unix')
 
     res = pipeline_config_handler.override_base_config('12345', 'title test')
@@ -61,6 +62,6 @@ def test_override_base_config(pipeline_config_handler, mocker):
     pipeline_config_handler.update_source_configs.assert_called_once()
     pipeline_config_handler.update_properties.assert_called_once()
     pipeline_config_handler.rename_fields_for_anodot_protocol.assert_called_once()
-    pipeline_config_handler.update_http_client.assert_called_once()
+    pipeline_config_handler.update_destination_config.assert_called_once()
     pipeline_config_handler.convert_timestamp_to_unix.assert_called_once()
 
