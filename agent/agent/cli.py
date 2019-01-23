@@ -3,7 +3,7 @@ import json
 import jsonschema
 import os
 
-from .pipeline_config_handler import PipelineConfigHandler, config_schema
+from .pipeline_config_handler import PipelineConfigHandler, config_schema, sources_configs, destinations_configs
 from .streamsets_api_client import StreamSetsApiClient, StreamSetsApiClientException
 from datetime import datetime
 from texttable import Texttable
@@ -45,16 +45,61 @@ def pipeline():
     pass
 
 
+def prompt_pipeline_config():
+    # ask source config
+    pipeline_config = {'source': {'config': {}}}
+    pipeline_config['source']['name'] = click.prompt('Choose source', type=click.Choice(['mongo']))
+    for conf in sources_configs[pipeline_config['source']['name']]:
+        pipeline_config['source']['config'][conf['name']] = click.prompt(conf['prompt_string'], type=conf['type'],
+                                                                         default=conf.get('default'),
+                                                                         value_proc=conf.get('expression'))
+
+    # ask destination config
+    pipeline_config['destination'] = {'config': {}}
+    pipeline_config['destination']['name'] = click.prompt('Choose destination', type=click.Choice(['http']))
+    for conf in destinations_configs[pipeline_config['destination']['name']]:
+        pipeline_config['destination']['config'][conf['name']] = click.prompt(conf['prompt_string'],
+                                                                              type=conf['type'],
+                                                                              default=conf.get('default'))
+
+    # pipeline config
+    pipeline_config['pipeline_id'] = click.prompt('Pipeline ID (must be unique)', type=click.STRING)
+    pipeline_config['measurement_name'] = click.prompt('Measurement name', type=click.STRING)
+
+    pipeline_config['value'] = {}
+    pipeline_config['value']['type'] = click.prompt('Value type', type=click.Choice(['column', 'constant']))
+    pipeline_config['value']['value'] = click.prompt('Value (column name or constant value)', type=click.STRING)
+
+    pipeline_config['target_type'] = click.prompt('Value type', type=click.Choice(['counter', 'gauge']),
+                                                  default='gauge')
+
+    pipeline_config['timestamp'] = {}
+    pipeline_config['timestamp']['name'] = click.prompt('Timestamp column name', type=click.STRING)
+    pipeline_config['timestamp']['type'] = click.prompt('Timestamp column type',
+                                                        type=click.Choice(
+                                                            ['string', 'datetime', 'unix', 'unix_ms']),
+                                                        default='unix')
+    if pipeline_config['timestamp']['type'] == 'string':
+        pipeline_config['timestamp']['format'] = click.prompt('Timestamp format string', type=click.STRING)
+
+    pipeline_config['dimensions'] = {}
+    pipeline_config['dimensions']['required'] = click.prompt('Required dimensions',
+                                                             type=click.STRING,
+                                                             value_proc=lambda x: x.split(),
+                                                             default='')
+    pipeline_config['dimensions']['optional'] = click.prompt('Optional dimensions',
+                                                             type=click.STRING,
+                                                             value_proc=lambda x: x.split(),
+                                                             default='')
+
+
 @click.command()
 @click.option('-f', '--file', type=click.File('r'), default=None)
 def create(file):
     if file:
         pipelines_configs = json.load(file)
     else:
-        pipelines_configs = []
-        # ask source config
-        # ask destination config
-        # continue asking pipeline config until user says no
+        pipelines_configs = [prompt_pipeline_config()]
 
     try:
         jsonschema.validate(pipelines_configs, config_schema)
