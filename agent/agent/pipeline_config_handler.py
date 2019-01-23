@@ -1,6 +1,7 @@
 import click
 import json
 import os
+import re
 
 from .logger import get_logger
 
@@ -90,7 +91,8 @@ sources_configs = {
         {'name': 'configBean.offsetField', 'prompt_string': 'Offset field', 'type': click.STRING, 'default': '_id'},
         {'name': 'configBean.batchSize', 'prompt_string': 'Batch size', 'type': click.INT, 'default': 1000},
         {'name': 'configBean.maxBatchWaitTime', 'prompt_string': 'Max batch wait time (seconds)', 'type': click.INT,
-         'default': 5, 'expression': lambda x: '${' + x + ' * SECONDS}'},
+         'default': '${5 * SECONDS}', 'expression': lambda x: '${' + str(x) + ' * SECONDS}',
+         'reverse_expression': lambda x: re.findall(r'\d+', x)[0]},
     ]
 }
 
@@ -166,7 +168,7 @@ class PipelineConfigHandler:
                 conf['value'] = ['/' + d for d in self.client_config['dimensions']['required']]
 
     def update_destination_config(self):
-        for conf in self.config['stages'][len(self.config['stages']) - 1]['configuration']:
+        for conf in self.config['stages'][-1]['configuration']:
             if conf['name'] in self.client_config['destination']['config']:
                 conf['value'] = self.client_config['destination']['config'][conf['name']]
 
@@ -206,6 +208,8 @@ class PipelineConfigHandler:
                 self.convert_timestamp_to_unix(stage)
 
         self.update_destination_config()
+        self.config['metadata']['labels'] = [self.client_config['source']['name'],
+                                             self.client_config['destination']['name']]
 
         return self.config
 

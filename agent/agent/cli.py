@@ -45,22 +45,45 @@ def pipeline():
     pass
 
 
+def get_previous_pipeline_config(label, stage=0):
+    recent_pipeline_config = {}
+    pipelines_with_source = api_client.get_pipelines(order_by='CREATED', order='DESC',
+                                                     label=label)
+    if len(pipelines_with_source) > 0:
+        recent_pipeline = api_client.get_pipeline(pipelines_with_source[0]['pipelineId'])
+        for conf in recent_pipeline['stages'][stage]['configuration']:
+            recent_pipeline_config[conf['name']] = conf['value']
+    return recent_pipeline_config
+
+
 def prompt_pipeline_config():
     # ask source config
     pipeline_config = {'source': {'config': {}}}
     pipeline_config['source']['name'] = click.prompt('Choose source', type=click.Choice(['mongo']))
+
+    recent_pipeline_config = get_previous_pipeline_config(pipeline_config['source']['name'])
     for conf in sources_configs[pipeline_config['source']['name']]:
-        pipeline_config['source']['config'][conf['name']] = click.prompt(conf['prompt_string'], type=conf['type'],
-                                                                         default=conf.get('default'),
-                                                                         value_proc=conf.get('expression'))
+        default_value = recent_pipeline_config.get(conf['name'], conf.get('default'))
+        if 'expression' in conf:
+            default_value = conf['reverse_expression'](default_value)
+
+        value = click.prompt(conf['prompt_string'], type=conf['type'], default=default_value)
+        if 'expression' in conf:
+            value = conf['expression'](value)
+
+        pipeline_config['source']['config'][conf['name']] = value
 
     # ask destination config
     pipeline_config['destination'] = {'config': {}}
+
     pipeline_config['destination']['name'] = click.prompt('Choose destination', type=click.Choice(['http']))
+
+    recent_pipeline_config = get_previous_pipeline_config(pipeline_config['destination']['name'], -1)
     for conf in destinations_configs[pipeline_config['destination']['name']]:
+        default_value = recent_pipeline_config.get(conf['name'], conf.get('default'))
         pipeline_config['destination']['config'][conf['name']] = click.prompt(conf['prompt_string'],
                                                                               type=conf['type'],
-                                                                              default=conf.get('default'))
+                                                                              default=default_value)
 
     # pipeline config
     pipeline_config['pipeline_id'] = click.prompt('Pipeline ID (must be unique)', type=click.STRING)
@@ -86,11 +109,13 @@ def prompt_pipeline_config():
     pipeline_config['dimensions']['required'] = click.prompt('Required dimensions',
                                                              type=click.STRING,
                                                              value_proc=lambda x: x.split(),
-                                                             default='')
+                                                             default=[])
     pipeline_config['dimensions']['optional'] = click.prompt('Optional dimensions',
                                                              type=click.STRING,
                                                              value_proc=lambda x: x.split(),
-                                                             default='')
+                                                             default=[])
+
+    return pipeline_config
 
 
 @click.command()
