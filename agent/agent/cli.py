@@ -164,8 +164,12 @@ def list_pipelines():
     click.echo(table.draw())
 
 
+def get_pipelines_ids(ctx, args, incomplete):
+    return [p['pipelineId'] for p in api_client.get_pipelines() if incomplete in p['pipelineId']]
+
+
 @click.command()
-@click.argument('pipeline_id')
+@click.argument('pipeline_id', autocompletion=get_pipelines_ids)
 def start(pipeline_id):
     try:
         api_client.start_pipeline(pipeline_id)
@@ -176,7 +180,7 @@ def start(pipeline_id):
 
 
 @click.command()
-@click.argument('pipeline_id')
+@click.argument('pipeline_id', autocompletion=get_pipelines_ids)
 def stop(pipeline_id):
     try:
         api_client.stop_pipeline(pipeline_id)
@@ -187,7 +191,7 @@ def stop(pipeline_id):
 
 
 @click.command()
-@click.argument('pipeline_id')
+@click.argument('pipeline_id', autocompletion=get_pipelines_ids)
 def delete(pipeline_id):
     try:
         api_client.delete_pipeline(pipeline_id)
@@ -198,7 +202,7 @@ def delete(pipeline_id):
 
 
 @click.command()
-@click.argument('pipeline_id')
+@click.argument('pipeline_id', autocompletion=get_pipelines_ids)
 @click.option('-s', '--severity', type=click.Choice(['INFO', 'ERROR']), default=None)
 def logs(pipeline_id, severity):
     try:
@@ -217,7 +221,7 @@ def logs(pipeline_id, severity):
 
 
 @click.command()
-@click.argument('pipeline_id')
+@click.argument('pipeline_id', autocompletion=get_pipelines_ids)
 def info(pipeline_id):
     # status
     try:
@@ -270,7 +274,7 @@ def info(pipeline_id):
 
 
 @click.command()
-@click.argument('pipeline_id')
+@click.argument('pipeline_id', autocompletion=get_pipelines_ids)
 def reset(pipeline_id):
     try:
         api_client.reset_pipeline(pipeline_id)
