@@ -125,6 +125,10 @@ def create(file):
         pipelines_configs = json.load(file)
     else:
         pipelines_configs = [prompt_pipeline_config()]
+        if click.confirm('Save config to file?'):
+            with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'pipeline_configs',
+                                   pipelines_configs[0]['pipeline_id'] + '.json'), 'w') as f:
+                json.dump(pipelines_configs, f)
 
     try:
         jsonschema.validate(pipelines_configs, config_schema)
