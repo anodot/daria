@@ -207,8 +207,9 @@ def delete(pipeline_id):
 
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids)
+@click.option('-l', '--lines', type=click.INT, default=10)
 @click.option('-s', '--severity', type=click.Choice(['INFO', 'ERROR']), default=None)
-def logs(pipeline_id, severity):
+def logs(pipeline_id, lines, severity):
     try:
         res = api_client.get_pipeline_logs(pipeline_id, severity=severity)
     except StreamSetsApiClientException as e:
@@ -220,13 +221,14 @@ def logs(pipeline_id, severity):
             return False
         return [item['timestamp'], item['severity'], item['category'], item['message']]
 
-    table = build_table(['Timestamp', 'Severity', 'Category', 'Message'], res, get_row)
+    table = build_table(['Timestamp', 'Severity', 'Category', 'Message'], res[-lines:], get_row)
     click.echo(table.draw())
 
 
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids)
-def info(pipeline_id):
+@click.option('-l', '--lines', type=click.INT, default=10)
+def info(pipeline_id, lines):
     # status
     try:
         status = api_client.get_pipeline_status(pipeline_id)
@@ -271,7 +273,7 @@ def info(pipeline_id):
                 message, metrics_str]
 
     history = api_client.get_pipeline_history(pipeline_id)
-    table = build_table(['Timestamp', 'Status', 'Message', 'Records count'], history, get_row)
+    table = build_table(['Timestamp', 'Status', 'Message', 'Records count'], history[:lines], get_row)
     click.echo('')
     click.secho('=== HISTORY ===', fg='green')
     click.echo(table.draw())
