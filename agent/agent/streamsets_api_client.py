@@ -1,3 +1,4 @@
+import os
 import requests
 import urllib.parse
 
@@ -207,3 +208,8 @@ class StreamSetsApiClient:
         """
         logger.info(f'Reset pipeline offset {pipeline_id}')
         return self.session.post(self.build_url('pipeline', pipeline_id, 'resetOffset'))
+
+
+api_client = StreamSetsApiClient(os.environ.get('STREAMSETS_USERNAME', 'admin'),
+                                 os.environ.get('STREAMSETS_PASSWORD', 'admin'),
+                                 os.environ.get('STREAMSETS_URL', 'http://localhost:18630'))

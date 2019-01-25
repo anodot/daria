@@ -4,6 +4,7 @@ import os
 import re
 
 from .logger import get_logger
+from .streamsets_api_client import api_client
 
 logger = get_logger(__name__)
 
@@ -72,36 +73,16 @@ config_schema = {
                      'dimensions', 'timestamp', 'destination']},
 }
 
-sources_configs = {
-    'mongo': [
-        {'name': 'configBean.mongoConfig.connectionString', 'prompt_string': 'Connection string', 'type': click.STRING},
-        {'name': 'configBean.mongoConfig.username', 'prompt_string': 'Username', 'type': click.STRING},
-        {'name': 'configBean.mongoConfig.password', 'prompt_string': 'Password', 'type': click.STRING},
-        {'name': 'configBean.mongoConfig.authSource', 'prompt_string': 'Authentication Source', 'type': click.STRING,
-         'default': '',
-         'comment': """For delegated authentication, specify alternate database name. 
-                        Leave blank for normal authentication"""},
-        {'name': 'configBean.mongoConfig.database', 'prompt_string': 'Database', 'type': click.STRING},
-        {'name': 'configBean.mongoConfig.collection', 'prompt_string': 'Collection', 'type': click.STRING},
-        {'name': 'configBean.isCapped', 'prompt_string': 'Is collection capped', 'type': click.BOOL,
-         'default': False},
-        {'name': 'configBean.initialOffset', 'prompt_string': 'Initial offset', 'type': click.STRING},
-        {'name': 'configBean.offsetType', 'prompt_string': 'Offset type',
-         'type': click.Choice(['OBJECTID', 'STRING', 'DATE']), 'default': 'OBJECTID'},
-        {'name': 'configBean.offsetField', 'prompt_string': 'Offset field', 'type': click.STRING, 'default': '_id'},
-        {'name': 'configBean.batchSize', 'prompt_string': 'Batch size', 'type': click.INT, 'default': 1000},
-        {'name': 'configBean.maxBatchWaitTime', 'prompt_string': 'Max batch wait time (seconds)', 'type': click.INT,
-         'default': '${5 * SECONDS}', 'expression': lambda x: '${' + str(x) + ' * SECONDS}',
-         'reverse_expression': lambda x: re.findall(r'\d+', x)[0]},
-    ]
-}
 
-destinations_configs = {
-    'http': [
-        {'name': 'conf.resourceUrl', 'prompt_string': 'Anodot metric api url with token and protocol params',
-         'type': click.STRING}
-    ]
-}
+def get_previous_pipeline_config(label, stage=0):
+    recent_pipeline_config = {}
+    pipelines_with_source = api_client.get_pipelines(order_by='CREATED', order='DESC',
+                                                     label=label)
+    if len(pipelines_with_source) > 0:
+        recent_pipeline = api_client.get_pipeline(pipelines_with_source[0]['pipelineId'])
+        for conf in recent_pipeline['stages'][stage]['configuration']:
+            recent_pipeline_config[conf['name']] = conf['value']
+    return recent_pipeline_config
 
 
 class PipelineConfigHandler:

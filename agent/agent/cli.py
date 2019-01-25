@@ -3,14 +3,12 @@ import json
 import jsonschema
 import os
 
-from .pipeline_config_handler import PipelineConfigHandler, config_schema, sources_configs, destinations_configs
-from .streamsets_api_client import StreamSetsApiClient, StreamSetsApiClientException
+from .pipeline_config_handler import PipelineConfigHandler, config_schema
+from .streamsets_api_client import api_client, StreamSetsApiClientException
+from .source.cli import source, get_configs_list as list_sources
+from .destination.cli import destination, get_configs_list as list_destinations
 from datetime import datetime
 from texttable import Texttable
-
-api_client = StreamSetsApiClient(os.environ.get('STREAMSETS_USERNAME', 'admin'),
-                                 os.environ.get('STREAMSETS_PASSWORD', 'admin'),
-                                 os.environ.get('STREAMSETS_URL', 'http://localhost:18630'))
 
 
 def build_table(header, data, get_row, *args):
@@ -45,45 +43,26 @@ def pipeline():
     pass
 
 
-def get_previous_pipeline_config(label, stage=0):
-    recent_pipeline_config = {}
-    pipelines_with_source = api_client.get_pipelines(order_by='CREATED', order='DESC',
-                                                     label=label)
-    if len(pipelines_with_source) > 0:
-        recent_pipeline = api_client.get_pipeline(pipelines_with_source[0]['pipelineId'])
-        for conf in recent_pipeline['stages'][stage]['configuration']:
-            recent_pipeline_config[conf['name']] = conf['value']
-    return recent_pipeline_config
-
-
 def prompt_pipeline_config():
-    # ask source config
-    pipeline_config = {'source': {'config': {}}}
-    pipeline_config['source']['name'] = click.prompt('Choose source', type=click.Choice(['mongo']))
+    pipeline_config = dict()
 
-    recent_pipeline_config = get_previous_pipeline_config(pipeline_config['source']['name'])
-    for conf in sources_configs[pipeline_config['source']['name']]:
-        default_value = recent_pipeline_config.get(conf['name'], conf.get('default'))
-        if 'expression' in conf:
-            default_value = conf['reverse_expression'](default_value)
+    sources = list_sources()
+    if len(sources) == 0:
+        raise click.ClickException('No sources configs found. Use "pipeline source create"')
 
-        value = click.prompt(conf['prompt_string'], type=conf['type'], default=default_value)
-        if 'expression' in conf:
-            value = conf['expression'](value)
+    destinations = list_destinations()
+    if len(destinations) == 0:
+        raise click.ClickException('No destinations configs found. Use "pipeline source create"')
 
-        pipeline_config['source']['config'][conf['name']] = value
+    source_config_name = click.prompt('Choose source config', type=click.Choice(sources))
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'source', 'data', source_config_name + '.json'),
+              'r') as f:
+        pipeline_config['source'] = json.load(f)
 
-    # ask destination config
-    pipeline_config['destination'] = {'config': {}}
-
-    pipeline_config['destination']['name'] = click.prompt('Choose destination', type=click.Choice(['http']))
-
-    recent_pipeline_config = get_previous_pipeline_config(pipeline_config['destination']['name'], -1)
-    for conf in destinations_configs[pipeline_config['destination']['name']]:
-        default_value = recent_pipeline_config.get(conf['name'], conf.get('default'))
-        pipeline_config['destination']['config'][conf['name']] = click.prompt(conf['prompt_string'],
-                                                                              type=conf['type'],
-                                                                              default=default_value)
+    destination_config_name = click.prompt('Choose destination config', type=click.Choice(destinations))
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'destination', 'data',
+                           destination_config_name + '.json'), 'r') as f:
+        pipeline_config['destination'] = json.load(f)
 
     # pipeline config
     pipeline_config['pipeline_id'] = click.prompt('Pipeline ID (must be unique)', type=click.STRING)
@@ -125,10 +104,6 @@ def create(file):
         pipelines_configs = json.load(file)
     else:
         pipelines_configs = [prompt_pipeline_config()]
-        if click.confirm('Save config to file?'):
-            with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'pipeline_configs',
-                                   pipelines_configs[0]['pipeline_id'] + '.json'), 'w') as f:
-                json.dump(pipelines_configs, f)
 
     try:
         jsonschema.validate(pipelines_configs, config_schema)
@@ -298,3 +273,5 @@ pipeline.add_command(delete)
 pipeline.add_command(logs)
 pipeline.add_command(info)
 pipeline.add_command(reset)
+pipeline.add_command(source)
+pipeline.add_command(destination)
