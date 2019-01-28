@@ -3,10 +3,11 @@ import json
 import jsonschema
 import os
 
-from .pipeline_config_handler import PipelineConfigHandler, config_schema
-from .streamsets_api_client import api_client, StreamSetsApiClientException
-from .source.cli import source, get_configs_list as list_sources
 from .destination.cli import destination, get_configs_list as list_destinations
+from .pipeline_config_handler import PipelineConfigHandler
+from .pipeline_config_schema import config_schema
+from .source.cli import source, get_configs_list as list_sources
+from .streamsets_api_client import api_client, StreamSetsApiClientException
 from datetime import datetime
 from texttable import Texttable
 
@@ -72,7 +73,7 @@ def prompt_pipeline_config():
     pipeline_config['value']['type'] = click.prompt('Value type', type=click.Choice(['column', 'constant']))
     pipeline_config['value']['value'] = click.prompt('Value (column name or constant value)', type=click.STRING)
 
-    pipeline_config['target_type'] = click.prompt('Value type', type=click.Choice(['counter', 'gauge']),
+    pipeline_config['target_type'] = click.prompt('Target type', type=click.Choice(['counter', 'gauge']),
                                                   default='gauge')
 
     pipeline_config['timestamp'] = {}
@@ -127,7 +128,7 @@ def create(file):
         pipeline_rules = api_client.get_pipeline_rules(pipeline_obj['pipelineId'])
         new_rules = config_handler.override_base_rules(pipeline_rules['uuid'])
         api_client.update_pipeline_rules(pipeline_obj['pipelineId'], new_rules)
-        click.echo('Created pipeline {}'.format(pipeline_config['pipeline_id']))
+        click.secho('Created pipeline {}'.format(pipeline_config['pipeline_id']), fg='green')
 
 
 @click.command(name='list')
