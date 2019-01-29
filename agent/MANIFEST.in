@@ -1,3 +1,1 @@
-include agent/pipelines/*
-include agent/source/data/*
-include agent/destination/data/*
+graft src
