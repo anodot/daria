@@ -1,6 +1,6 @@
 [
   {
-    "pipeline_id": "mongo test conddst",
+    "pipeline_id": "mongo test unix",
     "source": {
       "name": "mongo",
       "config": {
@@ -21,16 +21,18 @@
     "target_type": "counter",
     "timestamp": {
       "name": "timestamp",
-      "type": "string",
-      "format": "M/d/yyyy HH:mm:ss"
+      "type": "unix"
     },
     "dimensions": {
       "required": [
-        "AdSize",
         "AdType",
         "Country",
         "Exchange",
         "ver"
+      ],
+      "optional": [
+        "nonexistent",
+        "AdSize"
       ]
     },
     "destination": {

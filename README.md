@@ -67,16 +67,12 @@ or some issues connecting to destination etc. You can look for errors in three l
     shows error logs if any
 3. Also sometimes records may not reach destination because errors
 happened in one of data processing and transformation stages. In that case you can find them in error 
-files in streamsets conatainer
-
-    1. Connect to streamsets container
-        ```
-        docker exec -it dir_name_dc_1 bash
-        ```
-    2. Error files are placed at /data directory and named with pattern `error-pipelineid-sdcid` 
-    (pipeline id without spaces). For example to see last ten records for specific pipeline id use this command:
-        ```bash
-        tail $(ls -t /data/error-pipelineid* | head -1)
-        ```
+files which are placed at `/sdc-data` directory and named with pattern `error-pipelineid-sdcid` 
+    (pipeline id without spaces). 
+    
+    For example to see last ten records for specific pipeline id use this command:
+    ```bash
+    tail $(ls -t /sdc-data/error-pipelineid* | head -1)
+    ```
         
     

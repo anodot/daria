@@ -7,7 +7,7 @@ services:
       - "18630:18630"
     restart: on-failure
     volumes:
-      - ./volumes/sdc-data:/data
+      - sdc-data:/data
 
   mongo:
     image: mongo
@@ -15,10 +15,10 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: root
-      MONGO_INITDB_DATABASE: adtech
     volumes:
-      - "./volumes/mongo-data:/data/db"
-      - "./volumes/mongo-imports:/home"
+      - /data/db
+      - ./test-datasets:/home
+      - ./volumes/mongo-initdb:/docker-entrypoint-initdb.d
 
   agent:
     build: agent
@@ -33,3 +33,8 @@ services:
     depends_on:
       - dc
       - mongo
+    volumes:
+      - sdc-data:/sdc-data
+
+volumes:
+  sdc-data:
