@@ -209,6 +209,16 @@ class StreamSetsApiClient:
         logger.info(f'Reset pipeline offset {pipeline_id}')
         return self.session.post(self.build_url('pipeline', pipeline_id, 'resetOffset'))
 
+    @endpoint
+    def delete_by_filtering(self, filter_text):
+        """
+
+        :param filter_text: string
+        :return:
+        """
+        logger.info(f'Delete pipelines with text: {filter_text}')
+        return self.session.post(self.build_url('pipelines', 'deleteByFiltering'), params={'filterText': filter_text})
+
 
 api_client = StreamSetsApiClient(os.environ.get('STREAMSETS_USERNAME', 'admin'),
                                  os.environ.get('STREAMSETS_PASSWORD', 'admin'),

@@ -6,6 +6,9 @@ from .config_schema import sources_configs
 from ..pipeline_config_handler import get_previous_pipeline_config
 
 
+DATA_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data')
+
+
 @click.group()
 def source():
     pass
@@ -29,7 +32,7 @@ def create():
 
         config['config'][conf['name']] = value
 
-    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', file_name + '.json'), 'w') as f:
+    with open(os.path.join(DATA_DIR, file_name + '.json'), 'w') as f:
         json.dump(config, f)
 
     click.secho('Source config created', fg='green')
@@ -37,7 +40,7 @@ def create():
 
 def get_configs(ctx, args, incomplete):
     configs = []
-    for filename in os.listdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data')):
+    for filename in os.listdir(DATA_DIR):
         if filename.endswith('.json') and incomplete in filename:
             configs.append(filename.replace('.json', ''))
     return configs
@@ -45,7 +48,7 @@ def get_configs(ctx, args, incomplete):
 
 def get_configs_list():
     configs = []
-    for filename in os.listdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data')):
+    for filename in os.listdir(DATA_DIR):
         if filename.endswith('.json'):
             configs.append(filename.replace('.json', ''))
     return configs
@@ -60,7 +63,7 @@ def list_configs():
 @click.command()
 @click.argument('name', autocompletion=get_configs)
 def delete(name):
-    file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', name + '.json')
+    file_path = os.path.join(DATA_DIR, name + '.json')
     if os.path.exists(file_path):
         os.remove(file_path)
         click.secho('Source config was deleted', fg='green')

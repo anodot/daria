@@ -42,7 +42,7 @@ docker-compose up -d
         - `datetime` (if column has database specific datetime type like `Date` in mongo)
         - `unix_ms` (unix timestamp in milliseconds)
         - `unix` (unix timestamp in seconds)
-    - `required dimensions` - columns must exist in a record
+    - `required dimensions` - columns must exist in a record (separate with spaces)
     
     
     
