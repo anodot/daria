@@ -8,6 +8,7 @@ pull data from different sources and push it to anodot
 - **Pipeline** - pipelines connect sources and destinations with data processing and transformation stages
 
 What pipelines do: 
+
 1. Take data from source
 2. If destination is http client - every record is transformed to json object according to 
 specs of anodot 2.0 metric protocol 
@@ -15,6 +16,7 @@ specs of anodot 2.0 metric protocol
 4. Timestamps are converted to unix timestamp in seconds
 
 Basic flow
+
 1. Create source
 2. Create destination
 3. Create pipeline
