@@ -12,6 +12,8 @@ docker-compose up -d
     docker attach dir_name_agent_1
     ```
     
+###Run tests
+Just run `pytest` command inside agent container     
     
 ###Available commands
 1. List available commands 
