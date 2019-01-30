@@ -1,5 +1,30 @@
 ##Python agent
-Wrapper for Streamsets Data Collector
+With this CLI tool you can create pipelines in Streamsets Data collector which will 
+pull data from different sources and push it to anodot
+
+###Main concepts
+- **Source** - This is where you want your data to be pulled from. Available sources: *mongodb*
+- **Destination** - Where to put your data. Available destinations: *http client* - Anodot rest api endpoint
+- **Pipeline** - pipelines connect sources and destinations with data processing and transformation stages
+
+What pipelines do: 
+1. Take data from source
+2. If destination is http client - every record is transformed to json object according to 
+specs of anodot 2.0 metric protocol 
+3. Values are converted to floating point numbers
+4. Timestamps are converted to unix timestamp in seconds
+
+Basic flow
+1. Create source
+2. Create destination
+3. Create pipeline
+4. Run pipeline
+5. Check pipeline status
+6. If errors occur - check troubleshooting section
+    1. fix errors
+    2. Stop the pipeline 
+    3. Reset pipeline origin
+    4. Run pipeline again
 
 ###How to build
 ```
@@ -7,13 +32,13 @@ docker-compose up -d
 ```
 
 ###How to use
-1. Attach to docker container with agent and that's all - you can use CLI
-    ```
-    docker attach dir_name_agent_1
-    ```
+Attach to docker container with agent and that's all - you can use CLI
+```
+docker attach dir_name_agent_1
+```
     
 ###Run tests
-Just run `pytest` command inside agent container     
+Just run `pytest` command inside agent container.   
     
 ###Available commands
 1. List available commands 
@@ -34,19 +59,6 @@ Just run `pytest` command inside agent container
     
     If no file is specified config will be prompted in the console
     
-    - `pipeline_id` - unique pipeline identifier
-    - `target_type` - if `gauge` aggregation will be performed using average (default), if `counter` - using sum
-    - `timestamp` - `name`: column name, `type`: column type, `format`: datetime string format if type is string 
-        ([string format spec](https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html))
-    
-        possible types: 
-        - `string` (must specify format)
-        - `datetime` (if column has database specific datetime type like `Date` in mongo)
-        - `unix_ms` (unix timestamp in milliseconds)
-        - `unix` (unix timestamp in seconds)
-    - `required dimensions` - columns must exist in a record (separate with spaces)
-    
-    
     
 9. List pipelines `pipeline list`
 10. Start pipeline `pipeline start PIPELINE_ID`
@@ -58,6 +70,48 @@ Just run `pytest` command inside agent container
     pipeline configuration if any and history of execution
 14. Pipeline logs `pipeline logs --help`
 15. Reset pipeline offset `pipeline reset PIPELINE_ID`
+
+###Configuration description
+
+####Sources
+- **Mongodb**
+    - *Connection string* - database connection string e.g. `mongodb://mongo:27017`
+    - *Username*
+    - *Password*
+    - *Authentication Source* - for delegated authentication, specify alternate database name. 
+    Leave blank for normal authentication
+    - *Database*
+    - *Collection*
+    - *Is collection capped*
+    - *Initial offset* - Date or id from witch to pull data from
+    - *Offset type* - `OBJECTID`, `STRING` or  `DATE`
+    - *Offset field*
+    - *Batch size* - how many records to send to further pipeline stages
+    - *Max batch wait time (seconds)* - how many time to wait until batch will reach it's size
+
+####Destinations
+- **Http client** - anodot rest api
+    - *Anodot metric api url with token and protocol param* - e.g. `http://anodot.com/api/v1/metrics?token=065200eea2dbb29312c41424&protocol=anodot20`
+    
+####Pipeline
+- *Pipeline ID* - unique pipeline identifier (use human-readable name so you could easily use it further) 
+- *Measurement name* - what do you measure (this will be the value of `what` property in anodot 2.0 metric protocol)
+- *Value type* - column or constant
+- *Value* - if type column - enter column name, if type constant - enter value
+- *Target type* - represents how samples of the same metric are aggregated in Anodot. Valid values are: 
+        `gauge` (average aggregation), `counter` (sum aggregation)
+- *Timestamp column name*
+- *Timestamp column type*
+    - `string` (must specify format)
+    - `datetime` (if column has database specific datetime type like `Date` in mongo)
+    - `unix_ms` (unix timestamp in milliseconds)
+    - `unix` (unix timestamp in seconds)
+- *Timestamp format string* - if timestamp column type is string - specify format 
+according to this [spec](https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html).
+- *Required dimensions* - Names of columns delimited with spaces. 
+If these fields are missing in a record, it goes to error stage
+- *Optional dimensions* - Names of columns delimited with spaces. These fields may be missing in a record
+             
 
 ###Troubleshooting
 Pipelines may not work as expected for several reasons, for example wrong configuration, 
