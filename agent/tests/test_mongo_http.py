@@ -63,7 +63,7 @@ def test_start(cli_runner, name):
     result = cli_runner.invoke(pipeline_cli.start, [name])
     assert result.exit_code == 0
     # wait until pipeline starts running
-    time.sleep(2)
+    time.sleep(3)
     assert api_client.get_pipeline_status(name)['status'] == 'RUNNING'
 
 

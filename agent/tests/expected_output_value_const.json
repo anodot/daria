@@ -8,6 +8,17 @@
       "Country": "USA",
       "Exchange": "DoubleClick"
     },
+    "timestamp": 1512867600
+  },
+  {
+    "value": 1.0,
+    "properties": {
+      "what": "clicks",
+      "target_type": "gauge",
+      "ver": "AD200",
+      "Country": "USA",
+      "Exchange": "DoubleClick"
+    },
     "timestamp": 1512871200
   },
   {
@@ -53,17 +64,6 @@
       "Exchange": "DoubleClick"
     },
     "timestamp": 1512885600
-  },
-  {
-    "value": 1.0,
-    "properties": {
-      "what": "clicks",
-      "target_type": "gauge",
-      "ver": "AD200",
-      "Country": "USA",
-      "Exchange": "DoubleClick"
-    },
-    "timestamp": 1512867600
   },
   {
     "value": 1.0,
