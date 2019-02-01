@@ -1,15 +1,15 @@
 import click
 import json
-import jsonschema
 import os
 
 from .config_handler import PipelineConfigHandler
-from .config_schema import config_schema
 from ..destination.cli import get_configs_list as list_destinations, DATA_DIR as DESTINATIONS_DIR
 from ..source.cli import get_configs_list as list_sources, DATA_DIR as SOURCES_DIR
 from ..streamsets_api_client import api_client, StreamSetsApiClientException
 from datetime import datetime
 from texttable import Texttable
+
+DATA_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data')
 
 
 def build_table(header, data, get_row, *args):
@@ -39,12 +39,54 @@ def build_table(header, data, get_row, *args):
     return table
 
 
-@click.group()
-def pipeline():
-    pass
+def get_pipelines_ids_complete(ctx, args, incomplete):
+    return [p['pipelineId'] for p in api_client.get_pipelines() if incomplete in p['pipelineId']]
 
 
-def prompt_pipeline_config():
+def get_pipelines_ids():
+    return [p['pipelineId'] for p in api_client.get_pipelines()]
+
+
+def prompt_pipeline_config(config):
+    config['measurement_name'] = click.prompt('Measurement name', type=click.STRING,
+                                              default=config.get('measurement_name'))
+
+    config['value'] = config.get('value', {})
+    config['value']['value'] = click.prompt('Value (column name or constant value)', type=click.STRING,
+                                            default=config['value'].get('value'))
+    config['value']['type'] = click.prompt('Value type', type=click.Choice(['column', 'constant']),
+                                           default=config['value'].get('type'))
+
+    config['target_type'] = click.prompt('Target type', type=click.Choice(['counter', 'gauge']),
+                                         default=config.get('target_type', 'gauge'))
+
+    config['timestamp'] = config.get('timestamp', {})
+    config['timestamp']['name'] = click.prompt('Timestamp column name', type=click.STRING,
+                                               default=config['timestamp'].get('name'))
+    config['timestamp']['type'] = click.prompt('Timestamp column type',
+                                               type=click.Choice(
+                                                   ['string', 'datetime', 'unix', 'unix_ms']),
+                                               default=config['timestamp'].get('type', 'unix'))
+
+    if config['timestamp']['type'] == 'string':
+        config['timestamp']['format'] = click.prompt('Timestamp format string', type=click.STRING,
+                                                     default=config['timestamp'].get('format'))
+
+    config['dimensions'] = config.get('dimensions', {})
+    config['dimensions']['required'] = click.prompt('Required dimensions',
+                                                    type=click.STRING,
+                                                    value_proc=lambda x: x.split(),
+                                                    default=config['dimensions'].get('required', []))
+    config['dimensions']['optional'] = click.prompt('Optional dimensions',
+                                                    type=click.STRING,
+                                                    value_proc=lambda x: x.split(),
+                                                    default=config['dimensions'].get('optional', []))
+
+    return config
+
+
+@click.command()
+def create():
     pipeline_config = dict()
 
     sources = list_sources()
@@ -63,70 +105,60 @@ def prompt_pipeline_config():
     with open(os.path.join(DESTINATIONS_DIR, destination_config_name + '.json'), 'r') as f:
         pipeline_config['destination'] = json.load(f)
 
-    # pipeline config
     pipeline_config['pipeline_id'] = click.prompt('Pipeline ID (must be unique)', type=click.STRING)
-    pipeline_config['measurement_name'] = click.prompt('Measurement name', type=click.STRING)
 
-    pipeline_config['value'] = {}
-    pipeline_config['value']['type'] = click.prompt('Value type', type=click.Choice(['column', 'constant']))
-    pipeline_config['value']['value'] = click.prompt('Value (column name or constant value)', type=click.STRING)
+    pipeline_config = prompt_pipeline_config(pipeline_config)
 
-    pipeline_config['target_type'] = click.prompt('Target type', type=click.Choice(['counter', 'gauge']),
-                                                  default='gauge')
+    config_handler = PipelineConfigHandler(pipeline_config)
 
-    pipeline_config['timestamp'] = {}
-    pipeline_config['timestamp']['name'] = click.prompt('Timestamp column name', type=click.STRING)
-    pipeline_config['timestamp']['type'] = click.prompt('Timestamp column type',
-                                                        type=click.Choice(
-                                                            ['string', 'datetime', 'unix', 'unix_ms']),
-                                                        default='unix')
-    if pipeline_config['timestamp']['type'] == 'string':
-        pipeline_config['timestamp']['format'] = click.prompt('Timestamp format string', type=click.STRING)
+    try:
+        pipeline_obj = api_client.create_pipeline(pipeline_config['pipeline_id'])
+    except StreamSetsApiClientException as e:
+        click.secho(str(e), err=True, fg='red')
+        return
 
-    pipeline_config['dimensions'] = {}
-    pipeline_config['dimensions']['required'] = click.prompt('Required dimensions',
-                                                             type=click.STRING,
-                                                             value_proc=lambda x: x.split(),
-                                                             default=[])
-    pipeline_config['dimensions']['optional'] = click.prompt('Optional dimensions',
-                                                             type=click.STRING,
-                                                             value_proc=lambda x: x.split(),
-                                                             default=[])
+    new_config = config_handler.override_base_config(pipeline_obj['uuid'], pipeline_obj['title'])
+    api_client.update_pipeline(pipeline_obj['pipelineId'], new_config)
 
-    return pipeline_config
+    pipeline_rules = api_client.get_pipeline_rules(pipeline_obj['pipelineId'])
+    new_rules = config_handler.override_base_rules(pipeline_rules['uuid'])
+    api_client.update_pipeline_rules(pipeline_obj['pipelineId'], new_rules)
+
+    with open(os.path.join(DATA_DIR, pipeline_config['pipeline_id'] + '.json'), 'w') as f:
+        json.dump(pipeline_config, f)
+
+    click.secho('Created pipeline {}'.format(pipeline_config['pipeline_id']), fg='green')
 
 
 @click.command()
-@click.option('-f', '--file', type=click.File('r'), default=None)
-def create(file):
-    if file:
-        pipelines_configs = json.load(file)
-    else:
-        pipelines_configs = [prompt_pipeline_config()]
+@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, type=click.Choice(get_pipelines_ids()))
+def edit(pipeline_id):
+    with open(os.path.join(DATA_DIR, pipeline_id + '.json'), 'r') as f:
+        pipeline_config = json.load(f)
+
+    with open(os.path.join(SOURCES_DIR, pipeline_config['source']['name'] + '.json'), 'r') as f:
+        pipeline_config['source'] = json.load(f)
+
+    with open(os.path.join(DESTINATIONS_DIR, pipeline_config['destination']['name'] + '.json'), 'r') as f:
+        pipeline_config['destination'] = json.load(f)
+
+    pipeline_config = prompt_pipeline_config(pipeline_config)
+
+    pipeline_obj = api_client.get_pipeline(pipeline_config['pipeline_id'])
+
+    config_handler = PipelineConfigHandler(pipeline_config, pipeline_obj)
+    new_config = config_handler.override_base_config()
 
     try:
-        jsonschema.validate(pipelines_configs, config_schema)
-    except jsonschema.exceptions.ValidationError as e:
-        click.secho('Validation error', fg='red')
-        click.echo(str(e), err=True)
+        api_client.update_pipeline(pipeline_config['pipeline_id'], new_config)
+    except StreamSetsApiClientException as e:
+        click.secho(str(e), err=True, fg='red')
         return
 
-    for pipeline_config in pipelines_configs:
-        config_handler = PipelineConfigHandler(pipeline_config)
+    with open(os.path.join(DATA_DIR, pipeline_config['pipeline_id'] + '.json'), 'w') as f:
+        json.dump(pipeline_config, f)
 
-        try:
-            pipeline_obj = api_client.create_pipeline(pipeline_config['pipeline_id'])
-        except StreamSetsApiClientException as e:
-            click.secho(str(e), err=True, fg='red')
-            return
-
-        new_config = config_handler.override_base_config(pipeline_obj['uuid'], pipeline_obj['title'])
-        api_client.update_pipeline(pipeline_obj['pipelineId'], new_config)
-
-        pipeline_rules = api_client.get_pipeline_rules(pipeline_obj['pipelineId'])
-        new_rules = config_handler.override_base_rules(pipeline_rules['uuid'])
-        api_client.update_pipeline_rules(pipeline_obj['pipelineId'], new_rules)
-        click.secho('Created pipeline {}'.format(pipeline_config['pipeline_id']), fg='green')
+    click.secho('Updated pipeline {}'.format(pipeline_config['pipeline_id']), fg='green')
 
 
 @click.command(name='list')
@@ -142,12 +174,8 @@ def list_pipelines():
     click.echo(table.draw())
 
 
-def get_pipelines_ids(ctx, args, incomplete):
-    return [p['pipelineId'] for p in api_client.get_pipelines() if incomplete in p['pipelineId']]
-
-
 @click.command()
-@click.argument('pipeline_id', autocompletion=get_pipelines_ids)
+@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, type=click.Choice(get_pipelines_ids()))
 def start(pipeline_id):
     try:
         api_client.start_pipeline(pipeline_id)
@@ -158,7 +186,7 @@ def start(pipeline_id):
 
 
 @click.command()
-@click.argument('pipeline_id', autocompletion=get_pipelines_ids)
+@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, type=click.Choice(get_pipelines_ids()))
 def stop(pipeline_id):
     try:
         api_client.stop_pipeline(pipeline_id)
@@ -169,7 +197,7 @@ def stop(pipeline_id):
 
 
 @click.command()
-@click.argument('pipeline_id', autocompletion=get_pipelines_ids)
+@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, type=click.Choice(get_pipelines_ids()))
 def delete(pipeline_id):
     try:
         api_client.delete_pipeline(pipeline_id)
@@ -180,7 +208,7 @@ def delete(pipeline_id):
 
 
 @click.command()
-@click.argument('pipeline_id', autocompletion=get_pipelines_ids)
+@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, type=click.Choice(get_pipelines_ids()))
 @click.option('-l', '--lines', type=click.INT, default=10)
 @click.option('-s', '--severity', type=click.Choice(['INFO', 'ERROR']), default=None)
 def logs(pipeline_id, lines, severity):
@@ -200,7 +228,7 @@ def logs(pipeline_id, lines, severity):
 
 
 @click.command()
-@click.argument('pipeline_id', autocompletion=get_pipelines_ids)
+@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, type=click.Choice(get_pipelines_ids()))
 @click.option('-l', '--lines', type=click.INT, default=10)
 def info(pipeline_id, lines):
     # status
@@ -254,7 +282,7 @@ def info(pipeline_id, lines):
 
 
 @click.command()
-@click.argument('pipeline_id', autocompletion=get_pipelines_ids)
+@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, type=click.Choice(get_pipelines_ids()))
 def reset(pipeline_id):
     try:
         api_client.reset_pipeline(pipeline_id)
@@ -262,6 +290,11 @@ def reset(pipeline_id):
         click.secho(str(e), err=True, fg='red')
         return
     click.echo('Pipeline offset reset')
+
+
+@click.group()
+def pipeline():
+    pass
 
 
 pipeline.add_command(create)
@@ -272,3 +305,4 @@ pipeline.add_command(delete)
 pipeline.add_command(logs)
 pipeline.add_command(info)
 pipeline.add_command(reset)
+pipeline.add_command(edit)

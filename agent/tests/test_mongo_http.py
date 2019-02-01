@@ -39,7 +39,7 @@ def test_destination_create(cli_runner):
     ('test_timestamp_datetime', 'column', 'Clicks', 'timestamp_datetime', 'datetime'),
 ])
 def test_create(cli_runner, name, value_type, value, timestamp, timestamp_type):
-    result = cli_runner.invoke(pipeline_cli.create, input=f"""test_mongo\ntest_http\n{name}\nclicks\n{value_type}\n{value}\n\n{timestamp}\n{timestamp_type}\nver Country\nExchange optional_dim\n""")
+    result = cli_runner.invoke(pipeline_cli.create, input=f"""test_mongo\ntest_http\n{name}\nclicks\n{value}\n{value_type}\n\n{timestamp}\n{timestamp_type}\nver Country\nExchange optional_dim\n""")
     assert result.exit_code == 0
     assert api_client.get_pipeline(name)
 

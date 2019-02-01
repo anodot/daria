@@ -24,17 +24,20 @@ class PipelineConfigHandler:
     """
     PIPELINES_BASE_CONFIGS_PATH = 'pipelines/{source_name}_{destination_name}.json'
 
-    def __init__(self, client_config):
+    def __init__(self, client_config, base_config=None):
         self.client_config = client_config
 
-        base_path = self.PIPELINES_BASE_CONFIGS_PATH.format(**{
-            'source_name': client_config['source']['name'],
-            'destination_name': client_config['destination']['name']
-        })
-        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), base_path), 'r') as f:
-            data = json.load(f)
-            self.config = data['pipelineConfig']
-            self.rules = data['pipelineRules']
+        if base_config:
+            self.config = base_config
+        else:
+            base_path = self.PIPELINES_BASE_CONFIGS_PATH.format(**{
+                'source_name': client_config['source']['type'],
+                'destination_name': client_config['destination']['type']
+            })
+            with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), base_path), 'r') as f:
+                data = json.load(f)
+                self.config = data['pipelineConfig']
+                self.rules = data['pipelineRules']
 
     def update_source_configs(self):
         for conf in self.config['stages'][0]['configuration']:
@@ -105,9 +108,11 @@ class PipelineConfigHandler:
             conf['value'][0]['expression'] = '${' + expression + '}'
             return
 
-    def override_base_config(self, new_uuid, new_pipeline_title):
-        self.config['uuid'] = new_uuid
-        self.config['title'] = new_pipeline_title
+    def override_base_config(self, new_uuid=None, new_pipeline_title=None):
+        if new_uuid:
+            self.config['uuid'] = new_uuid
+        if new_pipeline_title:
+            self.config['title'] = new_pipeline_title
 
         self.update_source_configs()
 
