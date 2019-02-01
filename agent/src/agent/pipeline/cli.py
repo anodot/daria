@@ -97,11 +97,14 @@ def create():
     if len(destinations) == 0:
         raise click.ClickException('No destinations configs found. Use "pipeline source create"')
 
-    source_config_name = click.prompt('Choose source config', type=click.Choice(sources))
+    default_source = sources[0] if len(sources) == 1 else None
+    source_config_name = click.prompt('Choose source config', type=click.Choice(sources), default=default_source)
     with open(os.path.join(SOURCES_DIR, source_config_name + '.json'), 'r') as f:
         pipeline_config['source'] = json.load(f)
 
-    destination_config_name = click.prompt('Choose destination config', type=click.Choice(destinations))
+    default_destination = destinations[0] if len(destinations) == 1 else None
+    destination_config_name = click.prompt('Choose destination config', type=click.Choice(destinations),
+                                           default=default_destination)
     with open(os.path.join(DESTINATIONS_DIR, destination_config_name + '.json'), 'r') as f:
         pipeline_config['destination'] = json.load(f)
 

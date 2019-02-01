@@ -34,8 +34,11 @@ def destination():
 def create():
     config = dict(config={})
 
-    config['type'] = click.prompt('Choose destination', type=click.Choice(['http']))
+    config['type'] = click.prompt('Choose destination', type=click.Choice(['http']), default='http')
     config['name'] = click.prompt('Enter unique name for this source config', type=click.STRING)
+
+    if os.path.isfile(os.path.join(DATA_DIR, config['name'] + '.json')):
+        raise click.exceptions.ClickException('Destination config with this name already exists')
 
     recent_pipeline_config = get_previous_pipeline_config(config['type'], -1)
     for conf in destinations_configs[config['type']]:
