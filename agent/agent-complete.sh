@@ -1,13 +1,13 @@
-_pipeline_completion() {
+_agent_completion() {
     local IFS=$'
 '
     COMPREPLY=( $( env COMP_WORDS="${COMP_WORDS[*]}" \
                    COMP_CWORD=$COMP_CWORD \
-                   _PIPELINE_COMPLETE=complete $1 ) )
+                   _AGENT_COMPLETE=complete $1 ) )
     return 0
 }
 
-_pipeline_completionetup() {
+_agent_completionetup() {
     local COMPLETION_OPTIONS=""
     local BASH_VERSION_ARR=(${BASH_VERSION//./ })
     # Only BASH version 4.4 and later have the nosort option.
@@ -15,7 +15,7 @@ _pipeline_completionetup() {
         COMPLETION_OPTIONS="-o nosort"
     fi
 
-    complete $COMPLETION_OPTIONS -F _pipeline_completion pipeline
+    complete $COMPLETION_OPTIONS -F _agent_completion agent
 }
 
-_pipeline_completionetup;
+_agent_completionetup;

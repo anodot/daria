@@ -3,7 +3,7 @@ import json
 import os
 
 from .config_schema import sources_configs
-from ..pipeline_config_handler import get_previous_pipeline_config
+from agent.pipeline.config_handler import get_previous_pipeline_config
 
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data')

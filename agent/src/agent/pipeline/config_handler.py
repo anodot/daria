@@ -1,8 +1,8 @@
 import json
 import os
 
-from .logger import get_logger
-from .streamsets_api_client import api_client
+from agent.logger import get_logger
+from agent.streamsets_api_client import api_client
 
 logger = get_logger(__name__)
 
