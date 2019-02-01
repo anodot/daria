@@ -58,7 +58,7 @@ def create():
 
 
 @click.command()
-@click.argument('name', autocompletion=get_configs, type=click.Choice(get_configs_list()))
+@click.argument('name', autocompletion=get_configs)
 def edit(name):
 
     with open(os.path.join(DATA_DIR, name + '.json'), 'r') as f:
@@ -88,7 +88,7 @@ def list_configs():
 
 
 @click.command()
-@click.argument('name', autocompletion=get_configs, type=click.Choice(get_configs_list()))
+@click.argument('name', autocompletion=get_configs)
 def delete(name):
     file_path = os.path.join(DATA_DIR, name + '.json')
     if os.path.exists(file_path):

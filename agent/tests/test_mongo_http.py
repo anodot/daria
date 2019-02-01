@@ -10,14 +10,22 @@ from agent.streamsets_api_client import api_client
 from click.testing import CliRunner
 
 
+SDC_DATA_VOLUME_PATH = '/sdc-data'
+SDC_RESULTS_PATH = os.path.join(SDC_DATA_VOLUME_PATH, 'out')
+
+
 @pytest.fixture(scope="session", autouse=True)
-def remove_test_pipelines():
+def cli_runner():
     api_client.delete_by_filtering('test_')
 
+    yield CliRunner()
 
-@pytest.fixture()
-def cli_runner():
-    return CliRunner()
+    for filename in os.listdir(SDC_DATA_VOLUME_PATH):
+        if filename.startswith('error-test_'):
+            os.remove(os.path.join(SDC_DATA_VOLUME_PATH, filename))
+    for filename in os.listdir(SDC_RESULTS_PATH):
+        if filename.startswith('sdc-test_'):
+            os.remove(os.path.join(SDC_RESULTS_PATH, filename))
 
 
 def test_source_create(cli_runner):
@@ -90,10 +98,34 @@ def test_stop(cli_runner, name):
 def test_output(name, expected_output_file):
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), expected_output_file)) as f:
         expected_output = json.load(f)
-    for filename in os.listdir('/sdc-data/out'):
+    for filename in os.listdir(SDC_RESULTS_PATH):
         if filename.startswith(f'sdc-{name}'):
-            with open(os.path.join('/sdc-data/out', filename)) as f:
+            with open(os.path.join(SDC_RESULTS_PATH, filename)) as f:
                 actual_output = json.load(f)
                 assert actual_output == expected_output
                 return
     pytest.fail('No output file found')
+
+
+@pytest.mark.parametrize("name", [
+    'test_value_const',
+    'test_timestamp_ms',
+    'test_timestamp_string',
+    'test_timestamp_datetime',
+])
+def test_delete_pipeline(cli_runner, name):
+    result = cli_runner.invoke(pipeline_cli.delete, [name])
+    assert result.exit_code == 0
+    assert not os.path.isfile(os.path.join(pipeline_cli.DATA_DIR, name + '.json'))
+
+
+def test_source_delete(cli_runner):
+    result = cli_runner.invoke(source_cli.delete, ['test_mongo'])
+    assert result.exit_code == 0
+    assert not os.path.isfile(os.path.join(source_cli.DATA_DIR, 'test_mongo.json'))
+
+
+def test_destination_delete(cli_runner):
+    result = cli_runner.invoke(destination_cli.delete, ['test_http'])
+    assert result.exit_code == 0
+    assert not os.path.isfile(os.path.join(destination_cli.DATA_DIR, 'test_http.json'))

@@ -178,7 +178,7 @@ def list_pipelines():
 
 
 @click.command()
-@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, type=click.Choice(get_pipelines_ids()))
+@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
 def start(pipeline_id):
     try:
         api_client.start_pipeline(pipeline_id)
@@ -189,7 +189,7 @@ def start(pipeline_id):
 
 
 @click.command()
-@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, type=click.Choice(get_pipelines_ids()))
+@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
 def stop(pipeline_id):
     try:
         api_client.stop_pipeline(pipeline_id)
@@ -200,10 +200,12 @@ def stop(pipeline_id):
 
 
 @click.command()
-@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, type=click.Choice(get_pipelines_ids()))
+@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
 def delete(pipeline_id):
     try:
         api_client.delete_pipeline(pipeline_id)
+        file_path = os.path.join(DATA_DIR, pipeline_id + '.json')
+        os.remove(file_path)
     except StreamSetsApiClientException as e:
         click.secho(str(e), err=True, fg='red')
         return
@@ -211,7 +213,7 @@ def delete(pipeline_id):
 
 
 @click.command()
-@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, type=click.Choice(get_pipelines_ids()))
+@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
 @click.option('-l', '--lines', type=click.INT, default=10)
 @click.option('-s', '--severity', type=click.Choice(['INFO', 'ERROR']), default=None)
 def logs(pipeline_id, lines, severity):
@@ -231,7 +233,7 @@ def logs(pipeline_id, lines, severity):
 
 
 @click.command()
-@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, type=click.Choice(get_pipelines_ids()))
+@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
 @click.option('-l', '--lines', type=click.INT, default=10)
 def info(pipeline_id, lines):
     # status
@@ -285,7 +287,7 @@ def info(pipeline_id, lines):
 
 
 @click.command()
-@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, type=click.Choice(get_pipelines_ids()))
+@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
 def reset(pipeline_id):
     try:
         api_client.reset_pipeline(pipeline_id)
