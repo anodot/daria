@@ -93,7 +93,7 @@ Just run `pytest` command inside agent container.
 
 ####Destinations
 - **Http client** - anodot rest api
-    - *Anodot metric api url with token and protocol param* - e.g. `http://anodot.com/api/v1/metrics?token=065200eea2dbb29312c41424&protocol=anodot20`
+    - *Anodot metric api url with token and protocol param* - e.g. `https://api.anodot.com/api/v1/metrics?token=065200eea2dbb29312c41424&protocol=anodot20`
     
 ####Pipeline
 - *Pipeline ID* - unique pipeline identifier (use human-readable name so you could easily use it further) 

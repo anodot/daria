@@ -266,6 +266,11 @@ def reset(pipeline_id):
     click.echo('Pipeline offset reset')
 
 
+@click.group()
+def agent():
+    pass
+
+
 pipeline.add_command(create)
 pipeline.add_command(list_pipelines)
 pipeline.add_command(start)
@@ -274,5 +279,6 @@ pipeline.add_command(delete)
 pipeline.add_command(logs)
 pipeline.add_command(info)
 pipeline.add_command(reset)
-pipeline.add_command(source)
-pipeline.add_command(destination)
+agent.add_command(source)
+agent.add_command(destination)
+agent.add_command(pipeline)
