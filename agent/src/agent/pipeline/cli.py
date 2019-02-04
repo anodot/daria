@@ -1,15 +1,16 @@
 import click
 import json
 import os
+import urllib.parse
 
 from .config_handler import PipelineConfigHandler
-from ..destination.cli import get_configs_list as list_destinations, DATA_DIR as DESTINATIONS_DIR
 from ..source.cli import get_configs_list as list_sources, DATA_DIR as SOURCES_DIR
 from ..streamsets_api_client import api_client, StreamSetsApiClientException
 from datetime import datetime
 from texttable import Texttable
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data')
+TOKEN_FILE = os.path.join(DATA_DIR, 'anodot-token')
 
 
 def build_table(header, data, get_row, *args):
@@ -47,15 +48,20 @@ def get_pipelines_ids():
     return [p['pipelineId'] for p in api_client.get_pipelines()]
 
 
-def prompt_pipeline_config(config):
+def prompt_pipeline_config(config, advanced=False):
     config['measurement_name'] = click.prompt('Measurement name', type=click.STRING,
                                               default=config.get('measurement_name'))
 
     config['value'] = config.get('value', {})
-    config['value']['value'] = click.prompt('Value (column name or constant value)', type=click.STRING,
-                                            default=config['value'].get('value'))
-    config['value']['type'] = click.prompt('Value type', type=click.Choice(['column', 'constant']),
-                                           default=config['value'].get('type'))
+    if advanced:
+        config['value']['value'] = click.prompt('Value (column name or constant value)', type=click.STRING,
+                                                default=config['value'].get('value'))
+        config['value']['type'] = click.prompt('Value type', type=click.Choice(['column', 'constant']),
+                                               default=config['value'].get('type'))
+    else:
+        config['value']['type'] = 'column'
+        config['value']['value'] = click.prompt('Value column name', type=click.STRING,
+                                                default=config['value'].get('value'))
 
     config['target_type'] = click.prompt('Target type', type=click.Choice(['counter', 'gauge']),
                                          default=config.get('target_type', 'gauge'))
@@ -85,32 +91,43 @@ def prompt_pipeline_config(config):
     return config
 
 
+def get_http_destination():
+    api_url = os.environ.get('ANODOT_API_URL', 'https://api.anodot.com')
+    with open(TOKEN_FILE, 'r') as f:
+        token = f.read()
+    return {
+        "config": {
+            "conf.resourceUrl": urllib.parse.urljoin(api_url, f'api/v1/metrics?token={token}&protocol=anodot20')
+        },
+        "type": "http"
+    }
+
+
 @click.command()
-def create():
+@click.option('-a', '--advanced', is_flag=True)
+def create(advanced):
     pipeline_config = dict()
 
     sources = list_sources()
     if len(sources) == 0:
-        raise click.ClickException('No sources configs found. Use "pipeline source create"')
+        raise click.ClickException('No sources configs found. Use "agent source create"')
 
-    destinations = list_destinations()
-    if len(destinations) == 0:
-        raise click.ClickException('No destinations configs found. Use "pipeline source create"')
+    if not os.path.isfile(TOKEN_FILE):
+        raise click.ClickException('No anodot api token configured. Use "agent token"')
 
     default_source = sources[0] if len(sources) == 1 else None
     source_config_name = click.prompt('Choose source config', type=click.Choice(sources), default=default_source)
     with open(os.path.join(SOURCES_DIR, source_config_name + '.json'), 'r') as f:
         pipeline_config['source'] = json.load(f)
 
-    default_destination = destinations[0] if len(destinations) == 1 else None
-    destination_config_name = click.prompt('Choose destination config', type=click.Choice(destinations),
-                                           default=default_destination)
-    with open(os.path.join(DESTINATIONS_DIR, destination_config_name + '.json'), 'r') as f:
-        pipeline_config['destination'] = json.load(f)
+    destination_type = click.prompt('Choose destination', type=click.Choice(['http']),
+                                           default='http')
+    if destination_type == 'http':
+        pipeline_config['destination'] = get_http_destination()
 
     pipeline_config['pipeline_id'] = click.prompt('Pipeline ID (must be unique)', type=click.STRING)
 
-    pipeline_config = prompt_pipeline_config(pipeline_config)
+    pipeline_config = prompt_pipeline_config(pipeline_config, advanced)
 
     config_handler = PipelineConfigHandler(pipeline_config)
 
@@ -135,17 +152,18 @@ def create():
 
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, type=click.Choice(get_pipelines_ids()))
-def edit(pipeline_id):
+@click.option('-a', '--advanced', is_flag=True)
+def edit(pipeline_id, advanced):
     with open(os.path.join(DATA_DIR, pipeline_id + '.json'), 'r') as f:
         pipeline_config = json.load(f)
 
     with open(os.path.join(SOURCES_DIR, pipeline_config['source']['name'] + '.json'), 'r') as f:
         pipeline_config['source'] = json.load(f)
 
-    with open(os.path.join(DESTINATIONS_DIR, pipeline_config['destination']['name'] + '.json'), 'r') as f:
-        pipeline_config['destination'] = json.load(f)
+    if pipeline_config['destination']['type'] == 'http':
+        pipeline_config['destination'] = get_http_destination()
 
-    pipeline_config = prompt_pipeline_config(pipeline_config)
+    pipeline_config = prompt_pipeline_config(pipeline_config, advanced)
 
     pipeline_obj = api_client.get_pipeline(pipeline_config['pipeline_id'])
 

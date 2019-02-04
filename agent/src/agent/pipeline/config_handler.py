@@ -128,7 +128,7 @@ class PipelineConfigHandler:
 
         self.update_destination_config()
         self.config['metadata']['labels'] = [self.client_config['source']['name'],
-                                             self.client_config['destination']['name']]
+                                             self.client_config['destination']['type']]
 
         return self.config
 

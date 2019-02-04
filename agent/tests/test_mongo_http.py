@@ -4,7 +4,7 @@ import pytest
 import time
 
 from agent.pipeline import cli as pipeline_cli
-from agent.destination import cli as destination_cli
+from agent import cli as agent_cli
 from agent.source import cli as source_cli
 from agent.streamsets_api_client import api_client
 from click.testing import CliRunner
@@ -27,6 +27,8 @@ def cli_runner():
         if filename.startswith('sdc-test_'):
             os.remove(os.path.join(SDC_RESULTS_PATH, filename))
 
+    os.remove(pipeline_cli.TOKEN_FILE)
+
 
 def test_source_create(cli_runner):
     result = cli_runner.invoke(source_cli.create, input="""mongo\ntest_mongo\nmongodb://mongo:27017\nroot\nroot\nadmin\ntest\nadtech\n\n2015-01-01 00:00:00\n\n\n\n\n""")
@@ -34,10 +36,10 @@ def test_source_create(cli_runner):
     assert os.path.isfile(os.path.join(source_cli.DATA_DIR, 'test_mongo.json'))
 
 
-def test_destination_create(cli_runner):
-    result = cli_runner.invoke(destination_cli.create, input='http\ntest_http\ntest\n')
+def test_token(cli_runner):
+    result = cli_runner.invoke(agent_cli.token, input='token\n')
     assert result.exit_code == 0
-    assert os.path.isfile(os.path.join(destination_cli.DATA_DIR, 'test_http.json'))
+    assert os.path.isfile(pipeline_cli.TOKEN_FILE)
 
 
 @pytest.mark.parametrize("name,value_type,value,timestamp,timestamp_type", [
@@ -47,7 +49,7 @@ def test_destination_create(cli_runner):
     ('test_timestamp_datetime', 'column', 'Clicks', 'timestamp_datetime', 'datetime'),
 ])
 def test_create(cli_runner, name, value_type, value, timestamp, timestamp_type):
-    result = cli_runner.invoke(pipeline_cli.create, input=f"""test_mongo\ntest_http\n{name}\nclicks\n{value}\n{value_type}\n\n{timestamp}\n{timestamp_type}\nver Country\nExchange optional_dim\n""")
+    result = cli_runner.invoke(pipeline_cli.create, ['-a'], input=f"""test_mongo\nhttp\n{name}\nclicks\n{value}\n{value_type}\n\n{timestamp}\n{timestamp_type}\nver Country\nExchange optional_dim\n""")
     assert result.exit_code == 0
     assert api_client.get_pipeline(name)
 
@@ -123,9 +125,3 @@ def test_source_delete(cli_runner):
     result = cli_runner.invoke(source_cli.delete, ['test_mongo'])
     assert result.exit_code == 0
     assert not os.path.isfile(os.path.join(source_cli.DATA_DIR, 'test_mongo.json'))
-
-
-def test_destination_delete(cli_runner):
-    result = cli_runner.invoke(destination_cli.delete, ['test_http'])
-    assert result.exit_code == 0
-    assert not os.path.isfile(os.path.join(destination_cli.DATA_DIR, 'test_http.json'))

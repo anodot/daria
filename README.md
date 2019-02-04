@@ -17,8 +17,8 @@ specs of anodot 2.0 metric protocol
 
 Basic flow
 
-1. Create source
-2. Create destination
+1. Add anodot api token 
+2. Create source
 3. Create pipeline
 4. Run pipeline
 5. Check pipeline status
@@ -47,31 +47,21 @@ Just run `pytest` command inside agent container.
     ```
     pipeline --help
     ```
-2. Create source `pipeline source create`
-3. List sources `pipeline source list`
-4. Delete source `pipeline source delete`
-5. Create destination `pipeline destination create`
-6. List destination `pipeline destination list`
-7. Delete destination `pipeline destination delete`
-8. Create pipelines with config file `pipeline create -f CONFIG_FILE`
-
-    Config schema can be found in `agent/pipeline_config_schema.py`
-    
-    Config example is in `agent/pipeline_configs/pipeline_config_example.json`
-    
-    If no file is specified config will be prompted in the console
-    
-    
-9. List pipelines `pipeline list`
-10. Start pipeline `pipeline start PIPELINE_ID`
-11. Stop pipeline `pipeline stop PIPELINE_ID`
-12. Delete pipeline `pipeline delete PIPELINE_ID`
-13. Pipeline info `pipeline info PIPELINE_ID`
+2. Add anodot api token `agent token`
+3. Create source `agent source create`
+4. List sources `agent source list`
+5. Delete source `agent source delete`
+6. Create pipelines `agent pipeline create`. There is also '-a' (--advanced) option for advanced configuration 
+7. List pipelines `agent pipeline list`
+8. Start pipeline `agent pipeline start PIPELINE_ID`
+9. Stop pipeline `agent pipeline stop PIPELINE_ID`
+10. Delete pipeline `agent pipeline delete PIPELINE_ID`
+11. Pipeline info `agent pipeline info PIPELINE_ID`
     
     Shows current pipeline status, amount of records worked, issues with 
     pipeline configuration if any and history of execution
-14. Pipeline logs `pipeline logs --help`
-15. Reset pipeline offset `pipeline reset PIPELINE_ID`
+12. Pipeline logs `pipeline logs --help`
+13. Reset pipeline offset `pipeline reset PIPELINE_ID`
 
 ###Configuration description
 
@@ -91,9 +81,6 @@ Just run `pytest` command inside agent container.
     - *Batch size* - how many records to send to further pipeline stages
     - *Max batch wait time (seconds)* - how many time to wait until batch will reach it's size
 
-####Destinations
-- **Http client** - anodot rest api
-    - *Anodot metric api url with token and protocol param* - e.g. `https://api.anodot.com/api/v1/metrics?token=065200eea2dbb29312c41424&protocol=anodot20`
     
 ####Pipeline
 - *Pipeline ID* - unique pipeline identifier (use human-readable name so you could easily use it further) 
