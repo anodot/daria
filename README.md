@@ -45,7 +45,9 @@ Just run `pytest` command inside agent container.
 ###Available commands
 1. List available commands 
     ```
-    pipeline --help
+    agent --help
+    agent source --help
+    agent pipeline --help
     ```
 2. Add anodot api token `agent token`
 3. Create source `agent source create`
