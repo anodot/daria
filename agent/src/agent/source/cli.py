@@ -6,7 +6,7 @@ from .config_schema import sources_configs
 from agent.pipeline.config_handler import get_previous_pipeline_config
 
 
-DATA_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data')
+DATA_DIR = os.path.join(os.environ['DATA_DIR'], 'sources')
 
 
 def get_configs(ctx, args, incomplete):

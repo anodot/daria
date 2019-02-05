@@ -10,4 +10,5 @@ setup(
         [console_scripts]
         agent=agent.cli:agent
     ''',
+    zip_safe=False
 )

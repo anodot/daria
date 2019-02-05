@@ -9,8 +9,8 @@ from ..streamsets_api_client import api_client, StreamSetsApiClientException
 from datetime import datetime
 from texttable import Texttable
 
-DATA_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data')
-TOKEN_FILE = os.path.join(DATA_DIR, 'anodot-token')
+DATA_DIR = os.path.join(os.environ['DATA_DIR'], 'pipelines')
+TOKEN_FILE = os.path.join(os.environ['DATA_DIR'], 'anodot-token')
 
 
 def build_table(header, data, get_row, *args):
@@ -53,7 +53,7 @@ def prompt_pipeline_config(config, advanced=False):
                                               default=config.get('measurement_name'))
 
     config['value'] = config.get('value', {})
-    if advanced:
+    if advanced or config['value'].get('type') == 'constant':
         config['value']['value'] = click.prompt('Value (column name or constant value)', type=click.STRING,
                                                 default=config['value'].get('value'))
         config['value']['type'] = click.prompt('Value type', type=click.Choice(['column', 'constant']),
