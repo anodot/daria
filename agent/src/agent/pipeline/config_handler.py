@@ -127,7 +127,7 @@ class PipelineConfigHandler:
                 self.convert_timestamp_to_unix(stage)
 
         self.update_destination_config()
-        self.config['metadata']['labels'] = [self.client_config['source']['name'],
+        self.config['metadata']['labels'] = [self.client_config['source']['type'],
                                              self.client_config['destination']['type']]
 
         return self.config

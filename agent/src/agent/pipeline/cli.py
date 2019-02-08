@@ -12,6 +12,9 @@ from texttable import Texttable
 DATA_DIR = os.path.join(os.environ['DATA_DIR'], 'pipelines')
 TOKEN_FILE = os.path.join(os.environ['DATA_DIR'], 'anodot-token')
 
+SDC_DATA_PATH = os.environ.get('SDC_DATA_PATH', '/sdc-data')
+SDC_RESULTS_PATH = os.path.join(SDC_DATA_PATH, 'out')
+
 
 def build_table(header, data, get_row, *args):
     """
@@ -151,7 +154,7 @@ def create(advanced):
 
 
 @click.command()
-@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, type=click.Choice(get_pipelines_ids()))
+@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
 @click.option('-a', '--advanced', is_flag=True)
 def edit(pipeline_id, advanced):
     with open(os.path.join(DATA_DIR, pipeline_id + '.json'), 'r') as f:
