@@ -11,19 +11,6 @@ services:
     extra_hosts:
       - "daria-test2:10.0.0.28"
 
-  mongo:
-    image: mongo
-    restart: always
-    ports:
-      - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: root
-    volumes:
-      - /data/db
-      - ./test-datasets:/home
-      - ./volumes/mongo-initdb:/docker-entrypoint-initdb.d
-
   agent:
     build: agent
     restart: always
@@ -41,6 +28,36 @@ services:
       - mongo
     volumes:
       - sdc-data:/sdc-data
+
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    volumes:
+      - /data/db
+      - ./test-datasets:/home
+      - ./volumes/mongo-initdb:/docker-entrypoint-initdb.d
+
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+  kafka:
+    image: wurstmeister/kafka
+    container_name: agent-kafka
+    ports:
+      - "9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: host.docker.internal
+      KAFKA_CREATE_TOPICS: "test:1:1"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./test-datasets:/home
 
 volumes:
   sdc-data:

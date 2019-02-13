@@ -22,5 +22,12 @@ sources_configs = {
         {'name': 'configBean.maxBatchWaitTime', 'prompt_string': 'Max batch wait time (seconds)', 'type': click.INT,
          'default': '${5 * SECONDS}', 'expression': lambda x: '${' + str(x) + ' * SECONDS}',
          'reverse_expression': lambda x: re.findall(r'\d+', x)[0]},
+    ],
+    'kafka': [
+        {'name': 'kafkaConfigBean.metadataBrokerList', 'prompt_string': 'Kafka broker url', 'type': click.STRING},
+        {'name': 'kafkaConfigBean.zookeeperConnect', 'prompt_string': 'Zookeeper url', 'type': click.STRING},
+        {'name': 'kafkaConfigBean.consumerGroup', 'prompt_string': 'Consumer group', 'type': click.STRING,
+         'default': 'anodotAgent'},
+        {'name': 'kafkaConfigBean.topic', 'prompt_string': 'Topic', 'type': click.STRING},
     ]
 }

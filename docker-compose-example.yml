@@ -1,0 +1,25 @@
+version: '3.1'
+
+services:
+  dc:
+    image: anodot/streamsets:latest
+    restart: on-failure
+    volumes:
+      - sdc-data:/data
+
+  agent:
+    image: anodot/daria:latest
+    container_name: anodot-agent
+    restart: always
+    environment:
+      STREAMSETS_URL: 'http://dc:18630'
+      ANODOT_API_URL: 'https://api.anodot.com'
+    stdin_open: true
+    tty: true
+    depends_on:
+      - dc
+    volumes:
+      - sdc-data:/sdc-data
+
+volumes:
+  sdc-data:
