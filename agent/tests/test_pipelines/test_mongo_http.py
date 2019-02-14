@@ -9,7 +9,7 @@ from agent.source import cli as source_cli
 from agent.streamsets_api_client import api_client
 
 
-WAITING_TIME = 5
+WAITING_TIME = 3
 
 
 def test_source_create(cli_runner):
@@ -73,7 +73,7 @@ def test_stop(cli_runner, name):
     assert result.exit_code == 0
     # wait until pipeline stops
     time.sleep(WAITING_TIME)
-    assert api_client.get_pipeline_status(name)['status'] == 'STOPPED'
+    assert api_client.get_pipeline_status(name)['status'] in ['STOPPED', 'STOPPING']
 
 
 @pytest.mark.parametrize("name,expected_output_file", [

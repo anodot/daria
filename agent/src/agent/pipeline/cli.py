@@ -4,6 +4,7 @@ import os
 import urllib.parse
 
 from .config_handler import PipelineConfigHandler
+from .prompt_config import pipeline_configs
 from ..source.cli import get_configs_list as list_sources, DATA_DIR as SOURCES_DIR
 from ..streamsets_api_client import api_client, StreamSetsApiClientException
 from datetime import datetime
@@ -51,49 +52,6 @@ def get_pipelines_ids():
     return [p['pipelineId'] for p in api_client.get_pipelines()]
 
 
-def prompt_pipeline_config(config, advanced=False):
-    config['measurement_name'] = click.prompt('Measurement name', type=click.STRING,
-                                              default=config.get('measurement_name'))
-
-    config['value'] = config.get('value', {})
-    if advanced or config['value'].get('type') == 'constant':
-        config['value']['value'] = click.prompt('Value (column name or constant value)', type=click.STRING,
-                                                default=config['value'].get('value'))
-        config['value']['type'] = click.prompt('Value type', type=click.Choice(['column', 'constant']),
-                                               default=config['value'].get('type'))
-    else:
-        config['value']['type'] = 'column'
-        config['value']['value'] = click.prompt('Value column name', type=click.STRING,
-                                                default=config['value'].get('value'))
-
-    config['target_type'] = click.prompt('Target type', type=click.Choice(['counter', 'gauge']),
-                                         default=config.get('target_type', 'gauge'))
-
-    config['timestamp'] = config.get('timestamp', {})
-    config['timestamp']['name'] = click.prompt('Timestamp column name', type=click.STRING,
-                                               default=config['timestamp'].get('name'))
-    config['timestamp']['type'] = click.prompt('Timestamp column type',
-                                               type=click.Choice(
-                                                   ['string', 'datetime', 'unix', 'unix_ms']),
-                                               default=config['timestamp'].get('type', 'unix'))
-
-    if config['timestamp']['type'] == 'string':
-        config['timestamp']['format'] = click.prompt('Timestamp format string', type=click.STRING,
-                                                     default=config['timestamp'].get('format'))
-
-    config['dimensions'] = config.get('dimensions', {})
-    config['dimensions']['required'] = click.prompt('Required dimensions',
-                                                    type=click.STRING,
-                                                    value_proc=lambda x: x.split(),
-                                                    default=config['dimensions'].get('required', []))
-    config['dimensions']['optional'] = click.prompt('Optional dimensions',
-                                                    type=click.STRING,
-                                                    value_proc=lambda x: x.split(),
-                                                    default=config['dimensions'].get('optional', []))
-
-    return config
-
-
 def get_http_destination():
     api_url = os.environ.get('ANODOT_API_URL', 'https://api.anodot.com')
     with open(TOKEN_FILE, 'r') as f:
@@ -130,7 +88,7 @@ def create(advanced):
 
     pipeline_config['pipeline_id'] = click.prompt('Pipeline ID (must be unique)', type=click.STRING)
 
-    pipeline_config = prompt_pipeline_config(pipeline_config, advanced)
+    pipeline_config = pipeline_configs[pipeline_config['source']['type']](pipeline_config, advanced).config
 
     config_handler = PipelineConfigHandler(pipeline_config)
 
@@ -166,7 +124,7 @@ def edit(pipeline_id, advanced):
     if pipeline_config['destination']['type'] == 'http':
         pipeline_config['destination'] = get_http_destination()
 
-    pipeline_config = prompt_pipeline_config(pipeline_config, advanced)
+    pipeline_config = pipeline_configs[pipeline_config['source']['type']](pipeline_config, advanced).config
 
     pipeline_obj = api_client.get_pipeline(pipeline_config['pipeline_id'])
 

@@ -3,7 +3,18 @@ import json
 import os
 
 from .config_schema import sources_configs
-from agent.pipeline.config_handler import get_previous_pipeline_config
+from agent.streamsets_api_client import api_client
+
+
+def get_previous_pipeline_config(label, stage=0):
+    recent_pipeline_config = {}
+    pipelines_with_source = api_client.get_pipelines(order_by='CREATED', order='DESC',
+                                                     label=label)
+    if len(pipelines_with_source) > 0:
+        recent_pipeline = api_client.get_pipeline(pipelines_with_source[0]['pipelineId'])
+        for conf in recent_pipeline['stages'][stage]['configuration']:
+            recent_pipeline_config[conf['name']] = conf['value']
+    return recent_pipeline_config
 
 
 DATA_DIR = os.path.join(os.environ['DATA_DIR'], 'sources')

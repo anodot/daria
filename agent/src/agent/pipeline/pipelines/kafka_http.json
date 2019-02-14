@@ -479,6 +479,9 @@
         }, {
           "fieldToSet" : "/value",
           "expression" : "${record:value('/Clicks')}"
+        }, {
+          "fieldToSet" : "/kafka_timestamp",
+          "expression" : "${record:attribute('timestamp')}"
         } ]
       }, {
         "name" : "headerAttributeConfigs",
