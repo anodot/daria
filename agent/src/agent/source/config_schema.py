@@ -29,5 +29,7 @@ sources_configs = {
         {'name': 'kafkaConfigBean.consumerGroup', 'prompt_string': 'Consumer group', 'type': click.STRING,
          'default': 'anodotAgent'},
         {'name': 'kafkaConfigBean.topic', 'prompt_string': 'Topic', 'type': click.STRING},
+        # {'name': 'kafkaConfigBean.kafkaAutoOffsetReset', 'prompt_string': 'Offset', 'type': click.Choice(['EARLIEST', 'LATEST', 'TIMESTAMP']), 'default': 'EARLIEST'},
+        # {'name': 'kafkaConfigBean.timestampToSearchOffsets', 'prompt_string': 'Offset timestamp', 'type': click.INT, 'default': 0},
     ]
 }

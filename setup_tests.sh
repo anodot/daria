@@ -1,3 +1,6 @@
 #!/usr/bin/env bash
 
-docker exec streamsets-agent_kafka_1 bash -c "kafka-console-producer.sh --broker-list localhost:9092 --topic test < /home/test_json_items"
+docker exec agent-kafka bash -c "kafka-console-producer.sh --broker-list localhost:9092 --topic test_value_const < /home/test_json_items"
+docker exec agent-kafka bash -c "kafka-console-producer.sh --broker-list localhost:9092 --topic test_timestamp_ms < /home/test_json_items"
+docker exec agent-kafka bash -c "kafka-console-producer.sh --broker-list localhost:9092 --topic test_timestamp_string < /home/test_json_items"
+docker exec agent-kafka bash -c "kafka-console-producer.sh --broker-list localhost:9092 --topic test_timestamp_datetime < /home/test_json_items"
