@@ -20,6 +20,8 @@ services:
       - dc
     volumes:
       - sdc-data:/sdc-data
+      - agent-data:/usr/src/app/data
 
 volumes:
   sdc-data:
+  agent-data:

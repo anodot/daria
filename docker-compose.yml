@@ -28,6 +28,7 @@ services:
       - mongo
     volumes:
       - sdc-data:/sdc-data
+      - agent-data:/usr/src/app/data
 
   mongo:
     image: mongo
@@ -61,3 +62,4 @@ services:
 
 volumes:
   sdc-data:
+  agent-data:
