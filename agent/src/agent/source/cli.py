@@ -51,16 +51,7 @@ def create():
         raise click.exceptions.ClickException('Source config with this name already exists')
 
     recent_pipeline_config = get_previous_pipeline_config(config['type'])
-    for conf in sources_configs[config['type']]:
-        default_value = recent_pipeline_config.get(conf['name'], conf.get('default'))
-        if 'expression' in conf:
-            default_value = conf['reverse_expression'](default_value)
-
-        value = click.prompt(conf['prompt_string'], type=conf['type'], default=default_value)
-        if 'expression' in conf:
-            value = conf['expression'](value)
-
-        config['config'][conf['name']] = value
+    config['config'] = sources_configs[config['type']](recent_pipeline_config   )
 
     with open(os.path.join(DATA_DIR, config['name'] + '.json'), 'w') as f:
         json.dump(config, f)
@@ -75,16 +66,7 @@ def edit(name):
     with open(os.path.join(DATA_DIR, name + '.json'), 'r') as f:
         config = json.load(f)
 
-    for conf in sources_configs[config['type']]:
-        default_value = config['config'][conf['name']]
-        if 'expression' in conf:
-            default_value = conf['reverse_expression'](default_value)
-
-        value = click.prompt(conf['prompt_string'], type=conf['type'], default=default_value)
-        if 'expression' in conf:
-            value = conf['expression'](value)
-
-        config['config'][conf['name']] = value
+    config['config'] = sources_configs[config['type']](config['config'])
 
     with open(os.path.join(DATA_DIR, name + '.json'), 'w') as f:
         json.dump(config, f)

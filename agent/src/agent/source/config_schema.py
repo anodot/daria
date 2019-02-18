@@ -1,35 +1,91 @@
 import click
 import re
 
+
+def prompt_mongo_config(default_config):
+    config = dict()
+    config['configBean.mongoConfig.connectionString'] = click.prompt('Connection string',
+                                                                     type=click.STRING,
+                                                                     default=default_config.get(
+                                                                         'configBean.mongoConfig.connectionString'))
+    config['configBean.mongoConfig.username'] = click.prompt('Username',
+                                                             type=click.STRING,
+                                                             default=default_config.get(
+                                                                 'configBean.mongoConfig.username'))
+    config['configBean.mongoConfig.password'] = click.prompt('Password',
+                                                             type=click.STRING,
+                                                             default=default_config.get(
+                                                                 'configBean.mongoConfig.password'))
+    config['configBean.mongoConfig.authSource'] = click.prompt('Authentication Source',
+                                                               type=click.STRING,
+                                                               default=default_config.get(
+                                                                   'configBean.mongoConfig.authSource'))
+    config['configBean.mongoConfig.database'] = click.prompt('Database',
+                                                             type=click.STRING,
+                                                             default=default_config.get(
+                                                                 'configBean.mongoConfig.database'))
+    config['configBean.mongoConfig.collection'] = click.prompt('Collection',
+                                                               type=click.STRING,
+                                                               default=default_config.get(
+                                                                   'configBean.mongoConfig.collection'))
+    config['configBean.isCapped'] = click.prompt('Is collection capped',
+                                                 type=click.STRING,
+                                                 default=default_config.get('configBean.mongoConfig.isCapped',
+                                                                            False))
+    config['configBean.initialOffset'] = click.prompt('Initial offset', type=click.STRING,
+                                                      default=default_config.get('configBean.initialOffset'))
+
+    config['configBean.offsetType'] = click.prompt('Offset type', type=click.Choice(['OBJECTID', 'STRING', 'DATE']),
+                                                   default=default_config.get('configBean.offsetType', 'OBJECTID'))
+
+    config['configBean.offsetField'] = click.prompt('Offset field', type=click.STRING,
+                                                    default=default_config.get('configBean.offsetField', '_id'))
+    config['configBean.batchSize'] = click.prompt('Batch size', type=click.INT,
+                                                  default=default_config.get('configBean.batchSize', 1000))
+
+    default_batch_wait_time = default_config.get('configBean.maxBatchWaitTime')
+    if default_batch_wait_time:
+        default_batch_wait_time = re.findall(r'\d+', default_batch_wait_time)[0]
+    else:
+        default_batch_wait_time = '5'
+    batch_wait_time = click.prompt('Max batch wait time (seconds)', type=click.STRING, default=default_batch_wait_time)
+    config['configBean.maxBatchWaitTime'] = '${' + str(batch_wait_time) + ' * SECONDS}'
+
+    return config
+
+
+def prompt_kafka_config(default_config):
+    config = dict()
+    config['kafkaConfigBean.metadataBrokerList'] = click.prompt('Kafka broker url',
+                                                                type=click.STRING,
+                                                                default=default_config.get(
+                                                                    'kafkaConfigBean.metadataBrokerList'))
+    config['kafkaConfigBean.zookeeperConnect'] = click.prompt('Zookeeper url',
+                                                              type=click.STRING,
+                                                              default=default_config.get(
+                                                                  'kafkaConfigBean.zookeeperConnect'))
+    config['kafkaConfigBean.consumerGroup'] = click.prompt('Consumer group',
+                                                           type=click.STRING,
+                                                           default=default_config.get('kafkaConfigBean.consumerGroup',
+                                                                                      'anodotAgent'))
+    config['kafkaConfigBean.topic'] = click.prompt('Topic', type=click.STRING,
+                                                   default=default_config.get('kafkaConfigBean.topic'))
+    config['kafkaConfigBean.kafkaAutoOffsetReset'] = click.prompt('Offset',
+                                                                  type=click.Choice(
+                                                                      ['EARLIEST', 'LATEST', 'TIMESTAMP']),
+                                                                  default=default_config.get(
+                                                                      'kafkaConfigBean.kafkaAutoOffsetReset',
+                                                                      'EARLIEST'))
+    if config['kafkaConfigBean.kafkaAutoOffsetReset'] == 'TIMESTAMP':
+        config['kafkaConfigBean.timestampToSearchOffsets'] = click.prompt(
+            'Offset timestamp (unix timestamp in milliseconds)',
+            type=click.STRING,
+            default=default_config.get('kafkaConfigBean.timestampToSearchOffsets'))
+
+    return config
+
+
 sources_configs = {
-    'mongo': [
-        {'name': 'configBean.mongoConfig.connectionString', 'prompt_string': 'Connection string', 'type': click.STRING},
-        {'name': 'configBean.mongoConfig.username', 'prompt_string': 'Username', 'type': click.STRING},
-        {'name': 'configBean.mongoConfig.password', 'prompt_string': 'Password', 'type': click.STRING},
-        {'name': 'configBean.mongoConfig.authSource', 'prompt_string': 'Authentication Source', 'type': click.STRING,
-         'default': '',
-         'comment': """For delegated authentication, specify alternate database name. 
-                        Leave blank for normal authentication"""},
-        {'name': 'configBean.mongoConfig.database', 'prompt_string': 'Database', 'type': click.STRING},
-        {'name': 'configBean.mongoConfig.collection', 'prompt_string': 'Collection', 'type': click.STRING},
-        {'name': 'configBean.isCapped', 'prompt_string': 'Is collection capped', 'type': click.BOOL,
-         'default': False},
-        {'name': 'configBean.initialOffset', 'prompt_string': 'Initial offset', 'type': click.STRING},
-        {'name': 'configBean.offsetType', 'prompt_string': 'Offset type',
-         'type': click.Choice(['OBJECTID', 'STRING', 'DATE']), 'default': 'OBJECTID'},
-        {'name': 'configBean.offsetField', 'prompt_string': 'Offset field', 'type': click.STRING, 'default': '_id'},
-        {'name': 'configBean.batchSize', 'prompt_string': 'Batch size', 'type': click.INT, 'default': 1000},
-        {'name': 'configBean.maxBatchWaitTime', 'prompt_string': 'Max batch wait time (seconds)', 'type': click.INT,
-         'default': '${5 * SECONDS}', 'expression': lambda x: '${' + str(x) + ' * SECONDS}',
-         'reverse_expression': lambda x: re.findall(r'\d+', x)[0]},
-    ],
-    'kafka': [
-        {'name': 'kafkaConfigBean.metadataBrokerList', 'prompt_string': 'Kafka broker url', 'type': click.STRING},
-        {'name': 'kafkaConfigBean.zookeeperConnect', 'prompt_string': 'Zookeeper url', 'type': click.STRING},
-        {'name': 'kafkaConfigBean.consumerGroup', 'prompt_string': 'Consumer group', 'type': click.STRING,
-         'default': 'anodotAgent'},
-        {'name': 'kafkaConfigBean.topic', 'prompt_string': 'Topic', 'type': click.STRING},
-        # {'name': 'kafkaConfigBean.kafkaAutoOffsetReset', 'prompt_string': 'Offset', 'type': click.Choice(['EARLIEST', 'LATEST', 'TIMESTAMP']), 'default': 'EARLIEST'},
-        # {'name': 'kafkaConfigBean.timestampToSearchOffsets', 'prompt_string': 'Offset timestamp', 'type': click.INT, 'default': 0},
-    ]
+    'mongo': prompt_mongo_config,
+    'kafka': prompt_kafka_config
 }
