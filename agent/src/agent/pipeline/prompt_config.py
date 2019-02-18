@@ -2,9 +2,10 @@ import click
 
 
 class PromptConfig:
-    def __init__(self, config, advanced=False):
+    def __init__(self, default_config, advanced=False):
         self.advanced = advanced
-        self.config = config
+        self.default_config = default_config
+        self.config = dict()
 
         self.set_measurement_name()
         self.set_value()
@@ -14,10 +15,10 @@ class PromptConfig:
 
     def set_measurement_name(self):
         self.config['measurement_name'] = click.prompt('Measurement name', type=click.STRING,
-                                                       default=self.config.get('measurement_name'))
+                                                       default=self.default_config.get('measurement_name'))
 
     def set_value(self):
-        self.config['value'] = self.config.get('value', {})
+        self.config['value'] = self.default_config.get('value', {})
         if self.advanced or self.config['value'].get('type') == 'constant':
             self.config['value']['value'] = click.prompt('Value (column name or constant value)', type=click.STRING,
                                                          default=self.config['value'].get('value'))
@@ -30,10 +31,10 @@ class PromptConfig:
 
     def set_target_type(self):
         self.config['target_type'] = click.prompt('Target type', type=click.Choice(['counter', 'gauge']),
-                                                  default=self.config.get('target_type', 'gauge'))
+                                                  default=self.default_config.get('target_type', 'gauge'))
 
     def set_timestamp(self):
-        self.config['timestamp'] = self.config.get('timestamp', {})
+        self.config['timestamp'] = self.default_config.get('timestamp', {})
         self.config['timestamp']['name'] = click.prompt('Timestamp column name', type=click.STRING,
                                                         default=self.config['timestamp'].get('name'))
         self.config['timestamp']['type'] = click.prompt('Timestamp column type',
@@ -46,15 +47,17 @@ class PromptConfig:
                                                               default=self.config['timestamp'].get('format'))
 
     def set_dimensions(self):
-        self.config['dimensions'] = self.config.get('dimensions', {})
+        self.config['dimensions'] = self.default_config.get('dimensions', {})
         self.config['dimensions']['required'] = click.prompt('Required dimensions',
                                                              type=click.STRING,
                                                              value_proc=lambda x: x.split(),
-                                                             default=self.config['dimensions'].get('required', []))
+                                                             default=self.config['dimensions'].get('required',
+                                                                                                           []))
         self.config['dimensions']['optional'] = click.prompt('Optional dimensions',
                                                              type=click.STRING,
                                                              value_proc=lambda x: x.split(),
-                                                             default=self.config['dimensions'].get('optional', []))
+                                                             default=self.config['dimensions'].get('optional',
+                                                                                                           []))
 
 
 class PromptConfigMongo(PromptConfig):
@@ -63,7 +66,7 @@ class PromptConfigMongo(PromptConfig):
 
 class PromptConfigKafka(PromptConfig):
     def set_timestamp(self):
-        previous_val = self.config.get('timestamp', {}).get('name') == 'kafka_timestamp'
+        previous_val = self.default_config.get('timestamp', {}).get('name') == 'kafka_timestamp'
         if click.confirm('Use kafka timestamp?', default=previous_val):
             self.config['timestamp'] = {'name': 'kafka_timestamp', 'type': 'unix_ms'}
         else:

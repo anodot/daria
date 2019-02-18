@@ -17,6 +17,18 @@ SDC_DATA_PATH = os.environ.get('SDC_DATA_PATH', '/sdc-data')
 SDC_RESULTS_PATH = os.path.join(SDC_DATA_PATH, 'out')
 
 
+def get_previous_pipeline_config(label):
+    recent_pipeline_config = {}
+    pipelines_with_source = api_client.get_pipelines(order_by='CREATED', order='DESC',
+                                                     label=label)
+    if len(pipelines_with_source) > 0:
+        for filename in os.listdir(DATA_DIR):
+            if filename == pipelines_with_source[-1]['pipelineId'] + '.json':
+                with open(os.path.join(DATA_DIR, filename), 'r') as f:
+                    recent_pipeline_config = json.load(f)
+    return recent_pipeline_config
+
+
 def build_table(header, data, get_row, *args):
     """
 
@@ -67,8 +79,6 @@ def get_http_destination():
 @click.command()
 @click.option('-a', '--advanced', is_flag=True)
 def create(advanced):
-    pipeline_config = dict()
-
     sources = list_sources()
     if len(sources) == 0:
         raise click.ClickException('No sources configs found. Use "agent source create"')
@@ -78,17 +88,20 @@ def create(advanced):
 
     default_source = sources[0] if len(sources) == 1 else None
     source_config_name = click.prompt('Choose source config', type=click.Choice(sources), default=default_source)
-    with open(os.path.join(SOURCES_DIR, source_config_name + '.json'), 'r') as f:
-        pipeline_config['source'] = json.load(f)
 
+    with open(os.path.join(SOURCES_DIR, source_config_name + '.json'), 'r') as f:
+        source_config = json.load(f)
+
+    pipeline_config = get_previous_pipeline_config(source_config['type'])
+    pipeline_config['source'] = source_config
     destination_type = click.prompt('Choose destination', type=click.Choice(['http']),
-                                           default='http')
+                                    default='http')
     if destination_type == 'http':
         pipeline_config['destination'] = get_http_destination()
 
     pipeline_config['pipeline_id'] = click.prompt('Pipeline ID (must be unique)', type=click.STRING)
 
-    pipeline_config = pipeline_configs[pipeline_config['source']['type']](pipeline_config, advanced).config
+    pipeline_config.update(pipeline_configs[pipeline_config['source']['type']](pipeline_config, advanced).config)
 
     config_handler = PipelineConfigHandler(pipeline_config)
 
@@ -124,7 +137,7 @@ def edit(pipeline_id, advanced):
     if pipeline_config['destination']['type'] == 'http':
         pipeline_config['destination'] = get_http_destination()
 
-    pipeline_config = pipeline_configs[pipeline_config['source']['type']](pipeline_config, advanced).config
+    pipeline_config.update(pipeline_configs[pipeline_config['source']['type']](pipeline_config, advanced).config)
 
     pipeline_obj = api_client.get_pipeline(pipeline_config['pipeline_id'])
 

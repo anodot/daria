@@ -28,9 +28,9 @@ def test_source_edit(cli_runner):
 
 @pytest.mark.parametrize("name,options,value,timestamp,timestamp_type", [
     ('test_value_const', ['-a'], '2\nconstant', 'timestamp_unix', 'unix'),
-    ('test_timestamp_ms', [], 'Clicks', 'timestamp_unix_ms', 'unix_ms'),
-    ('test_timestamp_string', ['-a'], 'Clicks\nconstant', 'timestamp_string', 'string\nM/d/yyyy H:mm:ss'),
+    ('test_timestamp_ms', [], 'Clicks\ncolumn', 'timestamp_unix_ms', 'unix_ms'),
     ('test_timestamp_datetime', [], 'Clicks', 'timestamp_datetime', 'datetime'),
+    ('test_timestamp_string', ['-a'], 'Clicks\nconstant', 'timestamp_string', 'string\nM/d/yyyy H:mm:ss'),
 ])
 def test_create(cli_runner, name, options, value, timestamp, timestamp_type):
     result = cli_runner.invoke(pipeline_cli.create, options, input=f"""test_mongo\nhttp\n{name}\nclicks\n{value}\n\n{timestamp}\n{timestamp_type}\nver Country\nExchange optional_dim\n""")

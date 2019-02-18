@@ -25,9 +25,9 @@ def test_source_create(cli_runner, name):
 
 
 @pytest.mark.parametrize("name,options,value,timestamp", [
-    ('test_value_const', ['-a'], '2\nconstant', 'n\ntimestamp_unix\nunix'),
     ('test_timestamp_kafka', [], 'Clicks', 'y'),
-    ('test_timestamp_ms', [], 'Clicks', 'n\ntimestamp_unix_ms\nunix_ms'),
+    ('test_value_const', ['-a'], '2\nconstant', 'n\ntimestamp_unix\nunix'),
+    ('test_timestamp_ms', [], 'Clicks\ncolumn', 'n\ntimestamp_unix_ms\nunix_ms'),
     ('test_timestamp_string', ['-a'], 'Clicks\nconstant', 'n\ntimestamp_string\nstring\nM/d/yyyy H:mm:ss'),
 ])
 def test_create(cli_runner, name, options, value, timestamp):
