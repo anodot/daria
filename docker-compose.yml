@@ -50,7 +50,7 @@ services:
     image: wurstmeister/kafka
     container_name: agent-kafka
     ports:
-      - "9092"
+      - "9092:9092"
     environment:
       KAFKA_ADVERTISED_HOST_NAME: host.docker.internal
       KAFKA_CREATE_TOPICS: "test:1:1"
