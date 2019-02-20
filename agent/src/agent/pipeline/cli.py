@@ -1,12 +1,15 @@
 import click
 import json
 import os
+import random
+import time
 import urllib.parse
 
 from .config_handler import PipelineConfigHandler
 from ..source.cli import get_configs_list as list_sources, DATA_DIR as SOURCES_DIR
 from ..streamsets_api_client import api_client, StreamSetsApiClientException
 from datetime import datetime
+from pymongo import MongoClient
 from texttable import Texttable
 
 DATA_DIR = os.path.join(os.environ['DATA_DIR'], 'pipelines')
@@ -124,7 +127,7 @@ def create(advanced):
         pipeline_config['source'] = json.load(f)
 
     destination_type = click.prompt('Choose destination', type=click.Choice(['http']),
-                                           default='http')
+                                    default='http')
     if destination_type == 'http':
         pipeline_config['destination'] = get_http_destination()
 
@@ -318,6 +321,66 @@ def reset(pipeline_id):
     click.echo('Pipeline offset reset')
 
 
+@click.command()
+@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
+def dummy(pipeline_id):
+    with open(os.path.join(DATA_DIR, pipeline_id + '.json'), 'r') as f:
+        pipeline_config = json.load(f)
+    if pipeline_config['timestamp']['type'] == 'string':
+        click.secho('Pipelines with string timestamp type are not supported yet', err=True, fg='red')
+        return
+
+    value_range = None
+    if pipeline_config['value']['type'] == 'column':
+        value_range = click.prompt('Value range', type=click.STRING, value_proc=lambda x: x.split())
+
+    dimensions = {}
+    for d in pipeline_config['dimensions']['required'] + pipeline_config['dimensions']['optional']:
+        dimensions_values = click.prompt(f'Values for {d}', type=click.STRING, value_proc=lambda x: x.split(),
+                                         default=[])
+        if len(dimensions_values) > 0:
+            dimensions[d] = dimensions_values
+
+    batch_size = click.prompt('Number of records per minute', type=click.IntRange(min=1, max=10000))
+
+    click.secho('Generating records...', fg='green')
+
+    it_wait_time = 0.1
+    interval = int(60 * (1 // it_wait_time))
+    batch_size_ps = batch_size // interval
+
+    mongo = pipeline_config['source']['config']['configBean.mongoConfig.connectionString'].replace('mongodb://', '')
+
+    client = MongoClient('mongodb://' + pipeline_config['source']['config']['configBean.mongoConfig.username'] + ':' +
+                         pipeline_config['source']['config']['configBean.mongoConfig.password'] + '@' + mongo + '/' +
+                         pipeline_config['source']['config']['configBean.mongoConfig.authSource'])
+    db = client[pipeline_config['source']['config']['configBean.mongoConfig.database']]
+    collection = db[pipeline_config['source']['config']['configBean.mongoConfig.collection']]
+    while True:
+
+        batch_start = time.time()
+        for i in range(interval):
+            start_time = time.time()
+            for j in range(batch_size_ps):
+                document = {'target_type': pipeline_config['target_type']}
+                if value_range:
+                    document[pipeline_config['value']['value']] = random.randint(int(value_range[0]),
+                                                                                 int(value_range[1]))
+                if pipeline_config['timestamp']['name'] != '_id':
+                    if pipeline_config['timestamp']['type'] == 'unix':
+                        document[pipeline_config['timestamp']['name']] = int(time.time())
+                    elif pipeline_config['timestamp']['type'] == 'unix_ms':
+                        document[pipeline_config['timestamp']['name']] = int(time.time() * 1000)
+                    elif pipeline_config['timestamp']['type'] == 'datetime':
+                        document[pipeline_config['timestamp']['name']] = datetime.now()
+                for key, val in dimensions.items():
+                    document[key] = random.choice(val)
+
+                collection.insert_one(document)
+            time.sleep(max(it_wait_time - (time.time() - start_time), 0))
+        print(batch_size_ps, time.time() - batch_start)
+
+
 @click.group()
 def pipeline():
     pass
@@ -332,3 +395,4 @@ pipeline.add_command(logs)
 pipeline.add_command(info)
 pipeline.add_command(reset)
 pipeline.add_command(edit)
+pipeline.add_command(dummy)

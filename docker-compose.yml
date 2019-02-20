@@ -27,6 +27,7 @@ services:
   agent:
     build: agent
     restart: always
+    container_name: anodot-agent
     environment:
       STREAMSETS_USERNAME: 'admin'
       STREAMSETS_PASSWORD: 'admin'
@@ -41,6 +42,8 @@ services:
       - mongo
     volumes:
       - sdc-data:/sdc-data
+      - agent-data:/usr/src/app/data
 
 volumes:
   sdc-data:
+  agent-data:
