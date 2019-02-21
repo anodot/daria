@@ -4,8 +4,8 @@ import re
 sources_configs = {
     'mongo': [
         {'name': 'configBean.mongoConfig.connectionString', 'prompt_string': 'Connection string', 'type': click.STRING},
-        {'name': 'configBean.mongoConfig.username', 'prompt_string': 'Username', 'type': click.STRING},
-        {'name': 'configBean.mongoConfig.password', 'prompt_string': 'Password', 'type': click.STRING},
+        {'name': 'configBean.mongoConfig.username', 'prompt_string': 'Username', 'type': click.STRING, 'default': ''},
+        {'name': 'configBean.mongoConfig.password', 'prompt_string': 'Password', 'type': click.STRING, 'default': ''},
         {'name': 'configBean.mongoConfig.authSource', 'prompt_string': 'Authentication Source', 'type': click.STRING,
          'default': '',
          'comment': """For delegated authentication, specify alternate database name. 

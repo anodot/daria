@@ -51,6 +51,9 @@ def create():
 
         config['config'][conf['name']] = value
 
+    if config['config']['configBean.mongoConfig.username'] == '':
+        config['config']['configBean.mongoConfig.authenticationType'] = 'NONE'
+
     with open(os.path.join(DATA_DIR, config['name'] + '.json'), 'w') as f:
         json.dump(config, f)
 
