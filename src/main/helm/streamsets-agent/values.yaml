@@ -14,8 +14,8 @@ agent:
   tag: latest
   pullPolicy: IfNotPresent
 
-nameOverride: "agent"
-fullnameOverride: ""
+nameOverride: "streamsets-agent"
+fullnameOverride: "streamsets-agent"
 service:
   name: agent
   type: NodePort
