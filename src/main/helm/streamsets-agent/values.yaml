@@ -8,7 +8,7 @@ streamsets:
   repository: 340481513670.dkr.ecr.us-east-1.amazonaws.com/streamsets-agent/sdc
   tag: latest
   pullPolicy: IfNotPresent
-
+namespace: master
 agent:
   repository: 340481513670.dkr.ecr.us-east-1.amazonaws.com/streamsets-agent/agent
   tag: latest
