@@ -38,7 +38,12 @@ spec:
         - name: agent
           image: "{{ .Values.agent.repository }}:{{ .Values.agent.tag }}"
           imagePullPolicy: {{ .Values.agent.pullPolicy }}
-          command: ['sh', '-c', 'echo The app is running! && sleep 3600']
+          env:
+            - name: streamsetsurl
+              value: "{{ .Values.streamsetsurl }}"
+            - name: anodotapiurl
+              value: "{{ .Values.anodotapiurl }}"
+          command: ['sh', '-c', 'echo The app is running with streamset_url: $streamsetsurl and anodot_api as: $anodotapiurl ! && sleep 3600']
           resources:
   {{ toYaml .Values.resources | indent 12 }}
       {{- with .Values.nodeSelector }}

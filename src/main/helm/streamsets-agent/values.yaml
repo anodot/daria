@@ -21,6 +21,9 @@ service:
   type: NodePort
   port: 8080
 
+streamsetsurl: "http://localhost:18630"
+anodotapiurl: "http://anodotd:8080"
+
 ingress:
   enabled: false
   annotations: {}
