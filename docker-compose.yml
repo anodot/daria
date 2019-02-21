@@ -27,7 +27,6 @@ services:
   agent:
     build: agent
     restart: always
-    container_name: anodot-agent
     environment:
       STREAMSETS_USERNAME: 'admin'
       STREAMSETS_PASSWORD: 'admin'
