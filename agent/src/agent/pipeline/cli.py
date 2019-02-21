@@ -350,10 +350,15 @@ def dummy(pipeline_id):
     batch_size_ps = batch_size // interval
 
     mongo = pipeline_config['source']['config']['configBean.mongoConfig.connectionString'].replace('mongodb://', '')
+    user_pass = ''
+    if pipeline_config['source']['config']['configBean.mongoConfig.username'] != '':
+        user_pass = pipeline_config['source']['config']['configBean.mongoConfig.username'] + ':' + \
+                    pipeline_config['source']['config']['configBean.mongoConfig.password'] + '@'
+    auth_source = ''
+    if pipeline_config['source']['config']['configBean.mongoConfig.authSource'] != '':
+        auth_source = '/' + pipeline_config['source']['config']['configBean.mongoConfig.authSource']
+    client = MongoClient('mongodb://' + user_pass + mongo + auth_source)
 
-    client = MongoClient('mongodb://' + pipeline_config['source']['config']['configBean.mongoConfig.username'] + ':' +
-                         pipeline_config['source']['config']['configBean.mongoConfig.password'] + '@' + mongo + '/' +
-                         pipeline_config['source']['config']['configBean.mongoConfig.authSource'])
     db = client[pipeline_config['source']['config']['configBean.mongoConfig.database']]
     collection = db[pipeline_config['source']['config']['configBean.mongoConfig.collection']]
     while True:
