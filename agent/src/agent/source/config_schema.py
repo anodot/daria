@@ -11,11 +11,11 @@ def prompt_mongo_config(default_config):
     config['configBean.mongoConfig.username'] = click.prompt('Username',
                                                              type=click.STRING,
                                                              default=default_config.get(
-                                                                 'configBean.mongoConfig.username'))
+                                                                 'configBean.mongoConfig.username', ''))
     config['configBean.mongoConfig.password'] = click.prompt('Password',
                                                              type=click.STRING,
                                                              default=default_config.get(
-                                                                 'configBean.mongoConfig.password'))
+                                                                 'configBean.mongoConfig.password', ''))
     config['configBean.mongoConfig.authSource'] = click.prompt('Authentication Source',
                                                                type=click.STRING,
                                                                default=default_config.get(
@@ -50,6 +50,9 @@ def prompt_mongo_config(default_config):
         default_batch_wait_time = '5'
     batch_wait_time = click.prompt('Max batch wait time (seconds)', type=click.STRING, default=default_batch_wait_time)
     config['configBean.maxBatchWaitTime'] = '${' + str(batch_wait_time) + ' * SECONDS}'
+
+    if config['configBean.mongoConfig.username'] == '':
+        config['configBean.mongoConfig.authenticationType'] = 'NONE'
 
     return config
 

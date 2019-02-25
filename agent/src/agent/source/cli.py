@@ -51,7 +51,7 @@ def create():
         raise click.exceptions.ClickException('Source config with this name already exists')
 
     recent_pipeline_config = get_previous_pipeline_config(config['type'])
-    config['config'] = sources_configs[config['type']](recent_pipeline_config   )
+    config['config'] = sources_configs[config['type']](recent_pipeline_config)
 
     with open(os.path.join(DATA_DIR, config['name'] + '.json'), 'w') as f:
         json.dump(config, f)

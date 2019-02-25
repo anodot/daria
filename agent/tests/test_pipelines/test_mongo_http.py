@@ -30,6 +30,7 @@ def test_source_edit(cli_runner):
     ('test_value_const', ['-a'], '2\nconstant', 'timestamp_unix', 'unix'),
     ('test_timestamp_ms', [], 'Clicks\ncolumn', 'timestamp_unix_ms', 'unix_ms'),
     ('test_timestamp_datetime', [], 'Clicks', 'timestamp_datetime', 'datetime'),
+    ('test_timestamp_id', [], 'Clicks', '_id', 'unix'),
     ('test_timestamp_string', ['-a'], 'Clicks\nconstant', 'timestamp_string', 'string\nM/d/yyyy H:mm:ss'),
 ])
 def test_create(cli_runner, name, options, value, timestamp, timestamp_type):
@@ -52,6 +53,7 @@ def test_edit(cli_runner, options, value):
     'test_timestamp_ms',
     'test_timestamp_string',
     'test_timestamp_datetime',
+    'test_timestamp_id',
 ])
 def test_start(cli_runner, name):
     replace_destination(name)
@@ -67,6 +69,7 @@ def test_start(cli_runner, name):
     'test_timestamp_ms',
     'test_timestamp_string',
     'test_timestamp_datetime',
+    'test_timestamp_id'
 ])
 def test_stop(cli_runner, name):
     result = cli_runner.invoke(pipeline_cli.stop, [name])
@@ -86,6 +89,13 @@ def test_output(name, expected_output_file):
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), expected_output_file)) as f:
         expected_output = json.load(f)
     assert get_output(name) == expected_output
+
+
+@pytest.mark.parametrize("name", [
+    'test_timestamp_id'
+])
+def test_output_exists(name):
+    assert get_output(name) is not None
 
 
 @pytest.mark.parametrize("name", [

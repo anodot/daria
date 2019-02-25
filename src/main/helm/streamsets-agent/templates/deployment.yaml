@@ -1,0 +1,61 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ include "agent.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "agent.name" . }}
+    helm.sh/chart: {{ include "agent.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "agent.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "agent.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: streamsets
+          image: "{{ .Values.streamsets.repository }}:{{ .Values.streamsets.tag }}"
+          imagePullPolicy: {{ .Values.streamsets.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 18630
+              protocol: TCP
+          livenessProbe:
+              httpGet:
+                path: /
+                port: 18630
+          readinessProbe:
+              httpGet:
+                path: /
+                port: 18630
+        - name: agent
+          image: "{{ .Values.agent.repository }}:{{ .Values.agent.tag }}"
+          imagePullPolicy: {{ .Values.agent.pullPolicy }}
+          env:
+            - name: STREAMSETS_URL
+              value: "{{ .Values.streamsetsurl }}"
+            - name: ANODOT_API_URL
+              value: "{{ .Values.anodotapiurl }}"
+          command: ['sh', '-c', 'echo The app is running with streamset_url: $STREAMSETS_URL and anodot_api as: $ANODOT_API_URL ! && sleep 3600']
+          resources:
+  {{ toYaml .Values.resources | indent 12 }}
+      {{- with .Values.nodeSelector }}
+        nodeSelector:
+  {{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+        affinity:
+  {{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+        tolerations:
+  {{ toYaml . | indent 8 }}
+      {{- end }}
+    
