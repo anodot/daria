@@ -2,7 +2,7 @@ import click
 import re
 
 
-def prompt_mongo_config(default_config):
+def prompt_mongo_config(default_config, advanced=False):
     config = dict()
     config['configBean.mongoConfig.connectionString'] = click.prompt('Connection string',
                                                                      type=click.STRING,
@@ -57,7 +57,7 @@ def prompt_mongo_config(default_config):
     return config
 
 
-def prompt_kafka_config(default_config):
+def prompt_kafka_config(default_config, advanced=False):
     config = dict()
     config['kafkaConfigBean.metadataBrokerList'] = click.prompt('Kafka broker url',
                                                                 type=click.STRING,
@@ -84,6 +84,16 @@ def prompt_kafka_config(default_config):
             'Offset timestamp (unix timestamp in milliseconds)',
             type=click.STRING,
             default=default_config.get('kafkaConfigBean.timestampToSearchOffsets'))
+
+    if advanced:
+        config['kafkaConfigBean.maxBatchSize'] = click.prompt('Max Batch Size (records)',
+                                                              type=click.INT,
+                                                              default=default_config.get('kafkaConfigBean.maxBatchSize',
+                                                                                         1000))
+        config['kafkaConfigBean.maxWaitTime'] = click.prompt('Batch Wait Time (ms)',
+                                                             type=click.INT,
+                                                             default=default_config.get('kafkaConfigBean.maxWaitTime',
+                                                                                        1000))
 
     return config
 

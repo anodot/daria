@@ -42,7 +42,8 @@ def source():
 
 
 @click.command()
-def create():
+@click.option('-a', '--advanced', is_flag=True)
+def create(advanced):
     config = dict(config={})
     config['type'] = click.prompt('Choose source', type=click.Choice(sources_configs.keys()), default='mongo')
     config['name'] = click.prompt('Enter unique name for this source config', type=click.STRING)
@@ -51,7 +52,7 @@ def create():
         raise click.exceptions.ClickException('Source config with this name already exists')
 
     recent_pipeline_config = get_previous_pipeline_config(config['type'])
-    config['config'] = sources_configs[config['type']](recent_pipeline_config)
+    config['config'] = sources_configs[config['type']](recent_pipeline_config, advanced)
 
     with open(os.path.join(DATA_DIR, config['name'] + '.json'), 'w') as f:
         json.dump(config, f)
@@ -61,12 +62,13 @@ def create():
 
 @click.command()
 @click.argument('name', autocompletion=get_configs)
-def edit(name):
+@click.option('-a', '--advanced', is_flag=True)
+def edit(name, advanced):
 
     with open(os.path.join(DATA_DIR, name + '.json'), 'r') as f:
         config = json.load(f)
 
-    config['config'] = sources_configs[config['type']](config['config'])
+    config['config'] = sources_configs[config['type']](config['config'], advanced)
 
     with open(os.path.join(DATA_DIR, name + '.json'), 'w') as f:
         json.dump(config, f)
