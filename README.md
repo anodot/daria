@@ -3,7 +3,7 @@ With this CLI tool you can create pipelines in Streamsets Data collector which w
 pull data from different sources and push it to anodot
 
 ###Main concepts
-- **Source** - This is where you want your data to be pulled from. Available sources: *mongodb*
+- **Source** - This is where you want your data to be pulled from. Available sources: *mongodb*, *kafka*
 - **Destination** - Where to put your data. Available destinations: *http client* - Anodot rest api endpoint
 - **Pipeline** - pipelines connect sources and destinations with data processing and transformation stages
 
@@ -82,6 +82,15 @@ Just run `pytest` command inside agent container.
     - *Offset field*
     - *Batch size* - how many records to send to further pipeline stages
     - *Max batch wait time (seconds)* - how many time to wait until batch will reach it's size
+- **Kafka**
+    - *Kafka broker url*
+    - *Zookeeper url*
+    - *Consumer group* - default "anodotAgent"
+    - *Topic* - Kafka topic 
+    - *Initial offset* - values: EARLIEST, LATEST, TIMESTAMP
+    - *Offset timestamp (unix timestamp in milliseconds)* - if initial offset is TIMESTAMP then specify it here
+    - (advanced) *Max Batch Size (records)* - how many records to send to further pipeline stages
+    - (advanced) *Batch Wait Time (ms)* - how many time to wait until batch will reach it's size
 
     
 ####Pipeline

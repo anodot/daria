@@ -73,7 +73,7 @@ def prompt_kafka_config(default_config, advanced=False):
                                                                                       'anodotAgent'))
     config['kafkaConfigBean.topic'] = click.prompt('Topic', type=click.STRING,
                                                    default=default_config.get('kafkaConfigBean.topic'))
-    config['kafkaConfigBean.kafkaAutoOffsetReset'] = click.prompt('Offset',
+    config['kafkaConfigBean.kafkaAutoOffsetReset'] = click.prompt('Initial offset',
                                                                   type=click.Choice(
                                                                       ['EARLIEST', 'LATEST', 'TIMESTAMP']),
                                                                   default=default_config.get(
