@@ -43,7 +43,7 @@ spec:
               value: "{{ .Values.streamsetsurl }}"
             - name: ANODOT_API_URL
               value: "{{ .Values.anodotapiurl }}"
-          command: ['sh', '-c', 'echo The app is running with streamset_url: $STREAMSETS_URL and anodot_api as: $ANODOT_API_URL ! && sleep 3600']
+          command: ['sh', '-c', 'while true; do echo "The app is running with streamset_url: $STREAMSETS_URL and anodot_api as: $ANODOT_API_URL"; sleep 600; done']
           resources:
   {{ toYaml .Values.resources | indent 12 }}
       {{- with .Values.nodeSelector }}
