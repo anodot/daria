@@ -5,4 +5,4 @@ docker exec agent-kafka bash -c "kafka-console-producer.sh --broker-list localho
 docker exec agent-kafka bash -c "kafka-console-producer.sh --broker-list localhost:9092 --topic test_timestamp_string < /home/test_json_items"
 docker exec agent-kafka bash -c "kafka-console-producer.sh --broker-list localhost:9092 --topic test_timestamp_datetime < /home/test_json_items"
 
-pytest
+docker exec anodot-agent bash -c "pytest"
