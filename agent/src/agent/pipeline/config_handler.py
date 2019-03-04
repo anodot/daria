@@ -61,7 +61,10 @@ class PipelineConfigHandler:
         if 'optional' in self.client_config['dimensions']:
             dimensions = self.client_config['dimensions']['required'] + self.client_config['dimensions']['optional']
         for dim in dimensions:
-            rename_mapping.append({'fromFieldExpression': '/' + dim, 'toFieldExpression': '/properties/' + dim})
+            rename_mapping.append({
+                'fromFieldExpression': '/' + dim,
+                'toFieldExpression': '/properties/' + dim.replace('/', '_')
+            })
         return rename_mapping
 
     def rename_fields_for_anodot_protocol(self, stage):
