@@ -12,29 +12,26 @@ from agent.streamsets_api_client import api_client
 WAITING_TIME = 5
 
 
-def test_source_create(cli_runner):
-    result = cli_runner.invoke(source_cli.create, input="""mongo\ntest_mongo\nmongodb://mongo:27017\nroot\nroot\nadmin\ntest\nadtec\n\n2015-01-01 00:00:00\n\n\n\n\n""")
-    assert result.exit_code == 0
-    assert os.path.isfile(os.path.join(source_cli.DATA_DIR, 'test_mongo.json'))
-
-
-def test_source_edit(cli_runner):
-    result = cli_runner.invoke(source_cli.edit, ['test_mongo'], input="""\n\n\n\n\nadtech\n\n\n\n\n\n\n""")
-    with open(os.path.join(source_cli.DATA_DIR, 'test_mongo.json'), 'r') as f:
-        source = json.load(f)
-        assert source['config']['configBean.mongoConfig.collection'] == 'adtech'
-    assert result.exit_code == 0
-
-
-@pytest.mark.parametrize("name,options,value,timestamp,timestamp_type", [
-    ('test_value_const', ['-a'], '2\nconstant', 'timestamp_unix', 'unix'),
-    ('test_timestamp_ms', [], 'Clicks\ncolumn', 'timestamp_unix_ms', 'unix_ms'),
-    ('test_timestamp_datetime', [], 'Clicks', 'timestamp_datetime', 'datetime'),
-    ('test_timestamp_id', [], 'Clicks', '_id', 'unix'),
-    ('test_timestamp_string', ['-a'], 'Clicks\nconstant', 'timestamp_string', 'string\nM/d/yyyy H:mm:ss'),
+@pytest.mark.parametrize("name", [
+    'test_value_const',
+    'test_timestamp_ms',
+    'test_timestamp_kafka',
+    'test_timestamp_string',
 ])
-def test_create(cli_runner, name, options, value, timestamp, timestamp_type):
-    result = cli_runner.invoke(pipeline_cli.create, options, input=f"""test_mongo\nhttp\n{name}\nclicks\n{value}\n\n{timestamp}\n{timestamp_type}\nver Country\nExchange optional_dim\n""")
+def test_source_create(cli_runner, name):
+    result = cli_runner.invoke(source_cli.create, input=f"kafka\nkafka_{name}\nkafka:29092\nzookeeper:2181\nstreamsetsDC\n{name}\n\n")
+    assert result.exit_code == 0
+    assert os.path.isfile(os.path.join(source_cli.DATA_DIR, f'kafka_{name}.json'))
+
+
+@pytest.mark.parametrize("name,options,value,timestamp", [
+    ('test_timestamp_kafka', [], 'Clicks', 'y'),
+    ('test_value_const', ['-a'], '2\nconstant', 'n\ntimestamp_unix\nunix'),
+    ('test_timestamp_ms', [], 'Clicks\ncolumn', 'n\ntimestamp_unix_ms\nunix_ms'),
+    ('test_timestamp_string', ['-a'], 'Clicks\nconstant', 'n\ntimestamp_string\nstring\nM/d/yyyy H:mm:ss'),
+])
+def test_create(cli_runner, name, options, value, timestamp):
+    result = cli_runner.invoke(pipeline_cli.create, options, input=f"""kafka_{name}\nhttp\n{name}\nclicks\n{value}\n\n{timestamp}\nver Country\nExchange optional_dim\n""")
     assert result.exit_code == 0
     assert api_client.get_pipeline(name)
 
@@ -52,8 +49,7 @@ def test_edit(cli_runner, options, value):
     'test_value_const',
     'test_timestamp_ms',
     'test_timestamp_string',
-    'test_timestamp_datetime',
-    'test_timestamp_id',
+    'test_timestamp_kafka',
 ])
 def test_start(cli_runner, name):
     replace_destination(name)
@@ -68,8 +64,7 @@ def test_start(cli_runner, name):
     'test_value_const',
     'test_timestamp_ms',
     'test_timestamp_string',
-    'test_timestamp_datetime',
-    'test_timestamp_id'
+    'test_timestamp_kafka',
 ])
 def test_stop(cli_runner, name):
     result = cli_runner.invoke(pipeline_cli.stop, [name])
@@ -83,7 +78,6 @@ def test_stop(cli_runner, name):
     ('test_value_const', 'expected_output_value_const.json'),
     ('test_timestamp_ms', 'expected_output_value_column.json'),
     ('test_timestamp_string', 'expected_output_value_column.json'),
-    ('test_timestamp_datetime', 'expected_output_value_column.json'),
 ])
 def test_output(name, expected_output_file):
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), expected_output_file)) as f:
@@ -92,17 +86,10 @@ def test_output(name, expected_output_file):
 
 
 @pytest.mark.parametrize("name", [
-    'test_timestamp_id'
-])
-def test_output_exists(name):
-    assert get_output(name) is not None
-
-
-@pytest.mark.parametrize("name", [
     'test_value_const',
     'test_timestamp_ms',
     'test_timestamp_string',
-    'test_timestamp_datetime',
+    'test_timestamp_kafka',
 ])
 def test_delete_pipeline(cli_runner, name):
     result = cli_runner.invoke(pipeline_cli.delete, [name])
@@ -110,7 +97,13 @@ def test_delete_pipeline(cli_runner, name):
     assert not os.path.isfile(os.path.join(pipeline_cli.DATA_DIR, name + '.json'))
 
 
-def test_source_delete(cli_runner):
-    result = cli_runner.invoke(source_cli.delete, ['test_mongo'])
+@pytest.mark.parametrize("name", [
+    'test_value_const',
+    'test_timestamp_ms',
+    'test_timestamp_string',
+    'test_timestamp_kafka',
+])
+def test_source_delete(cli_runner, name):
+    result = cli_runner.invoke(source_cli.delete, [f'kafka_{name}'])
     assert result.exit_code == 0
-    assert not os.path.isfile(os.path.join(source_cli.DATA_DIR, 'test_mongo.json'))
+    assert not os.path.isfile(os.path.join(source_cli.DATA_DIR, f'kafka_{name}.json'))

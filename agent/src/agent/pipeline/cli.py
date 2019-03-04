@@ -6,6 +6,7 @@ import time
 import urllib.parse
 
 from .config_handler import PipelineConfigHandler
+from .prompt_config import pipeline_configs
 from ..source.cli import get_configs_list as list_sources, DATA_DIR as SOURCES_DIR
 from ..streamsets_api_client import api_client, StreamSetsApiClientException
 from datetime import datetime
@@ -17,6 +18,18 @@ TOKEN_FILE = os.path.join(os.environ['DATA_DIR'], 'anodot-token')
 
 SDC_DATA_PATH = os.environ.get('SDC_DATA_PATH', '/sdc-data')
 SDC_RESULTS_PATH = os.path.join(SDC_DATA_PATH, 'out')
+
+
+def get_previous_pipeline_config(label):
+    recent_pipeline_config = {}
+    pipelines_with_source = api_client.get_pipelines(order_by='CREATED', order='DESC',
+                                                     label=label)
+    if len(pipelines_with_source) > 0:
+        for filename in os.listdir(DATA_DIR):
+            if filename == pipelines_with_source[-1]['pipelineId'] + '.json':
+                with open(os.path.join(DATA_DIR, filename), 'r') as f:
+                    recent_pipeline_config = json.load(f)
+    return recent_pipeline_config
 
 
 def build_table(header, data, get_row, *args):
@@ -54,49 +67,6 @@ def get_pipelines_ids():
     return [p['pipelineId'] for p in api_client.get_pipelines()]
 
 
-def prompt_pipeline_config(config, advanced=False):
-    config['measurement_name'] = click.prompt('Measurement name', type=click.STRING,
-                                              default=config.get('measurement_name'))
-
-    config['value'] = config.get('value', {})
-    if advanced or config['value'].get('type') == 'constant':
-        config['value']['value'] = click.prompt('Value (column name or constant value)', type=click.STRING,
-                                                default=config['value'].get('value'))
-        config['value']['type'] = click.prompt('Value type', type=click.Choice(['column', 'constant']),
-                                               default=config['value'].get('type'))
-    else:
-        config['value']['type'] = 'column'
-        config['value']['value'] = click.prompt('Value column name', type=click.STRING,
-                                                default=config['value'].get('value'))
-
-    config['target_type'] = click.prompt('Target type', type=click.Choice(['counter', 'gauge']),
-                                         default=config.get('target_type', 'gauge'))
-
-    config['timestamp'] = config.get('timestamp', {})
-    config['timestamp']['name'] = click.prompt('Timestamp column name', type=click.STRING,
-                                               default=config['timestamp'].get('name'))
-    config['timestamp']['type'] = click.prompt('Timestamp column type',
-                                               type=click.Choice(
-                                                   ['string', 'datetime', 'unix', 'unix_ms']),
-                                               default=config['timestamp'].get('type', 'unix'))
-
-    if config['timestamp']['type'] == 'string':
-        config['timestamp']['format'] = click.prompt('Timestamp format string', type=click.STRING,
-                                                     default=config['timestamp'].get('format'))
-
-    config['dimensions'] = config.get('dimensions', {})
-    config['dimensions']['required'] = click.prompt('Required dimensions',
-                                                    type=click.STRING,
-                                                    value_proc=lambda x: x.split(),
-                                                    default=config['dimensions'].get('required', []))
-    config['dimensions']['optional'] = click.prompt('Optional dimensions',
-                                                    type=click.STRING,
-                                                    value_proc=lambda x: x.split(),
-                                                    default=config['dimensions'].get('optional', []))
-
-    return config
-
-
 def get_http_destination():
     api_url = os.environ.get('ANODOT_API_URL', 'https://api.anodot.com')
     with open(TOKEN_FILE, 'r') as f:
@@ -112,8 +82,6 @@ def get_http_destination():
 @click.command()
 @click.option('-a', '--advanced', is_flag=True)
 def create(advanced):
-    pipeline_config = dict()
-
     sources = list_sources()
     if len(sources) == 0:
         raise click.ClickException('No sources configs found. Use "agent source create"')
@@ -123,9 +91,12 @@ def create(advanced):
 
     default_source = sources[0] if len(sources) == 1 else None
     source_config_name = click.prompt('Choose source config', type=click.Choice(sources), default=default_source)
-    with open(os.path.join(SOURCES_DIR, source_config_name + '.json'), 'r') as f:
-        pipeline_config['source'] = json.load(f)
 
+    with open(os.path.join(SOURCES_DIR, source_config_name + '.json'), 'r') as f:
+        source_config = json.load(f)
+
+    pipeline_config = get_previous_pipeline_config(source_config['type'])
+    pipeline_config['source'] = source_config
     destination_type = click.prompt('Choose destination', type=click.Choice(['http']),
                                     default='http')
     if destination_type == 'http':
@@ -133,7 +104,7 @@ def create(advanced):
 
     pipeline_config['pipeline_id'] = click.prompt('Pipeline ID (must be unique)', type=click.STRING)
 
-    pipeline_config = prompt_pipeline_config(pipeline_config, advanced)
+    pipeline_config.update(pipeline_configs[pipeline_config['source']['type']](pipeline_config, advanced).config)
 
     config_handler = PipelineConfigHandler(pipeline_config)
 
@@ -169,7 +140,7 @@ def edit(pipeline_id, advanced):
     if pipeline_config['destination']['type'] == 'http':
         pipeline_config['destination'] = get_http_destination()
 
-    pipeline_config = prompt_pipeline_config(pipeline_config, advanced)
+    pipeline_config.update(pipeline_configs[pipeline_config['source']['type']](pipeline_config, advanced).config)
 
     pipeline_obj = api_client.get_pipeline(pipeline_config['pipeline_id'])
 

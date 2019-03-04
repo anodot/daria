@@ -3,7 +3,18 @@ import json
 import os
 
 from .config_schema import sources_configs
-from agent.pipeline.config_handler import get_previous_pipeline_config
+from agent.streamsets_api_client import api_client
+
+
+def get_previous_pipeline_config(label, stage=0):
+    recent_pipeline_config = {}
+    pipelines_with_source = api_client.get_pipelines(order_by='CREATED', order='DESC',
+                                                     label=label)
+    if len(pipelines_with_source) > 0:
+        recent_pipeline = api_client.get_pipeline(pipelines_with_source[0]['pipelineId'])
+        for conf in recent_pipeline['stages'][stage]['configuration']:
+            recent_pipeline_config[conf['name']] = conf['value']
+    return recent_pipeline_config
 
 
 DATA_DIR = os.path.join(os.environ['DATA_DIR'], 'sources')
@@ -31,28 +42,17 @@ def source():
 
 
 @click.command()
-def create():
+@click.option('-a', '--advanced', is_flag=True)
+def create(advanced):
     config = dict(config={})
-    config['type'] = click.prompt('Choose source', type=click.Choice(['mongo']), default='mongo')
+    config['type'] = click.prompt('Choose source', type=click.Choice(sources_configs.keys()), default='mongo')
     config['name'] = click.prompt('Enter unique name for this source config', type=click.STRING)
 
     if os.path.isfile(os.path.join(DATA_DIR, config['name'] + '.json')):
         raise click.exceptions.ClickException('Source config with this name already exists')
 
     recent_pipeline_config = get_previous_pipeline_config(config['type'])
-    for conf in sources_configs[config['type']]:
-        default_value = recent_pipeline_config.get(conf['name'], conf.get('default'))
-        if 'expression' in conf:
-            default_value = conf['reverse_expression'](default_value)
-
-        value = click.prompt(conf['prompt_string'], type=conf['type'], default=default_value)
-        if 'expression' in conf:
-            value = conf['expression'](value)
-
-        config['config'][conf['name']] = value
-
-    if config['config']['configBean.mongoConfig.username'] == '':
-        config['config']['configBean.mongoConfig.authenticationType'] = 'NONE'
+    config['config'] = sources_configs[config['type']](recent_pipeline_config, advanced)
 
     with open(os.path.join(DATA_DIR, config['name'] + '.json'), 'w') as f:
         json.dump(config, f)
@@ -62,21 +62,13 @@ def create():
 
 @click.command()
 @click.argument('name', autocompletion=get_configs)
-def edit(name):
+@click.option('-a', '--advanced', is_flag=True)
+def edit(name, advanced):
 
     with open(os.path.join(DATA_DIR, name + '.json'), 'r') as f:
         config = json.load(f)
 
-    for conf in sources_configs[config['type']]:
-        default_value = config['config'][conf['name']]
-        if 'expression' in conf:
-            default_value = conf['reverse_expression'](default_value)
-
-        value = click.prompt(conf['prompt_string'], type=conf['type'], default=default_value)
-        if 'expression' in conf:
-            value = conf['expression'](value)
-
-        config['config'][conf['name']] = value
+    config['config'] = sources_configs[config['type']](config['config'], advanced)
 
     with open(os.path.join(DATA_DIR, name + '.json'), 'w') as f:
         json.dump(config, f)

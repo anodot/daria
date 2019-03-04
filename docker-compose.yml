@@ -11,6 +11,26 @@ services:
     extra_hosts:
       - "daria-test2:10.0.0.28"
 
+  agent:
+    build: agent
+    restart: always
+    container_name: anodot-agent
+    environment:
+      STREAMSETS_USERNAME: 'admin'
+      STREAMSETS_PASSWORD: 'admin'
+      STREAMSETS_URL: 'http://dc:18630'
+      LOG_FILE_PATH: '/var/log/agent.log'
+      ANODOT_API_URL: 'http://daria-test2'
+      SDC_DATA_PATH: '/sdc-data'
+    stdin_open: true
+    tty: true
+    depends_on:
+      - dc
+      - mongo
+    volumes:
+      - sdc-data:/sdc-data
+      - agent-data:/usr/src/app/data
+
   mongo:
     image: mongo
     restart: always
@@ -24,24 +44,26 @@ services:
       - ./test-datasets:/home
       - ./volumes/mongo-initdb:/docker-entrypoint-initdb.d
 
-  agent:
-    build: agent
-    restart: always
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+  kafka:
+    image: wurstmeister/kafka
+    container_name: agent-kafka
+    ports:
+      - "9092:9092"
     environment:
-      STREAMSETS_USERNAME: 'admin'
-      STREAMSETS_PASSWORD: 'admin'
-      STREAMSETS_URL: 'http://dc:18630'
-      LOG_FILE_PATH: '/var/log/agent.log'
-      ANODOT_API_URL: 'http://anodotd:8080'
-      SDC_DATA_PATH: '/sdc-data'
-    stdin_open: true
-    tty: true
-    depends_on:
-      - dc
-      - mongo
+      KAFKA_LISTENERS: PLAINTEXT://:29092,PLAINTEXT_HOST://:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CREATE_TOPICS: "test:1:1,test-json:1:1"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
     volumes:
-      - sdc-data:/sdc-data
-      - agent-data:/usr/src/app/data
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./test-datasets:/home
 
 volumes:
   sdc-data:

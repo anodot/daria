@@ -3,7 +3,7 @@ With this CLI tool you can create pipelines in Streamsets Data collector which w
 pull data from different sources and push it to anodot
 
 ###Main concepts
-- **Source** - This is where you want your data to be pulled from. Available sources: *mongodb*
+- **Source** - This is where you want your data to be pulled from. Available sources: *mongodb*, *kafka*
 - **Destination** - Where to put your data. Available destinations: *http client* - Anodot rest api endpoint
 - **Pipeline** - pipelines connect sources and destinations with data processing and transformation stages
 
@@ -82,6 +82,15 @@ Just run `pytest` command inside agent container.
     - *Offset field*
     - *Batch size* - how many records to send to further pipeline stages
     - *Max batch wait time (seconds)* - how many time to wait until batch will reach it's size
+- **Kafka** - currently only JSON data format supported
+    - *Kafka broker url*
+    - *Zookeeper url*
+    - *Consumer group* - default "anodotAgent"
+    - *Topic* - Kafka topic 
+    - *Initial offset* - values: EARLIEST, LATEST, TIMESTAMP
+    - *Offset timestamp (unix timestamp in milliseconds)* - if initial offset is TIMESTAMP then specify it here
+    - (advanced) *Max Batch Size (records)* - how many records to send to further pipeline stages
+    - (advanced) *Batch Wait Time (ms)* - how many time to wait until batch will reach it's size
 
     
 ####Pipeline
@@ -102,6 +111,17 @@ according to this [spec](https://docs.oracle.com/javase/8/docs/api/java/text/Sim
 - *Required dimensions* - Names of columns delimited with spaces. 
 If these fields are missing in a record, it goes to error stage
 - *Optional dimensions* - Names of columns delimited with spaces. These fields may be missing in a record
+
+If your JSON data has nested structure you can specify path to required field with `/` sign. For example:
+```json
+    {
+      "transaction": {
+        "type": "SALE",
+        "status": "SUCCESS"
+      }
+    }
+```
+To specify these fields in pipeline config you can type `transaction/type` and `transaction/status` 
              
 
 ###Troubleshooting

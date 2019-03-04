@@ -2,20 +2,8 @@ import json
 import os
 
 from agent.logger import get_logger
-from agent.streamsets_api_client import api_client
 
 logger = get_logger(__name__)
-
-
-def get_previous_pipeline_config(label, stage=0):
-    recent_pipeline_config = {}
-    pipelines_with_source = api_client.get_pipelines(order_by='CREATED', order='DESC',
-                                                     label=label)
-    if len(pipelines_with_source) > 0:
-        recent_pipeline = api_client.get_pipeline(pipelines_with_source[0]['pipelineId'])
-        for conf in recent_pipeline['stages'][stage]['configuration']:
-            recent_pipeline_config[conf['name']] = conf['value']
-    return recent_pipeline_config
 
 
 class PipelineConfigHandler:
@@ -73,7 +61,10 @@ class PipelineConfigHandler:
         if 'optional' in self.client_config['dimensions']:
             dimensions = self.client_config['dimensions']['required'] + self.client_config['dimensions']['optional']
         for dim in dimensions:
-            rename_mapping.append({'fromFieldExpression': '/' + dim, 'toFieldExpression': '/properties/' + dim})
+            rename_mapping.append({
+                'fromFieldExpression': '/' + dim,
+                'toFieldExpression': '/properties/' + dim.replace('/', '_')
+            })
         return rename_mapping
 
     def rename_fields_for_anodot_protocol(self, stage):
