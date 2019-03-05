@@ -65,6 +65,16 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./test-datasets:/home
 
+  influx:
+    image: influxdb
+    ports:
+      - "8086:8086"
+    volumes:
+      - /var/lib/influxdb
+      - ./volumes/influx-initdb:/docker-entrypoint-initdb.d
+    environment:
+      INFLUXDB_DB: test
+
 volumes:
   sdc-data:
   agent-data:
