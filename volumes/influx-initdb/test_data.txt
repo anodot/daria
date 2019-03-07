@@ -1,6 +1,6 @@
-clicks,AdSize=Small,Country=USA,AdType=Display,ver=AD200,Exchange=DoubleClick value=6784.6904 1512867600000
-clicks,AdSize=Small,Country=USA,AdType=Display,ver=AD200,Exchange=DoubleClick value=6839 1512871200000
-clicks,AdSize=Small,Country=USA,AdType=Display,ver=AD200,Exchange=DoubleClick value=6909993404034934004 1512874800000
-clicks,AdSize=Small,Country=USA,AdType=Display,ver=AD200,Exchange=DoubleClick value=7158.97259827384293823434 1512878400000
-clicks,AdSize=Small,Country=USA,AdType=Display,ver=AD200,Exchange=DoubleClick value=7235.7574 1512882000000
-clicks,AdSize=Small,AdType=Display,ver=AD200,Exchange=DoubleClick value=7427.7744 1512889200000
+clicks,AdSize=Small,Country=USA,AdType=Display,ver=AD200,Exchange=DoubleClick value=6784.6904 1512867600000000000
+clicks,AdSize=Small,Country=USA,AdType=Display,ver=AD200,Exchange=DoubleClick value=6839 1512871200000000000
+clicks,AdSize=Small,Country=USA,AdType=Display,ver=AD200,Exchange=DoubleClick value=6909993404034934004 1512874800000000000
+clicks,AdSize=Small,Country=USA,AdType=Display,ver=AD200,Exchange=DoubleClick value=7158.97259827384293823434 1512878400000000000
+clicks,AdSize=Small,Country=USA,AdType=Display,ver=AD200,Exchange=DoubleClick value=7235.7574 1512882000000000000
+clicks,AdSize=Small,AdType=Display,ver=AD200,Exchange=DoubleClick value=7427.7744 1512889200000000000
