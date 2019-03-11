@@ -45,7 +45,7 @@ def source():
 @click.option('-a', '--advanced', is_flag=True)
 def create(advanced):
     config = dict(config={})
-    config['type'] = click.prompt('Choose source', type=click.Choice(sources_configs.keys()), default='mongo')
+    config['type'] = click.prompt('Choose source', type=click.Choice(sources_configs.keys()))
     config['name'] = click.prompt('Enter unique name for this source config', type=click.STRING)
 
     if os.path.isfile(os.path.join(DATA_DIR, config['name'] + '.json')):

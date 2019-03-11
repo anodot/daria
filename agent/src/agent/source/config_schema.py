@@ -1,6 +1,8 @@
 import click
 import re
 
+from urllib.parse import urlparse, parse_qs, urljoin
+
 
 def prompt_mongo_config(default_config, advanced=False):
     config = dict()
@@ -98,7 +100,25 @@ def prompt_kafka_config(default_config, advanced=False):
     return config
 
 
+def prompt_influx_config(default_config, advanced=False):
+    config = dict()
+    default_resource_url = default_config.get('conf.resourceUrl')
+    default_host = None
+    default_db = None
+    if default_resource_url:
+        url_parsed = urlparse(default_resource_url)
+        default_db = parse_qs(url_parsed.query).get('db')
+        url_parsed.path = ''
+        url_parsed.query = ''
+        default_host = url_parsed.get_url()
+    influx_host = click.prompt('InfluxDB API url', type=click.STRING, default=default_host)
+    db = click.prompt('Database', type=click.STRING, default=default_db)
+    config['conf.resourceUrl'] = urljoin(influx_host, f'/query?db={db}&epoch=s')
+    return config
+
+
 sources_configs = {
     'mongo': prompt_mongo_config,
-    'kafka': prompt_kafka_config
+    'kafka': prompt_kafka_config,
+    'influx': prompt_influx_config
 }
