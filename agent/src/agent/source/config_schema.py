@@ -105,15 +105,28 @@ def prompt_influx_config(default_config, advanced=False):
     default_resource_url = default_config.get('conf.resourceUrl')
     default_host = None
     default_db = None
+    default_limit = None
     if default_resource_url:
         url_parsed = urlparse(default_resource_url)
-        default_db = parse_qs(url_parsed.query).get('db')
+        parsed_query = parse_qs(url_parsed.query)
+        default_db = parsed_query.get('db')
+        default_limit = re.search(r'LIMIT\+([0-9]+)\+OFFSET', parsed_query.get('q', '')).group(1)
         url_parsed.path = ''
         url_parsed.query = ''
         default_host = url_parsed.get_url()
     influx_host = click.prompt('InfluxDB API url', type=click.STRING, default=default_host)
     db = click.prompt('Database', type=click.STRING, default=default_db)
-    config['conf.resourceUrl'] = urljoin(influx_host, f'/query?db={db}&epoch=s')
+    limit = click.prompt('Limit', type=click.INT, default=default_limit)
+    query = '/query?db={db}&epoch=s&q=SELECT+{dimensions}+FROM+{metric}+LIMIT+{limit}+OFFSET+${startAt}'.format(**{
+        'db': db,
+        'limit': limit,
+        'dimensions': '{dimensions}',
+        'metric': '{metric}',
+        'startAt': '{startAt}',
+    })
+    config['conf.resourceUrl'] = urljoin(influx_host, query)
+    config['conf.pagination.startAt'] = click.prompt('Initial offset', type=click.INT,
+                                                     default=default_config.get('conf.pagination.startAt'))
     return config
 
 
