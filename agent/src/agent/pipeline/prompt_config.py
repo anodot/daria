@@ -73,7 +73,28 @@ class PromptConfigKafka(PromptConfig):
             super().set_timestamp()
 
 
+class PromptConfigInflux(PromptConfig):
+    def set_timestamp(self):
+        pass
+
+    def set_value(self):
+        self.config['value'] = self.default_config.get('value', {})
+        if self.advanced or self.config['value'].get('type') == 'constant':
+            self.config['value']['value'] = click.prompt('Value (column name or constant value)', type=click.STRING,
+                                                         default=self.config['value'].get('value'))
+            self.config['value']['type'] = click.prompt('Value type', type=click.Choice(['column', 'constant']),
+                                                        default=self.config['value'].get('type'))
+        else:
+            self.config['value']['type'] = 'column'
+            default_names = self.config['value'].get('value')
+            if default_names:
+                default_names = ' '.join(default_names)
+            self.config['value']['value'] = click.prompt('Value columns names', type=click.STRING,
+                                                         default=default_names).split()
+
+
 pipeline_configs = {
     'mongo': PromptConfigMongo,
-    'kafka': PromptConfigKafka
+    'kafka': PromptConfigKafka,
+    'influx': PromptConfigInflux,
 }
