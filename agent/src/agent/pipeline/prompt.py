@@ -91,10 +91,3 @@ class PromptConfigInflux(PromptConfig):
                 default_names = ' '.join(default_names)
             self.config['value']['value'] = click.prompt('Value columns names', type=click.STRING,
                                                          default=default_names).split()
-
-
-pipeline_configs = {
-    'mongo': PromptConfigMongo,
-    'kafka': PromptConfigKafka,
-    'influx': PromptConfigInflux,
-}

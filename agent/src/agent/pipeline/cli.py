@@ -5,8 +5,7 @@ import random
 import time
 import urllib.parse
 
-from .config_handler import PipelineConfigHandler
-from .prompt_config import pipeline_configs
+from .config import pipeline_configs
 from ..source.cli import get_configs_list as list_sources, DATA_DIR as SOURCES_DIR
 from ..streamsets_api_client import api_client, StreamSetsApiClientException
 from datetime import datetime
@@ -104,9 +103,10 @@ def create(advanced):
 
     pipeline_config['pipeline_id'] = click.prompt('Pipeline ID (must be unique)', type=click.STRING)
 
-    pipeline_config.update(pipeline_configs[pipeline_config['source']['type']](pipeline_config, advanced).config)
+    pipeline_c = pipeline_configs[pipeline_config['source']['type']]
+    pipeline_config.update(pipeline_c.prompt(pipeline_config, advanced))
 
-    config_handler = PipelineConfigHandler(pipeline_config)
+    config_handler = pipeline_c.get_config_handler(pipeline_config)
 
     try:
         pipeline_obj = api_client.create_pipeline(pipeline_config['pipeline_id'])
@@ -140,11 +140,12 @@ def edit(pipeline_id, advanced):
     if pipeline_config['destination']['type'] == 'http':
         pipeline_config['destination'] = get_http_destination()
 
-    pipeline_config.update(pipeline_configs[pipeline_config['source']['type']](pipeline_config, advanced).config)
+    pipeline_c = pipeline_configs[pipeline_config['source']['type']]
+    pipeline_config.update(pipeline_c.prompt(pipeline_config, advanced))
 
     pipeline_obj = api_client.get_pipeline(pipeline_config['pipeline_id'])
 
-    config_handler = PipelineConfigHandler(pipeline_config, pipeline_obj)
+    config_handler = pipeline_c.get_config_handler(pipeline_config, pipeline_obj)
     new_config = config_handler.override_base_config()
 
     try:
