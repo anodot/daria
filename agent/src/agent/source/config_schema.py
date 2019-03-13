@@ -105,7 +105,7 @@ def prompt_influx_config(default_config, advanced=False):
     default_resource_url = default_config.get('conf.resourceUrl')
     default_host = None
     default_db = None
-    default_limit = None
+    default_limit = 1000
     if default_resource_url:
         url_parsed = urlparse(default_resource_url)
         parsed_query = parse_qs(url_parsed.query)
@@ -126,7 +126,7 @@ def prompt_influx_config(default_config, advanced=False):
     })
     config['conf.resourceUrl'] = urljoin(influx_host, query)
     config['conf.pagination.startAt'] = click.prompt('Initial offset', type=click.INT,
-                                                     default=default_config.get('conf.pagination.startAt'))
+                                                     default=default_config.get('conf.pagination.startAt', 0))
     return config
 
 

@@ -2,10 +2,10 @@
   "pipelineConfig" : {
     "schemaVersion" : 6,
     "version" : 11,
-    "pipelineId" : "test0a2efc59-4b39-46dc-8f4b-aa23e57dcc56",
-    "title" : "test",
+    "pipelineId" : "influxdbhttp65136c88-47c7-49f9-a30c-5f9af51b70ed",
+    "title" : "influxdb_http",
     "description" : "",
-    "uuid" : "e6668ddf-69df-4ff9-81c3-ddf4ae7c04cb",
+    "uuid" : "d8b42746-c0d5-422c-8bdb-5e76cbba10bb",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -639,7 +639,7 @@
       "uiInfo" : {
         "description" : "",
         "label" : "JavaScript Evaluator 1",
-        "xPos" : 191.23468017578125,
+        "xPos" : 190.23468017578125,
         "yPos" : 139.8766098022461,
         "stageType" : "PROCESSOR"
       },
@@ -657,10 +657,10 @@
         "value" : "BATCH"
       }, {
         "name" : "initScript",
-        "value" : "/**\n * Available Objects:\n * \n *  state: a dict that is preserved between invocations of this script. \n *        Useful for caching bits of data e.g. counters and long-lived resources.\n *\n *  log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n *                               loglevel is any log4j level: e.g. info, error, warn, trace.\n *   sdcFunctions.getFieldNull(Record, 'field path'): Receive a constant defined above \n *                          to check if the field is typed field with value null\n *   sdcFunctions.createMap(boolean listMap): Create a map for use as a field in a record. \n *                          Pass true to this function to create a list map (ordered map)\n */"
+        "value" : "/**\n * Available Objects:\n * \n *  state: a dict that is preserved between invocations of this script. \n *        Useful for caching bits of data e.g. counters and long-lived resources.\n *\n *  log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n *                               loglevel is any log4j level: e.g. info, error, warn, trace.\n *   sdcFunctions.getFieldNull(Record, 'field path'): Receive a constant defined above \n *                          to check if the field is typed field with value null\n *   sdcFunctions.createMap(boolean listMap): Create a map for use as a field in a record. \n *                          Pass true to this function to create a list map (ordered map)\n */\n\n/*\nstate['MEASUREMENT_NAME'] = 'clicks';\nstate['REQUIRED_DIMENSIONS'] = ['AdType', 'Exchange'];\nstate['OPTIONAL_DIMENSIONS'] = ['ver', 'AdSize', 'Country'];\nstate['VALUES_COLUMNS'] = ['value'];\nstate['TARGET_TYPE'] = 'gauge';\nstate['VALUE_CONSTANT'] = 1\n*/\n\nstate['MEASUREMENT_NAME'] = '{measurement_name}';\nstate['REQUIRED_DIMENSIONS'] = {required_dimensions};\nstate['OPTIONAL_DIMENSIONS'] = {optional_dimensions};\nstate['VALUES_COLUMNS'] = {values};\nstate['TARGET_TYPE'] = '{target_type}';\nstate['VALUE_CONSTANT'] = {value_constant}"
       }, {
         "name" : "script",
-        "value" : "/**\n * Available constants: \n *   They are to assign a type to a field with a value null.\n *   NULL_BOOLEAN, NULL_CHAR, NULL_BYTE, NULL_SHORT, NULL_INTEGER, NULL_LONG\n *   NULL_FLOATNULL_DOUBLE, NULL_DATE, NULL_DATETIME, NULL_TIME, NULL_DECIMAL\n *   NULL_BYTE_ARRAY, NULL_STRING, NULL_LIST, NULL_MAP\n *\n * Available Objects:\n * \n *  records: an array of records to process, depending on the JavaScript processor\n *           processing mode it may have 1 record or all the records in the batch.\n *\n *  state: a dict that is preserved between invocations of this script. \n *        Useful for caching bits of data e.g. counters.\n *\n *  log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n *                               loglevel is any log4j level: e.g. info, error, warn, trace.\n *\n *  output.write(record): writes a record to processor output\n *\n *  error.write(record, message): sends a record to error\n *\n *  sdcFunctions.getFieldNull(Record, 'field path'): Receive a constant defined above\n *                            to check if the field is typed field with value null\n *  sdcFunctions.createRecord(String recordId): Creates a new record.\n *                            Pass a recordId to uniquely identify the record and include enough information to track down the record source. \n *  sdcFunctions.createMap(boolean listMap): Create a map for use as a field in a record.\n *                            Pass true to this function to create a list map (ordered map)\n *\n *  sdcFunctions.createEvent(String type, int version): Creates a new event.\n *                            Create new empty event with standard headers.\n *  sdcFunctions.toEvent(Record): Send event to event stream\n *                            Only events created with sdcFunctions.createEvent are supported.\n *  sdcFunctions.isPreview(): Determine if pipeline is in preview mode.\n *\n * Available Record Header Variables:n *\n *  record.attributes: a map of record header attributes.\n *\n *  record.<header name>: get the value of 'header name'.\n */\n\n// Sample JavaScript code\nvar MEASUREMENT_NAME = 'clicks';\nvar REQUIRED_DIMENSIONS = ['AdType', 'Exchange'];\nvar OPTIONAL_DIMENSIONS = ['ver', 'AdSize', 'Country'];\nvar VALUES_COLUMNS = ['value'];\nvar TARGET_TYPE = 'gauge';\n\nfor(var i = 0; i < records.length; i++) {\n  try {\n    // Change record root field value to a STRING value\n    //records[i].value = 'Hello ' + i;\n\n\n    // Change record root field value to a MAP value and create an entry\n    //records[i].value = { V : 'Hello' };\n\n    // Access a MAP entry\n    //records[i].value.X = records[i].value['V'] + ' World';\n\n    // Modify a MAP entry\n    //records[i].value.V = 5;\n\n    // Create an ARRAY entry\n    //records[i].value.A = ['Element 1', 'Element 2'];\n\n    // Access a Array entry\n    //records[i].value.B = records[i].value['A'][0];\n\n    // Modify an existing ARRAY entry\n    //records[i].value.A[0] = 100;\n\n    // Assign a integer type to a field and value null\n    // records[i].value.null_int = NULL_INTEGER \n\n    // Check if the field is NULL_INTEGER. If so, assign a value \n    // if(sdcFunctions.getFieldNull(records[i], '/null_int') == NULL_INTEGER)\n    //    records[i].value.null_int = 123\n\n    // Create a new record with map field \n    var properties = {}\n    for (var j = 0; j < REQUIRED_DIMENSIONS.length; j++) {\n      properties[REQUIRED_DIMENSIONS[j]] = records[i].value[REQUIRED_DIMENSIONS[j]]\n    }\n    for (var j = 0; j < OPTIONAL_DIMENSIONS.length; j++) {\n      if (records[i].value[OPTIONAL_DIMENSIONS[j]] !== null) {\n        properties[OPTIONAL_DIMENSIONS[j]] = records[i].value[OPTIONAL_DIMENSIONS[j]]\n      }\n    }\n    if (VALUES_COLUMNS.length == 0) {\n      var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + i);\n      properties['what'] = properties['what'] = VALUES_COLUMNS[j];;\n      newRecord.value = {'timestamp' : records[i].value['time'], 'properties' : properties, 'value': 1};\n      output.write(newRecord);\n    }\n    \n    for (var j = 0; j < VALUES_COLUMNS.length; j++) {\n      var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + i);\n      if (MEASUREMENT_NAME !== null) {\n        if (VALUES_COLUMNS.length > 1) { \n          properties['measure'] = MEASUREMENT_NAME\n        } else {\n          properties['what'] = MEASUREMENT_NAME;\n        }\n      } else {\n        properties['what'] = VALUES_COLUMNS[j];\n      }\n      \n      newRecord.value = {'timestamp' : records[i].value['time'],\n                         'properties' : properties,\n                         'value': records[i].value[VALUES_COLUMNS[j]]};\n      output.write(newRecord);\n    }\n    \n    \n    // Create a new map and add it to the original record\n    // var newMap = sdcFunctions.createMap(true);\n    // newMap['key'] = 'value';\n    // records[i].value['b'] = newMap;\n\n    //Applies if the source uses WHOLE_FILE as data format\n    //var input_stream = record.value['fileRef'].getInputStream();\n    //try {\n      //input_stream.read(); //Process the input stream\n    //} finally{\n      //input_stream.close()\n    //}\n\n    // Modify a header attribute entry\n    // records[i].attributes['name'] = records[i].attributes['first_name'] + ' ' + records[i].attributes['last_name']    //\n\n    // Get a record header with field names ex. get sourceId and errorCode\n    // var sourceId = records[i].sourceId\n    // var errorCode = ''\n    // if(records[i].errorCode) {\n    //     errorCode = records[i].errorCode\n    // }\n\n    // Write record to processor output\n    // output.write(records[i]);\n  } catch (e) {\n    // Send record to error\n    error.write(records[i], e);\n  }\n}"
+        "value" : "/**\n * Available constants: \n *   They are to assign a type to a field with a value null.\n *   NULL_BOOLEAN, NULL_CHAR, NULL_BYTE, NULL_SHORT, NULL_INTEGER, NULL_LONG\n *   NULL_FLOATNULL_DOUBLE, NULL_DATE, NULL_DATETIME, NULL_TIME, NULL_DECIMAL\n *   NULL_BYTE_ARRAY, NULL_STRING, NULL_LIST, NULL_MAP\n *\n * Available Objects:\n * \n *  records: an array of records to process, depending on the JavaScript processor\n *           processing mode it may have 1 record or all the records in the batch.\n *\n *  state: a dict that is preserved between invocations of this script. \n *        Useful for caching bits of data e.g. counters.\n *\n *  log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n *                               loglevel is any log4j level: e.g. info, error, warn, trace.\n *\n *  output.write(record): writes a record to processor output\n *\n *  error.write(record, message): sends a record to error\n *\n *  sdcFunctions.getFieldNull(Record, 'field path'): Receive a constant defined above\n *                            to check if the field is typed field with value null\n *  sdcFunctions.createRecord(String recordId): Creates a new record.\n *                            Pass a recordId to uniquely identify the record and include enough information to track down the record source. \n *  sdcFunctions.createMap(boolean listMap): Create a map for use as a field in a record.\n *                            Pass true to this function to create a list map (ordered map)\n *\n *  sdcFunctions.createEvent(String type, int version): Creates a new event.\n *                            Create new empty event with standard headers.\n *  sdcFunctions.toEvent(Record): Send event to event stream\n *                            Only events created with sdcFunctions.createEvent are supported.\n *  sdcFunctions.isPreview(): Determine if pipeline is in preview mode.\n *\n * Available Record Header Variables:n *\n *  record.attributes: a map of record header attributes.\n *\n *  record.<header name>: get the value of 'header name'.\n */\n\n// Sample JavaScript code\n\n\nfor(var i = 0; i < records.length; i++) {\n  try {\n    // Change record root field value to a STRING value\n    //records[i].value = 'Hello ' + i;\n\n\n    // Change record root field value to a MAP value and create an entry\n    //records[i].value = { V : 'Hello' };\n\n    // Access a MAP entry\n    //records[i].value.X = records[i].value['V'] + ' World';\n\n    // Modify a MAP entry\n    //records[i].value.V = 5;\n\n    // Create an ARRAY entry\n    //records[i].value.A = ['Element 1', 'Element 2'];\n\n    // Access a Array entry\n    //records[i].value.B = records[i].value['A'][0];\n\n    // Modify an existing ARRAY entry\n    //records[i].value.A[0] = 100;\n\n    // Assign a integer type to a field and value null\n    // records[i].value.null_int = NULL_INTEGER \n\n    // Check if the field is NULL_INTEGER. If so, assign a value \n    // if(sdcFunctions.getFieldNull(records[i], '/null_int') == NULL_INTEGER)\n    //    records[i].value.null_int = 123\n\n    // Create a new record with map field \n    var properties = {'target_type': state['TARGET_TYPE']}\n    for (var j = 0; j < state['REQUIRED_DIMENSIONS'].length; j++) {\n      properties[state['REQUIRED_DIMENSIONS'][j]] = records[i].value[state['REQUIRED_DIMENSIONS'][j]]\n    }\n    for (var j = 0; j < state['OPTIONAL_DIMENSIONS'].length; j++) {\n      if (records[i].value[state['OPTIONAL_DIMENSIONS'][j]] !== null) {\n        properties[state['OPTIONAL_DIMENSIONS'][j]] = records[i].value[state['OPTIONAL_DIMENSIONS'][j]]\n      }\n    }\n    if (state['VALUES_COLUMNS'].length == 0) {\n      var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + i);\n      properties['what'] = properties['what'] = state['VALUES_COLUMNS'][j];;\n      newRecord.value = {'timestamp' : records[i].value['time'],\n                         'properties' : properties,\n                         'value': state['VALUE_CONSTANT']};\n      output.write(newRecord);\n    }\n    \n    for (var j = 0; j < state['VALUES_COLUMNS'].length; j++) {\n      var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + i);\n      if (state['MEASUREMENT_NAME'] !== null) {\n        if (state['VALUES_COLUMNS'].length > 1) { \n          properties['measure'] = state['MEASUREMENT_NAME']\n        } else {\n          properties['what'] = state['MEASUREMENT_NAME'];\n        }\n      } else {\n        properties['what'] = state['VALUES_COLUMNS'][j];\n      }\n      \n      newRecord.value = {'timestamp' : records[i].value['time'],\n                         'properties' : properties,\n                         'value': records[i].value[state['VALUES_COLUMNS'][j]]};\n      output.write(newRecord);\n    }\n    \n    \n    // Create a new map and add it to the original record\n    // var newMap = sdcFunctions.createMap(true);\n    // newMap['key'] = 'value';\n    // records[i].value['b'] = newMap;\n\n    //Applies if the source uses WHOLE_FILE as data format\n    //var input_stream = record.value['fileRef'].getInputStream();\n    //try {\n      //input_stream.read(); //Process the input stream\n    //} finally{\n      //input_stream.close()\n    //}\n\n    // Modify a header attribute entry\n    // records[i].attributes['name'] = records[i].attributes['first_name'] + ' ' + records[i].attributes['last_name']    //\n\n    // Get a record header with field names ex. get sourceId and errorCode\n    // var sourceId = records[i].sourceId\n    // var errorCode = ''\n    // if(records[i].errorCode) {\n    //     errorCode = records[i].errorCode\n    // }\n\n    // Write record to processor output\n    // output.write(records[i]);\n  } catch (e) {\n    // Send record to error\n    error.write(records[i], e);\n  }\n}"
       }, {
         "name" : "destroyScript",
         "value" : "/**\n * Available Objects:\n * \n *  state: a dict that is preserved between invocations of this script. \n *        Useful for caching bits of data e.g. counters and long-lived resources.\n *\n *  log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n *                               loglevel is any log4j level: e.g. info, error, warn, trace.\n *   sdcFunctions.getFieldNull(Record, 'field path'): Receive a constant defined above \n *                          to check if the field is typed field with value null\n *   sdcFunctions.createMap(boolean listMap): Create a map for use as a field in a record. \n *                          Pass true to this function to create a list map (ordered map)\n *   sdcFunctions.createEvent(String type, int version): Creates a new event.\n *                          Create new empty event with standard headers.\n *   sdcFunctions.toEvent(Record): Send event to event stream\n *                          Only events created with sdcFunctions.createEvent are supported.\n */\n\n// state['connection'].close();"
@@ -677,8 +677,8 @@
       "uiInfo" : {
         "description" : "",
         "label" : "JavaScript Evaluator 2",
-        "xPos" : 388.6939392089844,
-        "yPos" : 138.54216766357422,
+        "xPos" : 386.6939392089844,
+        "yPos" : 137.54216766357422,
         "stageType" : "PROCESSOR"
       },
       "inputLanes" : [ "JavaScriptEvaluator_01OutputLane15518645609860" ],
@@ -1016,22 +1016,22 @@
       "services" : [ ]
     },
     "info" : {
-      "pipelineId" : "test0a2efc59-4b39-46dc-8f4b-aa23e57dcc56",
-      "title" : "test",
+      "pipelineId" : "influxdbhttp65136c88-47c7-49f9-a30c-5f9af51b70ed",
+      "title" : "influxdb_http",
       "description" : "",
-      "created" : 1551793093509,
-      "lastModified" : 1551881357477,
+      "created" : 1552475781997,
+      "lastModified" : 1552478937101,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "e6668ddf-69df-4ff9-81c3-ddf4ae7c04cb",
+      "uuid" : "d8b42746-c0d5-422c-8bdb-5e76cbba10bb",
       "valid" : true,
       "metadata" : {
         "labels" : [ "mongo", "http" ]
       },
-      "name" : "test0a2efc59-4b39-46dc-8f4b-aa23e57dcc56",
+      "name" : "influxdbhttp65136c88-47c7-49f9-a30c-5f9af51b70ed",
       "sdcVersion" : "3.7.2",
-      "sdcId" : "743a2da7-3a82-11e9-a190-9f270d0e9fe0"
+      "sdcId" : "fb92fe3a-4577-11e9-a5ab-45a19500c522"
     },
     "metadata" : {
       "labels" : [ "mongo", "http" ]
@@ -1327,8 +1327,8 @@
     },
     "valid" : true,
     "issues" : {
-      "issueCount" : 0,
       "stageIssues" : { },
+      "issueCount" : 0,
       "pipelineIssues" : [ ]
     },
     "previewable" : true
@@ -1394,7 +1394,7 @@
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "a4c3567b-5519-4cf7-b172-6627665df43b",
+    "uuid" : "b6912f9c-0ee2-4807-a3eb-10757582ac9b",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : [ ]

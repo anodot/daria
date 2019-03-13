@@ -29,9 +29,38 @@ class BaseConfigHandler(ABC):
                 self.rules = data['pipelineRules']
 
     @abstractmethod
-    def override_base_config(self, new_uuid=None, new_pipeline_title=None):
+    def override_stages(self):
         ...
 
-    @abstractmethod
+    def override_base_config(self, new_uuid=None, new_pipeline_title=None):
+        if new_uuid:
+            self.config['uuid'] = new_uuid
+        if new_pipeline_title:
+            self.config['title'] = new_pipeline_title
+
+        self.override_stages()
+
+        self.config['metadata']['labels'] = [self.client_config['source']['type'],
+                                             self.client_config['destination']['type']]
+
+        return self.config
+
     def override_base_rules(self, new_uuid):
-        ...
+        self.rules['uuid'] = new_uuid
+        return self.rules
+
+    def update_source_configs(self):
+        for conf in self.config['stages'][0]['configuration']:
+            if conf['name'] in self.client_config['source']['config']:
+                conf['value'] = self.client_config['source']['config'][conf['name']]
+
+    def get_dimensions(self):
+        dimensions = self.client_config['dimensions']['required']
+        if 'optional' in self.client_config['dimensions']:
+            dimensions = self.client_config['dimensions']['required'] + self.client_config['dimensions']['optional']
+        return dimensions
+
+    def update_destination_config(self):
+        for conf in self.config['stages'][-1]['configuration']:
+            if conf['name'] in self.client_config['destination']['config']:
+                conf['value'] = self.client_config['destination']['config'][conf['name']]
