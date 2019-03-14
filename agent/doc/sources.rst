@@ -1,0 +1,24 @@
+Sources configs
+===============
+- **Mongodb**
+    - *Connection string* - database connection string e.g. :code:`mongodb://mongo:27017`
+    - *Username*
+    - *Password*
+    - *Authentication Source* - for delegated authentication, specify alternate database name. Leave blank for normal authentication
+    - *Database*
+    - *Collection*
+    - *Is collection capped*
+    - *Initial offset* - Date or id from witch to pull data from
+    - *Offset type* - :code:`OBJECTID`, :code:`STRING` or  :code:`DATE`
+    - *Offset field*
+    - *Batch size* - how many records to send to further pipeline stages
+    - *Max batch wait time (seconds)* - how many time to wait until batch will reach it's size
+- **Kafka** - currently only JSON data format supported
+    - *Kafka broker url*
+    - *Zookeeper url*
+    - *Consumer group* - default "anodotAgent"
+    - *Topic* - Kafka topic
+    - *Initial offset* - values: EARLIEST, LATEST, TIMESTAMP
+    - *Offset timestamp (unix timestamp in milliseconds)* - if initial offset is TIMESTAMP then specify it here
+    - (advanced) *Max Batch Size (records)* - how many records to send to further pipeline stages
+    - (advanced) *Batch Wait Time (ms)* - how many time to wait until batch will reach it's size

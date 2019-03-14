@@ -17,7 +17,7 @@ def get_previous_pipeline_config(label, stage=0):
     return recent_pipeline_config
 
 
-DATA_DIR = os.path.join(os.environ['DATA_DIR'], 'sources')
+DATA_DIR = os.path.join(os.environ.get('DATA_DIR', 'data'), 'sources')
 
 
 def get_configs(ctx, args, incomplete):
@@ -38,12 +38,18 @@ def get_configs_list():
 
 @click.group()
 def source():
+    """
+    Data sources management
+    """
     pass
 
 
 @click.command()
 @click.option('-a', '--advanced', is_flag=True)
 def create(advanced):
+    """
+    Create source
+    """
     config = dict(config={})
     config['type'] = click.prompt('Choose source', type=click.Choice(sources_configs.keys()), default='mongo')
     config['name'] = click.prompt('Enter unique name for this source config', type=click.STRING)
@@ -64,7 +70,9 @@ def create(advanced):
 @click.argument('name', autocompletion=get_configs)
 @click.option('-a', '--advanced', is_flag=True)
 def edit(name, advanced):
-
+    """
+    Edit source
+    """
     with open(os.path.join(DATA_DIR, name + '.json'), 'r') as f:
         config = json.load(f)
 
@@ -78,6 +86,9 @@ def edit(name, advanced):
 
 @click.command(name='list')
 def list_configs():
+    """
+    List all sources
+    """
     for config in get_configs_list():
         click.echo(config)
 
@@ -85,6 +96,9 @@ def list_configs():
 @click.command()
 @click.argument('name', autocompletion=get_configs)
 def delete(name):
+    """
+    Delete source
+    """
     file_path = os.path.join(DATA_DIR, name + '.json')
     if os.path.exists(file_path):
         os.remove(file_path)

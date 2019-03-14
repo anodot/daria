@@ -13,8 +13,8 @@ from datetime import datetime
 from pymongo import MongoClient
 from texttable import Texttable
 
-DATA_DIR = os.path.join(os.environ['DATA_DIR'], 'pipelines')
-TOKEN_FILE = os.path.join(os.environ['DATA_DIR'], 'anodot-token')
+DATA_DIR = os.path.join(os.environ.get('DATA_DIR', 'data'), 'pipelines')
+TOKEN_FILE = os.path.join(os.environ.get('DATA_DIR', 'data'), 'anodot-token')
 
 SDC_DATA_PATH = os.environ.get('SDC_DATA_PATH', '/sdc-data')
 SDC_RESULTS_PATH = os.path.join(SDC_DATA_PATH, 'out')
@@ -82,6 +82,9 @@ def get_http_destination():
 @click.command()
 @click.option('-a', '--advanced', is_flag=True)
 def create(advanced):
+    """
+    Create pipeline
+    """
     sources = list_sources()
     if len(sources) == 0:
         raise click.ClickException('No sources configs found. Use "agent source create"')
@@ -131,6 +134,9 @@ def create(advanced):
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
 @click.option('-a', '--advanced', is_flag=True)
 def edit(pipeline_id, advanced):
+    """
+    Edit pipeline
+    """
     with open(os.path.join(DATA_DIR, pipeline_id + '.json'), 'r') as f:
         pipeline_config = json.load(f)
 
@@ -161,6 +167,9 @@ def edit(pipeline_id, advanced):
 
 @click.command(name='list')
 def list_pipelines():
+    """
+    List all pipelines
+    """
     pipelines = api_client.get_pipelines()
     pipelines_status = api_client.get_pipelines_status()
 
@@ -175,6 +184,9 @@ def list_pipelines():
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
 def start(pipeline_id):
+    """
+    Start pipeline
+    """
     try:
         api_client.start_pipeline(pipeline_id)
     except StreamSetsApiClientException as e:
@@ -186,6 +198,9 @@ def start(pipeline_id):
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
 def stop(pipeline_id):
+    """
+    Stop pipeline
+    """
     try:
         api_client.stop_pipeline(pipeline_id)
     except StreamSetsApiClientException as e:
@@ -197,6 +212,9 @@ def stop(pipeline_id):
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
 def delete(pipeline_id):
+    """
+    Delete pipeline
+    """
     try:
         api_client.delete_pipeline(pipeline_id)
         file_path = os.path.join(DATA_DIR, pipeline_id + '.json')
@@ -212,6 +230,9 @@ def delete(pipeline_id):
 @click.option('-l', '--lines', type=click.INT, default=10)
 @click.option('-s', '--severity', type=click.Choice(['INFO', 'ERROR']), default=None)
 def logs(pipeline_id, lines, severity):
+    """
+    Show pipeline logs
+    """
     try:
         res = api_client.get_pipeline_logs(pipeline_id, severity=severity)
     except StreamSetsApiClientException as e:
@@ -231,6 +252,9 @@ def logs(pipeline_id, lines, severity):
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
 @click.option('-l', '--lines', type=click.INT, default=10)
 def info(pipeline_id, lines):
+    """
+    Show pipeline status, errors if any, statistics about amount of records sent
+    """
     # status
     try:
         status = api_client.get_pipeline_status(pipeline_id)
@@ -284,6 +308,9 @@ def info(pipeline_id, lines):
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
 def reset(pipeline_id):
+    """
+    Reset pipeline's offset
+    """
     try:
         api_client.reset_pipeline(pipeline_id)
     except StreamSetsApiClientException as e:
@@ -295,6 +322,9 @@ def reset(pipeline_id):
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
 def dummy(pipeline_id):
+    """
+    Generate dummy data based on pipeline's config. (Works only for mongo - http pipelines)
+    """
     with open(os.path.join(DATA_DIR, pipeline_id + '.json'), 'r') as f:
         pipeline_config = json.load(f)
     if pipeline_config['timestamp']['type'] == 'string':
@@ -359,6 +389,9 @@ def dummy(pipeline_id):
 
 @click.group()
 def pipeline():
+    """
+    Pipelines management
+    """
     pass
 
 
