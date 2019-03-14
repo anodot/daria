@@ -12,6 +12,10 @@ def agent():
 
 @click.command()
 def token():
+    """
+    Add anodot API token
+    You can copy it from Settings > API tokens > Data Collection in your anodot account
+    """
     if os.path.isfile(TOKEN_FILE):
         if not click.confirm('Anodot token is already configures. Do you want to edit it?'):
             return
