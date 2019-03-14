@@ -393,7 +393,7 @@
         "value" : null
       }, {
         "name" : "conf.resourceUrl",
-        "value" : "http://influx:8086/query?db=test&epoch=s&q=SELECT+%2A+FROM+clicks+LIMIT+1000+OFFSET+${startAt}"
+        "value" : "http://influx:8086/query?db=test&epoch=s&q=SELECT+{dimensions}+FROM+{metric}+LIMIT+1000+OFFSET+${startAt}"
       }, {
         "name" : "conf.headers",
         "value" : [ ]
