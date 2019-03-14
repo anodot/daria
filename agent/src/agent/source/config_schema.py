@@ -110,7 +110,9 @@ def prompt_influx_config(default_config, advanced=False):
         url_parsed = urlparse(default_resource_url)
         parsed_query = parse_qs(url_parsed.query)
         default_db = parsed_query.get('db')
-        default_limit = re.search(r'LIMIT\+([0-9]+)\+OFFSET', parsed_query.get('q', '')).group(1)
+        default_limit_matches = re.search(r'LIMIT\+([0-9]+)\+OFFSET', parsed_query.get('q', ''))
+        if default_limit_matches:
+            default_limit = default_limit_matches.group(1)
         url_parsed.path = ''
         url_parsed.query = ''
         default_host = url_parsed.get_url()
