@@ -81,12 +81,12 @@ class PromptConfigInflux(PromptConfig):
         self.config['value'] = self.default_config.get('value', {'constant': 1, 'values': []})
         if self.advanced or self.config['value'].get('type') == 'constant':
             self.config['value']['constant'] = click.prompt('Value (column name or constant value)', type=click.STRING,
-                                                            default=self.config['value'].get('value'))
+                                                            default=self.config['value'].get('constant'))
             self.config['value']['type'] = click.prompt('Value type', type=click.Choice(['column', 'constant']),
                                                         default=self.config['value'].get('type'))
         else:
             self.config['value']['type'] = 'column'
-            default_names = self.config['value'].get('value')
+            default_names = self.config['value'].get('values')
             if default_names:
                 default_names = ' '.join(default_names)
             self.config['value']['values'] = click.prompt('Value columns names', type=click.STRING,
