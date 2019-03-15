@@ -72,7 +72,8 @@ or some issues connecting to destination etc. You can look for errors in three l
 .. toctree::
    :caption: Table of Contents
 
-   sources
-   pipelines
+   mongodb
+   kafka
+   influxdb
    agent
 

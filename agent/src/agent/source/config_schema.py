@@ -131,6 +131,8 @@ def prompt_influx_config(default_config, advanced=False):
     config['conf.resourceUrl'] = urljoin(influx_host, query)
     config['conf.pagination.startAt'] = click.prompt('Initial offset', type=click.INT,
                                                      default=default_config.get('conf.pagination.startAt', 0))
+    config['conf.pagination.rateLimit'] = click.prompt('Wait time, ms', type=click.INT,
+                                                     default=default_config.get('conf.pagination.rateLimit', 2000))
     return config
 
 
