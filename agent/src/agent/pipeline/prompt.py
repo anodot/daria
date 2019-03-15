@@ -90,3 +90,24 @@ class PromptConfigInflux(PromptConfig):
             default_names = ' '.join(default_names) if len(default_names) > 0 else None
             self.config['value']['values'] = click.prompt('Value columns names', type=click.STRING,
                                                           default=default_names).split()
+
+    def set_dimensions(self):
+        self.config['dimensions'] = self.default_config.get('dimensions', {})
+        required = self.config['dimensions'].get('required', [])
+        if self.advanced or len(required) > 0:
+            self.config['dimensions']['required'] = click.prompt('Required dimensions',
+                                                                 type=click.STRING,
+                                                                 value_proc=lambda x: x.split(),
+                                                                 default=required)
+            self.config['dimensions']['optional'] = click.prompt('Optional dimensions',
+                                                                 type=click.STRING,
+                                                                 value_proc=lambda x: x.split(),
+                                                                 default=self.config['dimensions'].get('optional',
+                                                                                                       []))
+        else:
+            self.config['dimensions']['required'] = required
+            self.config['dimensions']['optional'] = click.prompt('Dimensions',
+                                                                 type=click.STRING,
+                                                                 value_proc=lambda x: x.split(),
+                                                                 default=self.config['dimensions'].get('optional',
+                                                                                                       []))
