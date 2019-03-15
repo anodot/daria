@@ -6,9 +6,10 @@ logger = get_logger(__name__)
 
 class InfluxConfigHandler(BaseConfigHandler):
     def override_stages(self):
+        dimensions = self.get_dimensions()
         source_config = self.client_config['source']['config']
         source_config['conf.resourceUrl'] = source_config['conf.resourceUrl'].format(
-            dimensions=','.join(self.get_dimensions() + self.client_config['value']['values']),
+            dimensions=','.join(dimensions + self.client_config['value']['values']),
             metric=self.client_config['measurement_name'],
             startAt='{startAt}'
         )
@@ -31,5 +32,11 @@ class InfluxConfigHandler(BaseConfigHandler):
                         target_type=self.client_config['target_type'],
                         value_constant=self.client_config['value']['constant']
                     )
+
+                if conf['name'] == 'stageRecordPreconditions':
+                    for d in dimensions:
+                        conf['value'].append(f"${{record:type('/{d}') == 'STRING'}}")
+                    for v in self.client_config['value']['values']:
+                        conf['value'].append(f"${{record:type('/{v}') != 'STRING'}}")
 
         self.update_destination_config()
