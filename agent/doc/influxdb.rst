@@ -10,6 +10,19 @@ Source config
 - *Initial offset* - integer, default 0
 - *Wait time* - integer, ms, default 2000
 
+**Example**:
+
+.. code-block:: console
+
+    > agent source create
+    Choose source (mongo, kafka, influx): influx
+    Enter unique name for this source config: influx_source
+    InfluxDB API url: http://influx:8086
+    Database: test
+    Limit [1000]:
+    Initial offset [0]:
+    Wait time, ms [2000]:
+    Source config created
 
 
 Pipeline config
@@ -32,3 +45,29 @@ Pipeline config
 
 Pipeline forms a query :code:`SELECT {dimensions},{values} FROM {measurement} LIMIT {limit} OFFSET {offset}`.
 When query result is empty, it waits :code:`Wait time` and makes query again.
+
+**Example**:
+
+.. code-block:: console
+
+    > agent pipeline create
+    Choose source config (influx_source) [influx_source]:
+    Choose destination (http) [http]:
+    Pipeline ID (must be unique): influx_cpu
+    Measurement name: cpu
+    Value columns names: usage_active usage_idle
+    Target type (counter, gauge) [gauge]:
+    Dimensions: cpu host zone
+    Created pipeline influx_cpu
+    >
+    > agent pipeline create -a
+    Choose source config (influx_source) [influx_source]:
+    Choose destination (http) [http]:
+    Pipeline ID (must be unique): influx_cpu
+    Measurement name: cpu
+    Value type (column, constant): constant
+    Value: 1
+    Target type (counter, gauge) [gauge]:
+    Required dimensions: cpu host
+    Optional dimensions: zone
+    Created pipeline influx_cpu
