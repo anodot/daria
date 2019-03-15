@@ -110,14 +110,16 @@ def prompt_influx_config(default_config, advanced=False):
         url_parsed = urlparse(default_resource_url)
         parsed_query = parse_qs(url_parsed.query)
         default_db = parsed_query.get('db')
-        default_limit_matches = re.search(r'LIMIT\+([0-9]+)\+OFFSET', parsed_query.get('q', ''))
-        if default_limit_matches:
-            default_limit = default_limit_matches.group(1)
-        url_parsed.path = ''
-        url_parsed.query = ''
-        default_host = url_parsed.get_url()
+        q = parsed_query.get('q')
+        if q:
+            default_limit_matches = re.search(r'LIMIT\+([0-9]+)\+OFFSET', q[0])
+            if default_limit_matches:
+                default_limit = default_limit_matches.group(1)
+        default_host = url_parsed.netloc
+        if url_parsed.scheme:
+            default_host = url_parsed.scheme + '://' + default_host
     influx_host = click.prompt('InfluxDB API url', type=click.STRING, default=default_host)
-    db = click.prompt('Database', type=click.STRING, default=default_db)
+    db = click.prompt('Database', type=click.STRING, default=default_db[0])
     limit = click.prompt('Limit', type=click.INT, default=default_limit)
     query = '/query?db={db}&epoch=s&q=SELECT+{dimensions}+FROM+{metric}+LIMIT+{limit}+OFFSET+${startAt}'.format(**{
         'db': db,

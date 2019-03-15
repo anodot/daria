@@ -87,7 +87,6 @@ class PromptConfigInflux(PromptConfig):
         else:
             self.config['value']['type'] = 'column'
             default_names = self.config['value'].get('values')
-            if default_names:
-                default_names = ' '.join(default_names)
+            default_names = ' '.join(default_names) if len(default_names) > 0 else None
             self.config['value']['values'] = click.prompt('Value columns names', type=click.STRING,
                                                           default=default_names).split()

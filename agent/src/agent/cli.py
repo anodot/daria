@@ -29,3 +29,7 @@ def token():
 agent.add_command(source)
 agent.add_command(pipeline)
 agent.add_command(token)
+
+
+if __name__ == '__main__':
+    agent()
