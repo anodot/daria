@@ -34,8 +34,10 @@ class InfluxConfigHandler(BaseConfigHandler):
                     )
 
                 if conf['name'] == 'stageRecordPreconditions':
-                    for d in dimensions:
+                    for d in self.client_config['dimensions']['required']:
                         conf['value'].append(f"${{record:type('/{d}') == 'STRING'}}")
+                    for d in self.client_config['dimensions']['optional']:
+                        conf['value'].append(f"${{record:type('/{d}') == 'STRING' or record:type('/{d}') == NULL}}")
                     for v in self.client_config['value']['values']:
                         conf['value'].append(f"${{record:type('/{v}') != 'STRING'}}")
 
