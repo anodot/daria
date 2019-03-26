@@ -1,36 +1,10 @@
-import json
-import os
-
+from .base import BaseConfigHandler
 from agent.logger import get_logger
 
 logger = get_logger(__name__)
 
 
-class PipelineConfigHandler:
-    """
-    Overrides base config file
-    """
-    PIPELINES_BASE_CONFIGS_PATH = 'pipelines/{source_name}_{destination_name}.json'
-
-    def __init__(self, client_config, base_config=None):
-        self.client_config = client_config
-
-        if base_config:
-            self.config = base_config
-        else:
-            base_path = self.PIPELINES_BASE_CONFIGS_PATH.format(**{
-                'source_name': client_config['source']['type'],
-                'destination_name': client_config['destination']['type']
-            })
-            with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), base_path), 'r') as f:
-                data = json.load(f)
-                self.config = data['pipelineConfig']
-                self.rules = data['pipelineRules']
-
-    def update_source_configs(self):
-        for conf in self.config['stages'][0]['configuration']:
-            if conf['name'] in self.client_config['source']['config']:
-                conf['value'] = self.client_config['source']['config'][conf['name']]
+class JsonConfigHandler(BaseConfigHandler):
 
     def update_properties(self, stage):
         for conf in stage['configuration']:
@@ -57,10 +31,7 @@ class PipelineConfigHandler:
             rename_mapping.append({'fromFieldExpression': '/' + self.client_config['timestamp']['name'],
                                    'toFieldExpression': '/timestamp'})
 
-        dimensions = self.client_config['dimensions']['required']
-        if 'optional' in self.client_config['dimensions']:
-            dimensions = self.client_config['dimensions']['required'] + self.client_config['dimensions']['optional']
-        for dim in dimensions:
+        for dim in self.get_dimensions():
             rename_mapping.append({
                 'fromFieldExpression': '/' + dim,
                 'toFieldExpression': '/properties/' + dim.replace('/', '_')
@@ -74,11 +45,6 @@ class PipelineConfigHandler:
 
             if conf['name'] == 'stageRequiredFields':
                 conf['value'] = ['/' + d for d in self.client_config['dimensions']['required']]
-
-    def update_destination_config(self):
-        for conf in self.config['stages'][-1]['configuration']:
-            if conf['name'] in self.client_config['destination']['config']:
-                conf['value'] = self.client_config['destination']['config'][conf['name']]
 
     def convert_timestamp_to_unix(self, stage):
         for conf in stage['configuration']:
@@ -99,12 +65,7 @@ class PipelineConfigHandler:
             conf['value'][0]['expression'] = '${' + expression + '}'
             return
 
-    def override_base_config(self, new_uuid=None, new_pipeline_title=None):
-        if new_uuid:
-            self.config['uuid'] = new_uuid
-        if new_pipeline_title:
-            self.config['title'] = new_pipeline_title
-
+    def override_stages(self):
         self.update_source_configs()
 
         for stage in self.config['stages']:
@@ -118,11 +79,3 @@ class PipelineConfigHandler:
                 self.convert_timestamp_to_unix(stage)
 
         self.update_destination_config()
-        self.config['metadata']['labels'] = [self.client_config['source']['type'],
-                                             self.client_config['destination']['type']]
-
-        return self.config
-
-    def override_base_rules(self, new_uuid):
-        self.rules['uuid'] = new_uuid
-        return self.rules

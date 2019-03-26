@@ -1,0 +1,6 @@
+cpu_test,cpu=cpu-total-usage,host=msk-air-trn5,zone=GEO usage_active=0.204,usage_idle=62.53,usage_iowait=0.391,usage_system=0.946,usage_user=0.624 1552654426147624000
+cpu_test,cpu=cpu-total-usage,host=msk-air-trn1,zone=GF usage_active=0.224,usage_idle=14.247,usage_iowait=0.339,usage_system=0.370,usage_user=0.977 1552654426174862000
+cpu_test,cpu=cpu-total-usage,host=msk-air-trn1,zone=GF usage_active=0.22432747346756736428783,usage_idle=14.247,usage_iowait=0.339,usage_system=0.370,usage_user=0.977 1552654426168997000
+cpu_test,cpu=cpu-total-usage,host=msk-air-trn1 usage_active=0.224,usage_idle=14.247,usage_iowait=0.339,usage_system=0.370,usage_user=0.977 1552654426168997000
+cpu_test,cpu=cpu-total-usage,host=msk-air-trn1,zone=GF usage_active=0.504,usage_idle=260404905034043049540,usage_iowait=0.539,usage_system=0.570,usage_user=0.577 1552654426172144000
+cpu_test,cpu=cpu-total-usage,host=msk-air-trn1,zone=GEO usage_active=0.504,usage_idle=26,usage_iowait=0.539,usage_system=0.570,usage_user=0.577 1552654426172144000

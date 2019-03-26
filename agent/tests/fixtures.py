@@ -12,14 +12,15 @@ def cli_runner():
 
     yield CliRunner()
 
-    api_client.delete_by_filtering('test_')
+    # api_client.delete_by_filtering('test_')
 
     for filename in os.listdir(pipeline_cli.SDC_DATA_PATH):
         if filename.startswith('error-test_'):
             os.remove(os.path.join(pipeline_cli.SDC_DATA_PATH, filename))
-    for filename in os.listdir(pipeline_cli.SDC_RESULTS_PATH):
-        if filename.startswith('sdc-test_'):
-            os.remove(os.path.join(pipeline_cli.SDC_RESULTS_PATH, filename))
+    # if os.path.isdir(pipeline_cli.SDC_RESULTS_PATH):
+    #     for filename in os.listdir(pipeline_cli.SDC_RESULTS_PATH):
+    #         if filename.startswith('sdc-test_'):
+    #             os.remove(os.path.join(pipeline_cli.SDC_RESULTS_PATH, filename))
 
     if os.path.isfile(pipeline_cli.TOKEN_FILE):
         os.remove(pipeline_cli.TOKEN_FILE)
@@ -29,6 +30,7 @@ def replace_destination(name):
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'test_pipelines/test_destination.json')) as f:
         test_destination = json.load(f)
     pipeline = api_client.get_pipeline(name)
+    test_destination['inputLanes'] = [pipeline['stages'][-2]['outputLanes'][0]]
     pipeline['stages'][-1] = test_destination
     api_client.update_pipeline(name, pipeline)
 

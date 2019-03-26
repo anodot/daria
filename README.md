@@ -15,7 +15,14 @@ docker attach anodot-agent
     
 ###Run tests
 1. Run `./setup_tests.sh`
-2. Run `pytest` command inside agent container.   
+2. Run `pytest` command inside agent container. 
+
+
+###Build docs
+```bash
+> cd agent/doc
+> make html
+```
     
 
 ###Troubleshooting

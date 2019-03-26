@@ -80,10 +80,10 @@ def test_stop(cli_runner, name):
 
 
 @pytest.mark.parametrize("name,expected_output_file", [
-    ('test_value_const', 'expected_output_value_const.json'),
-    ('test_timestamp_ms', 'expected_output_value_column.json'),
-    ('test_timestamp_string', 'expected_output_value_column.json'),
-    ('test_timestamp_datetime', 'expected_output_value_column.json'),
+    ('test_value_const', 'expected_output/json_value_const.json'),
+    ('test_timestamp_ms', 'expected_output/json_value_column.json'),
+    ('test_timestamp_string', 'expected_output/json_value_column.json'),
+    ('test_timestamp_datetime', 'expected_output/json_value_column.json'),
 ])
 def test_output(name, expected_output_file):
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), expected_output_file)) as f:

@@ -52,12 +52,12 @@ class PromptConfig:
                                                              type=click.STRING,
                                                              value_proc=lambda x: x.split(),
                                                              default=self.config['dimensions'].get('required',
-                                                                                                           []))
+                                                                                                   []))
         self.config['dimensions']['optional'] = click.prompt('Optional dimensions',
                                                              type=click.STRING,
                                                              value_proc=lambda x: x.split(),
                                                              default=self.config['dimensions'].get('optional',
-                                                                                                           []))
+                                                                                                   []))
 
 
 class PromptConfigMongo(PromptConfig):
@@ -73,7 +73,43 @@ class PromptConfigKafka(PromptConfig):
             super().set_timestamp()
 
 
-pipeline_configs = {
-    'mongo': PromptConfigMongo,
-    'kafka': PromptConfigKafka
-}
+class PromptConfigInflux(PromptConfig):
+    def set_timestamp(self):
+        pass
+
+    def set_value(self):
+        self.config['value'] = self.default_config.get('value', {'constant': 1, 'values': []})
+        if self.advanced or self.config['value'].get('type') == 'constant':
+            self.config['value']['constant'] = click.prompt('Value (column name or constant value)', type=click.INT,
+                                                            default=self.config['value'].get('constant'))
+            self.config['value']['type'] = click.prompt('Value type', type=click.Choice(['column', 'constant']),
+                                                        default=self.config['value'].get('type'))
+            self.config['value']['values'] = []
+        else:
+            self.config['value']['type'] = 'column'
+            default_names = self.config['value'].get('values')
+            default_names = ' '.join(default_names) if len(default_names) > 0 else None
+            self.config['value']['values'] = click.prompt('Value columns names', type=click.STRING,
+                                                          default=default_names).split()
+            self.config['value']['constant'] = 1
+
+    def set_dimensions(self):
+        self.config['dimensions'] = self.default_config.get('dimensions', {})
+        required = self.config['dimensions'].get('required', [])
+        if self.advanced or len(required) > 0:
+            self.config['dimensions']['required'] = click.prompt('Required dimensions',
+                                                                 type=click.STRING,
+                                                                 value_proc=lambda x: x.split(),
+                                                                 default=required)
+            self.config['dimensions']['optional'] = click.prompt('Optional dimensions',
+                                                                 type=click.STRING,
+                                                                 value_proc=lambda x: x.split(),
+                                                                 default=self.config['dimensions'].get('optional',
+                                                                                                       []))
+        else:
+            self.config['dimensions']['required'] = []
+            self.config['dimensions']['optional'] = click.prompt('Dimensions',
+                                                                 type=click.STRING,
+                                                                 value_proc=lambda x: x.split(),
+                                                                 default=self.config['dimensions'].get('optional',
+                                                                                                       []))

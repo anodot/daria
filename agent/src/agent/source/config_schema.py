@@ -1,6 +1,8 @@
 import click
 import re
 
+from urllib.parse import urlparse, parse_qs, urljoin
+
 
 def prompt_mongo_config(default_config, advanced=False):
     config = dict()
@@ -98,7 +100,46 @@ def prompt_kafka_config(default_config, advanced=False):
     return config
 
 
+def prompt_influx_config(default_config, advanced=False):
+    config = dict()
+    default_resource_url = default_config.get('conf.resourceUrl')
+    default_host = None
+    default_db = None
+    default_limit = 1000
+    if default_resource_url:
+        url_parsed = urlparse(default_resource_url)
+        parsed_query = parse_qs(url_parsed.query)
+        default_db = parsed_query.get('db')
+        if default_db:
+            default_db = default_db[0]
+        q = parsed_query.get('q')
+        if q:
+            default_limit_matches = re.search(r'LIMIT\+([0-9]+)\+OFFSET', q[0])
+            if default_limit_matches:
+                default_limit = default_limit_matches.group(1)
+        default_host = url_parsed.netloc
+        if url_parsed.scheme:
+            default_host = url_parsed.scheme + '://' + default_host
+    influx_host = click.prompt('InfluxDB API url', type=click.STRING, default=default_host)
+    db = click.prompt('Database', type=click.STRING, default=default_db)
+    limit = click.prompt('Limit', type=click.INT, default=default_limit)
+    query = '/query?db={db}&epoch=s&q=SELECT+{dimensions}+FROM+{metric}+LIMIT+{limit}+OFFSET+${startAt}'.format(**{
+        'db': db,
+        'limit': limit,
+        'dimensions': '{dimensions}',
+        'metric': '{metric}',
+        'startAt': '{startAt}',
+    })
+    config['conf.resourceUrl'] = urljoin(influx_host, query)
+    config['conf.pagination.startAt'] = click.prompt('Initial offset', type=click.INT,
+                                                     default=default_config.get('conf.pagination.startAt', 0))
+    config['conf.pagination.rateLimit'] = click.prompt('Wait time, ms', type=click.INT,
+                                                     default=default_config.get('conf.pagination.rateLimit', 2000))
+    return config
+
+
 sources_configs = {
     'mongo': prompt_mongo_config,
-    'kafka': prompt_kafka_config
+    'kafka': prompt_kafka_config,
+    'influx': prompt_influx_config
 }
