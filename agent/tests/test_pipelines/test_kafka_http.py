@@ -19,7 +19,7 @@ WAITING_TIME = 5
     'test_timestamp_string',
 ])
 def test_source_create(cli_runner, name):
-    result = cli_runner.invoke(source_cli.create, input=f"kafka\nkafka_{name}\nkafka:29092\nzookeeper:2181\nstreamsetsDC\n{name}\n\n")
+    result = cli_runner.invoke(source_cli.create, input=f"kafka\nkafka_{name}\nkafka:29092\nstreamsetsDC\n{name}\n\n")
     assert result.exit_code == 0
     assert os.path.isfile(os.path.join(source_cli.DATA_DIR, f'kafka_{name}.json'))
 

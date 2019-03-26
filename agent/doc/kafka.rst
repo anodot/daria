@@ -5,7 +5,6 @@ Kafka
 Source config
 -------------
 - *Kafka broker url*
-- *Zookeeper url*
 - *Consumer group* - default "anodotAgent"
 - *Topic* - Kafka topic
 - *Initial offset* - values: EARLIEST, LATEST, TIMESTAMP

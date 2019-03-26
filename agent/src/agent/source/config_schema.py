@@ -65,10 +65,6 @@ def prompt_kafka_config(default_config, advanced=False):
                                                                 type=click.STRING,
                                                                 default=default_config.get(
                                                                     'kafkaConfigBean.metadataBrokerList'))
-    config['kafkaConfigBean.zookeeperConnect'] = click.prompt('Zookeeper url',
-                                                              type=click.STRING,
-                                                              default=default_config.get(
-                                                                  'kafkaConfigBean.zookeeperConnect'))
     config['kafkaConfigBean.consumerGroup'] = click.prompt('Consumer group',
                                                            type=click.STRING,
                                                            default=default_config.get('kafkaConfigBean.consumerGroup',
