@@ -1,16 +1,17 @@
 Kafka
 =======================
 
+Supported versions: Kafka 2.0+
 
 Source config
 -------------
-- *Kafka broker url*
+- *Kafka broker connection string*
 - *Consumer group* - default "anodotAgent"
 - *Topic* - Kafka topic
 - *Initial offset* - values: EARLIEST, LATEST, TIMESTAMP
 - *Offset timestamp (unix timestamp in milliseconds)* - if initial offset is TIMESTAMP then specify it here
-- (advanced) *Max Batch Size (records)* - how many records to send to further pipeline stages
-- (advanced) *Batch Wait Time (ms)* - how many time to wait until batch will reach it's size
+- (advanced) *Max Batch Size (records)* - how many records to send to further pipeline stages. Default - 1000 records
+- (advanced) *Batch Wait Time (ms)* - how many time to wait until batch will reach it's size. Default - 1000 ms
 
 
 

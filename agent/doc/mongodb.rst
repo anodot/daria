@@ -1,6 +1,8 @@
 MongoDB
 =======================
 
+Supported versions: MongoDB 3.0+
+
 
 Source config
 -------------

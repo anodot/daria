@@ -61,7 +61,7 @@ def prompt_mongo_config(default_config, advanced=False):
 
 def prompt_kafka_config(default_config, advanced=False):
     config = dict()
-    config['kafkaConfigBean.metadataBrokerList'] = click.prompt('Kafka broker url',
+    config['kafkaConfigBean.metadataBrokerList'] = click.prompt('Kafka broker connection string',
                                                                 type=click.STRING,
                                                                 default=default_config.get(
                                                                     'kafkaConfigBean.metadataBrokerList'))
