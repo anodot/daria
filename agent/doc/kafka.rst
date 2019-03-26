@@ -21,22 +21,21 @@ Pipeline config
 - *Measurement name* - what do you measure (this will be the value of :code:`what` property in anodot 2.0 metric protocol)
 - Values config
     - Basic
-        - *Value* - enter column name
+        - *Value* - enter property name
     - Advanced
-        - *Value type* - column or constant
-        - *Value* - if type column - enter column name, if type constant - enter value
-- *Target type* - represents how samples of the same metric are aggregated in Anodot. Valid values are: :code:`gauge` (average aggregation), :code:`counter` (sum aggregation)
+        - *Value type* - property or constant
+        - *Value* - if type property - enter property name, if type constant - enter value
+- *Target type* - represents how samples of the same metric are aggregated in Anodot. Valid values are: :code:`gauge` (average aggregation), :code:`counter` (sum aggregation). Deafult - :code:`gauge`
 - Timestamp config
     - Use kafka timestamp or take it from data it
-    - *Timestamp column name*
-    - *Timestamp column type*
+    - *Timestamp property name*
+    - *Timestamp property type* :code:`unix`
         - :code:`string` (must specify format)
-        - :code:`datetime` (if column has database specific datetime type like `Date` in mongo)
         - :code:`unix_ms` (unix timestamp in milliseconds)
         - :code:`unix` (unix timestamp in seconds)
-    - *Timestamp format string* - if timestamp column type is string - specify format according to this [spec](https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html).
-- *Required dimensions* - Names of columns delimited with spaces. If these fields are missing in a record, it goes to error stage
-- *Optional dimensions* - Names of columns delimited with spaces. These fields may be missing in a record
+    - *Timestamp format string* - if timestamp property type is string - specify format according to this [spec](https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html).
+- *Required dimensions* - Names of properties delimited with spaces. If these fields are missing in a record, it goes to error stage
+- *Optional dimensions* - Names of properties delimited with spaces. These fields may be missing in a record
 
 If your JSON data has nested structure you can specify path to required field with :code:`/` sign. For example:
 

@@ -16,7 +16,7 @@ class JsonConfigHandler(BaseConfigHandler):
             if 'target_type' in self.client_config:
                 conf['value'][2]['expression'] = self.client_config['target_type']
 
-            if self.client_config['value']['type'] == 'column':
+            if self.client_config['value']['type'] == 'property':
                 expression = f"record:value('/{self.client_config['value']['value']}')"
                 conf['value'][3]['expression'] = '${' + expression + '}'
             else:

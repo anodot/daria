@@ -28,7 +28,7 @@ def test_source_edit(cli_runner):
 
 @pytest.mark.parametrize("name,options,value,timestamp,timestamp_type", [
     ('test_value_const', ['-a'], '2\nconstant', 'timestamp_unix', 'unix'),
-    ('test_timestamp_ms', [], 'Clicks\ncolumn', 'timestamp_unix_ms', 'unix_ms'),
+    ('test_timestamp_ms', [], 'Clicks\nproperty', 'timestamp_unix_ms', 'unix_ms'),
     ('test_timestamp_datetime', [], 'Clicks', 'timestamp_datetime', 'datetime'),
     ('test_timestamp_id', [], 'Clicks', '_id', 'unix'),
     ('test_timestamp_string', ['-a'], 'Clicks\nconstant', 'timestamp_string', 'string\nM/d/yyyy H:mm:ss'),
@@ -41,7 +41,7 @@ def test_create(cli_runner, name, options, value, timestamp, timestamp_type):
 
 @pytest.mark.parametrize("options,value", [
     (['test_value_const'], '1\n\n'),
-    (['test_timestamp_string', '-a'], 'Clicks\ncolumn'),
+    (['test_timestamp_string', '-a'], 'Clicks\nproperty'),
 ])
 def test_edit(cli_runner, options, value):
     result = cli_runner.invoke(pipeline_cli.edit, options, input=f"""\n{value}\n\n\n\n\n\n""")
@@ -81,9 +81,9 @@ def test_stop(cli_runner, name):
 
 @pytest.mark.parametrize("name,expected_output_file", [
     ('test_value_const', 'expected_output/json_value_const.json'),
-    ('test_timestamp_ms', 'expected_output/json_value_column.json'),
-    ('test_timestamp_string', 'expected_output/json_value_column.json'),
-    ('test_timestamp_datetime', 'expected_output/json_value_column.json'),
+    ('test_timestamp_ms', 'expected_output/json_value_property.json'),
+    ('test_timestamp_string', 'expected_output/json_value_property.json'),
+    ('test_timestamp_datetime', 'expected_output/json_value_property.json'),
 ])
 def test_output(name, expected_output_file):
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), expected_output_file)) as f:

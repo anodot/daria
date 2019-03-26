@@ -20,13 +20,13 @@ class PromptConfig:
     def set_value(self):
         self.config['value'] = self.default_config.get('value', {})
         if self.advanced or self.config['value'].get('type') == 'constant':
-            self.config['value']['value'] = click.prompt('Value (column name or constant value)', type=click.STRING,
+            self.config['value']['value'] = click.prompt('Value (property name or constant value)', type=click.STRING,
                                                          default=self.config['value'].get('value'))
-            self.config['value']['type'] = click.prompt('Value type', type=click.Choice(['column', 'constant']),
+            self.config['value']['type'] = click.prompt('Value type', type=click.Choice(['property', 'constant']),
                                                         default=self.config['value'].get('type'))
         else:
-            self.config['value']['type'] = 'column'
-            self.config['value']['value'] = click.prompt('Value column name', type=click.STRING,
+            self.config['value']['type'] = 'property'
+            self.config['value']['value'] = click.prompt('Value property name', type=click.STRING,
                                                          default=self.config['value'].get('value'))
 
     def set_target_type(self):
@@ -35,9 +35,9 @@ class PromptConfig:
 
     def set_timestamp(self):
         self.config['timestamp'] = self.default_config.get('timestamp', {})
-        self.config['timestamp']['name'] = click.prompt('Timestamp column name', type=click.STRING,
+        self.config['timestamp']['name'] = click.prompt('Timestamp property name', type=click.STRING,
                                                         default=self.config['timestamp'].get('name'))
-        self.config['timestamp']['type'] = click.prompt('Timestamp column type',
+        self.config['timestamp']['type'] = click.prompt('Timestamp property type',
                                                         type=click.Choice(
                                                             ['string', 'datetime', 'unix', 'unix_ms']),
                                                         default=self.config['timestamp'].get('type', 'unix'))
@@ -70,7 +70,16 @@ class PromptConfigKafka(PromptConfig):
         if click.confirm('Use kafka timestamp?', default=previous_val):
             self.config['timestamp'] = {'name': 'kafka_timestamp', 'type': 'unix_ms'}
         else:
-            super().set_timestamp()
+            self.config['timestamp'] = self.default_config.get('timestamp', {})
+            self.config['timestamp']['name'] = click.prompt('Timestamp property name', type=click.STRING,
+                                                            default=self.config['timestamp'].get('name'))
+            self.config['timestamp']['type'] = click.prompt('Timestamp property type',
+                                                            type=click.Choice(['string', 'unix', 'unix_ms']),
+                                                            default=self.config['timestamp'].get('type', 'unix'))
+
+            if self.config['timestamp']['type'] == 'string':
+                self.config['timestamp']['format'] = click.prompt('Timestamp format string', type=click.STRING,
+                                                                  default=self.config['timestamp'].get('format'))
 
 
 class PromptConfigInflux(PromptConfig):
