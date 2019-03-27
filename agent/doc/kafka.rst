@@ -12,6 +12,7 @@ Source config
 - *Offset timestamp (unix timestamp in milliseconds)* - if initial offset is TIMESTAMP then specify it here
 - (advanced) *Max Batch Size (records)* - how many records to send to further pipeline stages. Default - 1000 records
 - (advanced) *Batch Wait Time (ms)* - how many time to wait until batch will reach it's size. Default - 1000 ms
+- (advanced) *Kafka Configuration* - Additional Kafka properties to pass to the underlying Kafka consumer. Format - key1:value1 key2:value2 key3:value3
 
 
 
