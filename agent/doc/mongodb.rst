@@ -19,17 +19,37 @@ Source config
 - *Batch size* - how many records to send to further pipeline stages. Default - 1000 records
 - *Max batch wait time (seconds)* - how many time to wait until batch will reach it's size. Default - 5 seconds
 
+Example:
+
+.. code-block:: console
+
+    > agent source create
+    Choose source (mongo, kafka, influx): mongo
+    Enter unique name for this source config: mongo_test
+    Connection string: mongodb://mongo:27017
+    Username []:
+    Password []:
+    Authentication Source []:
+    Database: test
+    Collection: transactions
+    Is collection capped [False]:
+    Initial offset: 0
+    Offset type (OBJECTID, STRING, DATE) [OBJECTID]:
+    Offset field [_id]:
+    Batch size [1000]:
+    Max batch wait time (seconds) [5]:
+    Source config created
 
 
 Pipeline config
 ---------------
 - *Pipeline ID* - unique pipeline identifier (use human-readable name so you could easily use it further)
 - *Measurement name* - what do you measure (this will be the value of :code:`what` property in anodot 2.0 metric protocol)
-- Values config
+- Measurement values config
     - Basic
         - *Value* - enter property name
     - Advanced
-        - *Value type* - property or constant
+        - *Value type* - property (if measurement value is one of data properties) or constant (if measurement value is constant for every record, for example when you measure is records count, so for every record measurement value equals 1)
         - *Value* - if type property - enter property name, if type constant - enter value
 - *Target type* - represents how samples of the same metric are aggregated in Anodot. Valid values are: :code:`gauge` (average aggregation), :code:`counter` (sum aggregation). Deafult - :code:`gauge`
 - *Timestamp property name*
@@ -47,6 +67,7 @@ If your JSON data has nested structure you can specify path to required field wi
 .. code-block:: json
 
     {
+      "amount": 100,
       "transaction": {
         "type": "SALE",
         "status": "SUCCESS"
@@ -54,3 +75,36 @@ If your JSON data has nested structure you can specify path to required field wi
     }
 
 To specify these fields in pipeline config you can type :code:`transaction/type` and :code:`transaction/status`
+
+
+Example:
+
+.. code-block:: console
+
+    > agent pipeline create
+    Choose source config (mongo_test): mongo_test
+    Choose destination (http) [http]:
+    Pipeline ID (must be unique): test
+    Measurement name: transactions_amount
+    Value property name: amount
+    Target type (counter, gauge) [gauge]:
+    Timestamp property name: time
+    Timestamp property type (string, datetime, unix, unix_ms) [unix]:
+    Required dimensions [[]]: transaction/type transaction/status
+    Optional dimensions [[]]:
+    Created pipeline test
+    >
+    > agent pipeline create -a
+    Choose source config (mongo_test): mongo_test
+    Choose destination (http) [http]:
+    Pipeline ID (must be unique): test
+    Measurement name: transactions_count
+    Value (property name or constant value): 1
+    Value type (property, constant): constant
+    Target type (counter, gauge) [gauge]: counter
+    Timestamp property name: time
+    Timestamp property type (string, datetime, unix, unix_ms) [unix]: string
+    Timestamp format string: yyyy-MM-dd'T'HH:mm:ss.SSSZ
+    Required dimensions [[]]: transaction/type transaction/status
+    Optional dimensions [[]]:
+    Created pipeline test

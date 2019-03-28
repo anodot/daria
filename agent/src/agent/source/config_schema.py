@@ -21,7 +21,7 @@ def prompt_mongo_config(default_config, advanced=False):
     config['configBean.mongoConfig.authSource'] = click.prompt('Authentication Source',
                                                                type=click.STRING,
                                                                default=default_config.get(
-                                                                   'configBean.mongoConfig.authSource'))
+                                                                   'configBean.mongoConfig.authSource', ''))
     config['configBean.mongoConfig.database'] = click.prompt('Database',
                                                              type=click.STRING,
                                                              default=default_config.get(
