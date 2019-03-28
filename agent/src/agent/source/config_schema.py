@@ -21,7 +21,7 @@ def prompt_mongo_config(default_config, advanced=False):
     config['configBean.mongoConfig.authSource'] = click.prompt('Authentication Source',
                                                                type=click.STRING,
                                                                default=default_config.get(
-                                                                   'configBean.mongoConfig.authSource'))
+                                                                   'configBean.mongoConfig.authSource', ''))
     config['configBean.mongoConfig.database'] = click.prompt('Database',
                                                              type=click.STRING,
                                                              default=default_config.get(
@@ -61,14 +61,10 @@ def prompt_mongo_config(default_config, advanced=False):
 
 def prompt_kafka_config(default_config, advanced=False):
     config = dict()
-    config['kafkaConfigBean.metadataBrokerList'] = click.prompt('Kafka broker url',
+    config['kafkaConfigBean.metadataBrokerList'] = click.prompt('Kafka broker connection string',
                                                                 type=click.STRING,
                                                                 default=default_config.get(
                                                                     'kafkaConfigBean.metadataBrokerList'))
-    config['kafkaConfigBean.zookeeperConnect'] = click.prompt('Zookeeper url',
-                                                              type=click.STRING,
-                                                              default=default_config.get(
-                                                                  'kafkaConfigBean.zookeeperConnect'))
     config['kafkaConfigBean.consumerGroup'] = click.prompt('Consumer group',
                                                            type=click.STRING,
                                                            default=default_config.get('kafkaConfigBean.consumerGroup',
@@ -96,6 +92,18 @@ def prompt_kafka_config(default_config, advanced=False):
                                                              type=click.INT,
                                                              default=default_config.get('kafkaConfigBean.maxWaitTime',
                                                                                         1000))
+
+        default_kafka_config = default_config.get('kafkaConfigBean.kafkaConsumerConfigs', '')
+        if default_kafka_config:
+            default_kafka_config = ' '.join([i['key'] + ':' + i['value'] for i in default_kafka_config])
+        kafka_config = click.prompt('Kafka Configuration', type=click.STRING, default=default_kafka_config)
+        config['kafkaConfigBean.kafkaConsumerConfigs'] = []
+        for i in kafka_config.split():
+            pair = i.split(':')
+            if len(pair) != 2:
+                raise click.UsageError('Wrong format')
+
+            config['kafkaConfigBean.kafkaConsumerConfigs'].append({'key': pair[0], 'value': pair[1]})
 
     return config
 

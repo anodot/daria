@@ -390,7 +390,7 @@
         "value" : "kafka:9092"
       }, {
         "name" : "kafkaConfigBean.zookeeperConnect",
-        "value" : "zookeeper:2181"
+        "value" : "zkpr:2181"
       }, {
         "name" : "kafkaConfigBean.consumerGroup",
         "value" : "streamsetsDataCollector"

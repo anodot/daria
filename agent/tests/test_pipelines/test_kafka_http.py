@@ -19,7 +19,7 @@ WAITING_TIME = 5
     'test_timestamp_string',
 ])
 def test_source_create(cli_runner, name):
-    result = cli_runner.invoke(source_cli.create, input=f"kafka\nkafka_{name}\nkafka:29092\nzookeeper:2181\nstreamsetsDC\n{name}\n\n")
+    result = cli_runner.invoke(source_cli.create, input=f"kafka\nkafka_{name}\nkafka:29092\nstreamsetsDC\n{name}\n\n")
     assert result.exit_code == 0
     assert os.path.isfile(os.path.join(source_cli.DATA_DIR, f'kafka_{name}.json'))
 
@@ -27,7 +27,7 @@ def test_source_create(cli_runner, name):
 @pytest.mark.parametrize("name,options,value,timestamp", [
     ('test_timestamp_kafka', [], 'Clicks', 'y'),
     ('test_value_const', ['-a'], '2\nconstant', 'n\ntimestamp_unix\nunix'),
-    ('test_timestamp_ms', [], 'Clicks\ncolumn', 'n\ntimestamp_unix_ms\nunix_ms'),
+    ('test_timestamp_ms', [], 'Clicks\nproperty', 'n\ntimestamp_unix_ms\nunix_ms'),
     ('test_timestamp_string', ['-a'], 'Clicks\nconstant', 'n\ntimestamp_string\nstring\nM/d/yyyy H:mm:ss'),
 ])
 def test_create(cli_runner, name, options, value, timestamp):
@@ -38,7 +38,7 @@ def test_create(cli_runner, name, options, value, timestamp):
 
 @pytest.mark.parametrize("options,value", [
     (['test_value_const'], '1\n\n'),
-    (['test_timestamp_string', '-a'], 'Clicks\ncolumn'),
+    (['test_timestamp_string', '-a'], 'Clicks\nproperty'),
 ])
 def test_edit(cli_runner, options, value):
     result = cli_runner.invoke(pipeline_cli.edit, options, input=f"""\n{value}\n\n\n\n\n\n""")
@@ -76,8 +76,8 @@ def test_stop(cli_runner, name):
 
 @pytest.mark.parametrize("name,expected_output_file", [
     ('test_value_const', 'expected_output/json_value_const.json'),
-    ('test_timestamp_ms', 'expected_output/json_value_column.json'),
-    ('test_timestamp_string', 'expected_output/json_value_column.json'),
+    ('test_timestamp_ms', 'expected_output/json_value_property.json'),
+    ('test_timestamp_string', 'expected_output/json_value_property.json'),
 ])
 def test_output(name, expected_output_file):
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), expected_output_file)) as f:
