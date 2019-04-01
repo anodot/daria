@@ -5,7 +5,7 @@ from agent import cli as agent_cli
 from agent.pipeline import cli as pipeline_cli
 
 
-def test_token(cli_runner):
-    result = cli_runner.invoke(agent_cli.token, input='token\n')
+def test_destination(cli_runner):
+    result = cli_runner.invoke(agent_cli.destination, input='token\ny\nhttp://squid:3128\n\n\n')
     assert result.exit_code == 0
-    assert os.path.isfile(pipeline_cli.TOKEN_FILE)
+    assert os.path.isfile(pipeline_cli.DESTINATION_FILE)

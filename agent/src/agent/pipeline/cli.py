@@ -13,7 +13,7 @@ from pymongo import MongoClient
 from texttable import Texttable
 
 DATA_DIR = os.path.join(os.environ.get('DATA_DIR', 'data'), 'pipelines')
-TOKEN_FILE = os.path.join(os.environ.get('DATA_DIR', 'data'), 'anodot-token')
+DESTINATION_FILE = os.path.join(os.environ.get('DATA_DIR', 'data'), 'destination.json')
 
 SDC_DATA_PATH = os.environ.get('SDC_DATA_PATH', '/sdc-data')
 SDC_RESULTS_PATH = os.path.join(SDC_DATA_PATH, 'out')
@@ -66,18 +66,6 @@ def get_pipelines_ids():
     return [p['pipelineId'] for p in api_client.get_pipelines()]
 
 
-def get_http_destination():
-    api_url = os.environ.get('ANODOT_API_URL', 'https://api.anodot.com')
-    with open(TOKEN_FILE, 'r') as f:
-        token = f.read()
-    return {
-        "config": {
-            "conf.resourceUrl": urllib.parse.urljoin(api_url, f'api/v1/metrics?token={token}&protocol=anodot20')
-        },
-        "type": "http"
-    }
-
-
 @click.command()
 @click.option('-a', '--advanced', is_flag=True)
 def create(advanced):
@@ -88,8 +76,8 @@ def create(advanced):
     if len(sources) == 0:
         raise click.ClickException('No sources configs found. Use "agent source create"')
 
-    if not os.path.isfile(TOKEN_FILE):
-        raise click.ClickException('No anodot api token configured. Use "agent token"')
+    if not os.path.isfile(DESTINATION_FILE):
+        raise click.ClickException('Destination is not configured. Use "agent destination"')
 
     default_source = sources[0] if len(sources) == 1 else None
     source_config_name = click.prompt('Choose source config', type=click.Choice(sources), default=default_source)
@@ -102,7 +90,8 @@ def create(advanced):
     destination_type = click.prompt('Choose destination', type=click.Choice(['http']),
                                     default='http')
     if destination_type == 'http':
-        pipeline_config['destination'] = get_http_destination()
+        with open(DESTINATION_FILE, 'r') as f:
+            pipeline_config['destination'] = json.load(f)
 
     pipeline_config['pipeline_id'] = click.prompt('Pipeline ID (must be unique)', type=click.STRING)
 
@@ -144,7 +133,8 @@ def edit(pipeline_id, advanced):
         pipeline_config['source'] = json.load(f)
 
     if pipeline_config['destination']['type'] == 'http':
-        pipeline_config['destination'] = get_http_destination()
+        with open(DESTINATION_FILE, 'r') as f:
+            pipeline_config['destination'] = json.load(f)
 
     pipeline_c = pipeline_configs[pipeline_config['source']['type']]
     pipeline_config.update(pipeline_c.prompt(pipeline_config, advanced))
