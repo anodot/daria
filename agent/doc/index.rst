@@ -23,15 +23,47 @@ Main concepts
 
 **Basic flow**
 
-1. Add anodot api token
+1. Create destination (with Anodot api token). You can also configure proxy server for connecting to Anodot
+
+.. code-block:: console
+
+   > agent destination
+   Anodot api token: tokenhere
+   Use proxy for connecting to Anodot? [y/N]: y
+   Proxy uri: http://squid:3181
+   Proxy username []:
+   Proxy password []:
+   Destination configured
+
+
 2. Create source
+
+.. code-block:: console
+
+   agent source create
+
 3. Create pipeline
+
+.. code-block:: console
+
+   agent pipeline create
+
 4. Run pipeline
+
+.. code-block:: console
+
+   agent pipeline start PIPELINE_ID
+
 5. Check pipeline status
+
+.. code-block:: console
+
+   agent pipeline info PIPELINE_ID
+
 6. If errors occur - check troubleshooting section
     1. fix errors
-    2. Stop the pipeline
-    3. Reset pipeline origin
+    2. Stop the pipeline :code:`agent pipeline stop PIPELINE_ID`
+    3. Reset pipeline origin :code:`agent pipeline reset PIPELINE_ID`
     4. Run pipeline again
 
 

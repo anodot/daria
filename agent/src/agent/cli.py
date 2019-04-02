@@ -27,8 +27,8 @@ def destination():
         if not click.confirm('Destination is already configured. Do you want to edit it?'):
             return
 
-        with open(DESTINATION_FILE, 'w') as f:
-            dest = json.loads(f)
+        with open(DESTINATION_FILE, 'r') as f:
+            dest = json.load(f)
 
     token = click.prompt('Anodot api token', type=click.STRING)
     api_url = os.environ.get('ANODOT_API_URL', 'https://api.anodot.com')
@@ -37,9 +37,9 @@ def destination():
     dest['config']['conf.client.useProxy'] = click.confirm('Use proxy for connecting to Anodot?')
     if dest['config']['conf.client.useProxy']:
         dest['config']['conf.client.proxy.uri'] = click.prompt('Proxy uri', type=click.STRING,
-                                                               default=dest.get('conf.client.proxy.uri'))
+                                                               default=dest['config'].get('conf.client.proxy.uri'))
         dest['config']['conf.client.proxy.username'] = click.prompt('Proxy username', type=click.STRING,
-                                                                    default=dest.get('conf.client.proxy.username', ''))
+                                                                    default=dest['config'].get('conf.client.proxy.username', ''))
         dest['config']['conf.client.proxy.password'] = click.prompt('Proxy password', type=click.STRING, default='')
 
     with open(DESTINATION_FILE, 'w') as f:
