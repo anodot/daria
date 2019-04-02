@@ -22,8 +22,8 @@ def cli_runner():
             if filename.startswith('sdc-test_'):
                 os.remove(os.path.join(pipeline_cli.SDC_RESULTS_PATH, filename))
 
-    if os.path.isfile(pipeline_cli.TOKEN_FILE):
-        os.remove(pipeline_cli.TOKEN_FILE)
+    if os.path.isfile(pipeline_cli.DESTINATION_FILE):
+        os.remove(pipeline_cli.DESTINATION_FILE)
 
 
 def replace_destination(name):

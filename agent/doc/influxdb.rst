@@ -28,7 +28,7 @@ Source config
 Pipeline config
 ---------------
 * *Pipeline ID* - unique pipeline identifier (use human-readable name so you could easily use it further)
-* *Measurement name* - metric name in InfluxDB from which to make query. Also this is added as dimension :code:`measure` to result
+* *Measurement name* - metric name in InfluxDB from which to make query. Also this is added as dimension :code:`measurement_category` to result
 * Values config
 
     * Basic
