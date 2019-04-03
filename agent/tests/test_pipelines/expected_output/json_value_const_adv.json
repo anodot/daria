@@ -1,0 +1,86 @@
+[
+  {
+    "value": 1.0,
+    "properties": {
+      "what": "clicks",
+      "target_type": "gauge",
+      "ver": "AD200",
+      "Country": "USA",
+      "Exchange": "DoubleClick",
+      "key1": "val1"
+    },
+    "timestamp": 1512867600
+  },
+  {
+    "value": 1.0,
+    "properties": {
+      "what": "clicks",
+      "target_type": "gauge",
+      "ver": "AD200",
+      "Country": "USA",
+      "Exchange": "DoubleClick",
+      "key1": "val1"
+    },
+    "timestamp": 1512871200
+  },
+  {
+    "value": 1.0,
+    "properties": {
+      "what": "clicks",
+      "target_type": "gauge",
+      "ver": "AD200",
+      "Country": "USA",
+      "Exchange": "DoubleClick",
+      "key1": "val1"
+    },
+    "timestamp": 1512874800
+  },
+  {
+    "value": 1.0,
+    "properties": {
+      "what": "clicks",
+      "target_type": "gauge",
+      "ver": "AD200",
+      "Country": "USA",
+      "Exchange": "DoubleClick",
+      "key1": "val1"
+    },
+    "timestamp": 1512878400
+  },
+  {
+    "value": 1.0,
+    "properties": {
+      "what": "clicks",
+      "target_type": "gauge",
+      "ver": "AD200",
+      "Country": "USA",
+      "Exchange": "DoubleClick",
+      "key1": "val1"
+    },
+    "timestamp": 1512882000
+  },
+  {
+    "value": 1.0,
+    "properties": {
+      "what": "clicks",
+      "target_type": "gauge",
+      "ver": "AD200",
+      "Country": "USA",
+      "Exchange": "DoubleClick",
+      "key1": "val1"
+    },
+    "timestamp": 1512885600
+  },
+  {
+    "value": 1.0,
+    "properties": {
+      "what": "clicks",
+      "target_type": "gauge",
+      "ver": "AD200",
+      "Country": "",
+      "Exchange": "DoubleClick",
+      "key1": "val1"
+    },
+    "timestamp": 1512889200
+  }
+]

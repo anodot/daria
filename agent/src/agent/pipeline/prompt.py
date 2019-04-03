@@ -12,6 +12,7 @@ class PromptConfig:
         self.set_target_type()
         self.set_timestamp()
         self.set_dimensions()
+        self.set_static_properties()
 
     def set_measurement_name(self):
         self.config['measurement_name'] = click.prompt('Measurement name', type=click.STRING,
@@ -58,6 +59,25 @@ class PromptConfig:
                                                              value_proc=lambda x: x.split(),
                                                              default=self.config['dimensions'].get('optional',
                                                                                                    []))
+
+    def set_static_properties(self):
+        self.config['properties'] = self.default_config.get('properties', {})
+
+        properties_str = ''
+        if self.config['properties']:
+            properties_str = ' '.join([key + ':' + val for key, val in self.config['properties'].items()])
+
+        self.config['properties'] = {}
+        if not self.advanced:
+            return
+
+        properties_str = click.prompt('Additional properties', type=click.STRING, default=properties_str)
+        for i in properties_str.split():
+            pair = i.split(':')
+            if len(pair) != 2:
+                raise click.UsageError('Wrong format')
+
+            self.config['properties'][pair[0]] = pair[1]
 
 
 class PromptConfigMongo(PromptConfig):

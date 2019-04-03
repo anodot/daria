@@ -16,29 +16,33 @@ class InfluxConfigHandler(BaseConfigHandler):
         self.update_source_configs()
 
         for stage in self.config['stages']:
-            if stage['instanceName'] != 'JavaScriptEvaluator_02':
-                continue
+            if stage['instanceName'] == 'JavaScriptEvaluator_02':
+                for conf in stage['configuration']:
+                    if conf['name'] == 'stageRequiredFields':
+                        conf['value'] = ['/' + d for d in self.client_config['dimensions']['required']]
 
-            for conf in stage['configuration']:
-                if conf['name'] == 'stageRequiredFields':
-                    conf['value'] = ['/' + d for d in self.client_config['dimensions']['required']]
+                    if conf['name'] == 'initScript':
+                        conf['value'] = conf['value'].format(
+                            required_dimensions=str(self.client_config['dimensions']['required']),
+                            optional_dimensions=str(self.client_config['dimensions']['optional']),
+                            measurement_name=self.client_config['measurement_name'],
+                            values=str(self.client_config['value']['values']),
+                            target_type=self.client_config['target_type'],
+                            value_constant=self.client_config['value']['constant']
+                        )
 
-                if conf['name'] == 'initScript':
-                    conf['value'] = conf['value'].format(
-                        required_dimensions=str(self.client_config['dimensions']['required']),
-                        optional_dimensions=str(self.client_config['dimensions']['optional']),
-                        measurement_name=self.client_config['measurement_name'],
-                        values=str(self.client_config['value']['values']),
-                        target_type=self.client_config['target_type'],
-                        value_constant=self.client_config['value']['constant']
-                    )
+                    if conf['name'] == 'stageRecordPreconditions':
+                        for d in self.client_config['dimensions']['required']:
+                            conf['value'].append(f"${{record:type('/{d}') == 'STRING'}}")
+                        for d in self.client_config['dimensions']['optional']:
+                            conf['value'].append(f"${{record:type('/{d}') == 'STRING' or record:type('/{d}') == NULL}}")
+                        for v in self.client_config['value']['values']:
+                            conf['value'].append(f"${{record:type('/{v}') != 'STRING'}}")
 
-                if conf['name'] == 'stageRecordPreconditions':
-                    for d in self.client_config['dimensions']['required']:
-                        conf['value'].append(f"${{record:type('/{d}') == 'STRING'}}")
-                    for d in self.client_config['dimensions']['optional']:
-                        conf['value'].append(f"${{record:type('/{d}') == 'STRING' or record:type('/{d}') == NULL}}")
-                    for v in self.client_config['value']['values']:
-                        conf['value'].append(f"${{record:type('/{v}') != 'STRING'}}")
+            if stage['instanceName'] == 'ExpressionEvaluator_01':
+                for conf in stage['configuration']:
+                    if conf['name'] == 'expressionProcessorConfigs':
+                        for key, val in self.client_config['properties'].items():
+                            conf['value'].append({'fieldToSet': '/properties/' + key, 'expression': val})
 
         self.update_destination_config()

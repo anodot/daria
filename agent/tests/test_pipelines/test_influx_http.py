@@ -21,7 +21,7 @@ def test_source_create(cli_runner):
 @pytest.mark.parametrize("name,options,value,dimensions", [
     ('test_basic', [], 'usage_active usage_idle', 'cpu zone host'),
     ('test_numeric_dimensions', [], 'usage_active usage_idle', 'usage_iowait'),
-    ('test_string_values', ['-a'], '2123\nconstant', 'zone host\n '),
+    ('test_string_values', ['-a'], '2123\nconstant', 'zone host\n \nkey1:val1'),
 ])
 def test_create(cli_runner, name, options, value, dimensions):
     result = cli_runner.invoke(pipeline_cli.create,

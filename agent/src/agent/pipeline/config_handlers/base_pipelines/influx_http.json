@@ -686,6 +686,43 @@
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
+      "instanceName" : "ExpressionEvaluator_01",
+      "library" : "streamsets-datacollector-basic-lib",
+      "stageName" : "com_streamsets_pipeline_stage_processor_expression_ExpressionDProcessor",
+      "stageVersion" : "2",
+      "configuration" : [ {
+        "name" : "expressionProcessorConfigs",
+        "value" : [ ]
+      }, {
+        "name" : "headerAttributeConfigs",
+        "value" : [ { } ]
+      }, {
+        "name" : "fieldAttributeConfigs",
+        "value" : [ {
+          "fieldToSet" : "/"
+        } ]
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "description" : "",
+        "label" : "Add static properties",
+        "xPos" : 1205.0634155273438,
+        "yPos" : -23,
+        "stageType" : "PROCESSOR"
+      },
+      "inputLanes" : [ "JavaScriptEvaluator_02OutputLane15518690029440" ],
+      "outputLanes" : [ "ExpressionEvaluator_01OutputLane15542812028480" ],
+      "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
       "instanceName" : "HTTPClient_01",
       "library" : "streamsets-datacollector-basic-lib",
       "stageName" : "com_streamsets_pipeline_stage_destination_http_HttpClientDTarget",
@@ -980,7 +1017,7 @@
         "yPos" : 135.06565856933594,
         "stageType" : "TARGET"
       },
-      "inputLanes" : [ "JavaScriptEvaluator_02OutputLane15518690029440" ],
+      "inputLanes" : [ "ExpressionEvaluator_01OutputLane15542812028480" ],
       "outputLanes" : [ ],
       "eventLanes" : [ ],
       "services" : [ ]
