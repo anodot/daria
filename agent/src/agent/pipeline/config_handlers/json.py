@@ -22,6 +22,9 @@ class JsonConfigHandler(BaseConfigHandler):
             else:
                 conf['value'][3]['expression'] = self.client_config['value']['value']
 
+            for key, val in self.client_config['properties'].items():
+                conf['value'].append({'fieldToSet': '/properties/' + key, 'expression': val})
+
             return
 
     def get_rename_mapping(self):

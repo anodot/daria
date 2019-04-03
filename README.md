@@ -18,11 +18,8 @@ docker attach anodot-agent
 2. Run `pytest` command inside agent container. 
 
 
-###Build docs
-```bash
-> cd agent/doc
-> make html
-```
+###Docs
+[Github Wiki](https://github.com/anodot/daria/wiki)
     
 
 ###Troubleshooting

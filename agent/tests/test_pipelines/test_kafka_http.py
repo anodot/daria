@@ -24,14 +24,14 @@ def test_source_create(cli_runner, name):
     assert os.path.isfile(os.path.join(source_cli.DATA_DIR, f'kafka_{name}.json'))
 
 
-@pytest.mark.parametrize("name,options,value,timestamp", [
-    ('test_timestamp_kafka', [], 'Clicks', 'y'),
-    ('test_value_const', ['-a'], '2\nconstant', 'n\ntimestamp_unix\nunix'),
-    ('test_timestamp_ms', [], 'Clicks\nproperty', 'n\ntimestamp_unix_ms\nunix_ms'),
-    ('test_timestamp_string', ['-a'], 'Clicks\nconstant', 'n\ntimestamp_string\nstring\nM/d/yyyy H:mm:ss'),
+@pytest.mark.parametrize("name,options,value,timestamp,properties", [
+    ('test_timestamp_kafka', [], 'Clicks', 'y', ''),
+    ('test_value_const', ['-a'], '2\nconstant', 'n\ntimestamp_unix\nunix', 'key1:val1'),
+    ('test_timestamp_ms', [], 'Clicks\nproperty', 'n\ntimestamp_unix_ms\nunix_ms', ''),
+    ('test_timestamp_string', ['-a'], 'Clicks\nconstant', 'n\ntimestamp_string\nstring\nM/d/yyyy H:mm:ss', 'key1:val1'),
 ])
-def test_create(cli_runner, name, options, value, timestamp):
-    result = cli_runner.invoke(pipeline_cli.create, options, input=f"""kafka_{name}\nhttp\n{name}\nclicks\n{value}\n\n{timestamp}\nver Country\nExchange optional_dim\n""")
+def test_create(cli_runner, name, options, value, timestamp, properties):
+    result = cli_runner.invoke(pipeline_cli.create, options, input=f"""kafka_{name}\nhttp\n{name}\nclicks\n{value}\n\n{timestamp}\nver Country\nExchange optional_dim\n{properties}\n""")
     assert result.exit_code == 0
     assert api_client.get_pipeline(name)
 
@@ -75,9 +75,9 @@ def test_stop(cli_runner, name):
 
 
 @pytest.mark.parametrize("name,expected_output_file", [
-    ('test_value_const', 'expected_output/json_value_const.json'),
+    ('test_value_const', 'expected_output/json_value_const_adv.json'),
     ('test_timestamp_ms', 'expected_output/json_value_property.json'),
-    ('test_timestamp_string', 'expected_output/json_value_property.json'),
+    ('test_timestamp_string', 'expected_output/json_value_property_adv.json'),
 ])
 def test_output(name, expected_output_file):
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), expected_output_file)) as f:
