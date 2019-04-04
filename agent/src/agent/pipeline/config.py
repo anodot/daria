@@ -1,5 +1,6 @@
 from .config_handlers.json import JsonConfigHandler
 from .config_handlers.influx import InfluxConfigHandler
+from .config_handlers.kafka import KafkaConfigHandler
 from .prompt import PromptConfigMongo, PromptConfigKafka, PromptConfigInflux
 
 
@@ -17,6 +18,6 @@ class Pipeline:
 
 pipeline_configs = {
     'mongo': Pipeline(PromptConfigMongo, JsonConfigHandler),
-    'kafka': Pipeline(PromptConfigKafka, JsonConfigHandler),
+    'kafka': Pipeline(PromptConfigKafka, KafkaConfigHandler),
     'influx': Pipeline(PromptConfigInflux, InfluxConfigHandler),
 }

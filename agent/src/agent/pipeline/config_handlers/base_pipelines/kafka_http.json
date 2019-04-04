@@ -429,7 +429,7 @@
         "value" : true
       }, {
         "name" : "stageOnRecordError",
-        "value" : "TO_ERROR"
+        "value" : "DISCARD"
       } ],
       "uiInfo" : {
         "yPos" : 141.36934280395508,
@@ -493,7 +493,7 @@
         } ]
       }, {
         "name" : "stageOnRecordError",
-        "value" : "TO_ERROR"
+        "value" : "DISCARD"
       }, {
         "name" : "stageRequiredFields",
         "value" : [ ]
