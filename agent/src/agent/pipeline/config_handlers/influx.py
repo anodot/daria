@@ -1,5 +1,8 @@
+import requests
+
 from .base import BaseConfigHandler
 from agent.logger import get_logger
+from urllib.parse import urljoin
 
 logger = get_logger(__name__)
 
@@ -8,11 +11,25 @@ class InfluxConfigHandler(BaseConfigHandler):
     def override_stages(self):
         dimensions = self.get_dimensions()
         source_config = self.client_config['source']['config']
+        if not source_config['conf.pagination.startAt']:
+            source_config['conf.pagination.startAt'] = 0
+        else:
+            source_config['conf.pagination.startAt'] = requests.get(urljoin(source_config['conf.resourceUrl']['host'],
+                                                                            '/query'), params={
+                'db': source_config['conf.resourceUrl']['db'],
+                'q': 'SELECT count({val}) FROM {measure} WHERE time < {time}'.format(**{
+                    'val': self.client_config['value']['values'],
+                    'measure': self.client_config['measurement_name'],
+                    'time': source_config['conf.pagination.startAt'].strptime('%d/%m/%Y %H:%M').timestamp()
+                })
+            }).json()['results'][0]['series'][0]['values'][0][1]
+
         source_config['conf.resourceUrl'] = source_config['conf.resourceUrl'].format(
             dimensions=','.join(dimensions + self.client_config['value']['values']),
             metric=self.client_config['measurement_name'],
             startAt='{startAt}'
         )
+
         self.update_source_configs()
 
         for stage in self.config['stages']:
