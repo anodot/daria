@@ -2,34 +2,42 @@ import requests
 
 from .base import BaseConfigHandler
 from agent.logger import get_logger
+from datetime import datetime
 from urllib.parse import urljoin
 
 logger = get_logger(__name__)
 
 
 class InfluxConfigHandler(BaseConfigHandler):
-    def override_stages(self):
-        dimensions = self.get_dimensions()
-        source_config = self.client_config['source']['config']
+
+    def set_initial_offset(self, source_config, query):
         if not source_config['conf.pagination.startAt']:
             source_config['conf.pagination.startAt'] = 0
         else:
+            query = 'SELECT count(*) FROM ({query} WHERE time < {time})'.format(**{
+                'query': query,
+                'time': int(datetime.strptime(source_config['conf.pagination.startAt'], '%d/%m/%Y %H:%M').timestamp() * 1e9)
+            })
             source_config['conf.pagination.startAt'] = requests.get(urljoin(source_config['conf.resourceUrl']['host'],
                                                                             '/query'), params={
                 'db': source_config['conf.resourceUrl']['db'],
-                'q': 'SELECT count({val}) FROM {measure} WHERE time < {time}'.format(**{
-                    'val': self.client_config['value']['values'],
-                    'measure': self.client_config['measurement_name'],
-                    'time': source_config['conf.pagination.startAt'].strptime('%d/%m/%Y %H:%M').timestamp()
-                })
+                'q': query
             }).json()['results'][0]['series'][0]['values'][0][1]
 
-        source_config['conf.resourceUrl'] = source_config['conf.resourceUrl'].format(
-            dimensions=','.join(dimensions + self.client_config['value']['values']),
-            metric=self.client_config['measurement_name'],
-            startAt='{startAt}'
-        )
-
+    def override_stages(self):
+        dimensions = self.get_dimensions()
+        source_config = self.client_config['source']['config']
+        query_start = 'SELECT {dimensions} FROM {metric}'.format(**{
+            'dimensions': ','.join(dimensions + self.client_config['value']['values']),
+            'metric': self.client_config['measurement_name'],
+        })
+        self.set_initial_offset(source_config, query_start)
+        query = '/query?db={db}&epoch=s&q={query}+LIMIT+{limit}+OFFSET+${startAt}'.format(**{
+            'query': query_start.replace(' ', '+'),
+            'startAt': '{startAt}',
+            **source_config['conf.resourceUrl']
+        })
+        source_config['conf.resourceUrl'] = urljoin(source_config['conf.resourceUrl']['host'], query)
         self.update_source_configs()
 
         for stage in self.config['stages']:

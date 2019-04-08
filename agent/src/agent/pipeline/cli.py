@@ -3,20 +3,14 @@ import json
 import os
 import random
 import time
-import urllib.parse
 
 from .config import pipeline_configs
-from ..source.cli import get_configs_list as list_sources, DATA_DIR as SOURCES_DIR
+from ..source.cli import get_configs_list as list_sources
 from ..streamsets_api_client import api_client, StreamSetsApiClientException
+from agent.constants import DESTINATION_FILE, PIPELINES_DIR, SOURCES_DIR
 from datetime import datetime
 from pymongo import MongoClient
 from texttable import Texttable
-
-DATA_DIR = os.path.join(os.environ.get('DATA_DIR', 'data'), 'pipelines')
-DESTINATION_FILE = os.path.join(os.environ.get('DATA_DIR', 'data'), 'destination.json')
-
-SDC_DATA_PATH = os.environ.get('SDC_DATA_PATH', '/sdc-data')
-SDC_RESULTS_PATH = os.path.join(SDC_DATA_PATH, 'out')
 
 
 def get_previous_pipeline_config(label):
@@ -24,9 +18,9 @@ def get_previous_pipeline_config(label):
     pipelines_with_source = api_client.get_pipelines(order_by='CREATED', order='DESC',
                                                      label=label)
     if len(pipelines_with_source) > 0:
-        for filename in os.listdir(DATA_DIR):
+        for filename in os.listdir(PIPELINES_DIR):
             if filename == pipelines_with_source[-1]['pipelineId'] + '.json':
-                with open(os.path.join(DATA_DIR, filename), 'r') as f:
+                with open(os.path.join(PIPELINES_DIR, filename), 'r') as f:
                     recent_pipeline_config = json.load(f)
     return recent_pipeline_config
 
@@ -113,7 +107,7 @@ def create(advanced):
     new_rules = config_handler.override_base_rules(pipeline_rules['uuid'])
     api_client.update_pipeline_rules(pipeline_obj['pipelineId'], new_rules)
 
-    with open(os.path.join(DATA_DIR, pipeline_config['pipeline_id'] + '.json'), 'w') as f:
+    with open(os.path.join(PIPELINES_DIR, pipeline_config['pipeline_id'] + '.json'), 'w') as f:
         json.dump(pipeline_config, f)
 
     click.secho('Created pipeline {}'.format(pipeline_config['pipeline_id']), fg='green')
@@ -126,7 +120,7 @@ def edit(pipeline_id, advanced):
     """
     Edit pipeline
     """
-    with open(os.path.join(DATA_DIR, pipeline_id + '.json'), 'r') as f:
+    with open(os.path.join(PIPELINES_DIR, pipeline_id + '.json'), 'r') as f:
         pipeline_config = json.load(f)
 
     with open(os.path.join(SOURCES_DIR, pipeline_config['source']['name'] + '.json'), 'r') as f:
@@ -150,7 +144,7 @@ def edit(pipeline_id, advanced):
         click.secho(str(e), err=True, fg='red')
         return
 
-    with open(os.path.join(DATA_DIR, pipeline_config['pipeline_id'] + '.json'), 'w') as f:
+    with open(os.path.join(PIPELINES_DIR, pipeline_config['pipeline_id'] + '.json'), 'w') as f:
         json.dump(pipeline_config, f)
 
     click.secho('Updated pipeline {}'.format(pipeline_config['pipeline_id']), fg='green')
@@ -208,7 +202,7 @@ def delete(pipeline_id):
     """
     try:
         api_client.delete_pipeline(pipeline_id)
-        file_path = os.path.join(DATA_DIR, pipeline_id + '.json')
+        file_path = os.path.join(PIPELINES_DIR, pipeline_id + '.json')
         os.remove(file_path)
     except StreamSetsApiClientException as e:
         click.secho(str(e), err=True, fg='red')
@@ -316,7 +310,7 @@ def dummy(pipeline_id):
     """
     Generate dummy data based on pipeline's config. (Works only for mongo - http pipelines)
     """
-    with open(os.path.join(DATA_DIR, pipeline_id + '.json'), 'r') as f:
+    with open(os.path.join(PIPELINES_DIR, pipeline_id + '.json'), 'r') as f:
         pipeline_config = json.load(f)
     if pipeline_config['timestamp']['type'] == 'string':
         click.secho('Pipelines with string timestamp type are not supported yet', err=True, fg='red')
