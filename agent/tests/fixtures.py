@@ -12,18 +12,18 @@ def cli_runner():
 
     yield CliRunner()
 
-    api_client.delete_by_filtering('test_')
-
-    for filename in os.listdir(pipeline_cli.SDC_DATA_PATH):
-        if filename.startswith('error-test_'):
-            os.remove(os.path.join(pipeline_cli.SDC_DATA_PATH, filename))
-    if os.path.isdir(pipeline_cli.SDC_RESULTS_PATH):
-        for filename in os.listdir(pipeline_cli.SDC_RESULTS_PATH):
-            if filename.startswith('sdc-test_'):
-                os.remove(os.path.join(pipeline_cli.SDC_RESULTS_PATH, filename))
-
-    if os.path.isfile(pipeline_cli.DESTINATION_FILE):
-        os.remove(pipeline_cli.DESTINATION_FILE)
+    # api_client.delete_by_filtering('test_')
+    #
+    # for filename in os.listdir(pipeline_cli.SDC_DATA_PATH):
+    #     if filename.startswith('error-test_'):
+    #         os.remove(os.path.join(pipeline_cli.SDC_DATA_PATH, filename))
+    # if os.path.isdir(pipeline_cli.SDC_RESULTS_PATH):
+    #     for filename in os.listdir(pipeline_cli.SDC_RESULTS_PATH):
+    #         if filename.startswith('sdc-test_'):
+    #             os.remove(os.path.join(pipeline_cli.SDC_RESULTS_PATH, filename))
+    #
+    # if os.path.isfile(pipeline_cli.DESTINATION_FILE):
+    #     os.remove(pipeline_cli.DESTINATION_FILE)
 
 
 def replace_destination(name):
