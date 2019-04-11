@@ -103,7 +103,7 @@
       "measurement_category": "cpu_test",
       "what": "usage_active"
     },
-    "value": 504
+    "value": 0.504
   },
   {
     "timestamp": 1553054426,
@@ -115,7 +115,7 @@
       "measurement_category": "cpu_test",
       "what": "usage_idle"
     },
-    "value": 260404905034043049540
+    "value": 260404905034043060000
   },
   {
     "timestamp": 1553154426,

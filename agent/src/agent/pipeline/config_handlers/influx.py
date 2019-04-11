@@ -8,14 +8,20 @@ class InfluxConfigHandler(BaseConfigHandler):
     def override_stages(self):
         dimensions = self.get_dimensions()
         source_config = self.client_config['source']['config']
+        columns_to_select = dimensions + self.client_config['value']['values']
         source_config['conf.resourceUrl'] = source_config['conf.resourceUrl'].format(
-            dimensions=','.join(dimensions + self.client_config['value']['values']),
+            dimensions=','.join(columns_to_select),
             metric=self.client_config['measurement_name'],
             startAt='{startAt}'
         )
         self.update_source_configs()
 
         for stage in self.config['stages']:
+            if stage['instanceName'] == 'JavaScriptEvaluator_01':
+                for conf in stage['configuration']:
+                    if conf['name'] == 'initScript':
+                        conf['value'] = conf['value'].format(columns=str(['time'] + columns_to_select))
+
             if stage['instanceName'] == 'JavaScriptEvaluator_02':
                 for conf in stage['configuration']:
                     if conf['name'] == 'stageRequiredFields':
