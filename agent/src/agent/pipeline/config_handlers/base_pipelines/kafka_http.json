@@ -421,7 +421,7 @@
       }, {
         "name" : "kafkaConfigBean.timestampToSearchOffsets",
         "value" : 0
-      }, {      ть
+      }, {
           "name" : "kafkaConfigBean.kafkaConsumerConfigs",
         "value" : [ ]
       }, {

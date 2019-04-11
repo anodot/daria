@@ -10,28 +10,31 @@ logger = get_logger(__name__)
 
 class InfluxConfigHandler(BaseConfigHandler):
 
-    def set_initial_offset(self, source_config, query):
+    def set_initial_offset(self, query):
+        source_config = self.client_config['source']['config']
         if not source_config['conf.pagination.startAt']:
             source_config['conf.pagination.startAt'] = 0
-        else:
-            query = 'SELECT count(*) FROM ({query} WHERE time < {time})'.format(**{
-                'query': query,
-                'time': int(datetime.strptime(source_config['conf.pagination.startAt'], '%d/%m/%Y %H:%M').timestamp() * 1e9)
-            })
-            source_config['conf.pagination.startAt'] = requests.get(urljoin(source_config['conf.resourceUrl']['host'],
-                                                                            '/query'), params={
-                'db': source_config['conf.resourceUrl']['db'],
-                'q': query
-            }).json()['results'][0]['series'][0]['values'][0][1]
+            return
+
+        query = 'SELECT count(*) FROM ({query} WHERE time < {time})'.format(**{
+            'query': query,
+            'time': int(datetime.strptime(source_config['conf.pagination.startAt'], '%d/%m/%Y %H:%M').timestamp() * 1e9)
+        })
+        source_config['conf.pagination.startAt'] = requests.get(urljoin(source_config['conf.resourceUrl']['host'],
+                                                                        '/query'), params={
+            'db': source_config['conf.resourceUrl']['db'],
+            'q': query
+        }).json()['results'][0]['series'][0]['values'][0][1]
 
     def override_stages(self):
         dimensions = self.get_dimensions()
         source_config = self.client_config['source']['config']
+        columns_to_select = dimensions + self.client_config['value']['values']
         query_start = 'SELECT {dimensions} FROM {metric}'.format(**{
-            'dimensions': ','.join(dimensions + self.client_config['value']['values']),
+            'dimensions': ','.join(columns_to_select),
             'metric': self.client_config['measurement_name'],
         })
-        self.set_initial_offset(source_config, query_start)
+        self.set_initial_offset(query_start)
         query = '/query?db={db}&epoch=s&q={query}+LIMIT+{limit}+OFFSET+${startAt}'.format(**{
             'query': query_start.replace(' ', '+'),
             'startAt': '{startAt}',
@@ -41,6 +44,11 @@ class InfluxConfigHandler(BaseConfigHandler):
         self.update_source_configs()
 
         for stage in self.config['stages']:
+            if stage['instanceName'] == 'JavaScriptEvaluator_01':
+                for conf in stage['configuration']:
+                    if conf['name'] == 'initScript':
+                        conf['value'] = conf['value'].format(columns=str(['time'] + columns_to_select))
+
             if stage['instanceName'] == 'JavaScriptEvaluator_02':
                 for conf in stage['configuration']:
                     if conf['name'] == 'stageRequiredFields':

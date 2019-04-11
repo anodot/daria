@@ -14,7 +14,7 @@ WAITING_TIME = 5
 
 
 @pytest.mark.parametrize('name,offset', [
-    ('test_influx', ''),
+    ('test_influx', ' '),
     ('test_influx_offset', '19/03/2019 12:53')
 ])
 def test_source_create(cli_runner, name, offset):

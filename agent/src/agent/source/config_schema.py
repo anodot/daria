@@ -118,7 +118,8 @@ def prompt_influx_config(default_config, advanced=False):
         'limit': limit,
     }
 
-    config['conf.pagination.startAt'] = click.prompt('Initial offset ("dd/MM/yy HH:mm")', type=click.STRING, default='')
+    config['conf.pagination.startAt'] = click.prompt('Initial offset ("dd/MM/yy HH:mm")',
+                                                     type=click.STRING, default='').strip()
     config['conf.pagination.rateLimit'] = click.prompt('Wait time, ms', type=click.INT,
                                                        default=default_config.get('conf.pagination.rateLimit', 2000))
     return config
