@@ -1,6 +1,6 @@
 import requests
 
-from .base import BaseConfigHandler
+from .base import BaseConfigHandler, ConfigHandlerException
 from agent.logger import get_logger
 from datetime import datetime
 from urllib.parse import urljoin
@@ -16,15 +16,20 @@ class InfluxConfigHandler(BaseConfigHandler):
             source_config['conf.pagination.startAt'] = 0
             return
 
-        query = 'SELECT count(*) FROM ({query} WHERE time < {time})'.format(**{
-            'query': query,
-            'time': int(datetime.strptime(source_config['conf.pagination.startAt'], '%d/%m/%Y %H:%M').timestamp() * 1e9)
-        })
-        source_config['conf.pagination.startAt'] = requests.get(urljoin(source_config['conf.resourceUrl']['host'],
-                                                                        '/query'), params={
-            'db': source_config['conf.resourceUrl']['db'],
-            'q': query
-        }).json()['results'][0]['series'][0]['values'][0][1]
+        try:
+            query = 'SELECT count(*) FROM ({query} WHERE time < {time})'.format(**{
+                'query': query,
+                'time': int(datetime.strptime(source_config['conf.pagination.startAt'], '%d/%m/%Y %H:%M').timestamp() * 1e9)
+            })
+            source_config['conf.pagination.startAt'] = requests.get(urljoin(source_config['conf.resourceUrl']['host'],
+                                                                            '/query'), params={
+                'db': source_config['conf.resourceUrl']['db'],
+                'q': query
+            }).json()['results'][0]['series'][0]['values'][0][1]
+        except requests.exceptions.ConnectionError:
+            raise ConfigHandlerException('Failed to connect to source api url')
+        except KeyError:
+            source_config['conf.pagination.startAt'] = 0
 
     def override_stages(self):
         dimensions = self.get_dimensions()

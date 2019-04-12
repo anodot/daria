@@ -1,6 +1,17 @@
 import click
 import re
 
+from datetime import datetime
+from urllib.parse import urlparse
+
+
+def is_url(url):
+    try:
+        result = urlparse(url)
+        return all([result.scheme, result.netloc])
+    except ValueError as e:
+        return False
+
 
 def prompt_mongo_config(default_config, advanced=False):
     config = dict()
@@ -110,6 +121,9 @@ def prompt_influx_config(default_config, advanced=False):
     config = dict()
     default_resource_url = default_config.get('conf.resourceUrl', {})
     influx_host = click.prompt('InfluxDB API url', type=click.STRING, default=default_resource_url.get('host'))
+    if not is_url(influx_host):
+        raise click.UsageError(f'{influx_host} is not and url')
+
     db = click.prompt('Database', type=click.STRING, default=default_resource_url.get('db'))
     limit = click.prompt('Limit', type=click.INT, default=default_resource_url.get('limit', 1000))
     config['conf.resourceUrl'] = {
@@ -118,8 +132,14 @@ def prompt_influx_config(default_config, advanced=False):
         'limit': limit,
     }
 
-    config['conf.pagination.startAt'] = click.prompt('Initial offset ("dd/MM/yy HH:mm")',
-                                                     type=click.STRING, default='').strip()
+    config['conf.pagination.startAt'] = click.prompt('Initial offset ("dd/MM/yyyy HH:mm")',
+                                                     type=click.STRING,
+                                                     default=default_config.get('conf.pagination.startAt', '')).strip()
+    if config['conf.pagination.startAt']:
+        try:
+            datetime.strptime(config['conf.pagination.startAt'], '%d/%m/%Y %H:%M').timestamp()
+        except ValueError as e:
+            raise click.UsageError(str(e))
     config['conf.pagination.rateLimit'] = click.prompt('Wait time, ms', type=click.INT,
                                                        default=default_config.get('conf.pagination.rateLimit', 2000))
     return config

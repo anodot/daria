@@ -37,6 +37,6 @@ def replace_destination(name):
 
 def get_output(pipeline_name):
     for filename in os.listdir(SDC_RESULTS_PATH):
-        if filename.startswith(f'sdc-{pipeline_name}'):
+        if filename.startswith(f'sdc-{pipeline_name}-'):
             with open(os.path.join(SDC_RESULTS_PATH, filename)) as f:
                 return json.load(f)

@@ -4,6 +4,7 @@ import os
 import random
 import time
 
+from . import ConfigHandlerException
 from .config import pipeline_configs
 from ..source.cli import get_configs_list as list_sources
 from ..streamsets_api_client import api_client, StreamSetsApiClientException
@@ -100,7 +101,12 @@ def create(advanced):
         click.secho(str(e), err=True, fg='red')
         return
 
-    new_config = config_handler.override_base_config(pipeline_obj['uuid'], pipeline_obj['title'])
+    try:
+        new_config = config_handler.override_base_config(pipeline_obj['uuid'], pipeline_obj['title'])
+    except ConfigHandlerException as e:
+        click.secho(str(e), err=True, fg='red')
+        return
+
     api_client.update_pipeline(pipeline_obj['pipelineId'], new_config)
 
     pipeline_rules = api_client.get_pipeline_rules(pipeline_obj['pipelineId'])
@@ -136,7 +142,11 @@ def edit(pipeline_id, advanced):
     pipeline_obj = api_client.get_pipeline(pipeline_config['pipeline_id'])
 
     config_handler = pipeline_c.get_config_handler(pipeline_config, pipeline_obj)
-    new_config = config_handler.override_base_config()
+    try:
+        new_config = config_handler.override_base_config()
+    except ConfigHandlerException as e:
+        click.secho(str(e), err=True, fg='red')
+        return
 
     try:
         api_client.update_pipeline(pipeline_config['pipeline_id'], new_config)
