@@ -3,6 +3,7 @@ import os
 
 from abc import ABC, abstractmethod
 from agent.logger import get_logger
+from copy import deepcopy
 
 logger = get_logger(__name__)
 
@@ -14,7 +15,7 @@ class BaseConfigHandler(ABC):
     PIPELINES_BASE_CONFIGS_PATH = 'base_pipelines/{source_name}_{destination_name}.json'
 
     def __init__(self, client_config, base_config=None):
-        self.client_config = client_config
+        self.client_config = deepcopy(client_config)
 
         if base_config:
             self.config = base_config
@@ -64,3 +65,7 @@ class BaseConfigHandler(ABC):
         for conf in self.config['stages'][-1]['configuration']:
             if conf['name'] in self.client_config['destination']['config']:
                 conf['value'] = self.client_config['destination']['config'][conf['name']]
+
+
+class ConfigHandlerException(Exception):
+    pass

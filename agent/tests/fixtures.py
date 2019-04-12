@@ -2,9 +2,9 @@ import json
 import os
 import pytest
 
-from agent.pipeline import cli as pipeline_cli
 from agent.streamsets_api_client import api_client
 from click.testing import CliRunner
+from agent.constants import SDC_DATA_PATH, SDC_RESULTS_PATH, DESTINATION_FILE
 
 
 @pytest.fixture(scope="session")
@@ -14,16 +14,16 @@ def cli_runner():
 
     api_client.delete_by_filtering('test_')
 
-    for filename in os.listdir(pipeline_cli.SDC_DATA_PATH):
+    for filename in os.listdir(SDC_DATA_PATH):
         if filename.startswith('error-test_'):
-            os.remove(os.path.join(pipeline_cli.SDC_DATA_PATH, filename))
-    if os.path.isdir(pipeline_cli.SDC_RESULTS_PATH):
-        for filename in os.listdir(pipeline_cli.SDC_RESULTS_PATH):
+            os.remove(os.path.join(SDC_DATA_PATH, filename))
+    if os.path.isdir(SDC_RESULTS_PATH):
+        for filename in os.listdir(SDC_RESULTS_PATH):
             if filename.startswith('sdc-test_'):
-                os.remove(os.path.join(pipeline_cli.SDC_RESULTS_PATH, filename))
+                os.remove(os.path.join(SDC_RESULTS_PATH, filename))
 
-    if os.path.isfile(pipeline_cli.DESTINATION_FILE):
-        os.remove(pipeline_cli.DESTINATION_FILE)
+    if os.path.isfile(DESTINATION_FILE):
+        os.remove(DESTINATION_FILE)
 
 
 def replace_destination(name):
@@ -36,7 +36,7 @@ def replace_destination(name):
 
 
 def get_output(pipeline_name):
-    for filename in os.listdir(pipeline_cli.SDC_RESULTS_PATH):
-        if filename.startswith(f'sdc-{pipeline_name}'):
-            with open(os.path.join(pipeline_cli.SDC_RESULTS_PATH, filename)) as f:
+    for filename in os.listdir(SDC_RESULTS_PATH):
+        if filename.startswith(f'sdc-{pipeline_name}-'):
+            with open(os.path.join(SDC_RESULTS_PATH, filename)) as f:
                 return json.load(f)

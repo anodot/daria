@@ -1,0 +1,50 @@
+[
+  {
+    "timestamp": 1553054426,
+    "properties": {
+      "target_type": "gauge",
+      "cpu": "cpu-total-usage",
+      "zone": "GF",
+      "host": "msk-air-trn1",
+      "measurement_category": "cpu_test",
+      "what": "usage_active"
+    },
+    "value": 0.504
+  },
+  {
+    "timestamp": 1553054426,
+    "properties": {
+      "target_type": "gauge",
+      "cpu": "cpu-total-usage",
+      "zone": "GF",
+      "host": "msk-air-trn1",
+      "measurement_category": "cpu_test",
+      "what": "usage_idle"
+    },
+    "value": 260404905034043060000
+  },
+  {
+    "timestamp": 1553154426,
+    "properties": {
+      "target_type": "gauge",
+      "cpu": "cpu-total-usage",
+      "zone": "GEO",
+      "host": "msk-air-trn1",
+      "measurement_category": "cpu_test",
+      "what": "usage_active"
+    },
+    "value": 0.504
+  },
+  {
+    "timestamp": 1553154426,
+    "properties": {
+      "target_type": "gauge",
+      "cpu": "cpu-total-usage",
+      "zone": "GEO",
+      "host": "msk-air-trn1",
+      "measurement_category": "cpu_test",
+      "what": "usage_idle"
+    },
+    "value": 26
+  }
+]

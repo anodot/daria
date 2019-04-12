@@ -1,19 +1,51 @@
-from .base import BaseConfigHandler
+import requests
+
+from .base import BaseConfigHandler, ConfigHandlerException
 from agent.logger import get_logger
+from datetime import datetime
+from urllib.parse import urljoin
 
 logger = get_logger(__name__)
 
 
 class InfluxConfigHandler(BaseConfigHandler):
+
+    def set_initial_offset(self, query):
+        source_config = self.client_config['source']['config']
+        if not source_config['conf.pagination.startAt']:
+            source_config['conf.pagination.startAt'] = 0
+            return
+
+        try:
+            query = 'SELECT count(*) FROM ({query} WHERE time < {time})'.format(**{
+                'query': query,
+                'time': int(datetime.strptime(source_config['conf.pagination.startAt'], '%d/%m/%Y %H:%M').timestamp() * 1e9)
+            })
+            source_config['conf.pagination.startAt'] = requests.get(urljoin(source_config['conf.resourceUrl']['host'],
+                                                                            '/query'), params={
+                'db': source_config['conf.resourceUrl']['db'],
+                'q': query
+            }).json()['results'][0]['series'][0]['values'][0][1]
+        except requests.exceptions.ConnectionError:
+            raise ConfigHandlerException('Failed to connect to source api url')
+        except KeyError:
+            source_config['conf.pagination.startAt'] = 0
+
     def override_stages(self):
         dimensions = self.get_dimensions()
         source_config = self.client_config['source']['config']
         columns_to_select = dimensions + self.client_config['value']['values']
-        source_config['conf.resourceUrl'] = source_config['conf.resourceUrl'].format(
-            dimensions=','.join(columns_to_select),
-            metric=self.client_config['measurement_name'],
-            startAt='{startAt}'
-        )
+        query_start = 'SELECT {dimensions} FROM {metric}'.format(**{
+            'dimensions': ','.join(columns_to_select),
+            'metric': self.client_config['measurement_name'],
+        })
+        self.set_initial_offset(query_start)
+        query = '/query?db={db}&epoch=s&q={query}+LIMIT+{limit}+OFFSET+${startAt}'.format(**{
+            'query': query_start.replace(' ', '+'),
+            'startAt': '{startAt}',
+            **source_config['conf.resourceUrl']
+        })
+        source_config['conf.resourceUrl'] = urljoin(source_config['conf.resourceUrl']['host'], query)
         self.update_source_configs()
 
         for stage in self.config['stages']:

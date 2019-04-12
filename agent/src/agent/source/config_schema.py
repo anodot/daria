@@ -1,7 +1,16 @@
 import click
 import re
 
-from urllib.parse import urlparse, parse_qs, urljoin
+from datetime import datetime
+from urllib.parse import urlparse
+
+
+def is_url(url):
+    try:
+        result = urlparse(url)
+        return all([result.scheme, result.netloc])
+    except ValueError as e:
+        return False
 
 
 def prompt_mongo_config(default_config, advanced=False):
@@ -110,39 +119,29 @@ def prompt_kafka_config(default_config, advanced=False):
 
 def prompt_influx_config(default_config, advanced=False):
     config = dict()
-    default_resource_url = default_config.get('conf.resourceUrl')
-    default_host = None
-    default_db = None
-    default_limit = 1000
-    if default_resource_url:
-        url_parsed = urlparse(default_resource_url)
-        parsed_query = parse_qs(url_parsed.query)
-        default_db = parsed_query.get('db')
-        if default_db:
-            default_db = default_db[0]
-        q = parsed_query.get('q')
-        if q:
-            default_limit_matches = re.search(r'LIMIT\+([0-9]+)\+OFFSET', q[0])
-            if default_limit_matches:
-                default_limit = default_limit_matches.group(1)
-        default_host = url_parsed.netloc
-        if url_parsed.scheme:
-            default_host = url_parsed.scheme + '://' + default_host
-    influx_host = click.prompt('InfluxDB API url', type=click.STRING, default=default_host)
-    db = click.prompt('Database', type=click.STRING, default=default_db)
-    limit = click.prompt('Limit', type=click.INT, default=default_limit)
-    query = '/query?db={db}&epoch=s&q=SELECT+{dimensions}+FROM+{metric}+LIMIT+{limit}+OFFSET+${startAt}'.format(**{
+    default_resource_url = default_config.get('conf.resourceUrl', {})
+    influx_host = click.prompt('InfluxDB API url', type=click.STRING, default=default_resource_url.get('host'))
+    if not is_url(influx_host):
+        raise click.UsageError(f'{influx_host} is not and url')
+
+    db = click.prompt('Database', type=click.STRING, default=default_resource_url.get('db'))
+    limit = click.prompt('Limit', type=click.INT, default=default_resource_url.get('limit', 1000))
+    config['conf.resourceUrl'] = {
+        'host': influx_host,
         'db': db,
         'limit': limit,
-        'dimensions': '{dimensions}',
-        'metric': '{metric}',
-        'startAt': '{startAt}',
-    })
-    config['conf.resourceUrl'] = urljoin(influx_host, query)
-    config['conf.pagination.startAt'] = click.prompt('Initial offset', type=click.INT,
-                                                     default=default_config.get('conf.pagination.startAt', 0))
+    }
+
+    config['conf.pagination.startAt'] = click.prompt('Initial offset ("dd/MM/yyyy HH:mm")',
+                                                     type=click.STRING,
+                                                     default=default_config.get('conf.pagination.startAt', '')).strip()
+    if config['conf.pagination.startAt']:
+        try:
+            datetime.strptime(config['conf.pagination.startAt'], '%d/%m/%Y %H:%M').timestamp()
+        except ValueError as e:
+            raise click.UsageError(str(e))
     config['conf.pagination.rateLimit'] = click.prompt('Wait time, ms', type=click.INT,
-                                                     default=default_config.get('conf.pagination.rateLimit', 2000))
+                                                       default=default_config.get('conf.pagination.rateLimit', 2000))
     return config
 
 

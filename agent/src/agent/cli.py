@@ -3,8 +3,9 @@ import json
 import os
 import urllib.parse
 
-from .pipeline.cli import pipeline, DESTINATION_FILE
+from .pipeline.cli import pipeline
 from .source.cli import source
+from agent.constants import DESTINATION_FILE
 
 
 @click.group()
