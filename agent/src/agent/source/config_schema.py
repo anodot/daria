@@ -132,14 +132,20 @@ def prompt_influx_config(default_config, advanced=False):
         'limit': limit,
     }
 
-    config['conf.pagination.startAt'] = click.prompt('Initial offset ("dd/MM/yyyy HH:mm")',
+    config['conf.pagination.startAt'] = click.prompt('Initial offset (amount of days ago or specific date in format "dd/MM/yyyy HH:mm")',
                                                      type=click.STRING,
                                                      default=default_config.get('conf.pagination.startAt', '')).strip()
     if config['conf.pagination.startAt']:
-        try:
-            datetime.strptime(config['conf.pagination.startAt'], '%d/%m/%Y %H:%M').timestamp()
-        except ValueError as e:
-            raise click.UsageError(str(e))
+        if config['conf.pagination.startAt'].isdigit():
+            try:
+                int(config['conf.pagination.startAt'])
+            except ValueError:
+                raise click.UsageError(config['conf.pagination.startAt'] + ' is not a valid integer')
+        else:
+            try:
+                datetime.strptime(config['conf.pagination.startAt'], '%d/%m/%Y %H:%M').timestamp()
+            except ValueError as e:
+                raise click.UsageError(str(e))
     config['conf.pagination.rateLimit'] = click.prompt('Wait time, ms', type=click.INT,
                                                        default=default_config.get('conf.pagination.rateLimit', 2000))
     return config
