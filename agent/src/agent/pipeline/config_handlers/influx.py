@@ -2,7 +2,7 @@ import requests
 
 from .base import BaseConfigHandler, ConfigHandlerException
 from agent.logger import get_logger
-from datetime import datetime
+from datetime import datetime, timedelta
 from urllib.parse import urljoin
 
 logger = get_logger(__name__)
@@ -16,10 +16,15 @@ class InfluxConfigHandler(BaseConfigHandler):
             source_config['conf.pagination.startAt'] = 0
             return
 
+        if source_config['conf.pagination.startAt'].isdigit():
+            timestamp = datetime.now() - timedelta(days=int(source_config['conf.pagination.startAt']))
+        else:
+            timestamp = datetime.strptime(source_config['conf.pagination.startAt'], '%d/%m/%Y %H:%M')
+
         try:
             query = 'SELECT count(*) FROM ({query} WHERE time < {time})'.format(**{
                 'query': query,
-                'time': int(datetime.strptime(source_config['conf.pagination.startAt'], '%d/%m/%Y %H:%M').timestamp() * 1e9)
+                'time': int(timestamp.timestamp() * 1e9)
             })
             source_config['conf.pagination.startAt'] = requests.get(urljoin(source_config['conf.resourceUrl']['host'],
                                                                             '/query'), params={
