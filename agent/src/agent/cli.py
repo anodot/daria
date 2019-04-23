@@ -3,8 +3,10 @@ import json
 import os
 import urllib.parse
 
-from .pipeline.cli import pipeline
+from .pipeline.cli import pipeline, create_pipeline, edit_pipeline
+from .pipeline.config_handlers.monitoring import MonitoringConfigHandler
 from .source.cli import source
+from .streamsets_api_client import api_client
 from agent.constants import DESTINATION_FILE
 
 
@@ -24,10 +26,11 @@ def destination():
         "config": {},
         "type": "http"
     }
+    edit = False
     if os.path.isfile(DESTINATION_FILE):
         if not click.confirm('Destination is already configured. Do you want to edit it?'):
             return
-
+        edit = True
         with open(DESTINATION_FILE, 'r') as f:
             dest = json.load(f)
 
@@ -42,6 +45,16 @@ def destination():
         dest['config']['conf.client.proxy.username'] = click.prompt('Proxy username', type=click.STRING,
                                                                     default=dest['config'].get('conf.client.proxy.username', ''))
         dest['config']['conf.client.proxy.password'] = click.prompt('Proxy password', type=click.STRING, default='')
+
+    pipeline_config = {'destination': dest, 'pipeline_id': 'Monitoring'}
+    config_handler = MonitoringConfigHandler(pipeline_config)
+    if edit:
+        api_client.stop_pipeline(pipeline_config['pipeline_id'])
+        edit_pipeline(config_handler, pipeline_config)
+    else:
+        create_pipeline(config_handler, pipeline_config)
+
+    api_client.start_pipeline(pipeline_config['pipeline_id'])
 
     with open(DESTINATION_FILE, 'w') as f:
         json.dump(dest, f)

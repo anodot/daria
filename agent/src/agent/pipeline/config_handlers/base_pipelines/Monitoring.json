@@ -2,10 +2,10 @@
   "pipelineConfig" : {
     "schemaVersion" : 6,
     "version" : 11,
-    "pipelineId" : "Monitoringdc49412b-1fda-497f-bb2d-994d72e70c96",
+    "pipelineId" : "Monitoring1034a3c96-62e8-44e4-8427-bf4d096de3ad",
     "title" : "Monitoring",
     "description" : "",
-    "uuid" : "01e75663-cc97-45c3-91a0-5ad5cbb608dc",
+    "uuid" : "f359e86f-e019-4431-9514-d4611f8d7817",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -168,7 +168,7 @@
         "previewSource" : "CONFIGURED_SOURCE",
         "batchSize" : 10,
         "timeout" : 30000,
-        "writeToDestinations" : false,
+        "writeToDestinations" : true,
         "executeLifecycleEvents" : false,
         "showHeader" : false,
         "showFieldType" : true,
@@ -864,7 +864,7 @@
         "value" : null
       }, {
         "name" : "conf.outputField",
-        "value" : "/"
+        "value" : "/metrics"
       }, {
         "name" : "conf.headerOutputLocation",
         "value" : "HEADER"
@@ -1050,13 +1050,13 @@
         "value" : [ ]
       }, {
         "name" : "stageRecordPreconditions",
-        "value" : [ "${record:value('/status') == 'RUNNING'}", "${record:value('/pipelineId') != 'Monitoringdc49412b-1fda-497f-bb2d-994d72e70c96'}" ]
+        "value" : [ "${record:value('/status') == 'RUNNING'}", "${!str:contains(record:value('/pipelineId'), 'Monitoring')}" ]
       } ],
       "uiInfo" : {
         "description" : "",
         "label" : "HTTP Client 2",
         "xPos" : 550,
-        "yPos" : 116,
+        "yPos" : 115,
         "stageType" : "PROCESSOR"
       },
       "inputLanes" : [ "FieldPivoter_01OutputLane15559322335410" ],
@@ -1076,7 +1076,7 @@
         "value" : "/**\n * Available Objects:\n * \n *  state: a dict that is preserved between invocations of this script. \n *        Useful for caching bits of data e.g. counters and long-lived resources.\n *\n *  log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n *                               loglevel is any log4j level: e.g. info, error, warn, trace.\n *   sdcFunctions.getFieldNull(Record, 'field path'): Receive a constant defined above \n *                          to check if the field is typed field with value null\n *   sdcFunctions.createMap(boolean listMap): Create a map for use as a field in a record. \n *                          Pass true to this function to create a list map (ordered map)\n */\n\n// state['connection'] = new Connection().open();"
       }, {
         "name" : "script",
-        "value" : "/**\n * Available constants: \n *   They are to assign a type to a field with a value null.\n *   NULL_BOOLEAN, NULL_CHAR, NULL_BYTE, NULL_SHORT, NULL_INTEGER, NULL_LONG\n *   NULL_FLOATNULL_DOUBLE, NULL_DATE, NULL_DATETIME, NULL_TIME, NULL_DECIMAL\n *   NULL_BYTE_ARRAY, NULL_STRING, NULL_LIST, NULL_MAP\n *\n * Available Objects:\n * \n *  records: an array of records to process, depending on the JavaScript processor\n *           processing mode it may have 1 record or all the records in the batch.\n *\n *  state: a dict that is preserved between invocations of this script. \n *        Useful for caching bits of data e.g. counters.\n *\n *  log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n *                               loglevel is any log4j level: e.g. info, error, warn, trace.\n *\n *  output.write(record): writes a record to processor output\n *\n *  error.write(record, message): sends a record to error\n *\n *  sdcFunctions.getFieldNull(Record, 'field path'): Receive a constant defined above\n *                            to check if the field is typed field with value null\n *  sdcFunctions.createRecord(String recordId): Creates a new record.\n *                            Pass a recordId to uniquely identify the record and include enough information to track down the record source. \n *  sdcFunctions.createMap(boolean listMap): Create a map for use as a field in a record.\n *                            Pass true to this function to create a list map (ordered map)\n *\n *  sdcFunctions.createEvent(String type, int version): Creates a new event.\n *                            Create new empty event with standard headers.\n *  sdcFunctions.toEvent(Record): Send event to event stream\n *                            Only events created with sdcFunctions.createEvent are supported.\n *  sdcFunctions.isPreview(): Determine if pipeline is in preview mode.\n *\n * Available Record Header Variables:n *\n *  record.attributes: a map of record header attributes.\n *\n *  record.<header name>: get the value of 'header name'.\n */\n\n// Sample JavaScript code\nfor(var i = 0; i < records.length; i++) {\n  try {\n    // Change record root field value to a STRING value\n    //records[i].value = 'Hello ' + i;\n\n\n    // Change record root field value to a MAP value and create an entry\n    //records[i].value = { V : 'Hello' };\n\n    // Access a MAP entry\n    //records[i].value.X = records[i].value['V'] + ' World';\n\n    // Modify a MAP entry\n    //records[i].value.V = 5;\n\n    // Create an ARRAY entry\n    //records[i].value.A = ['Element 1', 'Element 2'];\n\n    // Access a Array entry\n    //records[i].value.B = records[i].value['A'][0];\n\n    // Modify an existing ARRAY entry\n    //records[i].value.A[0] = 100;\n\n    // Assign a integer type to a field and value null\n    // records[i].value.null_int = NULL_INTEGER \n\n    // Check if the field is NULL_INTEGER. If so, assign a value \n    // if(sdcFunctions.getFieldNull(records[i], '/null_int') == NULL_INTEGER)\n    //    records[i].value.null_int = 123\n\n    // Create a new record with map field \n    // var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':newRecordId');\n    // newRecord.value = {'field1' : 'val1', 'field2' : 'val2'};\n    // output.write(newRecord);\n    // Create a new map and add it to the original record\n    // var newMap = sdcFunctions.createMap(true);\n    // newMap['key'] = 'value';\n    // records[i].value['b'] = newMap;\n\n    //Applies if the source uses WHOLE_FILE as data format\n    //var input_stream = record.value['fileRef'].getInputStream();\n    //try {\n      //input_stream.read(); //Process the input stream\n    //} finally{\n      //input_stream.close()\n    //}\n\n    // Modify a header attribute entry\n    // records[i].attributes['name'] = records[i].attributes['first_name'] + ' ' + records[i].attributes['last_name']    //\n\n    // Get a record header with field names ex. get sourceId and errorCode\n    // var sourceId = records[i].sourceId\n    // var errorCode = ''\n    // if(records[i].errorCode) {\n    //     errorCode = records[i].errorCode\n    // }\n\n    // Write record to processor output\n    output.write(records[i]);\n  } catch (e) {\n    // Send record to error\n    error.write(records[i], e);\n  }\n}"
+        "value" : "/**\n * Available constants: \n *   They are to assign a type to a field with a value null.\n *   NULL_BOOLEAN, NULL_CHAR, NULL_BYTE, NULL_SHORT, NULL_INTEGER, NULL_LONG\n *   NULL_FLOATNULL_DOUBLE, NULL_DATE, NULL_DATETIME, NULL_TIME, NULL_DECIMAL\n *   NULL_BYTE_ARRAY, NULL_STRING, NULL_LIST, NULL_MAP\n *\n * Available Objects:\n * \n *  records: an array of records to process, depending on the JavaScript processor\n *           processing mode it may have 1 record or all the records in the batch.\n *\n *  state: a dict that is preserved between invocations of this script. \n *        Useful for caching bits of data e.g. counters.\n *\n *  log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n *                               loglevel is any log4j level: e.g. info, error, warn, trace.\n *\n *  output.write(record): writes a record to processor output\n *\n *  error.write(record, message): sends a record to error\n *\n *  sdcFunctions.getFieldNull(Record, 'field path'): Receive a constant defined above\n *                            to check if the field is typed field with value null\n *  sdcFunctions.createRecord(String recordId): Creates a new record.\n *                            Pass a recordId to uniquely identify the record and include enough information to track down the record source. \n *  sdcFunctions.createMap(boolean listMap): Create a map for use as a field in a record.\n *                            Pass true to this function to create a list map (ordered map)\n *\n *  sdcFunctions.createEvent(String type, int version): Creates a new event.\n *                            Create new empty event with standard headers.\n *  sdcFunctions.toEvent(Record): Send event to event stream\n *                            Only events created with sdcFunctions.createEvent are supported.\n *  sdcFunctions.isPreview(): Determine if pipeline is in preview mode.\n *\n * Available Record Header Variables:n *\n *  record.attributes: a map of record header attributes.\n *\n *  record.<header name>: get the value of 'header name'.\n */\ntime = Math.round(Date.now()/1000).toString()\nfunction get_metric(pipeline_id, what, target_type, value) {\n  return {\n    'timestamp': time,\n    'value': value,\n    'properties': {'pipeline_id': pipeline_id, 'source': 'agent_monitoring', 'what': what, 'target_type': target_type}\n  }\n}\n\n// Sample JavaScript code\nfor(var i = 0; i < records.length; i++) {\n  try {\n    // Change record root field value to a STRING value\n    //records[i].value = 'Hello ' + i;\n\n\n    // Change record root field value to a MAP value and create an entry\n    //records[i].value = { V : 'Hello' };\n\n    // Access a MAP entry\n    //records[i].value.X = records[i].value['V'] + ' World';\n\n    // Modify a MAP entry\n    //records[i].value.V = 5;\n\n    // Create an ARRAY entry\n    //records[i].value.A = ['Element 1', 'Element 2'];\n\n    // Access a Array entry\n    //records[i].value.B = records[i].value['A'][0];\n\n    // Modify an existing ARRAY entry\n    //records[i].value.A[0] = 100;\n\n    // Assign a integer type to a field and value null\n    // records[i].value.null_int = NULL_INTEGER \n\n    // Check if the field is NULL_INTEGER. If so, assign a value \n    // if(sdcFunctions.getFieldNull(records[i], '/null_int') == NULL_INTEGER)\n    //    records[i].value.null_int = 123\n\n    // Create a new record with map field \n    var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':newRecordId');\n    pipeline_id = records[i].value['pipelineId']\n    metrics = records[i].value['metrics']\n    newRecord.value = [\n      get_metric(pipeline_id, 'pipeline_batchCount', 'counter', metrics['counters']['pipeline.batchCount.counter']['count']),\n\t  get_metric(pipeline_id, 'pipeline_batchErrorMessages', 'counter', metrics['counters']['pipeline.batchErrorMessages.counter']['count']),\n      get_metric(pipeline_id, 'pipeline_batchErrorRecords', 'counter', metrics['counters']['pipeline.batchErrorRecords.counter']['count']),\n      get_metric(pipeline_id, 'pipeline_batchInputRecords', 'counter', metrics['counters']['pipeline.batchInputRecords.counter']['count']),\n      get_metric(pipeline_id, 'pipeline_batchOutputRecords', 'counter', metrics['counters']['pipeline.batchOutputRecords.counter']['count']),\n      get_metric(pipeline_id, 'pipeline_memoryConsumed', 'counter', metrics['counters']['pipeline.memoryConsumed.counter']['count']),\n    ];\n    output.write(newRecord);\n    // Create a new map and add it to the original record\n    // var newMap = sdcFunctions.createMap(true);\n    // newMap['key'] = 'value';\n    // records[i].value['b'] = newMap;\n\n    //Applies if the source uses WHOLE_FILE as data format\n    //var input_stream = record.value['fileRef'].getInputStream();\n    //try {\n      //input_stream.read(); //Process the input stream\n    //} finally{\n      //input_stream.close()\n    //}\n\n    // Modify a header attribute entry\n    // records[i].attributes['name'] = records[i].attributes['first_name'] + ' ' + records[i].attributes['last_name']    //\n\n    // Get a record header with field names ex. get sourceId and errorCode\n    // var sourceId = records[i].sourceId\n    // var errorCode = ''\n    // if(records[i].errorCode) {\n    //     errorCode = records[i].errorCode\n    // }\n\n    // Write record to processor output\n    // output.write(records[i]);\n  } catch (e) {\n    // Send record to error\n    error.write(records[i], e);\n  }\n}"
       }, {
         "name" : "destroyScript",
         "value" : "/**\n * Available Objects:\n * \n *  state: a dict that is preserved between invocations of this script. \n *        Useful for caching bits of data e.g. counters and long-lived resources.\n *\n *  log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n *                               loglevel is any log4j level: e.g. info, error, warn, trace.\n *   sdcFunctions.getFieldNull(Record, 'field path'): Receive a constant defined above \n *                          to check if the field is typed field with value null\n *   sdcFunctions.createMap(boolean listMap): Create a map for use as a field in a record. \n *                          Pass true to this function to create a list map (ordered map)\n *   sdcFunctions.createEvent(String type, int version): Creates a new event.\n *                          Create new empty event with standard headers.\n *   sdcFunctions.toEvent(Record): Send event to event stream\n *                          Only events created with sdcFunctions.createEvent are supported.\n */\n\n// state['connection'].close();"
@@ -1093,8 +1093,8 @@
       "uiInfo" : {
         "description" : "",
         "label" : "JavaScript Evaluator 1",
-        "xPos" : 760,
-        "yPos" : 119,
+        "xPos" : 737,
+        "yPos" : 112,
         "stageType" : "PROCESSOR"
       },
       "inputLanes" : [ "HTTPClient_02OutputLane15559313232440" ],
@@ -1102,175 +1102,283 @@
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
-      "instanceName" : "LocalFS_01",
+      "instanceName" : "HTTPClient_03",
       "library" : "streamsets-datacollector-basic-lib",
-      "stageName" : "com_streamsets_pipeline_stage_destination_localfilesystem_LocalFileSystemDTarget",
-      "stageVersion" : "3",
+      "stageName" : "com_streamsets_pipeline_stage_destination_http_HttpClientDTarget",
+      "stageVersion" : "4",
       "configuration" : [ {
-        "name" : "configs.uniquePrefix",
-        "value" : "sdc-${sdc:id()}"
-      }, {
-        "name" : "configs.fileNameSuffix",
-        "value" : null
-      }, {
-        "name" : "configs.dirPathTemplateInHeader",
-        "value" : false
-      }, {
-        "name" : "configs.dirPathTemplate",
-        "value" : "/tmp/out/${YYYY()}-${MM()}-${DD()}-${hh()}"
-      }, {
-        "name" : "configs.timeZoneID",
-        "value" : "UTC"
-      }, {
-        "name" : "configs.timeDriver",
-        "value" : "${time:now()}"
-      }, {
-        "name" : "configs.maxRecordsPerFile",
-        "value" : 0
-      }, {
-        "name" : "configs.maxFileSize",
-        "value" : 0
-      }, {
-        "name" : "configs.idleTimeout",
-        "value" : "${1 * HOURS}"
-      }, {
-        "name" : "configs.compression",
-        "value" : "NONE"
-      }, {
-        "name" : "configs.otherCompression",
-        "value" : null
-      }, {
-        "name" : "configs.fileType",
-        "value" : "TEXT"
-      }, {
-        "name" : "configs.keyEl",
-        "value" : "${uuid()}"
-      }, {
-        "name" : "configs.lateRecordsLimit",
-        "value" : "${1 * HOURS}"
-      }, {
-        "name" : "configs.rollIfHeader",
-        "value" : false
-      }, {
-        "name" : "configs.rollHeaderName",
-        "value" : "roll"
-      }, {
-        "name" : "configs.lateRecordsAction",
-        "value" : "SEND_TO_ERROR"
-      }, {
-        "name" : "configs.lateRecordsDirPathTemplate",
-        "value" : "/tmp/late/${YYYY()}-${MM()}-${DD()}"
-      }, {
-        "name" : "configs.dataFormat",
-        "value" : "JSON"
-      }, {
-        "name" : "configs.hdfsPermissionCheck",
-        "value" : true
-      }, {
-        "name" : "configs.permissionEL",
-        "value" : null
-      }, {
-        "name" : "configs.skipOldTempFileRecovery",
-        "value" : false
-      }, {
-        "name" : "configs.dataGeneratorFormatConfig.charset",
+        "name" : "conf.dataGeneratorFormatConfig.charset",
         "value" : "UTF-8"
       }, {
-        "name" : "configs.dataGeneratorFormatConfig.csvFileFormat",
+        "name" : "conf.dataGeneratorFormatConfig.csvFileFormat",
         "value" : "CSV"
       }, {
-        "name" : "configs.dataGeneratorFormatConfig.csvHeader",
+        "name" : "conf.dataGeneratorFormatConfig.csvHeader",
         "value" : "NO_HEADER"
       }, {
-        "name" : "configs.dataGeneratorFormatConfig.csvReplaceNewLines",
+        "name" : "conf.dataGeneratorFormatConfig.csvReplaceNewLines",
         "value" : true
       }, {
-        "name" : "configs.dataGeneratorFormatConfig.csvReplaceNewLinesString",
+        "name" : "conf.dataGeneratorFormatConfig.csvReplaceNewLinesString",
         "value" : " "
       }, {
-        "name" : "configs.dataGeneratorFormatConfig.csvCustomDelimiter",
+        "name" : "conf.dataGeneratorFormatConfig.csvCustomDelimiter",
         "value" : "|"
       }, {
-        "name" : "configs.dataGeneratorFormatConfig.csvCustomEscape",
+        "name" : "conf.dataGeneratorFormatConfig.csvCustomEscape",
         "value" : "\\"
       }, {
-        "name" : "configs.dataGeneratorFormatConfig.csvCustomQuote",
+        "name" : "conf.dataGeneratorFormatConfig.csvCustomQuote",
         "value" : "\""
       }, {
-        "name" : "configs.dataGeneratorFormatConfig.jsonMode",
+        "name" : "conf.dataGeneratorFormatConfig.jsonMode",
         "value" : "MULTIPLE_OBJECTS"
       }, {
-        "name" : "configs.dataGeneratorFormatConfig.textFieldPath",
+        "name" : "conf.dataGeneratorFormatConfig.textFieldPath",
         "value" : "/text"
       }, {
-        "name" : "configs.dataGeneratorFormatConfig.textRecordSeparator",
+        "name" : "conf.dataGeneratorFormatConfig.textRecordSeparator",
         "value" : "\\n"
       }, {
-        "name" : "configs.dataGeneratorFormatConfig.textFieldMissingAction",
+        "name" : "conf.dataGeneratorFormatConfig.textFieldMissingAction",
         "value" : "ERROR"
       }, {
-        "name" : "configs.dataGeneratorFormatConfig.textEmptyLineIfNull",
+        "name" : "conf.dataGeneratorFormatConfig.textEmptyLineIfNull",
         "value" : false
       }, {
-        "name" : "configs.dataGeneratorFormatConfig.avroSchemaSource",
+        "name" : "conf.dataGeneratorFormatConfig.avroSchemaSource",
         "value" : null
       }, {
-        "name" : "configs.dataGeneratorFormatConfig.avroSchema",
+        "name" : "conf.dataGeneratorFormatConfig.avroSchema",
         "value" : null
       }, {
-        "name" : "configs.dataGeneratorFormatConfig.registerSchema",
+        "name" : "conf.dataGeneratorFormatConfig.registerSchema",
         "value" : false
       }, {
-        "name" : "configs.dataGeneratorFormatConfig.schemaRegistryUrlsForRegistration",
+        "name" : "conf.dataGeneratorFormatConfig.schemaRegistryUrlsForRegistration",
         "value" : [ ]
       }, {
-        "name" : "configs.dataGeneratorFormatConfig.schemaRegistryUrls",
+        "name" : "conf.dataGeneratorFormatConfig.schemaRegistryUrls",
         "value" : [ ]
       }, {
-        "name" : "configs.dataGeneratorFormatConfig.schemaLookupMode",
+        "name" : "conf.dataGeneratorFormatConfig.schemaLookupMode",
         "value" : "SUBJECT"
       }, {
-        "name" : "configs.dataGeneratorFormatConfig.subject",
+        "name" : "conf.dataGeneratorFormatConfig.subject",
         "value" : null
       }, {
-        "name" : "configs.dataGeneratorFormatConfig.subjectToRegister",
+        "name" : "conf.dataGeneratorFormatConfig.subjectToRegister",
         "value" : null
       }, {
-        "name" : "configs.dataGeneratorFormatConfig.schemaId",
+        "name" : "conf.dataGeneratorFormatConfig.schemaId",
         "value" : null
       }, {
-        "name" : "configs.dataGeneratorFormatConfig.avroCompression",
-        "value" : "NULL"
-      }, {
-        "name" : "configs.dataGeneratorFormatConfig.binaryFieldPath",
-        "value" : "/"
-      }, {
-        "name" : "configs.dataGeneratorFormatConfig.protoDescriptorFile",
-        "value" : null
-      }, {
-        "name" : "configs.dataGeneratorFormatConfig.messageType",
-        "value" : null
-      }, {
-        "name" : "configs.dataGeneratorFormatConfig.fileNameEL",
-        "value" : null
-      }, {
-        "name" : "configs.dataGeneratorFormatConfig.wholeFileExistsAction",
-        "value" : "TO_ERROR"
-      }, {
-        "name" : "configs.dataGeneratorFormatConfig.includeChecksumInTheEvents",
-        "value" : false
-      }, {
-        "name" : "configs.dataGeneratorFormatConfig.checksumAlgorithm",
-        "value" : "MD5"
-      }, {
-        "name" : "configs.dataGeneratorFormatConfig.xmlPrettyPrint",
+        "name" : "conf.dataGeneratorFormatConfig.includeSchema",
         "value" : true
       }, {
-        "name" : "configs.dataGeneratorFormatConfig.xmlValidateSchema",
+        "name" : "conf.dataGeneratorFormatConfig.avroCompression",
+        "value" : "NULL"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.binaryFieldPath",
+        "value" : "/"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.protoDescriptorFile",
+        "value" : null
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.messageType",
+        "value" : null
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.fileNameEL",
+        "value" : null
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.wholeFileExistsAction",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.includeChecksumInTheEvents",
         "value" : false
       }, {
-        "name" : "configs.dataGeneratorFormatConfig.xmlSchema",
+        "name" : "conf.dataGeneratorFormatConfig.checksumAlgorithm",
+        "value" : "MD5"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.xmlPrettyPrint",
+        "value" : true
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.xmlValidateSchema",
+        "value" : false
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.xmlSchema",
         "value" : null
+      }, {
+        "name" : "conf.dataFormat",
+        "value" : "JSON"
+      }, {
+        "name" : "conf.resourceUrl",
+        "value" : "http://daria-test2/api/v1/metrics?token=06599f200eccbf0ea2dbb29312c41424&protocol=anodot20"
+      }, {
+        "name" : "conf.headers",
+        "value" : [ ]
+      }, {
+        "name" : "conf.httpMethod",
+        "value" : "POST"
+      }, {
+        "name" : "conf.methodExpression",
+        "value" : null
+      }, {
+        "name" : "conf.client.transferEncoding",
+        "value" : "BUFFERED"
+      }, {
+        "name" : "conf.client.httpCompression",
+        "value" : "NONE"
+      }, {
+        "name" : "conf.client.connectTimeoutMillis",
+        "value" : 0
+      }, {
+        "name" : "conf.client.readTimeoutMillis",
+        "value" : 0
+      }, {
+        "name" : "conf.client.numThreads",
+        "value" : 1
+      }, {
+        "name" : "conf.client.authType",
+        "value" : "NONE"
+      }, {
+        "name" : "conf.client.useOAuth2",
+        "value" : false
+      }, {
+        "name" : "conf.client.oauth.consumerKey",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth.consumerSecret",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth.token",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth.tokenSecret",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth2.credentialsGrantType",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth2.tokenUrl",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth2.clientId",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth2.clientSecret",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth2.username",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth2.password",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth2.resourceOwnerClientId",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth2.resourceOwnerClientSecret",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth2.algorithm",
+        "value" : "NONE"
+      }, {
+        "name" : "conf.client.oauth2.key",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth2.jwtClaims",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth2.transferEncoding",
+        "value" : "BUFFERED"
+      }, {
+        "name" : "conf.client.oauth2.additionalValues",
+        "value" : [ { } ]
+      }, {
+        "name" : "conf.client.basicAuth.username",
+        "value" : null
+      }, {
+        "name" : "conf.client.basicAuth.password",
+        "value" : null
+      }, {
+        "name" : "conf.client.useProxy",
+        "value" : true
+      }, {
+        "name" : "conf.client.proxy.uri",
+        "value" : "http://squid:3128"
+      }, {
+        "name" : "conf.client.proxy.username",
+        "value" : null
+      }, {
+        "name" : "conf.client.proxy.password",
+        "value" : null
+      }, {
+        "name" : "conf.client.tlsConfig.tlsEnabled",
+        "value" : false
+      }, {
+        "name" : "conf.client.tlsConfig.keyStoreFilePath",
+        "value" : null
+      }, {
+        "name" : "conf.client.tlsConfig.keyStoreType",
+        "value" : "JKS"
+      }, {
+        "name" : "conf.client.tlsConfig.keyStorePassword",
+        "value" : null
+      }, {
+        "name" : "conf.client.tlsConfig.keyStoreAlgorithm",
+        "value" : "SunX509"
+      }, {
+        "name" : "conf.client.tlsConfig.trustStoreFilePath",
+        "value" : null
+      }, {
+        "name" : "conf.client.tlsConfig.trustStoreType",
+        "value" : "JKS"
+      }, {
+        "name" : "conf.client.tlsConfig.trustStorePassword",
+        "value" : null
+      }, {
+        "name" : "conf.client.tlsConfig.trustStoreAlgorithm",
+        "value" : "SunX509"
+      }, {
+        "name" : "conf.client.tlsConfig.useDefaultProtocols",
+        "value" : true
+      }, {
+        "name" : "conf.client.tlsConfig.protocols",
+        "value" : [ ]
+      }, {
+        "name" : "conf.client.tlsConfig.useDefaultCiperSuites",
+        "value" : true
+      }, {
+        "name" : "conf.client.tlsConfig.cipherSuites",
+        "value" : [ ]
+      }, {
+        "name" : "conf.client.requestLoggingConfig.enableRequestLogging",
+        "value" : false
+      }, {
+        "name" : "conf.client.requestLoggingConfig.logLevel",
+        "value" : "FINE"
+      }, {
+        "name" : "conf.client.requestLoggingConfig.verbosity",
+        "value" : "HEADERS_ONLY"
+      }, {
+        "name" : "conf.client.requestLoggingConfig.maxEntitySize",
+        "value" : 0
+      }, {
+        "name" : "conf.singleRequestPerBatch",
+        "value" : true
+      }, {
+        "name" : "conf.rateLimit",
+        "value" : 0
+      }, {
+        "name" : "conf.maxRequestCompletionSecs",
+        "value" : 60
+      }, {
+        "name" : "conf.responseConf.sendResponseToOrigin",
+        "value" : false
+      }, {
+        "name" : "conf.responseConf.responseType",
+        "value" : "SUCCESS_RECORDS"
       }, {
         "name" : "stageOnRecordError",
         "value" : "TO_ERROR"
@@ -1283,9 +1391,9 @@
       } ],
       "uiInfo" : {
         "description" : "",
-        "label" : "Local FS 1",
-        "xPos" : 971,
-        "yPos" : 110,
+        "label" : "HTTP Client 3",
+        "xPos" : 957,
+        "yPos" : 111,
         "stageType" : "TARGET"
       },
       "inputLanes" : [ "JavaScriptEvaluator_01OutputLane15559414121260" ],
@@ -1324,22 +1432,22 @@
       "services" : [ ]
     },
     "info" : {
-      "pipelineId" : "Monitoringdc49412b-1fda-497f-bb2d-994d72e70c96",
-      "title" : "Monitoring",
+      "pipelineId" : "Monitoring1034a3c96-62e8-44e4-8427-bf4d096de3ad",
+      "title" : "Monitoring (1)",
       "description" : "",
-      "created" : 1555588017790,
-      "lastModified" : 1555941420415,
+      "created" : 1556023123700,
+      "lastModified" : 1556025762182,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "01e75663-cc97-45c3-91a0-5ad5cbb608dc",
+      "uuid" : "f359e86f-e019-4431-9514-d4611f8d7817",
       "valid" : true,
       "metadata" : {
         "labels" : [ ]
       },
-      "name" : "Monitoringdc49412b-1fda-497f-bb2d-994d72e70c96",
-      "sdcVersion" : "3.7.2",
-      "sdcId" : "83a1c247-60ee-11e9-aeaa-4586c981d3b6"
+      "name" : "Monitoring1034a3c96-62e8-44e4-8427-bf4d096de3ad",
+      "sdcVersion" : "3.7.1",
+      "sdcId" : "a31af9a3-65c4-11e9-9efb-31c823dad68b"
     },
     "metadata" : {
       "labels" : [ ]
@@ -1635,9 +1743,9 @@
     },
     "valid" : true,
     "issues" : {
-      "pipelineIssues" : [ ],
       "stageIssues" : { },
-      "issueCount" : 0
+      "issueCount" : 0,
+      "pipelineIssues" : [ ]
     },
     "previewable" : true
   },
@@ -1702,7 +1810,7 @@
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "5e53dcdc-ca35-47cf-8095-74595685ae68",
+    "uuid" : "40518b64-fb50-4dff-9c8b-b7673bab6569",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : [ ]

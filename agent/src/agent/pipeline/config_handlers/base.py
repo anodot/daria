@@ -17,21 +17,25 @@ class BaseConfigHandler(ABC):
     def __init__(self, client_config, base_config=None):
         self.client_config = deepcopy(client_config)
 
-        if base_config:
-            self.config = base_config
-        else:
-            base_path = self.PIPELINES_BASE_CONFIGS_PATH.format(**{
-                'source_name': client_config['source']['type'],
-                'destination_name': client_config['destination']['type']
-            })
-            with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), base_path), 'r') as f:
-                data = json.load(f)
-                self.config = data['pipelineConfig']
-                self.rules = data['pipelineRules']
+        self.config = base_config if base_config else self.load_base_config()
+
+    def load_base_config(self):
+        base_path = self.PIPELINES_BASE_CONFIGS_PATH.format(**{
+            'source_name': self.client_config['source']['type'],
+            'destination_name': self.client_config['destination']['type']
+        })
+        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), base_path), 'r') as f:
+            data = json.load(f)
+
+        return data['pipelineConfig']
 
     @abstractmethod
     def override_stages(self):
         ...
+
+    def set_labels(self):
+        self.config['metadata']['labels'] = [self.client_config['source']['type'],
+                                             self.client_config['destination']['type']]
 
     def override_base_config(self, new_uuid=None, new_pipeline_title=None):
         if new_uuid:
@@ -40,15 +44,9 @@ class BaseConfigHandler(ABC):
             self.config['title'] = new_pipeline_title
 
         self.override_stages()
-
-        self.config['metadata']['labels'] = [self.client_config['source']['type'],
-                                             self.client_config['destination']['type']]
+        self.set_labels()
 
         return self.config
-
-    def override_base_rules(self, new_uuid):
-        self.rules['uuid'] = new_uuid
-        return self.rules
 
     def update_source_configs(self):
         for conf in self.config['stages'][0]['configuration']:
