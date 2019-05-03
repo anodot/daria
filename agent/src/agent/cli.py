@@ -1,13 +1,22 @@
 import click
 import json
 import os
+import time
 import urllib.parse
+import uuid
 
 from .pipeline.cli import pipeline, create_pipeline, edit_pipeline
 from .pipeline.config_handlers.monitoring import MonitoringConfigHandler
 from .source.cli import source
 from .streamsets_api_client import api_client
 from agent.constants import DESTINATION_FILE
+
+
+HOST_ID_LENGTH = 10
+
+
+def generate_host_id(length=10):
+    return str(uuid.uuid4()).replace('-', '')[:length].upper()
 
 
 @click.group()
@@ -23,8 +32,9 @@ def destination():
     Proxy for connecting to Anodot
     """
     dest = {
-        "config": {},
-        "type": "http"
+        'config': {},
+        'type': 'http',
+        'host_id': generate_host_id(HOST_ID_LENGTH)
     }
     edit = False
     if os.path.isfile(DESTINATION_FILE):
@@ -47,11 +57,15 @@ def destination():
         dest['config']['conf.client.proxy.password'] = click.prompt('Proxy password', type=click.STRING, default='')
 
     pipeline_config = {'destination': dest, 'pipeline_id': 'Monitoring'}
-    config_handler = MonitoringConfigHandler(pipeline_config)
+
     if edit:
+        base_config = api_client.get_pipeline('Monitoring')
+        config_handler = MonitoringConfigHandler(pipeline_config, base_config)
         api_client.stop_pipeline(pipeline_config['pipeline_id'])
+        time.sleep(3)
         edit_pipeline(config_handler, pipeline_config)
     else:
+        config_handler = MonitoringConfigHandler(pipeline_config)
         create_pipeline(config_handler, pipeline_config)
 
     api_client.start_pipeline(pipeline_config['pipeline_id'])
