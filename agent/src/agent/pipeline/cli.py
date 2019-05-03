@@ -9,6 +9,7 @@ from .config import pipeline_configs
 from ..source.cli import get_configs_list as list_sources
 from ..streamsets_api_client import api_client, StreamSetsApiClientException
 from agent.constants import DESTINATION_FILE, PIPELINES_DIR, SOURCES_DIR
+from jsonschema import validate, ValidationError
 from datetime import datetime
 from pymongo import MongoClient
 from texttable import Texttable
@@ -78,9 +79,46 @@ def edit_pipeline(config_handler, pipeline_config):
         raise click.ClickException(str(e))
 
 
+def create_multiple(file):
+    data = json.load(file)
+
+    json_schema = {
+        'type': 'array',
+        'items': {
+            'type': 'object',
+            'properties': {
+                'source': {'type': 'string', 'enum': list_sources()},
+                'pipeline_id': {'type': 'string', 'minLength': 1, 'maxLength': 100}
+            },
+            'required': ['source', 'pipeline_id']
+        }
+    }
+    validate(data, json_schema)
+    with open(DESTINATION_FILE, 'r') as f:
+        destination = json.load(f)
+
+    for item in data:
+        pipeline_config = {}
+        with open(os.path.join(SOURCES_DIR, item['source'] + '.json'), 'r') as f:
+            source = json.load(f)
+        pipeline_c = pipeline_configs[source['type']]
+        pipeline_config.update(pipeline_c.load(item, source['type']))
+        pipeline_config['source'] = source
+        pipeline_config['destination'] = destination
+        config_handler = pipeline_c.get_config_handler(pipeline_config)
+
+        create_pipeline(config_handler, pipeline_config)
+
+        with open(os.path.join(PIPELINES_DIR, pipeline_config['pipeline_id'] + '.json'), 'w') as f:
+            json.dump(pipeline_config, f)
+
+        click.secho('Created pipeline {}'.format(pipeline_config['pipeline_id']), fg='green')
+
+
 @click.command()
 @click.option('-a', '--advanced', is_flag=True)
-def create(advanced):
+@click.option('-f', '--file', type=click.File())
+def create(advanced, file):
     """
     Create pipeline
     """
@@ -90,6 +128,13 @@ def create(advanced):
 
     if not os.path.isfile(DESTINATION_FILE):
         raise click.ClickException('Destination is not configured. Use "agent destination"')
+
+    if file:
+        try:
+            create_multiple(file)
+        except (StreamSetsApiClientException, ConfigHandlerException, ValidationError) as e:
+            raise click.ClickException(str(e))
+        return
 
     default_source = sources[0] if len(sources) == 1 else None
     source_config_name = click.prompt('Choose source config', type=click.Choice(sources), default=default_source)
@@ -118,13 +163,60 @@ def create(advanced):
     click.secho('Created pipeline {}'.format(pipeline_config['pipeline_id']), fg='green')
 
 
+def edit_multiple(file):
+    data = json.load(file)
+
+    json_schema = {
+        'type': 'array',
+        'items': {
+            'type': 'object',
+            'properties': {
+                'pipeline_id': {'type': 'string', 'minLength': 1, 'maxLength': 100}
+            },
+            'required': ['pipeline_id']
+        }
+    }
+    validate(data, json_schema)
+    with open(DESTINATION_FILE, 'r') as f:
+        destination = json.load(f)
+
+    for item in data:
+        with open(os.path.join(PIPELINES_DIR, item['pipeline_id'] + '.json'), 'r') as f:
+            pipeline_config = json.load(f)
+
+        with open(os.path.join(SOURCES_DIR, pipeline_config['source']['name'] + '.json'), 'r') as f:
+            source = json.load(f)
+        pipeline_c = pipeline_configs[source['type']]
+        pipeline_config.update(pipeline_c.load(item, source['type'], edit=True))
+        pipeline_config['source'] = source
+        pipeline_config['destination'] = destination
+
+        pipeline_obj = api_client.get_pipeline(pipeline_config['pipeline_id'])
+        config_handler = pipeline_c.get_config_handler(pipeline_config, pipeline_obj)
+
+        edit_pipeline(config_handler, pipeline_config)
+
+        with open(os.path.join(PIPELINES_DIR, pipeline_config['pipeline_id'] + '.json'), 'w') as f:
+            json.dump(pipeline_config, f)
+
+        click.secho('Updated pipeline {}'.format(pipeline_config['pipeline_id']), fg='green')
+
+
 @click.command()
-@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
+@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, required=False)
 @click.option('-a', '--advanced', is_flag=True)
-def edit(pipeline_id, advanced):
+@click.option('-f', '--file', type=click.File())
+def edit(pipeline_id, advanced, file):
     """
     Edit pipeline
     """
+    if not file and not pipeline_id:
+        raise click.UsageError('Specify pipeline id or file')
+
+    if file:
+        edit_multiple(file)
+        return
+
     with open(os.path.join(PIPELINES_DIR, pipeline_id + '.json'), 'r') as f:
         pipeline_config = json.load(f)
 

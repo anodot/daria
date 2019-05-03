@@ -19,7 +19,7 @@ def get_previous_source_config(label):
     return recent_pipeline_config
 
 
-def get_configs(ctx, args, incomplete):
+def sources_autocomplete(ctx, args, incomplete):
     configs = []
     for filename in os.listdir(SOURCES_DIR):
         if filename.endswith('.json') and incomplete in filename:
@@ -66,7 +66,7 @@ def create(advanced):
 
 
 @click.command()
-@click.argument('name', autocompletion=get_configs)
+@click.argument('name', autocompletion=sources_autocomplete)
 @click.option('-a', '--advanced', is_flag=True)
 def edit(name, advanced):
     """
@@ -93,7 +93,7 @@ def list_configs():
 
 
 @click.command()
-@click.argument('name', autocompletion=get_configs)
+@click.argument('name', autocompletion=sources_autocomplete)
 def delete(name):
     """
     Delete source

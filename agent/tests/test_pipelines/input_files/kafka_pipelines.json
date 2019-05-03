@@ -1,0 +1,29 @@
+[
+  {
+    "source": "kafka_test_timestamp_kafka",
+    "pipeline_id": "test_kafka_file_short",
+    "measurement_name": "clicks",
+    "value": "Clicks",
+    "dimensions": ["ver", "Country"]
+  },
+  {
+    "source": "kafka_test_timestamp_string",
+    "pipeline_id": "test_kafka_file_full",
+    "measurement_name": "clicks",
+    "value": {
+      "type": "constant",
+      "value": "1"
+    },
+    "dimensions": {
+      "required": ["ver", "Country"],
+      "optional": ["Exchange", "optional_dim"]
+    },
+    "timestamp": {
+      "type": "string",
+      "name": "timestamp_string",
+      "format": "M/d/yyyy H:mm:ss"
+    },
+    "target_type": "counter",
+    "properties": {"test": "val"}
+  }
+]

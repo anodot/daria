@@ -1,0 +1,20 @@
+{
+  "type": "object",
+  "properties": {
+    "measurement_name": {"type": "string", "minLength": 1},
+    "target_type": {"type": "string", "enum": ["counter", "gauge"]},
+    "value": {"oneOf": [
+      {"type": "array", "items": {"type": "string"}},
+      {"type": "number"}
+    ]},
+    "dimensions": {"oneOf": [
+      {"type": "array", "items": {"type": "string"}},
+      {"type": "object", "properties": {
+        "required": {"type": "array", "items": {"type": "string"}},
+        "optional": {"type": "array", "items": {"type": "string"}}
+      }}
+    ]},
+    "properties": {"type": "object"}
+  },
+  "required": ["measurement_name", "value", "dimensions"]
+}

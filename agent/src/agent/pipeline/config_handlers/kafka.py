@@ -17,17 +17,5 @@ class KafkaConfigHandler(JsonConfigHandler):
 
             if conf['name'] == 'expressionProcessorConfigs':
 
-                conf['value'][1]['expression'] = self.client_config['measurement_name']
-
-                if 'target_type' in self.client_config:
-                    conf['value'][2]['expression'] = self.client_config['target_type']
-
-                if self.client_config['value']['type'] == 'property':
-                    expression = f"record:value('/{self.client_config['value']['value']}')"
-                    conf['value'][3]['expression'] = '${' + expression + '}'
-                else:
-                    conf['value'][3]['expression'] = self.client_config['value']['value']
-
-                for key, val in self.client_config['properties'].items():
-                    conf['value'].append({'fieldToSet': '/properties/' + key, 'expression': val})
+                self.update_expression_processor(conf)
 

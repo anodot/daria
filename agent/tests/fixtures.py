@@ -40,3 +40,7 @@ def get_output(pipeline_name):
         if filename.startswith(f'sdc-{pipeline_name}-'):
             with open(os.path.join(SDC_RESULTS_PATH, filename)) as f:
                 return json.load(f)
+
+
+def get_input_file_path(name):
+    return os.path.join(os.path.dirname(os.path.realpath(__file__)), 'test_pipelines', 'input_files', f'{name}.json')

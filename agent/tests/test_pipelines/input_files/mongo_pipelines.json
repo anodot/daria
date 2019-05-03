@@ -1,0 +1,33 @@
+[
+  {
+    "source": "test_mongo",
+    "pipeline_id": "test_mongo_file_short",
+    "measurement_name": "clicks",
+    "value": "Clicks",
+    "dimensions": ["ver", "Country"],
+    "timestamp": {
+      "type": "unix_ms",
+      "name": "timestamp_unix_ms"
+    }
+  },
+  {
+    "source": "test_mongo",
+    "pipeline_id": "test_mongo_file_full",
+    "measurement_name": "clicks",
+    "value": {
+      "type": "constant",
+      "value": "1"
+    },
+    "dimensions": {
+      "required": ["ver", "Country"],
+      "optional": ["Exchange", "optional_dim"]
+    },
+    "timestamp": {
+      "type": "string",
+      "name": "timestamp_string",
+      "format": "M/d/yyyy H:mm:ss"
+    },
+    "target_type": "counter",
+    "properties": {"test": "val"}
+  }
+]

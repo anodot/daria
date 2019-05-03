@@ -6,26 +6,24 @@ logger = get_logger(__name__)
 
 class JsonConfigHandler(BaseConfigHandler):
 
+    def update_expression_processor(self, conf):
+        conf['value'][1]['expression'] = self.client_config['measurement_name']
+        conf['value'][2]['expression'] = self.client_config.get('target_type', 'gauge')
+
+        if self.client_config['value']['type'] == 'property':
+            expression = f"record:value('/{self.client_config['value']['value']}')"
+            conf['value'][3]['expression'] = '${' + expression + '}'
+        else:
+            conf['value'][3]['expression'] = self.client_config['value']['value']
+
+        for key, val in self.client_config.get('properties', {}).items():
+            conf['value'].append({'fieldToSet': '/properties/' + key, 'expression': val})
+
     def update_properties(self, stage):
         for conf in stage['configuration']:
-            if conf['name'] != 'expressionProcessorConfigs':
-                continue
-
-            conf['value'][1]['expression'] = self.client_config['measurement_name']
-
-            if 'target_type' in self.client_config:
-                conf['value'][2]['expression'] = self.client_config['target_type']
-
-            if self.client_config['value']['type'] == 'property':
-                expression = f"record:value('/{self.client_config['value']['value']}')"
-                conf['value'][3]['expression'] = '${' + expression + '}'
-            else:
-                conf['value'][3]['expression'] = self.client_config['value']['value']
-
-            for key, val in self.client_config['properties'].items():
-                conf['value'].append({'fieldToSet': '/properties/' + key, 'expression': val})
-
-            return
+            if conf['name'] == 'expressionProcessorConfigs':
+                self.update_expression_processor(conf)
+                return
 
     def get_rename_mapping(self):
         rename_mapping = []
