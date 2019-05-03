@@ -9,6 +9,28 @@ logger = get_logger(__name__)
 
 
 class InfluxConfigHandler(BaseConfigHandler):
+    DECLARE_VARS_JS = """/*
+state['MEASUREMENT_NAME'] = 'clicks';
+state['REQUIRED_DIMENSIONS'] = ['AdType', 'Exchange'];
+state['OPTIONAL_DIMENSIONS'] = ['ver', 'AdSize', 'Country'];
+state['VALUES_COLUMNS'] = ['value'];
+state['TARGET_TYPE'] = 'gauge';
+state['VALUE_CONSTANT'] = 1
+*/
+
+state['MEASUREMENT_NAME'] = '{measurement_name}';
+state['REQUIRED_DIMENSIONS'] = {required_dimensions};
+state['OPTIONAL_DIMENSIONS'] = {optional_dimensions};
+state['VALUES_COLUMNS'] = {values};
+state['TARGET_TYPE'] = '{target_type}';
+state['VALUE_CONSTANT'] = {value_constant}
+"""
+
+    DECLARE_COLUMNS_JS = """/*
+state['columns'] = ['time', 'cpu', 'zone', 'host', 'usage_active', 'usage_idle'];
+*/
+
+state['columns'] = {columns};"""
 
     def set_initial_offset(self, query):
         source_config = self.client_config['source']['config']
@@ -57,7 +79,7 @@ class InfluxConfigHandler(BaseConfigHandler):
             if stage['instanceName'] == 'JavaScriptEvaluator_01':
                 for conf in stage['configuration']:
                     if conf['name'] == 'initScript':
-                        conf['value'] = conf['value'].format(columns=str(['time'] + columns_to_select))
+                        conf['value'] = self.DECLARE_COLUMNS_JS.format(columns=str(['time'] + columns_to_select))
 
             if stage['instanceName'] == 'JavaScriptEvaluator_02':
                 for conf in stage['configuration']:
@@ -65,13 +87,13 @@ class InfluxConfigHandler(BaseConfigHandler):
                         conf['value'] = ['/' + d for d in self.client_config['dimensions']['required']]
 
                     if conf['name'] == 'initScript':
-                        conf['value'] = conf['value'].format(
+                        conf['value'] = self.DECLARE_VARS_JS.format(
                             required_dimensions=str(self.client_config['dimensions']['required']),
                             optional_dimensions=str(self.client_config['dimensions']['optional']),
                             measurement_name=self.client_config['measurement_name'],
-                            values=str(self.client_config['value']['values']),
-                            target_type=self.client_config['target_type'],
-                            value_constant=self.client_config['value']['constant']
+                            values=str(self.client_config['value'].get('values', [])),
+                            target_type=self.client_config.get('target_type', 'gauge'),
+                            value_constant=self.client_config['value'].get('constant', '1')
                         )
 
                     if conf['name'] == 'stageRecordPreconditions':
@@ -85,7 +107,7 @@ class InfluxConfigHandler(BaseConfigHandler):
             if stage['instanceName'] == 'ExpressionEvaluator_01':
                 for conf in stage['configuration']:
                     if conf['name'] == 'expressionProcessorConfigs':
-                        for key, val in self.client_config['properties'].items():
+                        for key, val in self.client_config.get('properties', {}).items():
                             conf['value'].append({'fieldToSet': '/properties/' + key, 'expression': val})
 
         self.update_destination_config()

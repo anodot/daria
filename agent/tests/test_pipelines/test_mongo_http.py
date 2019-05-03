@@ -3,7 +3,7 @@ import os
 import pytest
 import time
 
-from ..fixtures import cli_runner, get_output, replace_destination
+from ..fixtures import cli_runner, get_output, replace_destination, get_input_file_path
 from agent.pipeline import cli as pipeline_cli
 from agent.source import cli as source_cli
 from agent.streamsets_api_client import api_client
@@ -40,6 +40,16 @@ def test_create(cli_runner, name, options, value, timestamp, timestamp_type, pro
     assert api_client.get_pipeline(name)
 
 
+def test_create_with_file(cli_runner):
+    input_file_path = get_input_file_path('mongo_pipelines')
+    result = cli_runner.invoke(pipeline_cli.create, ['-f', input_file_path])
+    assert result.exit_code == 0
+    with open(input_file_path, 'r') as f:
+        pipelines = json.load(f)
+        for pipeline in pipelines:
+            assert api_client.get_pipeline(pipeline['pipeline_id'])
+
+
 @pytest.mark.parametrize("options,value", [
     (['test_value_const'], '1\n\n'),
     (['test_timestamp_string', '-a'], 'Clicks\nproperty'),
@@ -55,6 +65,8 @@ def test_edit(cli_runner, options, value):
     'test_timestamp_string',
     'test_timestamp_datetime',
     'test_timestamp_id',
+    'test_mongo_file_short',
+    'test_mongo_file_full',
 ])
 def test_start(cli_runner, name):
     replace_destination(name)
@@ -70,7 +82,9 @@ def test_start(cli_runner, name):
     'test_timestamp_ms',
     'test_timestamp_string',
     'test_timestamp_datetime',
-    'test_timestamp_id'
+    'test_timestamp_id',
+    'test_mongo_file_short',
+    'test_mongo_file_full',
 ])
 def test_stop(cli_runner, name):
     result = cli_runner.invoke(pipeline_cli.stop, [name])

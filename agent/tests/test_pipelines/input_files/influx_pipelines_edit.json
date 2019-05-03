@@ -1,0 +1,10 @@
+[
+  {
+    "pipeline_id": "test_influx_file_short",
+    "measurement_name": "cpu_test"
+  },
+  {
+    "pipeline_id": "test_influx_file_full",
+    "value": ["usage_active", "usage_idle"]
+  }
+]
