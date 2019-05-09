@@ -1,8 +1,10 @@
 import os
 
-SOURCES_DIR = os.path.join(os.environ.get('DATA_DIR', 'data'), 'sources')
-PIPELINES_DIR = os.path.join(os.environ.get('DATA_DIR', 'data'), 'pipelines')
-DESTINATION_FILE = os.path.join(os.environ.get('DATA_DIR', 'data'), 'destination.json')
+DATA_DIR = os.environ.get('DATA_DIR', 'data')
+SOURCES_DIR = os.path.join(DATA_DIR, 'sources')
+PIPELINES_DIR = os.path.join(DATA_DIR, 'pipelines')
 
 SDC_DATA_PATH = os.environ.get('SDC_DATA_PATH', '/sdc-data')
 SDC_RESULTS_PATH = os.path.join(SDC_DATA_PATH, 'out')
+
+ANODOT_API_URL = os.environ.get('ANODOT_API_URL', 'https://api.anodot.com')

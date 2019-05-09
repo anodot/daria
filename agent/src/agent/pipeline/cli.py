@@ -8,7 +8,8 @@ from . import ConfigHandlerException
 from .config import pipeline_configs
 from ..source.cli import get_configs_list as list_sources
 from ..streamsets_api_client import api_client, StreamSetsApiClientException
-from agent.constants import DESTINATION_FILE, PIPELINES_DIR, SOURCES_DIR
+from agent.constants import PIPELINES_DIR, SOURCES_DIR
+from agent.destination.http import HttpDestination
 from jsonschema import validate, ValidationError
 from datetime import datetime
 from pymongo import MongoClient
@@ -77,8 +78,7 @@ def create_multiple(file):
         }
     }
     validate(data, json_schema)
-    with open(DESTINATION_FILE, 'r') as f:
-        destination = json.load(f)
+    destination = HttpDestination.load()
 
     for item in data:
         pipeline_config = {}
@@ -112,7 +112,7 @@ def create(advanced, file):
     if len(sources) == 0:
         raise click.ClickException('No sources configs found. Use "agent source create"')
 
-    if not os.path.isfile(DESTINATION_FILE):
+    if not HttpDestination.exists():
         raise click.ClickException('Destination is not configured. Use "agent destination"')
 
     if file:
@@ -130,11 +130,10 @@ def create(advanced, file):
 
     pipeline_config = get_previous_pipeline_config(source_config['type'])
     pipeline_config['source'] = source_config
-    destination_type = click.prompt('Choose destination', type=click.Choice(['http']),
-                                    default='http')
-    if destination_type == 'http':
-        with open(DESTINATION_FILE, 'r') as f:
-            pipeline_config['destination'] = json.load(f)
+    destination_type = click.prompt('Choose destination', type=click.Choice([HttpDestination.TYPE]),
+                                    default=HttpDestination.TYPE)
+    if destination_type == HttpDestination.TYPE:
+        pipeline_config['destination'] = HttpDestination.load()
 
     pipeline_config['pipeline_id'] = click.prompt('Pipeline ID (must be unique)', type=click.STRING)
 
@@ -181,8 +180,7 @@ def edit_multiple(file):
         }
     }
     validate(data, json_schema)
-    with open(DESTINATION_FILE, 'r') as f:
-        destination = json.load(f)
+    destination = HttpDestination.load()
 
     for item in data:
         with open(os.path.join(PIPELINES_DIR, item['pipeline_id'] + '.json'), 'r') as f:
@@ -228,9 +226,8 @@ def edit(pipeline_id, advanced, file):
     with open(os.path.join(SOURCES_DIR, pipeline_config['source']['name'] + '.json'), 'r') as f:
         pipeline_config['source'] = json.load(f)
 
-    if pipeline_config['destination']['type'] == 'http':
-        with open(DESTINATION_FILE, 'r') as f:
-            pipeline_config['destination'] = json.load(f)
+    if pipeline_config['destination']['type'] == HttpDestination.TYPE:
+        pipeline_config['destination'] = HttpDestination.load()
 
     pipeline_c = pipeline_configs[pipeline_config['source']['type']]
     pipeline_config.update(pipeline_c.prompt(pipeline_config, advanced))
