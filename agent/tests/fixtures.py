@@ -4,7 +4,8 @@ import pytest
 
 from agent.streamsets_api_client import api_client
 from click.testing import CliRunner
-from agent.constants import SDC_DATA_PATH, SDC_RESULTS_PATH, DESTINATION_FILE
+from agent.constants import SDC_DATA_PATH, SDC_RESULTS_PATH
+from agent.destination.http import HttpDestination
 
 
 @pytest.fixture(scope="session")
@@ -25,8 +26,8 @@ def cli_runner():
             if filename.startswith('sdc-test_'):
                 os.remove(os.path.join(SDC_RESULTS_PATH, filename))
 
-    if os.path.isfile(DESTINATION_FILE):
-        os.remove(DESTINATION_FILE)
+    if os.path.isfile(HttpDestination.FILE):
+        os.remove(HttpDestination.FILE)
 
 
 def replace_destination(name):
