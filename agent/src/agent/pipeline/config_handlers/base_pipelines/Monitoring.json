@@ -552,7 +552,7 @@
         "value" : "POLLING"
       }, {
         "name" : "conf.pollingInterval",
-        "value" : 10000
+        "value" : 60000
       }, {
         "name" : "conf.dataFormat",
         "value" : "JSON"
@@ -593,7 +593,7 @@
         "value" : false
       }, {
         "name" : "conf.pagination.rateLimit",
-        "value" : 10000
+        "value" : 60000
       }, {
         "name" : "stageOnRecordError",
         "value" : "TO_ERROR"
