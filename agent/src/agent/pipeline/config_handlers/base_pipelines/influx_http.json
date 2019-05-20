@@ -1146,7 +1146,7 @@
         "value" : "1000"
       }, {
         "name" : "config.script",
-        "value" : "cd /data/timestamps/$PIPELINE_ID && if [ \"$(ls -l | wc -l)\" -ge \"4\" ]; then rm $(ls -t | tail -1); fi"
+        "value" : "cd /data/timestamps/$PIPELINE_ID && if [ \"$(ls -l | wc -l)\" -ge \"4\" ]; then rm $(ls -rt | sed -n 2p); fi"
       }, {
         "name" : "stageOnRecordError",
         "value" : "TO_ERROR"

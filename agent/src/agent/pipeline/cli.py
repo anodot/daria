@@ -13,6 +13,7 @@ from agent.constants import PIPELINES_DIR, SOURCES_DIR, TIMESTAMPS_DIR
 from agent.destination.http import HttpDestination
 from jsonschema import validate, ValidationError
 from datetime import datetime
+from pathlib import Path
 from pymongo import MongoClient
 from texttable import Texttable
 
@@ -399,6 +400,10 @@ def reset(pipeline_id):
     """
     try:
         api_client.reset_pipeline(pipeline_id)
+        timestamps_dir = os.path.join(TIMESTAMPS_DIR, pipeline_id)
+        if os.path.isdir(timestamps_dir):
+            for p in Path(timestamps_dir).glob('timestamp_*'):
+                p.unlink()
     except StreamSetsApiClientException as e:
         click.secho(str(e), err=True, fg='red')
         return
