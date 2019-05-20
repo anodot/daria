@@ -120,30 +120,25 @@ def prompt_kafka_config(default_config, advanced=False):
 def prompt_influx_config(default_config, advanced=False):
     config = dict()
     default_resource_url = default_config.get('conf.resourceUrl', {})
-    influx_host = click.prompt('InfluxDB API url', type=click.STRING, default=default_resource_url.get('host'))
-    if not is_url(influx_host):
-        raise click.UsageError(f'{influx_host} is not and url')
+    config['host'] = click.prompt('InfluxDB API url', type=click.STRING, default=default_resource_url.get('host'))
+    if not is_url(config['host']):
+        raise click.UsageError(f"{config['host']} is not and url")
 
-    db = click.prompt('Database', type=click.STRING, default=default_resource_url.get('db'))
-    limit = click.prompt('Limit', type=click.INT, default=default_resource_url.get('limit', 1000))
-    config['conf.resourceUrl'] = {
-        'host': influx_host,
-        'db': db,
-        'limit': limit,
-    }
+    config['db'] = click.prompt('Database', type=click.STRING, default=default_resource_url.get('db'))
+    config['limit'] = click.prompt('Limit', type=click.INT, default=default_resource_url.get('limit', 1000))
 
-    config['conf.pagination.startAt'] = click.prompt('Initial offset (amount of days ago or specific date in format "dd/MM/yyyy HH:mm")',
-                                                     type=click.STRING,
-                                                     default=default_config.get('conf.pagination.startAt', '')).strip()
-    if config['conf.pagination.startAt']:
-        if config['conf.pagination.startAt'].isdigit():
+    config['offset'] = click.prompt('Initial offset (amount of days ago or specific date in format "dd/MM/yyyy HH:mm")',
+                                    type=click.STRING,
+                                    default=default_config.get('offset', '')).strip()
+    if config['offset']:
+        if config['offset'].isdigit():
             try:
-                int(config['conf.pagination.startAt'])
+                int(config['offset'])
             except ValueError:
-                raise click.UsageError(config['conf.pagination.startAt'] + ' is not a valid integer')
+                raise click.UsageError(config['offset'] + ' is not a valid integer')
         else:
             try:
-                datetime.strptime(config['conf.pagination.startAt'], '%d/%m/%Y %H:%M').timestamp()
+                datetime.strptime(config['offset'], '%d/%m/%Y %H:%M').timestamp()
             except ValueError as e:
                 raise click.UsageError(str(e))
     config['conf.pagination.rateLimit'] = click.prompt('Wait time, ms', type=click.INT,

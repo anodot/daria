@@ -1,11 +1,11 @@
 {
   "pipelineConfig" : {
     "schemaVersion" : 6,
-    "version" : 11,
-    "pipelineId" : "influxhttpa51e2ec8-d520-4836-8e69-9158ae2020b5",
-    "title" : "influx_http",
+    "version" : 12,
+    "pipelineId" : "erwe96d5a241-288f-4d0f-914d-cb7c7616e08e",
+    "title" : "erwe",
     "description" : "",
-    "uuid" : "cd4a8af3-3d2a-42b4-97af-a92d1de1bab7",
+    "uuid" : "99841e6b-f543-4e0f-b7d4-17bfa3be2eb0",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -30,12 +30,6 @@
     }, {
       "name" : "retryAttempts",
       "value" : -1
-    }, {
-      "name" : "memoryLimit",
-      "value" : "${jvm:maxMemoryMB() * 0.85}"
-    }, {
-      "name" : "memoryLimitExceeded",
-      "value" : "LOG"
     }, {
       "name" : "notifyOnStates",
       "value" : [ "RUN_ERROR", "STOPPED", "FINISHED" ]
@@ -101,10 +95,10 @@
       "value" : null
     }, {
       "name" : "amazonEMRConfig.accessKey",
-      "value" : null
+      "value" : ""
     }, {
       "name" : "amazonEMRConfig.secretKey",
-      "value" : null
+      "value" : ""
     }, {
       "name" : "amazonEMRConfig.s3StagingUri",
       "value" : null
@@ -177,17 +171,11 @@
     },
     "fragments" : [ ],
     "stages" : [ {
-      "instanceName" : "HTTPClient_02",
+      "instanceName" : "Directory_01",
       "library" : "streamsets-datacollector-basic-lib",
-      "stageName" : "com_streamsets_pipeline_stage_origin_http_HttpClientDSource",
-      "stageVersion" : "14",
+      "stageName" : "com_streamsets_pipeline_stage_origin_spooldir_SpoolDirDSource",
+      "stageVersion" : "10",
       "configuration" : [ {
-        "name" : "conf.basic.maxBatchSize",
-        "value" : 1000
-      }, {
-        "name" : "conf.basic.maxWaitTime",
-        "value" : 2000
-      }, {
         "name" : "conf.dataFormatConfig.compression",
         "value" : "NONE"
       }, {
@@ -216,13 +204,13 @@
         "value" : "MULTIPLE_OBJECTS"
       }, {
         "name" : "conf.dataFormatConfig.jsonMaxObjectLen",
-        "value" : 1000000000
+        "value" : 4096
       }, {
         "name" : "conf.dataFormatConfig.csvFileFormat",
         "value" : "CSV"
       }, {
         "name" : "conf.dataFormatConfig.csvHeader",
-        "value" : "WITH_HEADER"
+        "value" : "NO_HEADER"
       }, {
         "name" : "conf.dataFormatConfig.csvAllowExtraColumns",
         "value" : false
@@ -235,6 +223,292 @@
       }, {
         "name" : "conf.dataFormatConfig.csvCustomDelimiter",
         "value" : "|"
+      }, {
+        "name" : "conf.dataFormatConfig.multiCharacterFieldDelimiter",
+        "value" : "||"
+      }, {
+        "name" : "conf.dataFormatConfig.multiCharacterLineDelimiter",
+        "value" : "${str:unescapeJava('\\\\n')}"
+      }, {
+        "name" : "conf.dataFormatConfig.csvCustomEscape",
+        "value" : "\\"
+      }, {
+        "name" : "conf.dataFormatConfig.csvCustomQuote",
+        "value" : "\""
+      }, {
+        "name" : "conf.dataFormatConfig.csvEnableComments",
+        "value" : false
+      }, {
+        "name" : "conf.dataFormatConfig.csvCommentMarker",
+        "value" : "#"
+      }, {
+        "name" : "conf.dataFormatConfig.csvIgnoreEmptyLines",
+        "value" : true
+      }, {
+        "name" : "conf.dataFormatConfig.csvRecordType",
+        "value" : "LIST_MAP"
+      }, {
+        "name" : "conf.dataFormatConfig.csvSkipStartLines",
+        "value" : 0
+      }, {
+        "name" : "conf.dataFormatConfig.parseNull",
+        "value" : false
+      }, {
+        "name" : "conf.dataFormatConfig.nullConstant",
+        "value" : "\\\\N"
+      }, {
+        "name" : "conf.dataFormatConfig.xmlRecordElement",
+        "value" : null
+      }, {
+        "name" : "conf.dataFormatConfig.includeFieldXpathAttributes",
+        "value" : false
+      }, {
+        "name" : "conf.dataFormatConfig.xPathNamespaceContext",
+        "value" : [ ]
+      }, {
+        "name" : "conf.dataFormatConfig.outputFieldAttributes",
+        "value" : false
+      }, {
+        "name" : "conf.dataFormatConfig.xmlMaxObjectLen",
+        "value" : 4096
+      }, {
+        "name" : "conf.dataFormatConfig.logMode",
+        "value" : "COMMON_LOG_FORMAT"
+      }, {
+        "name" : "conf.dataFormatConfig.logMaxObjectLen",
+        "value" : 1024
+      }, {
+        "name" : "conf.dataFormatConfig.retainOriginalLine",
+        "value" : false
+      }, {
+        "name" : "conf.dataFormatConfig.customLogFormat",
+        "value" : "%h %l %u %t \"%r\" %>s %b"
+      }, {
+        "name" : "conf.dataFormatConfig.regex",
+        "value" : "^(\\S+) (\\S+) (\\S+) \\[([\\w:/]+\\s[+\\-]\\d{4})\\] \"(\\S+) (\\S+) (\\S+)\" (\\d{3}) (\\d+)"
+      }, {
+        "name" : "conf.dataFormatConfig.fieldPathsToGroupName",
+        "value" : [ {
+          "fieldPath" : "/",
+          "group" : 1
+        } ]
+      }, {
+        "name" : "conf.dataFormatConfig.grokPatternDefinition",
+        "value" : null
+      }, {
+        "name" : "conf.dataFormatConfig.grokPattern",
+        "value" : "%{COMMONAPACHELOG}"
+      }, {
+        "name" : "conf.dataFormatConfig.onParseError",
+        "value" : "ERROR"
+      }, {
+        "name" : "conf.dataFormatConfig.maxStackTraceLines",
+        "value" : 50
+      }, {
+        "name" : "conf.dataFormatConfig.enableLog4jCustomLogFormat",
+        "value" : false
+      }, {
+        "name" : "conf.dataFormatConfig.log4jCustomLogFormat",
+        "value" : "%r [%t] %-5p %c %x - %m%n"
+      }, {
+        "name" : "conf.dataFormatConfig.avroSchema",
+        "value" : null
+      }, {
+        "name" : "conf.dataFormatConfig.schemaRegistryUrls",
+        "value" : [ ]
+      }, {
+        "name" : "conf.dataFormatConfig.schemaLookupMode",
+        "value" : "SUBJECT"
+      }, {
+        "name" : "conf.dataFormatConfig.subject",
+        "value" : null
+      }, {
+        "name" : "conf.dataFormatConfig.schemaId",
+        "value" : null
+      }, {
+        "name" : "conf.dataFormatConfig.protoDescriptorFile",
+        "value" : null
+      }, {
+        "name" : "conf.dataFormatConfig.messageType",
+        "value" : null
+      }, {
+        "name" : "conf.dataFormatConfig.isDelimited",
+        "value" : true
+      }, {
+        "name" : "conf.dataFormatConfig.binaryMaxObjectLen",
+        "value" : 1024
+      }, {
+        "name" : "conf.dataFormatConfig.datagramMode",
+        "value" : "SYSLOG"
+      }, {
+        "name" : "conf.dataFormatConfig.typesDbPath",
+        "value" : null
+      }, {
+        "name" : "conf.dataFormatConfig.convertTime",
+        "value" : false
+      }, {
+        "name" : "conf.dataFormatConfig.excludeInterval",
+        "value" : true
+      }, {
+        "name" : "conf.dataFormatConfig.authFilePath",
+        "value" : null
+      }, {
+        "name" : "conf.dataFormatConfig.netflowOutputValuesMode",
+        "value" : "RAW_AND_INTERPRETED"
+      }, {
+        "name" : "conf.dataFormatConfig.maxTemplateCacheSize",
+        "value" : -1
+      }, {
+        "name" : "conf.dataFormatConfig.templateCacheTimeoutMs",
+        "value" : -1
+      }, {
+        "name" : "conf.dataFormatConfig.netflowOutputValuesModeDatagram",
+        "value" : "RAW_AND_INTERPRETED"
+      }, {
+        "name" : "conf.dataFormatConfig.maxTemplateCacheSizeDatagram",
+        "value" : -1
+      }, {
+        "name" : "conf.dataFormatConfig.templateCacheTimeoutMsDatagram",
+        "value" : -1
+      }, {
+        "name" : "conf.dataFormatConfig.wholeFileMaxObjectLen",
+        "value" : 8192
+      }, {
+        "name" : "conf.dataFormatConfig.rateLimit",
+        "value" : "-1"
+      }, {
+        "name" : "conf.dataFormatConfig.excelHeader",
+        "value" : null
+      }, {
+        "name" : "conf.dataFormat",
+        "value" : "TEXT"
+      }, {
+        "name" : "conf.spoolDir",
+        "value" : "/data/timestamps/${pipeline:id()}"
+      }, {
+        "name" : "conf.numberOfThreads",
+        "value" : 1
+      }, {
+        "name" : "conf.pathMatcherMode",
+        "value" : "GLOB"
+      }, {
+        "name" : "conf.filePattern",
+        "value" : "timestamp*"
+      }, {
+        "name" : "conf.useLastModified",
+        "value" : "TIMESTAMP"
+      }, {
+        "name" : "conf.processSubdirectories",
+        "value" : false
+      }, {
+        "name" : "conf.allowLateDirectory",
+        "value" : true
+      }, {
+        "name" : "conf.overrunLimit",
+        "value" : 128
+      }, {
+        "name" : "conf.batchSize",
+        "value" : 1
+      }, {
+        "name" : "conf.poolingTimeoutSecs",
+        "value" : 10
+      }, {
+        "name" : "conf.maxSpoolFiles",
+        "value" : 1000
+      }, {
+        "name" : "conf.spoolingPeriod",
+        "value" : 10
+      }, {
+        "name" : "conf.initialFileToProcess",
+        "value" : null
+      }, {
+        "name" : "conf.errorArchiveDir",
+        "value" : null
+      }, {
+        "name" : "conf.postProcessing",
+        "value" : "NONE"
+      }, {
+        "name" : "conf.archiveDir",
+        "value" : "/data/out"
+      }, {
+        "name" : "conf.retentionTimeMins",
+        "value" : 0
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      } ],
+      "uiInfo" : {
+        "yPos" : 147,
+        "stageType" : "SOURCE",
+        "rawSource" : {
+          "configuration" : [ {
+            "name" : "fileName"
+          } ]
+        },
+        "description" : "",
+        "label" : "Directory 1",
+        "xPos" : -164.93658447265625
+      },
+      "inputLanes" : [ ],
+      "outputLanes" : [ "Directory_01OutputLane15580093564870" ],
+      "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
+      "instanceName" : "HTTPClient_03",
+      "library" : "streamsets-datacollector-basic-lib",
+      "stageName" : "com_streamsets_pipeline_stage_processor_http_HttpDProcessor",
+      "stageVersion" : "11",
+      "configuration" : [ {
+        "name" : "conf.dataFormatConfig.compression",
+        "value" : "NONE"
+      }, {
+        "name" : "conf.dataFormatConfig.filePatternInArchive",
+        "value" : "*"
+      }, {
+        "name" : "conf.dataFormatConfig.charset",
+        "value" : "UTF-8"
+      }, {
+        "name" : "conf.dataFormatConfig.removeCtrlChars",
+        "value" : false
+      }, {
+        "name" : "conf.dataFormatConfig.textMaxLineLen",
+        "value" : 1024
+      }, {
+        "name" : "conf.dataFormatConfig.useCustomDelimiter",
+        "value" : false
+      }, {
+        "name" : "conf.dataFormatConfig.customDelimiter",
+        "value" : "\\r\\n"
+      }, {
+        "name" : "conf.dataFormatConfig.includeCustomDelimiterInTheText",
+        "value" : false
+      }, {
+        "name" : "conf.dataFormatConfig.jsonMaxObjectLen",
+        "value" : 100000000
+      }, {
+        "name" : "conf.dataFormatConfig.csvFileFormat",
+        "value" : "CSV"
+      }, {
+        "name" : "conf.dataFormatConfig.csvHeader",
+        "value" : "NO_HEADER"
+      }, {
+        "name" : "conf.dataFormatConfig.csvAllowExtraColumns",
+        "value" : false
+      }, {
+        "name" : "conf.dataFormatConfig.csvExtraColumnPrefix",
+        "value" : "_extra_"
+      }, {
+        "name" : "conf.dataFormatConfig.csvMaxObjectLen",
+        "value" : 1024
+      }, {
+        "name" : "conf.dataFormatConfig.csvCustomDelimiter",
+        "value" : "|"
+      }, {
+        "name" : "conf.dataFormatConfig.multiCharacterFieldDelimiter",
+        "value" : "||"
+      }, {
+        "name" : "conf.dataFormatConfig.multiCharacterLineDelimiter",
+        "value" : "${str:unescapeJava('\\\\n')}"
       }, {
         "name" : "conf.dataFormatConfig.csvCustomEscape",
         "value" : "\\"
@@ -392,8 +666,23 @@
         "name" : "conf.dataFormatConfig.excelHeader",
         "value" : null
       }, {
+        "name" : "conf.outputField",
+        "value" : "/response"
+      }, {
+        "name" : "conf.headerOutputLocation",
+        "value" : "HEADER"
+      }, {
+        "name" : "conf.headerAttributePrefix",
+        "value" : null
+      }, {
+        "name" : "conf.headerOutputField",
+        "value" : null
+      }, {
+        "name" : "conf.dataFormat",
+        "value" : "JSON"
+      }, {
         "name" : "conf.resourceUrl",
-        "value" : "http://influx:8086/query?db=test&epoch=s&q=SELECT+{dimensions}+FROM+{metric}+LIMIT+1000+OFFSET+${startAt}"
+        "value" : "http://influx:8086/query?db=test&epoch=ns&q=SELECT+cpu,zone,host,usage_active,usage_idle+FROM+cpu+WHERE+time+%3E+${record:value('/text')}+LIMIT+1000"
       }, {
         "name" : "conf.headers",
         "value" : [ ]
@@ -401,8 +690,8 @@
         "name" : "conf.httpMethod",
         "value" : "GET"
       }, {
-        "name" : "conf.timeZoneID",
-        "value" : "UTC"
+        "name" : "conf.methodExpression",
+        "value" : null
       }, {
         "name" : "conf.requestBody",
         "value" : null
@@ -422,6 +711,9 @@
         "name" : "conf.client.readTimeoutMillis",
         "value" : 0
       }, {
+        "name" : "conf.client.numThreads",
+        "value" : 1
+      }, {
         "name" : "conf.client.authType",
         "value" : "NONE"
       }, {
@@ -429,16 +721,16 @@
         "value" : false
       }, {
         "name" : "conf.client.oauth.consumerKey",
-        "value" : null
+        "value" : ""
       }, {
         "name" : "conf.client.oauth.consumerSecret",
-        "value" : null
+        "value" : ""
       }, {
         "name" : "conf.client.oauth.token",
-        "value" : null
+        "value" : ""
       }, {
         "name" : "conf.client.oauth.tokenSecret",
-        "value" : null
+        "value" : ""
       }, {
         "name" : "conf.client.oauth2.credentialsGrantType",
         "value" : null
@@ -447,28 +739,28 @@
         "value" : null
       }, {
         "name" : "conf.client.oauth2.clientId",
-        "value" : null
+        "value" : ""
       }, {
         "name" : "conf.client.oauth2.clientSecret",
-        "value" : null
+        "value" : ""
       }, {
         "name" : "conf.client.oauth2.username",
-        "value" : null
+        "value" : ""
       }, {
         "name" : "conf.client.oauth2.password",
-        "value" : null
+        "value" : ""
       }, {
         "name" : "conf.client.oauth2.resourceOwnerClientId",
-        "value" : null
+        "value" : ""
       }, {
         "name" : "conf.client.oauth2.resourceOwnerClientSecret",
-        "value" : null
+        "value" : ""
       }, {
         "name" : "conf.client.oauth2.algorithm",
         "value" : "NONE"
       }, {
         "name" : "conf.client.oauth2.key",
-        "value" : null
+        "value" : ""
       }, {
         "name" : "conf.client.oauth2.jwtClaims",
         "value" : null
@@ -480,10 +772,10 @@
         "value" : [ { } ]
       }, {
         "name" : "conf.client.basicAuth.username",
-        "value" : null
+        "value" : ""
       }, {
         "name" : "conf.client.basicAuth.password",
-        "value" : null
+        "value" : ""
       }, {
         "name" : "conf.client.useProxy",
         "value" : false
@@ -492,10 +784,10 @@
         "value" : null
       }, {
         "name" : "conf.client.proxy.username",
-        "value" : null
+        "value" : ""
       }, {
         "name" : "conf.client.proxy.password",
-        "value" : null
+        "value" : ""
       }, {
         "name" : "conf.client.tlsConfig.tlsEnabled",
         "value" : false
@@ -507,7 +799,7 @@
         "value" : "JKS"
       }, {
         "name" : "conf.client.tlsConfig.keyStorePassword",
-        "value" : null
+        "value" : ""
       }, {
         "name" : "conf.client.tlsConfig.keyStoreAlgorithm",
         "value" : "SunX509"
@@ -519,7 +811,7 @@
         "value" : "JKS"
       }, {
         "name" : "conf.client.tlsConfig.trustStorePassword",
-        "value" : null
+        "value" : ""
       }, {
         "name" : "conf.client.tlsConfig.trustStoreAlgorithm",
         "value" : "SunX509"
@@ -548,65 +840,30 @@
         "name" : "conf.client.requestLoggingConfig.maxEntitySize",
         "value" : 0
       }, {
-        "name" : "conf.httpMode",
-        "value" : "STREAMING"
-      }, {
-        "name" : "conf.pollingInterval",
-        "value" : 5000
-      }, {
-        "name" : "conf.dataFormat",
-        "value" : "JSON"
-      }, {
-        "name" : "conf.responseStatusActionConfigs",
-        "value" : [ {
-          "statusCode" : 500,
-          "action" : "RETRY_EXPONENTIAL_BACKOFF",
-          "backoffInterval" : 1000,
-          "maxNumRetries" : 10
-        } ]
-      }, {
-        "name" : "conf.responseTimeoutActionConfig.action",
-        "value" : "RETRY_IMMEDIATELY"
-      }, {
-        "name" : "conf.responseTimeoutActionConfig.backoffInterval",
-        "value" : 1000
-      }, {
-        "name" : "conf.responseTimeoutActionConfig.maxNumRetries",
-        "value" : 10
-      }, {
-        "name" : "conf.pagination.mode",
-        "value" : "BY_OFFSET"
-      }, {
-        "name" : "conf.pagination.nextPageFieldPath",
-        "value" : null
-      }, {
-        "name" : "conf.pagination.stopCondition",
-        "value" : null
-      }, {
-        "name" : "conf.pagination.startAt",
+        "name" : "conf.rateLimit",
         "value" : 0
       }, {
-        "name" : "conf.pagination.resultFieldPath",
-        "value" : "/results[0]/series[0]/values"
-      }, {
-        "name" : "conf.pagination.keepAllFields",
-        "value" : false
-      }, {
-        "name" : "conf.pagination.rateLimit",
-        "value" : 2000
+        "name" : "conf.maxRequestCompletionSecs",
+        "value" : 60
       }, {
         "name" : "stageOnRecordError",
         "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
       } ],
       "uiInfo" : {
         "description" : "",
-        "label" : "HTTP Client 2",
-        "xPos" : 4.979646682739258,
-        "yPos" : 137.8765799999237,
-        "stageType" : "SOURCE"
+        "label" : "HTTP Client 3",
+        "xPos" : 18.06341552734375,
+        "yPos" : 149,
+        "stageType" : "PROCESSOR"
       },
-      "inputLanes" : [ ],
-      "outputLanes" : [ "HTTPClient_02OutputLane15517931295410" ],
+      "inputLanes" : [ "Directory_01OutputLane15580093564870" ],
+      "outputLanes" : [ "HTTPClient_03OutputLane15580084532730" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -619,10 +876,10 @@
         "value" : "BATCH"
       }, {
         "name" : "initScript",
-        "value" : "/*\nstate['columns'] = ['time', 'cpu', 'zone', 'host', 'usage_active', 'usage_idle'];\n*/\n\nstate['columns'] = {columns};"
+        "value" : ""
       }, {
         "name" : "script",
-        "value" : "/**\n * Available constants: \n *   They are to assign a type to a field with a value null.\n *   NULL_BOOLEAN, NULL_CHAR, NULL_BYTE, NULL_SHORT, NULL_INTEGER, NULL_LONG\n *   NULL_FLOATNULL_DOUBLE, NULL_DATE, NULL_DATETIME, NULL_TIME, NULL_DECIMAL\n *   NULL_BYTE_ARRAY, NULL_STRING, NULL_LIST, NULL_MAP\n *\n * Available Objects:\n * \n *  records: an array of records to process, depending on the JavaScript processor\n *           processing mode it may have 1 record or all the records in the batch.\n *\n *  state: a dict that is preserved between invocations of this script. \n *        Useful for caching bits of data e.g. counters.\n *\n *  log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n *                               loglevel is any log4j level: e.g. info, error, warn, trace.\n *\n *  output.write(record): writes a record to processor output\n *\n *  error.write(record, message): sends a record to error\n *\n *  sdcFunctions.getFieldNull(Record, 'field path'): Receive a constant defined above\n *                            to check if the field is typed field with value null\n *  sdcFunctions.createRecord(String recordId): Creates a new record.\n *                            Pass a recordId to uniquely identify the record and include enough information to track down the record source. \n *  sdcFunctions.createMap(boolean listMap): Create a map for use as a field in a record.\n *                            Pass true to this function to create a list map (ordered map)\n *\n *  sdcFunctions.createEvent(String type, int version): Creates a new event.\n *                            Create new empty event with standard headers.\n *  sdcFunctions.toEvent(Record): Send event to event stream\n *                            Only events created with sdcFunctions.createEvent are supported.\n *  sdcFunctions.isPreview(): Determine if pipeline is in preview mode.\n *\n * Available Record Header Variables:n *\n *  record.attributes: a map of record header attributes.\n *\n *  record.<header name>: get the value of 'header name'.\n */\n\n// Sample JavaScript code\nfor(var i = 0; i < records.length; i++) {\n  try {\n    // Change record root field value to a STRING value\n    //records[i].value = 'Hello ' + i;\n\n\n    // Change record root field value to a MAP value and create an entry\n    //records[i].value = { V : 'Hello' };\n\n    // Access a MAP entry\n    //records[i].value.X = records[i].value['V'] + ' World';\n\n    // Modify a MAP entry\n    //records[i].value.V = 5;\n\n    // Create an ARRAY entry\n    //records[i].value.A = ['Element 1', 'Element 2'];\n\n    // Access a Array entry\n    //records[i].value.B = records[i].value['A'][0];\n\n    // Modify an existing ARRAY entry\n    //records[i].value.A[0] = 100;\n\n    // Assign a integer type to a field and value null\n    // records[i].value.null_int = NULL_INTEGER \n\n    // Check if the field is NULL_INTEGER. If so, assign a value \n    // if(sdcFunctions.getFieldNull(records[i], '/null_int') == NULL_INTEGER)\n    //    records[i].value.null_int = 123\n\n    // Create a new record with map field \n    if (records[i].value['results']) {\n      continue;\n    }\n    var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + i);\n    newRecord.value = {};\n    for (var k = 0; k < state['columns'].length; k++) {\n      if (records[i].value[k] == null) {\n        continue;\n      }\n      newRecord.value[state['columns'][k]] = records[i].value[k]\n    }\n\n    output.write(newRecord);\n    // output.write(newRecord);\n    // Create a new map and add it to the original record\n    // var newMap = sdcFunctions.createMap(true);\n    // newMap['key'] = 'value';\n    // records[i].value['b'] = newMap;\n\n    //Applies if the source uses WHOLE_FILE as data format\n    //var input_stream = record.value['fileRef'].getInputStream();\n    //try {\n      //input_stream.read(); //Process the input stream\n    //} finally{\n      //input_stream.close()\n    //}\n\n    // Modify a header attribute entry\n    // records[i].attributes['name'] = records[i].attributes['first_name'] + ' ' + records[i].attributes['last_name']    //\n\n    // Get a record header with field names ex. get sourceId and errorCode\n    // var sourceId = records[i].sourceId\n    // var errorCode = ''\n    // if(records[i].errorCode) {\n    //     errorCode = records[i].errorCode\n    // }\n\n    // Write record to processor output\n    // output.write(records[i]);\n  } catch (e) {\n    // Send record to error\n    error.write(records[i], e);\n  }\n}"
+        "value" : "for(var i = 0; i < records.length; i++) {\n  try {\n    if (records[i].value['response']['results'][0]['series'] == null) {\n      var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + records.length);\n      newRecord.value = {'last_timestamp': records[i].value['text']}\n    \n      try {\n        output.write(newRecord);\n      } catch (e) {\n        error.write(newRecord, e);\n      }\n      continue;\n    } \n    series = records[i].value['response']['results'][0]['series'][0]\n    for (var k = 0; k < series['values'].length; k++) {\n      var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + k);\n      newRecord.value = {};\n      for (var c = 0; c < series['columns'].length; c++) {\n\t\tif (series['values'][k][c] == null) {\n          continue;\n        }\n        newRecord.value[series['columns'][c]] = series['values'][k][c]\n      }\n      \n      output.write(newRecord);\n    }\n\n\tvar newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + records.length);\n\tif (k > 0) {\n      newRecord.value = {'last_timestamp': series['values'][k - 1][0]}\n    } else {\n      newRecord.value = {'last_timestamp': records[i].value['text']}\n    }\n    \n    try {\n      output.write(newRecord);\n    } catch (e) {\n      error.write(newRecord, e);\n    }\n  } catch (e) {\n    // Send record to error\n    error.write(records[i], e);\n  }\n}"
       }, {
         "name" : "destroyScript",
         "value" : "/**\n * Available Objects:\n * \n *  state: a dict that is preserved between invocations of this script. \n *        Useful for caching bits of data e.g. counters and long-lived resources.\n *\n *  log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n *                               loglevel is any log4j level: e.g. info, error, warn, trace.\n *   sdcFunctions.getFieldNull(Record, 'field path'): Receive a constant defined above \n *                          to check if the field is typed field with value null\n *   sdcFunctions.createMap(boolean listMap): Create a map for use as a field in a record. \n *                          Pass true to this function to create a list map (ordered map)\n *   sdcFunctions.createEvent(String type, int version): Creates a new event.\n *                          Create new empty event with standard headers.\n *   sdcFunctions.toEvent(Record): Send event to event stream\n *                          Only events created with sdcFunctions.createEvent are supported.\n */\n\n// state['connection'].close();"
@@ -639,31 +896,28 @@
       "uiInfo" : {
         "description" : "",
         "label" : "JavaScript Evaluator 1",
-        "xPos" : 190.23468017578125,
-        "yPos" : 139.8766098022461,
+        "xPos" : 200.23468017578125,
+        "yPos" : 138.8766098022461,
         "stageType" : "PROCESSOR"
       },
-      "inputLanes" : [ "HTTPClient_02OutputLane15517931295410" ],
+      "inputLanes" : [ "HTTPClient_03OutputLane15580084532730" ],
       "outputLanes" : [ "JavaScriptEvaluator_01OutputLane15518645609860" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
-      "instanceName" : "JavaScriptEvaluator_02",
+      "instanceName" : "StreamSelector_01",
       "library" : "streamsets-datacollector-basic-lib",
-      "stageName" : "com_streamsets_pipeline_stage_processor_javascript_JavaScriptDProcessor",
-      "stageVersion" : "2",
+      "stageName" : "com_streamsets_pipeline_stage_processor_selector_SelectorDProcessor",
+      "stageVersion" : "1",
       "configuration" : [ {
-        "name" : "processingMode",
-        "value" : "BATCH"
-      }, {
-        "name" : "initScript",
-        "value" : "/*\nstate['MEASUREMENT_NAME'] = 'clicks';\nstate['REQUIRED_DIMENSIONS'] = ['AdType', 'Exchange'];\nstate['OPTIONAL_DIMENSIONS'] = ['ver', 'AdSize', 'Country'];\nstate['VALUES_COLUMNS'] = ['value'];\nstate['TARGET_TYPE'] = 'gauge';\nstate['VALUE_CONSTANT'] = 1\n*/\n\nstate['MEASUREMENT_NAME'] = '{measurement_name}';\nstate['REQUIRED_DIMENSIONS'] = {required_dimensions};\nstate['OPTIONAL_DIMENSIONS'] = {optional_dimensions};\nstate['VALUES_COLUMNS'] = {values};\nstate['TARGET_TYPE'] = '{target_type}';\nstate['VALUE_CONSTANT'] = {value_constant}"
-      }, {
-        "name" : "script",
-        "value" : "/**\n * Available constants: \n *   They are to assign a type to a field with a value null.\n *   NULL_BOOLEAN, NULL_CHAR, NULL_BYTE, NULL_SHORT, NULL_INTEGER, NULL_LONG\n *   NULL_FLOATNULL_DOUBLE, NULL_DATE, NULL_DATETIME, NULL_TIME, NULL_DECIMAL\n *   NULL_BYTE_ARRAY, NULL_STRING, NULL_LIST, NULL_MAP\n *\n * Available Objects:\n * \n *  records: an array of records to process, depending on the JavaScript processor\n *           processing mode it may have 1 record or all the records in the batch.\n *\n *  state: a dict that is preserved between invocations of this script. \n *        Useful for caching bits of data e.g. counters.\n *\n *  log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n *                               loglevel is any log4j level: e.g. info, error, warn, trace.\n *\n *  output.write(record): writes a record to processor output\n *\n *  error.write(record, message): sends a record to error\n *\n *  sdcFunctions.getFieldNull(Record, 'field path'): Receive a constant defined above\n *                            to check if the field is typed field with value null\n *  sdcFunctions.createRecord(String recordId): Creates a new record.\n *                            Pass a recordId to uniquely identify the record and include enough information to track down the record source. \n *  sdcFunctions.createMap(boolean listMap): Create a map for use as a field in a record.\n *                            Pass true to this function to create a list map (ordered map)\n *\n *  sdcFunctions.createEvent(String type, int version): Creates a new event.\n *                            Create new empty event with standard headers.\n *  sdcFunctions.toEvent(Record): Send event to event stream\n *                            Only events created with sdcFunctions.createEvent are supported.\n *  sdcFunctions.isPreview(): Determine if pipeline is in preview mode.\n *\n * Available Record Header Variables:n *\n *  record.attributes: a map of record header attributes.\n *\n *  record.<header name>: get the value of 'header name'.\n */\n\n// Sample JavaScript code\n\n\nfor(var i = 0; i < records.length; i++) {\n  try {\n    // Change record root field value to a STRING value\n    //records[i].value = 'Hello ' + i;\n\n\n    // Change record root field value to a MAP value and create an entry\n    //records[i].value = { V : 'Hello' };\n\n    // Access a MAP entry\n    //records[i].value.X = records[i].value['V'] + ' World';\n\n    // Modify a MAP entry\n    //records[i].value.V = 5;\n\n    // Create an ARRAY entry\n    //records[i].value.A = ['Element 1', 'Element 2'];\n\n    // Access a Array entry\n    //records[i].value.B = records[i].value['A'][0];\n\n    // Modify an existing ARRAY entry\n    //records[i].value.A[0] = 100;\n\n    // Assign a integer type to a field and value null\n    // records[i].value.null_int = NULL_INTEGER \n\n    // Check if the field is NULL_INTEGER. If so, assign a value \n    // if(sdcFunctions.getFieldNull(records[i], '/null_int') == NULL_INTEGER)\n    //    records[i].value.null_int = 123\n\n    // Create a new record with map field \n    var properties = {'target_type': state['TARGET_TYPE']}\n    for (var j = 0; j < state['REQUIRED_DIMENSIONS'].length; j++) {\n      properties[state['REQUIRED_DIMENSIONS'][j]] = records[i].value[state['REQUIRED_DIMENSIONS'][j]]\n    }\n    for (var j = 0; j < state['OPTIONAL_DIMENSIONS'].length; j++) {\n      if (records[i].value[state['OPTIONAL_DIMENSIONS'][j]] !== null) {\n        properties[state['OPTIONAL_DIMENSIONS'][j]] = records[i].value[state['OPTIONAL_DIMENSIONS'][j]]\n      }\n    }\n    if (state['VALUES_COLUMNS'].length == 0) {\n      var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + i);\n      properties['what'] = properties['what'] = state['VALUES_COLUMNS'][j];;\n      newRecord.value = {'timestamp' : records[i].value['time'],\n                         'properties' : properties,\n                         'value': state['VALUE_CONSTANT']};\n      output.write(newRecord);\n    }\n    \n    for (var j = 0; j < state['VALUES_COLUMNS'].length; j++) {\n      var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + i);\n      if (state['VALUES_COLUMNS'].length == 0) { \n        properties['what'] = state['MEASUREMENT_NAME'];\n      } else {\n        properties['measurement_category'] = state['MEASUREMENT_NAME'];\n        properties['what'] = state['VALUES_COLUMNS'][j];\n      }\n      \n      newRecord.value = {'timestamp' : records[i].value['time'],\n                         'properties' : properties,\n                         'value': records[i].value[state['VALUES_COLUMNS'][j]]};\n      output.write(newRecord);\n    }\n    \n    \n    // Create a new map and add it to the original record\n    // var newMap = sdcFunctions.createMap(true);\n    // newMap['key'] = 'value';\n    // records[i].value['b'] = newMap;\n\n    //Applies if the source uses WHOLE_FILE as data format\n    //var input_stream = record.value['fileRef'].getInputStream();\n    //try {\n      //input_stream.read(); //Process the input stream\n    //} finally{\n      //input_stream.close()\n    //}\n\n    // Modify a header attribute entry\n    // records[i].attributes['name'] = records[i].attributes['first_name'] + ' ' + records[i].attributes['last_name']    //\n\n    // Get a record header with field names ex. get sourceId and errorCode\n    // var sourceId = records[i].sourceId\n    // var errorCode = ''\n    // if(records[i].errorCode) {\n    //     errorCode = records[i].errorCode\n    // }\n\n    // Write record to processor output\n    // output.write(records[i]);\n  } catch (e) {\n    // Send record to error\n    error.write(records[i], e);\n  }\n}"
-      }, {
-        "name" : "destroyScript",
-        "value" : "/**\n * Available Objects:\n * \n *  state: a dict that is preserved between invocations of this script. \n *        Useful for caching bits of data e.g. counters and long-lived resources.\n *\n *  log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n *                               loglevel is any log4j level: e.g. info, error, warn, trace.\n *   sdcFunctions.getFieldNull(Record, 'field path'): Receive a constant defined above \n *                          to check if the field is typed field with value null\n *   sdcFunctions.createMap(boolean listMap): Create a map for use as a field in a record. \n *                          Pass true to this function to create a list map (ordered map)\n *   sdcFunctions.createEvent(String type, int version): Creates a new event.\n *                          Create new empty event with standard headers.\n *   sdcFunctions.toEvent(Record): Send event to event stream\n *                          Only events created with sdcFunctions.createEvent are supported.\n */\n\n// state['connection'].close();"
+        "name" : "lanePredicates",
+        "value" : [ {
+          "outputLane" : "StreamSelector_01OutputLane1558022315966",
+          "predicate" : "${record:exists('/last_timestamp')}"
+        }, {
+          "outputLane" : "StreamSelector_01OutputLane1558022212363",
+          "predicate" : "default"
+        } ]
       }, {
         "name" : "stageOnRecordError",
         "value" : "TO_ERROR"
@@ -676,12 +930,279 @@
       } ],
       "uiInfo" : {
         "description" : "",
-        "label" : "JavaScript Evaluator 2",
-        "xPos" : 386.6939392089844,
-        "yPos" : 137.54216766357422,
+        "label" : "Stream Selector 1",
+        "xPos" : 375.06341552734375,
+        "yPos" : 150,
         "stageType" : "PROCESSOR"
       },
       "inputLanes" : [ "JavaScriptEvaluator_01OutputLane15518645609860" ],
+      "outputLanes" : [ "StreamSelector_01OutputLane1558022315966", "StreamSelector_01OutputLane1558022212363" ],
+      "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
+      "instanceName" : "LocalFS_01",
+      "library" : "streamsets-datacollector-basic-lib",
+      "stageName" : "com_streamsets_pipeline_stage_destination_localfilesystem_LocalFileSystemDTarget",
+      "stageVersion" : "3",
+      "configuration" : [ {
+        "name" : "configs.uniquePrefix",
+        "value" : "timestamp_${sdc:id()}"
+      }, {
+        "name" : "configs.fileNameSuffix",
+        "value" : null
+      }, {
+        "name" : "configs.dirPathTemplateInHeader",
+        "value" : false
+      }, {
+        "name" : "configs.dirPathTemplate",
+        "value" : "/data/timestamps/${pipeline:id()}"
+      }, {
+        "name" : "configs.timeZoneID",
+        "value" : "UTC"
+      }, {
+        "name" : "configs.timeDriver",
+        "value" : "${time:now()}"
+      }, {
+        "name" : "configs.maxRecordsPerFile",
+        "value" : 1
+      }, {
+        "name" : "configs.maxFileSize",
+        "value" : 0
+      }, {
+        "name" : "configs.idleTimeout",
+        "value" : "${1 * HOURS}"
+      }, {
+        "name" : "configs.compression",
+        "value" : "NONE"
+      }, {
+        "name" : "configs.otherCompression",
+        "value" : null
+      }, {
+        "name" : "configs.fileType",
+        "value" : "TEXT"
+      }, {
+        "name" : "configs.keyEl",
+        "value" : "${uuid()}"
+      }, {
+        "name" : "configs.lateRecordsLimit",
+        "value" : "${1 * HOURS}"
+      }, {
+        "name" : "configs.rollIfHeader",
+        "value" : false
+      }, {
+        "name" : "configs.rollHeaderName",
+        "value" : "roll"
+      }, {
+        "name" : "configs.lateRecordsAction",
+        "value" : "SEND_TO_ERROR"
+      }, {
+        "name" : "configs.lateRecordsDirPathTemplate",
+        "value" : "/tmp/late/${YYYY()}-${MM()}-${DD()}"
+      }, {
+        "name" : "configs.dataFormat",
+        "value" : "TEXT"
+      }, {
+        "name" : "configs.hdfsPermissionCheck",
+        "value" : true
+      }, {
+        "name" : "configs.permissionEL",
+        "value" : null
+      }, {
+        "name" : "configs.skipOldTempFileRecovery",
+        "value" : false
+      }, {
+        "name" : "configs.dataGeneratorFormatConfig.charset",
+        "value" : "UTF-8"
+      }, {
+        "name" : "configs.dataGeneratorFormatConfig.csvFileFormat",
+        "value" : "CSV"
+      }, {
+        "name" : "configs.dataGeneratorFormatConfig.csvHeader",
+        "value" : "NO_HEADER"
+      }, {
+        "name" : "configs.dataGeneratorFormatConfig.csvReplaceNewLines",
+        "value" : true
+      }, {
+        "name" : "configs.dataGeneratorFormatConfig.csvReplaceNewLinesString",
+        "value" : " "
+      }, {
+        "name" : "configs.dataGeneratorFormatConfig.csvCustomDelimiter",
+        "value" : "|"
+      }, {
+        "name" : "configs.dataGeneratorFormatConfig.csvCustomEscape",
+        "value" : "\\"
+      }, {
+        "name" : "configs.dataGeneratorFormatConfig.csvCustomQuote",
+        "value" : "\""
+      }, {
+        "name" : "configs.dataGeneratorFormatConfig.jsonMode",
+        "value" : "MULTIPLE_OBJECTS"
+      }, {
+        "name" : "configs.dataGeneratorFormatConfig.textFieldPath",
+        "value" : "/last_timestamp"
+      }, {
+        "name" : "configs.dataGeneratorFormatConfig.textRecordSeparator",
+        "value" : "\\n"
+      }, {
+        "name" : "configs.dataGeneratorFormatConfig.textFieldMissingAction",
+        "value" : "ERROR"
+      }, {
+        "name" : "configs.dataGeneratorFormatConfig.textEmptyLineIfNull",
+        "value" : false
+      }, {
+        "name" : "configs.dataGeneratorFormatConfig.avroSchemaSource",
+        "value" : null
+      }, {
+        "name" : "configs.dataGeneratorFormatConfig.avroSchema",
+        "value" : null
+      }, {
+        "name" : "configs.dataGeneratorFormatConfig.registerSchema",
+        "value" : false
+      }, {
+        "name" : "configs.dataGeneratorFormatConfig.schemaRegistryUrlsForRegistration",
+        "value" : [ ]
+      }, {
+        "name" : "configs.dataGeneratorFormatConfig.schemaRegistryUrls",
+        "value" : [ ]
+      }, {
+        "name" : "configs.dataGeneratorFormatConfig.schemaLookupMode",
+        "value" : "SUBJECT"
+      }, {
+        "name" : "configs.dataGeneratorFormatConfig.subject",
+        "value" : null
+      }, {
+        "name" : "configs.dataGeneratorFormatConfig.subjectToRegister",
+        "value" : null
+      }, {
+        "name" : "configs.dataGeneratorFormatConfig.schemaId",
+        "value" : null
+      }, {
+        "name" : "configs.dataGeneratorFormatConfig.avroCompression",
+        "value" : "NULL"
+      }, {
+        "name" : "configs.dataGeneratorFormatConfig.binaryFieldPath",
+        "value" : "/"
+      }, {
+        "name" : "configs.dataGeneratorFormatConfig.protoDescriptorFile",
+        "value" : null
+      }, {
+        "name" : "configs.dataGeneratorFormatConfig.messageType",
+        "value" : null
+      }, {
+        "name" : "configs.dataGeneratorFormatConfig.fileNameEL",
+        "value" : null
+      }, {
+        "name" : "configs.dataGeneratorFormatConfig.wholeFileExistsAction",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "configs.dataGeneratorFormatConfig.includeChecksumInTheEvents",
+        "value" : false
+      }, {
+        "name" : "configs.dataGeneratorFormatConfig.checksumAlgorithm",
+        "value" : "MD5"
+      }, {
+        "name" : "configs.dataGeneratorFormatConfig.xmlPrettyPrint",
+        "value" : true
+      }, {
+        "name" : "configs.dataGeneratorFormatConfig.xmlValidateSchema",
+        "value" : false
+      }, {
+        "name" : "configs.dataGeneratorFormatConfig.xmlSchema",
+        "value" : null
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "description" : "",
+        "label" : "Local FS 1",
+        "xPos" : 641.0633544921875,
+        "yPos" : 1,
+        "stageType" : "TARGET"
+      },
+      "inputLanes" : [ "StreamSelector_01OutputLane1558022315966" ],
+      "outputLanes" : [ ],
+      "eventLanes" : [ "LocalFS_01_EventLane" ],
+      "services" : [ ]
+    }, {
+      "instanceName" : "Shell_01",
+      "library" : "streamsets-datacollector-basic-lib",
+      "stageName" : "com_streamsets_pipeline_stage_executor_shell_ShellDExecutor",
+      "stageVersion" : "1",
+      "configuration" : [ {
+        "name" : "config.environmentVariables",
+        "value" : [ {
+          "key" : "PIPELINE_ID",
+          "value" : "${pipeline:id()}"
+        } ]
+      }, {
+        "name" : "config.timeout",
+        "value" : "1000"
+      }, {
+        "name" : "config.script",
+        "value" : "cd /data/timestamps/$PIPELINE_ID && if [ \"$(ls -l | wc -l)\" -ge \"4\" ]; then rm $(ls -t | tail -1); fi"
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "description" : "",
+        "label" : "Shell 1",
+        "xPos" : 872.0634155273438,
+        "yPos" : 116,
+        "stageType" : "EXECUTOR"
+      },
+      "inputLanes" : [ "LocalFS_01_EventLane" ],
+      "outputLanes" : [ ],
+      "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
+      "instanceName" : "JavaScriptEvaluator_02",
+      "library" : "streamsets-datacollector-basic-lib",
+      "stageName" : "com_streamsets_pipeline_stage_processor_javascript_JavaScriptDProcessor",
+      "stageVersion" : "2",
+      "configuration" : [ {
+        "name" : "processingMode",
+        "value" : "BATCH"
+      }, {
+        "name" : "initScript",
+        "value" : "/*\nstate['MEASUREMENT_NAME'] = 'clicks';\nstate['REQUIRED_DIMENSIONS'] = ['AdType', 'Exchange'];\nstate['OPTIONAL_DIMENSIONS'] = ['ver', 'AdSize', 'Country'];\nstate['VALUES_COLUMNS'] = ['value'];\nstate['TARGET_TYPE'] = 'gauge';\nstate['VALUE_CONSTANT'] = 1\n*/\n\nstate['MEASUREMENT_NAME'] = 'cpu_test';\nstate['REQUIRED_DIMENSIONS'] = [];\nstate['OPTIONAL_DIMENSIONS'] = ['cpu', 'zone', 'host'];\nstate['VALUES_COLUMNS'] = ['usage_active', 'usage_idle'];\nstate['TARGET_TYPE'] = 'gauge';\nstate['VALUE_CONSTANT'] = 1"
+      }, {
+        "name" : "script",
+        "value" : "/**\n * Available constants: \n *   They are to assign a type to a field with a value null.\n *   NULL_BOOLEAN, NULL_CHAR, NULL_BYTE, NULL_SHORT, NULL_INTEGER, NULL_LONG\n *   NULL_FLOATNULL_DOUBLE, NULL_DATE, NULL_DATETIME, NULL_TIME, NULL_DECIMAL\n *   NULL_BYTE_ARRAY, NULL_STRING, NULL_LIST, NULL_MAP\n *\n * Available Objects:\n * \n *  records: an array of records to process, depending on the JavaScript processor\n *           processing mode it may have 1 record or all the records in the batch.\n *\n *  state: a dict that is preserved between invocations of this script. \n *        Useful for caching bits of data e.g. counters.\n *\n *  log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n *                               loglevel is any log4j level: e.g. info, error, warn, trace.\n *\n *  output.write(record): writes a record to processor output\n *\n *  error.write(record, message): sends a record to error\n *\n *  sdcFunctions.getFieldNull(Record, 'field path'): Receive a constant defined above\n *                            to check if the field is typed field with value null\n *  sdcFunctions.createRecord(String recordId): Creates a new record.\n *                            Pass a recordId to uniquely identify the record and include enough information to track down the record source. \n *  sdcFunctions.createMap(boolean listMap): Create a map for use as a field in a record.\n *                            Pass true to this function to create a list map (ordered map)\n *\n *  sdcFunctions.createEvent(String type, int version): Creates a new event.\n *                            Create new empty event with standard headers.\n *  sdcFunctions.toEvent(Record): Send event to event stream\n *                            Only events created with sdcFunctions.createEvent are supported.\n *  sdcFunctions.isPreview(): Determine if pipeline is in preview mode.\n *\n * Available Record Header Variables:n *\n *  record.attributes: a map of record header attributes.\n *\n *  record.<header name>: get the value of 'header name'.\n */\n\n// Sample JavaScript code\n\n\nfor(var i = 0; i < records.length; i++) {\n  try {\n\ttimestamp = Math.round(records[i].value['time'] / 1e9)\n    // Create a new record with map field \n    var properties = {'target_type': state['TARGET_TYPE']}\n    for (var j = 0; j < state['REQUIRED_DIMENSIONS'].length; j++) {\n      properties[state['REQUIRED_DIMENSIONS'][j]] = records[i].value[state['REQUIRED_DIMENSIONS'][j]]\n    }\n    for (var j = 0; j < state['OPTIONAL_DIMENSIONS'].length; j++) {\n      if (records[i].value[state['OPTIONAL_DIMENSIONS'][j]] !== null) {\n        properties[state['OPTIONAL_DIMENSIONS'][j]] = records[i].value[state['OPTIONAL_DIMENSIONS'][j]]\n      }\n    }\n    if (state['VALUES_COLUMNS'].length == 0) {\n      var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + i);\n      properties['what'] = properties['what'] = state['VALUES_COLUMNS'][j];;\n      newRecord.value = {'timestamp' : timestamp,\n                         'properties' : properties,\n                         'value': state['VALUE_CONSTANT']};\n      output.write(newRecord);\n    }\n    \n    for (var j = 0; j < state['VALUES_COLUMNS'].length; j++) {\n      var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + i);\n      if (state['VALUES_COLUMNS'].length == 0) { \n        properties['what'] = state['MEASUREMENT_NAME'];\n      } else {\n        properties['measurement_category'] = state['MEASUREMENT_NAME'];\n        properties['what'] = state['VALUES_COLUMNS'][j];\n      }\n      \n      newRecord.value = {'timestamp' : timestamp,\n                         'properties' : properties,\n                         'value': records[i].value[state['VALUES_COLUMNS'][j]]};\n      output.write(newRecord);\n    }\n\n    // output.write(records[i]);\n  } catch (e) {\n    // Send record to error\n    error.write(records[i], e);\n  }\n}"
+      }, {
+        "name" : "destroyScript",
+        "value" : "/**\n * Available Objects:\n * \n *  state: a dict that is preserved between invocations of this script. \n *        Useful for caching bits of data e.g. counters and long-lived resources.\n *\n *  log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n *                               loglevel is any log4j level: e.g. info, error, warn, trace.\n *   sdcFunctions.getFieldNull(Record, 'field path'): Receive a constant defined above \n *                          to check if the field is typed field with value null\n *   sdcFunctions.createMap(boolean listMap): Create a map for use as a field in a record. \n *                          Pass true to this function to create a list map (ordered map)\n *   sdcFunctions.createEvent(String type, int version): Creates a new event.\n *                          Create new empty event with standard headers.\n *   sdcFunctions.toEvent(Record): Send event to event stream\n *                          Only events created with sdcFunctions.createEvent are supported.\n */\n\n// state['connection'].close();"
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ "${record:type('/cpu') == 'STRING' or record:type('/cpu') == NULL}", "${record:type('/zone') == 'STRING' or record:type('/zone') == NULL}", "${record:type('/host') == 'STRING' or record:type('/host') == NULL}", "${record:type('/usage_active') != 'STRING'}", "${record:type('/usage_idle') != 'STRING'}" ]
+      } ],
+      "uiInfo" : {
+        "description" : "",
+        "label" : "JavaScript Evaluator 2",
+        "xPos" : 577.6939392089844,
+        "yPos" : 243.54216766357422,
+        "stageType" : "PROCESSOR"
+      },
+      "inputLanes" : [ "StreamSelector_01OutputLane1558022212363" ],
       "outputLanes" : [ "JavaScriptEvaluator_02OutputLane15518690029440" ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -714,8 +1235,8 @@
       "uiInfo" : {
         "description" : "",
         "label" : "Add static properties",
-        "xPos" : 1205.0634155273438,
-        "yPos" : -23,
+        "xPos" : 793.0634155273438,
+        "yPos" : 277,
         "stageType" : "PROCESSOR"
       },
       "inputLanes" : [ "JavaScriptEvaluator_02OutputLane15518690029440" ],
@@ -834,7 +1355,7 @@
         "value" : "JSON"
       }, {
         "name" : "conf.resourceUrl",
-        "value" : "http://daria-test2/api/v1/metrics?token=e&protocol=anodot20"
+        "value" : "http://daria-test2/api/v1/metrics?token=ewrqerqw&protocol=anodot20"
       }, {
         "name" : "conf.headers",
         "value" : [ ]
@@ -867,16 +1388,16 @@
         "value" : false
       }, {
         "name" : "conf.client.oauth.consumerKey",
-        "value" : null
+        "value" : ""
       }, {
         "name" : "conf.client.oauth.consumerSecret",
-        "value" : null
+        "value" : ""
       }, {
         "name" : "conf.client.oauth.token",
-        "value" : null
+        "value" : ""
       }, {
         "name" : "conf.client.oauth.tokenSecret",
-        "value" : null
+        "value" : ""
       }, {
         "name" : "conf.client.oauth2.credentialsGrantType",
         "value" : null
@@ -885,28 +1406,28 @@
         "value" : null
       }, {
         "name" : "conf.client.oauth2.clientId",
-        "value" : null
+        "value" : ""
       }, {
         "name" : "conf.client.oauth2.clientSecret",
-        "value" : null
+        "value" : ""
       }, {
         "name" : "conf.client.oauth2.username",
-        "value" : null
+        "value" : ""
       }, {
         "name" : "conf.client.oauth2.password",
-        "value" : null
+        "value" : ""
       }, {
         "name" : "conf.client.oauth2.resourceOwnerClientId",
-        "value" : null
+        "value" : ""
       }, {
         "name" : "conf.client.oauth2.resourceOwnerClientSecret",
-        "value" : null
+        "value" : ""
       }, {
         "name" : "conf.client.oauth2.algorithm",
         "value" : "NONE"
       }, {
         "name" : "conf.client.oauth2.key",
-        "value" : null
+        "value" : ""
       }, {
         "name" : "conf.client.oauth2.jwtClaims",
         "value" : null
@@ -918,10 +1439,10 @@
         "value" : [ { } ]
       }, {
         "name" : "conf.client.basicAuth.username",
-        "value" : null
+        "value" : ""
       }, {
         "name" : "conf.client.basicAuth.password",
-        "value" : null
+        "value" : ""
       }, {
         "name" : "conf.client.useProxy",
         "value" : false
@@ -930,10 +1451,10 @@
         "value" : null
       }, {
         "name" : "conf.client.proxy.username",
-        "value" : null
+        "value" : ""
       }, {
         "name" : "conf.client.proxy.password",
-        "value" : null
+        "value" : ""
       }, {
         "name" : "conf.client.tlsConfig.tlsEnabled",
         "value" : false
@@ -945,7 +1466,7 @@
         "value" : "JKS"
       }, {
         "name" : "conf.client.tlsConfig.keyStorePassword",
-        "value" : "changeit"
+        "value" : ""
       }, {
         "name" : "conf.client.tlsConfig.keyStoreAlgorithm",
         "value" : "SunX509"
@@ -957,7 +1478,7 @@
         "value" : "JKS"
       }, {
         "name" : "conf.client.tlsConfig.trustStorePassword",
-        "value" : "changeit"
+        "value" : ""
       }, {
         "name" : "conf.client.tlsConfig.trustStoreAlgorithm",
         "value" : "SunX509"
@@ -1002,10 +1523,10 @@
         "value" : "SUCCESS_RECORDS"
       }, {
         "name" : "stageOnRecordError",
-        "value" : "TO_ERROR"
+        "value" : "DISCARD"
       }, {
         "name" : "stageRequiredFields",
-        "value" : [ ]
+        "value" : [ "/value" ]
       }, {
         "name" : "stageRecordPreconditions",
         "value" : [ ]
@@ -1013,8 +1534,8 @@
       "uiInfo" : {
         "description" : "",
         "label" : "HTTP Client 1",
-        "xPos" : 578.0634155273438,
-        "yPos" : 135.06565856933594,
+        "xPos" : 1046.0634155273438,
+        "yPos" : 290.06565856933594,
         "stageType" : "TARGET"
       },
       "inputLanes" : [ "ExpressionEvaluator_01OutputLane15542812028480" ],
@@ -1053,25 +1574,25 @@
       "services" : [ ]
     },
     "info" : {
-      "pipelineId" : "influxhttpa51e2ec8-d520-4836-8e69-9158ae2020b5",
-      "title" : "influx_http",
+      "pipelineId" : "erwe96d5a241-288f-4d0f-914d-cb7c7616e08e",
+      "title" : "erwe",
       "description" : "",
-      "created" : 1552648285949,
-      "lastModified" : 1552654987975,
+      "created" : 1558104162017,
+      "lastModified" : 1558361706490,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "cd4a8af3-3d2a-42b4-97af-a92d1de1bab7",
+      "uuid" : "99841e6b-f543-4e0f-b7d4-17bfa3be2eb0",
       "valid" : true,
       "metadata" : {
-        "labels" : [ "mongo", "http" ]
+        "labels" : [ "influx", "http" ]
       },
-      "name" : "influxhttpa51e2ec8-d520-4836-8e69-9158ae2020b5",
-      "sdcVersion" : "3.7.2",
-      "sdcId" : "00cf0a8a-458b-11e9-91e8-a3ac38f7451d"
+      "name" : "erwe96d5a241-288f-4d0f-914d-cb7c7616e08e",
+      "sdcVersion" : "3.8.2",
+      "sdcId" : "bfd2f32e-7ad0-11e9-adb4-ad5c9e6db833"
     },
     "metadata" : {
-      "labels" : [ "mongo", "http" ]
+      "labels" : [ "influx", "http" ]
     },
     "statsAggregatorStage" : {
       "instanceName" : "statsAggregatorStageInstance",
@@ -1135,6 +1656,9 @@
       }, {
         "name" : "stopAfterFirstBatch",
         "value" : false
+      }, {
+        "name" : "eventData",
+        "value" : null
       }, {
         "name" : "stageOnRecordError",
         "value" : "TO_ERROR"
@@ -1203,6 +1727,12 @@
         }, {
           "name" : "dataFormatConfig.csvCustomDelimiter",
           "value" : "|"
+        }, {
+          "name" : "dataFormatConfig.multiCharacterFieldDelimiter",
+          "value" : "||"
+        }, {
+          "name" : "dataFormatConfig.multiCharacterLineDelimiter",
+          "value" : "${str:unescapeJava('\\\\n')}"
         }, {
           "name" : "dataFormatConfig.csvCustomEscape",
           "value" : "\\"
@@ -1364,9 +1894,9 @@
     },
     "valid" : true,
     "issues" : {
+      "issueCount" : 0,
       "stageIssues" : { },
-      "pipelineIssues" : [ ],
-      "issueCount" : 0
+      "pipelineIssues" : [ ]
     },
     "previewable" : true
   },
@@ -1382,7 +1912,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1547131665566,
+      "timestamp" : 1558007679200,
       "valid" : true
     }, {
       "id" : "stageErrorAlertID",
@@ -1393,7 +1923,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1547131665566,
+      "timestamp" : 1558007679200,
       "valid" : true
     }, {
       "id" : "idleGaugeID",
@@ -1404,7 +1934,7 @@
       "condition" : "${time:now() - value() > 120000}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1547131665566,
+      "timestamp" : 1558007679200,
       "valid" : true
     }, {
       "id" : "batchTimeAlertID",
@@ -1415,23 +1945,12 @@
       "condition" : "${value() > 200}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1547131665566,
-      "valid" : true
-    }, {
-      "id" : "memoryLimitAlertID",
-      "alertText" : "Memory limit for pipeline exceeded",
-      "metricId" : "pipeline.memoryConsumed.counter",
-      "metricType" : "COUNTER",
-      "metricElement" : "COUNTER_COUNT",
-      "condition" : "${value() > (jvm:maxMemoryMB() * 0.65)}",
-      "sendEmail" : false,
-      "enabled" : false,
-      "timestamp" : 1547131665566,
+      "timestamp" : 1558007679200,
       "valid" : true
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "8e18da46-c1be-4313-8481-60ebd14d0ff1",
+    "uuid" : "96c28f42-3c05-45e2-8874-9afa8de17245",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : [ ]
