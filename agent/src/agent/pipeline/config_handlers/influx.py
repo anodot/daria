@@ -47,8 +47,8 @@ state['VALUE_CONSTANT'] = {value_constant}
             os.makedirs(offset_file_dir)
             os.chmod(offset_file_dir, 0o777)
 
-            with open(offset_file_path, 'w+') as f:
-                f.write(str(source_config['offset']))
+        with open(offset_file_path, 'w+') as f:
+            f.write(str(source_config['offset']))
 
     def override_stages(self):
         self.update_source_configs()
