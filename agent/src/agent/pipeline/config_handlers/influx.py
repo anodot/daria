@@ -51,6 +51,8 @@ state['VALUE_CONSTANT'] = {value_constant}
                 f.write(str(source_config['offset']))
 
     def override_stages(self):
+        self.update_source_configs()
+
         dimensions = self.get_dimensions()
         source_config = self.client_config['source']['config']
         columns_to_select = dimensions + self.client_config['value']['values']

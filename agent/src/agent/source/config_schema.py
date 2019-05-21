@@ -119,13 +119,12 @@ def prompt_kafka_config(default_config, advanced=False):
 
 def prompt_influx_config(default_config, advanced=False):
     config = dict()
-    default_resource_url = default_config.get('conf.resourceUrl', {})
-    config['host'] = click.prompt('InfluxDB API url', type=click.STRING, default=default_resource_url.get('host'))
+    config['host'] = click.prompt('InfluxDB API url', type=click.STRING, default=default_config.get('host'))
     if not is_url(config['host']):
         raise click.UsageError(f"{config['host']} is not and url")
 
-    config['db'] = click.prompt('Database', type=click.STRING, default=default_resource_url.get('db'))
-    config['limit'] = click.prompt('Limit', type=click.INT, default=default_resource_url.get('limit', 1000))
+    config['db'] = click.prompt('Database', type=click.STRING, default=default_config.get('db'))
+    config['limit'] = click.prompt('Limit', type=click.INT, default=default_config.get('limit', 1000))
 
     config['offset'] = click.prompt('Initial offset (amount of days ago or specific date in format "dd/MM/yyyy HH:mm")',
                                     type=click.STRING,
@@ -141,8 +140,9 @@ def prompt_influx_config(default_config, advanced=False):
                 datetime.strptime(config['offset'], '%d/%m/%Y %H:%M').timestamp()
             except ValueError as e:
                 raise click.UsageError(str(e))
-    config['conf.pagination.rateLimit'] = click.prompt('Wait time, ms', type=click.INT,
-                                                       default=default_config.get('conf.pagination.rateLimit', 2000))
+    config['conf.spoolingPeriod'] = click.prompt('Querying interval, seconds', type=click.INT,
+                                                 default=default_config.get('conf.spoolingPeriod', 60))
+    config['conf.poolingTimeoutSecs'] = config['conf.spoolingPeriod']
     return config
 
 
