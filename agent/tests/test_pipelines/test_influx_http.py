@@ -4,7 +4,7 @@ import pytest
 import time
 
 from ..fixtures import cli_runner, get_output, replace_destination, get_input_file_path
-from agent.constants import PIPELINES_DIR, SOURCES_DIR
+from agent.constants import PIPELINES_DIR, SOURCES_DIR, TIMESTAMPS_DIR
 from agent.pipeline import cli as pipeline_cli
 from agent.source import cli as source_cli
 from agent.streamsets_api_client import api_client
@@ -33,8 +33,10 @@ def test_create(cli_runner, name, source, options, value, dimensions):
     result = cli_runner.invoke(pipeline_cli.create,
                                options,
                                input=f'{source}\nhttp\n{name}\ncpu_test\n{value}\n\n{dimensions}\n')
+    timestamp_file = os.path.join(TIMESTAMPS_DIR, name, 'timestamp')
     assert result.exit_code == 0
     assert api_client.get_pipeline(name)
+    assert os.path.isfile(timestamp_file)
 
 
 def test_create_with_file(cli_runner):
@@ -130,8 +132,10 @@ def test_no_output(name):
 ])
 def test_delete_pipeline(cli_runner, name):
     result = cli_runner.invoke(pipeline_cli.delete, [name])
+    timestamp_file = os.path.join(TIMESTAMPS_DIR, name, 'timestamp')
     assert result.exit_code == 0
     assert not os.path.isfile(os.path.join(PIPELINES_DIR, name + '.json'))
+    assert not os.path.isfile(timestamp_file)
 
 
 @pytest.mark.parametrize('name', [

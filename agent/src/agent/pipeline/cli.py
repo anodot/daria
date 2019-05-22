@@ -3,15 +3,17 @@ import json
 import os
 import random
 import time
+import shutil
 
 from . import ConfigHandlerException
 from .config import pipeline_configs
 from ..source.cli import get_configs_list as list_sources
 from ..streamsets_api_client import api_client, StreamSetsApiClientException
-from agent.constants import PIPELINES_DIR, SOURCES_DIR
+from agent.constants import PIPELINES_DIR, SOURCES_DIR, TIMESTAMPS_DIR
 from agent.destination.http import HttpDestination
 from jsonschema import validate, ValidationError
 from datetime import datetime
+from pathlib import Path
 from pymongo import MongoClient
 from texttable import Texttable
 
@@ -301,6 +303,9 @@ def delete(pipeline_id):
         api_client.delete_pipeline(pipeline_id)
         file_path = os.path.join(PIPELINES_DIR, pipeline_id + '.json')
         os.remove(file_path)
+        timestamps_dir = os.path.join(TIMESTAMPS_DIR, pipeline_id)
+        if os.path.isdir(timestamps_dir):
+            shutil.rmtree(timestamps_dir)
     except StreamSetsApiClientException as e:
         click.secho(str(e), err=True, fg='red')
         return
@@ -395,6 +400,10 @@ def reset(pipeline_id):
     """
     try:
         api_client.reset_pipeline(pipeline_id)
+        timestamps_dir = os.path.join(TIMESTAMPS_DIR, pipeline_id)
+        if os.path.isdir(timestamps_dir):
+            for p in Path(timestamps_dir).glob('timestamp_*'):
+                p.unlink()
     except StreamSetsApiClientException as e:
         click.secho(str(e), err=True, fg='red')
         return
