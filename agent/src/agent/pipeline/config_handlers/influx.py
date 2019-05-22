@@ -1,6 +1,7 @@
-import requests
+import os
 
 from .base import BaseConfigHandler, ConfigHandlerException
+from agent.constants import SDC_DATA_PATH
 from agent.logger import get_logger
 from datetime import datetime, timedelta
 from urllib.parse import urljoin
@@ -26,60 +27,49 @@ state['TARGET_TYPE'] = '{target_type}';
 state['VALUE_CONSTANT'] = {value_constant}
 """
 
-    DECLARE_COLUMNS_JS = """/*
-state['columns'] = ['time', 'cpu', 'zone', 'host', 'usage_active', 'usage_idle'];
-*/
+    DB_QUERY = "SELECT+{dimensions}+FROM+{metric}+WHERE+time+%3E+${{record:value('/text')}}+LIMIT+{limit}"
 
-state['columns'] = {columns};"""
-
-    def set_initial_offset(self, query):
+    def set_initial_offset(self):
         source_config = self.client_config['source']['config']
-        if not source_config['conf.pagination.startAt']:
-            source_config['conf.pagination.startAt'] = 0
-            return
-
-        if source_config['conf.pagination.startAt'].isdigit():
-            timestamp = datetime.now() - timedelta(days=int(source_config['conf.pagination.startAt']))
+        if not source_config['offset']:
+            source_config['offset'] = 0
         else:
-            timestamp = datetime.strptime(source_config['conf.pagination.startAt'], '%d/%m/%Y %H:%M')
+            if source_config['offset'].isdigit():
+                timestamp = datetime.now() - timedelta(days=int(source_config['offset']))
+            else:
+                timestamp = datetime.strptime(source_config['offset'], '%d/%m/%Y %H:%M')
 
-        try:
-            query = 'SELECT count(*) FROM ({query} WHERE time < {time})'.format(**{
-                'query': query,
-                'time': int(timestamp.timestamp() * 1e9)
-            })
-            source_config['conf.pagination.startAt'] = requests.get(urljoin(source_config['conf.resourceUrl']['host'],
-                                                                            '/query'), params={
-                'db': source_config['conf.resourceUrl']['db'],
-                'q': query
-            }).json()['results'][0]['series'][0]['values'][0][1]
-        except requests.exceptions.ConnectionError:
-            raise ConfigHandlerException('Failed to connect to source api url')
-        except KeyError:
-            source_config['conf.pagination.startAt'] = 0
+            source_config['offset'] = int(timestamp.timestamp() * 1e9)
+
+        offset_file_dir = os.path.join(SDC_DATA_PATH, 'timestamps', self.client_config['pipeline_id'])
+        offset_file_path = os.path.join(offset_file_dir, 'timestamp')
+        if not os.path.isdir(offset_file_dir):
+            os.makedirs(offset_file_dir)
+            os.chmod(offset_file_dir, 0o777)
+
+        with open(offset_file_path, 'w+') as f:
+            f.write(str(source_config['offset']))
 
     def override_stages(self):
+        self.update_source_configs()
+
         dimensions = self.get_dimensions()
         source_config = self.client_config['source']['config']
         columns_to_select = dimensions + self.client_config['value']['values']
-        query_start = 'SELECT {dimensions} FROM {metric}'.format(**{
+
+        self.set_initial_offset()
+        query = f"/query?db={source_config['db']}&epoch=ns&q={self.DB_QUERY}".format(**{
             'dimensions': ','.join(columns_to_select),
             'metric': self.client_config['measurement_name'],
+            'limit': source_config['limit']
         })
-        self.set_initial_offset(query_start)
-        query = '/query?db={db}&epoch=s&q={query}+LIMIT+{limit}+OFFSET+${startAt}'.format(**{
-            'query': query_start.replace(' ', '+'),
-            'startAt': '{startAt}',
-            **source_config['conf.resourceUrl']
-        })
-        source_config['conf.resourceUrl'] = urljoin(source_config['conf.resourceUrl']['host'], query)
-        self.update_source_configs()
+        source_config['conf.resourceUrl'] = urljoin(source_config['host'], query)
 
         for stage in self.config['stages']:
-            if stage['instanceName'] == 'JavaScriptEvaluator_01':
+            if stage['instanceName'] == 'HTTPClient_03':
                 for conf in stage['configuration']:
-                    if conf['name'] == 'initScript':
-                        conf['value'] = self.DECLARE_COLUMNS_JS.format(columns=str(['time'] + columns_to_select))
+                    if conf['name'] in self.client_config['source']['config']:
+                        conf['value'] = self.client_config['source']['config'][conf['name']]
 
             if stage['instanceName'] == 'JavaScriptEvaluator_02':
                 for conf in stage['configuration']:

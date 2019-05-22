@@ -1,5 +1,5 @@
 {
-  "instanceName": "LocalFS_01",
+  "instanceName": "LocalFS_02",
   "library": "streamsets-datacollector-basic-lib",
   "stageName": "com_streamsets_pipeline_stage_destination_localfilesystem_LocalFileSystemDTarget",
   "stageVersion": "3",
@@ -239,7 +239,7 @@
   ],
   "uiInfo": {
     "description": "",
-    "label": "Local FS 1",
+    "label": "Local FS 2",
     "xPos": 1449.833251953125,
     "yPos": 409.24574279785156,
     "stageType": "TARGET"
