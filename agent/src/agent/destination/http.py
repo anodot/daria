@@ -1,6 +1,7 @@
 import json
 import os
 import urllib.parse
+import uuid
 
 from agent.constants import ANODOT_API_URL, DATA_DIR
 
@@ -10,7 +11,12 @@ class HttpDestination:
     TYPE = 'http'
 
     def __init__(self):
-        self.config = self.load() if self.exists() else {'config': {}, 'type': self.TYPE}
+        self.config = self.load() if self.exists() else {'config': {}, 'type': self.TYPE,
+                                                         'host_id': self.generate_host_id()}
+
+    @classmethod
+    def generate_host_id(cls, length=10):
+        return str(uuid.uuid4()).replace('-', '')[:length].upper()
 
     @classmethod
     def exists(cls):

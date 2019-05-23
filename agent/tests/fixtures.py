@@ -15,6 +15,9 @@ def cli_runner():
     yield CliRunner()
 
     api_client.delete_by_filtering('test_')
+    if api_client.get_pipelines(text='Monitoring'):
+        api_client.stop_pipeline('Monitoring')
+        api_client.delete_pipeline('Monitoring')
 
     for filename in os.listdir(SDC_DATA_PATH):
         if filename.startswith('error-test_'):

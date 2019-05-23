@@ -123,11 +123,13 @@ class StreamSetsApiClient:
         return self.session.post(self.build_url('pipeline', pipeline_id, 'stop'))
 
     @endpoint
-    def get_pipelines(self, order_by='NAME', order='ASC', label=None):
+    def get_pipelines(self, order_by='NAME', order='ASC', label=None, text=None):
         logger.info('Get pipelines')
         params = {'orderBy': order_by, 'order': order}
         if label:
             params['label'] = label
+        if text:
+            params['filterText'] = text
         return self.session.get(self.build_url('pipelines'), params=params)
 
     @endpoint

@@ -1,5 +1,10 @@
 import click
+import time
+
 from .http import HttpDestination
+from ..streamsets_api_client import api_client
+from ..pipeline.cli import create_pipeline, edit_pipeline
+from ..pipeline.config_handlers.monitoring import MonitoringConfigHandler
 
 
 @click.command()
@@ -22,6 +27,20 @@ def destination():
         conf['conf.client.proxy.username'] = click.prompt('Proxy username', type=click.STRING,
                                                           default=conf.get('conf.client.proxy.username', ''))
         conf['conf.client.proxy.password'] = click.prompt('Proxy password', type=click.STRING, default='')
+
+    pipeline_config = {'destination': dest.config, 'pipeline_id': 'Monitoring'}
+
+    if dest.exists():
+        base_config = api_client.get_pipeline('Monitoring')
+        config_handler = MonitoringConfigHandler(pipeline_config, base_config)
+        api_client.stop_pipeline(pipeline_config['pipeline_id'])
+        time.sleep(3)
+        edit_pipeline(config_handler, pipeline_config)
+    else:
+        config_handler = MonitoringConfigHandler(pipeline_config)
+        create_pipeline(config_handler, pipeline_config)
+
+    api_client.start_pipeline(pipeline_config['pipeline_id'])
 
     dest.save()
 

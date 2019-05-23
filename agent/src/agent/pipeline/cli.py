@@ -65,6 +65,23 @@ def get_pipelines_ids():
     return [p['pipelineId'] for p in api_client.get_pipelines()]
 
 
+def create_pipeline(config_handler, pipeline_config):
+    try:
+        pipeline_obj = api_client.create_pipeline(pipeline_config['pipeline_id'])
+        new_config = config_handler.override_base_config(pipeline_obj['uuid'], pipeline_obj['title'])
+        api_client.update_pipeline(pipeline_obj['pipelineId'], new_config)
+    except (ConfigHandlerException, StreamSetsApiClientException) as e:
+        raise click.ClickException(str(e))
+
+
+def edit_pipeline(config_handler, pipeline_config):
+    try:
+        new_config = config_handler.override_base_config()
+        api_client.update_pipeline(pipeline_config['pipeline_id'], new_config)
+    except (StreamSetsApiClientException, ConfigHandlerException) as e:
+        raise click.ClickException(str(e))
+
+
 def create_multiple(file):
     data = json.load(file)
 
@@ -92,10 +109,7 @@ def create_multiple(file):
         pipeline_config['destination'] = destination
         config_handler = pipeline_c.get_config_handler(pipeline_config)
 
-        pipeline_obj = api_client.create_pipeline(pipeline_config['pipeline_id'])
-        new_config = config_handler.override_base_config(pipeline_obj['uuid'], pipeline_obj['title'])
-
-        api_client.update_pipeline(pipeline_obj['pipelineId'], new_config)
+        create_pipeline(config_handler, pipeline_config)
 
         with open(os.path.join(PIPELINES_DIR, pipeline_config['pipeline_id'] + '.json'), 'w') as f:
             json.dump(pipeline_config, f)
@@ -141,26 +155,8 @@ def create(advanced, file):
 
     pipeline_c = pipeline_configs[pipeline_config['source']['type']]
     pipeline_config.update(pipeline_c.prompt(pipeline_config, advanced))
-
     config_handler = pipeline_c.get_config_handler(pipeline_config)
-
-    try:
-        pipeline_obj = api_client.create_pipeline(pipeline_config['pipeline_id'])
-    except StreamSetsApiClientException as e:
-        click.secho(str(e), err=True, fg='red')
-        return
-
-    try:
-        new_config = config_handler.override_base_config(pipeline_obj['uuid'], pipeline_obj['title'])
-    except ConfigHandlerException as e:
-        click.secho(str(e), err=True, fg='red')
-        return
-
-    api_client.update_pipeline(pipeline_obj['pipelineId'], new_config)
-
-    pipeline_rules = api_client.get_pipeline_rules(pipeline_obj['pipelineId'])
-    new_rules = config_handler.override_base_rules(pipeline_rules['uuid'])
-    api_client.update_pipeline_rules(pipeline_obj['pipelineId'], new_rules)
+    create_pipeline(config_handler, pipeline_config)
 
     with open(os.path.join(PIPELINES_DIR, pipeline_config['pipeline_id'] + '.json'), 'w') as f:
         json.dump(pipeline_config, f)
@@ -198,8 +194,7 @@ def edit_multiple(file):
         pipeline_obj = api_client.get_pipeline(pipeline_config['pipeline_id'])
         config_handler = pipeline_c.get_config_handler(pipeline_config, pipeline_obj)
 
-        new_config = config_handler.override_base_config()
-        api_client.update_pipeline(pipeline_config['pipeline_id'], new_config)
+        edit_pipeline(config_handler, pipeline_config)
 
         with open(os.path.join(PIPELINES_DIR, pipeline_config['pipeline_id'] + '.json'), 'w') as f:
             json.dump(pipeline_config, f)
@@ -237,11 +232,7 @@ def edit(pipeline_id, advanced, file):
     pipeline_obj = api_client.get_pipeline(pipeline_config['pipeline_id'])
 
     config_handler = pipeline_c.get_config_handler(pipeline_config, pipeline_obj)
-    try:
-        new_config = config_handler.override_base_config()
-        api_client.update_pipeline(pipeline_config['pipeline_id'], new_config)
-    except (StreamSetsApiClientException, ConfigHandlerException) as e:
-        raise click.ClickException(str(e))
+    edit_pipeline(config_handler, pipeline_config)
 
     with open(os.path.join(PIPELINES_DIR, pipeline_config['pipeline_id'] + '.json'), 'w') as f:
         json.dump(pipeline_config, f)
