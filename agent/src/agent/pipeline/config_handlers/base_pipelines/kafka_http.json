@@ -1000,16 +1000,16 @@
       "stageVersion" : "1",
       "configuration" : [ {
         "name" : "directory",
-        "value" : "/data"
+        "value" : "/data/errors/${pipeline:id()}"
       }, {
         "name" : "uniquePrefix",
-        "value" : "error-${pipeline:id()}-sdc-${sdc:id()}"
+        "value" : "sdc-${sdc:id()}.error.log"
       }, {
         "name" : "rotationIntervalSecs",
         "value" : "${1 * HOURS}"
       }, {
         "name" : "maxFileSizeMbs",
-        "value" : 512
+        "value" : 10
       } ],
       "uiInfo" : {
         "description" : "",

@@ -9,7 +9,7 @@ from . import ConfigHandlerException
 from .config import pipeline_configs
 from ..source.cli import get_configs_list as list_sources
 from ..streamsets_api_client import api_client, StreamSetsApiClientException
-from agent.constants import PIPELINES_DIR, SOURCES_DIR, TIMESTAMPS_DIR
+from agent.constants import PIPELINES_DIR, SOURCES_DIR, TIMESTAMPS_DIR, ERRORS_DIR
 from agent.destination.http import HttpDestination
 from jsonschema import validate, ValidationError
 from datetime import datetime
@@ -297,6 +297,10 @@ def delete(pipeline_id):
         timestamps_dir = os.path.join(TIMESTAMPS_DIR, pipeline_id)
         if os.path.isdir(timestamps_dir):
             shutil.rmtree(timestamps_dir)
+
+        errors_dir = os.path.join(ERRORS_DIR, pipeline_id)
+        if os.path.isdir(errors_dir):
+            shutil.rmtree(errors_dir)
     except StreamSetsApiClientException as e:
         click.secho(str(e), err=True, fg='red')
         return

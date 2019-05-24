@@ -3,6 +3,7 @@ import os
 
 from abc import ABC, abstractmethod
 from agent.logger import get_logger
+from agent.constants import ERRORS_DIR
 from copy import deepcopy
 
 logger = get_logger(__name__)
@@ -18,6 +19,12 @@ class BaseConfigHandler(ABC):
         self.client_config = deepcopy(client_config)
 
         self.config = base_config if base_config else self.load_base_config()
+
+        # create errors dir
+        errors_dir = os.path.join(ERRORS_DIR, self.client_config['pipeline_id'])
+        if not os.path.isdir(errors_dir):
+            os.makedirs(errors_dir)
+            os.chmod(errors_dir, 0o777)
 
     def load_base_config(self):
         base_path = self.PIPELINES_BASE_CONFIGS_PATH.format(**{
