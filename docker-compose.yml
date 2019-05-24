@@ -6,8 +6,6 @@ services:
     ports:
       - "18630:18630"
     restart: on-failure
-    environment:
-      SDC_SECURITY_MANAGER_ENABLED: "false"
     volumes:
       - sdc-data:/data
 #    extra_hosts:
