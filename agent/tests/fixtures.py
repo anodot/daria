@@ -2,6 +2,7 @@ import json
 import os
 import pytest
 import shutil
+import time
 
 from agent.streamsets_api_client import api_client
 from click.testing import CliRunner
@@ -17,6 +18,8 @@ def cli_runner():
     api_client.delete_by_filtering('test_')
     if api_client.get_pipelines(text='Monitoring'):
         api_client.stop_pipeline('Monitoring')
+        api_client.force_stop_pipeline('Monitoring')
+        time.sleep(2)
         api_client.delete_pipeline('Monitoring')
 
     for filename in os.listdir(SDC_DATA_PATH):

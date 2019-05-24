@@ -1,7 +1,7 @@
 import os
 
 from .base import BaseConfigHandler, ConfigHandlerException
-from agent.constants import SDC_DATA_PATH
+from agent.constants import TIMESTAMPS_DIR
 from agent.logger import get_logger
 from datetime import datetime, timedelta
 from urllib.parse import urljoin
@@ -41,7 +41,7 @@ state['VALUE_CONSTANT'] = {value_constant}
 
             source_config['offset'] = int(timestamp.timestamp() * 1e9)
 
-        offset_file_dir = os.path.join(SDC_DATA_PATH, 'timestamps', self.client_config['pipeline_id'])
+        offset_file_dir = os.path.join(TIMESTAMPS_DIR, self.client_config['pipeline_id'])
         offset_file_path = os.path.join(offset_file_dir, 'timestamp')
         if not os.path.isdir(offset_file_dir):
             os.makedirs(offset_file_dir)

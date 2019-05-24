@@ -123,6 +123,16 @@ class StreamSetsApiClient:
         return self.session.post(self.build_url('pipeline', pipeline_id, 'stop'))
 
     @endpoint
+    def force_stop_pipeline(self, pipeline_id):
+        """
+
+        :param pipeline_id: string
+        :return:
+        """
+        logger.info(f'Force stop pipeline: {pipeline_id}')
+        return self.session.post(self.build_url('pipeline', pipeline_id, 'forceStop'))
+
+    @endpoint
     def get_pipelines(self, order_by='NAME', order='ASC', label=None, text=None):
         logger.info('Get pipelines')
         params = {'orderBy': order_by, 'order': order}
