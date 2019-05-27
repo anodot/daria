@@ -474,10 +474,10 @@
         "value" : [ { } ]
       }, {
         "name" : "conf.client.basicAuth.username",
-        "value" : ""
+        "value" : "admin"
       }, {
         "name" : "conf.client.basicAuth.password",
-        "value" : ""
+        "value" : "admin"
       }, {
         "name" : "conf.client.useProxy",
         "value" : false
@@ -969,10 +969,10 @@
         "value" : [ { } ]
       }, {
         "name" : "conf.client.basicAuth.username",
-        "value" : ""
+        "value" : "admin"
       }, {
         "name" : "conf.client.basicAuth.password",
-        "value" : ""
+        "value" : "admin"
       }, {
         "name" : "conf.client.useProxy",
         "value" : false
@@ -1388,10 +1388,10 @@
         "value" : [ { } ]
       }, {
         "name" : "conf.client.basicAuth.username",
-        "value" : ""
+        "value" : "admin"
       }, {
         "name" : "conf.client.basicAuth.password",
-        "value" : ""
+        "value" : "admin"
       }, {
         "name" : "conf.client.useProxy",
         "value" : false
