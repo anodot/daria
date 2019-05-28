@@ -22,15 +22,18 @@ state['host_id'] = '{host_id}';
         return data['pipelineConfig']
 
     def override_stages(self):
-        self.update_destination_config()
 
         for stage in self.config['stages']:
+            if stage['instanceName'] == 'HTTPClient_03':
+                for conf in stage['configuration']:
+                    if conf['name'] in self.client_config['destination']['config']:
+                        conf['value'] = self.client_config['destination']['config'][conf['name']]
+
             if stage['instanceName'] == 'JavaScriptEvaluator_01':
                 for conf in stage['configuration']:
                     if conf['name'] == 'initScript':
                         conf['value'] = self.DECLARE_VARS_JS.format(
                             host_id=self.client_config['destination']['host_id'])
-                        return
 
     def set_labels(self):
         pass
