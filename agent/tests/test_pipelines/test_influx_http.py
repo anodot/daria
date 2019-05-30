@@ -26,8 +26,6 @@ def test_source_create(cli_runner, name, offset):
 @pytest.mark.parametrize("name,source,options,value,dimensions", [
     ('test_basic', 'test_influx', [], 'usage_active usage_idle', 'cpu zone host'),
     ('test_basic_offset', 'test_influx_offset', [], 'usage_active usage_idle', 'cpu zone host'),
-    ('test_numeric_dimensions', 'test_influx', [], 'usage_active usage_idle', 'usage_iowait'),
-    ('test_string_values', 'test_influx', ['-a'], '2123\nconstant', 'zone host\n \nkey1:val1'),
 ])
 def test_create(cli_runner, name, source, options, value, dimensions):
     result = cli_runner.invoke(pipeline_cli.create,
@@ -50,14 +48,6 @@ def test_create_with_file(cli_runner):
             assert api_client.get_pipeline(pipeline['pipeline_id'])
 
 
-@pytest.mark.parametrize("options,value", [
-    (['test_string_values', '-a'], 'cpu usage_active\ncolumn'),
-])
-def test_edit(cli_runner, options, value):
-    result = cli_runner.invoke(pipeline_cli.edit, options, input=f"""\n{value}\n\n\n\n\n\n""")
-    assert result.exit_code == 0
-
-
 def test_edit_with_file(cli_runner):
     input_file_path = get_input_file_path('influx_pipelines_edit')
     result = cli_runner.invoke(pipeline_cli.edit, ['-f', input_file_path])
@@ -72,8 +62,6 @@ def test_edit_with_file(cli_runner):
 @pytest.mark.parametrize("name", [
     'test_basic',
     'test_basic_offset',
-    'test_numeric_dimensions',
-    'test_string_values',
     'test_influx_file_short',
     'test_influx_file_full',
 ])
@@ -89,8 +77,6 @@ def test_start(cli_runner, name):
 @pytest.mark.parametrize("name", [
     'test_basic',
     'test_basic_offset',
-    'test_numeric_dimensions',
-    'test_string_values',
     'test_influx_file_short',
     'test_influx_file_full',
 ])
@@ -115,18 +101,8 @@ def test_output(name, output):
 
 
 @pytest.mark.parametrize("name", [
-    'test_numeric_dimensions',
-    'test_string_values',
-])
-def test_no_output(name):
-    assert get_output(name) is None
-
-
-@pytest.mark.parametrize("name", [
     'test_basic_offset',
     'test_basic',
-    'test_numeric_dimensions',
-    'test_string_values',
     'test_influx_file_short',
     'test_influx_file_full',
 ])
