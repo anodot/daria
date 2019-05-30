@@ -29,7 +29,7 @@
       "target_type": "gauge",
       "cpu": "cpu-total-usage",
       "zone": "GF",
-      "host": "msk-air-trn1",
+      "host": "msk_a_ir_trn1",
       "measurement_category": "cpu_test",
       "what": "usage_active"
     },
@@ -41,7 +41,7 @@
       "target_type": "gauge",
       "cpu": "cpu-total-usage",
       "zone": "GF",
-      "host": "msk-air-trn1",
+      "host": "msk_a_ir_trn1",
       "measurement_category": "cpu_test",
       "what": "usage_idle"
     },
@@ -53,7 +53,7 @@
       "target_type": "gauge",
       "cpu": "cpu-total-usage",
       "zone": "GF",
-      "host": "msk-air-trn1",
+      "host": "msk_air_trn1",
       "measurement_category": "cpu_test",
       "what": "usage_active"
     },
@@ -65,7 +65,7 @@
       "target_type": "gauge",
       "cpu": "cpu-total-usage",
       "zone": "GF",
-      "host": "msk-air-trn1",
+      "host": "msk_air_trn1",
       "measurement_category": "cpu_test",
       "what": "usage_idle"
     },
