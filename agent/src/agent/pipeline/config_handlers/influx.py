@@ -27,7 +27,7 @@ state['TARGET_TYPE'] = '{target_type}';
 state['VALUE_CONSTANT'] = {value_constant}
 """
 
-    DB_QUERY = "SELECT+{dimensions}+FROM+{metric}+WHERE+time+%3E+${{record:value('/text')}}+LIMIT+{limit}"
+    DB_QUERY = "SELECT+{dimensions}+FROM+%22{metric}%22+WHERE+%22time%22+%3E+${{record:value('/text')}}+LIMIT+{limit}"
 
     def set_initial_offset(self):
         source_config = self.client_config['source']['config']
@@ -59,7 +59,7 @@ state['VALUE_CONSTANT'] = {value_constant}
 
         self.set_initial_offset()
         query = f"/query?db={source_config['db']}&epoch=ns&q={self.DB_QUERY}".format(**{
-            'dimensions': ','.join(columns_to_select),
+            'dimensions': '%22' + '%22,%22'.join(columns_to_select) + '%22',
             'metric': self.client_config['measurement_name'],
             'limit': source_config['limit']
         })
