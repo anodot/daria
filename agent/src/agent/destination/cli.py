@@ -21,17 +21,16 @@ def destination():
     if dest.exists():
         dest.load()
 
-    conf = dest.config['config']
+    dest.update_url(click.prompt('Anodot api token', type=click.STRING))
 
-    token = click.prompt('Anodot api token', type=click.STRING)
-    conf['conf.resourceUrl'] = dest.get_url(token)
-    conf['conf.client.useProxy'] = click.confirm('Use proxy for connecting to Anodot?')
-    if conf['conf.client.useProxy']:
-        conf['conf.client.proxy.uri'] = click.prompt('Proxy uri', type=click.STRING,
-                                                     default=conf.get('conf.client.proxy.uri'))
-        conf['conf.client.proxy.username'] = click.prompt('Proxy username', type=click.STRING,
-                                                          default=conf.get('conf.client.proxy.username', ''))
-        conf['conf.client.proxy.password'] = click.prompt('Proxy password', type=click.STRING, default='')
+    use_proxy = click.confirm('Use proxy for connecting to Anodot?')
+    if use_proxy:
+        uri = click.prompt('Proxy uri', type=click.STRING, default=dest.get_proxy_url())
+        username = click.prompt('Proxy username', type=click.STRING, default=dest.get_proxy_username() or '')
+        password = click.prompt('Proxy password', type=click.STRING, default='')
+        dest.set_proxy(use_proxy, uri, username, password)
+    else:
+        dest.set_proxy(use_proxy)
 
     if dest.exists():
         with open(os.path.join(PIPELINES_DIR, 'Monitoring' + '.json'), 'r') as f:

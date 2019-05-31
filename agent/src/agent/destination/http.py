@@ -30,9 +30,9 @@ class HttpDestination:
 
         return self.config
 
-    @staticmethod
-    def get_url(token):
-        return urllib.parse.urljoin(ANODOT_API_URL, f'api/v1/metrics?token={token}&protocol=anodot20')
+    def update_url(self, token):
+        self.config['config']['conf.resourceUrl'] = urllib.parse.urljoin(
+            ANODOT_API_URL, f'api/v1/metrics?token={token}&protocol=anodot20')
 
     def save(self):
         with open(self.FILE, 'w') as f:
@@ -40,6 +40,19 @@ class HttpDestination:
 
     def enable_logs(self, enable=True):
         self.config['config']['conf.client.requestLoggingConfig.enableRequestLogging'] = enable
+
+    def set_proxy(self, enable, uri='', username='', password=''):
+        self.config['config']['conf.client.useProxy'] = enable
+        if enable:
+            self.config['config']['conf.client.proxy.uri'] = uri
+            self.config['config']['conf.client.proxy.username'] = username
+            self.config['config']['conf.client.proxy.password'] = password
+
+    def get_proxy_url(self):
+        return self.config['config'].get('conf.client.proxy.uri')
+
+    def get_proxy_username(self):
+        return self.config['config'].get('conf.client.proxy.username')
 
 
 class DestinationException(Exception):
