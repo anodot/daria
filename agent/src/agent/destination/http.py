@@ -10,6 +10,13 @@ class HttpDestination:
     FILE = os.path.join(DATA_DIR, 'destination.json')
     TYPE = 'http'
 
+    CONFIG_PROXY_USE = 'conf.client.proxy.useProxy'
+    CONFIG_PROXY_USERNAME = 'conf.client.proxy.username'
+    CONFIG_PROXY_PASSWORD = 'conf.client.proxy.password'
+    CONFIG_PROXY_URI = 'conf.client.proxy.uri'
+    CONFIG_RESOURCE_URL = 'conf.resourceUrl'
+    CONFIG_ENABLE_REQUEST_LOGGING = 'conf.client.requestLoggingConfig.enableRequestLogging'
+
     def __init__(self):
         self.config = {'config': {}, 'type': self.TYPE, 'host_id': self.generate_host_id()}
 
@@ -31,7 +38,7 @@ class HttpDestination:
         return self.config
 
     def update_url(self, token):
-        self.config['config']['conf.resourceUrl'] = urllib.parse.urljoin(
+        self.config['config'][self.CONFIG_RESOURCE_URL] = urllib.parse.urljoin(
             ANODOT_API_URL, f'api/v1/metrics?token={token}&protocol=anodot20')
 
     def save(self):
@@ -39,20 +46,20 @@ class HttpDestination:
             json.dump(self.config, f)
 
     def enable_logs(self, enable=True):
-        self.config['config']['conf.client.requestLoggingConfig.enableRequestLogging'] = enable
+        self.config['config'][self.CONFIG_ENABLE_REQUEST_LOGGING] = enable
 
     def set_proxy(self, enable, uri='', username='', password=''):
-        self.config['config']['conf.client.useProxy'] = enable
+        self.config['config'][self.CONFIG_PROXY_USE] = enable
         if enable:
-            self.config['config']['conf.client.proxy.uri'] = uri
-            self.config['config']['conf.client.proxy.username'] = username
-            self.config['config']['conf.client.proxy.password'] = password
+            self.config['config'][self.CONFIG_PROXY_URI] = uri
+            self.config['config'][self.CONFIG_PROXY_USERNAME] = username
+            self.config['config'][self.CONFIG_PROXY_PASSWORD] = password
 
     def get_proxy_url(self):
-        return self.config['config'].get('conf.client.proxy.uri')
+        return self.config['config'].get(self.CONFIG_PROXY_URI)
 
     def get_proxy_username(self):
-        return self.config['config'].get('conf.client.proxy.username')
+        return self.config['config'].get(self.CONFIG_PROXY_USERNAME)
 
 
 class DestinationException(Exception):
