@@ -20,9 +20,9 @@ def test_destination(cli_runner):
 
 
 def test_edit_destination(cli_runner):
-    prev_dest = HttpDestination.load()
+    prev_dest = HttpDestination().load()
     result = cli_runner.invoke(agent_cli.destination, input='y\ntoken\ny\nhttp://squid:3128\n\n\n')
-    curr_dest = HttpDestination.load()
+    curr_dest = HttpDestination().load()
     assert result.exit_code == 0
     assert curr_dest['config']['conf.client.proxy.uri'] == 'http://squid:3128'
     assert curr_dest['host_id'] == prev_dest['host_id']

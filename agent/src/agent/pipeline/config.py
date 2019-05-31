@@ -1,6 +1,7 @@
 from .config_handlers.json import JsonConfigHandler
 from .config_handlers.influx import InfluxConfigHandler
 from .config_handlers.kafka import KafkaConfigHandler
+from .config_handlers.monitoring import MonitoringConfigHandler
 from .prompt import PromptConfigMongo, PromptConfigKafka, PromptConfigInflux
 from .load_client_data import InfluxLoadClientData, KafkaLoadClientData, MongoLoadClientData
 
@@ -25,4 +26,5 @@ pipeline_configs = {
     'mongo': Pipeline(PromptConfigMongo, JsonConfigHandler, MongoLoadClientData),
     'kafka': Pipeline(PromptConfigKafka, KafkaConfigHandler, KafkaLoadClientData),
     'influx': Pipeline(PromptConfigInflux, InfluxConfigHandler, InfluxLoadClientData),
+    'Monitoring': Pipeline(None, MonitoringConfigHandler, None),
 }

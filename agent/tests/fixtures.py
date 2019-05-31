@@ -6,7 +6,7 @@ import time
 
 from agent.streamsets_api_client import api_client
 from click.testing import CliRunner
-from agent.constants import SDC_DATA_PATH, SDC_RESULTS_PATH, TIMESTAMPS_DIR
+from agent.constants import SDC_DATA_PATH, SDC_RESULTS_PATH, TIMESTAMPS_DIR, PIPELINES_DIR
 from agent.destination.http import HttpDestination
 
 
@@ -21,6 +21,7 @@ def cli_runner():
         api_client.force_stop_pipeline('Monitoring')
         time.sleep(2)
         api_client.delete_pipeline('Monitoring')
+        os.remove(os.path.join(PIPELINES_DIR, 'Monitoring.json'))
 
     for filename in os.listdir(SDC_DATA_PATH):
         if filename.startswith('error-test_'):

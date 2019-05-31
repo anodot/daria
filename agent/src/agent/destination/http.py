@@ -11,8 +11,7 @@ class HttpDestination:
     TYPE = 'http'
 
     def __init__(self):
-        self.config = self.load() if self.exists() else {'config': {}, 'type': self.TYPE,
-                                                         'host_id': self.generate_host_id()}
+        self.config = {'config': {}, 'type': self.TYPE, 'host_id': self.generate_host_id()}
 
     @classmethod
     def generate_host_id(cls, length=10):
@@ -22,13 +21,14 @@ class HttpDestination:
     def exists(cls):
         return os.path.isfile(cls.FILE)
 
-    @classmethod
-    def load(cls):
-        if not cls.exists():
+    def load(self):
+        if not self.exists():
             raise DestinationException('Destination wasn\'t configured')
 
-        with open(cls.FILE, 'r') as f:
-            return json.load(f)
+        with open(self.FILE, 'r') as f:
+            self.config = json.load(f)
+
+        return self.config
 
     @staticmethod
     def get_url(token):
@@ -37,6 +37,9 @@ class HttpDestination:
     def save(self):
         with open(self.FILE, 'w') as f:
             json.dump(self.config, f)
+
+    def enable_logs(self, enable=True):
+        self.config['config']['conf.client.requestLoggingConfig.enableRequestLogging'] = enable
 
 
 class DestinationException(Exception):

@@ -97,7 +97,7 @@ def create_multiple(file):
         }
     }
     validate(data, json_schema)
-    destination = HttpDestination.load()
+    destination = HttpDestination().load()
 
     for item in data:
         pipeline_config = {}
@@ -149,7 +149,7 @@ def create(advanced, file):
     destination_type = click.prompt('Choose destination', type=click.Choice([HttpDestination.TYPE]),
                                     default=HttpDestination.TYPE)
     if destination_type == HttpDestination.TYPE:
-        pipeline_config['destination'] = HttpDestination.load()
+        pipeline_config['destination'] = HttpDestination().load()
 
     pipeline_config['pipeline_id'] = click.prompt('Pipeline ID (must be unique)', type=click.STRING)
 
@@ -178,7 +178,7 @@ def edit_multiple(file):
         }
     }
     validate(data, json_schema)
-    destination = HttpDestination.load()
+    destination = HttpDestination().load()
 
     for item in data:
         with open(os.path.join(PIPELINES_DIR, item['pipeline_id'] + '.json'), 'r') as f:
@@ -223,12 +223,39 @@ def edit(pipeline_id, advanced, file):
     with open(os.path.join(SOURCES_DIR, pipeline_config['source']['name'] + '.json'), 'r') as f:
         pipeline_config['source'] = json.load(f)
 
-    if pipeline_config['destination']['type'] == HttpDestination.TYPE:
-        pipeline_config['destination'] = HttpDestination.load()
+    pipeline_config['destination'] = HttpDestination().load()
 
     pipeline_c = pipeline_configs[pipeline_config['source']['type']]
     pipeline_config.update(pipeline_c.prompt(pipeline_config, advanced))
 
+    pipeline_obj = api_client.get_pipeline(pipeline_config['pipeline_id'])
+
+    config_handler = pipeline_c.get_config_handler(pipeline_config, pipeline_obj)
+    edit_pipeline(config_handler, pipeline_config)
+
+    with open(os.path.join(PIPELINES_DIR, pipeline_config['pipeline_id'] + '.json'), 'w') as f:
+        json.dump(pipeline_config, f)
+
+    click.secho('Updated pipeline {}'.format(pipeline_config['pipeline_id']), fg='green')
+
+
+@click.command()
+@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
+@click.option('--enable/--disable', default=False)
+def destination_logs(pipeline_id, enable):
+    """
+    Enable destination response logs for a pipeline (for debugging purposes only)
+    """
+
+    with open(os.path.join(PIPELINES_DIR, pipeline_id + '.json'), 'r') as f:
+        pipeline_config = json.load(f)
+
+    dest = HttpDestination()
+    dest.enable_logs(enable)
+
+    pipeline_config['destination'] = dest.config
+
+    pipeline_c = pipeline_configs[pipeline_config['source']['type']]
     pipeline_obj = api_client.get_pipeline(pipeline_config['pipeline_id'])
 
     config_handler = pipeline_c.get_config_handler(pipeline_config, pipeline_obj)
@@ -491,3 +518,4 @@ pipeline.add_command(info)
 pipeline.add_command(reset)
 pipeline.add_command(edit)
 pipeline.add_command(dummy)
+pipeline.add_command(destination_logs)
