@@ -10,6 +10,13 @@ class HttpDestination:
     FILE = os.path.join(DATA_DIR, 'destination.json')
     TYPE = 'http'
 
+    CONFIG_PROXY_USE = 'conf.client.proxy.useProxy'
+    CONFIG_PROXY_USERNAME = 'conf.client.proxy.username'
+    CONFIG_PROXY_PASSWORD = 'conf.client.proxy.password'
+    CONFIG_PROXY_URI = 'conf.client.proxy.uri'
+    CONFIG_RESOURCE_URL = 'conf.resourceUrl'
+    CONFIG_ENABLE_REQUEST_LOGGING = 'conf.client.requestLoggingConfig.enableRequestLogging'
+
     def __init__(self):
         self.config = {'config': {}, 'type': self.TYPE, 'host_id': self.generate_host_id()}
 
@@ -30,16 +37,29 @@ class HttpDestination:
 
         return self.config
 
-    @staticmethod
-    def get_url(token):
-        return urllib.parse.urljoin(ANODOT_API_URL, f'api/v1/metrics?token={token}&protocol=anodot20')
+    def update_url(self, token):
+        self.config['config'][self.CONFIG_RESOURCE_URL] = urllib.parse.urljoin(
+            ANODOT_API_URL, f'api/v1/metrics?token={token}&protocol=anodot20')
 
     def save(self):
         with open(self.FILE, 'w') as f:
             json.dump(self.config, f)
 
     def enable_logs(self, enable=True):
-        self.config['config']['conf.client.requestLoggingConfig.enableRequestLogging'] = enable
+        self.config['config'][self.CONFIG_ENABLE_REQUEST_LOGGING] = enable
+
+    def set_proxy(self, enable, uri='', username='', password=''):
+        self.config['config'][self.CONFIG_PROXY_USE] = enable
+        if enable:
+            self.config['config'][self.CONFIG_PROXY_URI] = uri
+            self.config['config'][self.CONFIG_PROXY_USERNAME] = username
+            self.config['config'][self.CONFIG_PROXY_PASSWORD] = password
+
+    def get_proxy_url(self):
+        return self.config['config'].get(self.CONFIG_PROXY_URI)
+
+    def get_proxy_username(self):
+        return self.config['config'].get(self.CONFIG_PROXY_USERNAME)
 
 
 class DestinationException(Exception):
