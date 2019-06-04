@@ -424,8 +424,15 @@ def reset(pipeline_id):
         api_client.reset_pipeline(pipeline_id)
         timestamps_dir = os.path.join(TIMESTAMPS_DIR, pipeline_id)
         if os.path.isdir(timestamps_dir):
-            for p in Path(timestamps_dir).glob('timestamp_*'):
+            for p in Path(timestamps_dir).glob('timestamp*'):
                 p.unlink()
+
+            with open(os.path.join(PIPELINES_DIR, pipeline_id + '.json'), 'r') as f:
+                pipeline_config = json.load(f)
+            pipeline_c = pipeline_configs[pipeline_config['source']['type']]
+            config_handler = pipeline_c.get_config_handler(pipeline_config)
+            config_handler.set_initial_offset()
+
     except StreamSetsApiClientException as e:
         click.secho(str(e), err=True, fg='red')
         return

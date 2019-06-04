@@ -1,7 +1,7 @@
 import os
 
 from .base import BaseConfigHandler, ConfigHandlerException
-from agent.constants import TIMESTAMPS_DIR
+from agent.constants import TIMESTAMPS_DIR, TMP_DIR
 from agent.logger import get_logger
 from datetime import datetime, timedelta
 from urllib.parse import urljoin
@@ -42,10 +42,14 @@ state['VALUE_CONSTANT'] = {value_constant}
             source_config['offset'] = int(timestamp.timestamp() * 1e9)
 
         offset_file_dir = os.path.join(TIMESTAMPS_DIR, self.client_config['pipeline_id'])
+        tmp_dir = os.path.join(TMP_DIR, self.client_config['pipeline_id'])
         offset_file_path = os.path.join(offset_file_dir, 'timestamp')
         if not os.path.isdir(offset_file_dir):
             os.makedirs(offset_file_dir)
             os.chmod(offset_file_dir, 0o777)
+        if not os.path.isdir(tmp_dir):
+            os.makedirs(tmp_dir)
+            os.chmod(tmp_dir, 0o777)
 
         with open(offset_file_path, 'w+') as f:
             f.write(str(source_config['offset']))
