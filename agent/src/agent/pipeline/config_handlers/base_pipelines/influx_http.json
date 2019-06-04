@@ -14,7 +14,7 @@
       "value" : "http://localhost:18633"
     }, {
       "name" : "deliveryGuarantee",
-      "value" : "AT_LEAST_ONCE"
+      "value" : "AT_MOST_ONCE"
     }, {
       "name" : "testOriginStage",
       "value" : "streamsets-datacollector-dev-lib::com_streamsets_pipeline_stage_devtest_rawdata_RawDataDSource::3"
@@ -426,7 +426,7 @@
         "value" : null
       }, {
         "name" : "conf.postProcessing",
-        "value" : "NONE"
+        "value" : "DELETE"
       }, {
         "name" : "conf.archiveDir",
         "value" : "/data/out"
@@ -955,7 +955,7 @@
         "value" : false
       }, {
         "name" : "configs.dirPathTemplate",
-        "value" : "/data/timestamps/${pipeline:id()}"
+        "value" : "/data/tmp/${pipeline:id()}"
       }, {
         "name" : "configs.timeZoneID",
         "value" : "UTC"
@@ -1146,7 +1146,7 @@
         "value" : "1000"
       }, {
         "name" : "config.script",
-        "value" : "cd /data/timestamps/$PIPELINE_ID && if [ \"$(ls -l | wc -l)\" -ge \"4\" ]; then rm $(ls -rt | sed -n 2p); fi"
+        "value" : "cd /data/tmp/$PIPELINE_ID && mv $(ls -t timestamp* | head -1) /data/timestamps/$PIPELINE_ID/"
       }, {
         "name" : "stageOnRecordError",
         "value" : "TO_ERROR"
