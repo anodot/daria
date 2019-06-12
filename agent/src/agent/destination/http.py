@@ -10,7 +10,7 @@ class HttpDestination:
     FILE = os.path.join(DATA_DIR, 'destination.json')
     TYPE = 'http'
 
-    CONFIG_PROXY_USE = 'conf.client.proxy.useProxy'
+    CONFIG_PROXY_USE = 'conf.client.useProxy'
     CONFIG_PROXY_USERNAME = 'conf.client.proxy.username'
     CONFIG_PROXY_PASSWORD = 'conf.client.proxy.password'
     CONFIG_PROXY_URI = 'conf.client.proxy.uri'

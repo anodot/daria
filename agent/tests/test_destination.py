@@ -24,7 +24,8 @@ def test_edit_destination(cli_runner):
     result = cli_runner.invoke(agent_cli.destination, input='y\ntoken\ny\nhttp://squid:3128\n\n\n')
     curr_dest = HttpDestination().load()
     assert result.exit_code == 0
-    assert curr_dest['config']['conf.client.proxy.uri'] == 'http://squid:3128'
+    assert curr_dest['config'][HttpDestination.CONFIG_PROXY_USE]
+    assert curr_dest['config'][HttpDestination.CONFIG_PROXY_URI] == 'http://squid:3128'
     assert curr_dest['host_id'] == prev_dest['host_id']
     time.sleep(WAITING_TIME)
     assert api_client.get_pipeline_status('Monitoring')['status'] == 'RUNNING'

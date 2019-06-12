@@ -6,7 +6,7 @@ import time
 
 from agent.streamsets_api_client import api_client
 from click.testing import CliRunner
-from agent.constants import SDC_DATA_PATH, SDC_RESULTS_PATH, TIMESTAMPS_DIR, PIPELINES_DIR
+from agent.constants import SDC_DATA_PATH, SDC_RESULTS_PATH, TIMESTAMPS_DIR, PIPELINES_DIR, TMP_DIR
 from agent.destination.http import HttpDestination
 
 
@@ -33,6 +33,9 @@ def cli_runner():
 
     if os.path.isdir(TIMESTAMPS_DIR):
         shutil.rmtree(TIMESTAMPS_DIR)
+
+    if os.path.isdir(TMP_DIR):
+        shutil.rmtree(TMP_DIR)
 
     if os.path.isfile(HttpDestination.FILE):
         os.remove(HttpDestination.FILE)
