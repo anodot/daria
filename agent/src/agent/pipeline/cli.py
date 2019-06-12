@@ -313,6 +313,35 @@ def stop(pipeline_id):
 
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
+def update(pipeline_id):
+    """
+    Update pipeline
+    """
+    try:
+        with open(os.path.join(PIPELINES_DIR, pipeline_id + '.json'), 'r') as f:
+            pipeline_config = json.load(f)
+
+        with open(os.path.join(SOURCES_DIR, pipeline_config['source']['name'] + '.json'), 'r') as f:
+            pipeline_config['source'] = json.load(f)
+
+        pipeline_config['destination'] = HttpDestination().load()
+
+        pipeline_c = pipeline_configs[pipeline_config['source']['type']]
+        pipeline_obj = api_client.get_pipeline(pipeline_config['pipeline_id'])
+
+        config_handler = pipeline_c.get_config_handler(pipeline_config, pipeline_obj)
+        edit_pipeline(config_handler, pipeline_config)
+
+        with open(os.path.join(PIPELINES_DIR, pipeline_config['pipeline_id'] + '.json'), 'w') as f:
+            json.dump(pipeline_config, f)
+    except StreamSetsApiClientException as e:
+        click.secho(str(e), err=True, fg='red')
+        return
+    click.echo('Pipeline updated')
+
+
+@click.command()
+@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
 def delete(pipeline_id):
     """
     Delete pipeline
@@ -526,3 +555,4 @@ pipeline.add_command(reset)
 pipeline.add_command(edit)
 pipeline.add_command(dummy)
 pipeline.add_command(destination_logs)
+pipeline.add_command(update)
