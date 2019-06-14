@@ -5,9 +5,9 @@ import time
 
 from ..fixtures import cli_runner, get_output, replace_destination, get_input_file_path
 from agent.pipeline import cli as pipeline_cli
-from agent.source import cli as source_cli
+from agent.source import cli as source_cli, Source
 from agent.streamsets_api_client import api_client
-from agent.constants import PIPELINES_DIR, SOURCES_DIR
+from agent.constants import PIPELINES_DIR
 
 
 WAITING_TIME = 5
@@ -16,12 +16,12 @@ WAITING_TIME = 5
 def test_source_create(cli_runner):
     result = cli_runner.invoke(source_cli.create, input="""mongo\ntest_mongo\nmongodb://mongo:27017\nroot\nroot\nadmin\ntest\nadtec\n\n2015-01-01 00:00:00\n\n\n\n\n""")
     assert result.exit_code == 0
-    assert os.path.isfile(os.path.join(SOURCES_DIR, 'test_mongo.json'))
+    assert os.path.isfile(os.path.join(Source.DIR, 'test_mongo.json'))
 
 
 def test_source_edit(cli_runner):
     result = cli_runner.invoke(source_cli.edit, ['test_mongo'], input="""\n\n\n\n\nadtech\n\n\n\n\n\n\n""")
-    with open(os.path.join(SOURCES_DIR, 'test_mongo.json'), 'r') as f:
+    with open(os.path.join(Source.DIR, 'test_mongo.json'), 'r') as f:
         source = json.load(f)
         assert source['config']['configBean.mongoConfig.collection'] == 'adtech'
     assert result.exit_code == 0
@@ -128,4 +128,4 @@ def test_delete_pipeline(cli_runner, name):
 def test_source_delete(cli_runner):
     result = cli_runner.invoke(source_cli.delete, ['test_mongo'])
     assert result.exit_code == 0
-    assert not os.path.isfile(os.path.join(SOURCES_DIR, 'test_mongo.json'))
+    assert not os.path.isfile(os.path.join(Source.DIR, 'test_mongo.json'))
