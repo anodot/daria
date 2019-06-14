@@ -2,9 +2,9 @@ import click
 import json
 import os
 
-from .config_schema import sources_configs
+from .source import Source, SourceException
 from agent.streamsets_api_client import api_client
-from agent.constants import PIPELINES_DIR, SOURCES_DIR
+from agent.constants import PIPELINES_DIR
 
 
 def get_previous_source_config(label):
@@ -21,16 +21,8 @@ def get_previous_source_config(label):
 
 def sources_autocomplete(ctx, args, incomplete):
     configs = []
-    for filename in os.listdir(SOURCES_DIR):
+    for filename in os.listdir(Source.DIR):
         if filename.endswith('.json') and incomplete in filename:
-            configs.append(filename.replace('.json', ''))
-    return configs
-
-
-def get_configs_list():
-    configs = []
-    for filename in os.listdir(SOURCES_DIR):
-        if filename.endswith('.json'):
             configs.append(filename.replace('.json', ''))
     return configs
 
@@ -49,18 +41,18 @@ def create(advanced):
     """
     Create source
     """
-    config = dict(config={})
-    config['type'] = click.prompt('Choose source', type=click.Choice(sources_configs.keys()))
-    config['name'] = click.prompt('Enter unique name for this source config', type=click.STRING)
+    source_type = click.prompt('Choose source', type=click.Choice(Source.types))
+    source_name = click.prompt('Enter unique name for this source config', type=click.STRING)
 
-    if os.path.isfile(os.path.join(SOURCES_DIR, config['name'] + '.json')):
-        raise click.exceptions.ClickException('Source config with this name already exists')
+    source_instance = Source(source_name, source_type)
 
-    recent_pipeline_config = get_previous_source_config(config['type'])
-    config['config'] = sources_configs[config['type']](recent_pipeline_config, advanced)
+    try:
+        recent_pipeline_config = get_previous_source_config(source_type)
+        source_instance.prompt(recent_pipeline_config, advanced)
 
-    with open(os.path.join(SOURCES_DIR, config['name'] + '.json'), 'w') as f:
-        json.dump(config, f)
+        source_instance.create()
+    except SourceException:
+        raise click.ClickException(str(SourceException))
 
     click.secho('Source config created', fg='green')
 
@@ -72,13 +64,14 @@ def edit(name, advanced):
     """
     Edit source
     """
-    with open(os.path.join(SOURCES_DIR, name + '.json'), 'r') as f:
-        config = json.load(f)
+    source_instance = Source(name)
 
-    config['config'] = sources_configs[config['type']](config['config'], advanced)
-
-    with open(os.path.join(SOURCES_DIR, name + '.json'), 'w') as f:
-        json.dump(config, f)
+    try:
+        source_instance.load()
+        source_instance.prompt(advanced=advanced)
+        source_instance.save()
+    except SourceException:
+        raise click.ClickException(str(SourceException))
 
     click.secho('Source config updated', fg='green')
 
@@ -88,7 +81,7 @@ def list_configs():
     """
     List all sources
     """
-    for config in get_configs_list():
+    for config in Source.get_list():
         click.echo(config)
 
 
@@ -98,12 +91,13 @@ def delete(name):
     """
     Delete source
     """
-    file_path = os.path.join(SOURCES_DIR, name + '.json')
-    if os.path.exists(file_path):
-        os.remove(file_path)
-        click.secho('Source config was deleted', fg='green')
-    else:
-        click.echo("The config does not exist")
+    source_instance = Source(name)
+
+    try:
+        source_instance.load()
+        source_instance.delete()
+    except SourceException:
+        raise click.ClickException(str(SourceException))
 
 
 source.add_command(create)

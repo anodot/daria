@@ -1,19 +1,31 @@
 import os
 import json
 
-from abc import ABC, abstractmethod
 from agent.constants import DATA_DIR
 
 
-class BaseSource(ABC):
+from .influx import PromptInflux
+from .kafka import PromptKafka
+from .mongo import PromptMongo
+
+
+class Source:
     DIR = os.path.join(DATA_DIR, 'sources')
 
-    @abstractmethod
-    def get_type(self):
-        ...
+    TYPE_INFLUX = 'influx'
+    TYPE_KAFKA = 'kafka'
+    TYPE_MONGO = 'mongo'
 
-    def __init__(self, name):
-        self.config = {'name': name, 'type': self.get_type(), 'config': {}}
+    types = [TYPE_INFLUX, TYPE_KAFKA, TYPE_MONGO]
+
+    prompters = {
+        TYPE_INFLUX: PromptInflux,
+        TYPE_KAFKA: PromptKafka,
+        TYPE_MONGO: PromptMongo
+    }
+
+    def __init__(self, name, source_type=None):
+        self.config = {'name': name, 'type': source_type, 'config': {}}
 
     @property
     def file_path(self):
@@ -32,7 +44,7 @@ class BaseSource(ABC):
         return self.config
 
     def save(self):
-        with open(os.path.join(self.DIR, self.config['name'] + '.json'), 'w') as f:
+        with open(self.file_path, 'w') as f:
             json.dump(self.config, f)
 
     def create(self):
@@ -46,6 +58,19 @@ class BaseSource(ABC):
             raise SourceNotExists(f"Source config {self.config['name']} doesn't exist")
 
         os.remove(self.file_path)
+
+    def prompt(self, default_config=None, advanced=False):
+        if not default_config:
+            default_config = self.config['config']
+        self.config['config'] = self.prompters[self.config['type']]().prompt(default_config, advanced)
+
+    @classmethod
+    def get_list(cls):
+        configs = []
+        for filename in os.listdir(cls.DIR):
+            if filename.endswith('.json'):
+                configs.append(filename.replace('.json', ''))
+        return configs
 
 
 class SourceException(Exception):
