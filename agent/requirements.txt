@@ -9,6 +9,7 @@ docutils==0.14
 idna==2.8
 imagesize==1.1.0
 inflection==0.3.1
+influxdb==5.2.2
 javaproperties==0.5.1
 Jinja2==2.10
 jsonschema==3.0.1

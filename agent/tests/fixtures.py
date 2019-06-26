@@ -1,12 +1,11 @@
 import json
 import os
 import pytest
-import shutil
 import time
 
 from agent.streamsets_api_client import api_client
 from click.testing import CliRunner
-from agent.constants import SDC_DATA_PATH, SDC_RESULTS_PATH, TIMESTAMPS_DIR, PIPELINES_DIR
+from agent.constants import SDC_DATA_PATH, SDC_RESULTS_PATH, PIPELINES_DIR
 from agent.destination.http import HttpDestination
 
 
@@ -14,7 +13,7 @@ from agent.destination.http import HttpDestination
 def cli_runner():
 
     yield CliRunner()
-
+    time.sleep(5)
     api_client.delete_by_filtering('test_')
     if api_client.get_pipelines(text='Monitoring'):
         api_client.stop_pipeline('Monitoring')
@@ -30,9 +29,6 @@ def cli_runner():
         for filename in os.listdir(SDC_RESULTS_PATH):
             if filename.startswith('sdc-test_'):
                 os.remove(os.path.join(SDC_RESULTS_PATH, filename))
-
-    if os.path.isdir(TIMESTAMPS_DIR):
-        shutil.rmtree(TIMESTAMPS_DIR)
 
     if os.path.isfile(HttpDestination.FILE):
         os.remove(HttpDestination.FILE)
