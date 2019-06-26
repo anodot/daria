@@ -52,7 +52,6 @@ state['VALUE_CONSTANT'] = {value_constant}
 
     def override_stages(self):
 
-
         self.update_source_configs()
 
         source_config = self.client_config['source']['config']
@@ -74,6 +73,7 @@ state['VALUE_CONSTANT'] = {value_constant}
                         )
 
                     if conf['name'] == 'stageRecordPreconditions':
+                        conf['value'] = []
                         for d in self.client_config['dimensions']['required']:
                             conf['value'].append(f"${{record:type('/{d}') == 'STRING'}}")
                         for d in self.client_config['dimensions']['optional']:
