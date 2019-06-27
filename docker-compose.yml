@@ -20,7 +20,7 @@ services:
       STREAMSETS_PASSWORD: 'admin'
       STREAMSETS_URL: 'http://dc:18630'
       LOG_FILE_PATH: '/var/log/agent.log'
-      ANODOT_API_URL: 'http://daria-test2'
+      ANODOT_API_URL: 'https://feature-test-agent.ano-dev.com'
       SDC_DATA_PATH: '/sdc-data'
     stdin_open: true
     tty: true

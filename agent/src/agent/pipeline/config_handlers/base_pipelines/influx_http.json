@@ -1074,7 +1074,7 @@
           "outputLane" : "StreamSelector_01OutputLane1558022315966",
           "predicate" : "${record:exists('/last_timestamp')}"
         }, {
-          "outputLane" : "StreamSelector_01OutputLane1558022212363",
+          "outputLane" : "destination_stream_lane",
           "predicate" : "default"
         } ]
       }, {
@@ -1095,7 +1095,7 @@
         "stageType" : "PROCESSOR"
       },
       "inputLanes" : [ "JavaScriptEvaluator_01OutputLane15518645609860" ],
-      "outputLanes" : [ "StreamSelector_01OutputLane1558022315966", "StreamSelector_01OutputLane1558022212363" ],
+      "outputLanes" : [ "StreamSelector_01OutputLane1558022315966", "destination_stream_lane" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -1431,7 +1431,7 @@
         "yPos" : 244.54216766357422,
         "stageType" : "PROCESSOR"
       },
-      "inputLanes" : [ "StreamSelector_01OutputLane1558022212363" ],
+      "inputLanes" : [ "destination_stream_lane" ],
       "outputLanes" : [ "JavaScriptEvaluator_02OutputLane15518690029440" ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -1473,7 +1473,7 @@
       "eventLanes" : [ ],
       "services" : [ ]
     },  {
-      "instanceName" : "HTTPClient_01",
+      "instanceName" : "destination",
       "library" : "streamsets-datacollector-basic-lib",
       "stageName" : "com_streamsets_pipeline_stage_destination_http_HttpClientDTarget",
       "stageVersion" : "4",
