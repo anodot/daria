@@ -4,9 +4,9 @@ import pytest
 import time
 
 from ..fixtures import cli_runner, get_output, replace_destination, get_input_file_path
-from agent.constants import PIPELINES_DIR, SOURCES_DIR
+from agent.constants import PIPELINES_DIR
 from agent.pipeline import cli as pipeline_cli
-from agent.source import cli as source_cli
+from agent.source import cli as source_cli, Source
 from agent.streamsets_api_client import api_client
 
 
@@ -20,7 +20,7 @@ WAITING_TIME = 5
 def test_source_create(cli_runner, name, offset):
     result = cli_runner.invoke(source_cli.create, input=f"influx\n{name}\nhttp://influx:8086\ntest\n\n{offset}\n\n")
     assert result.exit_code == 0
-    assert os.path.isfile(os.path.join(SOURCES_DIR, f'{name}.json'))
+    assert os.path.isfile(os.path.join(Source.DIR, f'{name}.json'))
 
 
 @pytest.mark.parametrize("name,source,options,value,dimensions", [
@@ -117,4 +117,4 @@ def test_delete_pipeline(cli_runner, name):
 def test_source_delete(cli_runner, name):
     result = cli_runner.invoke(source_cli.delete, [name])
     assert result.exit_code == 0
-    assert not os.path.isfile(os.path.join(SOURCES_DIR, f'{name}.json'))
+    assert not os.path.isfile(os.path.join(Source.DIR, f'{name}.json'))

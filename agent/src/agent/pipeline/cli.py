@@ -7,9 +7,9 @@ import shutil
 
 from . import ConfigHandlerException
 from .config import pipeline_configs
-from ..source.cli import get_configs_list as list_sources
+from ..source import Source
 from ..streamsets_api_client import api_client, StreamSetsApiClientException
-from agent.constants import PIPELINES_DIR, SOURCES_DIR, ERRORS_DIR
+from agent.constants import PIPELINES_DIR, ERRORS_DIR
 from agent.destination.http import HttpDestination
 from jsonschema import validate, ValidationError
 from datetime import datetime
@@ -90,7 +90,7 @@ def create_multiple(file):
         'items': {
             'type': 'object',
             'properties': {
-                'source': {'type': 'string', 'enum': list_sources()},
+                'source': {'type': 'string', 'enum': Source.get_list()},
                 'pipeline_id': {'type': 'string', 'minLength': 1, 'maxLength': 100}
             },
             'required': ['source', 'pipeline_id']
@@ -101,8 +101,7 @@ def create_multiple(file):
 
     for item in data:
         pipeline_config = {}
-        with open(os.path.join(SOURCES_DIR, item['source'] + '.json'), 'r') as f:
-            source = json.load(f)
+        source = Source(item['source']).load()
         pipeline_c = pipeline_configs[source['type']]
         pipeline_config.update(pipeline_c.load(item, source['type']))
         pipeline_config['source'] = source
@@ -124,7 +123,7 @@ def create(advanced, file):
     """
     Create pipeline
     """
-    sources = list_sources()
+    sources = Source.get_list()
     if len(sources) == 0:
         raise click.ClickException('No sources configs found. Use "agent source create"')
 
@@ -141,11 +140,10 @@ def create(advanced, file):
     default_source = sources[0] if len(sources) == 1 else None
     source_config_name = click.prompt('Choose source config', type=click.Choice(sources), default=default_source)
 
-    with open(os.path.join(SOURCES_DIR, source_config_name + '.json'), 'r') as f:
-        source_config = json.load(f)
+    source = Source(source_config_name).load()
 
-    pipeline_config = get_previous_pipeline_config(source_config['type'])
-    pipeline_config['source'] = source_config
+    pipeline_config = get_previous_pipeline_config(source['type'])
+    pipeline_config['source'] = source
     destination_type = click.prompt('Choose destination', type=click.Choice([HttpDestination.TYPE]),
                                     default=HttpDestination.TYPE)
     if destination_type == HttpDestination.TYPE:
@@ -184,8 +182,7 @@ def edit_multiple(file):
         with open(os.path.join(PIPELINES_DIR, item['pipeline_id'] + '.json'), 'r') as f:
             pipeline_config = json.load(f)
 
-        with open(os.path.join(SOURCES_DIR, pipeline_config['source']['name'] + '.json'), 'r') as f:
-            source = json.load(f)
+        source = Source(pipeline_config['source']['name']).load()
         pipeline_c = pipeline_configs[source['type']]
         pipeline_config.update(pipeline_c.load(item, source['type'], edit=True))
         pipeline_config['source'] = source
@@ -220,8 +217,8 @@ def edit(pipeline_id, advanced, file):
     with open(os.path.join(PIPELINES_DIR, pipeline_id + '.json'), 'r') as f:
         pipeline_config = json.load(f)
 
-    with open(os.path.join(SOURCES_DIR, pipeline_config['source']['name'] + '.json'), 'r') as f:
-        pipeline_config['source'] = json.load(f)
+    source = Source(pipeline_config['source']['name']).load()
+    pipeline_config['source'] = source
 
     pipeline_config['destination'] = HttpDestination().load()
 
@@ -309,6 +306,33 @@ def stop(pipeline_id):
         click.secho(str(e), err=True, fg='red')
         return
     click.echo('Pipeline stopping')
+
+
+@click.command()
+@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
+def update(pipeline_id):
+    """
+    Update pipeline
+    """
+    try:
+        with open(os.path.join(PIPELINES_DIR, pipeline_id + '.json'), 'r') as f:
+            pipeline_config = json.load(f)
+
+        pipeline_config['source'] = Source(pipeline_config['source']['name']).load()
+        pipeline_config['destination'] = HttpDestination().load()
+
+        pipeline_c = pipeline_configs[pipeline_config['source']['type']]
+        pipeline_obj = api_client.get_pipeline(pipeline_config['pipeline_id'])
+
+        config_handler = pipeline_c.get_config_handler(pipeline_config, pipeline_obj)
+        edit_pipeline(config_handler, pipeline_config)
+
+        with open(os.path.join(PIPELINES_DIR, pipeline_config['pipeline_id'] + '.json'), 'w') as f:
+            json.dump(pipeline_config, f)
+    except StreamSetsApiClientException as e:
+        click.secho(str(e), err=True, fg='red')
+        return
+    click.echo('Pipeline updated')
 
 
 @click.command()
@@ -518,3 +542,4 @@ pipeline.add_command(reset)
 pipeline.add_command(edit)
 pipeline.add_command(dummy)
 pipeline.add_command(destination_logs)
+pipeline.add_command(update)

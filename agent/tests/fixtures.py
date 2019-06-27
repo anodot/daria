@@ -13,7 +13,7 @@ from agent.destination.http import HttpDestination
 def cli_runner():
 
     yield CliRunner()
-    time.sleep(5)
+
     api_client.delete_by_filtering('test_')
     if api_client.get_pipelines(text='Monitoring'):
         api_client.stop_pipeline('Monitoring')

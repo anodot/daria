@@ -1100,7 +1100,7 @@
         "value" : false
       }, {
         "name" : "conf.dataFormatConfig.jsonMaxObjectLen",
-        "value" : 409600
+        "value" : 5409600
       }, {
         "name" : "conf.dataFormatConfig.csvFileFormat",
         "value" : "CSV"
