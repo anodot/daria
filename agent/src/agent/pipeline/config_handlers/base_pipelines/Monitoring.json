@@ -1050,7 +1050,7 @@
         "value" : [ ]
       }, {
         "name" : "stageRecordPreconditions",
-        "value" : [ "${record:value('/status') == 'RUNNING'}" ]
+        "value" : [ ]
       }, {
         "name" : "conf.dataFormatConfig.multiCharacterFieldDelimiter",
         "value" : "||"
