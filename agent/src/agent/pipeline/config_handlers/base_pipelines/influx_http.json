@@ -540,7 +540,7 @@
         "value" : [ ]
       }, {
         "name" : "conf.client.requestLoggingConfig.enableRequestLogging",
-        "value" : true
+        "value" : false
       }, {
         "name" : "conf.client.requestLoggingConfig.logLevel",
         "value" : "INFO"
@@ -988,7 +988,7 @@
         "value" : [ ]
       }, {
         "name" : "conf.client.requestLoggingConfig.enableRequestLogging",
-        "value" : true
+        "value" : false
       }, {
         "name" : "conf.client.requestLoggingConfig.logLevel",
         "value" : "INFO"
