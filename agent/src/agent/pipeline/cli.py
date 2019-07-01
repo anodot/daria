@@ -9,7 +9,7 @@ from . import ConfigHandlerException
 from .config import pipeline_configs
 from ..source import Source
 from ..streamsets_api_client import api_client, StreamSetsApiClientException
-from agent.constants import PIPELINES_DIR, TIMESTAMPS_DIR, ERRORS_DIR
+from agent.constants import PIPELINES_DIR, ERRORS_DIR
 from agent.destination.http import HttpDestination
 from jsonschema import validate, ValidationError
 from datetime import datetime
@@ -318,9 +318,7 @@ def update(pipeline_id):
         with open(os.path.join(PIPELINES_DIR, pipeline_id + '.json'), 'r') as f:
             pipeline_config = json.load(f)
 
-        with open(os.path.join(SOURCES_DIR, pipeline_config['source']['name'] + '.json'), 'r') as f:
-            pipeline_config['source'] = json.load(f)
-
+        pipeline_config['source'] = Source(pipeline_config['source']['name']).load()
         pipeline_config['destination'] = HttpDestination().load()
 
         pipeline_c = pipeline_configs[pipeline_config['source']['type']]
@@ -347,10 +345,6 @@ def delete(pipeline_id):
         api_client.delete_pipeline(pipeline_id)
         file_path = os.path.join(PIPELINES_DIR, pipeline_id + '.json')
         os.remove(file_path)
-        timestamps_dir = os.path.join(TIMESTAMPS_DIR, pipeline_id)
-        if os.path.isdir(timestamps_dir):
-            shutil.rmtree(timestamps_dir)
-
         errors_dir = os.path.join(ERRORS_DIR, pipeline_id)
         if os.path.isdir(errors_dir):
             shutil.rmtree(errors_dir)
@@ -448,16 +442,12 @@ def reset(pipeline_id):
     """
     try:
         api_client.reset_pipeline(pipeline_id)
-        timestamps_dir = os.path.join(TIMESTAMPS_DIR, pipeline_id)
-        if os.path.isdir(timestamps_dir):
-            for p in Path(timestamps_dir).glob('timestamp*'):
-                p.unlink()
 
-            with open(os.path.join(PIPELINES_DIR, pipeline_id + '.json'), 'r') as f:
-                pipeline_config = json.load(f)
-            pipeline_c = pipeline_configs[pipeline_config['source']['type']]
-            config_handler = pipeline_c.get_config_handler(pipeline_config)
-            config_handler.set_initial_offset()
+        with open(os.path.join(PIPELINES_DIR, pipeline_id + '.json'), 'r') as f:
+            pipeline_config = json.load(f)
+        pipeline_c = pipeline_configs[pipeline_config['source']['type']]
+        config_handler = pipeline_c.get_config_handler(pipeline_config)
+        config_handler.set_initial_offset()
 
     except StreamSetsApiClientException as e:
         click.secho(str(e), err=True, fg='red')
