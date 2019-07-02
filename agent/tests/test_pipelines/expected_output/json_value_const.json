@@ -6,7 +6,9 @@
       "target_type": "gauge",
       "ver": "AD200",
       "Country": "USA",
-      "Exchange": "DoubleClick"
+      "Exchange": "DoubleClick",
+      "source": "anodot-agent",
+      "source_host_id": "ABCDEF"
     },
     "timestamp": 1512867600
   },
@@ -17,7 +19,9 @@
       "target_type": "gauge",
       "ver": "AD200",
       "Country": "USA",
-      "Exchange": "DoubleClick"
+      "Exchange": "DoubleClick",
+      "source": "anodot-agent",
+      "source_host_id": "ABCDEF"
     },
     "timestamp": 1512871200
   },
@@ -28,7 +32,9 @@
       "target_type": "gauge",
       "ver": "AD200",
       "Country": "USA",
-      "Exchange": "DoubleClick"
+      "Exchange": "DoubleClick",
+      "source": "anodot-agent",
+      "source_host_id": "ABCDEF"
     },
     "timestamp": 1512874800
   },
@@ -39,7 +45,9 @@
       "target_type": "gauge",
       "ver": "AD200",
       "Country": "USA",
-      "Exchange": "DoubleClick"
+      "Exchange": "DoubleClick",
+      "source": "anodot-agent",
+      "source_host_id": "ABCDEF"
     },
     "timestamp": 1512878400
   },
@@ -50,7 +58,9 @@
       "target_type": "gauge",
       "ver": "AD200",
       "Country": "USA",
-      "Exchange": "DoubleClick"
+      "Exchange": "DoubleClick",
+      "source": "anodot-agent",
+      "source_host_id": "ABCDEF"
     },
     "timestamp": 1512882000
   },
@@ -61,7 +71,9 @@
       "target_type": "gauge",
       "ver": "AD200",
       "Country": "USA",
-      "Exchange": "DoubleClick"
+      "Exchange": "DoubleClick",
+      "source": "anodot-agent",
+      "source_host_id": "ABCDEF"
     },
     "timestamp": 1512885600
   },
@@ -72,7 +84,9 @@
       "target_type": "gauge",
       "ver": "AD200",
       "Country": "",
-      "Exchange": "DoubleClick"
+      "Exchange": "DoubleClick",
+      "source": "anodot-agent",
+      "source_host_id": "ABCDEF"
     },
     "timestamp": 1512889200
   }

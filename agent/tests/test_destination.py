@@ -1,6 +1,5 @@
-import json
-import os
 import time
+import pytest
 
 from .fixtures import cli_runner
 from agent import cli as agent_cli
@@ -9,6 +8,13 @@ from agent.streamsets_api_client import api_client
 
 
 WAITING_TIME = 3
+
+
+@pytest.fixture(autouse=True)
+def host_id(monkeypatch):
+    def constant_host_id(length=10):
+        return 'ABCDEF'
+    monkeypatch.setattr(HttpDestination, 'generate_host_id', constant_host_id)
 
 
 def test_destination(cli_runner):

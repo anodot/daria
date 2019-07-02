@@ -7,7 +7,9 @@
       "zone": "GF",
       "host": "msk-air-trn1",
       "measurement_category": "cpu_test",
-      "what": "usage_active"
+      "what": "usage_active",
+      "source": "anodot-agent",
+      "source_host_id": "ABCDEF"
     },
     "value": 0.504
   },
@@ -19,7 +21,9 @@
       "zone": "GF",
       "host": "msk-air-trn1",
       "measurement_category": "cpu_test",
-      "what": "usage_idle"
+      "what": "usage_idle",
+      "source": "anodot-agent",
+      "source_host_id": "ABCDEF"
     },
     "value": 260404905034043060000
   },
@@ -31,7 +35,9 @@
       "zone": "GEO",
       "host": "msk-air-trn1",
       "measurement_category": "cpu_test",
-      "what": "usage_active"
+      "what": "usage_active",
+      "source": "anodot-agent",
+      "source_host_id": "ABCDEF"
     },
     "value": 0.504
   },
@@ -43,7 +49,9 @@
       "zone": "GEO",
       "host": "msk-air-trn1",
       "measurement_category": "cpu_test",
-      "what": "usage_idle"
+      "what": "usage_idle",
+      "source": "anodot-agent",
+      "source_host_id": "ABCDEF"
     },
     "value": 26
   }
