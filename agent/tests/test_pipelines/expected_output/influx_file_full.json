@@ -8,7 +8,9 @@
       "host": "msk-air-trn5",
       "measurement_category": "cpu_test",
       "what": "usage_active",
-      "test": "val"
+      "test": "val",
+      "source": "anodot-agent",
+      "source_host_id": "ABCDEF"
     },
     "value": 0.204
   },
@@ -21,7 +23,9 @@
       "host": "msk-air-trn5",
       "measurement_category": "cpu_test",
       "what": "usage_idle",
-      "test": "val"
+      "test": "val",
+      "source": "anodot-agent",
+      "source_host_id": "ABCDEF"
     },
     "value": 62.53
   },
@@ -34,7 +38,9 @@
       "host": "msk_a_ir_trn1",
       "measurement_category": "cpu_test",
       "what": "usage_active",
-      "test": "val"
+      "test": "val",
+      "source": "anodot-agent",
+      "source_host_id": "ABCDEF"
     },
     "value": 0.224
   },
@@ -47,7 +53,9 @@
       "host": "msk_a_ir_trn1",
       "measurement_category": "cpu_test",
       "what": "usage_idle",
-      "test": "val"
+      "test": "val",
+      "source": "anodot-agent",
+      "source_host_id": "ABCDEF"
     },
     "value": 14.247
   },
@@ -60,7 +68,9 @@
       "host": "msk_air_trn1",
       "measurement_category": "cpu_test",
       "what": "usage_active",
-      "test": "val"
+      "test": "val",
+      "source": "anodot-agent",
+      "source_host_id": "ABCDEF"
     },
     "value": 0.22432747346756737
   },
@@ -73,7 +83,9 @@
       "host": "msk_air_trn1",
       "measurement_category": "cpu_test",
       "what": "usage_idle",
-      "test": "val"
+      "test": "val",
+      "source": "anodot-agent",
+      "source_host_id": "ABCDEF"
     },
     "value": 14.247
   },
@@ -85,7 +97,9 @@
       "host": "msk-air-trn1",
       "measurement_category": "cpu_test",
       "what": "usage_active",
-      "test": "val"
+      "test": "val",
+      "source": "anodot-agent",
+      "source_host_id": "ABCDEF"
     },
     "value": 0.224
   },
@@ -97,7 +111,9 @@
       "host": "msk-air-trn1",
       "measurement_category": "cpu_test",
       "what": "usage_idle",
-      "test": "val"
+      "test": "val",
+      "source": "anodot-agent",
+      "source_host_id": "ABCDEF"
     },
     "value": 14.247
   },
@@ -110,7 +126,9 @@
       "host": "msk-air-trn1",
       "measurement_category": "cpu_test",
       "what": "usage_active",
-      "test": "val"
+      "test": "val",
+      "source": "anodot-agent",
+      "source_host_id": "ABCDEF"
     },
     "value": 0.504
   },
@@ -123,7 +141,9 @@
       "host": "msk-air-trn1",
       "measurement_category": "cpu_test",
       "what": "usage_idle",
-      "test": "val"
+      "test": "val",
+      "source": "anodot-agent",
+      "source_host_id": "ABCDEF"
     },
     "value": 260404905034043060000
   },
@@ -136,7 +156,9 @@
       "host": "msk-air-trn1",
       "measurement_category": "cpu_test",
       "what": "usage_active",
-      "test": "val"
+      "test": "val",
+      "source": "anodot-agent",
+      "source_host_id": "ABCDEF"
     },
     "value": 0.504
   },
@@ -149,7 +171,9 @@
       "host": "msk-air-trn1",
       "measurement_category": "cpu_test",
       "what": "usage_idle",
-      "test": "val"
+      "test": "val",
+      "source": "anodot-agent",
+      "source_host_id": "ABCDEF"
     },
     "value": 26
   }

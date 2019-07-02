@@ -71,6 +71,11 @@ class BaseConfigHandler(ABC):
             if conf['name'] in self.client_config['destination']['config']:
                 conf['value'] = self.client_config['destination']['config'][conf['name']]
 
+    def set_source_properties(self, conf):
+        conf['value'].append({'fieldToSet': '/properties/source', 'expression': 'anodot-agent'})
+        conf['value'].append({'fieldToSet': '/properties/source_host_id',
+                              'expression': self.client_config['destination']['host_id']})
+
 
 class ConfigHandlerException(Exception):
     pass

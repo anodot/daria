@@ -19,6 +19,8 @@ class JsonConfigHandler(BaseConfigHandler):
         for key, val in self.client_config.get('properties', {}).items():
             conf['value'].append({'fieldToSet': '/properties/' + key, 'expression': val})
 
+        self.set_source_properties(conf)
+
     def update_properties(self, stage):
         for conf in stage['configuration']:
             if conf['name'] == 'expressionProcessorConfigs':

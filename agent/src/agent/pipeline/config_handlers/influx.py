@@ -86,6 +86,7 @@ state['VALUE_CONSTANT'] = {value_constant}
                     if conf['name'] == 'expressionProcessorConfigs':
                         for key, val in self.client_config.get('properties', {}).items():
                             conf['value'].append({'fieldToSet': '/properties/' + key, 'expression': val})
+                        self.set_source_properties(conf)
 
             if stage['instanceName'] == 'HTTPClient_05':
                 for conf in stage['configuration']:
