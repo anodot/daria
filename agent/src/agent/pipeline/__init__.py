@@ -1,1 +1,1 @@
-from .config_handlers.base import ConfigHandlerException
+from .pipeline import Pipeline

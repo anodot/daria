@@ -16,6 +16,7 @@ class LoadClientData:
         if self.edit:
             schema['required'] = []
         validate(self.client_config, schema)
+        client_config.pop('source', None)
 
     def load_dimensions(self):
         if type(self.client_config.get('dimensions')) == list:

@@ -4,10 +4,9 @@ import pytest
 import time
 
 from ..fixtures import cli_runner, get_output, replace_destination, get_input_file_path
-from agent.pipeline import cli as pipeline_cli
+from agent.pipeline import cli as pipeline_cli, Pipeline
 from agent.source import cli as source_cli, Source
 from agent.streamsets_api_client import api_client
-from agent.constants import PIPELINES_DIR
 
 
 WAITING_TIME = 5
@@ -32,7 +31,7 @@ def test_source_create(cli_runner, name):
     ('test_timestamp_string', ['-a'], 'Clicks\nconstant', 'n\ntimestamp_string\nstring\nM/d/yyyy H:mm:ss', 'key1:val1'),
 ])
 def test_create(cli_runner, name, options, value, timestamp, properties):
-    result = cli_runner.invoke(pipeline_cli.create, options, input=f"""kafka_{name}\nhttp\n{name}\nclicks\n{value}\n\n{timestamp}\nver Country\nExchange optional_dim\n{properties}\n""")
+    result = cli_runner.invoke(pipeline_cli.create, options, input=f"""kafka_{name}\n{name}\nclicks\n{value}\n\n{timestamp}\nver Country\nExchange optional_dim\n{properties}\n""")
     assert result.exit_code == 0
     assert api_client.get_pipeline(name)
 
@@ -109,8 +108,9 @@ def test_output(name, output):
 ])
 def test_delete_pipeline(cli_runner, name):
     result = cli_runner.invoke(pipeline_cli.delete, [name])
+    pipeline_obj = Pipeline(name)
     assert result.exit_code == 0
-    assert not os.path.isfile(os.path.join(PIPELINES_DIR, name + '.json'))
+    assert not pipeline_obj.exists()
 
 
 @pytest.mark.parametrize("name", [

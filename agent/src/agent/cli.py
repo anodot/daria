@@ -9,9 +9,15 @@ def agent():
     pass
 
 
+@click.command()
+def upgrade():
+    pass
+
+
 agent.add_command(source)
 agent.add_command(pipeline)
 agent.add_command(destination)
+agent.add_command(upgrade)
 
 if __name__ == '__main__':
     agent()

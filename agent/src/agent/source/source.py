@@ -15,6 +15,7 @@ class Source:
     TYPE_INFLUX = 'influx'
     TYPE_KAFKA = 'kafka'
     TYPE_MONGO = 'mongo'
+    TYPE_MONITORING = 'Monitoring'
 
     types = [TYPE_INFLUX, TYPE_KAFKA, TYPE_MONGO]
 
