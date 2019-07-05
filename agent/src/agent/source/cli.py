@@ -1,22 +1,19 @@
 import click
-import json
 import os
 
 from .source import Source, SourceException
+from agent.pipeline import Pipeline
 from agent.streamsets_api_client import api_client
-from agent.constants import PIPELINES_DIR
 
 
 def get_previous_source_config(label):
-    recent_pipeline_config = {}
     pipelines_with_source = api_client.get_pipelines(order_by='CREATED', order='DESC',
                                                      label=label)
     if len(pipelines_with_source) > 0:
-        for filename in os.listdir(PIPELINES_DIR):
-            if filename == pipelines_with_source[-1]['pipelineId'] + '.json':
-                with open(os.path.join(PIPELINES_DIR, filename), 'r') as f:
-                    recent_pipeline_config = json.load(f)['source']['config']
-    return recent_pipeline_config
+        pipeline_obj = Pipeline(pipelines_with_source[-1]['pipelineId'])
+        pipeline_obj.load()
+        return pipeline_obj.config['source']['config']
+    return {}
 
 
 def sources_autocomplete(ctx, args, incomplete):
@@ -51,8 +48,8 @@ def create(advanced):
         source_instance.prompt(recent_pipeline_config, advanced)
 
         source_instance.create()
-    except SourceException:
-        raise click.ClickException(str(SourceException))
+    except SourceException as e:
+        raise click.ClickException(str(e))
 
     click.secho('Source config created', fg='green')
 
@@ -70,8 +67,8 @@ def edit(name, advanced):
         source_instance.load()
         source_instance.prompt(advanced=advanced)
         source_instance.save()
-    except SourceException:
-        raise click.ClickException(str(SourceException))
+    except SourceException as e:
+        raise click.ClickException(str(e))
 
     click.secho('Source config updated', fg='green')
 
@@ -96,8 +93,8 @@ def delete(name):
     try:
         source_instance.load()
         source_instance.delete()
-    except SourceException:
-        raise click.ClickException(str(SourceException))
+    except SourceException as e:
+        raise click.ClickException(str(e))
 
 
 source.add_command(create)

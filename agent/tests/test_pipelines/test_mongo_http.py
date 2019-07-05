@@ -4,10 +4,9 @@ import pytest
 import time
 
 from ..fixtures import cli_runner, get_output, replace_destination, get_input_file_path
-from agent.pipeline import cli as pipeline_cli
+from agent.pipeline import cli as pipeline_cli, Pipeline
 from agent.source import cli as source_cli, Source
 from agent.streamsets_api_client import api_client
-from agent.constants import PIPELINES_DIR
 
 
 WAITING_TIME = 5
@@ -35,7 +34,7 @@ def test_source_edit(cli_runner):
     ('test_timestamp_string', ['-a'], 'Clicks\nconstant', 'timestamp_string', 'string\nM/d/yyyy H:mm:ss', 'key1:val1'),
 ])
 def test_create(cli_runner, name, options, value, timestamp, timestamp_type, properties):
-    result = cli_runner.invoke(pipeline_cli.create, options, input=f"""test_mongo\nhttp\n{name}\nclicks\n{value}\n\n{timestamp}\n{timestamp_type}\nver Country\nExchange optional_dim\n{properties}\n""")
+    result = cli_runner.invoke(pipeline_cli.create, options, input=f"""test_mongo\n{name}\nclicks\n{value}\n\n{timestamp}\n{timestamp_type}\nver Country\nExchange optional_dim\n{properties}\n""")
     assert result.exit_code == 0
     assert api_client.get_pipeline(name)
 
@@ -121,8 +120,9 @@ def test_output_exists(name):
 ])
 def test_delete_pipeline(cli_runner, name):
     result = cli_runner.invoke(pipeline_cli.delete, [name])
+    pipeline_obj = Pipeline(name)
     assert result.exit_code == 0
-    assert not os.path.isfile(os.path.join(PIPELINES_DIR, name + '.json'))
+    assert not pipeline_obj.exists()
 
 
 def test_source_delete(cli_runner):
