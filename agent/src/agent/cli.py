@@ -14,7 +14,7 @@ def agent():
 
 
 @click.command()
-def upgrade():
+def update():
 
     running_pipelines = []
     for p in api_client.get_pipelines():
@@ -28,17 +28,18 @@ def upgrade():
     for p in api_client.get_pipelines():
         pipeline_obj = Pipeline(p['pipelineId'])
         pipeline_obj.load()
-        pipeline_obj.update()
+        pipeline_obj.delete()
+        pipeline_obj.create()
 
         if p['pipelineId'] in running_pipelines:
             api_client.start_pipeline(pipeline_obj.id)
-        click.secho('Destination configured', fg='green')
+        click.secho(f'Pipeline {p["pipelineId"]} updated', fg='green')
 
 
 agent.add_command(source)
 agent.add_command(pipeline)
 agent.add_command(destination)
-agent.add_command(upgrade)
+agent.add_command(update)
 
 if __name__ == '__main__':
     agent()
