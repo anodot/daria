@@ -51,6 +51,11 @@ class Pipeline:
             return Source.TYPE_MONITORING
         return self.config['source']['type']
 
+    def load_source(self):
+        if not self.id == 'Monitoring':
+            self.source = Source(self.config['source']['name']).load()
+            self.config['source'] = self.source
+
     @property
     def id(self):
         return self.config['pipeline_id']
@@ -64,6 +69,8 @@ class Pipeline:
 
         with open(self.file_path, 'r') as f:
             self.config = json.load(f)
+
+        self.load_source()
 
         return self.config
 
