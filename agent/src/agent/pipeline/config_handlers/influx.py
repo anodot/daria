@@ -43,7 +43,7 @@ state['VALUE_CONSTANT'] = {value_constant}
         source_config['offset'] = int(timestamp.timestamp() * 1e9)
 
         influx_url = urlparse(source_config['host']).netloc.split(':')
-        client = InfluxDBClient(influx_url[0], influx_url[1], database='test')
+        client = InfluxDBClient(influx_url[0], influx_url[1], database=source_config['db'])
         client.write_points([{
             'measurement': 'agent_timestamps',
             'tags': {'pipeline_id': self.client_config['pipeline_id']},
