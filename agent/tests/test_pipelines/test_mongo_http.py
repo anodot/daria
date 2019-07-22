@@ -13,7 +13,7 @@ WAITING_TIME = 5
 
 
 def test_source_create(cli_runner):
-    result = cli_runner.invoke(source_cli.create, input="""mongo\ntest_mongo\nmongodb://mongo:27017\nroot\nroot\nadmin\ntest\nadtec\n\n2015-01-01 00:00:00\n\n\n\n\n""")
+    result = cli_runner.invoke(source_cli.create, input="""mongo\ntest_mongo\nmongodb://mongo:27017\nroot\nroot\nadmin\ntest\nadtec\n\n\n2015-01-01 00:00:00\n\n\n\n""")
     assert result.exit_code == 0
     assert os.path.isfile(os.path.join(Source.DIR, 'test_mongo.json'))
 

@@ -27,7 +27,7 @@ class Pipeline:
 
     config_handlers = {
         Source.TYPE_INFLUX: config_handlers.InfluxConfigHandler,
-        Source.TYPE_MONGO: config_handlers.JsonConfigHandler,
+        Source.TYPE_MONGO: config_handlers.MongoConfigHandler,
         Source.TYPE_KAFKA: config_handlers.KafkaConfigHandler,
         Source.TYPE_MONITORING: config_handlers.MonitoringConfigHandler,
     }

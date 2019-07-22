@@ -34,11 +34,14 @@ class PromptMongo:
                                                      type=click.STRING,
                                                      default=default_config.get('configBean.mongoConfig.isCapped',
                                                                                 False))
-        config['configBean.initialOffset'] = click.prompt('Initial offset', type=click.STRING,
-                                                          default=default_config.get('configBean.initialOffset'))
-
         config['configBean.offsetType'] = click.prompt('Offset type', type=click.Choice(['OBJECTID', 'STRING', 'DATE']),
                                                        default=default_config.get('configBean.offsetType', 'OBJECTID'))
+
+        default_offset = None if config['configBean.offsetType'] == 'STRING' else '3'
+        config['configBean.initialOffset'] = click.prompt('Initial offset (amount of days ago or specific date)',
+                                                          type=click.STRING,
+                                                          default=default_config.get('configBean.initialOffset',
+                                                                                     default_offset))
 
         config['configBean.offsetField'] = click.prompt('Offset field', type=click.STRING,
                                                         default=default_config.get('configBean.offsetField', '_id'))
