@@ -1,9 +1,11 @@
 import click
 import time
+import os
 
 from .http import HttpDestination
 from ..streamsets_api_client import api_client
 from agent.pipeline import Pipeline
+from agent.source import Source
 
 
 @click.command()
@@ -37,6 +39,8 @@ def destination():
         time.sleep(3)
         pipeline_monitoring.update()
     else:
+        os.mkdir(Source.DIR)
+        os.mkdir(Pipeline.DIR)
         pipeline_monitoring.create()
 
     api_client.start_pipeline(pipeline_monitoring.id)
