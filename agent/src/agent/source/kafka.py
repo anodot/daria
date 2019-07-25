@@ -45,7 +45,7 @@ class PromptKafka:
                 default_kafka_config = ' '.join([i['key'] + ':' + i['value'] for i in default_kafka_config])
             kafka_config = click.prompt('Kafka Configuration', type=click.STRING, default=default_kafka_config)
             config['kafkaConfigBean.kafkaConsumerConfigs'] = []
-            for i in kafka_config.split():
+            for i in kafka_config.split(','):
                 pair = i.split(':')
                 if len(pair) != 2:
                     raise click.UsageError('Wrong format')

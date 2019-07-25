@@ -28,6 +28,11 @@ class Source:
     def __init__(self, name, source_type=None):
         self.config = {'name': name, 'type': source_type, 'config': {}}
 
+    @classmethod
+    def create_dir(cls):
+        if not os.path.exists(cls.DIR):
+            os.mkdir(cls.DIR)
+
     @property
     def file_path(self):
         return os.path.join(self.DIR, self.config['name'] + '.json')

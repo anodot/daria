@@ -41,6 +41,11 @@ class Pipeline:
             'destination': self.destination.load()
         }
 
+    @classmethod
+    def create_dir(cls):
+        if not os.path.exists(cls.DIR):
+            os.mkdir(cls.DIR)
+
     @property
     def file_path(self):
         return os.path.join(self.DIR, self.id + '.json')

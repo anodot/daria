@@ -1,6 +1,5 @@
 import click
 import time
-import os
 
 from .http import HttpDestination
 from ..streamsets_api_client import api_client
@@ -39,8 +38,8 @@ def destination():
         time.sleep(3)
         pipeline_monitoring.update()
     else:
-        os.mkdir(Source.DIR)
-        os.mkdir(Pipeline.DIR)
+        Source.create_dir()
+        Pipeline.create_dir()
         pipeline_monitoring.create()
 
     api_client.start_pipeline(pipeline_monitoring.id)
