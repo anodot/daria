@@ -319,6 +319,7 @@ def reset(pipeline_id):
     """
     try:
         pipeline_obj = Pipeline(pipeline_id)
+        pipeline_obj.load()
         pipeline_obj.reset()
 
     except StreamSetsApiClientException as e:

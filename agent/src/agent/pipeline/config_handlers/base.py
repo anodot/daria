@@ -72,8 +72,11 @@ class BaseConfigHandler(ABC):
                 conf['value'] = self.client_config['destination']['config'][conf['name']]
 
     def set_source_properties(self, conf):
-        conf['value'].append({'fieldToSet': '/properties/source', 'expression': 'anodot-agent'})
-        conf['value'].append({'fieldToSet': '/properties/source_host_id',
+        conf['value'].append({'fieldToSet': '/tags', 'expression': '${emptyMap()}'})
+        conf['value'].append({'fieldToSet': '/tags/source', 'expression': '${emptyList()}'})
+        conf['value'].append({'fieldToSet': '/tags/source_host_id', 'expression': '${emptyList()}'})
+        conf['value'].append({'fieldToSet': '/tags/source[0]', 'expression': 'anodot-agent'})
+        conf['value'].append({'fieldToSet': '/tags/source_host_id[0]',
                               'expression': self.client_config['destination']['host_id']})
 
 
