@@ -4,6 +4,7 @@ import os
 from .source import Source, SourceException
 from agent.pipeline import Pipeline
 from agent.streamsets_api_client import api_client
+from agent.destination import HttpDestination
 
 
 def get_previous_source_config(label):
@@ -38,6 +39,8 @@ def create(advanced):
     """
     Create source
     """
+    if not HttpDestination.exists():
+        raise click.ClickException('Destination is not configured. Please use `agent destination` command')
     source_type = click.prompt('Choose source', type=click.Choice(Source.types))
     source_name = click.prompt('Enter unique name for this source config', type=click.STRING)
 

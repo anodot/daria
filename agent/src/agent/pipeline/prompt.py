@@ -85,6 +85,25 @@ class PromptConfigMongo(PromptConfig):
 
 
 class PromptConfigKafka(PromptConfig):
+
+    def set_measurement_name(self):
+        static_what_default = self.default_config.get('static_what', True)
+        if self.advanced or not static_what_default:
+            self.config['static_what'] = click.confirm('Is `what` property static?',
+                                                       default=self.default_config.get('static_what', True))
+
+        prompt_text = 'Measurement name' if self.config.get('static_what', True) else 'Measurement property name'
+        self.config['measurement_name'] = click.prompt(prompt_text, type=click.STRING,
+                                                       default=self.default_config.get('measurement_name'))
+
+    def set_target_type(self):
+        if self.config.get('static_what', True):
+            self.config['target_type'] = click.prompt('Target type', type=click.Choice(['counter', 'gauge']),
+                                                      default=self.default_config.get('target_type', 'gauge'))
+        else:
+            self.config['target_type'] = click.prompt('Target type property name', type=click.STRING,
+                                                      default=self.default_config.get('target_type'))
+
     def set_timestamp(self):
         previous_val = self.default_config.get('timestamp', {}).get('name') == 'kafka_timestamp'
         if click.confirm('Use kafka timestamp?', default=previous_val):

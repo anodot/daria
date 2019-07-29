@@ -13,10 +13,10 @@ WAITING_TIME = 5
 
 
 @pytest.mark.parametrize("name", [
-    'test_value_const',
-    'test_timestamp_ms',
-    'test_timestamp_kafka',
-    'test_timestamp_string',
+    'test_kfk_value_const',
+    'test_kfk_timestamp_ms',
+    'test_kfk_timestamp_kafka',
+    'test_kfk_timestamp_string',
 ])
 def test_source_create(cli_runner, name):
     result = cli_runner.invoke(source_cli.create, input=f"kafka\nkafka_{name}\nkafka:29092\nstreamsetsDC\n{name}\n\n")
@@ -25,13 +25,13 @@ def test_source_create(cli_runner, name):
 
 
 @pytest.mark.parametrize("name,options,value,timestamp,properties", [
-    ('test_timestamp_kafka', [], 'Clicks', 'y', ''),
-    ('test_value_const', ['-a'], '2\nconstant', 'n\ntimestamp_unix\nunix', 'key1:val1'),
-    ('test_timestamp_ms', [], 'Clicks\nproperty', 'n\ntimestamp_unix_ms\nunix_ms', ''),
-    ('test_timestamp_string', ['-a'], 'Clicks\nconstant', 'n\ntimestamp_string\nstring\nM/d/yyyy H:mm:ss', 'key1:val1'),
+    ('test_kfk_timestamp_kafka', [], 'clicks\nClicks\n', 'y', ''),
+    ('test_kfk_value_const', ['-a'], 'y\nclicks\n2\nconstant\n', 'n\ntimestamp_unix\nunix', 'key1:val1'),
+    ('test_kfk_timestamp_ms', [], 'clicks\nClicks\nproperty\n', 'n\ntimestamp_unix_ms\nunix_ms', ''),
+    ('test_kfk_timestamp_string', ['-a'], 'y\nclicks\nClicks\nconstant\n', 'n\ntimestamp_string\nstring\nM/d/yyyy H:mm:ss', 'key1:val1'),
 ])
 def test_create(cli_runner, name, options, value, timestamp, properties):
-    result = cli_runner.invoke(pipeline_cli.create, options, input=f"""kafka_{name}\n{name}\nclicks\n{value}\n\n{timestamp}\nver Country\nExchange optional_dim\n{properties}\n""")
+    result = cli_runner.invoke(pipeline_cli.create, options, input=f"""kafka_{name}\n{name}\n{value}\n{timestamp}\nver Country\nExchange optional_dim\n{properties}\n""")
     assert result.exit_code == 0
     assert api_client.get_pipeline(name)
 
@@ -48,21 +48,21 @@ def test_create_with_file(cli_runner):
 
 
 @pytest.mark.parametrize("options,value", [
-    (['test_value_const'], '1\n\n'),
-    (['test_timestamp_string', '-a'], 'Clicks\nproperty'),
+    (['test_kfk_value_const'], '\n1\n\n'),
+    (['test_kfk_timestamp_string', '-a'], 'n\nAdType\nClicks\nproperty\nagg_type'),
 ])
 def test_edit(cli_runner, options, value):
-    result = cli_runner.invoke(pipeline_cli.edit, options, input=f"""\n{value}\n\n\n\n\n\n""")
+    result = cli_runner.invoke(pipeline_cli.edit, options, input=f"""{value}\n\n\n\n\n\n\n\n""")
     assert result.exit_code == 0
 
 
 @pytest.mark.parametrize("name", [
-    'test_value_const',
-    'test_timestamp_ms',
-    'test_timestamp_string',
-    'test_timestamp_kafka',
-    'test_kafka_file_short',
-    'test_kafka_file_full'
+    'test_kfk_value_const',
+    'test_kfk_timestamp_ms',
+    'test_kfk_timestamp_string',
+    'test_kfk_timestamp_kafka',
+    'test_kfk_kafka_file_short',
+    'test_kfk_kafka_file_full'
 ])
 def test_start(cli_runner, name):
     replace_destination(name)
@@ -74,12 +74,12 @@ def test_start(cli_runner, name):
 
 
 @pytest.mark.parametrize("name", [
-    'test_value_const',
-    'test_timestamp_ms',
-    'test_timestamp_string',
-    'test_timestamp_kafka',
-    'test_kafka_file_short',
-    'test_kafka_file_full'
+    'test_kfk_value_const',
+    'test_kfk_timestamp_ms',
+    'test_kfk_timestamp_string',
+    'test_kfk_timestamp_kafka',
+    'test_kfk_kafka_file_short',
+    'test_kfk_kafka_file_full'
 ])
 def test_stop(cli_runner, name):
     result = cli_runner.invoke(pipeline_cli.stop, [name])
@@ -90,9 +90,9 @@ def test_stop(cli_runner, name):
 
 
 @pytest.mark.parametrize("name,output", [
-    ('test_value_const', 'json_value_const_adv.json'),
-    ('test_timestamp_ms', 'json_value_property.json'),
-    ('test_timestamp_string', 'json_value_property_adv.json'),
+    ('test_kfk_value_const', 'json_value_const_adv.json'),
+    ('test_kfk_timestamp_ms', 'json_value_property.json'),
+    ('test_kfk_timestamp_string', 'json_value_property_kafka_adv.json'),
 ])
 def test_output(name, output):
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), f'expected_output/{output}')) as f:
@@ -101,10 +101,10 @@ def test_output(name, output):
 
 
 @pytest.mark.parametrize("name", [
-    'test_value_const',
-    'test_timestamp_ms',
-    'test_timestamp_string',
-    'test_timestamp_kafka',
+    'test_kfk_value_const',
+    'test_kfk_timestamp_ms',
+    'test_kfk_timestamp_string',
+    'test_kfk_timestamp_kafka',
 ])
 def test_delete_pipeline(cli_runner, name):
     result = cli_runner.invoke(pipeline_cli.delete, [name])
@@ -114,10 +114,10 @@ def test_delete_pipeline(cli_runner, name):
 
 
 @pytest.mark.parametrize("name", [
-    'test_value_const',
-    'test_timestamp_ms',
-    'test_timestamp_string',
-    'test_timestamp_kafka',
+    'test_kfk_value_const',
+    'test_kfk_timestamp_ms',
+    'test_kfk_timestamp_string',
+    'test_kfk_timestamp_kafka',
 ])
 def test_source_delete(cli_runner, name):
     result = cli_runner.invoke(source_cli.delete, [f'kafka_{name}'])

@@ -7,8 +7,13 @@ logger = get_logger(__name__)
 class JsonConfigHandler(BaseConfigHandler):
 
     def update_expression_processor(self, conf):
-        conf['value'][1]['expression'] = self.client_config['measurement_name']
-        conf['value'][2]['expression'] = self.client_config.get('target_type', 'gauge')
+        if self.client_config.get('static_what', True):
+            conf['value'][1]['expression'] = self.client_config['measurement_name']
+            conf['value'][2]['expression'] = self.client_config.get('target_type', 'gauge')
+        else:
+            expression = "record:value('/{}')"
+            conf['value'][1]['expression'] = '${' + expression.format(self.client_config['measurement_name']) + '}'
+            conf['value'][2]['expression'] = '${' + expression.format(self.client_config['target_type']) + '}'
 
         if self.client_config['value']['type'] == 'property':
             expression = f"record:value('/{self.client_config['value']['value']}')"
