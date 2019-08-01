@@ -1,0 +1,18 @@
+{
+  "type": "object",
+  "properties": {
+    "table": {"type": "string", "minLength": 1},
+    "values": {"type": "object"},
+    "count_records": {"type": "boolean"},
+    "dimensions": {"type": "array", "items": {"type": "string"}},
+    "timestamp": {"type":  "object", "properties": {
+      "name": {"type": "string", "minLength": 1},
+      "type": {"type":  "string", "enum": ["datetime", "unix", "unix_ms"]}
+    }, "required": ["name", "type"]},
+    "properties": {"type": "object"},
+    "offset_column": {"type": "string", "minLength": 1},
+    "initial_offset": {"oneOf": [{"type": "string", "minLength": 1}, {"type": "integer", "minimum": 0}]},
+    "limit": {"type": "integer", "minimum": 1}
+  },
+  "required": ["table", "dimensions", "timestamp", "offset_column"]
+}

@@ -8,10 +8,12 @@ definitions_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'jso
 
 
 class LoadClientData:
-    def __init__(self, client_config, source_type, edit=False):
+    VALIDATION_SCHEMA_FILE_NAME = ''
+
+    def __init__(self, client_config, edit=False):
         self.client_config = client_config
         self.edit = edit
-        with open(os.path.join(definitions_dir, source_type + '.json'), 'r') as f:
+        with open(os.path.join(definitions_dir, self.VALIDATION_SCHEMA_FILE_NAME + '.json'), 'r') as f:
             schema = json.load(f)
         if self.edit:
             schema['required'] = []
@@ -33,10 +35,12 @@ class LoadClientData:
 
 
 class MongoLoadClientData(LoadClientData):
-    pass
+    VALIDATION_SCHEMA_FILE_NAME = 'mongo'
 
 
 class KafkaLoadClientData(LoadClientData):
+    VALIDATION_SCHEMA_FILE_NAME = 'kafka'
+
     def load(self):
         self.load_dimensions()
         self.load_value()
@@ -46,9 +50,19 @@ class KafkaLoadClientData(LoadClientData):
 
 
 class InfluxLoadClientData(LoadClientData):
+    VALIDATION_SCHEMA_FILE_NAME = 'influx'
+
     def load_value(self):
         if type(self.client_config.get('value')) == list:
             self.client_config['value'] = {'type': 'property', 'values': self.client_config['value'], 'constant': '1'}
         elif str(self.client_config.get('value')).isnumeric():
             self.client_config['value'] = {'type': 'constant', 'values': [],
                                            'constant': str(self.client_config['value'])}
+
+
+class JDBCLoadClientData(LoadClientData):
+    VALIDATION_SCHEMA_FILE_NAME = 'jdbc'
+
+    def load(self):
+        return self.client_config
+

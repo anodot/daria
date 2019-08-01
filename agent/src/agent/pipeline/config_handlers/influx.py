@@ -82,11 +82,7 @@ state['VALUE_CONSTANT'] = {value_constant}
                             conf['value'].append(f"${{record:type('/{v}') != 'STRING'}}")
 
             if stage['instanceName'] == 'ExpressionEvaluator_01':
-                for conf in stage['configuration']:
-                    if conf['name'] == 'expressionProcessorConfigs':
-                        for key, val in self.client_config.get('properties', {}).items():
-                            conf['value'].append({'fieldToSet': '/properties/' + key, 'expression': val})
-                        self.set_source_properties(conf)
+                self.set_constant_properties(stage)
 
             if stage['instanceName'] == 'HTTPClient_05':
                 for conf in stage['configuration']:

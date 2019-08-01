@@ -1,0 +1,180 @@
+[
+  {
+    "timestamp": 1512867600,
+    "properties": {
+      "table_name": "test",
+      "AdSize": "Small",
+      "Country": "USA",
+      "what": "Clicks",
+      "target_type": "gauge"
+    },
+    "tags": {
+      "source": ["anodot-agent"],
+      "source_host_id": ["ABCDEF"]
+    },
+    "value": 6784.69
+  },
+  {
+    "timestamp": 1512867600,
+    "properties": {
+      "table_name": "test",
+      "AdSize": "Small",
+      "Country": "USA",
+      "what": "Impressions",
+      "target_type": "gauge"
+    },
+    "tags": {
+      "source": ["anodot-agent"],
+      "source_host_id": ["ABCDEF"]
+    },
+    "value": 123.0
+  },
+  {
+    "timestamp": 1512871200,
+    "properties": {
+      "table_name": "test",
+      "AdSize": "Small",
+      "Country": "USA",
+      "what": "Clicks",
+      "target_type": "gauge"
+    },
+    "tags": {
+      "source": ["anodot-agent"],
+      "source_host_id": ["ABCDEF"]
+    },
+    "value": 6839.0
+  },
+  {
+    "timestamp": 1512871200,
+    "properties": {
+      "table_name": "test",
+      "AdSize": "Small",
+      "Country": "USA",
+      "what": "Impressions",
+      "target_type": "gauge"
+    },
+    "tags": {
+      "source": ["anodot-agent"],
+      "source_host_id": ["ABCDEF"]
+    },
+    "value": 22.0
+  },
+  {
+    "timestamp": 1512874800,
+    "properties": {
+      "table_name": "test",
+      "AdSize": "Small",
+      "Country": "USA",
+      "what": "Clicks",
+      "target_type": "gauge"
+    },
+    "tags": {
+      "source": ["anodot-agent"],
+      "source_host_id": ["ABCDEF"]
+    },
+    "value": 6.9099902E18
+  },
+  {
+    "timestamp": 1512874800,
+    "properties": {
+      "table_name": "test",
+      "AdSize": "Small",
+      "Country": "USA",
+      "what": "Impressions",
+      "target_type": "gauge"
+    },
+    "tags": {
+      "source": ["anodot-agent"],
+      "source_host_id": ["ABCDEF"]
+    },
+    "value": 15.0
+  },
+  {
+    "timestamp": 1512878400,
+    "properties": {
+      "table_name": "test",
+      "AdSize": "Small",
+      "Country": "USA",
+      "what": "Clicks",
+      "target_type": "gauge"
+    },
+    "tags": {
+      "source": ["anodot-agent"],
+      "source_host_id": ["ABCDEF"]
+    },
+    "value": 7158.97
+  },
+  {
+    "timestamp": 1512878400,
+    "properties": {
+      "table_name": "test",
+      "AdSize": "Small",
+      "Country": "USA",
+      "what": "Impressions",
+      "target_type": "gauge"
+    },
+    "tags": {
+      "source": ["anodot-agent"],
+      "source_host_id": ["ABCDEF"]
+    },
+    "value": 3.0
+  },
+  {
+    "timestamp": 1512885600,
+    "properties": {
+      "table_name": "test",
+      "AdSize": "Small",
+      "Country": "USA",
+      "what": "Clicks",
+      "target_type": "gauge"
+    },
+    "tags": {
+      "source": ["anodot-agent"],
+      "source_host_id": ["ABCDEF"]
+    },
+    "value": null
+  },
+  {
+    "timestamp": 1512885600,
+    "properties": {
+      "table_name": "test",
+      "AdSize": "Small",
+      "Country": "USA",
+      "what": "Impressions",
+      "target_type": "gauge"
+    },
+    "tags": {
+      "source": ["anodot-agent"],
+      "source_host_id": ["ABCDEF"]
+    },
+    "value": 4.0
+  },
+  {
+    "timestamp": 1512889200,
+    "properties": {
+      "table_name": "test",
+      "AdSize": "Small",
+      "what": "Clicks",
+      "target_type": "gauge"
+    },
+    "tags": {
+      "source": ["anodot-agent"],
+      "source_host_id": ["ABCDEF"]
+    },
+    "value": 7427.77
+  },
+  {
+    "timestamp": 1512889200,
+    "properties": {
+      "table_name": "test",
+      "AdSize": "Small",
+      "what": "Impressions",
+      "target_type": "gauge"
+    },
+    "tags": {
+      "source": ["anodot-agent"],
+      "source_host_id": ["ABCDEF"]
+    },
+    "value": 0.0
+  }
+]

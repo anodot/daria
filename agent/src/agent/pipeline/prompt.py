@@ -7,6 +7,9 @@ class PromptConfig:
         self.default_config = default_config
         self.config = dict()
 
+        self.set_config()
+
+    def set_config(self):
         self.set_measurement_name()
         self.set_value()
         self.set_target_type()
@@ -60,24 +63,26 @@ class PromptConfig:
                                                              default=self.config['dimensions'].get('optional',
                                                                                                    []))
 
-    def set_static_properties(self):
-        self.config['properties'] = self.default_config.get('properties', {})
+    def prompt_object(self, property_name, prompt_text):
+        self.config[property_name] = self.default_config.get(property_name, {})
 
         properties_str = ''
-        if self.config['properties']:
-            properties_str = ' '.join([key + ':' + val for key, val in self.config['properties'].items()])
+        if self.config[property_name]:
+            properties_str = ' '.join([key + ':' + val for key, val in self.config[property_name].items()])
 
-        self.config['properties'] = {}
-        if not self.advanced:
-            return
+        self.config[property_name] = {}
 
-        properties_str = click.prompt('Additional properties', type=click.STRING, default=properties_str)
+        properties_str = click.prompt(prompt_text, type=click.STRING, default=properties_str)
         for i in properties_str.split():
             pair = i.split(':')
             if len(pair) != 2:
-                raise click.UsageError('Wrong format')
+                raise click.UsageError('Wrong format, correct example - key:val key2:val2')
 
-            self.config['properties'][pair[0]] = pair[1]
+            self.config[property_name][pair[0]] = pair[1]
+
+    def set_static_properties(self):
+        if self.advanced:
+            self.prompt_object('properties', 'Additional properties')
 
 
 class PromptConfigMongo(PromptConfig):
@@ -167,3 +172,53 @@ class PromptConfigInflux(PromptConfig):
                                                                  value_proc=lambda x: x.split(),
                                                                  default=self.config['dimensions'].get('optional',
                                                                                                        []))
+
+
+class PromptConfigJDBC(PromptConfig):
+    def set_config(self):
+        self.set_table()
+        self.set_values()
+        self.set_timestamp()
+        self.set_dimensions()
+        self.set_static_properties()
+        self.set_pagination()
+        self.set_condition()
+
+    def set_table(self):
+        self.config['table'] = click.prompt('Table name', type=click.STRING, default=self.default_config.get('table'))
+
+    def set_values(self):
+        self.config['count_records'] = int(click.confirm('Count records?',
+                                                         default=self.default_config.get('count_records', False)))
+        self.prompt_object('values', 'Value columns with target types. Example - column:counter column2:gauge')
+
+        if not set(self.config['values'].values()).issubset(('counter', 'gauge')):
+            raise click.UsageError('Target type should be counter or gauge')
+
+        if not self.config['count_records'] and not self.config['values']:
+            raise click.UsageError('Set value columns or count records flag')
+
+    def set_timestamp(self):
+        self.config['timestamp'] = self.default_config.get('timestamp', {})
+        self.config['timestamp']['name'] = click.prompt('Timestamp column name', type=click.STRING,
+                                                        default=self.config['timestamp'].get('name'))
+        self.config['timestamp']['type'] = click.prompt('Timestamp column type',
+                                                        type=click.Choice(['datetime', 'unix', 'unix_ms']),
+                                                        default=self.config['timestamp'].get('type', 'unix'))
+
+    def set_dimensions(self):
+        self.config['dimensions'] = click.prompt('Dimensions', type=click.STRING, value_proc=lambda x: x.split(),
+                                                 default=self.default_config.get('dimensions', []))
+
+    def set_pagination(self):
+        self.config['limit'] = click.prompt('Limit', type=click.INT,
+                                            default=self.default_config.get('limit', 1000))
+        self.config['offset_column'] = click.prompt('Unique ID column (must be auto-incremented)', type=click.STRING,
+                                                    default=self.default_config.get('offset_column', 'id'))
+        self.config['initial_offset'] = click.prompt('Collect since (days ago)', type=click.STRING,
+                                                     default=self.default_config.get('initial_offset', '3'))
+
+    def set_condition(self):
+        if self.advanced:
+            self.config['condition'] = click.prompt('Condition', type=click.STRING,
+                                                    default=self.default_config.get('condition'))

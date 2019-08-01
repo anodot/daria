@@ -1779,7 +1779,7 @@
       "stageVersion" : "1",
       "configuration" : [ {
         "name" : "directory",
-        "value" : "/data"
+        "value" : "/data/errors/${pipeline:id()}"
       }, {
         "name" : "uniquePrefix",
         "value" : "sdc-${sdc:id()}.error.log"

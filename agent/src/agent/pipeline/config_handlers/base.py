@@ -71,13 +71,40 @@ class BaseConfigHandler(ABC):
             if conf['name'] in self.client_config['destination']['config']:
                 conf['value'] = self.client_config['destination']['config'][conf['name']]
 
-    def set_source_properties(self, conf):
-        conf['value'].append({'fieldToSet': '/tags', 'expression': '${emptyMap()}'})
-        conf['value'].append({'fieldToSet': '/tags/source', 'expression': '${emptyList()}'})
-        conf['value'].append({'fieldToSet': '/tags/source_host_id', 'expression': '${emptyList()}'})
-        conf['value'].append({'fieldToSet': '/tags/source[0]', 'expression': 'anodot-agent'})
-        conf['value'].append({'fieldToSet': '/tags/source_host_id[0]',
-                              'expression': self.client_config['destination']['host_id']})
+    def convert_timestamp_to_unix(self, stage):
+        for conf in stage['configuration']:
+            if conf['name'] != 'expressionProcessorConfigs':
+                continue
+
+            if self.client_config['timestamp']['type'] == 'string':
+                dt_format = self.client_config['timestamp']['format']
+                get_timestamp_exp = f"time:extractDateFromString(record:value('/timestamp'), '{dt_format}')"
+                expression = f"time:dateTimeToMilliseconds({get_timestamp_exp})/1000"
+            elif self.client_config['timestamp']['type'] == 'datetime':
+                expression = "time:dateTimeToMilliseconds(record:value('/timestamp'))/1000"
+            elif self.client_config['timestamp']['type'] == 'unix_ms':
+                expression = "record:value('/timestamp')/1000"
+            else:
+                expression = "record:value('/timestamp')"
+
+            conf['value'][0]['expression'] = '${' + expression + '}'
+            return
+
+    def set_constant_properties(self, stage):
+        for conf in stage['configuration']:
+            if conf['name'] != 'expressionProcessorConfigs':
+                continue
+
+            for key, val in self.client_config.get('properties', {}).items():
+                conf['value'].append({'fieldToSet': '/properties/' + key, 'expression': val})
+
+            conf['value'].append({'fieldToSet': '/tags', 'expression': '${emptyMap()}'})
+            conf['value'].append({'fieldToSet': '/tags/source', 'expression': '${emptyList()}'})
+            conf['value'].append({'fieldToSet': '/tags/source_host_id', 'expression': '${emptyList()}'})
+            conf['value'].append({'fieldToSet': '/tags/source[0]', 'expression': 'anodot-agent'})
+            conf['value'].append({'fieldToSet': '/tags/source_host_id[0]',
+                                  'expression': self.client_config['destination']['host_id']})
+            return
 
 
 class ConfigHandlerException(Exception):

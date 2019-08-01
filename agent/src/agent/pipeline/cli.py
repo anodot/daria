@@ -105,6 +105,9 @@ def create(advanced, file):
     pipeline_id = click.prompt('Pipeline ID (must be unique)', type=click.STRING)
 
     pipeline_obj = Pipeline(pipeline_id, source_config_name)
+    if pipeline_obj.exists():
+        raise click.ClickException('Pipeline with this name already exists')
+
     pipeline_obj.prompt(get_previous_pipeline_config(pipeline_obj.source_type), advanced)
     pipeline_obj.create()
 

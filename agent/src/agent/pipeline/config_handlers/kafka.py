@@ -21,7 +21,5 @@ class KafkaConfigHandler(JsonConfigHandler):
                 expression = "record:value('/{0}') == 'gauge' || record:value('/{0}') == 'counter'"
                 conf['value'].append('${' + expression.format(self.client_config['target_type']) + '}')
 
-            if conf['name'] == 'expressionProcessorConfigs':
-
-                self.update_expression_processor(conf)
+        super().update_properties(stage)
 

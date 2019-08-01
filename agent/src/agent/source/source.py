@@ -2,11 +2,7 @@ import os
 import json
 
 from agent.constants import DATA_DIR
-
-
-from .influx import PromptInflux
-from .kafka import PromptKafka
-from .mongo import PromptMongo
+from . import prompters
 
 
 class Source:
@@ -15,14 +11,16 @@ class Source:
     TYPE_INFLUX = 'influx'
     TYPE_KAFKA = 'kafka'
     TYPE_MONGO = 'mongo'
+    TYPE_MYSQL = 'mysql'
     TYPE_MONITORING = 'Monitoring'
 
-    types = [TYPE_INFLUX, TYPE_KAFKA, TYPE_MONGO]
+    types = [TYPE_INFLUX, TYPE_KAFKA, TYPE_MONGO, TYPE_MYSQL]
 
     prompters = {
-        TYPE_INFLUX: PromptInflux,
-        TYPE_KAFKA: PromptKafka,
-        TYPE_MONGO: PromptMongo
+        TYPE_INFLUX: prompters.PromptInflux,
+        TYPE_KAFKA: prompters.PromptKafka,
+        TYPE_MONGO: prompters.PromptMongo,
+        TYPE_MYSQL: prompters.PromptJDBC
     }
 
     def __init__(self, name, source_type=None):

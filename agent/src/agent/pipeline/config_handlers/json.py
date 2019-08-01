@@ -21,16 +21,12 @@ class JsonConfigHandler(BaseConfigHandler):
         else:
             conf['value'][3]['expression'] = self.client_config['value']['value']
 
-        for key, val in self.client_config.get('properties', {}).items():
-            conf['value'].append({'fieldToSet': '/properties/' + key, 'expression': val})
-
-        self.set_source_properties(conf)
-
     def update_properties(self, stage):
         for conf in stage['configuration']:
             if conf['name'] == 'expressionProcessorConfigs':
                 self.update_expression_processor(conf)
-                return
+                break
+        self.set_constant_properties(stage)
 
     def get_rename_mapping(self):
         rename_mapping = []
@@ -53,25 +49,6 @@ class JsonConfigHandler(BaseConfigHandler):
 
             if conf['name'] == 'stageRequiredFields':
                 conf['value'] = ['/' + d for d in self.client_config['dimensions']['required']]
-
-    def convert_timestamp_to_unix(self, stage):
-        for conf in stage['configuration']:
-            if conf['name'] != 'expressionProcessorConfigs':
-                continue
-
-            if self.client_config['timestamp']['type'] == 'string':
-                dt_format = self.client_config['timestamp']['format']
-                get_timestamp_exp = f"time:extractDateFromString(record:value('/timestamp'), '{dt_format}')"
-                expression = f"time:dateTimeToMilliseconds({get_timestamp_exp})/1000"
-            elif self.client_config['timestamp']['type'] == 'datetime':
-                expression = "time:dateTimeToMilliseconds(record:value('/timestamp'))/1000"
-            elif self.client_config['timestamp']['type'] == 'unix_ms':
-                expression = "record:value('/timestamp')/1000"
-            else:
-                expression = "record:value('/timestamp')"
-
-            conf['value'][0]['expression'] = '${' + expression + '}'
-            return
 
     def override_stages(self):
         self.update_source_configs()

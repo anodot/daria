@@ -17,19 +17,22 @@ class Pipeline:
         Source.TYPE_INFLUX: prompt.PromptConfigInflux,
         Source.TYPE_KAFKA: prompt.PromptConfigKafka,
         Source.TYPE_MONGO: prompt.PromptConfigMongo,
+        Source.TYPE_MYSQL: prompt.PromptConfigJDBC,
     }
 
     loaders = {
         Source.TYPE_INFLUX: load_client_data.InfluxLoadClientData,
         Source.TYPE_MONGO: load_client_data.MongoLoadClientData,
         Source.TYPE_KAFKA: load_client_data.KafkaLoadClientData,
+        Source.TYPE_MYSQL: load_client_data.JDBCLoadClientData,
     }
 
     config_handlers = {
+        Source.TYPE_MONITORING: config_handlers.MonitoringConfigHandler,
         Source.TYPE_INFLUX: config_handlers.InfluxConfigHandler,
         Source.TYPE_MONGO: config_handlers.MongoConfigHandler,
         Source.TYPE_KAFKA: config_handlers.KafkaConfigHandler,
-        Source.TYPE_MONITORING: config_handlers.MonitoringConfigHandler,
+        Source.TYPE_MYSQL: config_handlers.JDBCConfigHandler
     }
 
     def __init__(self, pipeline_id, source_name=None):
@@ -89,7 +92,7 @@ class Pipeline:
         self.config.update(self.prompters[self.source_type](default_config, advanced).config)
 
     def load_client_data(self, client_config, edit=False):
-        self.config.update(self.loaders[self.source_type](client_config, self.source_type, edit).load())
+        self.config.update(self.loaders[self.source_type](client_config, edit).load())
 
     def get_config_handler(self, pipeline_obj=None):
         return self.config_handlers[self.source_type](self.config, pipeline_obj)
