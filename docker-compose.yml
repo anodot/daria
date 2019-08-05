@@ -96,6 +96,16 @@ services:
       - /var/lib/mysql
       - ./volumes/mysql-initdb:/docker-entrypoint-initdb.d
 
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_DB: test
+      POSTGRES_PASSWORD: password
+    volumes:
+      - /var/lib/postgresql/data
+      - ./volumes/postgres-initdb:/docker-entrypoint-initdb.d
+
+
 volumes:
   sdc-data:
   agent-data:

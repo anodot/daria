@@ -12,15 +12,17 @@ class Source:
     TYPE_KAFKA = 'kafka'
     TYPE_MONGO = 'mongo'
     TYPE_MYSQL = 'mysql'
+    TYPE_POSTGRES = 'postgres'
     TYPE_MONITORING = 'Monitoring'
 
-    types = [TYPE_INFLUX, TYPE_KAFKA, TYPE_MONGO, TYPE_MYSQL]
+    types = [TYPE_INFLUX, TYPE_KAFKA, TYPE_MONGO, TYPE_MYSQL, TYPE_POSTGRES]
 
     prompters = {
         TYPE_INFLUX: prompters.PromptInflux,
         TYPE_KAFKA: prompters.PromptKafka,
         TYPE_MONGO: prompters.PromptMongo,
-        TYPE_MYSQL: prompters.PromptJDBC
+        TYPE_MYSQL: prompters.PromptJDBC,
+        TYPE_POSTGRES: prompters.PromptJDBC,
     }
 
     def __init__(self, name, source_type=None):
