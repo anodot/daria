@@ -46,7 +46,7 @@ class TestKafka(TestPipeline):
         result = cli_runner.invoke(source_cli.create,
                                    input=f"kafka\nkafka_{name}\nkafka:29092\nstreamsetsDC\n{name}\n\n")
         assert result.exit_code == 0
-        assert os.path.isfile(os.path.join(Source.DIR, f'{name}.json'))
+        assert os.path.isfile(os.path.join(Source.DIR, f'kafka_{name}.json'))
 
     def test_create(self, cli_runner, name, options, value, timestamp, properties):
         result = cli_runner.invoke(pipeline_cli.create, options,
