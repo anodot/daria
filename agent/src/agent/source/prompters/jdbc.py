@@ -18,6 +18,6 @@ class PromptJDBC:
         config['query_interval'] = click.prompt('Query interval (seconds)', type=click.STRING,
                                       default=default_config.get('query_interval', '10'))
 
-        if config['hikariConfigBean.password'] == '':
-            config['hikariConfigBean.useCredentials'] = False
+        if config['hikariConfigBean.password'] != '':
+            config['hikariConfigBean.useCredentials'] = True
         return config

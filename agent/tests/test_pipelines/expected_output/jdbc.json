@@ -3,9 +3,9 @@
     "timestamp": 1512867600,
     "properties": {
       "table_name": "test",
-      "AdSize": "Small",
-      "Country": "USA",
-      "what": "Clicks",
+      "adsize": "Small",
+      "country": "USA",
+      "what": "clicks",
       "target_type": "gauge"
     },
     "tags": {
@@ -18,9 +18,9 @@
     "timestamp": 1512867600,
     "properties": {
       "table_name": "test",
-      "AdSize": "Small",
-      "Country": "USA",
-      "what": "Impressions",
+      "adsize": "Small",
+      "country": "USA",
+      "what": "impressions",
       "target_type": "gauge"
     },
     "tags": {
@@ -33,9 +33,9 @@
     "timestamp": 1512871200,
     "properties": {
       "table_name": "test",
-      "AdSize": "Small",
-      "Country": "USA",
-      "what": "Clicks",
+      "adsize": "Small",
+      "country": "USA",
+      "what": "clicks",
       "target_type": "gauge"
     },
     "tags": {
@@ -48,9 +48,9 @@
     "timestamp": 1512871200,
     "properties": {
       "table_name": "test",
-      "AdSize": "Small",
-      "Country": "USA",
-      "what": "Impressions",
+      "adsize": "Small",
+      "country": "USA",
+      "what": "impressions",
       "target_type": "gauge"
     },
     "tags": {
@@ -63,24 +63,24 @@
     "timestamp": 1512874800,
     "properties": {
       "table_name": "test",
-      "AdSize": "Small",
-      "Country": "USA",
-      "what": "Clicks",
+      "adsize": "Small",
+      "country": "USA",
+      "what": "clicks",
       "target_type": "gauge"
     },
     "tags": {
       "source": ["anodot-agent"],
       "source_host_id": ["ABCDEF"]
     },
-    "value": 6.9099902E18
+    "value": 690999
   },
   {
     "timestamp": 1512874800,
     "properties": {
       "table_name": "test",
-      "AdSize": "Small",
-      "Country": "USA",
-      "what": "Impressions",
+      "adsize": "Small",
+      "country": "USA",
+      "what": "impressions",
       "target_type": "gauge"
     },
     "tags": {
@@ -93,9 +93,9 @@
     "timestamp": 1512878400,
     "properties": {
       "table_name": "test",
-      "AdSize": "Small",
-      "Country": "USA",
-      "what": "Clicks",
+      "adsize": "Small",
+      "country": "USA",
+      "what": "clicks",
       "target_type": "gauge"
     },
     "tags": {
@@ -108,9 +108,9 @@
     "timestamp": 1512878400,
     "properties": {
       "table_name": "test",
-      "AdSize": "Small",
-      "Country": "USA",
-      "what": "Impressions",
+      "adsize": "Small",
+      "country": "USA",
+      "what": "impressions",
       "target_type": "gauge"
     },
     "tags": {
@@ -123,9 +123,9 @@
     "timestamp": 1512885600,
     "properties": {
       "table_name": "test",
-      "AdSize": "Small",
-      "Country": "USA",
-      "what": "Clicks",
+      "adsize": "Small",
+      "country": "USA",
+      "what": "clicks",
       "target_type": "gauge"
     },
     "tags": {
@@ -138,9 +138,9 @@
     "timestamp": 1512885600,
     "properties": {
       "table_name": "test",
-      "AdSize": "Small",
-      "Country": "USA",
-      "what": "Impressions",
+      "adsize": "Small",
+      "country": "USA",
+      "what": "impressions",
       "target_type": "gauge"
     },
     "tags": {
@@ -153,8 +153,8 @@
     "timestamp": 1512889200,
     "properties": {
       "table_name": "test",
-      "AdSize": "Small",
-      "what": "Clicks",
+      "adsize": "Small",
+      "what": "clicks",
       "target_type": "gauge"
     },
     "tags": {
@@ -167,8 +167,8 @@
     "timestamp": 1512889200,
     "properties": {
       "table_name": "test",
-      "AdSize": "Small",
-      "what": "Impressions",
+      "adsize": "Small",
+      "what": "impressions",
       "target_type": "gauge"
     },
     "tags": {

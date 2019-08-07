@@ -1,10 +1,10 @@
 [
   {
-    "source": "test_mysql",
-    "pipeline_id": "test_mysql_file_short",
+    "source": "test_jdbc",
+    "pipeline_id": "test_jdbc_file_short",
     "table": "test",
-    "values": {"Clicks": "gauge", "Impressions": "gauge"},
-    "dimensions": ["AdSize", "Country"],
+    "values": {"clicks": "gauge", "impressions": "gauge"},
+    "dimensions": ["adsize", "country"],
     "timestamp": {
       "type": "unix_ms",
       "name": "timestamp_unix_ms"
@@ -14,12 +14,12 @@
     "limit": 500
   },
   {
-    "source": "test_mysql",
-    "pipeline_id": "test_mysql_file_full",
+    "source": "test_jdbc",
+    "pipeline_id": "test_jdbc_file_full",
     "table": "test",
-    "values": {"Clicks": "gauge", "Impressions": "gauge"},
+    "values": {"clicks": "gauge", "impressions": "gauge"},
     "count_records": true,
-    "dimensions": ["AdSize", "Country"],
+    "dimensions": ["adsize", "country"],
     "timestamp": {
       "type": "datetime",
       "name": "timestamp_datetime"
@@ -28,6 +28,6 @@
     "offset_column": "id",
     "initial_offset": 1000,
     "limit": 500,
-    "condition": "Country = \"USA\""
+    "condition": "Country = 'USA'"
   }
 ]
