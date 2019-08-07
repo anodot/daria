@@ -10,18 +10,22 @@ from .test_pipeline import TestPipeline, pytest_generate_tests
 
 class TestKafka(TestPipeline):
     __test__ = True
+
     params = {
         'test_source_create': [{'name': 'test_kfk_value_const'}, {'name': 'test_kfk_timestamp_ms'},
                                {'name': 'test_kfk_timestamp_kafka'}, {'name': 'test_kfk_timestamp_string'}],
         'test_create': [
             {'name': 'test_kfk_timestamp_kafka', 'options': [], 'value': 'clicks\nClicks\n', 'timestamp': 'y',
-             'properties': ''},
+             'properties': '', 'source_name': 'test_kfk_timestamp_kafka'},
             {'name': 'test_kfk_value_const', 'options': ['-a'], 'value': 'y\nclicks\n2\nconstant\n',
-             'timestamp': 'n\ntimestamp_unix\nunix', 'properties': 'key1:val1'},
+             'timestamp': 'n\ntimestamp_unix\nunix', 'properties': 'key1:val1',
+             'source_name': 'test_kfk_value_const'},
             {'name': 'test_kfk_timestamp_ms', 'options': [], 'value': 'clicks\nClicks\nproperty\n',
-             'timestamp': 'n\ntimestamp_unix_ms\nunix_ms', 'properties': ''},
+             'timestamp': 'n\ntimestamp_unix_ms\nunix_ms', 'properties': '',
+             'source_name': 'test_kfk_timestamp_ms'},
             {'name': 'test_kfk_timestamp_string', 'options': ['-a'], 'value': 'y\nclicks\nClicks\nconstant\n',
-             'timestamp': 'n\ntimestamp_string\nstring\nM/d/yyyy H:mm:ss', 'properties': 'key1:val1'}],
+             'timestamp': 'n\ntimestamp_string\nstring\nM/d/yyyy H:mm:ss', 'properties': 'key1:val1',
+             'source_name': 'test_kfk_timestamp_string'}],
         'test_create_with_file': [{'file_name': 'kafka_pipelines'}],
         'test_edit': [{'options': ['test_kfk_value_const'], 'value': '\n1\n\n'},
                       {'options': ['test_kfk_timestamp_string', '-a'],
@@ -38,24 +42,24 @@ class TestKafka(TestPipeline):
         'test_delete_pipeline': [{'name': 'test_kfk_value_const'}, {'name': 'test_kfk_timestamp_ms'},
                                  {'name': 'test_kfk_timestamp_string'}, {'name': 'test_kfk_timestamp_kafka'},
                                  {'name': 'test_kfk_kafka_file_short'}, {'name': 'test_kfk_kafka_file_full'}],
-        'test_source_delete': [{'name': 'kafka_test_kfk_value_const'}, {'name': 'kafka_test_kfk_timestamp_ms'},
-                               {'name': 'kafka_test_kfk_timestamp_kafka'}, {'name': 'kafka_test_kfk_timestamp_string'}],
+        'test_source_delete': [{'name': 'test_kfk_value_const'}, {'name': 'test_kfk_timestamp_ms'},
+                               {'name': 'test_kfk_timestamp_kafka'}, {'name': 'test_kfk_timestamp_string'}],
     }
 
     def test_source_create(self, cli_runner, name):
         result = cli_runner.invoke(source_cli.create,
-                                   input=f"kafka\nkafka_{name}\nkafka:29092\nstreamsetsDC\n{name}\n\n")
+                                   input=f"kafka\n{name}\nkafka:29092\nstreamsetsDC\n{name}\n\n")
         assert result.exit_code == 0
-        assert os.path.isfile(os.path.join(Source.DIR, f'kafka_{name}.json'))
+        assert os.path.isfile(os.path.join(Source.DIR, f'{name}.json'))
 
-    def test_create(self, cli_runner, name, options, value, timestamp, properties):
+    def test_create(self, cli_runner, source_name, name, options, value, timestamp, properties):
         result = cli_runner.invoke(pipeline_cli.create, options,
-                                   input=f"""{name}\nkafka_{name}\n{value}\n{timestamp}\nver Country\nExchange optional_dim\n{properties}\n""")
+                                   input=f"{source_name}\n{name}\n{value}\n{timestamp}\nver Country\nExchange optional_dim\n{properties}\n")
         assert result.exit_code == 0
         assert api_client.get_pipeline(name)
 
     def test_edit(self, cli_runner, options, value):
-        result = cli_runner.invoke(pipeline_cli.edit, options, input=f"""{value}\n\n\n\n\n\n\n\n""")
+        result = cli_runner.invoke(pipeline_cli.edit, options, input=f"{value}\n\n\n\n\n\n\n\n")
         assert result.exit_code == 0
 
     def test_edit_with_file(self, cli_runner, file_name=None):

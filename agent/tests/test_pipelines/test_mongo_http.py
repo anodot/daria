@@ -13,10 +13,10 @@ from .test_pipeline import TestPipeline, pytest_generate_tests
 class TestMongo(TestPipeline):
     __test__ = True
     params = {
-        'test_create': [{'name': 'test_value_const', 'options': ['-a'], 'value': '2\nconstant', 'timestamp': 'timestamp_unix', 'timestamp_type': 'unix', 'properties': ''},
-                        {'name': 'test_timestamp_ms', 'options': [], 'value': 'Clicks\nproperty', 'timestamp': 'timestamp_unix_ms', 'timestamp_type': 'unix_ms', 'properties': 'key1:val1'},
-                        {'name': 'test_timestamp_datetime', 'options': [], 'value': 'Clicks', 'timestamp': 'timestamp_datetime', 'timestamp_type': 'unix', 'properties': ''},
-                        {'name': 'test_timestamp_id', 'options': [], 'value': 'Clicks', 'timestamp': '_id', 'timestamp_type': 'datetime', 'properties': 'key1:val1'},
+        'test_create': [{'name': 'test_value_const', 'options': ['-a'], 'value': '2\nconstant', 'timestamp': 'timestamp_unix', 'timestamp_type': 'unix', 'properties': 'key1:val1'},
+                        {'name': 'test_timestamp_ms', 'options': [], 'value': 'Clicks\nproperty', 'timestamp': 'timestamp_unix_ms', 'timestamp_type': 'unix_ms', 'properties': ''},
+                        {'name': 'test_timestamp_datetime', 'options': [], 'value': 'Clicks', 'timestamp': 'timestamp_datetime', 'timestamp_type': 'datetime', 'properties': ''},
+                        {'name': 'test_timestamp_id', 'options': [], 'value': 'Clicks', 'timestamp': '_id', 'timestamp_type': 'unix', 'properties': 'key1:val1'},
                         {'name': 'test_timestamp_string', 'options': ['-a'], 'value': 'Clicks\nconstant', 'timestamp': 'timestamp_string', 'timestamp_type': 'string\nM/d/yyyy H:mm:ss', 'properties': 'key1:val1'}],
         'test_create_with_file': [{'file_name': 'mongo_pipelines'}],
         'test_edit': [{'options': ['test_value_const'], 'value': '1\n\n'},
@@ -61,7 +61,7 @@ class TestMongo(TestPipeline):
         assert api_client.get_pipeline(name)
 
     def test_edit(self, cli_runner, options, value):
-        result = cli_runner.invoke(pipeline_cli.edit, options, input=f"""{value}\n\n\n\n\n\n\n\n""")
+        result = cli_runner.invoke(pipeline_cli.edit, options, input=f"\n{value}\n\n\n\n\n\n\n\n")
         assert result.exit_code == 0
 
     def test_edit_with_file(self, cli_runner, file_name=None):
