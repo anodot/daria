@@ -5,10 +5,10 @@ from ..fixtures import cli_runner
 from agent.pipeline import cli as pipeline_cli
 from agent.source import cli as source_cli, Source
 from agent.streamsets_api_client import api_client
-from .test_pipeline import TestPipeline, pytest_generate_tests
+from .test_pipeline_base import TestPipelineBase, pytest_generate_tests
 
 
-class TestMySQL(TestPipeline):
+class TestMySQL(TestPipelineBase):
     __test__ = True
     params = {
         'test_source_create': [{'name': 'test_jdbc', 'type': 'mysql', 'conn': 'mysql://root@mysql:3306/test'}],

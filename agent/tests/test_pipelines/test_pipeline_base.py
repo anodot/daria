@@ -22,7 +22,7 @@ def pytest_generate_tests(metafunc):
             for funcargs in funcarglist])
 
 
-class TestPipeline(object):
+class TestPipelineBase(object):
     __test__ = False
 
     params = {}
