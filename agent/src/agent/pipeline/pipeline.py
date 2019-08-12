@@ -18,6 +18,7 @@ class Pipeline:
         Source.TYPE_KAFKA: prompt.PromptConfigKafka,
         Source.TYPE_MONGO: prompt.PromptConfigMongo,
         Source.TYPE_MYSQL: prompt.PromptConfigJDBC,
+        Source.TYPE_POSTGRES: prompt.PromptConfigJDBC,
     }
 
     loaders = {
@@ -25,6 +26,7 @@ class Pipeline:
         Source.TYPE_MONGO: load_client_data.MongoLoadClientData,
         Source.TYPE_KAFKA: load_client_data.KafkaLoadClientData,
         Source.TYPE_MYSQL: load_client_data.JDBCLoadClientData,
+        Source.TYPE_POSTGRES: load_client_data.JDBCLoadClientData,
     }
 
     config_handlers = {
@@ -32,7 +34,8 @@ class Pipeline:
         Source.TYPE_INFLUX: config_handlers.InfluxConfigHandler,
         Source.TYPE_MONGO: config_handlers.MongoConfigHandler,
         Source.TYPE_KAFKA: config_handlers.KafkaConfigHandler,
-        Source.TYPE_MYSQL: config_handlers.JDBCConfigHandler
+        Source.TYPE_MYSQL: config_handlers.JDBCConfigHandler,
+        Source.TYPE_POSTGRES: config_handlers.JDBCConfigHandler
     }
 
     def __init__(self, pipeline_id, source_name=None):

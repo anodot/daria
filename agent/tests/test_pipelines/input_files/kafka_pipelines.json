@@ -1,13 +1,13 @@
 [
   {
-    "source": "kafka_test_kfk_timestamp_kafka",
+    "source": "test_kfk_timestamp_kafka",
     "pipeline_id": "test_kfk_kafka_file_short",
     "measurement_name": "clicks",
     "value": "Clicks",
     "dimensions": ["ver", "Country"]
   },
   {
-    "source": "kafka_test_kfk_timestamp_string",
+    "source": "test_kfk_timestamp_string",
     "pipeline_id": "test_kfk_kafka_file_full",
     "measurement_name": "clicks",
     "value": {

@@ -1,9 +1,9 @@
-import mysql.connector
-
 from .base import BaseConfigHandler, ConfigHandlerException
 from agent.logger import get_logger
 from datetime import datetime, timedelta
-from urllib.parse import urlparse
+from sqlalchemy import create_engine
+from sqlalchemy.exc import SQLAlchemyError
+from urllib.parse import urlparse, urlunparse
 
 logger = get_logger(__name__)
 
@@ -84,7 +84,7 @@ state['COUNT_RECORDS'] = {count_records}
 
         timestamp = datetime.now() - timedelta(days=int(self.client_config.get('initial_offset', 3)))
         if self.client_config['timestamp']['type'] == 'datetime':
-            self.client_config['start'] = '"' + timestamp.strftime('%Y-%m-%d %H:%M:%S') + '"'
+            self.client_config['start'] = timestamp.strftime('%Y-%m-%d %H:%M:%S')
         elif self.client_config['timestamp']['type'] == 'unix':
             self.client_config['start'] = str(int(timestamp.timestamp()))
         elif self.client_config['timestamp']['type'] == 'unix_ms':
@@ -99,30 +99,23 @@ state['COUNT_RECORDS'] = {count_records}
     def get_initial_offset_value_from_db(self):
         source_config = self.client_config['source']['config']
         conn_info = urlparse(source_config['connection_string'])
-        params = {
-            'host': conn_info.hostname,
-            'database': conn_info.path.replace('/', ''),
-            'port': conn_info.port
-        }
-        if source_config['hikariConfigBean.useCredentials']:
-            params['user'] = source_config['hikariConfigBean.username']
-            params['password'] = source_config['hikariConfigBean.password']
+        if source_config.get('hikariConfigBean.useCredentials'):
+            userpass = source_config['hikariConfigBean.username'] + ':' + source_config['hikariConfigBean.password']
+            netloc = userpass + '@' + conn_info.netloc
         else:
-            params['user'] = conn_info.username
+            netloc = conn_info.netloc
 
+        scheme = conn_info.scheme + '+mysqlconnector' if self.client_config['source']['type'] == 'mysql' else conn_info.scheme
         try:
-            cnx = mysql.connector.connect(**params)
-            cursor = cnx.cursor()
-            cursor.execute('''SELECT {offset}, {timestamp} FROM {table} 
-            WHERE {timestamp} >= {start} ORDER BY {offset} ASC LIMIT 1'''.format(
-                table=self.client_config['table'],
-                offset=self.client_config['offset_column'],
-                timestamp=self.client_config['timestamp']['name'],
-                start=self.client_config['start']
-            ))
-            row = cursor.fetchone()
-            source_config['initialOffset'] = str(row[0] - 1)
-            cursor.close()
-            cnx.close()
-        except mysql.connector.Error as e:
+            eng = create_engine(urlunparse((scheme, netloc, conn_info.path, '', '', '')))
+            with eng.connect() as con:
+                result = con.execute("""SELECT {offset}, {timestamp} FROM {table} 
+                                    WHERE {timestamp} >= '{start}' ORDER BY {offset} ASC LIMIT 1""".format(
+                                        table=self.client_config['table'],
+                                        offset=self.client_config['offset_column'],
+                                        timestamp=self.client_config['timestamp']['name'],
+                                        start=self.client_config['start']
+                                    ))
+                source_config['initialOffset'] = str(result.fetchone()[0] - 1)
+        except SQLAlchemyError as e:
             raise ConfigHandlerException(str(e))

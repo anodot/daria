@@ -1,8 +1,5 @@
-CREATE DATABASE test;
-USE test;
-
 CREATE TABLE test(
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     timestamp_unix INT,
     timestamp_unix_ms BIGINT,
     ver VARCHAR(20),
@@ -12,7 +9,7 @@ CREATE TABLE test(
     exchange VARCHAR(20),
     clicks FLOAT,
     impressions INT,
-    timestamp_datetime DATETIME,
+    timestamp_datetime TIMESTAMP,
     timestamp_string VARCHAR(30)
 );
 INSERT INTO test (timestamp_unix,timestamp_unix_ms,ver,adsize,country,adtype,exchange,clicks,impressions,timestamp_datetime,timestamp_string)
