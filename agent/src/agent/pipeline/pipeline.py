@@ -108,6 +108,7 @@ class Pipeline:
 
             api_client.update_pipeline(self.id, new_config)
         except (config_handlers.ConfigHandlerException, StreamSetsApiClientException) as e:
+            self.delete()
             raise PipelineException(str(e))
 
         self.save()
@@ -119,7 +120,10 @@ class Pipeline:
             new_config = config_handler.override_base_config()
 
             api_client.update_pipeline(self.id, new_config)
-        except (config_handlers.ConfigHandlerException, StreamSetsApiClientException) as e:
+        except StreamSetsApiClientException as e:
+            raise PipelineException(str(e))
+        except config_handlers.ConfigHandlerException as e:
+            self.delete()
             raise PipelineException(str(e))
 
         self.save()
@@ -135,7 +139,8 @@ class Pipeline:
     def delete(self):
         try:
             api_client.delete_pipeline(self.id)
-            os.remove(self.file_path)
+            if self.exists():
+                os.remove(self.file_path)
             errors_dir = os.path.join(ERRORS_DIR, self.id)
             if os.path.isdir(errors_dir):
                 shutil.rmtree(errors_dir)
