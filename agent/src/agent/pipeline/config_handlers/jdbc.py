@@ -27,7 +27,7 @@ state['COUNT_RECORDS'] = {count_records}
 """
     PIPELINES_BASE_CONFIGS_PATH = 'base_pipelines/jdbc_{destination_name}.json'
 
-    QUERY = "SELECT * FROM {table} WHERE {offset_column} > ${{OFFSET}} {condition} ORDER BY {offset_column}"
+    QUERY = "SELECT * FROM {table} WHERE {offset_column} > ${{OFFSET}} {condition} ORDER BY {offset_column} LIMIT {limit}"
 
     def override_stages(self):
 
@@ -66,14 +66,16 @@ state['COUNT_RECORDS'] = {count_records}
 
         offset_column = self.client_config.get('offset_column', self.client_config['timestamp']['name'])
 
+        limit = self.client_config.get('limit', 1000)
         source_config['query'] = self.QUERY.format(**{
             'table': self.client_config['table'],
             'offset_column': offset_column,
-            'condition': condition
+            'condition': condition,
+            'limit': limit
         })
         source_config['hikariConfigBean.connectionString'] = 'jdbc:' + source_config['connection_string']
         source_config['queryInterval'] = '${' + source_config['query_interval'] + ' * SECONDS}'
-        source_config['commonSourceConfigBean.maxBatchSize'] = self.client_config.get('limit', 1000)
+        source_config['commonSourceConfigBean.maxBatchSize'] = limit
         source_config['offsetColumn'] = offset_column
         self.set_initial_offset()
 
@@ -110,12 +112,14 @@ state['COUNT_RECORDS'] = {count_records}
             eng = create_engine(urlunparse((scheme, netloc, conn_info.path, '', '', '')))
             with eng.connect() as con:
                 result = con.execute("""SELECT {offset}, {timestamp} FROM {table} 
-                                    WHERE {timestamp} >= '{start}' ORDER BY {offset} ASC LIMIT 1""".format(
+                                    WHERE {timestamp} <= '{start}' ORDER BY {offset} DESC LIMIT 1""".format(
                                         table=self.client_config['table'],
                                         offset=self.client_config['offset_column'],
                                         timestamp=self.client_config['timestamp']['name'],
                                         start=self.client_config['start']
                                     ))
-                source_config['initialOffset'] = str(result.fetchone()[0] - 1)
+
+                res = result.fetchone()
+                source_config['initialOffset'] = str(res[0]) if res else '0'
         except SQLAlchemyError as e:
             raise ConfigHandlerException(str(e))
