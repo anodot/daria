@@ -5,6 +5,7 @@ from .pipeline import Pipeline, PipelineException
 from ..source import Source
 from ..streamsets_api_client import api_client, StreamSetsApiClientException
 from agent.destination.http import HttpDestination
+from agent.constants import ENV_PROD
 from jsonschema import validate, ValidationError
 from datetime import datetime
 from texttable import Texttable
@@ -170,6 +171,7 @@ def destination_logs(pipeline_id, enable):
     """
 
     pipeline_obj = Pipeline(pipeline_id)
+    pipeline_obj.load()
     pipeline_obj.enable_destination_logs(enable)
 
     click.secho('Updated pipeline {}'.format(pipeline_id), fg='green')
@@ -199,10 +201,16 @@ def start(pipeline_id):
     """
     try:
         api_client.start_pipeline(pipeline_id)
-    except StreamSetsApiClientException as e:
+        click.echo('Pipeline is starting...')
+        pipeline_obj = Pipeline(pipeline_id)
+        pipeline_obj.wait_for_status(Pipeline.STATUS_RUNNING)
+        click.secho('Pipeline is running', fg='green')
+        if ENV_PROD:
+            pipeline_obj.wait_for_sending_data()
+            click.secho('Pipeline is sending data', fg='green')
+    except (StreamSetsApiClientException, PipelineException) as e:
         click.secho(str(e), err=True, fg='red')
         return
-    click.echo('Pipeline starting')
 
 
 @click.command()
@@ -213,10 +221,13 @@ def stop(pipeline_id):
     """
     try:
         api_client.stop_pipeline(pipeline_id)
-    except StreamSetsApiClientException as e:
+        click.echo('Pipeline is stopping...')
+        pipeline_obj = Pipeline(pipeline_id)
+        pipeline_obj.wait_for_status(Pipeline.STATUS_STOPPED)
+        click.secho('Pipeline is stopped', fg='green')
+    except (StreamSetsApiClientException, PipelineException) as e:
         click.secho(str(e), err=True, fg='red')
         return
-    click.echo('Pipeline stopping')
 
 
 @click.command()

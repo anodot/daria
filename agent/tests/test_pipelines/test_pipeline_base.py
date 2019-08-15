@@ -1,15 +1,11 @@
 import json
 import os
 import pytest
-import time
 
 from ..fixtures import cli_runner, get_output, replace_destination, get_input_file_path
 from agent.pipeline import cli as pipeline_cli, Pipeline
 from agent.source import cli as source_cli, Source
 from agent.streamsets_api_client import api_client
-
-
-WAITING_TIME = 5
 
 
 def pytest_generate_tests(metafunc):
@@ -45,16 +41,12 @@ class TestPipelineBase(object):
         replace_destination(name)
         result = cli_runner.invoke(pipeline_cli.start, [name])
         assert result.exit_code == 0
-        # wait until pipeline starts running
-        time.sleep(WAITING_TIME)
         assert api_client.get_pipeline_status(name)['status'] == 'RUNNING'
 
     def test_stop(self, cli_runner, name):
         result = cli_runner.invoke(pipeline_cli.stop, [name])
         assert result.exit_code == 0
-        # wait until pipeline stops
-        time.sleep(WAITING_TIME)
-        assert api_client.get_pipeline_status(name)['status'] in ['STOPPED', 'STOPPING']
+        assert api_client.get_pipeline_status(name)['status'] in ['STOPPED']
 
     def test_output(self, name, output):
         with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), f'expected_output/{output}')) as f:

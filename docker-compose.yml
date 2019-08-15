@@ -26,6 +26,7 @@ services:
       LOG_FILE_PATH: '/var/log/agent.log'
       ANODOT_API_URL: 'https://feature-agent-mysql.ano-dev.com'
       SDC_DATA_PATH: '/sdc-data'
+      ENV_PROD: 'false'
     stdin_open: true
     tty: true
     depends_on:

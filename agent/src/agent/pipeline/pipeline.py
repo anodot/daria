@@ -1,6 +1,7 @@
 import json
 import os
 import shutil
+import time
 
 from agent.constants import DATA_DIR, ERRORS_DIR
 from agent.destination import HttpDestination
@@ -12,6 +13,8 @@ from . import prompt, config_handlers, load_client_data
 
 class Pipeline:
     DIR = os.path.join(DATA_DIR, 'pipelines')
+    STATUS_RUNNING = 'RUNNING'
+    STATUS_STOPPED = 'STOPPED'
 
     prompters = {
         Source.TYPE_INFLUX: prompt.PromptConfigInflux,
@@ -149,8 +152,37 @@ class Pipeline:
 
     def enable_destination_logs(self, enable):
         self.destination.enable_logs(enable)
-        self.config['destination'] = self.destination.config
+        self.config['destination'] = self.destination.to_dict()
         self.update()
+
+    def wait_for_status(self, status, tries=5, initial_delay=2):
+        for i in range(1, tries):
+            response = api_client.get_pipeline_status(self.id)
+            if response['status'] == status:
+                return True
+            delay = initial_delay ** i
+            if i == tries:
+                raise PipelineException(f"Pipeline {self.id} is still {response['status']} after {tries} tries")
+            print(f"Pipeline {self.id} is {response['status']}. Check again after {delay} seconds...")
+            time.sleep(delay)
+
+    def wait_for_sending_data(self, tries=5, initial_delay=2):
+        for i in range(1, tries + 1):
+            response = api_client.get_pipeline_metrics(self.id)
+            stats = {
+                'in': response['counters']['pipeline.batchInputRecords.counter']['count'],
+                'out': response['counters']['pipeline.batchOutputRecords.counter']['count'],
+                'errors': response['counters']['pipeline.batchErrorRecords.counter']['count'],
+            }
+            if stats['out'] > 0 and stats['errors'] == 0:
+                return True
+            if stats['errors'] > 0:
+                raise PipelineException(f"Pipeline {self.id} is has {stats['errors']} errors")
+            delay = initial_delay ** i
+            if i == tries:
+                raise PipelineException(f"Pipeline {self.id} did not send any data. Received number of records - {stats['in']}")
+            print(f'Waiting for pipeline {self.id} to send data. Check again after {delay} seconds...')
+            time.sleep(delay)
 
 
 class PipelineException(Exception):
