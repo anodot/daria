@@ -1,7 +1,9 @@
 import click
 
+from .prompt_interface import PromptInterface
 
-class PromptKafka:
+
+class PromptKafka(PromptInterface):
 
     def prompt(self, default_config, advanced=False):
         config = dict()

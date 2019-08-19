@@ -1,6 +1,7 @@
 import click
 from datetime import datetime
 from urllib.parse import urlparse
+from .prompt_interface import PromptInterface
 
 
 def is_url(url):
@@ -11,7 +12,7 @@ def is_url(url):
         return False
 
 
-class PromptInflux:
+class PromptInflux(PromptInterface):
 
     def prompt(self, default_config, advanced=False):
         config = dict()

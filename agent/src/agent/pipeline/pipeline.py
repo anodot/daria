@@ -5,7 +5,7 @@ import time
 
 from agent.constants import DATA_DIR, ERRORS_DIR
 from agent.destination import HttpDestination
-from agent.source import Source
+from agent.source import Source, create_source_object, load_source_object
 from agent.streamsets_api_client import api_client, StreamSetsApiClientException
 
 from . import prompt, config_handlers, load_client_data
@@ -42,7 +42,7 @@ class Pipeline:
     }
 
     def __init__(self, pipeline_id, source_name=None):
-        self.source = Source(source_name).load() if source_name else None
+        self.source = load_source_object(source_name).config if source_name else None
         self.destination = HttpDestination()
         self.config = {
             'pipeline_id': pipeline_id,
@@ -67,7 +67,7 @@ class Pipeline:
 
     def load_source(self):
         if not self.id == 'Monitoring':
-            self.source = Source(self.config['source']['name']).load()
+            self.source = load_source_object(self.config['source']['name']).config
             self.config['source'] = self.source
 
     @property

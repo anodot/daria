@@ -1,8 +1,10 @@
 import click
 import re
 
+from .prompt_interface import PromptInterface
 
-class PromptMongo:
+
+class PromptMongo(PromptInterface):
 
     def prompt(self, default_config, advanced=False):
         config = dict()

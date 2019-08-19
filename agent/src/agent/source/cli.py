@@ -1,7 +1,7 @@
 import click
 import os
 
-from .source import Source, SourceException
+from .source import Source, SourceException, create_source_object, load_source_object
 from agent.pipeline import Pipeline
 from agent.streamsets_api_client import api_client
 from agent.destination import HttpDestination
@@ -44,11 +44,11 @@ def create(advanced):
     source_type = click.prompt('Choose source', type=click.Choice(Source.types))
     source_name = click.prompt('Enter unique name for this source config', type=click.STRING)
 
-    source_instance = Source(source_name, source_type)
+    source_instance = create_source_object(source_name, source_type)
 
     try:
         recent_pipeline_config = get_previous_source_config(source_type)
-        source_instance.prompt(recent_pipeline_config, advanced)
+        source_instance.config['config'] = source_instance.prompter.prompt(recent_pipeline_config, advanced)
 
         source_instance.create()
     except SourceException as e:
@@ -64,11 +64,10 @@ def edit(name, advanced):
     """
     Edit source
     """
-    source_instance = Source(name)
+    source_instance = load_source_object(name)
 
     try:
-        source_instance.load()
-        source_instance.prompt(advanced=advanced)
+        source_instance.config['config'] = source_instance.prompter.prompt(source_instance.config['config'], advanced=advanced)
         source_instance.save()
     except SourceException as e:
         raise click.ClickException(str(e))
@@ -91,10 +90,9 @@ def delete(name):
     """
     Delete source
     """
-    source_instance = Source(name)
+    source_instance = load_source_object(name)
 
     try:
-        source_instance.load()
         source_instance.delete()
     except SourceException as e:
         raise click.ClickException(str(e))
