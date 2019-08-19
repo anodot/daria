@@ -5,7 +5,7 @@ import time
 
 from agent.constants import DATA_DIR, ERRORS_DIR
 from agent.destination import HttpDestination
-from agent.source import Source, create_source_object, load_source_object
+from agent.source import source
 from agent.streamsets_api_client import api_client, StreamSetsApiClientException
 
 from . import prompt, config_handlers, load_client_data
@@ -17,32 +17,32 @@ class Pipeline:
     STATUS_STOPPED = 'STOPPED'
 
     prompters = {
-        Source.TYPE_INFLUX: prompt.PromptConfigInflux,
-        Source.TYPE_KAFKA: prompt.PromptConfigKafka,
-        Source.TYPE_MONGO: prompt.PromptConfigMongo,
-        Source.TYPE_MYSQL: prompt.PromptConfigJDBC,
-        Source.TYPE_POSTGRES: prompt.PromptConfigJDBC,
+        source.TYPE_INFLUX: prompt.PromptConfigInflux,
+        source.TYPE_KAFKA: prompt.PromptConfigKafka,
+        source.TYPE_MONGO: prompt.PromptConfigMongo,
+        source.TYPE_MYSQL: prompt.PromptConfigJDBC,
+        source.TYPE_POSTGRES: prompt.PromptConfigJDBC,
     }
 
     loaders = {
-        Source.TYPE_INFLUX: load_client_data.InfluxLoadClientData,
-        Source.TYPE_MONGO: load_client_data.MongoLoadClientData,
-        Source.TYPE_KAFKA: load_client_data.KafkaLoadClientData,
-        Source.TYPE_MYSQL: load_client_data.JDBCLoadClientData,
-        Source.TYPE_POSTGRES: load_client_data.JDBCLoadClientData,
+        source.TYPE_INFLUX: load_client_data.InfluxLoadClientData,
+        source.TYPE_MONGO: load_client_data.MongoLoadClientData,
+        source.TYPE_KAFKA: load_client_data.KafkaLoadClientData,
+        source.TYPE_MYSQL: load_client_data.JDBCLoadClientData,
+        source.TYPE_POSTGRES: load_client_data.JDBCLoadClientData,
     }
 
     config_handlers = {
-        Source.TYPE_MONITORING: config_handlers.MonitoringConfigHandler,
-        Source.TYPE_INFLUX: config_handlers.InfluxConfigHandler,
-        Source.TYPE_MONGO: config_handlers.MongoConfigHandler,
-        Source.TYPE_KAFKA: config_handlers.KafkaConfigHandler,
-        Source.TYPE_MYSQL: config_handlers.JDBCConfigHandler,
-        Source.TYPE_POSTGRES: config_handlers.JDBCConfigHandler
+        source.TYPE_MONITORING: config_handlers.MonitoringConfigHandler,
+        source.TYPE_INFLUX: config_handlers.InfluxConfigHandler,
+        source.TYPE_MONGO: config_handlers.MongoConfigHandler,
+        source.TYPE_KAFKA: config_handlers.KafkaConfigHandler,
+        source.TYPE_MYSQL: config_handlers.JDBCConfigHandler,
+        source.TYPE_POSTGRES: config_handlers.JDBCConfigHandler
     }
 
     def __init__(self, pipeline_id, source_name=None):
-        self.source = load_source_object(source_name).config if source_name else None
+        self.source = source.load_object(source_name).to_dict() if source_name else None
         self.destination = HttpDestination()
         self.config = {
             'pipeline_id': pipeline_id,
@@ -62,12 +62,12 @@ class Pipeline:
     @property
     def source_type(self):
         if self.id == 'Monitoring':
-            return Source.TYPE_MONITORING
+            return source.TYPE_MONITORING
         return self.config['source']['type']
 
     def load_source(self):
         if not self.id == 'Monitoring':
-            self.source = load_source_object(self.config['source']['name']).config
+            self.source = source.load_object(self.config['source']['name']).to_dict()
             self.config['source'] = self.source
 
     @property

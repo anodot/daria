@@ -78,9 +78,7 @@ class HttpDestination:
     def get_proxy_password(self) -> str:
         return self.config.get(self.CONFIG_PROXY_PASSWORD)
 
-    def validate(self) -> bool:
-        if not ENV_PROD:
-            return True
+    def get_proxy_configs(self) -> dict:
         proxies = {}
         if self.config[self.CONFIG_PROXY_USE]:
             proxy_parsed = urlparse(self.get_proxy_url())
@@ -89,7 +87,12 @@ class HttpDestination:
                 netloc = self.get_proxy_username() + ':' + self.get_proxy_password() + '@' + netloc
             proxies['http'] = urlunparse((proxy_parsed.scheme, netloc, proxy_parsed.path, '', '', ''))
             proxies['https'] = proxies['http']
-        result = requests.post(self.config[self.CONFIG_RESOURCE_URL], proxies=proxies)
+        return proxies
+
+    def validate(self) -> bool:
+        if not ENV_PROD:
+            return True
+        result = requests.post(self.config[self.CONFIG_RESOURCE_URL], proxies=self.get_proxy_configs())
         result.raise_for_status()
         return True
 

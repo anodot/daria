@@ -3,7 +3,7 @@ import pytest
 
 from ..fixtures import cli_runner
 from agent.pipeline import cli as pipeline_cli
-from agent.source import cli as source_cli, Source
+from agent.source import cli as source_cli, source
 from agent.streamsets_api_client import api_client
 from .test_pipeline_base import pytest_generate_tests, TestPipelineBase
 
@@ -36,7 +36,7 @@ class TestPostgreSQL(TestPipelineBase):
     def test_source_create(self, cli_runner, name, type, conn):
         result = cli_runner.invoke(source_cli.create, input=f"{type}\n{name}\n{conn}\npostgres\npassword\n\n")
         assert result.exit_code == 0
-        assert os.path.isfile(os.path.join(Source.DIR, f'{name}.json'))
+        assert os.path.isfile(os.path.join(source.DIR, f'{name}.json'))
 
     def test_create(self, cli_runner, name, source, timestamp_type, timestamp_name):
         result = cli_runner.invoke(pipeline_cli.create,

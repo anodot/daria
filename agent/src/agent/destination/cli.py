@@ -1,10 +1,9 @@
 import click
-import time
 
 from .http import HttpDestination, DestinationException
 from ..streamsets_api_client import api_client
 from agent.pipeline import Pipeline, PipelineException
-from agent.source import Source
+from agent.source import source
 from agent.constants import ENV_PROD
 
 
@@ -19,7 +18,7 @@ def monitoring():
             pipeline_monitoring.update()
         else:
             click.secho('Starting Monitoring pipeline...')
-            Source.create_dir()
+            source.create_dir()
             Pipeline.create_dir()
             pipeline_monitoring.create()
 

@@ -2,7 +2,7 @@ import click
 import json
 
 from .pipeline import Pipeline, PipelineException
-from ..source import Source
+from ..source import source
 from ..streamsets_api_client import api_client, StreamSetsApiClientException
 from agent.destination.http import HttpDestination
 from agent.constants import ENV_PROD
@@ -63,7 +63,7 @@ def create_multiple(file):
         'items': {
             'type': 'object',
             'properties': {
-                'source': {'type': 'string', 'enum': Source.get_list()},
+                'source': {'type': 'string', 'enum': source.get_list()},
                 'pipeline_id': {'type': 'string', 'minLength': 1, 'maxLength': 100}
             },
             'required': ['source', 'pipeline_id']
@@ -86,7 +86,7 @@ def create(advanced, file):
     """
     Create pipeline
     """
-    sources = Source.get_list()
+    sources = source.get_list()
     if len(sources) == 0:
         raise click.ClickException('No sources configs found. Use "agent source create"')
 
