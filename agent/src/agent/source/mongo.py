@@ -1,10 +1,10 @@
 import click
 import re
 
-from .prompt_interface import PromptInterface
+from .abstract_source import Source
 
 
-class PromptMongo(PromptInterface):
+class MongoSource(Source):
 
     def prompt(self, default_config, advanced=False):
         config = dict()

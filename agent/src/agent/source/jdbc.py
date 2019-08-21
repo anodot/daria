@@ -1,9 +1,9 @@
 import click
 
-from .prompt_interface import PromptInterface
+from .abstract_source import Source
 
 
-class PromptJDBC(PromptInterface):
+class JDBCSource(Source):
 
     def prompt(self, default_config, advanced=False):
         config = dict()

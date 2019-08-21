@@ -4,7 +4,7 @@ import pytest
 
 from ..fixtures import cli_runner, get_output, replace_destination, get_input_file_path
 from agent.pipeline import cli as pipeline_cli, Pipeline
-from agent.source import cli as source_cli, source
+from agent.source import cli as source_cli, Source
 from agent.streamsets_api_client import api_client
 
 
@@ -65,4 +65,4 @@ class TestPipelineBase(object):
     def test_source_delete(self, cli_runner, name):
         result = cli_runner.invoke(source_cli.delete, [name])
         assert result.exit_code == 0
-        assert not os.path.isfile(os.path.join(source.DIR, f'{name}.json'))
+        assert not os.path.isfile(os.path.join(Source.DIR, f'{name}.json'))

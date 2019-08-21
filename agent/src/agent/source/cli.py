@@ -1,7 +1,6 @@
 import click
-import os
 
-from agent.source import source
+from agent.source import SourceException, source
 from agent.pipeline import Pipeline
 from agent.streamsets_api_client import api_client
 from agent.destination import HttpDestination
@@ -15,14 +14,6 @@ def get_previous_source_config(label):
         pipeline_obj.load()
         return pipeline_obj.config['source']['config']
     return {}
-
-
-def sources_autocomplete(ctx, args, incomplete):
-    configs = []
-    for filename in os.listdir(source.DIR):
-        if filename.endswith('.json') and incomplete in filename:
-            configs.append(filename.replace('.json', ''))
-    return configs
 
 
 @click.group(name='source')
@@ -48,17 +39,17 @@ def create(advanced):
 
     try:
         recent_pipeline_config = get_previous_source_config(source_type)
-        source_instance.config = source_instance.prompter.prompt(recent_pipeline_config, advanced)
+        source_instance.config = source_instance.prompt(recent_pipeline_config, advanced)
 
         source_instance.create()
-    except source.SourceException as e:
+    except SourceException as e:
         raise click.ClickException(str(e))
 
     click.secho('Source config created', fg='green')
 
 
 @click.command()
-@click.argument('name', autocompletion=sources_autocomplete)
+@click.argument('name', autocompletion=source.autocomplete)
 @click.option('-a', '--advanced', is_flag=True)
 def edit(name, advanced):
     """
@@ -67,9 +58,9 @@ def edit(name, advanced):
     source_instance = source.load_object(name)
 
     try:
-        source_instance.config = source_instance.prompter.prompt(source_instance.config, advanced=advanced)
+        source_instance.config = source_instance.prompt(source_instance.config, advanced=advanced)
         source_instance.save()
-    except source.SourceException as e:
+    except SourceException as e:
         raise click.ClickException(str(e))
 
     click.secho('Source config updated', fg='green')
@@ -85,7 +76,7 @@ def list_configs():
 
 
 @click.command()
-@click.argument('name', autocompletion=sources_autocomplete)
+@click.argument('name', autocompletion=source.autocomplete)
 def delete(name):
     """
     Delete source
@@ -94,7 +85,7 @@ def delete(name):
 
     try:
         source_instance.delete()
-    except source.SourceException as e:
+    except SourceException as e:
         raise click.ClickException(str(e))
 
 

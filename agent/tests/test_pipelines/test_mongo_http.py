@@ -4,7 +4,7 @@ import pytest
 
 from ..fixtures import cli_runner
 from agent.pipeline import cli as pipeline_cli
-from agent.source import cli as source_cli, source
+from agent.source import cli as source_cli, Source
 from agent.streamsets_api_client import api_client
 from .test_pipeline_base import TestPipelineBase, pytest_generate_tests
 
@@ -44,11 +44,11 @@ class TestMongo(TestPipelineBase):
         result = cli_runner.invoke(source_cli.create,
                                    input="""mongo\ntest_mongo\nmongodb://mongo:27017\nroot\nroot\nadmin\ntest\nadtec\n\n\n2015-01-01 00:00:00\n\n\n\n""")
         assert result.exit_code == 0
-        assert os.path.isfile(os.path.join(source.DIR, 'test_mongo.json'))
+        assert os.path.isfile(os.path.join(Source.DIR, 'test_mongo.json'))
 
     def test_source_edit(self, cli_runner):
         result = cli_runner.invoke(source_cli.edit, ['test_mongo'], input="""\n\n\n\n\nadtech\n\n\n\n\n\n\n""")
-        with open(os.path.join(source.DIR, 'test_mongo.json'), 'r') as f:
+        with open(os.path.join(Source.DIR, 'test_mongo.json'), 'r') as f:
             source_dict = json.load(f)
             assert source_dict['config']['configBean.mongoConfig.collection'] == 'adtech'
         assert result.exit_code == 0

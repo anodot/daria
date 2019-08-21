@@ -3,7 +3,7 @@ import pytest
 
 from ..fixtures import cli_runner
 from agent.pipeline import cli as pipeline_cli
-from agent.source import cli as source_cli, source
+from agent.source import cli as source_cli, Source
 from agent.streamsets_api_client import api_client
 from .test_pipeline_base import TestPipelineBase, pytest_generate_tests
 
@@ -50,7 +50,7 @@ class TestKafka(TestPipelineBase):
         result = cli_runner.invoke(source_cli.create,
                                    input=f"kafka\n{name}\nkafka:29092\nstreamsetsDC\n{name}\n\n")
         assert result.exit_code == 0
-        assert os.path.isfile(os.path.join(source.DIR, f'{name}.json'))
+        assert os.path.isfile(os.path.join(Source.DIR, f'{name}.json'))
 
     def test_create(self, cli_runner, source_name, name, options, value, timestamp, properties):
         result = cli_runner.invoke(pipeline_cli.create, options,

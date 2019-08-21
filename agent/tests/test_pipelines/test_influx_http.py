@@ -3,7 +3,7 @@ import pytest
 
 from ..fixtures import cli_runner
 from agent.pipeline import cli as pipeline_cli
-from agent.source import cli as source_cli, source
+from agent.source import cli as source_cli, Source
 from agent.streamsets_api_client import api_client
 from .test_pipeline_base import TestPipelineBase, pytest_generate_tests
 
@@ -34,7 +34,7 @@ class TestInflux(TestPipelineBase):
     def test_source_create(self, cli_runner, name, offset):
         result = cli_runner.invoke(source_cli.create, input=f"influx\n{name}\nhttp://influx:8086\ntest\n\n{offset}\n\n")
         assert result.exit_code == 0
-        assert os.path.isfile(os.path.join(source.DIR, f'{name}.json'))
+        assert os.path.isfile(os.path.join(Source.DIR, f'{name}.json'))
 
     def test_create(self, cli_runner, name, source):
         result = cli_runner.invoke(pipeline_cli.create,
