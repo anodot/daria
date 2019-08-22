@@ -5,7 +5,7 @@ import time
 
 from agent.constants import DATA_DIR, ERRORS_DIR
 from agent.destination import HttpDestination
-from agent.source import source
+from agent import source
 from agent.streamsets_api_client import api_client, StreamSetsApiClientException
 
 from . import prompt, config_handlers, load_client_data

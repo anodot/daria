@@ -42,15 +42,15 @@ class TestMongo(TestPipelineBase):
 
     def test_source_create(self, cli_runner):
         result = cli_runner.invoke(source_cli.create,
-                                   input="""mongo\ntest_mongo\nmongodb://mongo:27017\nroot\nroot\nadmin\ntest\nadtec\n\n\n2015-01-01 00:00:00\n\n\n\n""")
+                                   input="""mongo\ntest_mongo\nmongodb://mongo:27017\nroot\nroot\nadmin\ntest\nadtech\n\n2015-01-02 00:00:00\n\n\n\n""")
         assert result.exit_code == 0
         assert os.path.isfile(os.path.join(Source.DIR, 'test_mongo.json'))
 
     def test_source_edit(self, cli_runner):
-        result = cli_runner.invoke(source_cli.edit, ['test_mongo'], input="""\n\n\n\n\nadtech\n\n\n\n\n\n\n""")
+        result = cli_runner.invoke(source_cli.edit, ['test_mongo'], input="""\n\n\n\n\n\n\n2015-01-01 00:00:00\n\n\n\n""")
         with open(os.path.join(Source.DIR, 'test_mongo.json'), 'r') as f:
             source_dict = json.load(f)
-            assert source_dict['config']['configBean.mongoConfig.collection'] == 'adtech'
+            assert source_dict['config']['configBean.initialOffset'] == '2015-01-01 00:00:00'
         assert result.exit_code == 0
 
     def test_create(self, cli_runner, name, options, value, timestamp, timestamp_type, properties):

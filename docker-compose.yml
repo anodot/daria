@@ -24,9 +24,9 @@ services:
       STREAMSETS_PASSWORD: 'admin'
       STREAMSETS_URL: 'http://dc:18630'
       LOG_FILE_PATH: '/var/log/agent.log'
-      ANODOT_API_URL: 'https://feature-agent-mysql.ano-dev.com'
+      ANODOT_API_URL: 'http://3.215.226.90'
       SDC_DATA_PATH: '/sdc-data'
-      ENV_PROD: 'false'
+#      ENV_PROD: 'false'
     stdin_open: true
     tty: true
     depends_on:

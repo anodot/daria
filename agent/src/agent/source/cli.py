@@ -1,6 +1,6 @@
 import click
 
-from agent.source import SourceException, source
+from agent import source
 from agent.pipeline import Pipeline
 from agent.streamsets_api_client import api_client
 from agent.destination import HttpDestination
@@ -42,7 +42,7 @@ def create(advanced):
         source_instance.config = source_instance.prompt(recent_pipeline_config, advanced)
 
         source_instance.create()
-    except SourceException as e:
+    except source.SourceException as e:
         raise click.ClickException(str(e))
 
     click.secho('Source config created', fg='green')
@@ -60,7 +60,7 @@ def edit(name, advanced):
     try:
         source_instance.config = source_instance.prompt(source_instance.config, advanced=advanced)
         source_instance.save()
-    except SourceException as e:
+    except source.SourceException as e:
         raise click.ClickException(str(e))
 
     click.secho('Source config updated', fg='green')
@@ -85,7 +85,7 @@ def delete(name):
 
     try:
         source_instance.delete()
-    except SourceException as e:
+    except source.SourceException as e:
         raise click.ClickException(str(e))
 
 
