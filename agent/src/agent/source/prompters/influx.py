@@ -37,7 +37,5 @@ class PromptInflux:
                     datetime.strptime(config['offset'], '%d/%m/%Y %H:%M').timestamp()
                 except ValueError as e:
                     raise click.UsageError(str(e))
-        config['conf.spoolingPeriod'] = click.prompt('Querying interval, seconds', type=click.INT,
-                                                     default=default_config.get('conf.spoolingPeriod', 60))
-        config['conf.poolingTimeoutSecs'] = config['conf.spoolingPeriod']
+
         return config

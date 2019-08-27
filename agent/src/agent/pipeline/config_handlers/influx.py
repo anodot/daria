@@ -17,6 +17,8 @@ state['OPTIONAL_DIMENSIONS'] = ['ver', 'AdSize', 'Country'];
 state['VALUES_COLUMNS'] = ['value'];
 state['TARGET_TYPE'] = 'gauge';
 state['VALUE_CONSTANT'] = 1
+state['CONSTANT_PROPERTIES'] = {"key": "value", "key2": "value2"}
+state['HOST_ID'] = 'acgdhjehfje'
 */
 
 state['MEASUREMENT_NAME'] = '{measurement_name}';
@@ -25,10 +27,13 @@ state['OPTIONAL_DIMENSIONS'] = {optional_dimensions};
 state['VALUES_COLUMNS'] = {values};
 state['TARGET_TYPE'] = '{target_type}';
 state['VALUE_CONSTANT'] = {value_constant}
+state['CONSTANT_PROPERTIES'] = {constant_properties}
+state['HOST_ID'] = '{host_id}'
 """
 
-    QUERY_GET_DATA = "SELECT+{dimensions}+FROM+%22{metric}%22+WHERE+%22time%22+%3E+${{record:value('/last_timestamp')}}+LIMIT+{limit}"
+    QUERY_GET_DATA = "SELECT+{dimensions}+FROM+%22{metric}%22+WHERE+%22time%22+%3E%3D+${record:value('/last_timestamp')}+AND+%22time%22+%3C+${record:value('/last_timestamp')}%2B{interval}+AND+%22time%22+%3C+now%28%29-{delay}"
     QUERY_GET_TIMESTAMP = "SELECT+last_timestamp+FROM+agent_timestamps+WHERE+pipeline_id%3D%27${pipeline:id()}%27+ORDER+BY+time+DESC+LIMIT+1"
+    QUERY_CHECK_DATA = "SELECT+{dimensions}+FROM+%22{metric}%22+WHERE+%22time%22+%3E+${record:value('/last_timestamp_value')}+AND+%22time%22+%3C+now%28%29-{delay}+ORDER+BY+time+ASC+limit+1"
 
     def set_initial_offset(self):
         source_config = self.client_config['source']['config']
@@ -69,7 +74,9 @@ state['VALUE_CONSTANT'] = {value_constant}
                             measurement_name=self.client_config['measurement_name'],
                             values=str(self.client_config['value'].get('values', [])),
                             target_type=self.client_config.get('target_type', 'gauge'),
-                            value_constant=self.client_config['value'].get('constant', '1')
+                            value_constant=self.client_config['value'].get('constant', '1'),
+                            constant_properties=str(self.client_config.get('properties', {})),
+                            host_id=self.client_config['destination']['host_id']
                         )
 
                     if conf['name'] == 'stageRecordPreconditions':
@@ -80,9 +87,6 @@ state['VALUE_CONSTANT'] = {value_constant}
                             conf['value'].append(f"${{record:type('/{d}') == 'STRING' or record:type('/{d}') == NULL}}")
                         for v in self.client_config['value']['values']:
                             conf['value'].append(f"${{record:type('/{v}') != 'STRING'}}")
-
-            if stage['instanceName'] == 'ExpressionEvaluator_01':
-                self.set_constant_properties(stage)
 
             if stage['instanceName'] == 'HTTPClient_05':
                 for conf in stage['configuration']:
@@ -98,14 +102,19 @@ state['VALUE_CONSTANT'] = {value_constant}
         source_config = self.client_config['source']['config']
         dimensions_to_select = [f'%22{d}%22' + '%3A%3Atag' for d in dimensions]
         values_to_select = [f'%22{v}%22' + '%3A%3Afield' for v in self.client_config['value']['values']]
-
+        delay = self.client_config.get('delay', '0s')
+        interval = self.client_config('interval', 60)
+        columns = ','.join(dimensions_to_select + values_to_select)
         self.set_initial_offset()
         query = f"/query?db={source_config['db']}&epoch=ns&q={self.QUERY_GET_DATA}".format(**{
-            'dimensions': ','.join(dimensions_to_select + values_to_select),
+            'dimensions': columns,
             'metric': self.client_config['measurement_name'],
-            'limit': source_config['limit']
+            'delay': delay,
+            'interval': str(interval) + 's',
         })
         source_config['conf.resourceUrl'] = urljoin(source_config['host'], query)
+        source_config['conf.spoolingPeriod'] = interval
+        source_config['conf.poolingTimeoutSecs'] = interval
 
         get_timestamp_url = urljoin(source_config['host'],
                                     f"/query?db={source_config['db']}&epoch=ns&q={self.QUERY_GET_TIMESTAMP}")
@@ -120,3 +129,13 @@ state['VALUE_CONSTANT'] = {value_constant}
                 for conf in stage['configuration']:
                     if conf['name'] == 'conf.resourceUrl':
                         conf['value'] = get_timestamp_url
+
+            if stage['instanceName'] == 'HTTPClient_06':
+                for conf in stage['configuration']:
+                    if conf['name'] == 'conf.resourceUrl':
+                        query = f"/query?db={source_config['db']}&epoch=ns&q={self.QUERY_CHECK_DATA}".format(**{
+                            'dimensions': columns,
+                            'metric': self.client_config['measurement_name'],
+                            'delay': delay
+                        })
+                        conf['value'] = urljoin(source_config['host'], query)
