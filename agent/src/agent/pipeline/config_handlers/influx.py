@@ -42,8 +42,17 @@ state['VALUE_CONSTANT'] = {value_constant}
 
         source_config['offset'] = int(timestamp.timestamp() * 1e9)
 
-        influx_url = urlparse(source_config['host']).netloc.split(':')
-        client = InfluxDBClient(influx_url[0], influx_url[1], database=source_config['db'])
+        influx_url_parsed = urlparse(source_config['host'])
+        influx_url = influx_url_parsed.netloc.split(':')
+        args = {'database': source_config['db'], 'host': influx_url[0], 'port': influx_url[1]}
+        username = source_config.get('username', '')
+        password = source_config.get('password', '')
+        if username != '':
+            args['username'] = username
+            args['password'] = password
+        if influx_url_parsed.scheme == 'https':
+            args['ssl'] = True
+        client = InfluxDBClient(**args)
         client.write_points([{
             'measurement': 'agent_timestamps',
             'tags': {'pipeline_id': self.client_config['pipeline_id']},
@@ -54,7 +63,6 @@ state['VALUE_CONSTANT'] = {value_constant}
 
         self.update_source_configs()
 
-        source_config = self.client_config['source']['config']
         for stage in self.config['stages']:
 
             if stage['instanceName'] == 'JavaScriptEvaluator_02':
@@ -84,12 +92,6 @@ state['VALUE_CONSTANT'] = {value_constant}
             if stage['instanceName'] == 'ExpressionEvaluator_01':
                 self.set_constant_properties(stage)
 
-            if stage['instanceName'] == 'HTTPClient_05':
-                for conf in stage['configuration']:
-                    if conf['name'] == 'conf.resourceUrl':
-                        conf['value'] = urljoin(source_config['host'],
-                                                f"/write?db={source_config['db']}&precision=ns")
-
         self.update_destination_config()
 
     def update_source_configs(self):
@@ -98,6 +100,12 @@ state['VALUE_CONSTANT'] = {value_constant}
         source_config = self.client_config['source']['config']
         dimensions_to_select = [f'%22{d}%22' + '%3A%3Atag' for d in dimensions]
         values_to_select = [f'%22{v}%22' + '%3A%3Afield' for v in self.client_config['value']['values']]
+        username = source_config.get('username', '')
+        password = source_config.get('password', '')
+        if username != '':
+            self.client_config['source']['config']['conf.client.authType'] = 'BASIC'
+            self.client_config['source']['config']['conf.client.basicAuth.username'] = username
+            self.client_config['source']['config']['conf.client.basicAuth.password'] = password
 
         self.set_initial_offset()
         query = f"/query?db={source_config['db']}&epoch=ns&q={self.QUERY_GET_DATA}".format(**{
@@ -120,3 +128,17 @@ state['VALUE_CONSTANT'] = {value_constant}
                 for conf in stage['configuration']:
                     if conf['name'] == 'conf.resourceUrl':
                         conf['value'] = get_timestamp_url
+                        continue
+
+                    if conf['name'] in self.client_config['source']['config']:
+                        conf['value'] = self.client_config['source']['config'][conf['name']]
+
+            if stage['instanceName'] == 'HTTPClient_05':
+                for conf in stage['configuration']:
+                    if conf['name'] == 'conf.resourceUrl':
+                        conf['value'] = urljoin(source_config['host'],
+                                                f"/write?db={source_config['db']}&precision=ns")
+                        continue
+
+                    if conf['name'] in self.client_config['source']['config']:
+                        conf['value'] = self.client_config['source']['config'][conf['name']]

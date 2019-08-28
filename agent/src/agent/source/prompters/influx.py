@@ -19,6 +19,8 @@ class PromptInflux:
         if not is_url(config['host']):
             raise click.UsageError(f"{config['host']} is not and url")
 
+        config['username'] = click.prompt('Username', type=click.STRING, default=default_config.get('username', ''))
+        config['password'] = click.prompt('Password', type=click.STRING, default=default_config.get('password', ''))
         config['db'] = click.prompt('Database', type=click.STRING, default=default_config.get('db'))
         config['limit'] = click.prompt('Limit', type=click.INT, default=default_config.get('limit', 1000))
 
