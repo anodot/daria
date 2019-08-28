@@ -24,7 +24,7 @@ services:
       STREAMSETS_PASSWORD: 'admin'
       STREAMSETS_URL: 'http://dc:18630'
       LOG_FILE_PATH: '/var/log/agent.log'
-      ANODOT_API_URL: 'https://feature-agent-mysql.ano-dev.com'
+      ANODOT_API_URL: 'http://dummy_destination'
       SDC_DATA_PATH: '/sdc-data'
       ENV_PROD: 'false'
     stdin_open: true
@@ -105,6 +105,9 @@ services:
     volumes:
       - /var/lib/postgresql/data
       - ./volumes/postgres-initdb:/docker-entrypoint-initdb.d
+
+  dummy_destination:
+    build: dummy_destination
 
 
 volumes:
