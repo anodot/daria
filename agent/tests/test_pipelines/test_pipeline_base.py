@@ -1,6 +1,7 @@
 import json
 import os
 import pytest
+import time
 
 from ..fixtures import cli_runner, get_output, replace_destination, get_input_file_path
 from agent.pipeline import cli as pipeline_cli, Pipeline
@@ -44,6 +45,7 @@ class TestPipelineBase(object):
         assert api_client.get_pipeline_status(name)['status'] == 'RUNNING'
 
     def test_stop(self, cli_runner, name):
+        time.sleep(15)
         result = cli_runner.invoke(pipeline_cli.stop, [name])
         assert result.exit_code == 0
         assert api_client.get_pipeline_status(name)['status'] in ['STOPPED']

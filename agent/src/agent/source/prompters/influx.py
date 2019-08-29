@@ -22,7 +22,6 @@ class PromptInflux:
         config['username'] = click.prompt('Username', type=click.STRING, default=default_config.get('username', ''))
         config['password'] = click.prompt('Password', type=click.STRING, default=default_config.get('password', ''))
         config['db'] = click.prompt('Database', type=click.STRING, default=default_config.get('db'))
-        config['limit'] = click.prompt('Limit', type=click.INT, default=default_config.get('limit', 1000))
 
         config['offset'] = click.prompt(
             'Initial offset (amount of days ago or specific date in format "dd/MM/yyyy HH:mm")',

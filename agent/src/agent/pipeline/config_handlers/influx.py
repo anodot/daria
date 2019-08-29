@@ -17,7 +17,6 @@ state['OPTIONAL_DIMENSIONS'] = ['ver', 'AdSize', 'Country'];
 state['VALUES_COLUMNS'] = ['value'];
 state['TARGET_TYPE'] = 'gauge';
 state['VALUE_CONSTANT'] = 1
-state['CONSTANT_PROPERTIES'] = {"key": "value", "key2": "value2"}
 state['HOST_ID'] = 'acgdhjehfje'
 */
 
@@ -31,9 +30,9 @@ state['CONSTANT_PROPERTIES'] = {constant_properties}
 state['HOST_ID'] = '{host_id}'
 """
 
-    QUERY_GET_DATA = "SELECT+{dimensions}+FROM+%22{metric}%22+WHERE+%22time%22+%3E%3D+${record:value('/last_timestamp')}+AND+%22time%22+%3C+${record:value('/last_timestamp')}%2B{interval}+AND+%22time%22+%3C+now%28%29-{delay}"
+    QUERY_GET_DATA = "SELECT+{dimensions}+FROM+%22{metric}%22+WHERE+%22time%22+%3E%3D+${{record:value('/last_timestamp')}}+AND+%22time%22+%3C+${{record:value('/last_timestamp')}}%2B{interval}+AND+%22time%22+%3C+now%28%29-{delay}"
     QUERY_GET_TIMESTAMP = "SELECT+last_timestamp+FROM+agent_timestamps+WHERE+pipeline_id%3D%27${pipeline:id()}%27+ORDER+BY+time+DESC+LIMIT+1"
-    QUERY_CHECK_DATA = "SELECT+{dimensions}+FROM+%22{metric}%22+WHERE+%22time%22+%3E+${record:value('/last_timestamp_value')}+AND+%22time%22+%3C+now%28%29-{delay}+ORDER+BY+time+ASC+limit+1"
+    QUERY_CHECK_DATA = "SELECT+{dimensions}+FROM+%22{metric}%22+WHERE+%22time%22+%3E+${{record:value('/last_timestamp_value')}}+AND+%22time%22+%3C+now%28%29-{delay}+ORDER+BY+time+ASC+limit+1"
 
     def set_initial_offset(self):
         source_config = self.client_config['source']['config']
@@ -112,7 +111,7 @@ state['HOST_ID'] = '{host_id}'
             self.client_config['source']['config']['conf.client.basicAuth.password'] = password
 
         delay = self.client_config.get('delay', '0s')
-        interval = self.client_config('interval', 60)
+        interval = self.client_config.get('interval', 60)
         columns = ','.join(dimensions_to_select + values_to_select)
         self.set_initial_offset()
 

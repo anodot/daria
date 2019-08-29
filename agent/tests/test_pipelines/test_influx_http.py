@@ -34,13 +34,13 @@ class TestInflux(TestPipelineBase):
     }
 
     def test_source_create(self, cli_runner, name, offset):
-        result = cli_runner.invoke(source_cli.create, input=f"influx\n{name}\nhttp://influx:8086\n\n\ntest\n\n{offset}\n\n")
+        result = cli_runner.invoke(source_cli.create, input=f"influx\n{name}\nhttp://influx:8086\n\n\ntest\n{offset}\n\n")
         assert result.exit_code == 0
         assert os.path.isfile(os.path.join(Source.DIR, f'{name}.json'))
 
     def test_create(self, cli_runner, name, source):
         result = cli_runner.invoke(pipeline_cli.create,
-                                   input=f'{source}\n{name}\ncpu_test\nusage_active usage_idle\n\ncpu zone host\n')
+                                   input=f'{source}\n{name}\ncpu_test\nusage_active usage_idle\n\ncpu zone host\n\n\n')
         assert result.exit_code == 0
         assert api_client.get_pipeline(name)
 

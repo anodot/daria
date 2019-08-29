@@ -35,6 +35,7 @@ services:
     volumes:
       - sdc-data:/sdc-data
       - agent-data:/usr/src/app/data
+      - dummy-destination-data:/output
 
   mongo:
     image: mongo
@@ -108,8 +109,11 @@ services:
 
   dummy_destination:
     build: dummy_destination
+    volumes:
+      - dummy-destination-data:/app
 
 
 volumes:
   sdc-data:
   agent-data:
+  dummy-destination-data:

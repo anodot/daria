@@ -15,24 +15,24 @@ def cli_runner():
 
     yield CliRunner()
 
-    api_client.delete_by_filtering('test_')
-    if api_client.get_pipelines(text='Monitoring'):
-        api_client.stop_pipeline('Monitoring')
-        api_client.force_stop_pipeline('Monitoring')
-        time.sleep(2)
-        pipeline_monitoring = Pipeline('Monitoring')
-        pipeline_monitoring.delete()
-
-    for filename in os.listdir(SDC_DATA_PATH):
-        if filename.startswith('error-test_'):
-            os.remove(os.path.join(SDC_DATA_PATH, filename))
-    if os.path.isdir(SDC_RESULTS_PATH):
-        for filename in os.listdir(SDC_RESULTS_PATH):
-            if filename.startswith('sdc-test_'):
-                os.remove(os.path.join(SDC_RESULTS_PATH, filename))
-
-    if os.path.isfile(HttpDestination.FILE):
-        os.remove(HttpDestination.FILE)
+    # api_client.delete_by_filtering('test_')
+    # if api_client.get_pipelines(text='Monitoring'):
+    #     api_client.stop_pipeline('Monitoring')
+    #     api_client.force_stop_pipeline('Monitoring')
+    #     time.sleep(2)
+    #     pipeline_monitoring = Pipeline('Monitoring')
+    #     pipeline_monitoring.delete()
+    #
+    # for filename in os.listdir(SDC_DATA_PATH):
+    #     if filename.startswith('error-test_'):
+    #         os.remove(os.path.join(SDC_DATA_PATH, filename))
+    # if os.path.isdir(SDC_RESULTS_PATH):
+    #     for filename in os.listdir(SDC_RESULTS_PATH):
+    #         if filename.startswith('sdc-test_'):
+    #             os.remove(os.path.join(SDC_RESULTS_PATH, filename))
+    #
+    # if os.path.isfile(HttpDestination.FILE):
+    #     os.remove(HttpDestination.FILE)
 
 
 def replace_destination(name):
@@ -40,7 +40,10 @@ def replace_destination(name):
         test_destination = json.load(f)
     pipeline = api_client.get_pipeline(name)
     test_destination['inputLanes'] = [pipeline['stages'][-2]['outputLanes'][0]]
-    pipeline['stages'][-1] = test_destination
+    for key, stage in enumerate(pipeline['stages']):
+        if stage['instanceName'] == 'destination':
+            test_destination['inputLanes'] = [pipeline['stages'][key-1]['outputLanes'][0]]
+            pipeline['stages'][key] = test_destination
     api_client.update_pipeline(name, pipeline)
 
 
