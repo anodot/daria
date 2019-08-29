@@ -47,8 +47,17 @@ state['HOST_ID'] = '{host_id}'
 
         source_config['offset'] = int(timestamp.timestamp() * 1e9)
 
-        influx_url = urlparse(source_config['host']).netloc.split(':')
-        client = InfluxDBClient(influx_url[0], influx_url[1], database=source_config['db'])
+        influx_url_parsed = urlparse(source_config['host'])
+        influx_url = influx_url_parsed.netloc.split(':')
+        args = {'database': source_config['db'], 'host': influx_url[0], 'port': influx_url[1]}
+        username = source_config.get('username', '')
+        password = source_config.get('password', '')
+        if username != '':
+            args['username'] = username
+            args['password'] = password
+        if influx_url_parsed.scheme == 'https':
+            args['ssl'] = True
+        client = InfluxDBClient(**args)
         client.write_points([{
             'measurement': 'agent_timestamps',
             'tags': {'pipeline_id': self.client_config['pipeline_id']},
@@ -59,7 +68,6 @@ state['HOST_ID'] = '{host_id}'
 
         self.update_source_configs()
 
-        source_config = self.client_config['source']['config']
         for stage in self.config['stages']:
 
             if stage['instanceName'] == 'JavaScriptEvaluator_02':
@@ -88,12 +96,6 @@ state['HOST_ID'] = '{host_id}'
                         for v in self.client_config['value']['values']:
                             conf['value'].append(f"${{record:type('/{v}') != 'STRING'}}")
 
-            if stage['instanceName'] == 'HTTPClient_05':
-                for conf in stage['configuration']:
-                    if conf['name'] == 'conf.resourceUrl':
-                        conf['value'] = urljoin(source_config['host'],
-                                                f"/write?db={source_config['db']}&precision=ns")
-
         self.update_destination_config()
 
     def update_source_configs(self):
@@ -102,40 +104,53 @@ state['HOST_ID'] = '{host_id}'
         source_config = self.client_config['source']['config']
         dimensions_to_select = [f'%22{d}%22' + '%3A%3Atag' for d in dimensions]
         values_to_select = [f'%22{v}%22' + '%3A%3Afield' for v in self.client_config['value']['values']]
+        username = source_config.get('username', '')
+        password = source_config.get('password', '')
+        if username != '':
+            self.client_config['source']['config']['conf.client.authType'] = 'BASIC'
+            self.client_config['source']['config']['conf.client.basicAuth.username'] = username
+            self.client_config['source']['config']['conf.client.basicAuth.password'] = password
+
         delay = self.client_config.get('delay', '0s')
         interval = self.client_config('interval', 60)
         columns = ','.join(dimensions_to_select + values_to_select)
         self.set_initial_offset()
-        query = f"/query?db={source_config['db']}&epoch=ns&q={self.QUERY_GET_DATA}".format(**{
-            'dimensions': columns,
-            'metric': self.client_config['measurement_name'],
-            'delay': delay,
-            'interval': str(interval) + 's',
-        })
-        source_config['conf.resourceUrl'] = urljoin(source_config['host'], query)
+
         source_config['conf.spoolingPeriod'] = interval
         source_config['conf.poolingTimeoutSecs'] = interval
 
-        get_timestamp_url = urljoin(source_config['host'],
-                                    f"/query?db={source_config['db']}&epoch=ns&q={self.QUERY_GET_TIMESTAMP}")
-
         for stage in self.config['stages']:
             if stage['instanceName'] == 'HTTPClient_03':
-                for conf in stage['configuration']:
-                    if conf['name'] in self.client_config['source']['config']:
-                        conf['value'] = self.client_config['source']['config'][conf['name']]
+                query = f"/query?db={source_config['db']}&epoch=ns&q={self.QUERY_GET_DATA}".format(**{
+                    'dimensions': columns,
+                    'metric': self.client_config['measurement_name'],
+                    'delay': delay,
+                    'interval': str(interval) + 's',
+                })
+                self.update_http_stage(stage, urljoin(source_config['host'], query))
 
             if stage['instanceName'] == 'HTTPClient_04':
-                for conf in stage['configuration']:
-                    if conf['name'] == 'conf.resourceUrl':
-                        conf['value'] = get_timestamp_url
+                get_timestamp_url = urljoin(source_config['host'],
+                                            f"/query?db={source_config['db']}&epoch=ns&q={self.QUERY_GET_TIMESTAMP}")
+                self.update_http_stage(stage, get_timestamp_url)
+
+            if stage['instanceName'] == 'HTTPClient_05':
+                self.update_http_stage(stage, urljoin(source_config['host'],
+                                                      f"/write?db={source_config['db']}&precision=ns"))
 
             if stage['instanceName'] == 'HTTPClient_06':
-                for conf in stage['configuration']:
-                    if conf['name'] == 'conf.resourceUrl':
-                        query = f"/query?db={source_config['db']}&epoch=ns&q={self.QUERY_CHECK_DATA}".format(**{
-                            'dimensions': columns,
-                            'metric': self.client_config['measurement_name'],
-                            'delay': delay
-                        })
-                        conf['value'] = urljoin(source_config['host'], query)
+                query = f"/query?db={source_config['db']}&epoch=ns&q={self.QUERY_CHECK_DATA}".format(**{
+                    'dimensions': columns,
+                    'metric': self.client_config['measurement_name'],
+                    'delay': delay
+                })
+                self.update_http_stage(stage, urljoin(source_config['host'], query))
+
+    def update_http_stage(self, stage, url=None):
+        for conf in stage['configuration']:
+            if conf['name'] == 'conf.resourceUrl' and url:
+                conf['value'] = url
+                continue
+
+            if conf['name'] in self.client_config['source']['config']:
+                conf['value'] = self.client_config['source']['config'][conf['name']]
