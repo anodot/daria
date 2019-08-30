@@ -30,8 +30,6 @@ state['CONSTANT_PROPERTIES'] = {constant_properties}
 state['HOST_ID'] = '{host_id}'
 """
 
-    DECLARE_VARS_JS_PARSE = "state['interval'] = {interval}"
-
     QUERY_GET_DATA = "SELECT+{dimensions}+FROM+%22{metric}%22+WHERE+%22time%22+%3E%3D+${{record:value('/last_timestamp')}}+AND+%22time%22+%3C+${{record:value('/last_timestamp')}}%2B{interval}+AND+%22time%22+%3C+now%28%29-{delay}"
     QUERY_GET_TIMESTAMP = "SELECT+last_timestamp+FROM+agent_timestamps+WHERE+pipeline_id%3D%27${pipeline:id()}%27+ORDER+BY+time+DESC+LIMIT+1"
     QUERY_CHECK_DATA = "SELECT+{dimensions}+FROM+%22{metric}%22+WHERE+%22time%22+%3E+${{record:value('/last_timestamp_value')}}+AND+%22time%22+%3C+now%28%29-{delay}+ORDER+BY+time+ASC+limit+1"
@@ -94,11 +92,6 @@ state['HOST_ID'] = '{host_id}'
         self.update_source_configs()
 
         for stage in self.config['stages']:
-            if stage['instanceName'] == 'JavaScriptEvaluator_01':
-                for conf in stage['configuration']:
-                    if conf['name'] == 'initScript':
-                        conf['value'] = self.DECLARE_VARS_JS_PARSE.format(interval=self.client_config.get('interval', 60) * 10e9)
-
             if stage['instanceName'] == 'JavaScriptEvaluator_02':
                 for conf in stage['configuration']:
                     if conf['name'] == 'stageRequiredFields':

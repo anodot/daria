@@ -988,7 +988,7 @@
         "value" : [ ]
       }, {
         "name" : "conf.client.requestLoggingConfig.enableRequestLogging",
-        "value" : true
+        "value" : false
       }, {
         "name" : "conf.client.requestLoggingConfig.logLevel",
         "value" : "INFO"
@@ -1038,7 +1038,7 @@
         "value" : ""
       }, {
         "name" : "script",
-        "value" : "var last_timestamps_text = 'agent_timestamps,pipeline_id=${pipeline:id()} last_timestamp='\n\nfor(var i = 0; i < records.length; i++) {\n  try {\n    if (records[i].value['response']['results'][0]['series'] == null) {\n      var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + records.length);\n      newRecord.value = {'last_timestamp_text': last_timestamps_text, 'no_data': true, 'last_timestamp_value': records[i].value['last_timestamp']}\n    \n      try {\n        output.write(newRecord);\n      } catch (e) {\n        error.write(newRecord, e);\n      }\n      continue;\n    } \n    series = records[i].value['response']['results'][0]['series'][0]\n    for (var k = 0; k < series['values'].length; k++) {\n      var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + k);\n      newRecord.value = {};\n      for (var c = 0; c < series['columns'].length; c++) {\n\t\tif (series['values'][k][c] == null) {\n          continue;\n        }\n        newRecord.value[series['columns'][c]] = typeof series['values'][k][c] === 'string' \n          ? series['values'][k][c].replace(/[\\. ]+/g, '_') : series['values'][k][c]\n      }\n      output.write(newRecord);\n    }\n\n\tvar newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + records.length);\n    newRecord.value = {'last_timestamp': last_timestamps_text + (parseInt(records[i].value['last_timestamp']) + state['interval']).toString() + 'i'}\n    \n    try {\n      output.write(newRecord);\n    } catch (e) {\n      error.write(newRecord, e);\n    }\n  } catch (e) {\n    // Send record to error\n    error.write(records[i], e);\n  }\n}"
+        "value" : "var last_timestamps_text = 'agent_timestamps,pipeline_id=${pipeline:id()} last_timestamp='\n\nfor(var i = 0; i < records.length; i++) {\n  try {\n    if (records[i].value['response']['results'][0]['series'] == null) {\n      var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + records.length);\n      newRecord.value = {'last_timestamp_text': last_timestamps_text, 'no_data': true, 'last_timestamp_value': records[i].value['last_timestamp']}\n    \n      try {\n        output.write(newRecord);\n      } catch (e) {\n        error.write(newRecord, e);\n      }\n      continue;\n    } \n    series = records[i].value['response']['results'][0]['series'][0]\n    for (var k = 0; k < series['values'].length; k++) {\n      var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + k);\n      newRecord.value = {};\n      for (var c = 0; c < series['columns'].length; c++) {\n\t\tif (series['values'][k][c] == null) {\n          continue;\n        }\n        newRecord.value[series['columns'][c]] = typeof series['values'][k][c] === 'string' \n          ? series['values'][k][c].replace(/[\\. ]+/g, '_') : series['values'][k][c]\n      }\n      output.write(newRecord);\n    }\n\n\tvar newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + records.length);\n    newRecord.value = {'last_timestamp': last_timestamps_text + (parseInt(series['values'][k-1][0])+1).toString() + 'i'}\n    \n    try {\n      output.write(newRecord);\n    } catch (e) {\n      error.write(newRecord, e);\n    }\n  } catch (e) {\n    // Send record to error\n    error.write(records[i], e);\n  }\n}"
       }, {
         "name" : "destroyScript",
         "value" : "/**\n * Available Objects:\n * \n *  state: a dict that is preserved between invocations of this script. \n *        Useful for caching bits of data e.g. counters and long-lived resources.\n *\n *  log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n *                               loglevel is any log4j level: e.g. info, error, warn, trace.\n *   sdcFunctions.getFieldNull(Record, 'field path'): Receive a constant defined above \n *                          to check if the field is typed field with value null\n *   sdcFunctions.createMap(boolean listMap): Create a map for use as a field in a record. \n *                          Pass true to this function to create a list map (ordered map)\n *   sdcFunctions.createEvent(String type, int version): Creates a new event.\n *                          Create new empty event with standard headers.\n *   sdcFunctions.toEvent(Record): Send event to event stream\n *                          Only events created with sdcFunctions.createEvent are supported.\n */\n\n// state['connection'].close();"
@@ -1392,7 +1392,7 @@
         "value" : [ ]
       }, {
         "name" : "conf.client.requestLoggingConfig.enableRequestLogging",
-        "value" : true
+        "value" : false
       }, {
         "name" : "conf.client.requestLoggingConfig.logLevel",
         "value" : "INFO"
@@ -1814,7 +1814,7 @@
         "value" : [ ]
       }, {
         "name" : "conf.client.requestLoggingConfig.enableRequestLogging",
-        "value" : true
+        "value" : false
       }, {
         "name" : "conf.client.requestLoggingConfig.logLevel",
         "value" : "INFO"
