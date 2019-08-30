@@ -45,7 +45,6 @@ class TestPipelineBase(object):
         assert api_client.get_pipeline_status(name)['status'] == 'RUNNING'
 
     def test_stop(self, cli_runner, name):
-        time.sleep(15)
         result = cli_runner.invoke(pipeline_cli.stop, [name])
         assert result.exit_code == 0
         assert api_client.get_pipeline_status(name)['status'] in ['STOPPED']
