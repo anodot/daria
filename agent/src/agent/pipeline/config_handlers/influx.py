@@ -34,6 +34,41 @@ state['HOST_ID'] = '{host_id}'
     QUERY_GET_TIMESTAMP = "SELECT+last_timestamp+FROM+agent_timestamps+WHERE+pipeline_id%3D%27${pipeline:id()}%27+ORDER+BY+time+DESC+LIMIT+1"
     QUERY_CHECK_DATA = "SELECT+{dimensions}+FROM+%22{metric}%22+WHERE+%22time%22+%3E+${{record:value('/last_timestamp_value')}}+AND+%22time%22+%3C+now%28%29-{delay}+ORDER+BY+time+ASC+limit+1"
 
+    def get_write_client(self):
+        host, db, username, password = self.get_write_config()
+        influx_url_parsed = urlparse(host)
+        influx_url = influx_url_parsed.netloc.split(':')
+        args = {'database': db, 'host': influx_url[0], 'port': influx_url[1]}
+        if username != '':
+            args['username'] = username
+            args['password'] = password
+        if influx_url_parsed.scheme == 'https':
+            args['ssl'] = True
+        return InfluxDBClient(**args)
+
+    def get_write_config(self):
+        source_config = self.client_config['source']['config']
+        if 'write_host' in source_config:
+            host = source_config['write_host']
+            db = source_config['write_db']
+            username = source_config.get('write_username', '')
+            password = source_config.get('write_password', '')
+        else:
+            host = source_config['host']
+            db = source_config['db']
+            username = source_config.get('username', '')
+            password = source_config.get('password', '')
+        return host, db, username, password
+
+    def set_write_config_pipeline(self):
+        host, db, username, password = self.get_write_config()
+        config = {'host': host, 'db': db}
+        if username != '':
+            config['conf.client.authType'] = 'BASIC'
+            config['conf.client.basicAuth.username'] = username
+            config['conf.client.basicAuth.password'] = password
+        return config
+
     def set_initial_offset(self):
         source_config = self.client_config['source']['config']
         if not source_config['offset']:
@@ -46,18 +81,7 @@ state['HOST_ID'] = '{host_id}'
 
         source_config['offset'] = int(timestamp.timestamp() * 1e9)
 
-        influx_url_parsed = urlparse(source_config['host'])
-        influx_url = influx_url_parsed.netloc.split(':')
-        args = {'database': source_config['db'], 'host': influx_url[0], 'port': influx_url[1]}
-        username = source_config.get('username', '')
-        password = source_config.get('password', '')
-        if username != '':
-            args['username'] = username
-            args['password'] = password
-        if influx_url_parsed.scheme == 'https':
-            args['ssl'] = True
-        client = InfluxDBClient(**args)
-        client.write_points([{
+        self.get_write_client().write_points([{
             'measurement': 'agent_timestamps',
             'tags': {'pipeline_id': self.client_config['pipeline_id']},
             'fields': {'last_timestamp': source_config['offset']}
@@ -118,6 +142,8 @@ state['HOST_ID'] = '{host_id}'
         source_config['conf.spoolingPeriod'] = interval
         source_config['conf.poolingTimeoutSecs'] = interval
 
+        write_config = self.set_write_config_pipeline()
+
         for stage in self.config['stages']:
             if stage['instanceName'] == 'HTTPClient_03':
                 query = f"/query?db={source_config['db']}&epoch=ns&q={self.QUERY_GET_DATA}".format(**{
@@ -126,16 +152,16 @@ state['HOST_ID'] = '{host_id}'
                     'delay': delay,
                     'interval': str(interval) + 's',
                 })
-                self.update_http_stage(stage, urljoin(source_config['host'], query))
+                self.update_http_stage(stage, self.client_config['source']['config'], urljoin(source_config['host'], query))
 
             if stage['instanceName'] == 'HTTPClient_04':
-                get_timestamp_url = urljoin(source_config['host'],
-                                            f"/query?db={source_config['db']}&epoch=ns&q={self.QUERY_GET_TIMESTAMP}")
-                self.update_http_stage(stage, get_timestamp_url)
+                get_timestamp_url = urljoin(write_config['host'],
+                                            f"/query?db={write_config['db']}&epoch=ns&q={self.QUERY_GET_TIMESTAMP}")
+                self.update_http_stage(stage, write_config, get_timestamp_url)
 
             if stage['instanceName'] == 'HTTPClient_05':
-                self.update_http_stage(stage, urljoin(source_config['host'],
-                                                      f"/write?db={source_config['db']}&precision=ns"))
+                self.update_http_stage(stage, write_config, urljoin(write_config['host'],
+                                                      f"/write?db={write_config['db']}&precision=ns"))
 
             if stage['instanceName'] == 'HTTPClient_06':
                 query = f"/query?db={source_config['db']}&epoch=ns&q={self.QUERY_CHECK_DATA}".format(**{
@@ -143,13 +169,13 @@ state['HOST_ID'] = '{host_id}'
                     'metric': self.client_config['measurement_name'],
                     'delay': delay
                 })
-                self.update_http_stage(stage, urljoin(source_config['host'], query))
+                self.update_http_stage(stage, self.client_config['source']['config'], urljoin(source_config['host'], query))
 
-    def update_http_stage(self, stage, url=None):
+    def update_http_stage(self, stage, config, url=None):
         for conf in stage['configuration']:
             if conf['name'] == 'conf.resourceUrl' and url:
                 conf['value'] = url
                 continue
 
-            if conf['name'] in self.client_config['source']['config']:
-                conf['value'] = self.client_config['source']['config'][conf['name']]
+            if conf['name'] in config:
+                conf['value'] = config[conf['name']]
