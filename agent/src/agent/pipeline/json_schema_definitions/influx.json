@@ -14,7 +14,9 @@
         "optional": {"type": "array", "items": {"type": "string"}}
       }}
     ]},
-    "properties": {"type": "object"}
+    "properties": {"type": "object"},
+    "delay": {"type": "string"},
+    "interval": {"type": "integer"}
   },
   "required": ["measurement_name", "value", "dimensions"]
 }

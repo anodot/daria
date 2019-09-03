@@ -67,9 +67,11 @@ class BaseConfigHandler(ABC):
         return dimensions
 
     def update_destination_config(self):
-        for conf in self.config['stages'][-1]['configuration']:
-            if conf['name'] in self.client_config['destination']['config']:
-                conf['value'] = self.client_config['destination']['config'][conf['name']]
+        for stage in self.config['stages']:
+            if stage['instanceName'] == 'destination':
+                for conf in stage['configuration']:
+                    if conf['name'] in self.client_config['destination']['config']:
+                        conf['value'] = self.client_config['destination']['config'][conf['name']]
 
     def convert_timestamp_to_unix(self, stage):
         for conf in stage['configuration']:

@@ -1,7 +1,9 @@
 import click
+import time
 from datetime import datetime
 from urllib.parse import urlparse
 from influxdb import InfluxDBClient
+from influxdb.exceptions import InfluxDBClientError
 
 
 def is_url(url):
@@ -23,12 +25,21 @@ class PromptInflux:
         if influx_url_parsed.scheme == 'https':
             args['ssl'] = True
         client = InfluxDBClient(**args)
-        privileges = client.get_list_privileges(config['username'])
-        for privilege in privileges:
-            if privilege['privilege'] == 'WRITE' and privilege['database'] == config['db']:
-                return True
+        try:
+            client.write_points([{
+                "measurement": "agent_test",
+                "time": time.time_ns(),
+                "fields": {
+                    "val": 1.0
+                }
+            }])
+        except InfluxDBClientError as e:
+            if e.code == 403:
+                return False
 
-        return False
+        client.drop_measurement('agent_test')
+
+        return True
 
     def prompt(self, default_config, advanced=False):
         config = dict()
@@ -53,8 +64,6 @@ class PromptInflux:
             config['write_db'] = click.prompt('Write database', type=click.STRING,
                                               default=default_config.get('write_db', ''))
 
-        config['limit'] = click.prompt('Limit', type=click.INT, default=default_config.get('limit', 1000))
-
         config['offset'] = click.prompt(
             'Initial offset (amount of days ago or specific date in format "dd/MM/yyyy HH:mm")',
             type=click.STRING,
@@ -70,7 +79,5 @@ class PromptInflux:
                     datetime.strptime(config['offset'], '%d/%m/%Y %H:%M').timestamp()
                 except ValueError as e:
                     raise click.UsageError(str(e))
-        config['conf.spoolingPeriod'] = click.prompt('Querying interval, seconds', type=click.INT,
-                                                     default=default_config.get('conf.spoolingPeriod', 60))
-        config['conf.poolingTimeoutSecs'] = config['conf.spoolingPeriod']
+
         return config

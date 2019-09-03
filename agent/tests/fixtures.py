@@ -40,7 +40,10 @@ def replace_destination(name):
         test_destination = json.load(f)
     pipeline = api_client.get_pipeline(name)
     test_destination['inputLanes'] = [pipeline['stages'][-2]['outputLanes'][0]]
-    pipeline['stages'][-1] = test_destination
+    for key, stage in enumerate(pipeline['stages']):
+        if stage['instanceName'] == 'destination':
+            test_destination['inputLanes'] = [pipeline['stages'][key-1]['outputLanes'][0]]
+            pipeline['stages'][key] = test_destination
     api_client.update_pipeline(name, pipeline)
 
 
