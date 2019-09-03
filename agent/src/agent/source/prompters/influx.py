@@ -1,7 +1,9 @@
 import click
+import time
 from datetime import datetime
 from urllib.parse import urlparse
 from influxdb import InfluxDBClient
+from influxdb.exceptions import InfluxDBClientError
 
 
 def is_url(url):
@@ -23,12 +25,21 @@ class PromptInflux:
         if influx_url_parsed.scheme == 'https':
             args['ssl'] = True
         client = InfluxDBClient(**args)
-        privileges = client.get_list_privileges(config['username'])
-        for privilege in privileges:
-            if privilege['privilege'] == 'WRITE' and privilege['database'] == config['db']:
-                return True
+        try:
+            client.write_points([{
+                "measurement": "agent_test",
+                "time": time.time_ns(),
+                "fields": {
+                    "val": 1.0
+                }
+            }])
+        except InfluxDBClientError as e:
+            if e.code == 403:
+                return False
 
-        return False
+        client.drop_measurement('agent_test')
+
+        return True
 
     def prompt(self, default_config, advanced=False):
         config = dict()
