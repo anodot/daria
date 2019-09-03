@@ -138,14 +138,13 @@ state['HOST_ID'] = '{host_id}'
         columns = ','.join(dimensions_to_select + values_to_select)
         self.set_initial_offset()
 
-        source_config['conf.spoolingPeriod'] = interval
-        source_config['conf.poolingTimeoutSecs'] = interval
-
         write_config = self.set_write_config_pipeline()
+        write_config['conf.spoolingPeriod'] = interval
+        write_config['conf.poolingTimeoutSecs'] = interval
 
         for stage in self.config['stages']:
             if stage['instanceName'] == 'HTTPClient_03':
-                query = f"/query?db={source_config['db']}&epoch=ns&q={self.QUERY_GET_DATA}".format(**{
+                query = f"/query?db={source_config['db']}&epoch=ms&q={self.QUERY_GET_DATA}".format(**{
                     'dimensions': columns,
                     'metric': self.client_config['measurement_name'],
                     'delay': delay,
