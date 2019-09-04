@@ -2,6 +2,7 @@ import os
 
 from .base import BaseConfigHandler, ConfigHandlerException
 from agent.logger import get_logger
+from agent.constants import HOSTNAME
 from datetime import datetime, timedelta
 from influxdb import InfluxDBClient
 from urllib.parse import urljoin, urlparse
@@ -28,6 +29,7 @@ state['TARGET_TYPE'] = '{target_type}';
 state['VALUE_CONSTANT'] = {value_constant}
 state['CONSTANT_PROPERTIES'] = {constant_properties}
 state['HOST_ID'] = '{host_id}'
+state['HOST_NAME'] = '{host_name}'
 """
 
     QUERY_GET_DATA = "SELECT+{dimensions}+FROM+%22{metric}%22+WHERE+%22time%22+%3E%3D+${{record:value('/last_timestamp')}}+AND+%22time%22+%3C+${{record:value('/last_timestamp')}}%2B{interval}+AND+%22time%22+%3C+now%28%29-{delay}"
@@ -106,7 +108,8 @@ state['HOST_ID'] = '{host_id}'
                             target_type=self.client_config.get('target_type', 'gauge'),
                             value_constant=self.client_config['value'].get('constant', '1'),
                             constant_properties=str(self.client_config.get('properties', {})),
-                            host_id=self.client_config['destination']['host_id']
+                            host_id=self.client_config['destination']['host_id'],
+                            host_name=HOSTNAME
                         )
 
                     if conf['name'] == 'stageRecordPreconditions':
