@@ -3,7 +3,7 @@ import os
 
 from abc import ABC, abstractmethod
 from agent.logger import get_logger
-from agent.constants import ERRORS_DIR
+from agent.constants import ERRORS_DIR, HOSTNAME
 from copy import deepcopy
 
 logger = get_logger(__name__)
@@ -103,9 +103,12 @@ class BaseConfigHandler(ABC):
             conf['value'].append({'fieldToSet': '/tags', 'expression': '${emptyMap()}'})
             conf['value'].append({'fieldToSet': '/tags/source', 'expression': '${emptyList()}'})
             conf['value'].append({'fieldToSet': '/tags/source_host_id', 'expression': '${emptyList()}'})
+            conf['value'].append({'fieldToSet': '/tags/source_host_name', 'expression': '${emptyList()}'})
             conf['value'].append({'fieldToSet': '/tags/source[0]', 'expression': 'anodot-agent'})
             conf['value'].append({'fieldToSet': '/tags/source_host_id[0]',
                                   'expression': self.client_config['destination']['host_id']})
+            conf['value'].append({'fieldToSet': '/tags/source_host_name[0]',
+                                  'expression': HOSTNAME})
             return
 
 

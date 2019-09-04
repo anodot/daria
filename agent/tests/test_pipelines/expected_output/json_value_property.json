@@ -10,7 +10,8 @@
     },
     "tags": {
       "source": ["anodot-agent"],
-      "source_host_id": ["ABCDEF"]
+      "source_host_id": ["ABCDEF"],
+      "source_host_name": ["agent"]
     },
     "timestamp": 1512867600
   },
@@ -25,7 +26,8 @@
     },
     "tags": {
       "source": ["anodot-agent"],
-      "source_host_id": ["ABCDEF"]
+      "source_host_id": ["ABCDEF"],
+      "source_host_name": ["agent"]
     },
     "timestamp": 1512871200
   },
@@ -40,7 +42,8 @@
     },
     "tags": {
       "source": ["anodot-agent"],
-      "source_host_id": ["ABCDEF"]
+      "source_host_id": ["ABCDEF"],
+      "source_host_name": ["agent"]
     },
     "timestamp": 1512874800
   },
@@ -55,7 +58,8 @@
     },
     "tags": {
       "source": ["anodot-agent"],
-      "source_host_id": ["ABCDEF"]
+      "source_host_id": ["ABCDEF"],
+      "source_host_name": ["agent"]
     },
     "timestamp": 1512878400
   },
@@ -70,7 +74,8 @@
     },
     "tags": {
       "source": ["anodot-agent"],
-      "source_host_id": ["ABCDEF"]
+      "source_host_id": ["ABCDEF"],
+      "source_host_name": ["agent"]
     },
     "timestamp": 1512882000
   },
@@ -85,7 +90,8 @@
     },
     "tags": {
       "source": ["anodot-agent"],
-      "source_host_id": ["ABCDEF"]
+      "source_host_id": ["ABCDEF"],
+      "source_host_name": ["agent"]
     },
     "timestamp": 1512889200
   }
