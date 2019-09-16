@@ -1,6 +1,7 @@
 import json
 import os
 import pytest
+import time
 
 from ..fixtures import cli_runner, get_output, replace_destination, get_input_file_path
 from agent.pipeline import cli as pipeline_cli, Pipeline

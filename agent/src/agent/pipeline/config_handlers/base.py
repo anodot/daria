@@ -3,7 +3,7 @@ import os
 
 from abc import ABC, abstractmethod
 from agent.logger import get_logger
-from agent.constants import ERRORS_DIR
+from agent.constants import ERRORS_DIR, HOSTNAME
 from copy import deepcopy
 
 logger = get_logger(__name__)
@@ -67,9 +67,11 @@ class BaseConfigHandler(ABC):
         return dimensions
 
     def update_destination_config(self):
-        for conf in self.config['stages'][-1]['configuration']:
-            if conf['name'] in self.client_config['destination']['config']:
-                conf['value'] = self.client_config['destination']['config'][conf['name']]
+        for stage in self.config['stages']:
+            if stage['instanceName'] == 'destination':
+                for conf in stage['configuration']:
+                    if conf['name'] in self.client_config['destination']['config']:
+                        conf['value'] = self.client_config['destination']['config'][conf['name']]
 
     def convert_timestamp_to_unix(self, stage):
         for conf in stage['configuration']:
@@ -101,9 +103,12 @@ class BaseConfigHandler(ABC):
             conf['value'].append({'fieldToSet': '/tags', 'expression': '${emptyMap()}'})
             conf['value'].append({'fieldToSet': '/tags/source', 'expression': '${emptyList()}'})
             conf['value'].append({'fieldToSet': '/tags/source_host_id', 'expression': '${emptyList()}'})
+            conf['value'].append({'fieldToSet': '/tags/source_host_name', 'expression': '${emptyList()}'})
             conf['value'].append({'fieldToSet': '/tags/source[0]', 'expression': 'anodot-agent'})
             conf['value'].append({'fieldToSet': '/tags/source_host_id[0]',
                                   'expression': self.client_config['destination']['host_id']})
+            conf['value'].append({'fieldToSet': '/tags/source_host_name[0]',
+                                  'expression': HOSTNAME})
             return
 
 

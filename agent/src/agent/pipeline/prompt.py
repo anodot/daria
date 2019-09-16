@@ -127,6 +127,15 @@ class PromptConfigKafka(PromptConfig):
 
 
 class PromptConfigInflux(PromptConfig):
+    def set_config(self):
+        super().set_config()
+        self.set_delay()
+
+    def set_delay(self):
+        self.config['delay'] = click.prompt('Delay', type=click.STRING, default=self.default_config.get('delay', '0s'))
+        self.config['interval'] = click.prompt('Interval, seconds', type=click.INT,
+                                               default=self.default_config.get('interval', 60))
+
     def set_timestamp(self):
         pass
 

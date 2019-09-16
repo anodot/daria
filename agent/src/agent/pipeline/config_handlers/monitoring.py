@@ -2,6 +2,7 @@ import json
 import os
 
 from .base import BaseConfigHandler
+from agent.constants import HOSTNAME
 
 
 class MonitoringConfigHandler(BaseConfigHandler):
@@ -12,6 +13,7 @@ state['host_id'] = 'host_id';
 */
 
 state['host_id'] = '{host_id}';
+state['host_name'] = '{host_name}';
 """
 
     def load_base_config(self):
@@ -33,7 +35,9 @@ state['host_id'] = '{host_id}';
                 for conf in stage['configuration']:
                     if conf['name'] == 'initScript':
                         conf['value'] = self.DECLARE_VARS_JS.format(
-                            host_id=self.client_config['destination']['host_id'])
+                            host_id=self.client_config['destination']['host_id'],
+                            host_name=HOSTNAME
+                        )
 
     def set_labels(self):
         pass

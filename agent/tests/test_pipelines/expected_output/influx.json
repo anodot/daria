@@ -1,6 +1,6 @@
-[
+[[
   {
-    "timestamp": 1552654426,
+    "timestamp": 1552654426.147,
     "properties": {
       "target_type": "gauge",
       "cpu": "cpu-total-usage",
@@ -11,12 +11,13 @@
     },
     "tags": {
       "source": ["anodot-agent"],
-      "source_host_id": ["ABCDEF"]
+      "source_host_id": ["ABCDEF"],
+      "source_host_name": ["agent"]
     },
     "value": 0.204
   },
   {
-    "timestamp": 1552654426,
+    "timestamp": 1552654426.147,
     "properties": {
       "target_type": "gauge",
       "cpu": "cpu-total-usage",
@@ -27,12 +28,13 @@
     },
     "tags": {
       "source": ["anodot-agent"],
-      "source_host_id": ["ABCDEF"]
+      "source_host_id": ["ABCDEF"],
+      "source_host_name": ["agent"]
     },
     "value": 62.53
   },
   {
-    "timestamp": 1552754426,
+    "timestamp": 1552754426.174,
     "properties": {
       "target_type": "gauge",
       "cpu": "cpu-total-usage",
@@ -43,12 +45,13 @@
     },
     "tags": {
       "source": ["anodot-agent"],
-      "source_host_id": ["ABCDEF"]
+      "source_host_id": ["ABCDEF"],
+      "source_host_name": ["agent"]
     },
     "value": 0.224
   },
   {
-    "timestamp": 1552754426,
+    "timestamp": 1552754426.174,
     "properties": {
       "target_type": "gauge",
       "cpu": "cpu-total-usage",
@@ -59,12 +62,13 @@
     },
     "tags": {
       "source": ["anodot-agent"],
-      "source_host_id": ["ABCDEF"]
+      "source_host_id": ["ABCDEF"],
+      "source_host_name": ["agent"]
     },
     "value": 14.247
   },
   {
-    "timestamp": 1552854426,
+    "timestamp": 1552854426.174,
     "properties": {
       "target_type": "gauge",
       "cpu": "cpu-total-usage",
@@ -75,12 +79,13 @@
     },
     "tags": {
       "source": ["anodot-agent"],
-      "source_host_id": ["ABCDEF"]
+      "source_host_id": ["ABCDEF"],
+      "source_host_name": ["agent"]
     },
     "value": 0.22432747346756737
   },
   {
-    "timestamp": 1552854426,
+    "timestamp": 1552854426.174,
     "properties": {
       "target_type": "gauge",
       "cpu": "cpu-total-usage",
@@ -91,12 +96,13 @@
     },
     "tags": {
       "source": ["anodot-agent"],
-      "source_host_id": ["ABCDEF"]
+      "source_host_id": ["ABCDEF"],
+      "source_host_name": ["agent"]
     },
     "value": 14.247
   },
   {
-    "timestamp": 1552954426,
+    "timestamp": 1552954426.168,
     "properties": {
       "target_type": "gauge",
       "cpu": "cpu-total-usage",
@@ -106,12 +112,13 @@
     },
     "tags": {
       "source": ["anodot-agent"],
-      "source_host_id": ["ABCDEF"]
+      "source_host_id": ["ABCDEF"],
+      "source_host_name": ["agent"]
     },
     "value": 0.224
   },
   {
-    "timestamp": 1552954426,
+    "timestamp": 1552954426.168,
     "properties": {
       "target_type": "gauge",
       "cpu": "cpu-total-usage",
@@ -121,12 +128,13 @@
     },
     "tags": {
       "source": ["anodot-agent"],
-      "source_host_id": ["ABCDEF"]
+      "source_host_id": ["ABCDEF"],
+      "source_host_name": ["agent"]
     },
     "value": 14.247
   },
   {
-    "timestamp": 1553054426,
+    "timestamp": 1553054426.168,
     "properties": {
       "target_type": "gauge",
       "cpu": "cpu-total-usage",
@@ -137,12 +145,13 @@
     },
     "tags": {
       "source": ["anodot-agent"],
-      "source_host_id": ["ABCDEF"]
+      "source_host_id": ["ABCDEF"],
+      "source_host_name": ["agent"]
     },
     "value": 0.504
   },
   {
-    "timestamp": 1553054426,
+    "timestamp": 1553054426.168,
     "properties": {
       "target_type": "gauge",
       "cpu": "cpu-total-usage",
@@ -153,12 +162,13 @@
     },
     "tags": {
       "source": ["anodot-agent"],
-      "source_host_id": ["ABCDEF"]
+      "source_host_id": ["ABCDEF"],
+      "source_host_name": ["agent"]
     },
     "value": 260404905034043060000
   },
   {
-    "timestamp": 1553154426,
+    "timestamp": 1553154426.168,
     "properties": {
       "target_type": "gauge",
       "cpu": "cpu-total-usage",
@@ -169,12 +179,13 @@
     },
     "tags": {
       "source": ["anodot-agent"],
-      "source_host_id": ["ABCDEF"]
+      "source_host_id": ["ABCDEF"],
+      "source_host_name": ["agent"]
     },
     "value": 0.504
   },
   {
-    "timestamp": 1553154426,
+    "timestamp": 1553154426.168,
     "properties": {
       "target_type": "gauge",
       "cpu": "cpu-total-usage",
@@ -185,8 +196,9 @@
     },
     "tags": {
       "source": ["anodot-agent"],
-      "source_host_id": ["ABCDEF"]
+      "source_host_id": ["ABCDEF"],
+      "source_host_name": ["agent"]
     },
     "value": 26
   }
-]
+]]
