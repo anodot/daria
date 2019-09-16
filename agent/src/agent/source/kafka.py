@@ -53,6 +53,7 @@ class KafkaSource(Source):
         self.config[self.CONFIG_CONSUMER_GROUP] = click.prompt('Consumer group', type=click.STRING,
                                                                default=default_config.get(self.CONFIG_CONSUMER_GROUP,
                                                                                           'anodotAgent'))
+        self.prompt_topic(default_config)
         self.config[self.CONFIG_OFFSET_TYPE] = click.prompt('Initial offset',
                                                             type=click.Choice([self.OFFSET_EARLIEST, self.OFFSET_LATEST,
                                                                                self.OFFSET_TIMESTAMP]),
