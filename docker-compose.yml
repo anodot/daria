@@ -8,6 +8,7 @@ services:
     restart: on-failure
     volumes:
       - sdc-data:/data
+      - ./certs:/home/certs
 #    environment:
 #      SDC_CONF_PARSER_LIMIT: 2048576
 #      SDC_CONF_RUNNER_THREAD_POOL_SIZE: "200"
@@ -60,17 +61,31 @@ services:
     container_name: agent-kafka
     ports:
       - "9092:9092"
+    expose:
+      - "9093"
+      - "9094"
     environment:
-      KAFKA_LISTENERS: PLAINTEXT://:29092,PLAINTEXT_HOST://:9092
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://:29092,PLAINTEXT_HOST://:9092,SSL://:9093,SSL_DOCKER://:9094
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092,SSL://localhost:9093,SSL_DOCKER://kafka:9094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,SSL:SSL,SSL_DOCKER:SSL
+#      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_CREATE_TOPICS: "test:1:1,test-json:1:1"
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_SSL_KEYSTORE_LOCATION: '/certs/docker.kafka.server.keystore.jks'
+      KAFKA_SSL_KEYSTORE_PASSWORD: 'kafkadocker'
+      KAFKA_SSL_KEY_PASSWORD: 'kafkadocker'
+      KAFKA_SSL_TRUSTSTORE_LOCATION: '/certs/docker.kafka.server.truststore.jks'
+      KAFKA_SSL_TRUSTSTORE_PASSWORD: 'kafkadocker'
+      KAFKA_SSL_CLIENT_AUTH: 'required'
+      KAFKA_SECURITY_INTER_BROKER_PROTOCOL: 'SSL'
+      KAFKA_SECURITY_PROTOCOL: 'SSL'
+      KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: ''
+#      KAFKA_LOG4J_ROOT_LOGLEVEL: 'DEBUG, stdout'
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./test-datasets:/home
+      - ./certs:/certs
 
   influx:
     image: influxdb
@@ -81,11 +96,11 @@ services:
       - ./volumes/influx-initdb:/docker-entrypoint-initdb.d
     environment:
       INFLUXDB_DB: test
-      INFLUXDB_HTTP_AUTH_ENABLED: 'true'
-      INFLUXDB_ADMIN_USER: admin
-      INFLUXDB_ADMIN_PASSWORD: admin
-      INFLUXDB_READ_USER: ro
-      INFLUXDB_READ_USER_PASSWORD: roro
+#      INFLUXDB_HTTP_AUTH_ENABLED: 'true'
+#      INFLUXDB_ADMIN_USER: admin
+#      INFLUXDB_ADMIN_PASSWORD: admin
+#      INFLUXDB_READ_USER: ro
+#      INFLUXDB_READ_USER_PASSWORD: roro
 
   squid:
     image: datadog/squid
