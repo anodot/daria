@@ -22,7 +22,9 @@ class InfluxSource(Source):
     def get_influx_client(self):
         influx_url_parsed = urlparse(self.config['host'])
         influx_url = influx_url_parsed.netloc.split(':')
-        args = {'host': influx_url[0], 'port': influx_url[1]}
+        args = {'host': influx_url[0]}
+        if len(influx_url) > 1:
+            args['port'] = influx_url[1]
         if self.config['username'] != '':
             args['username'] = self.config['username']
             args['password'] = self.config['password']
@@ -55,7 +57,7 @@ class InfluxSource(Source):
     def prompt_connection(self, default_config):
         self.config['host'] = click.prompt('InfluxDB API url', type=click.STRING, default=default_config.get('host'))
         if not is_url(self.config['host']):
-            raise click.UsageError(f"{self.config['host']} is not and url")
+            raise click.UsageError(f"Wrong url format. Correct format is `scheme://host:port`")
 
         self.config['username'] = click.prompt('Username', type=click.STRING, default=default_config.get('username', ''))
         self.config['password'] = click.prompt('Password', type=click.STRING, default=default_config.get('password', ''))
