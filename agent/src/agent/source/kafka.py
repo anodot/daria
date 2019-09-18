@@ -24,14 +24,14 @@ class KafkaSource(Source):
 
     TEST_PIPELINE_NAME = 'test_kafka'
 
-    def wait_for_preview_data(self, preview_id, tries=5, initial_delay=2):
+    def wait_for_preview(self, preview_id, tries=5, initial_delay=2):
         for i in range(1, tries):
-            response = api_client.get_preview_data(self.TEST_PIPELINE_NAME, preview_id)
-            if response:
+            response = api_client.get_preview_status(self.TEST_PIPELINE_NAME, preview_id)
+            if response['status'] != 'VALIDATING' and response['status'] != 'CREATED':
                 return response
             delay = initial_delay ** i
             if i == tries:
-                raise SourceException(f"Can't validate connection")
+                raise SourceException(f"Can't connect to kafka")
             print(f"Validating connection. Check again after {delay} seconds...")
             time.sleep(delay)
 
@@ -49,7 +49,8 @@ class KafkaSource(Source):
         api_client.update_pipeline(self.TEST_PIPELINE_NAME, pipeline_config)
 
         validate_status = api_client.validate(self.TEST_PIPELINE_NAME)
-        preview_data = self.wait_for_preview_data(validate_status['previewerId'])
+        self.wait_for_preview(validate_status['previewerId'])
+        preview_data = api_client.get_preview_data(self.TEST_PIPELINE_NAME, validate_status['previewerId'])
         if preview_data['status'] == 'INVALID':
             errors = []
             for issue in preview_data['issues']['stageIssues']['KafkaConsumer_01']:

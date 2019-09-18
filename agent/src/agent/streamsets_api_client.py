@@ -241,6 +241,11 @@ class StreamSetsApiClient:
         logger.info(f'Validate pipeline {pipeline_id}')
         return self.session.get(self.build_url('pipeline', pipeline_id, 'preview', previewer_id))
 
+    @endpoint
+    def get_preview_status(self, pipeline_id: str, previewer_id: str):
+        logger.info(f'Validate pipeline {pipeline_id}')
+        return self.session.get(self.build_url('pipeline', pipeline_id, 'preview', previewer_id, 'status'))
+
 
 api_client = StreamSetsApiClient(os.environ.get('STREAMSETS_USERNAME', 'admin'),
                                  os.environ.get('STREAMSETS_PASSWORD', 'admin'),
