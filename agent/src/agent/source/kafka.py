@@ -1,8 +1,11 @@
 import click
+import json
+import os
+import time
 
-from .abstract_source import Source
+from .abstract_source import Source, SourceException
 from agent.tools import infinite_retry
-from kafka import KafkaConsumer
+from agent.streamsets_api_client import api_client
 
 
 class KafkaSource(Source):
@@ -19,6 +22,44 @@ class KafkaSource(Source):
     OFFSET_LATEST = 'LATEST'
     OFFSET_TIMESTAMP = 'TIMESTAMP'
 
+    TEST_PIPELINE_NAME = 'test_kafka'
+
+    def wait_for_preview_data(self, preview_id, tries=5, initial_delay=2):
+        for i in range(1, tries):
+            response = api_client.get_preview_data(self.TEST_PIPELINE_NAME, preview_id)
+            if response:
+                return response
+            delay = initial_delay ** i
+            if i == tries:
+                raise SourceException(f"Can't validate connection")
+            print(f"Validating connection. Check again after {delay} seconds...")
+            time.sleep(delay)
+
+    def validate_connection(self):
+        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'test_pipelines',
+                               self.TEST_PIPELINE_NAME + '.json'), 'r') as f:
+            data = json.load(f)
+
+        pipeline_config = data['pipelineConfig']
+        new_pipeline = api_client.create_pipeline(self.TEST_PIPELINE_NAME)
+        for conf in pipeline_config['stages'][0]['configuration']:
+            if conf['name'] in self.config:
+                conf['value'] = self.config[conf['name']]
+        pipeline_config['uuid'] = new_pipeline['uuid']
+        api_client.update_pipeline(self.TEST_PIPELINE_NAME, pipeline_config)
+
+        validate_status = api_client.validate(self.TEST_PIPELINE_NAME)
+        preview_data = self.wait_for_preview_data(validate_status['previewerId'])
+        if preview_data['status'] == 'INVALID':
+            errors = []
+            for issue in preview_data['issues']['stageIssues']['KafkaConsumer_01']:
+                errors.append(issue['message'])
+            api_client.delete_pipeline(self.TEST_PIPELINE_NAME)
+            raise SourceException('Connection error. ' + '. '.join(errors))
+
+        api_client.delete_pipeline(self.TEST_PIPELINE_NAME)
+        return True
+
     @infinite_retry
     def prompt_connection(self, default_config, advanced=False):
         self.config[self.CONFIG_BROKER_LIST] = click.prompt('Kafka broker connection string',
@@ -26,6 +67,9 @@ class KafkaSource(Source):
                                                             default=default_config.get(self.CONFIG_BROKER_LIST))
         if advanced:
             self.prompt_consumer_params(default_config)
+
+        self.validate_connection()
+        click.echo('Successfully connected to kafka')
 
     @infinite_retry
     def prompt_consumer_params(self, default_config):
@@ -41,11 +85,6 @@ class KafkaSource(Source):
 
             self.config[self.CONFIG_CONSUMER_PARAMS].append({'key': pair[0], 'value': pair[1]})
 
-    @infinite_retry
-    def prompt_topic(self, default_config):
-        self.config[self.CONFIG_TOPIC] = click.prompt('Topic', type=click.STRING,
-                                                      default=default_config.get(self.CONFIG_TOPIC))
-
     def prompt(self, default_config, advanced=False):
         self.config = dict()
         self.prompt_connection(default_config, advanced)
@@ -53,7 +92,8 @@ class KafkaSource(Source):
         self.config[self.CONFIG_CONSUMER_GROUP] = click.prompt('Consumer group', type=click.STRING,
                                                                default=default_config.get(self.CONFIG_CONSUMER_GROUP,
                                                                                           'anodotAgent'))
-        self.prompt_topic(default_config)
+        self.config[self.CONFIG_TOPIC] = click.prompt('Topic', type=click.STRING,
+                                                      default=default_config.get(self.CONFIG_TOPIC))
         self.config[self.CONFIG_OFFSET_TYPE] = click.prompt('Initial offset',
                                                             type=click.Choice([self.OFFSET_EARLIEST, self.OFFSET_LATEST,
                                                                                self.OFFSET_TIMESTAMP]),
