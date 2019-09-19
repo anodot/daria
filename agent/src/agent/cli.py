@@ -6,11 +6,13 @@ from .pipeline.cli import pipeline
 from .source.cli import source_group
 from .destination.cli import destination
 from agent.streamsets_api_client import api_client, StreamSetsApiClientException
+from agent.version import __version__
 
 
-@click.group()
-def agent():
-    pass
+@click.group(invoke_without_command=True)
+@click.option('-v', '--version', is_flag=True, default=False)
+def agent(version):
+    click.echo('Daria Agent ' + __version__)
 
 
 @click.command()
