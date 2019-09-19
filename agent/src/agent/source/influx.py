@@ -2,19 +2,11 @@ import click
 import time
 
 from .abstract_source import Source
-from agent.tools import infinite_retry
+from agent.tools import infinite_retry, is_url
 from datetime import datetime
 from urllib.parse import urlparse
 from influxdb import InfluxDBClient
 from influxdb.exceptions import InfluxDBClientError
-
-
-def is_url(url):
-    try:
-        result = urlparse(url)
-        return all([result.scheme, result.netloc])
-    except ValueError as e:
-        return False
 
 
 def get_influx_client(host, username=None, password=None, db=None):
@@ -81,7 +73,7 @@ class InfluxSource(Source):
         self.config['write_host'] = click.prompt('InfluxDB API url for writing data', type=click.STRING,
                                                  default=default_config.get('write_host'))
         if not is_url(self.config['write_host']):
-            raise click.UsageError(f"{self.config['write_host']} is not and url")
+            raise click.UsageError(f"Wrong url format. Correct format is `scheme://host:port`")
 
         client = get_influx_client(self.config['write_host'])
         client.ping()

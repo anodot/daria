@@ -12,7 +12,8 @@ from agent.version import __version__
 @click.group(invoke_without_command=True)
 @click.option('-v', '--version', is_flag=True, default=False)
 def agent(version):
-    click.echo('Daria Agent ' + __version__)
+    if version:
+        click.echo('Daria Agent ' + __version__)
 
 
 @click.command()
