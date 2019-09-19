@@ -4,6 +4,7 @@ from agent import source
 from agent.pipeline import Pipeline
 from agent.streamsets_api_client import api_client
 from agent.destination import HttpDestination
+from agent.tools import infinite_retry
 
 
 def get_previous_source_config(label):
@@ -24,6 +25,14 @@ def source_group():
     pass
 
 
+@infinite_retry
+def prompt_source_name():
+    source_name = click.prompt('Enter unique name for this source config', type=click.STRING)
+    if source.Source.exists(source_name):
+        raise click.UsageError(f"Source config {source_name} already exists")
+    return source_name
+
+
 @click.command()
 @click.option('-a', '--advanced', is_flag=True)
 def create(advanced):
@@ -33,11 +42,10 @@ def create(advanced):
     if not HttpDestination.exists():
         raise click.ClickException('Destination is not configured. Please use `agent destination` command')
     source_type = click.prompt('Choose source', type=click.Choice(source.types))
-    source_name = click.prompt('Enter unique name for this source config', type=click.STRING)
-
-    source_instance = source.create_object(source_name, source_type)
+    source_name = prompt_source_name()
 
     try:
+        source_instance = source.create_object(source_name, source_type)
         recent_pipeline_config = get_previous_source_config(source_type)
         source_instance.config = source_instance.prompt(recent_pipeline_config, advanced)
 
