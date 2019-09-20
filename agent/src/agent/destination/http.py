@@ -23,7 +23,7 @@ class HttpDestination:
         self.config = {}
         self.host_id = self.generate_host_id()
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         return {'config': self.config, 'type': self.TYPE, 'host_id': self.host_id}
 
     @classmethod
@@ -34,7 +34,7 @@ class HttpDestination:
     def exists(cls) -> bool:
         return os.path.isfile(cls.FILE)
 
-    def load(self):
+    def load(self) -> dict:
         if not self.exists():
             raise DestinationException('Destination wasn\'t configured')
 
@@ -46,7 +46,7 @@ class HttpDestination:
 
         return config
 
-    def update_url(self, token):
+    def update_url(self, token: str):
         self.config[self.CONFIG_RESOURCE_URL] = urllib.parse.urljoin(
             ANODOT_API_URL, f'api/v1/metrics?token={token}&protocol=anodot20')
 
@@ -69,26 +69,30 @@ class HttpDestination:
             self.config[self.CONFIG_PROXY_USERNAME] = username
             self.config[self.CONFIG_PROXY_PASSWORD] = password
 
-    def get_proxy_url(self):
+    def get_proxy_url(self) -> str:
         return self.config.get(self.CONFIG_PROXY_URI)
 
-    def get_proxy_username(self):
+    def get_proxy_username(self) -> str:
         return self.config.get(self.CONFIG_PROXY_USERNAME)
+
+    def get_proxy_password(self) -> str:
+        return self.config.get(self.CONFIG_PROXY_PASSWORD)
+
+    def get_proxy_configs(self) -> dict:
+        proxies = {}
+        if self.config[self.CONFIG_PROXY_USE]:
+            proxy_parsed = urlparse(self.get_proxy_url())
+            netloc = proxy_parsed.netloc
+            if self.get_proxy_password():
+                netloc = self.get_proxy_username() + ':' + self.get_proxy_password() + '@' + netloc
+            proxies['http'] = urlunparse((proxy_parsed.scheme, netloc, proxy_parsed.path, '', '', ''))
+            proxies['https'] = proxies['http']
+        return proxies
 
     def validate(self) -> bool:
         if not ENV_PROD:
             return True
-        proxies = {}
-        if self.config[self.CONFIG_PROXY_USE]:
-            proxy_parsed = urlparse(self.config[self.CONFIG_PROXY_URI])
-            if self.config[self.CONFIG_PROXY_PASSWORD]:
-                userpass = self.config[self.CONFIG_PROXY_USERNAME] + ':' + self.config[self.CONFIG_PROXY_PASSWORD]
-                netloc = userpass + '@' + proxy_parsed.netloc
-            else:
-                netloc = proxy_parsed.netloc
-            proxies['http'] = urlunparse((proxy_parsed.scheme, netloc, proxy_parsed.path, '', '', ''))
-            proxies['https'] = proxies['http']
-        result = requests.post(self.config[self.CONFIG_RESOURCE_URL], proxies=proxies)
+        result = requests.post(self.config[self.CONFIG_RESOURCE_URL], proxies=self.get_proxy_configs())
         result.raise_for_status()
         return True
 

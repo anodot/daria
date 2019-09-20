@@ -231,6 +231,21 @@ class StreamSetsApiClient:
         logger.info(f'Delete pipelines with text: {filter_text}')
         return self.session.post(self.build_url('pipelines', 'deleteByFiltering'), params={'filterText': filter_text})
 
+    @endpoint
+    def validate(self, pipeline_id: str):
+        logger.info(f'Validate pipeline {pipeline_id}')
+        return self.session.get(self.build_url('pipeline', pipeline_id, 'validate'))
+
+    @endpoint
+    def get_preview_data(self, pipeline_id: str, previewer_id: str):
+        logger.info(f'Validate pipeline {pipeline_id}')
+        return self.session.get(self.build_url('pipeline', pipeline_id, 'preview', previewer_id))
+
+    @endpoint
+    def get_preview_status(self, pipeline_id: str, previewer_id: str):
+        logger.info(f'Validate pipeline {pipeline_id}')
+        return self.session.get(self.build_url('pipeline', pipeline_id, 'preview', previewer_id, 'status'))
+
 
 api_client = StreamSetsApiClient(os.environ.get('STREAMSETS_USERNAME', 'admin'),
                                  os.environ.get('STREAMSETS_PASSWORD', 'admin'),

@@ -13,6 +13,7 @@ influxdb==5.2.2
 javaproperties==0.5.1
 Jinja2==2.10
 jsonschema==3.0.1
+kafka-python==1.4.6
 MarkupSafe==1.1.1
 more-itertools==5.0.0
 mysql-connector-python==8.0.17

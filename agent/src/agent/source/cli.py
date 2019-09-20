@@ -1,10 +1,10 @@
 import click
-import os
 
-from .source import Source, SourceException
+from agent import source
 from agent.pipeline import Pipeline
 from agent.streamsets_api_client import api_client
 from agent.destination import HttpDestination
+from agent.tools import infinite_retry
 
 
 def get_previous_source_config(label):
@@ -17,20 +17,20 @@ def get_previous_source_config(label):
     return {}
 
 
-def sources_autocomplete(ctx, args, incomplete):
-    configs = []
-    for filename in os.listdir(Source.DIR):
-        if filename.endswith('.json') and incomplete in filename:
-            configs.append(filename.replace('.json', ''))
-    return configs
-
-
-@click.group()
-def source():
+@click.group(name='source')
+def source_group():
     """
     Data sources management
     """
     pass
+
+
+@infinite_retry
+def prompt_source_name():
+    source_name = click.prompt('Enter unique name for this source config', type=click.STRING)
+    if source.Source.exists(source_name):
+        raise click.UsageError(f"Source config {source_name} already exists")
+    return source_name
 
 
 @click.command()
@@ -41,36 +41,34 @@ def create(advanced):
     """
     if not HttpDestination.exists():
         raise click.ClickException('Destination is not configured. Please use `agent destination` command')
-    source_type = click.prompt('Choose source', type=click.Choice(Source.types))
-    source_name = click.prompt('Enter unique name for this source config', type=click.STRING)
-
-    source_instance = Source(source_name, source_type)
+    source_type = click.prompt('Choose source', type=click.Choice(source.types))
+    source_name = prompt_source_name()
 
     try:
+        source_instance = source.create_object(source_name, source_type)
         recent_pipeline_config = get_previous_source_config(source_type)
-        source_instance.prompt(recent_pipeline_config, advanced)
+        source_instance.config = source_instance.prompt(recent_pipeline_config, advanced)
 
         source_instance.create()
-    except SourceException as e:
+    except source.SourceException as e:
         raise click.ClickException(str(e))
 
     click.secho('Source config created', fg='green')
 
 
 @click.command()
-@click.argument('name', autocompletion=sources_autocomplete)
+@click.argument('name', autocompletion=source.autocomplete)
 @click.option('-a', '--advanced', is_flag=True)
 def edit(name, advanced):
     """
     Edit source
     """
-    source_instance = Source(name)
+    source_instance = source.load_object(name)
 
     try:
-        source_instance.load()
-        source_instance.prompt(advanced=advanced)
+        source_instance.config = source_instance.prompt(source_instance.config, advanced=advanced)
         source_instance.save()
-    except SourceException as e:
+    except source.SourceException as e:
         raise click.ClickException(str(e))
 
     click.secho('Source config updated', fg='green')
@@ -81,26 +79,25 @@ def list_configs():
     """
     List all sources
     """
-    for config in Source.get_list():
+    for config in source.get_list():
         click.echo(config)
 
 
 @click.command()
-@click.argument('name', autocompletion=sources_autocomplete)
+@click.argument('name', autocompletion=source.autocomplete)
 def delete(name):
     """
     Delete source
     """
-    source_instance = Source(name)
+    source_instance = source.load_object(name)
 
     try:
-        source_instance.load()
         source_instance.delete()
-    except SourceException as e:
+    except source.SourceException as e:
         raise click.ClickException(str(e))
 
 
-source.add_command(create)
-source.add_command(list_configs)
-source.add_command(delete)
-source.add_command(edit)
+source_group.add_command(create)
+source_group.add_command(list_configs)
+source_group.add_command(delete)
+source_group.add_command(edit)

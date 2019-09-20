@@ -1,11 +1,11 @@
 import click
-import time
 
 from .http import HttpDestination, DestinationException
 from ..streamsets_api_client import api_client
 from agent.pipeline import Pipeline, PipelineException
-from agent.source import Source
+from agent import source
 from agent.constants import ENV_PROD
+from agent.tools import infinite_retry
 
 
 def monitoring():
@@ -19,7 +19,7 @@ def monitoring():
             pipeline_monitoring.update()
         else:
             click.secho('Starting Monitoring pipeline...')
-            Source.create_dir()
+            source.create_dir()
             Pipeline.create_dir()
             pipeline_monitoring.create()
 
@@ -33,13 +33,8 @@ def monitoring():
         raise click.ClickException(str(e))
 
 
-@click.command()
-def destination():
-    """
-    Data destination config.
-    Anodot API token - You can copy it from Settings > API tokens > Data Collection in your Anodot account
-    Proxy for connecting to Anodot
-    """
+@infinite_retry
+def create_destination():
     try:
         dest = HttpDestination()
         if dest.exists():
@@ -59,6 +54,17 @@ def destination():
         dest.save()
     except DestinationException as e:
         raise click.ClickException(str(e))
+
+
+@click.command()
+def destination():
+    """
+    Data destination config.
+    Anodot API token - You can copy it from Settings > API tokens > Data Collection in your Anodot account
+    Proxy for connecting to Anodot
+    """
+
+    create_destination()
     click.secho('Connection to Anodot established')
     monitoring()
 

@@ -3,14 +3,17 @@ import time
 
 from .pipeline import Pipeline
 from .pipeline.cli import pipeline
-from .source.cli import source
+from .source.cli import source_group
 from .destination.cli import destination
 from agent.streamsets_api_client import api_client, StreamSetsApiClientException
+from agent.version import __version__
 
 
-@click.group()
-def agent():
-    pass
+@click.group(invoke_without_command=True)
+@click.option('-v', '--version', is_flag=True, default=False)
+def agent(version):
+    if version:
+        click.echo('Daria Agent ' + __version__)
 
 
 @click.command()
@@ -36,7 +39,7 @@ def update():
         click.secho(f'Pipeline {p["pipelineId"]} updated', fg='green')
 
 
-agent.add_command(source)
+agent.add_command(source_group)
 agent.add_command(pipeline)
 agent.add_command(destination)
 agent.add_command(update)
