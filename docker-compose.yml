@@ -28,7 +28,7 @@ services:
       LOG_FILE_PATH: '/var/log/agent.log'
       ANODOT_API_URL: 'http://3.215.226.90'
       SDC_DATA_PATH: '/sdc-data'
-#      ENV_PROD: 'false'
+      ENV_PROD: 'false'
     stdin_open: true
     tty: true
     depends_on:
