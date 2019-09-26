@@ -1,0 +1,13 @@
+{
+  "type": "object",
+  "properties": {
+    "kafkaConfigBean.metadataBrokerList": {"type": "string"},
+    "kafkaConfigBean.consumerGroup": {"type": "string"},
+    "kafkaConfigBean.topic": {"type": "string"},
+    "kafkaConfigBean.kafkaAutoOffsetReset": {"type": "string"},
+    "kafkaConfigBean.maxBatchSize": {"type": "integer"},
+    "kafkaConfigBean.maxWaitTime": {"type": "integer"},
+    "kafkaConfigBean.kafkaConsumerConfigs": {"type": "string"}
+  },
+  "required": ["kafkaConfigBean.metadataBrokerList", "kafkaConfigBean.topic"]
+}

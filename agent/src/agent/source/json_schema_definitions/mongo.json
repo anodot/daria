@@ -1,0 +1,20 @@
+{
+  "type": "object",
+  "properties": {
+    "configBean.mongoConfig.connectionString": {"type": "string"},
+    "configBean.mongoConfig.username": {"type": "string"},
+    "configBean.mongoConfig.password": {"type": "string"},
+    "configBean.mongoConfig.authSource": {"type": "string"},
+    "configBean.mongoConfig.authenticationType": {"type": "string"},
+    "configBean.mongoConfig.database": {"type": "string"},
+    "configBean.mongoConfig.collection": {"type": "string"},
+    "configBean.isCapped": {"type": "string"},
+    "configBean.offsetType": {"type": "string"},
+    "configBean.initialOffset": {"type": "string"},
+    "configBean.offsetField": {"type": "string"},
+    "configBean.batchSize": {"type": "integer"},
+    "configBean.maxBatchWaitTime": {"type": "integer"}
+  },
+  "required": ["configBean.mongoConfig.connectionString", "configBean.mongoConfig.database",
+    "configBean.mongoConfig.collection"]
+}

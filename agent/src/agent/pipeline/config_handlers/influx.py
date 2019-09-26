@@ -73,10 +73,10 @@ state['HOST_NAME'] = '{host_name}'
 
     def set_initial_offset(self):
         source_config = self.client_config['source']['config']
-        if not source_config['offset']:
+        if not source_config.get('offset'):
             source_config['offset'] = '0'
 
-        if source_config['offset'].isdigit():
+        if str(source_config['offset']).isdigit():
             timestamp = datetime.now() - timedelta(days=int(source_config['offset']))
         else:
             timestamp = datetime.strptime(source_config['offset'], '%d/%m/%Y %H:%M')

@@ -17,6 +17,7 @@ class TestPostgreSQL(TestPipelineBase):
                         {'name': 'test_postgres_timestamp_datetime', 'source': 'test_jdbc', 'timestamp_type': 'datetime', 'timestamp_name': 'timestamp_datetime'}],
         'test_create_advanced': [{'name': 'test_postgres_advanced', 'source': 'test_jdbc'}],
         'test_create_with_file': [{'file_name': 'jdbc_pipelines'}],
+        'test_create_source_with_file': [{'file_name': 'postgres_sources'}],
         'test_start': [{'name': 'test_postgres'}, {'name': 'test_postgres_timestamp_ms'}, {'name': 'test_postgres_timestamp_datetime'},
                        {'name': 'test_postgres_advanced'}, {'name': 'test_jdbc_file_short'}, {'name': 'test_jdbc_file_full'}],
         'test_stop': [{'name': 'test_postgres'}, {'name': 'test_postgres_timestamp_ms'}, {'name': 'test_postgres_timestamp_datetime'},

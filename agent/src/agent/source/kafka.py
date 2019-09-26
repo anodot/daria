@@ -24,6 +24,8 @@ class KafkaSource(Source):
 
     TEST_PIPELINE_NAME = 'test_kafka'
 
+    VALIDATION_SCHEMA_FILE_NAME = 'kafka.json'
+
     def wait_for_preview(self, preview_id, tries=5, initial_delay=2):
         for i in range(1, tries):
             response = api_client.get_preview_status(self.TEST_PIPELINE_NAME, preview_id)
@@ -92,9 +94,9 @@ class KafkaSource(Source):
 
         self.config[self.CONFIG_CONSUMER_GROUP] = click.prompt('Consumer group', type=click.STRING,
                                                                default=default_config.get(self.CONFIG_CONSUMER_GROUP,
-                                                                                          'anodotAgent'))
+                                                                                          'anodotAgent')).strip()
         self.config[self.CONFIG_TOPIC] = click.prompt('Topic', type=click.STRING,
-                                                      default=default_config.get(self.CONFIG_TOPIC))
+                                                      default=default_config.get(self.CONFIG_TOPIC)).strip()
         self.config[self.CONFIG_OFFSET_TYPE] = click.prompt('Initial offset',
                                                             type=click.Choice([self.OFFSET_EARLIEST, self.OFFSET_LATEST,
                                                                                self.OFFSET_TIMESTAMP]),
@@ -104,14 +106,18 @@ class KafkaSource(Source):
             self.config[self.CONFIG_OFFSET_TIMESTAMP] = click.prompt(
                 'Offset timestamp (unix timestamp in milliseconds)',
                 type=click.STRING,
-                default=default_config.get(self.CONFIG_OFFSET_TIMESTAMP))
+                default=default_config.get(self.CONFIG_OFFSET_TIMESTAMP)).strip()
 
         if advanced:
-            self.config[self.CONFIG_BATCH_SIZE] = click.prompt('Max Batch Size (records)', type=click.INT,
+            self.config[self.CONFIG_BATCH_SIZE] = click.prompt('Max Batch Size (records)', type=click.IntRange(1),
                                                                default=default_config.get(self.CONFIG_BATCH_SIZE, 1000))
-            self.config[self.CONFIG_BATCH_WAIT_TIME] = click.prompt('Batch Wait Time (ms)', type=click.INT,
+            self.config[self.CONFIG_BATCH_WAIT_TIME] = click.prompt('Batch Wait Time (ms)', type=click.IntRange(1),
                                                                     default=default_config.get(
                                                                         self.CONFIG_BATCH_WAIT_TIME,
                                                                         1000))
 
         return self.config
+
+    def validate(self):
+        super().validate()
+        self.validate_connection()

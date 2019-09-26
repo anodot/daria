@@ -74,7 +74,7 @@ state['COUNT_RECORDS'] = {count_records}
             'limit': limit
         })
         source_config['hikariConfigBean.connectionString'] = 'jdbc:' + source_config['connection_string']
-        source_config['queryInterval'] = '${' + source_config['query_interval'] + ' * SECONDS}'
+        source_config['queryInterval'] = '${' + str(source_config.get('query_interval', '10')) + ' * SECONDS}'
         source_config['commonSourceConfigBean.maxBatchSize'] = limit
         source_config['offsetColumn'] = offset_column
         self.set_initial_offset()

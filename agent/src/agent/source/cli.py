@@ -1,10 +1,12 @@
 import click
+import json
 
-from agent import source
+from .. import source
+from agent.destination import HttpDestination
 from agent.pipeline import Pipeline
 from agent.streamsets_api_client import api_client
-from agent.destination import HttpDestination
 from agent.tools import infinite_retry
+from jsonschema import validate, ValidationError, SchemaError
 
 
 def get_previous_source_config(label):
@@ -27,21 +29,97 @@ def source_group():
 
 @infinite_retry
 def prompt_source_name():
-    source_name = click.prompt('Enter unique name for this source config', type=click.STRING)
+    source_name = click.prompt('Enter unique name for this source config', type=click.STRING).strip()
     if source.Source.exists(source_name):
         raise click.UsageError(f"Source config {source_name} already exists")
     return source_name
 
 
+def parse_config(file):
+    try:
+        return json.load(file)
+    except json.decoder.JSONDecodeError as e:
+        raise click.ClickException(str(e))
+
+
+def create_with_file(file):
+    data = parse_config(file)
+    json_schema = {
+        'type': 'array',
+        'items': {
+            'type': 'object',
+            'properties': {
+                'type': {'type': 'string', 'enum': list(source.get_types())},
+                'name': {'type': 'string', 'minLength': 1, 'maxLength': 100},
+                'config': {'type': 'object'}
+            },
+            'required': ['type', 'name', 'config']
+        }
+    }
+    validate(data, json_schema)
+
+    exceptions = {}
+    for item in data:
+        try:
+            source_instance = source.create_object(item['name'], item['type'])
+            source_instance.config = item['config']
+            source_instance.validate()
+            source_instance.create()
+            click.secho(f"Source {item['name']} created")
+        except Exception as e:
+            exceptions[item['name']] = str(e)
+    if exceptions:
+        raise source.SourceException(json.dumps(exceptions))
+
+
+def edit_with_file(file):
+
+    data = parse_config(file)
+    json_schema = {
+        'type': 'array',
+        'items': {
+            'type': 'object',
+            'properties': {
+                'name': {'type': 'string', 'minLength': 1, 'maxLength': 100, 'enum': source.get_list()},
+                'config': {'type': 'object'}
+            },
+            'required': ['name', 'config']
+        }
+    }
+    validate(data, json_schema)
+
+    exceptions = {}
+    for item in data:
+        try:
+            source_instance = source.load_object(item['name'])
+            source_instance.config = item['config']
+            source_instance.validate()
+            source_instance.save()
+            click.secho(f"Source {item['name']} edited")
+        except Exception as e:
+            exceptions[item['name']] = str(e)
+    if exceptions:
+        raise source.SourceException(json.dumps(exceptions))
+
+
 @click.command()
 @click.option('-a', '--advanced', is_flag=True)
-def create(advanced):
+@click.option('-f', '--file', type=click.File())
+def create(advanced, file):
     """
     Create source
     """
     if not HttpDestination.exists():
         raise click.ClickException('Destination is not configured. Please use `agent destination` command')
-    source_type = click.prompt('Choose source', type=click.Choice(source.types))
+
+    if file:
+        try:
+            create_with_file(file)
+            return
+        except (source.SourceException, ValidationError, SchemaError) as e:
+            raise click.ClickException(str(e))
+
+    source_type = click.prompt('Choose source', type=click.Choice(source.types)).strip()
     source_name = prompt_source_name()
 
     try:
@@ -57,12 +135,23 @@ def create(advanced):
 
 
 @click.command()
-@click.argument('name', autocompletion=source.autocomplete)
+@click.argument('name', autocompletion=source.autocomplete, required=False)
 @click.option('-a', '--advanced', is_flag=True)
-def edit(name, advanced):
+@click.option('-f', '--file', type=click.File())
+def edit(name, advanced, file):
     """
     Edit source
     """
+    if not file and not name:
+        raise click.UsageError('Specify source name or file path')
+
+    if file:
+        try:
+            edit_with_file(file)
+            return
+        except (source.SourceException, ValidationError, SchemaError) as e:
+            raise click.ClickException(str(e))
+
     source_instance = source.load_object(name)
 
     try:

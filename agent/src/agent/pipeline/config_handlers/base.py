@@ -111,6 +111,9 @@ class BaseConfigHandler(ABC):
                                   'expression': HOSTNAME})
             return
 
+    def set_initial_offset(self):
+        pass
+
 
 class ConfigHandlerException(Exception):
     pass

@@ -27,6 +27,7 @@ class TestKafka(TestPipelineBase):
              'timestamp': 'n\ntimestamp_string\nstring\nM/d/yyyy H:mm:ss', 'properties': 'key1:val1',
              'source_name': 'test_kfk_timestamp_string'}],
         'test_create_with_file': [{'file_name': 'kafka_pipelines'}],
+        'test_create_source_with_file': [{'file_name': 'kafka_sources'}],
         'test_edit': [{'options': ['test_kfk_value_const'], 'value': '\n1\n\n'},
                       {'options': ['test_kfk_timestamp_string', '-a'],
                        'value': 'n\nAdType\nClicks\nproperty\nagg_type'}],

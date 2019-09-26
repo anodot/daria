@@ -1,0 +1,11 @@
+{
+  "type": "object",
+  "properties": {
+    "connection_string": {"type": "string"},
+    "hikariConfigBean.useCredentials": {"type": "boolean"},
+    "hikariConfigBean.username": {"type": "string"},
+    "hikariConfigBean.password": {"type": "string"},
+    "conf.pagination.query_interval": {"type": "integer", "minimum": 1}
+  },
+  "required": ["connection_string"]
+}

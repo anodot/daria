@@ -5,3 +5,4 @@ from .monitoring import MonitoringConfigHandler
 from .base import ConfigHandlerException
 from .jdbc import JDBCConfigHandler
 from .mongo import MongoConfigHandler
+from .base import BaseConfigHandler

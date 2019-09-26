@@ -1,0 +1,10 @@
+[
+  {
+    "type": "kafka",
+    "name": "test_kafka_1",
+    "config": {
+      "kafkaConfigBean.metadataBrokerList": "kafka:29092",
+      "kafkaConfigBean.topic": "test"
+    }
+  }
+]

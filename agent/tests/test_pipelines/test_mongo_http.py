@@ -18,6 +18,7 @@ class TestMongo(TestPipelineBase):
                         {'name': 'test_timestamp_id', 'options': [], 'value': 'Clicks', 'timestamp': '_id', 'timestamp_type': 'unix', 'properties': 'key1:val1'},
                         {'name': 'test_timestamp_string', 'options': ['-a'], 'value': 'Clicks\nconstant', 'timestamp': 'timestamp_string', 'timestamp_type': 'string\nM/d/yyyy H:mm:ss', 'properties': 'key1:val1'}],
         'test_create_with_file': [{'file_name': 'mongo_pipelines'}],
+        'test_create_source_with_file': [{'file_name': 'mongo_sources'}],
         'test_edit': [{'options': ['test_value_const'], 'value': '1\n\n'},
                       {'options': ['test_timestamp_string', '-a'], 'value': 'Clicks\nproperty'}],
         'test_start': [{'name': 'test_value_const'}, {'name': 'test_timestamp_ms'},

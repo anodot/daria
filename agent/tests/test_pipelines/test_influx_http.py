@@ -17,6 +17,7 @@ class TestInflux(TestPipelineBase):
         'test_create': [{'name': 'test_basic', 'source': 'test_influx'},
                         {'name': 'test_basic_offset', 'source': 'test_influx_offset'}],
         'test_create_with_file': [{'file_name': 'influx_pipelines'}],
+        'test_create_source_with_file': [{'file_name': 'influx_sources'}],
         'test_edit_with_file': [{'file_name': 'influx_pipelines_edit'}],
         'test_start': [{'name': 'test_basic'}, {'name': 'test_basic_offset'}, {'name': 'test_influx_file_short'},
                        {'name': 'test_influx_file_full'}],

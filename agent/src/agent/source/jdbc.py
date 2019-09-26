@@ -7,6 +7,7 @@ from urllib.parse import urlparse, urlunparse
 
 
 class JDBCSource(Source):
+    VALIDATION_SCHEMA_FILE_NAME = 'jdbc.json'
 
     def get_connection_url(self):
         conn_info = urlparse(self.config['connection_string'])
@@ -20,12 +21,7 @@ class JDBCSource(Source):
 
         return urlunparse((scheme, netloc, conn_info.path, '', '', ''))
 
-    @infinite_retry
-    def prompt_connection_string(self, default_config):
-        self.config['connection_string'] = click.prompt('Connection string',
-                                                        type=click.STRING,
-                                                        default=default_config.get('connection_string'))
-
+    def validate_connection_string(self):
         if not is_url(self.config['connection_string']):
             raise click.UsageError('Wrong url format. Correct format is `scheme://host:port`')
 
@@ -36,12 +32,23 @@ class JDBCSource(Source):
             raise click.UsageError('Wrong url scheme. Use `postgresql`')
 
     @infinite_retry
+    def prompt_connection_string(self, default_config):
+        self.config['connection_string'] = click.prompt('Connection string',
+                                                        type=click.STRING,
+                                                        default=default_config.get('connection_string')).strip()
+        self.validate_connection_string()
+
+    def validate_connection(self):
+        eng = create_engine(self.get_connection_url())
+        eng.connect()
+
+    @infinite_retry
     def prompt_connection(self, default_config):
         self.prompt_connection_string(default_config)
         self.config['hikariConfigBean.username'] = click.prompt('Username',
                                                                 type=click.STRING,
                                                                 default=default_config.get('hikariConfigBean.username',
-                                                                                           ''))
+                                                                                           '')).strip()
         self.config['hikariConfigBean.password'] = click.prompt('Password',
                                                                 type=click.STRING,
                                                                 default=default_config.get('hikariConfigBean.password',
@@ -49,13 +56,18 @@ class JDBCSource(Source):
         if self.config['hikariConfigBean.password'] != '':
             self.config['hikariConfigBean.useCredentials'] = True
 
-        eng = create_engine(self.get_connection_url())
-        eng.connect()
+        self.validate_connection()
+        click.secho('Connection successful')
 
     def prompt(self, default_config, advanced=False):
         self.config = dict()
         self.prompt_connection(default_config)
-        self.config['query_interval'] = click.prompt('Query interval (seconds)', type=click.STRING,
-                                                     default=default_config.get('query_interval', '10'))
+        self.config['query_interval'] = click.prompt('Query interval (seconds)', type=click.IntRange(1),
+                                                     default=default_config.get('query_interval', 10))
 
         return self.config
+
+    def validate(self):
+        super().validate()
+        self.validate_connection_string()
+        self.validate_connection()

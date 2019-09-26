@@ -32,7 +32,7 @@ class Pipeline:
         source.TYPE_POSTGRES: load_client_data.JDBCLoadClientData,
     }
 
-    config_handlers = {
+    handlers = {
         source.TYPE_MONITORING: config_handlers.MonitoringConfigHandler,
         source.TYPE_INFLUX: config_handlers.InfluxConfigHandler,
         source.TYPE_MONGO: config_handlers.MongoConfigHandler,
@@ -100,8 +100,8 @@ class Pipeline:
     def load_client_data(self, client_config, edit=False):
         self.config.update(self.loaders[self.source_type](client_config, edit).load())
 
-    def get_config_handler(self, pipeline_obj=None):
-        return self.config_handlers[self.source_type](self.config, pipeline_obj)
+    def get_config_handler(self, pipeline_obj=None) -> config_handlers.BaseConfigHandler:
+        return self.handlers[self.source_type](self.config, pipeline_obj)
 
     def create(self):
         try:
