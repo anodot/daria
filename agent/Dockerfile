@@ -1,5 +1,9 @@
 FROM python:3.7
 
+#defined in jenklins build, so for any local build it should be explicitly set as following:
+#docker build --build-arg GIT_SHA1=$(git describe --dirty --always)
+ARG GIT_SHA1=local-build
+
 WORKDIR /usr/src/app
 
 COPY . .

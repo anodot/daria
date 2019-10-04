@@ -6,14 +6,16 @@ from .pipeline.cli import pipeline
 from .source.cli import source_group
 from .destination.cli import destination
 from agent.streamsets_api_client import api_client, StreamSetsApiClientException
-from agent.version import __version__
+from agent.version import __version__, __build_time__, __git_sha1__
 
 
 @click.group(invoke_without_command=True)
 @click.option('-v', '--version', is_flag=True, default=False)
 def agent(version):
     if version:
-        click.echo('Daria Agent ' + __version__)
+        click.echo('Daria Agent version: ' + __version__)
+        click.echo('Build Time (UTC): ' + __build_time__)
+        click.echo('Git commit: ' + __git_sha1__)
 
 
 @click.command()

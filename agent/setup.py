@@ -1,4 +1,19 @@
+import datetime
+import os
+
 from setuptools import setup, find_packages
+
+app_version = '1.4.9'
+
+
+def build_time():
+    return datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+
+with open(os.path.join(os.path.dirname(__file__), 'src/agent/version.py'), 'w') as f:
+    f.write(f'__version__ = "{app_version}"\n')
+    f.write(f'__git_sha1__ = "{os.environ["GIT_SHA1"]}"\n')
+    f.write(f'__build_time__ = "{build_time()}"\n')
 
 setup(
     name='agent',
