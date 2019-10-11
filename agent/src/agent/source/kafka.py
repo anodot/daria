@@ -22,7 +22,7 @@ class KafkaSource(Source):
     OFFSET_LATEST = 'LATEST'
     OFFSET_TIMESTAMP = 'TIMESTAMP'
 
-    TEST_PIPELINE_NAME = 'test_kafka'
+    TEST_PIPELINE_NAME = 'test_kafka_kjeu4334'
 
     VALIDATION_SCHEMA_FILE_NAME = 'kafka.json'
 

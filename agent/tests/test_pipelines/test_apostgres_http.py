@@ -30,7 +30,7 @@ class TestPostgreSQL(TestPipelineBase):
                         {'name': 'test_jdbc_file_full', 'output': 'jdbc_file_full.json'}],
         'test_delete_pipeline': [{'name': 'test_postgres'}, {'name': 'test_postgres_timestamp_ms'}, {'name': 'test_postgres_timestamp_datetime'},
                                  {'name': 'test_postgres_advanced'}, {'name': 'test_jdbc_file_short'}, {'name': 'test_jdbc_file_full'}],
-        'test_source_delete': [{'name': 'test_jdbc'}]
+        'test_source_delete': [{'name': 'test_jdbc'}, {'name': 'test_postgres_1'}]
 
     }
 

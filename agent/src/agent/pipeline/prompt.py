@@ -1,4 +1,8 @@
 import click
+import os
+
+from agent.tools import infinite_retry
+from agent.pipeline.config_handlers import filtering_condition_parser
 
 
 class PromptConfig:
@@ -90,6 +94,9 @@ class PromptConfigMongo(PromptConfig):
 
 
 class PromptConfigKafka(PromptConfig):
+    def set_config(self):
+        super().set_config()
+        self.filter_messages()
 
     def set_measurement_name(self):
         static_what_default = self.default_config.get('static_what', True)
@@ -124,6 +131,34 @@ class PromptConfigKafka(PromptConfig):
             if self.config['timestamp']['type'] == 'string':
                 self.config['timestamp']['format'] = click.prompt('Timestamp format string', type=click.STRING,
                                                                   default=self.config['timestamp'].get('format'))
+
+    @infinite_retry
+    def prompt_files(self):
+        files = click.prompt('Lookup tables files paths', type=click.STRING,
+                             default=','.join(self.config['filter'].get('files', []))).strip()
+        files = files.split(',') if files else []
+        for file in files:
+            if not os.path.isfile(file):
+                raise click.UsageError(f'{file} doesn\'t exist')
+        self.config['filter']['files'] = files
+
+    @infinite_retry
+    def prompt_condition(self):
+        condition = click.prompt('Filter condition', type=click.STRING,
+                                 default=self.config['filter'].get('condition', '')).strip()
+        if not condition:
+            return
+        filtering_condition_parser.validate_filtering_condition(condition)
+        self.config['filter']['condition'] = condition
+
+    def filter_messages(self):
+        if not self.advanced and not self.default_config.get('filter'):
+            return
+        # if not click.confirm('Filter messages?', default=True if self.config.get('filter') else None):
+        #     return
+        self.config['filter'] = self.default_config.get('filter', {})
+        self.prompt_condition()
+        # self.prompt_files()
 
 
 class PromptConfigInflux(PromptConfig):

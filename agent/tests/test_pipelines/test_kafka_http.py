@@ -44,7 +44,8 @@ class TestKafka(TestPipelineBase):
                                  {'name': 'test_kfk_timestamp_string'}, {'name': 'test_kfk_timestamp_kafka'},
                                  {'name': 'test_kfk_kafka_file_short'}, {'name': 'test_kfk_kafka_file_full'}],
         'test_source_delete': [{'name': 'test_kfk_value_const'}, {'name': 'test_kfk_timestamp_ms'},
-                               {'name': 'test_kfk_timestamp_kafka'}, {'name': 'test_kfk_timestamp_string'}],
+                               {'name': 'test_kfk_timestamp_kafka'}, {'name': 'test_kfk_timestamp_string'},
+                               {'name': 'test_kafka_1'}],
     }
 
     def test_source_create(self, cli_runner, name):

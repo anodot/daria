@@ -37,7 +37,7 @@ class TestMongo(TestPipelineBase):
                        {'name': 'test_timestamp_string'}, {'name': 'test_timestamp_datetime'},
                        {'name': 'test_timestamp_id'}, {'name': 'test_mongo_file_short'},
                        {'name': 'test_mongo_file_full'}],
-        'test_source_delete': [{'name': 'test_mongo'}],
+        'test_source_delete': [{'name': 'test_mongo'}, {'name': 'test_mongo_1'}],
         'test_output_exists': [{'name': 'test_timestamp_id'}]
     }
 

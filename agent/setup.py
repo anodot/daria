@@ -3,7 +3,7 @@ import os
 
 from setuptools import setup, find_packages
 
-app_version = '1.4.9'
+app_version = '1.4.10'
 
 
 def build_time():
@@ -24,5 +24,6 @@ setup(
         [console_scripts]
         agent=agent.cli:agent
     ''',
-    zip_safe=False
+    zip_safe=False,
+    version=app_version
 )

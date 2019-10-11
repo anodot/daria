@@ -85,6 +85,7 @@ class Pipeline:
             self.config = json.load(f)
 
         self.load_source()
+        self.config['destination'] = self.destination.load()
 
         return self.config
 
@@ -155,7 +156,7 @@ class Pipeline:
         self.config['destination'] = self.destination.to_dict()
         self.update()
 
-    def wait_for_status(self, status, tries=5, initial_delay=2):
+    def wait_for_status(self, status, tries=5, initial_delay=3):
         for i in range(1, tries):
             response = api_client.get_pipeline_status(self.id)
             if response['status'] == status:
@@ -183,6 +184,14 @@ class Pipeline:
                 raise PipelineException(f"Pipeline {self.id} did not send any data. Received number of records - {stats['in']}")
             print(f'Waiting for pipeline {self.id} to send data. Check again after {delay} seconds...')
             time.sleep(delay)
+
+    def stop(self):
+        api_client.stop_pipeline(self.id)
+        self.wait_for_status(self.STATUS_STOPPED)
+
+    def start(self):
+        api_client.start_pipeline(self.id)
+        self.wait_for_status(self.STATUS_RUNNING)
 
 
 class PipelineException(Exception):

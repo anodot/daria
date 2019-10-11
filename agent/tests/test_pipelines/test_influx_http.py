@@ -29,7 +29,7 @@ class TestInflux(TestPipelineBase):
                         {'name': 'test_influx_file_full', 'output': 'influx_file_full.json'}],
         'test_delete_pipeline': [{'name': 'test_basic'}, {'name': 'test_basic_offset'},
                                  {'name': 'test_influx_file_short'}, {'name': 'test_influx_file_full'}],
-        'test_source_delete': [{'name': 'test_influx'}, {'name': 'test_influx_offset'}],
+        'test_source_delete': [{'name': 'test_influx'}, {'name': 'test_influx_offset'}, {'name': 'test_influx_1'}],
     }
 
     def test_source_create(self, cli_runner, name, offset):
