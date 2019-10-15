@@ -56,6 +56,8 @@ class BaseConfigHandler(ABC):
         return self.config
 
     def update_source_configs(self):
+        if 'library' in self.client_config['source']['config']:
+            self.config['stages'][0]['library'] = self.client_config['source']['config']['library']
         for conf in self.config['stages'][0]['configuration']:
             if conf['name'] in self.client_config['source']['config']:
                 conf['value'] = self.client_config['source']['config'][conf['name']]

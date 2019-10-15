@@ -17,6 +17,8 @@ class KafkaSource(Source):
     CONFIG_BATCH_SIZE = 'kafkaConfigBean.maxBatchSize'
     CONFIG_BATCH_WAIT_TIME = 'kafkaConfigBean.maxWaitTime'
     CONFIG_CONSUMER_PARAMS = 'kafkaConfigBean.kafkaConsumerConfigs'
+    CONFIG_LIBRARY = 'library'
+    CONFIG_VERSION = 'version'
 
     OFFSET_EARLIEST = 'EARLIEST'
     OFFSET_LATEST = 'LATEST'
@@ -25,6 +27,11 @@ class KafkaSource(Source):
     TEST_PIPELINE_NAME = 'test_kafka_kjeu4334'
 
     VALIDATION_SCHEMA_FILE_NAME = 'kafka.json'
+
+    version_libraries = {'0.10': 'streamsets-datacollector-apache-kafka_0_11-lib',
+                         '0.11': 'streamsets-datacollector-apache-kafka_0_11-lib',
+                         '2.0+': 'streamsets-datacollector-apache-kafka_2_0-lib'}
+    DEFAULT_KAFKA_VERSION = '2.0+'
 
     def wait_for_preview(self, preview_id, tries=5, initial_delay=2):
         for i in range(1, tries):
@@ -44,6 +51,8 @@ class KafkaSource(Source):
 
         pipeline_config = data['pipelineConfig']
         new_pipeline = api_client.create_pipeline(self.TEST_PIPELINE_NAME)
+        if self.CONFIG_VERSION in self.config:
+            pipeline_config['stages'][0]['library'] = self.version_libraries[self.config[self.CONFIG_VERSION]]
         for conf in pipeline_config['stages'][0]['configuration']:
             if conf['name'] in self.config:
                 conf['value'] = self.config[conf['name']]
@@ -79,7 +88,9 @@ class KafkaSource(Source):
         default_kafka_config = default_config.get(self.CONFIG_CONSUMER_PARAMS, '')
         if default_kafka_config:
             default_kafka_config = ' '.join([i['key'] + ':' + i['value'] for i in default_kafka_config])
-        kafka_config = click.prompt('Kafka Configuration', type=click.STRING, default=default_kafka_config)
+        kafka_config = click.prompt('Kafka Configuration', type=click.STRING, default=default_kafka_config).strip()
+        if not kafka_config:
+            return
         self.config[self.CONFIG_CONSUMER_PARAMS] = []
         for i in kafka_config.split(','):
             pair = i.split(':')
@@ -90,6 +101,12 @@ class KafkaSource(Source):
 
     def prompt(self, default_config, advanced=False):
         self.config = dict()
+        if advanced:
+            self.config[self.CONFIG_VERSION] = click.prompt('Kafka version',
+                                                            type=click.Choice(self.version_libraries.keys()),
+                                                            default=default_config.get(self.CONFIG_VERSION,
+                                                                                       self.DEFAULT_KAFKA_VERSION))
+            self.config[self.CONFIG_LIBRARY] = self.version_libraries[self.config[self.CONFIG_VERSION]]
         self.prompt_connection(default_config, advanced)
 
         self.config[self.CONFIG_CONSUMER_GROUP] = click.prompt('Consumer group', type=click.STRING,
@@ -121,3 +138,8 @@ class KafkaSource(Source):
     def validate(self):
         super().validate()
         self.validate_connection()
+
+    def set_config(self, config):
+        super().set_config(config)
+        self.config[self.CONFIG_LIBRARY] = self.version_libraries[self.config.get(self.CONFIG_VERSION,
+                                                                                  self.DEFAULT_KAFKA_VERSION)]

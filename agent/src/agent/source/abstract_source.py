@@ -57,6 +57,9 @@ class Source(ABC):
 
         validate(self.config, json_schema)
 
+    def set_config(self, config):
+        self.config = config
+
 
 class SourceException(Exception):
     pass

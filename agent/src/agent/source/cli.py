@@ -2,6 +2,7 @@ import click
 import json
 
 from .. import source
+from agent.constants import ENV_PROD
 from agent.destination import HttpDestination
 from agent.pipeline import Pipeline
 from agent.streamsets_api_client import api_client
@@ -62,11 +63,13 @@ def create_with_file(file):
     for item in data:
         try:
             source_instance = source.create_object(item['name'], item['type'])
-            source_instance.config = item['config']
+            source_instance.set_config(item['config'])
             source_instance.validate()
             source_instance.create()
             click.secho(f"Source {item['name']} created")
         except Exception as e:
+            if not ENV_PROD:
+                raise e
             exceptions[item['name']] = str(e)
     if exceptions:
         raise source.SourceException(json.dumps(exceptions))
@@ -92,7 +95,7 @@ def edit_with_file(file):
     for item in data:
         try:
             source_instance = source.load_object(item['name'])
-            source_instance.config = item['config']
+            source_instance.set_config(item['config'])
             source_instance.validate()
             source_instance.save()
             click.secho(f"Source {item['name']} edited")
