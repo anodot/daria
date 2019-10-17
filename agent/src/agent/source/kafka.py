@@ -173,7 +173,7 @@ class KafkaSource(Source):
         return [{int(item['sqpath'][1:]): item['value'] for item in record['value']['value']} for record in data[:max_records]]
 
     def change_field_names(self, default_config):
-        previous_val = default_config.get(self.CONFIG_CSV_MAPPING)
+        previous_val = default_config.get(self.CONFIG_CSV_MAPPING, {})
         records = self.get_sample_records()
         if records:
             print('Records example:')
