@@ -60,6 +60,9 @@ class Source(ABC):
     def set_config(self, config):
         self.config = config
 
+    def print_sample_data(self):
+        pass
+
 
 class SourceException(Exception):
     pass

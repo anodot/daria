@@ -2,6 +2,7 @@ import click
 
 from agent.constants import ENV_PROD
 from urllib.parse import urlparse
+from tabulate import tabulate
 
 
 def infinite_retry(func):
@@ -23,3 +24,7 @@ def is_url(url):
         return all([result.scheme, result.netloc])
     except ValueError as e:
         return False
+
+
+def print_dicts(dicts: list):
+    print(tabulate(list(zip(*[[f'{idx}: {item}' for idx, item in dict_item.items()] for dict_item in dicts]))))

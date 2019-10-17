@@ -8,7 +8,8 @@
     "kafkaConfigBean.maxBatchSize": {"type": "integer"},
     "kafkaConfigBean.maxWaitTime": {"type": "integer"},
     "kafkaConfigBean.kafkaConsumerConfigs": {"type": "string"},
-    "version": {"type": "string", "enum": ["2.0+", "0.10", "0.11"]}
+    "version": {"type": "string", "enum": ["2.0+", "0.10", "0.11"]},
+    "csv_mapping": {"type": "object"}
   },
   "required": ["kafkaConfigBean.metadataBrokerList", "kafkaConfigBean.topic"]
 }

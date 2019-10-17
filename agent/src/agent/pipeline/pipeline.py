@@ -42,11 +42,11 @@ class Pipeline:
     }
 
     def __init__(self, pipeline_id, source_name=None):
-        self.source = source.load_object(source_name).to_dict() if source_name else None
+        self.source = source.load_object(source_name) if source_name else None
         self.destination = HttpDestination()
         self.config = {
             'pipeline_id': pipeline_id,
-            'source': self.source,
+            'source': self.source.to_dict() if self.source else None,
             'destination': self.destination.load()
         }
 
@@ -67,8 +67,8 @@ class Pipeline:
 
     def load_source(self):
         if not self.id == 'Monitoring':
-            self.source = source.load_object(self.config['source']['name']).to_dict()
-            self.config['source'] = self.source
+            self.source = source.load_object(self.config['source']['name'])
+            self.config['source'] = self.source.to_dict()
 
     @property
     def id(self):
