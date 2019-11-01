@@ -1,8 +1,10 @@
+import json
 import os
 import requests
 import urllib.parse
 
 from .logger import get_logger
+from agent.constants import STREAMSETS_PREVIEW_TIMEOUT
 
 logger = get_logger(__name__)
 
@@ -24,9 +26,12 @@ def endpoint(func):
             return
         except requests.exceptions.HTTPError:
             if res.text:
-                response = res.json()
-                logger.exception(response['RemoteException'])
-                raise StreamSetsApiClientException(response['RemoteException']['message'])
+                try:
+                    response = res.json()
+                    logger.exception(response['RemoteException'])
+                    raise StreamSetsApiClientException(response['RemoteException']['message'])
+                except json.decoder.JSONDecodeError:
+                    raise StreamSetsApiClientException(res.text)
             raise
 
     return wrapper
@@ -234,12 +239,14 @@ class StreamSetsApiClient:
     @endpoint
     def validate(self, pipeline_id: str):
         logger.info(f'Validate pipeline {pipeline_id}')
-        return self.session.get(self.build_url('pipeline', pipeline_id, 'validate'))
+        return self.session.get(self.build_url('pipeline', pipeline_id, 'validate'),
+                                params={'timeout': STREAMSETS_PREVIEW_TIMEOUT})
 
     @endpoint
     def create_preview(self, pipeline_id: str):
         logger.info(f'Create pipeline {pipeline_id} preview')
-        return self.session.post(self.build_url('pipeline', pipeline_id, 'preview'))
+        return self.session.post(self.build_url('pipeline', pipeline_id, 'preview'),
+                                 params={'timeout': STREAMSETS_PREVIEW_TIMEOUT})
 
     @endpoint
     def get_preview_data(self, pipeline_id: str, previewer_id: str):

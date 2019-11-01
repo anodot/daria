@@ -11,3 +11,5 @@ ANODOT_API_URL = os.environ.get('ANODOT_API_URL', 'https://api.anodot.com')
 ENV_PROD = True if os.environ.get('ENV_PROD') == 'true' else False
 
 HOSTNAME = os.environ.get('HOSTNAME', 'agent')
+
+STREAMSETS_PREVIEW_TIMEOUT = os.environ.get('STREAMSETS_PREVIEW_TIMEOUT', 20000)
