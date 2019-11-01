@@ -43,10 +43,10 @@ class KafkaSource(Source):
 
     def wait_for_preview(self, preview_id, tries=5, initial_delay=2):
         for i in range(1, tries):
-            response = api_client.get_preview_status(self.TEST_PIPELINE_NAME, preview_id)
+            preview_data = api_client.get_preview_data(self.TEST_PIPELINE_NAME, preview_id)
 
-            if response['status'] not in ['VALIDATING', 'CREATED', 'RUNNING']:
-                return response
+            if preview_data:
+                return preview_data
 
             delay = initial_delay ** i
             if i == tries:
@@ -72,8 +72,7 @@ class KafkaSource(Source):
     def validate_connection(self):
         self.create_test_pipeline()
         validate_status = api_client.validate(self.TEST_PIPELINE_NAME)
-        self.wait_for_preview(validate_status['previewerId'])
-        preview_data = api_client.get_preview_data(self.TEST_PIPELINE_NAME, validate_status['previewerId'])
+        preview_data = self.wait_for_preview(validate_status['previewerId'])
         if preview_data['status'] == 'INVALID':
             errors = []
             for issue in preview_data['issues']['stageIssues']['KafkaConsumer_01']:
