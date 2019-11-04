@@ -1,5 +1,4 @@
 import click
-import time
 
 from .pipeline import Pipeline
 from .pipeline.cli import pipeline
@@ -46,7 +45,6 @@ def update():
             continue
         running_pipelines.append(p['pipelineId'])
 
-    time.sleep(3)
     for p in api_client.get_pipelines():
         pipeline_obj = Pipeline(p['pipelineId'])
         pipeline_obj.load()

@@ -1,3 +1,6 @@
+"""
+Validate condition entered by user and transform it to StreamSets expression language
+"""
 import re
 
 COMPARISON_FUNCTIONS = ['contains', 'startsWith', 'endsWith', 'matches']
@@ -41,34 +44,34 @@ def replace_conjunction_operator(literal: str) -> str:
     return re.sub(r'^(\&\&|\|\|)[ ]+', '', literal)
 
 
-def validate_filtering_condition(condition: str) -> bool:
+def validate_condition(condition: str) -> bool:
     parentheses_count_total = 0
     expressions = split_to_expressions(condition)
     for expression in expressions:
         literals = split_to_literals(expression)
         if len(literals) != 3:
-            raise FilteringConditionException('Wrong format. Example: "property" == "value" && "property2" contains "value"')
+            raise ConditionException('Wrong format. Example: "property" == "value" && "property2" contains "value"')
 
         operand = replace_conjunction_operator(literals[0])
         parentheses_count_total += count_opened_parenthesis(operand)
         if not first_operand_enclosed_in_quotes(operand):
-            raise FilteringConditionException(f'Unsupported literal {operand}. Operand must be enclosed in quotes')
+            raise ConditionException(f'Unsupported literal {operand}. Operand must be enclosed in quotes')
 
         if not validate_comparison_literal(literals[1]):
-            raise FilteringConditionException(
+            raise ConditionException(
                 f'Unsupported literal {literals[1]}. Please use "==", "!=", "contains", "startsWith", "endsWith", "matches"')
 
         parentheses_count_total -= count_closed_parenthesis(literals[2])
         if not last_operand_enclosed_in_quotes(literals[2]):
-            raise FilteringConditionException(f'Unsupported literal {literals[2]}. Operand must be enclosed in quotes')
+            raise ConditionException(f'Unsupported literal {literals[2]}. Operand must be enclosed in quotes')
 
     if parentheses_count_total != 0:
-        raise FilteringConditionException('Unclosed parentheses. Please check your expression')
+        raise ConditionException('Unclosed parentheses. Please check your expression')
     return True
 
 
-def get_filtering_expression(condition: str) -> str:
-    validate_filtering_condition(condition)
+def get_expression(condition: str) -> str:
+    validate_condition(condition)
     expressions = split_to_expressions(condition)
 
     condition = []
@@ -89,8 +92,8 @@ def get_filtering_expression(condition: str) -> str:
         sdc_function = f'str:{literals[1]}({operand}, {literals[2][:end_quote_idx + 1]})'
         condition.append(exp_start + sdc_function + exp_end)
 
-    return '${' + ' '.join(condition) + '}'
+    return ' '.join(condition)
 
 
-class FilteringConditionException(Exception):
+class ConditionException(Exception):
     pass
