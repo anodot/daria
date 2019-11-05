@@ -40,6 +40,9 @@ class KafkaConfigHandler(JsonConfigHandler):
             return transformations
         with open(file) as f:
             for row in csv.reader(f):
-                exp = row[1] if not row[2] else row[2] + '?' + row[1] + ':' + f"record:value('/{row[0]}')"
+                exp = row[1]
+                if row[2]:
+                    exp = condition_parser.get_expression(row[2]) + '?' + exp + ':' + f"record:value('/{row[0]}')"
+
                 transformations.append({'fieldToSet': '/' + row[0], 'expression': '${' + exp + '}'})
         return transformations
