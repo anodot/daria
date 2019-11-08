@@ -13,3 +13,5 @@ ENV_PROD = True if os.environ.get('ENV_PROD') == 'true' else False
 HOSTNAME = os.environ.get('HOSTNAME', 'agent')
 
 STREAMSETS_PREVIEW_TIMEOUT = os.environ.get('STREAMSETS_PREVIEW_TIMEOUT', 20000)
+
+MONITORING_SOURCE_NAME = 'monitoring'

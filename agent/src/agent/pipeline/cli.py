@@ -110,7 +110,7 @@ def create(advanced, file):
         raise click.ClickException('Pipeline with this name already exists')
 
     pipeline_obj.source.print_sample_data()
-    pipeline_obj.prompt(get_previous_pipeline_config(pipeline_obj.source_type), advanced)
+    pipeline_obj.prompt(get_previous_pipeline_config(pipeline_obj.source.type), advanced)
     pipeline_obj.create()
 
     click.secho('Created pipeline {}'.format(pipeline_id), fg='green')

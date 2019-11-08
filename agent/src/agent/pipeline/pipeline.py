@@ -57,12 +57,6 @@ class Pipeline:
     def file_path(self):
         return os.path.join(self.DIR, self.id + '.json')
 
-    @property
-    def source_type(self):
-        if self.id == 'Monitoring':
-            return source.TYPE_MONITORING
-        return self.source.type
-
     def to_dict(self):
         return {
             **self.config,
@@ -70,11 +64,6 @@ class Pipeline:
             'source': self.source.to_dict() if self.source else None,
             'destination': self.destination.to_dict()
         }
-
-    def load_source(self):
-        if not self.id == 'Monitoring':
-            self.source = source.load_object(self.config['source']['name'])
-            self.config['source'] = self.source.to_dict()
 
     def exists(self):
         return os.path.isfile(self.file_path)
@@ -86,8 +75,9 @@ class Pipeline:
         with open(self.file_path, 'r') as f:
             self.config = json.load(f)
 
-        self.load_source()
-        self.config['destination'] = self.destination.load()
+        self.source = source.load_object(self.config['source']['name'])
+        # self.config['source'] = self.source.to_dict()
+        # self.config['destination'] = self.destination.load()
 
         return self.config
 
@@ -98,13 +88,13 @@ class Pipeline:
     def prompt(self, default_config=None, advanced=False):
         if not default_config:
             default_config = self.to_dict()
-        self.config.update(self.prompters[self.source_type](default_config, advanced).config)
+        self.config.update(self.prompters[self.source.type](default_config, advanced).config)
 
     def load_client_data(self, client_config, edit=False):
-        self.config.update(self.loaders[self.source_type](client_config, edit).load())
+        self.config.update(self.loaders[self.source.type](client_config, edit).load())
 
     def get_config_handler(self, pipeline_obj=None) -> config_handlers.BaseConfigHandler:
-        return self.handlers[self.source_type](self.to_dict(), pipeline_obj)
+        return self.handlers[self.source.type](self.to_dict(), pipeline_obj)
 
     def create(self):
         try:

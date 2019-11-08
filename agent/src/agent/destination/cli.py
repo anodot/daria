@@ -4,12 +4,12 @@ from .http import HttpDestination, DestinationException
 from .. import source
 from ..streamsets_api_client import api_client
 from agent.pipeline import Pipeline, PipelineException
-from agent.constants import ENV_PROD
+from agent.constants import ENV_PROD, MONITORING_SOURCE_NAME
 from agent.tools import infinite_retry
 
 
 def monitoring():
-    pipeline_monitoring = Pipeline('Monitoring')
+    pipeline_monitoring = Pipeline('Monitoring', MONITORING_SOURCE_NAME)
 
     try:
         if pipeline_monitoring.exists():
