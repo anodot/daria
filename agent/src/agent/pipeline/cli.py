@@ -2,7 +2,7 @@ import click
 import json
 
 from .pipeline import Pipeline, PipelineException
-from agent import source
+from .. import source
 from ..streamsets_api_client import api_client, StreamSetsApiClientException
 from agent.destination.http import HttpDestination
 from agent.constants import ENV_PROD
