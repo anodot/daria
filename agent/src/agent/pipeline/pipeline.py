@@ -44,11 +44,9 @@ class Pipeline:
     def __init__(self, pipeline_id, source_name=None):
         self.source = source.load_object(source_name) if source_name else None
         self.destination = HttpDestination()
-        self.config = {
-            'pipeline_id': pipeline_id,
-            'source': self.source.to_dict() if self.source else None,
-            'destination': self.destination.load()
-        }
+        self.destination.load()
+        self.id = pipeline_id
+        self.config = {}
 
     @classmethod
     def create_dir(cls):
@@ -63,16 +61,20 @@ class Pipeline:
     def source_type(self):
         if self.id == 'Monitoring':
             return source.TYPE_MONITORING
-        return self.config['source']['type']
+        return self.source.type
+
+    def to_dict(self):
+        return {
+            **self.config,
+            'pipeline_id': self.id,
+            'source': self.source.to_dict() if self.source else None,
+            'destination': self.destination.to_dict()
+        }
 
     def load_source(self):
         if not self.id == 'Monitoring':
             self.source = source.load_object(self.config['source']['name'])
             self.config['source'] = self.source.to_dict()
-
-    @property
-    def id(self):
-        return self.config['pipeline_id']
 
     def exists(self):
         return os.path.isfile(self.file_path)
@@ -91,18 +93,18 @@ class Pipeline:
 
     def save(self):
         with open(self.file_path, 'w') as f:
-            json.dump(self.config, f)
+            json.dump(self.to_dict(), f)
 
     def prompt(self, default_config=None, advanced=False):
         if not default_config:
-            default_config = self.config
+            default_config = self.to_dict()
         self.config.update(self.prompters[self.source_type](default_config, advanced).config)
 
     def load_client_data(self, client_config, edit=False):
         self.config.update(self.loaders[self.source_type](client_config, edit).load())
 
     def get_config_handler(self, pipeline_obj=None) -> config_handlers.BaseConfigHandler:
-        return self.handlers[self.source_type](self.config, pipeline_obj)
+        return self.handlers[self.source_type](self.to_dict(), pipeline_obj)
 
     def create(self):
         try:
@@ -153,7 +155,7 @@ class Pipeline:
 
     def enable_destination_logs(self, enable):
         self.destination.enable_logs(enable)
-        self.config['destination'] = self.destination.to_dict()
+        # self.config['destination'] = self.destination.to_dict()
         self.update()
 
     def wait_for_status(self, status, tries=5, initial_delay=3):

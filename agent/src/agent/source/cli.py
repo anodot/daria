@@ -16,7 +16,7 @@ def get_previous_source_config(label):
     if len(pipelines_with_source) > 0:
         pipeline_obj = Pipeline(pipelines_with_source[-1]['pipelineId'])
         pipeline_obj.load()
-        return pipeline_obj.config['source']['config']
+        return pipeline_obj.source.config
     return {}
 
 
