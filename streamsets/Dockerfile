@@ -15,3 +15,4 @@ COPY ./sdc-security.policy ${SDC_CONF}/sdc-security.policy
 RUN "${SDC_DIST}/bin/streamsets" stagelibs -install="streamsets-datacollector-mongodb_3-lib,streamsets-datacollector-apache-kafka_2_0-lib,streamsets-datacollector-apache-kafka_0_11-lib,streamsets-datacollector-jdbc-lib"
 
 VOLUME /data
+COPY ./kafka-clients-0.11.0.4-SNAPSHOT.jar ${SDC_DIST}/streamsets-libs/streamsets-datacollector-apache-kafka_0_11-lib/lib/kafka-clients-0.11.0.3.jar
