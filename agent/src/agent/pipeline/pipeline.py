@@ -7,7 +7,6 @@ from .. import source
 from agent.constants import DATA_DIR, ERRORS_DIR
 from agent.destination import HttpDestination
 from agent.streamsets_api_client import api_client, StreamSetsApiClientException
-
 from . import prompt, config_handlers, load_client_data
 
 
@@ -31,14 +30,9 @@ class Pipeline:
         self.prompter = prompter
         self.loader = loader
 
-    @classmethod
-    def create_dir(cls):
-        if not os.path.exists(cls.DIR):
-            os.mkdir(cls.DIR)
-
     @property
-    def file_path(self):
-        return os.path.join(self.DIR, self.id + '.json')
+    def file_path(self) -> str:
+        return self.get_file_path(self.id)
 
     def to_dict(self):
         return {
@@ -48,8 +42,16 @@ class Pipeline:
             'destination': self.destination.to_dict()
         }
 
-    def exists(self):
-        return os.path.isfile(self.file_path)
+    @classmethod
+    def get_file_path(cls, pipeline_id: str) -> str:
+        return os.path.join(cls.DIR, pipeline_id + '.json')
+
+    @classmethod
+    def exists(cls, pipeline_id: str) -> bool:
+        return os.path.isfile(cls.get_file_path(pipeline_id))
+
+    def set_config(self, config: dict):
+        self.config.update(config)
 
     # def load(self):
     #     if not self.exists():
@@ -82,7 +84,7 @@ class Pipeline:
     def create(self):
         try:
             pipeline_obj = api_client.create_pipeline(self.id)
-            new_config = self.config_handler.override_base_config(self.to_dict(), pipeline_obj['uuid'])
+            new_config = self.config_handler.override_base_config(self.to_dict(), new_uuid=pipeline_obj['uuid'])
 
             api_client.update_pipeline(self.id, new_config)
         except (config_handlers.ConfigHandlerException, StreamSetsApiClientException) as e:
@@ -94,7 +96,7 @@ class Pipeline:
     def update(self):
         try:
             pipeline_obj = api_client.get_pipeline(self.id)
-            new_config = self.config_handler.override_base_config(self.to_dict(), pipeline_obj)
+            new_config = self.config_handler.override_base_config(self.to_dict(), base_config=pipeline_obj)
 
             api_client.update_pipeline(self.id, new_config)
         except StreamSetsApiClientException as e:
@@ -108,14 +110,14 @@ class Pipeline:
     def reset(self):
         try:
             api_client.reset_pipeline(self.id)
-            self.config_handler.set_initial_offset(self.to_dict())
+            self.config_handler.set_initial_offset()
         except (config_handlers.ConfigHandlerException, StreamSetsApiClientException) as e:
             raise PipelineException(str(e))
 
     def delete(self):
         try:
             api_client.delete_pipeline(self.id)
-            if self.exists():
+            if self.exists(self.id):
                 os.remove(self.file_path)
             errors_dir = os.path.join(ERRORS_DIR, self.id)
             if os.path.isdir(errors_dir):

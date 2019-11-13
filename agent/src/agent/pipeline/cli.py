@@ -1,11 +1,11 @@
 import click
 import json
 
-from .pipeline import Pipeline, PipelineException
-from .. import source
+from .. import pipeline, source
 from ..streamsets_api_client import api_client, StreamSetsApiClientException
 from agent.destination.http import HttpDestination
 from agent.constants import ENV_PROD
+from agent.tools import infinite_retry
 from jsonschema import validate, ValidationError
 from datetime import datetime
 from texttable import Texttable
@@ -15,8 +15,8 @@ def get_previous_pipeline_config(label):
     pipelines_with_source = api_client.get_pipelines(order_by='CREATED', order='DESC',
                                                      label=label)
     if len(pipelines_with_source) > 0:
-        pipeline_obj = Pipeline(pipelines_with_source[-1]['pipelineId'])
-        return pipeline_obj.load()
+        pipeline_obj = pipeline.load_object(pipelines_with_source[-1]['pipelineId'])
+        return pipeline_obj.to_dict()
     return {}
 
 
@@ -72,11 +72,19 @@ def create_multiple(file):
     validate(data, json_schema)
 
     for item in data:
-        pipeline_obj = Pipeline(item['pipeline_id'], item['source'])
-        pipeline_obj.load_client_data(item)
+        pipeline_obj = pipeline.create_object(item['pipeline_id'], item['source'])
+        pipeline_obj.set_config(pipeline_obj.loader.load(item))
         pipeline_obj.create()
 
         click.secho('Created pipeline {}'.format(item['pipeline_id']), fg='green')
+
+
+@infinite_retry
+def prompt_pipeline_id():
+    pipeline_id = click.prompt('Pipeline ID (must be unique)', type=click.STRING).strip()
+    if pipeline.Pipeline.exists(pipeline_id):
+        raise click.UsageError(f"Pipeline {pipeline_id} already exists")
+    return pipeline_id
 
 
 @click.command()
@@ -96,21 +104,19 @@ def create(advanced, file):
     if file:
         try:
             create_multiple(file)
-        except (StreamSetsApiClientException, PipelineException, ValidationError) as e:
+        except (StreamSetsApiClientException, pipeline.PipelineException, ValidationError) as e:
             raise click.ClickException(str(e))
         return
 
     default_source = sources[0] if len(sources) == 1 else None
     source_config_name = click.prompt('Choose source config', type=click.Choice(sources), default=default_source)
 
-    pipeline_id = click.prompt('Pipeline ID (must be unique)', type=click.STRING)
-
-    pipeline_obj = Pipeline(pipeline_id, source_config_name)
-    if pipeline_obj.exists():
-        raise click.ClickException('Pipeline with this name already exists')
+    pipeline_id = prompt_pipeline_id()
+    pipeline_obj = pipeline.create_object(pipeline_id, source_config_name)
 
     pipeline_obj.source.print_sample_data()
-    pipeline_obj.prompt(get_previous_pipeline_config(pipeline_obj.source.type), advanced)
+    previous_config = get_previous_pipeline_config(pipeline_obj.source.type)
+    pipeline_obj.set_config(pipeline_obj.prompter.prompt(previous_config, advanced))
     pipeline_obj.create()
 
     click.secho('Created pipeline {}'.format(pipeline_id), fg='green')
@@ -132,9 +138,8 @@ def edit_multiple(file):
     validate(data, json_schema)
 
     for item in data:
-        pipeline_obj = Pipeline(item['pipeline_id'])
-        pipeline_obj.load()
-        pipeline_obj.load_client_data(item, edit=True)
+        pipeline_obj = pipeline.load_object(item['pipeline_id'])
+        pipeline_obj.set_config(pipeline_obj.loader.load(item))
         pipeline_obj.update()
 
         click.secho('Updated pipeline {}'.format(item['pipeline_id']), fg='green')
@@ -155,9 +160,8 @@ def edit(pipeline_id, advanced, file):
         edit_multiple(file)
         return
 
-    pipeline_obj = Pipeline(pipeline_id)
-    pipeline_obj.load()
-    pipeline_obj.prompt(advanced=advanced)
+    pipeline_obj = pipeline.load_object(pipeline_id)
+    pipeline_obj.set_config(pipeline_obj.prompter.prompt({}, advanced=advanced))
     pipeline_obj.update()
 
     click.secho('Updated pipeline {}'.format(pipeline_id), fg='green')
@@ -171,8 +175,7 @@ def destination_logs(pipeline_id, enable):
     Enable destination response logs for a pipeline (for debugging purposes only)
     """
 
-    pipeline_obj = Pipeline(pipeline_id)
-    pipeline_obj.load()
+    pipeline_obj = pipeline.load_object(pipeline_id)
     pipeline_obj.enable_destination_logs(enable)
 
     click.secho('Updated pipeline {}'.format(pipeline_id), fg='green')
@@ -203,13 +206,13 @@ def start(pipeline_id):
     try:
         api_client.start_pipeline(pipeline_id)
         click.echo('Pipeline is starting...')
-        pipeline_obj = Pipeline(pipeline_id)
-        pipeline_obj.wait_for_status(Pipeline.STATUS_RUNNING)
+        pipeline_obj = pipeline.load_object(pipeline_id)
+        pipeline_obj.wait_for_status(pipeline.Pipeline.STATUS_RUNNING)
         click.secho('Pipeline is running', fg='green')
         if ENV_PROD:
             pipeline_obj.wait_for_sending_data()
             click.secho('Pipeline is sending data', fg='green')
-    except (StreamSetsApiClientException, PipelineException) as e:
+    except (StreamSetsApiClientException, pipeline.PipelineException) as e:
         click.secho(str(e), err=True, fg='red')
         return
 
@@ -223,10 +226,10 @@ def stop(pipeline_id):
     try:
         api_client.stop_pipeline(pipeline_id)
         click.echo('Pipeline is stopping...')
-        pipeline_obj = Pipeline(pipeline_id)
-        pipeline_obj.wait_for_status(Pipeline.STATUS_STOPPED)
+        pipeline_obj = pipeline.load_object(pipeline_id)
+        pipeline_obj.wait_for_status(pipeline.Pipeline.STATUS_STOPPED)
         click.secho('Pipeline is stopped', fg='green')
-    except (StreamSetsApiClientException, PipelineException) as e:
+    except (StreamSetsApiClientException, pipeline.PipelineException) as e:
         click.secho(str(e), err=True, fg='red')
         return
 
@@ -238,7 +241,7 @@ def delete(pipeline_id):
     Delete pipeline
     """
     try:
-        pipeline_obj = Pipeline(pipeline_id)
+        pipeline_obj = pipeline.load_object(pipeline_id)
         pipeline_obj.delete()
     except StreamSetsApiClientException as e:
         click.secho(str(e), err=True, fg='red')
@@ -333,8 +336,7 @@ def reset(pipeline_id):
     Reset pipeline's offset
     """
     try:
-        pipeline_obj = Pipeline(pipeline_id)
-        pipeline_obj.load()
+        pipeline_obj = pipeline.load_object(pipeline_id)
         pipeline_obj.reset()
 
     except StreamSetsApiClientException as e:
@@ -343,21 +345,21 @@ def reset(pipeline_id):
     click.echo('Pipeline offset reset')
 
 
-@click.group()
-def pipeline():
+@click.group(name='pipeline')
+def pipeline_group():
     """
     Pipelines management
     """
     pass
 
 
-pipeline.add_command(create)
-pipeline.add_command(list_pipelines)
-pipeline.add_command(start)
-pipeline.add_command(stop)
-pipeline.add_command(delete)
-pipeline.add_command(logs)
-pipeline.add_command(info)
-pipeline.add_command(reset)
-pipeline.add_command(edit)
-pipeline.add_command(destination_logs)
+pipeline_group.add_command(create)
+pipeline_group.add_command(list_pipelines)
+pipeline_group.add_command(start)
+pipeline_group.add_command(stop)
+pipeline_group.add_command(delete)
+pipeline_group.add_command(logs)
+pipeline_group.add_command(info)
+pipeline_group.add_command(reset)
+pipeline_group.add_command(edit)
+pipeline_group.add_command(destination_logs)

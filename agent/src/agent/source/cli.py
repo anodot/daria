@@ -1,10 +1,9 @@
 import click
 import json
 
-from .. import source
+from .. import source, pipeline
 from agent.constants import ENV_PROD
 from agent.destination import HttpDestination
-from agent.pipeline import Pipeline
 from agent.streamsets_api_client import api_client
 from agent.tools import infinite_retry
 from jsonschema import validate, ValidationError, SchemaError
@@ -14,8 +13,7 @@ def get_previous_source_config(label):
     pipelines_with_source = api_client.get_pipelines(order_by='CREATED', order='DESC',
                                                      label=label)
     if len(pipelines_with_source) > 0:
-        pipeline_obj = Pipeline(pipelines_with_source[-1]['pipelineId'])
-        pipeline_obj.load()
+        pipeline_obj = pipeline.load_object(pipelines_with_source[-1]['pipelineId'])
         return pipeline_obj.source.config
     return {}
 

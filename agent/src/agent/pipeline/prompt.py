@@ -6,20 +6,21 @@ from agent.pipeline.config_handlers import filtering_condition_parser
 
 
 class PromptConfig:
-    def __init__(self, default_config, advanced=False):
+    def __init__(self):
+        self.advanced = False
+        self.default_config = {}
+        self.config = {}
+
+    def prompt(self, default_config, advanced=False):
         self.advanced = advanced
         self.default_config = default_config
-        self.config = dict()
-
-        self.set_config()
-
-    def set_config(self):
         self.set_measurement_name()
         self.set_value()
         self.set_target_type()
         self.set_timestamp()
         self.set_dimensions()
         self.set_static_properties()
+        return self.config
 
     def set_measurement_name(self):
         self.config['measurement_name'] = click.prompt('Measurement name', type=click.STRING,
@@ -94,9 +95,10 @@ class PromptConfigMongo(PromptConfig):
 
 
 class PromptConfigKafka(PromptConfig):
-    def set_config(self):
-        super().set_config()
+    def prompt(self, default_config, advanced=False):
+        super().prompt(default_config, advanced)
         self.filter_messages()
+        return self.config
 
     def set_measurement_name(self):
         static_what_default = self.default_config.get('static_what', True)
@@ -162,9 +164,10 @@ class PromptConfigKafka(PromptConfig):
 
 
 class PromptConfigInflux(PromptConfig):
-    def set_config(self):
-        super().set_config()
+    def prompt(self, default_config, advanced=False):
+        super().prompt(default_config, advanced)
         self.set_delay()
+        return self.config
 
     def set_delay(self):
         self.config['delay'] = click.prompt('Delay', type=click.STRING, default=self.default_config.get('delay', '0s'))
@@ -219,7 +222,7 @@ class PromptConfigInflux(PromptConfig):
 
 
 class PromptConfigJDBC(PromptConfig):
-    def set_config(self):
+    def prompt(self, default_config, advanced=False):
         self.set_table()
         self.set_values()
         self.set_timestamp()
@@ -227,6 +230,7 @@ class PromptConfigJDBC(PromptConfig):
         self.set_static_properties()
         self.set_pagination()
         self.set_condition()
+        return self.config
 
     def set_table(self):
         self.config['table'] = click.prompt('Table name', type=click.STRING, default=self.default_config.get('table'))
