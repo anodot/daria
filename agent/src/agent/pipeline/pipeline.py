@@ -16,37 +16,20 @@ class Pipeline:
     STATUS_RUNNING = 'RUNNING'
     STATUS_STOPPED = 'STOPPED'
 
-    prompters = {
-        source.TYPE_INFLUX: prompt.PromptConfigInflux,
-        source.TYPE_KAFKA: prompt.PromptConfigKafka,
-        source.TYPE_MONGO: prompt.PromptConfigMongo,
-        source.TYPE_MYSQL: prompt.PromptConfigJDBC,
-        source.TYPE_POSTGRES: prompt.PromptConfigJDBC,
-    }
-
-    loaders = {
-        source.TYPE_INFLUX: load_client_data.InfluxLoadClientData,
-        source.TYPE_MONGO: load_client_data.MongoLoadClientData,
-        source.TYPE_KAFKA: load_client_data.KafkaLoadClientData,
-        source.TYPE_MYSQL: load_client_data.JDBCLoadClientData,
-        source.TYPE_POSTGRES: load_client_data.JDBCLoadClientData,
-    }
-
-    handlers = {
-        source.TYPE_MONITORING: config_handlers.MonitoringConfigHandler,
-        source.TYPE_INFLUX: config_handlers.InfluxConfigHandler,
-        source.TYPE_MONGO: config_handlers.MongoConfigHandler,
-        source.TYPE_KAFKA: config_handlers.KafkaConfigHandler,
-        source.TYPE_MYSQL: config_handlers.JDBCConfigHandler,
-        source.TYPE_POSTGRES: config_handlers.JDBCConfigHandler
-    }
-
-    def __init__(self, pipeline_id, source_name=None):
-        self.source = source.load_object(source_name) if source_name else None
-        self.destination = HttpDestination()
-        self.destination.load()
+    def __init__(self, pipeline_id: str,
+                 source_obj: source.Source,
+                 config: dict,
+                 destination: HttpDestination,
+                 config_handler: config_handlers.BaseConfigHandler,
+                 prompter: prompt.PromptConfig,
+                 loader: load_client_data.LoadClientData):
         self.id = pipeline_id
-        self.config = {}
+        self.config = config
+        self.source = source_obj
+        self.destination = destination
+        self.config_handler = config_handler
+        self.prompter = prompter
+        self.loader = loader
 
     @classmethod
     def create_dir(cls):
@@ -68,39 +51,38 @@ class Pipeline:
     def exists(self):
         return os.path.isfile(self.file_path)
 
-    def load(self):
-        if not self.exists():
-            raise PipelineNotExists(f"Pipeline {self.id} doesn't exist")
-
-        with open(self.file_path, 'r') as f:
-            self.config = json.load(f)
-
-        self.source = source.load_object(self.config['source']['name'])
-        # self.config['source'] = self.source.to_dict()
-        # self.config['destination'] = self.destination.load()
-
-        return self.config
+    # def load(self):
+    #     if not self.exists():
+    #         raise PipelineNotExists(f"Pipeline {self.id} doesn't exist")
+    #
+    #     with open(self.file_path, 'r') as f:
+    #         self.config = json.load(f)
+    #
+    #     self.source = source.load_object(self.config['source']['name'])
+    #     # self.config['source'] = self.source.to_dict()
+    #     # self.config['destination'] = self.destination.load()
+    #
+    #     return self.config
 
     def save(self):
         with open(self.file_path, 'w') as f:
             json.dump(self.to_dict(), f)
 
-    def prompt(self, default_config=None, advanced=False):
-        if not default_config:
-            default_config = self.to_dict()
-        self.config.update(self.prompters[self.source.type](default_config, advanced).config)
-
-    def load_client_data(self, client_config, edit=False):
-        self.config.update(self.loaders[self.source.type](client_config, edit).load())
-
-    def get_config_handler(self, pipeline_obj=None) -> config_handlers.BaseConfigHandler:
-        return self.handlers[self.source.type](self.to_dict(), pipeline_obj)
+    # def prompt(self, default_config=None, advanced=False):
+    #     if not default_config:
+    #         default_config = self.to_dict()
+    #     self.config.update(self.prompters[self.source.type](default_config, advanced).config)
+    #
+    # def load_client_data(self, client_config, edit=False):
+    #     self.config.update(self.loaders[self.source.type](client_config, edit).load())
+    #
+    # def get_config_handler(self, pipeline_obj=None) -> config_handlers.BaseConfigHandler:
+    #     return self.handlers[self.source.type](self.to_dict(), pipeline_obj)
 
     def create(self):
         try:
             pipeline_obj = api_client.create_pipeline(self.id)
-            config_handler = self.get_config_handler()
-            new_config = config_handler.override_base_config(pipeline_obj['uuid'], pipeline_obj['title'])
+            new_config = self.config_handler.override_base_config(self.to_dict(), pipeline_obj['uuid'])
 
             api_client.update_pipeline(self.id, new_config)
         except (config_handlers.ConfigHandlerException, StreamSetsApiClientException) as e:
@@ -112,8 +94,7 @@ class Pipeline:
     def update(self):
         try:
             pipeline_obj = api_client.get_pipeline(self.id)
-            config_handler = self.get_config_handler(pipeline_obj)
-            new_config = config_handler.override_base_config()
+            new_config = self.config_handler.override_base_config(self.to_dict(), pipeline_obj)
 
             api_client.update_pipeline(self.id, new_config)
         except StreamSetsApiClientException as e:
@@ -127,8 +108,7 @@ class Pipeline:
     def reset(self):
         try:
             api_client.reset_pipeline(self.id)
-            config_handler = self.get_config_handler()
-            config_handler.set_initial_offset()
+            self.config_handler.set_initial_offset(self.to_dict())
         except (config_handlers.ConfigHandlerException, StreamSetsApiClientException) as e:
             raise PipelineException(str(e))
 
@@ -145,7 +125,6 @@ class Pipeline:
 
     def enable_destination_logs(self, enable):
         self.destination.enable_logs(enable)
-        # self.config['destination'] = self.destination.to_dict()
         self.update()
 
     def wait_for_status(self, status, tries=5, initial_delay=3):
