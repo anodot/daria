@@ -223,6 +223,8 @@ class PromptConfigInflux(PromptConfig):
 
 class PromptConfigJDBC(PromptConfig):
     def prompt(self, default_config, advanced=False):
+        self.advanced = advanced
+        self.default_config = default_config
         self.set_table()
         self.set_values()
         self.set_timestamp()

@@ -53,38 +53,15 @@ class Pipeline:
     def set_config(self, config: dict):
         self.config.update(config)
 
-    # def load(self):
-    #     if not self.exists():
-    #         raise PipelineNotExists(f"Pipeline {self.id} doesn't exist")
-    #
-    #     with open(self.file_path, 'r') as f:
-    #         self.config = json.load(f)
-    #
-    #     self.source = source.load_object(self.config['source']['name'])
-    #     # self.config['source'] = self.source.to_dict()
-    #     # self.config['destination'] = self.destination.load()
-    #
-    #     return self.config
-
     def save(self):
         with open(self.file_path, 'w') as f:
             json.dump(self.to_dict(), f)
 
-    # def prompt(self, default_config=None, advanced=False):
-    #     if not default_config:
-    #         default_config = self.to_dict()
-    #     self.config.update(self.prompters[self.source.type](default_config, advanced).config)
-    #
-    # def load_client_data(self, client_config, edit=False):
-    #     self.config.update(self.loaders[self.source.type](client_config, edit).load())
-    #
-    # def get_config_handler(self, pipeline_obj=None) -> config_handlers.BaseConfigHandler:
-    #     return self.handlers[self.source.type](self.to_dict(), pipeline_obj)
-
     def create(self):
         try:
             pipeline_obj = api_client.create_pipeline(self.id)
-            new_config = self.config_handler.override_base_config(self.to_dict(), new_uuid=pipeline_obj['uuid'])
+            new_config = self.config_handler.override_base_config(self.to_dict(), new_uuid=pipeline_obj['uuid'],
+                                                                  new_pipeline_title=self.id)
 
             api_client.update_pipeline(self.id, new_config)
         except (config_handlers.ConfigHandlerException, StreamSetsApiClientException) as e:
@@ -110,7 +87,7 @@ class Pipeline:
     def reset(self):
         try:
             api_client.reset_pipeline(self.id)
-            self.config_handler.set_initial_offset()
+            self.config_handler.set_initial_offset(self.to_dict())
         except (config_handlers.ConfigHandlerException, StreamSetsApiClientException) as e:
             raise PipelineException(str(e))
 

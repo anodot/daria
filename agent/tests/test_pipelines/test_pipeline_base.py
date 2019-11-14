@@ -68,9 +68,8 @@ class TestPipelineBase(object):
 
     def test_delete_pipeline(self, cli_runner, name):
         result = cli_runner.invoke(pipeline_cli.delete, [name])
-        pipeline_obj = Pipeline(name)
         assert result.exit_code == 0
-        assert not pipeline_obj.exists()
+        assert not Pipeline.exists(name)
 
     def test_source_delete(self, cli_runner, name):
         result = cli_runner.invoke(source_cli.delete, [name])

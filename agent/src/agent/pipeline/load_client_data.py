@@ -29,7 +29,7 @@ class LoadClientData:
 
         with open(os.path.join(definitions_dir, self.VALIDATION_SCHEMA_FILE_NAME + '.json'), 'r') as f:
             schema = json.load(f)
-        if edit:
+        if self.edit:
             schema['required'] = []
         validate(self.client_config, schema)
         client_config.pop('source', None)

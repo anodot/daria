@@ -139,7 +139,7 @@ def edit_multiple(file):
 
     for item in data:
         pipeline_obj = pipeline.load_object(item['pipeline_id'])
-        pipeline_obj.set_config(pipeline_obj.loader.load(item))
+        pipeline_obj.set_config(pipeline_obj.loader.load(item, edit=True))
         pipeline_obj.update()
 
         click.secho('Updated pipeline {}'.format(item['pipeline_id']), fg='green')
@@ -161,7 +161,7 @@ def edit(pipeline_id, advanced, file):
         return
 
     pipeline_obj = pipeline.load_object(pipeline_id)
-    pipeline_obj.set_config(pipeline_obj.prompter.prompt({}, advanced=advanced))
+    pipeline_obj.set_config(pipeline_obj.prompter.prompt(pipeline_obj.to_dict(), advanced=advanced))
     pipeline_obj.update()
 
     click.secho('Updated pipeline {}'.format(pipeline_id), fg='green')
