@@ -72,10 +72,18 @@ class Pipeline:
 
     def update(self):
         try:
-            pipeline_obj = api_client.get_pipeline(self.id)
-            new_config = self.config_handler.override_base_config(self.to_dict(), base_config=pipeline_obj)
+            start_pipeline = False
+            if self.check_status(self.STATUS_RUNNING):
+                self.stop()
+                start_pipeline = True
 
+            pipeline_obj = api_client.get_pipeline(self.id)
+            new_config = self.config_handler.override_base_config(self.to_dict(), new_uuid=pipeline_obj['uuid'],
+                                                                  new_pipeline_title=self.id)
             api_client.update_pipeline(self.id, new_config)
+
+            if start_pipeline:
+                self.start()
         except StreamSetsApiClientException as e:
             raise PipelineException(str(e))
         except config_handlers.ConfigHandlerException as e:
@@ -105,6 +113,10 @@ class Pipeline:
     def enable_destination_logs(self, enable):
         self.destination.enable_logs(enable)
         self.update()
+
+    def check_status(self, status):
+        response = api_client.get_pipeline_status(self.id)
+        return response['status'] == status
 
     def wait_for_status(self, status, tries=5, initial_delay=3):
         for i in range(1, tries):
