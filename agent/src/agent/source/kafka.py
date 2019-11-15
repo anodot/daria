@@ -4,7 +4,7 @@ import os
 import time
 
 from .abstract_source import Source, SourceException
-from agent.tools import infinite_retry, print_dicts
+from agent.tools import infinite_retry, print_dicts, if_validation_enabled
 from agent.streamsets_api_client import api_client
 
 
@@ -69,6 +69,7 @@ class KafkaSource(Source):
         pipeline_config['uuid'] = new_pipeline['uuid']
         api_client.update_pipeline(self.TEST_PIPELINE_NAME, pipeline_config)
 
+    @if_validation_enabled
     def validate_connection(self):
         self.create_test_pipeline()
         validate_status = api_client.validate(self.TEST_PIPELINE_NAME)
