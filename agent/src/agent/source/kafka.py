@@ -216,12 +216,14 @@ class KafkaSource(Source):
                                                                                   self.DEFAULT_KAFKA_VERSION)]
 
     def print_sample_data(self):
-        if self.config.get(self.CONFIG_DATA_FORMAT) != self.DATA_FORMAT_CSV:
-            return
         records = self.get_sample_records()
         if not records:
             return
-        print_dicts(self.map_keys(records, self.config.get(self.CONFIG_CSV_MAPPING, {})))
+
+        if self.config.get(self.CONFIG_DATA_FORMAT) == self.DATA_FORMAT_CSV:
+            print_dicts(self.map_keys(records, self.config.get(self.CONFIG_CSV_MAPPING, {})))
+        else:
+            print(records)
 
     def map_keys(self, records, mapping):
         return [{new_key: record[int(idx)] for idx, new_key in mapping.items()} for record in records]
