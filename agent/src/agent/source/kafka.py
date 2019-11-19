@@ -155,6 +155,16 @@ class KafkaSource(Source):
 
         return self.config
 
+    def sdc_record_map_to_dict(self, record: dict):
+        if 'value' in record:
+            if type(record['value']) is list:
+                return {key: self.sdc_record_map_to_dict(item) for key, item in enumerate(record['value'])}
+            elif type(record['value']) is dict:
+                return {key: self.sdc_record_map_to_dict(item) for key, item in record['value'].items()}
+            else:
+                return record['value']
+        return record
+
     def get_sample_records(self, max_records=3):
         self.create_test_pipeline()
         preview = api_client.create_preview(self.TEST_PIPELINE_NAME)
@@ -170,8 +180,7 @@ class KafkaSource(Source):
         except ValueError:
             print('No preview data available')
             return
-
-        return [{int(item['sqpath'][1:]): item['value'] for item in record['value']['value']} for record in data[:max_records]]
+        return [self.sdc_record_map_to_dict(record['value']) for record in data[:max_records]]
 
     def change_field_names(self, default_config):
         previous_val = default_config.get(self.CONFIG_CSV_MAPPING, {})
@@ -224,7 +233,11 @@ class KafkaSource(Source):
         if self.config.get(self.CONFIG_DATA_FORMAT) == self.DATA_FORMAT_CSV:
             print_dicts(self.map_keys(records, self.config.get(self.CONFIG_CSV_MAPPING, {})))
         else:
-            print(records)
+            print('\n', '=========')
+            for record in records:
+                print(json.dumps(record, indent=4, sort_keys=True))
+                print('=========')
+            print('\n')
 
     def map_keys(self, records, mapping):
         return [{new_key: record[int(idx)] for idx, new_key in mapping.items()} for record in records]
