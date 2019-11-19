@@ -1,6 +1,6 @@
 import click
 
-from agent.constants import ENV_PROD
+from agent.constants import ENV_PROD, VALIDATION_ENABLED
 from urllib.parse import urlparse
 from tabulate import tabulate
 
@@ -28,3 +28,11 @@ def is_url(url):
 
 def print_dicts(dicts: list):
     print(tabulate(list(zip(*[[f'{idx}: {item}' for idx, item in dict_item.items()] for dict_item in dicts]))))
+
+
+def if_validation_enabled(func):
+    if not VALIDATION_ENABLED:
+        def new_func(*args, **kwargs):
+            return True
+        return new_func
+    return func
