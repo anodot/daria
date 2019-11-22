@@ -1,5 +1,6 @@
 import click
 import time
+import readline
 
 from .pipeline import Pipeline
 from .pipeline.cli import pipeline
