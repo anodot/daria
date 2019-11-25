@@ -7,6 +7,14 @@ from agent.pipeline import cli as pipeline_cli
 from agent.source import cli as source_cli, Source
 from agent.streamsets_api_client import api_client
 from .test_pipeline_base import TestPipelineBase, pytest_generate_tests
+from agent.pipeline.config_handlers.mongo import MongoConfigHandler
+
+
+@pytest.fixture(autouse=True)
+def pipeline_id(monkeypatch):
+    def constant_pipeline_id(self):
+        return 'pipeline_id'
+    monkeypatch.setattr(MongoConfigHandler, 'get_pipeline_id', constant_pipeline_id)
 
 
 class TestMongo(TestPipelineBase):

@@ -26,6 +26,9 @@ class BaseConfigHandler(ABC):
             os.makedirs(errors_dir)
             os.chmod(errors_dir, 0o777)
 
+    def get_pipeline_id(self):
+        return self.client_config['pipeline_id']
+
     def load_base_config(self):
         base_path = self.PIPELINES_BASE_CONFIGS_PATH.format(**{
             'source_name': self.client_config['source']['type'],
@@ -106,11 +109,13 @@ class BaseConfigHandler(ABC):
             conf['value'].append({'fieldToSet': '/tags/source', 'expression': '${emptyList()}'})
             conf['value'].append({'fieldToSet': '/tags/source_host_id', 'expression': '${emptyList()}'})
             conf['value'].append({'fieldToSet': '/tags/source_host_name', 'expression': '${emptyList()}'})
+            conf['value'].append({'fieldToSet': '/tags/pipeline_id', 'expression': '${emptyList()}'})
             conf['value'].append({'fieldToSet': '/tags/source[0]', 'expression': 'anodot-agent'})
             conf['value'].append({'fieldToSet': '/tags/source_host_id[0]',
                                   'expression': self.client_config['destination']['host_id']})
             conf['value'].append({'fieldToSet': '/tags/source_host_name[0]',
                                   'expression': HOSTNAME})
+            conf['value'].append({'fieldToSet': '/tags/pipeline_id[0]', 'expression': self.get_pipeline_id()})
             return
 
     def set_initial_offset(self):
