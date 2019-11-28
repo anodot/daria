@@ -3,7 +3,7 @@
     "value": 1.0,
     "properties": {
       "what": "clicks",
-      "target_type": "gauge",
+      "target_type": "counter",
       "ver": "AD200",
       "Country": "USA",
       "Exchange": "DoubleClick",
@@ -21,7 +21,7 @@
     "value": 1.0,
     "properties": {
       "what": "clicks",
-      "target_type": "gauge",
+      "target_type": "counter",
       "ver": "AD200",
       "Country": "USA",
       "Exchange": "DoubleClick",
@@ -39,7 +39,7 @@
     "value": 1.0,
     "properties": {
       "what": "clicks",
-      "target_type": "gauge",
+      "target_type": "counter",
       "ver": "AD200",
       "Country": "USA",
       "Exchange": "DoubleClick",
@@ -57,7 +57,7 @@
     "value": 1.0,
     "properties": {
       "what": "clicks",
-      "target_type": "gauge",
+      "target_type": "counter",
       "ver": "AD200",
       "Country": "USA",
       "Exchange": "DoubleClick",
@@ -75,7 +75,7 @@
     "value": 1.0,
     "properties": {
       "what": "clicks",
-      "target_type": "gauge",
+      "target_type": "counter",
       "ver": "AD200",
       "Country": "USA",
       "Exchange": "DoubleClick",
@@ -93,7 +93,7 @@
     "value": 1.0,
     "properties": {
       "what": "clicks",
-      "target_type": "gauge",
+      "target_type": "counter",
       "ver": "AD200",
       "Country": "USA",
       "Exchange": "DoubleClick",
@@ -111,7 +111,7 @@
     "value": 1.0,
     "properties": {
       "what": "clicks",
-      "target_type": "gauge",
+      "target_type": "counter",
       "ver": "AD200",
       "Country": "",
       "Exchange": "DoubleClick",

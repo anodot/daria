@@ -44,7 +44,6 @@ class KafkaLoadClientData(LoadClientData):
 
     def load(self):
         self.load_dimensions()
-        self.load_value()
         if 'timestamp' not in self.client_config and not self.edit:
             self.client_config['timestamp'] = {'name': 'kafka_timestamp', 'type': 'unix_ms'}
         condition = self.client_config.get('filter', {}).get('condition')

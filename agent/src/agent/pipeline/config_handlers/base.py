@@ -121,6 +121,14 @@ class BaseConfigHandler(ABC):
     def set_initial_offset(self):
         pass
 
+    def get_property_mapping(self, property_value):
+        mapping = self.client_config['source']['config'].get('csv_mapping', {})
+        for idx, item in mapping.items():
+            if item == property_value:
+                return idx
+
+        return property_value
+
 
 class ConfigHandlerException(Exception):
     pass

@@ -138,7 +138,7 @@ services:
   dummy_destination:
     build: dummy_destination
     volumes:
-      - dummy-destination-data:/app
+      - dummy-destination-data:/app/log
 
 
 volumes:
