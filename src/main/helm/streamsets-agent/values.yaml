@@ -1,0 +1,44 @@
+# Default values for agent.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+replicaCount: 1
+persistence:
+  enabled: false
+  storageClass: ""
+  size: "3Gi"
+
+streamsets:
+  repository: 340481513670.dkr.ecr.us-east-1.amazonaws.com/streamsets-agent/sdc
+  tag: latest
+  pullPolicy: IfNotPresent
+  env:
+    SDC_JAVA_OPTS: "-Xmx4096m -Xms4096m -server"
+  resources: {}
+#    limits:
+#      cpu: 3
+#      memory: 7Gi
+#    requests:
+#      cpu: 2
+#      memory: 6Gi
+
+agent:
+  repository: 340481513670.dkr.ecr.us-east-1.amazonaws.com/streamsets-agent/agent
+  tag: latest
+  pullPolicy: IfNotPresent
+  resources: {}
+#    limits:
+#      cpu: 500m
+#      memory: 2Gi
+#    requests:
+#      cpu: 500m
+#      memory: 1Gi
+
+nameOverride: "streamsets-agent"
+fullnameOverride: "streamsets-agent"
+service:
+  name: agent
+  type: NodePort
+  port: 8080
+
+streamsetsurl: "http://localhost:18630"
+anodotapiurl: "http://anodotd:8080"
