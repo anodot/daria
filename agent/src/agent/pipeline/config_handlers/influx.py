@@ -5,7 +5,7 @@ from agent.logger import get_logger
 from agent.constants import HOSTNAME
 from datetime import datetime, timedelta
 from influxdb import InfluxDBClient
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urljoin, urlparse, quote_plus
 
 logger = get_logger(__name__)
 
@@ -33,9 +33,9 @@ state['HOST_NAME'] = '{host_name}'
 state['PIPELINE_ID'] = '{pipeline_id}'
 """
 
-    QUERY_GET_DATA = "SELECT+{dimensions}+FROM+%22{metric}%22+WHERE+%22time%22+%3E%3D+${{record:value('/last_timestamp')}}+AND+%22time%22+%3C+${{record:value('/last_timestamp')}}%2B{interval}+AND+%22time%22+%3C+now%28%29-{delay}"
+    QUERY_GET_DATA = "SELECT+{dimensions}+FROM+%22{metric}%22+WHERE+%28%22time%22+%3E%3D+${{record:value('/last_timestamp')}}+AND+%22time%22+%3C+${{record:value('/last_timestamp')}}%2B{interval}+AND+%22time%22+%3C+now%28%29-{delay}%29+{where}"
     QUERY_GET_TIMESTAMP = "SELECT+last_timestamp+FROM+agent_timestamps+WHERE+pipeline_id%3D%27${pipeline:id()}%27+ORDER+BY+time+DESC+LIMIT+1"
-    QUERY_CHECK_DATA = "SELECT+{dimensions}+FROM+%22{metric}%22+WHERE+%22time%22+%3E+${{record:value('/last_timestamp_value')}}+AND+%22time%22+%3C+now%28%29-{delay}+ORDER+BY+time+ASC+limit+1"
+    QUERY_CHECK_DATA = "SELECT+{dimensions}+FROM+%22{metric}%22+WHERE+%28%22time%22+%3E+${{record:value('/last_timestamp_value')}}+AND+%22time%22+%3C+now%28%29-{delay}%29+{where}+ORDER+BY+time+ASC+limit+1"
 
     def get_write_client(self):
         host, db, username, password = self.get_write_config()
@@ -147,6 +147,9 @@ state['PIPELINE_ID'] = '{pipeline_id}'
         write_config['conf.spoolingPeriod'] = interval
         write_config['conf.poolingTimeoutSecs'] = interval
 
+        where = self.client_config.get('filtering')
+        where = f'AND+%28{quote_plus(where)}%29' if where else ''
+
         for stage in self.config['stages']:
             if stage['instanceName'] == 'HTTPClient_03':
                 query = f"/query?db={source_config['db']}&epoch=ms&q={self.QUERY_GET_DATA}".format(**{
@@ -154,6 +157,7 @@ state['PIPELINE_ID'] = '{pipeline_id}'
                     'metric': self.client_config['measurement_name'],
                     'delay': delay,
                     'interval': str(interval) + 's',
+                    'where': where
                 })
                 self.update_http_stage(stage, self.client_config['source']['config'], urljoin(source_config['host'], query))
 
@@ -170,7 +174,8 @@ state['PIPELINE_ID'] = '{pipeline_id}'
                 query = f"/query?db={source_config['db']}&epoch=ns&q={self.QUERY_CHECK_DATA}".format(**{
                     'dimensions': columns,
                     'metric': self.client_config['measurement_name'],
-                    'delay': delay
+                    'delay': delay,
+                    'where': where
                 })
                 self.update_http_stage(stage, self.client_config['source']['config'], urljoin(source_config['host'], query))
 

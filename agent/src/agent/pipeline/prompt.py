@@ -187,6 +187,7 @@ class PromptConfigInflux(PromptConfig):
         self.set_dimensions()
         self.set_static_properties()
         self.set_delay()
+        self.set_filtering()
 
     def set_delay(self):
         self.config['delay'] = click.prompt('Delay', type=click.STRING, default=self.default_config.get('delay', '0s'))
@@ -198,12 +199,16 @@ class PromptConfigInflux(PromptConfig):
 
     def set_value(self):
         self.config['value'] = self.default_config.get('value', {'constant': 1, 'values': []})
+
         if self.advanced or self.config['value'].get('type') == 'constant':
             self.config['value']['type'] = click.prompt('Value type', type=click.Choice(['column', 'constant']),
                                                         default=self.config['value'].get('type'))
+            default_values = self.config['value'].get('values')
+            if default_values:
+                default_values = ' '.join(default_values)
 
             value = click.prompt('Value (column name or constant value)', type=click.STRING,
-                                 default=self.config['value'].get('constant'))
+                                 default=default_values)
             if self.config['value']['type'] == 'constant':
                 self.config['value']['constant'] = value
                 self.config['value']['values'] = []
@@ -238,6 +243,11 @@ class PromptConfigInflux(PromptConfig):
                                                                  value_proc=lambda x: x.split(),
                                                                  default=self.config['dimensions'].get('optional',
                                                                                                        []))
+
+    def set_filtering(self):
+        if self.advanced or self.config.get('filtering'):
+            self.config['filtering'] = click.prompt('Filtering condition', type=click.STRING,
+                                                    default=self.default_config.get('filtering'))
 
 
 class PromptConfigJDBC(PromptConfig):

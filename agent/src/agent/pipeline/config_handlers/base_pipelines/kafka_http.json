@@ -2,10 +2,10 @@
   "pipelineConfig" : {
     "schemaVersion" : 6,
     "version" : 12,
-    "pipelineId" : "kafkahttp72dbcea1e-66d2-483f-8421-cdc405552a5b",
-    "title" : "kafka_http (7)",
+    "pipelineId" : "kafkahttp7cfed255-30ce-43c2-946a-826ca6786ae8",
+    "title" : "kafka_http",
     "description" : "",
-    "uuid" : "093bec19-e917-4346-b658-80f7baf85444",
+    "uuid" : "c158b13c-aa33-43b2-84a8-e140c78fba6e",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -461,6 +461,46 @@
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
+      "instanceName" : "ExpressionEvaluator_03",
+      "library" : "streamsets-datacollector-basic-lib",
+      "stageName" : "com_streamsets_pipeline_stage_processor_expression_ExpressionDProcessor",
+      "stageVersion" : "2",
+      "configuration" : [ {
+        "name" : "expressionProcessorConfigs",
+        "value" : [ {
+          "fieldToSet" : "/kafka_timestamp",
+          "expression" : "${record:attribute('timestamp')}"
+        } ]
+      }, {
+        "name" : "headerAttributeConfigs",
+        "value" : [ { } ]
+      }, {
+        "name" : "fieldAttributeConfigs",
+        "value" : [ {
+          "fieldToSet" : "/"
+        } ]
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "description" : "",
+        "label" : "Expression Evaluator 1",
+        "xPos" : 280,
+        "yPos" : 50,
+        "stageType" : "PROCESSOR"
+      },
+      "inputLanes" : [ "KafkaConsumer_01OutputLane15499645704860" ],
+      "outputLanes" : [ "ExpressionEvaluator_03OutputLane15750326759030" ],
+      "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
       "instanceName" : "FieldFlattener_01",
       "library" : "streamsets-datacollector-basic-lib",
       "stageName" : "com_streamsets_pipeline_stage_processor_fieldflattener_FieldFlattenerDProcessor",
@@ -499,11 +539,11 @@
       "uiInfo" : {
         "description" : "",
         "label" : "Field Flattener 1",
-        "xPos" : 280,
+        "xPos" : 500,
         "yPos" : 50,
         "stageType" : "PROCESSOR"
       },
-      "inputLanes" : [ "KafkaConsumer_01OutputLane15499645704860" ],
+      "inputLanes" : [ "ExpressionEvaluator_03OutputLane15750326759030" ],
       "outputLanes" : [ "FieldFlattener_01OutputLane15747616139350" ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -537,7 +577,7 @@
       "uiInfo" : {
         "description" : "",
         "label" : "transform",
-        "xPos" : 500,
+        "xPos" : 720,
         "yPos" : 50,
         "stageType" : "PROCESSOR"
       },
@@ -577,7 +617,7 @@
       "uiInfo" : {
         "description" : "",
         "label" : "Convert timestamp to long",
-        "xPos" : 720,
+        "xPos" : 940,
         "yPos" : 50,
         "stageType" : "PROCESSOR"
       },
@@ -642,7 +682,7 @@
       "uiInfo" : {
         "description" : "Convert value to float and timestamp to int",
         "label" : "Convert value and timestamp",
-        "xPos" : 940,
+        "xPos" : 1160,
         "yPos" : 50,
         "stageType" : "PROCESSOR"
       },
@@ -941,7 +981,7 @@
       "uiInfo" : {
         "description" : "",
         "label" : "HTTP Client 1",
-        "xPos" : 1160,
+        "xPos" : 1380,
         "yPos" : 50,
         "stageType" : "TARGET"
       },
@@ -981,22 +1021,22 @@
       "services" : [ ]
     },
     "info" : {
-      "pipelineId" : "kafkahttp72dbcea1e-66d2-483f-8421-cdc405552a5b",
-      "title" : "kafka_http (7)",
+      "pipelineId" : "kafkahttp7cfed255-30ce-43c2-946a-826ca6786ae8",
+      "title" : "kafka_http",
       "description" : "",
-      "created" : 1574759158665,
-      "lastModified" : 1574761634993,
+      "created" : 1575032634677,
+      "lastModified" : 1575032706526,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "093bec19-e917-4346-b658-80f7baf85444",
+      "uuid" : "c158b13c-aa33-43b2-84a8-e140c78fba6e",
       "valid" : true,
       "metadata" : {
         "labels" : [ "mongo", "http" ]
       },
-      "name" : "kafkahttp72dbcea1e-66d2-483f-8421-cdc405552a5b",
+      "name" : "kafkahttp7cfed255-30ce-43c2-946a-826ca6786ae8",
       "sdcVersion" : "3.8.2",
-      "sdcId" : "b4d89c1d-0f7b-11ea-8a83-11ade7c4bafc"
+      "sdcId" : "19269e37-12a0-11ea-b3c5-952363f9ec0a"
     },
     "metadata" : {
       "labels" : [ "mongo", "http" ]
@@ -1368,7 +1408,7 @@
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "056d4b07-ee2e-4ccf-be2d-3d8e57916d97",
+    "uuid" : "931607e3-4e89-49d0-92e5-c90ad72dbb41",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : [ ]
@@ -1376,8 +1416,8 @@
       "name" : "webhookConfigs",
       "value" : [ ]
     } ],
-    "configIssues" : [ ],
-    "ruleIssues" : [ ]
+    "ruleIssues" : [ ],
+    "configIssues" : [ ]
   },
   "libraryDefinitions" : null
 }

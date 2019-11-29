@@ -109,7 +109,7 @@ class KafkaSource(Source):
     def prompt_consumer_params(self, default_config):
         default_kafka_config = default_config.get(self.CONFIG_CONSUMER_PARAMS, '')
         if default_kafka_config:
-            default_kafka_config = ' '.join([i['key'] + ':' + i['value'] for i in default_kafka_config])
+            default_kafka_config = ','.join([i['key'] + ':' + i['value'] for i in default_kafka_config])
         kafka_config = click.prompt('Kafka Configuration', type=click.STRING, default=default_kafka_config).strip()
         if not kafka_config:
             return
@@ -122,7 +122,7 @@ class KafkaSource(Source):
             self.config[self.CONFIG_CONSUMER_PARAMS].append({'key': pair[0], 'value': pair[1]})
 
     def prompt(self, default_config, advanced=False):
-        self.config = dict()
+        self.config = {}
         if advanced:
             self.config[self.CONFIG_VERSION] = click.prompt('Kafka version',
                                                             type=click.Choice(self.version_libraries.keys()),
