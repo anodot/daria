@@ -1,8 +1,8 @@
-##Python agent
+## Python agent
 With this CLI tool you can create pipelines in Streamsets Data collector which will 
 pull data from different sources and push it to anodot
 
-###How to build
+### How to build
 ```
 docker-compose up -d
 ```

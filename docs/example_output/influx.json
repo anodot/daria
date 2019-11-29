@@ -1,0 +1,242 @@
+[
+  {
+    "timestamp": 1555319249,
+    "properties": {
+      "target_type": "gauge",
+      "cpu": "cpu-total-usage",
+      "host": "msk-air-trn4",
+      "zone": "GF",
+      "measurement_category": "cpu",
+      "what": "usage_active"
+    },
+    "value": 0.94
+  },
+  {
+    "timestamp": 1555319249,
+    "properties": {
+      "target_type": "gauge",
+      "cpu": "cpu-total-usage",
+      "host": "msk-air-trn4",
+      "zone": "GF",
+      "measurement_category": "cpu",
+      "what": "usage_idle"
+    },
+    "value": 30.77
+  },
+  {
+    "timestamp": 1555319249,
+    "properties": {
+      "target_type": "gauge",
+      "cpu": "cpu-total-usage",
+      "host": "msk-air-trn0",
+      "zone": "GEO",
+      "measurement_category": "cpu",
+      "what": "usage_active"
+    },
+    "value": 0.2
+  },
+  {
+    "timestamp": 1555319249,
+    "properties": {
+      "target_type": "gauge",
+      "cpu": "cpu-total-usage",
+      "host": "msk-air-trn0",
+      "zone": "GEO",
+      "measurement_category": "cpu",
+      "what": "usage_idle"
+    },
+    "value": 92.6
+  },
+  {
+    "timestamp": 1555319249,
+    "properties": {
+      "target_type": "gauge",
+      "cpu": "cpu-total-usage",
+      "host": "msk-air-trn0",
+      "zone": "GEO",
+      "measurement_category": "cpu",
+      "what": "usage_active"
+    },
+    "value": 0.54
+  },
+  {
+    "timestamp": 1555319249,
+    "properties": {
+      "target_type": "gauge",
+      "cpu": "cpu-total-usage",
+      "host": "msk-air-trn0",
+      "zone": "GEO",
+      "measurement_category": "cpu",
+      "what": "usage_idle"
+    },
+    "value": 50.63
+  },
+  {
+    "timestamp": 1555319249,
+    "properties": {
+      "target_type": "gauge",
+      "cpu": "cpu-total-usage",
+      "host": "msk-air-trn2",
+      "zone": "GF",
+      "measurement_category": "cpu",
+      "what": "usage_active"
+    },
+    "value": 0.54
+  },
+  {
+    "timestamp": 1555319249,
+    "properties": {
+      "target_type": "gauge",
+      "cpu": "cpu-total-usage",
+      "host": "msk-air-trn2",
+      "zone": "GF",
+      "measurement_category": "cpu",
+      "what": "usage_idle"
+    },
+    "value": 33.99
+  },
+  {
+    "timestamp": 1555319249,
+    "properties": {
+      "target_type": "gauge",
+      "cpu": "cpu-total-usage",
+      "host": "msk-air-trn1",
+      "zone": "GF",
+      "measurement_category": "cpu",
+      "what": "usage_active"
+    },
+    "value": 0.33
+  },
+  {
+    "timestamp": 1555319249,
+    "properties": {
+      "target_type": "gauge",
+      "cpu": "cpu-total-usage",
+      "host": "msk-air-trn1",
+      "zone": "GF",
+      "measurement_category": "cpu",
+      "what": "usage_idle"
+    },
+    "value": 90.95
+  },
+  {
+    "timestamp": 1555319249,
+    "properties": {
+      "target_type": "gauge",
+      "cpu": "cpu-total-usage",
+      "host": "msk-air-trn2",
+      "zone": "GF",
+      "measurement_category": "cpu",
+      "what": "usage_active"
+    },
+    "value": 0.44
+  },
+  {
+    "timestamp": 1555319249,
+    "properties": {
+      "target_type": "gauge",
+      "cpu": "cpu-total-usage",
+      "host": "msk-air-trn2",
+      "zone": "GF",
+      "measurement_category": "cpu",
+      "what": "usage_idle"
+    },
+    "value": 94.75
+  },
+  {
+    "timestamp": 1555319249,
+    "properties": {
+      "target_type": "gauge",
+      "cpu": "cpu-total-usage",
+      "host": "msk-air-trn4",
+      "zone": "GF",
+      "measurement_category": "cpu",
+      "what": "usage_active"
+    },
+    "value": 0.77
+  },
+  {
+    "timestamp": 1555319249,
+    "properties": {
+      "target_type": "gauge",
+      "cpu": "cpu-total-usage",
+      "host": "msk-air-trn4",
+      "zone": "GF",
+      "measurement_category": "cpu",
+      "what": "usage_idle"
+    },
+    "value": 7.85
+  },
+  {
+    "timestamp": 1555319249,
+    "properties": {
+      "target_type": "gauge",
+      "cpu": "cpu-total-usage",
+      "host": "msk-air-trn4",
+      "zone": "GEO",
+      "measurement_category": "cpu",
+      "what": "usage_active"
+    },
+    "value": 0.32
+  },
+  {
+    "timestamp": 1555319249,
+    "properties": {
+      "target_type": "gauge",
+      "cpu": "cpu-total-usage",
+      "host": "msk-air-trn4",
+      "zone": "GEO",
+      "measurement_category": "cpu",
+      "what": "usage_idle"
+    },
+    "value": 75.31
+  },
+  {
+    "timestamp": 1555319249,
+    "properties": {
+      "target_type": "gauge",
+      "cpu": "cpu-total-usage",
+      "host": "msk-air-trn2",
+      "zone": "GF",
+      "measurement_category": "cpu",
+      "what": "usage_active"
+    },
+    "value": 0.23
+  },
+  {
+    "timestamp": 1555319249,
+    "properties": {
+      "target_type": "gauge",
+      "cpu": "cpu-total-usage",
+      "host": "msk-air-trn2",
+      "zone": "GF",
+      "measurement_category": "cpu",
+      "what": "usage_idle"
+    },
+    "value": 3.81
+  },
+  {
+    "timestamp": 1555319249,
+    "properties": {
+      "target_type": "gauge",
+      "cpu": "cpu-total-usage",
+      "host": "msk-air-trn3",
+      "zone": "GEO",
+      "measurement_category": "cpu",
+      "what": "usage_active"
+    },
+    "value": 0.81
+  },
+  {
+    "timestamp": 1555319249,
+    "properties": {
+      "target_type": "gauge",
+      "cpu": "cpu-total-usage",
+      "host": "msk-air-trn3",
+      "zone": "GEO",
+      "measurement_category": "cpu",
+      "what": "usage_idle"
+    },
+    "value": 2.97
+  }
+]
