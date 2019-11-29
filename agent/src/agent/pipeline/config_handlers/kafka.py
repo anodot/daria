@@ -18,6 +18,7 @@ state['COUNT_RECORDS'] = 1
 
 state['TIMESTAMP_COLUMN'] = '{timestamp_column}';
 state['DIMENSIONS'] = {dimensions};
+state['DIMENSIONS_NAMES'] = {dimensions_names};
 state['VALUES_COLUMNS'] = {values};
 state['MEASUREMENT_NAMES'] = {measurement_names};
 state['TARGET_TYPES'] = {target_types};
@@ -59,7 +60,7 @@ state['STATIC_WHAT'] = {static_what};
         measurement_names = []
         for key in self.client_config['values'].keys():
             if key in self.client_config['measurement_names']:
-                measurement_names.append(self.client_config['measurement_names'][key])
+                measurement_names.append(self.get_property_mapping(self.client_config['measurement_names'][key]))
             else:
                 measurement_names.append(key)
         return measurement_names
@@ -68,12 +69,13 @@ state['STATIC_WHAT'] = {static_what};
         for conf in stage['configuration']:
             if conf['name'] == 'initScript':
                 topic_name = self.client_config['source']['config']['kafkaConfigBean.topic']
-                dimensions = self.client_config['dimensions']['required'] + self.client_config['dimensions']['optional']
+                dimensions_names = self.client_config['dimensions']['required'] + self.client_config['dimensions']['optional']
                 conf['value'] = self.DECLARE_VARS_JS.format(
-                    timestamp_column=str(self.client_config['timestamp']['name']),
-                    dimensions=dimensions,
-                    values=str(list(self.client_config['values'].keys())),
-                    target_types=str(list(self.client_config['values'].values())),
+                    timestamp_column=str(self.get_property_mapping(self.client_config['timestamp']['name'])),
+                    dimensions=[self.get_property_mapping(value) for value in dimensions_names],
+                    dimensions_names=dimensions_names,
+                    values=str(list([self.get_property_mapping(value) for value in self.client_config['values'].keys()])),
+                    target_types=str(list([self.get_property_mapping(value) for value in self.client_config['values'].values()])),
                     measurement_names=str(list(self.get_measurement_names())),
                     count_records=int(self.client_config.get('count_records', False)),
                     count_records_measurement_name=str(
