@@ -245,9 +245,9 @@ class PromptConfigInflux(PromptConfig):
                                                                                                        []))
 
     def set_filtering(self):
-        if self.advanced or self.config.get('filtering'):
+        if self.advanced or self.config.get('filtering', ''):
             self.config['filtering'] = click.prompt('Filtering condition', type=click.STRING,
-                                                    default=self.default_config.get('filtering'))
+                                                    default=self.default_config.get('filtering')).strip()
 
 
 class PromptConfigJDBC(PromptConfig):
