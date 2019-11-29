@@ -7,22 +7,22 @@ pull data from different sources and push it to anodot
 docker-compose up -d
 ```
 
-###How to use
+### How to use
 Attach to docker container with agent and that's all - you can use CLI
 ```
 docker attach anodot-agent
 ```
     
-###Run tests
+### Run tests
 1. Run `./setup_tests.sh`
 2. Run `pytest` command inside agent container. 
 
 
-###Docs
+### Docs
 [Github Wiki](https://github.com/anodot/daria/wiki)
     
 
-###Troubleshooting
+### Troubleshooting
 Pipelines may not work as expected for several reasons, for example wrong configuration, 
 or some issues connecting to destination etc. You can look for errors in three locations:
 
