@@ -24,6 +24,14 @@ class KafkaSource(Source):
 
     DATA_FORMAT_JSON = 'JSON'
     DATA_FORMAT_CSV = 'DELIMITED'
+    DATA_FORMAT_AVRO = 'AVRO'
+
+    CONFIG_AVRO_SCHEMA_SOURCE = 'kafkaConfigBean.dataFormatConfig.avroSchemaSource'
+    CONFIG_AVRO_SCHEMA = 'kafkaConfigBean.dataFormatConfig.avroSchema'
+    CONFIG_AVRO_SCHEMA_FILE = 'schema_file'
+
+    AVRO_SCHEMA_SOURCE_SOURCE = 'SOURCE'
+    AVRO_SCHEMA_SOURCE_INLINE = 'INLINE'
 
     OFFSET_EARLIEST = 'EARLIEST'
     OFFSET_LATEST = 'LATEST'
@@ -39,13 +47,14 @@ class KafkaSource(Source):
                          '0.11': 'streamsets-datacollector-apache-kafka_0_11-lib',
                          '2.0+': 'streamsets-datacollector-apache-kafka_2_0-lib'}
 
-    data_formats = [DATA_FORMAT_JSON, DATA_FORMAT_CSV]
+    data_formats = [DATA_FORMAT_JSON, DATA_FORMAT_CSV, DATA_FORMAT_AVRO]
 
     def wait_for_preview(self, preview_id, tries=5, initial_delay=2):
-        for i in range(1, tries+1):
+        for i in range(1, tries + 1):
             response = api_client.get_preview_status(self.TEST_PIPELINE_NAME, preview_id)
 
-            if response['status'] not in ['VALIDATING', 'CREATED', 'RUNNING', 'STARTING', 'FINISHING', 'CANCELLING', 'TIMING_OUT']:
+            if response['status'] not in ['VALIDATING', 'CREATED', 'RUNNING', 'STARTING', 'FINISHING', 'CANCELLING',
+                                          'TIMING_OUT']:
                 return response
 
             delay = initial_delay ** i
@@ -100,7 +109,7 @@ class KafkaSource(Source):
     def prompt_consumer_params(self, default_config):
         default_kafka_config = default_config.get(self.CONFIG_CONSUMER_PARAMS, '')
         if default_kafka_config:
-            default_kafka_config = ' '.join([i['key'] + ':' + i['value'] for i in default_kafka_config])
+            default_kafka_config = ','.join([i['key'] + ':' + i['value'] for i in default_kafka_config])
         kafka_config = click.prompt('Kafka Configuration', type=click.STRING, default=default_kafka_config).strip()
         if not kafka_config:
             return
@@ -113,7 +122,7 @@ class KafkaSource(Source):
             self.config[self.CONFIG_CONSUMER_PARAMS].append({'key': pair[0], 'value': pair[1]})
 
     def prompt(self, default_config, advanced=False):
-        self.config = dict()
+        self.config = {}
         if advanced:
             self.config[self.CONFIG_VERSION] = click.prompt('Kafka version',
                                                             type=click.Choice(self.version_libraries.keys()),
@@ -139,19 +148,36 @@ class KafkaSource(Source):
                 default=default_config.get(self.CONFIG_OFFSET_TIMESTAMP)).strip()
 
         if advanced:
-            self.config[self.CONFIG_DATA_FORMAT] = click.prompt('Data format',
-                                                                type=click.Choice(self.data_formats),
-                                                                default=default_config.get(self.CONFIG_DATA_FORMAT,
-                                                                                           self.DATA_FORMAT_JSON))
-            if self.config[self.CONFIG_DATA_FORMAT] == self.DATA_FORMAT_CSV:
-                self.change_field_names(default_config)
+            self.prompt_data_format(default_config)
 
-            self.config[self.CONFIG_BATCH_SIZE] = click.prompt('Max Batch Size (records)', type=click.IntRange(1),
-                                                               default=default_config.get(self.CONFIG_BATCH_SIZE, 1000))
-            self.config[self.CONFIG_BATCH_WAIT_TIME] = click.prompt('Batch Wait Time (ms)', type=click.IntRange(1),
-                                                                    default=default_config.get(
-                                                                        self.CONFIG_BATCH_WAIT_TIME,
-                                                                        1000))
+        return self.config
+
+    def prompt_data_format(self, default_config):
+        self.config[self.CONFIG_DATA_FORMAT] = click.prompt('Data format',
+                                                            type=click.Choice(self.data_formats),
+                                                            default=default_config.get(self.CONFIG_DATA_FORMAT,
+                                                                                       self.DATA_FORMAT_JSON))
+        if self.config[self.CONFIG_DATA_FORMAT] == self.DATA_FORMAT_CSV:
+            self.change_field_names(default_config)
+        elif self.config[self.CONFIG_DATA_FORMAT] == self.DATA_FORMAT_AVRO:
+            default_schema_location = default_config.get(self.CONFIG_AVRO_SCHEMA_SOURCE,
+                                                         self.AVRO_SCHEMA_SOURCE_SOURCE)
+            schema_in_source = click.confirm('Does messages include schema?',
+                                             default=default_schema_location == self.AVRO_SCHEMA_SOURCE_SOURCE)
+            if not schema_in_source:
+                self.config[self.CONFIG_AVRO_SCHEMA_SOURCE] = self.AVRO_SCHEMA_SOURCE_INLINE
+                schema_file = click.prompt('Schema file path', type=click.File(),
+                                           default=default_config.get(self.CONFIG_AVRO_SCHEMA_FILE))
+                self.config[self.CONFIG_AVRO_SCHEMA] = json.dumps(json.load(schema_file))
+            else:
+                self.config[self.CONFIG_AVRO_SCHEMA_SOURCE] = self.AVRO_SCHEMA_SOURCE_SOURCE
+
+        self.config[self.CONFIG_BATCH_SIZE] = click.prompt('Max Batch Size (records)', type=click.IntRange(1),
+                                                           default=default_config.get(self.CONFIG_BATCH_SIZE, 1000))
+        self.config[self.CONFIG_BATCH_WAIT_TIME] = click.prompt('Batch Wait Time (ms)', type=click.IntRange(1),
+                                                                default=default_config.get(
+                                                                    self.CONFIG_BATCH_WAIT_TIME,
+                                                                    1000))
 
         return self.config
 

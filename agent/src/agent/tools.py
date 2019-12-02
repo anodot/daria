@@ -13,6 +13,8 @@ def infinite_retry(func):
         while True:
             try:
                 return func(*args, **kwargs)
+            except (KeyboardInterrupt, SystemExit, click.Abort):
+                raise click.Abort()
             except Exception as e:
                 click.secho(str(e), err=True, color='red')
     return new_func
@@ -21,7 +23,7 @@ def infinite_retry(func):
 def is_url(url):
     try:
         result = urlparse(url)
-        return all([result.scheme, result.netloc])
+        return all([result.scheme, result.netloc, result.port])
     except ValueError as e:
         return False
 

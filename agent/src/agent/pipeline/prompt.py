@@ -6,41 +6,15 @@ from agent.pipeline.config_handlers import filtering_condition_parser
 
 
 class PromptConfig:
-    def __init__(self):
-        self.advanced = False
-        self.default_config = {}
-        self.config = {}
-
-    def prompt(self, default_config, advanced=False):
+    def __init__(self, default_config, advanced=False):
         self.advanced = advanced
         self.default_config = default_config
-        self.set_measurement_name()
-        self.set_value()
-        self.set_target_type()
-        self.set_timestamp()
-        self.set_dimensions()
-        self.set_static_properties()
-        return self.config
+        self.config = dict()
 
-    def set_measurement_name(self):
-        self.config['measurement_name'] = click.prompt('Measurement name', type=click.STRING,
-                                                       default=self.default_config.get('measurement_name'))
+        self.set_config()
 
-    def set_value(self):
-        self.config['value'] = self.default_config.get('value', {})
-        if self.advanced or self.config['value'].get('type') == 'constant':
-            self.config['value']['value'] = click.prompt('Value (property name or constant value)', type=click.STRING,
-                                                         default=self.config['value'].get('value'))
-            self.config['value']['type'] = click.prompt('Value type', type=click.Choice(['property', 'constant']),
-                                                        default=self.config['value'].get('type'))
-        else:
-            self.config['value']['type'] = 'property'
-            self.config['value']['value'] = click.prompt('Value property name', type=click.STRING,
-                                                         default=self.config['value'].get('value'))
-
-    def set_target_type(self):
-        self.config['target_type'] = click.prompt('Target type', type=click.Choice(['counter', 'gauge']),
-                                                  default=self.default_config.get('target_type', 'gauge'))
+    def set_config(self):
+        pass
 
     def set_timestamp(self):
         self.config['timestamp'] = self.default_config.get('timestamp', {})
@@ -68,6 +42,7 @@ class PromptConfig:
                                                              default=self.config['dimensions'].get('optional',
                                                                                                    []))
 
+    @infinite_retry
     def prompt_object(self, property_name, prompt_text):
         self.config[property_name] = self.default_config.get(property_name, {})
 
@@ -89,34 +64,74 @@ class PromptConfig:
         if self.advanced:
             self.prompt_object('properties', 'Additional properties')
 
+    def set_measurement_name(self):
+        self.config['measurement_name'] = click.prompt('Measurement name', type=click.STRING,
+                                                       default=self.default_config.get('measurement_name'))
+
+    def set_target_type(self):
+        self.config['target_type'] = click.prompt('Target type', type=click.Choice(['counter', 'gauge']),
+                                                  default=self.default_config.get('target_type', 'gauge'))
+
 
 class PromptConfigMongo(PromptConfig):
-    pass
+    def set_config(self):
+        self.set_measurement_name()
+        self.set_value()
+        self.set_target_type()
+        self.set_timestamp()
+        self.set_dimensions()
+        self.set_static_properties()
+
+    def set_value(self):
+        self.config['value'] = self.default_config.get('value', {})
+        if self.advanced or self.config['value'].get('type') == 'constant':
+            self.config['value']['value'] = click.prompt('Value (property name or constant value)', type=click.STRING,
+                                                         default=self.config['value'].get('value'))
+            self.config['value']['type'] = click.prompt('Value type', type=click.Choice(['property', 'constant']),
+                                                        default=self.config['value'].get('type'))
+        else:
+            self.config['value']['type'] = 'property'
+            self.config['value']['value'] = click.prompt('Value property name', type=click.STRING,
+                                                         default=self.config['value'].get('value'))
 
 
 class PromptConfigKafka(PromptConfig):
-    def prompt(self, default_config, advanced=False):
-        super().prompt(default_config, advanced)
+    def set_config(self):
+        self.set_values()
+        self.set_measurement_names()
+        self.set_timestamp()
+        self.set_dimensions()
+        self.set_static_properties()
         self.filter_messages()
-        return self.config
 
-    def set_measurement_name(self):
+    @infinite_retry
+    def set_values(self):
+        self.config['count_records'] = int(click.confirm('Count records?',
+                                                         default=self.default_config.get('count_records', False)))
+        if self.config['count_records']:
+            self.config['count_records_measurement_name'] = click.prompt('Measurement name', type=click.STRING,
+                                                                         default=self.default_config.get(
+                                                                             'count_records_measurement_name'))
+
         static_what_default = self.default_config.get('static_what', True)
         if self.advanced or not static_what_default:
             self.config['static_what'] = click.confirm('Is `what` property static?',
                                                        default=self.default_config.get('static_what', True))
 
-        prompt_text = 'Measurement name' if self.config.get('static_what', True) else 'Measurement property name'
-        self.config['measurement_name'] = click.prompt(prompt_text, type=click.STRING,
-                                                       default=self.default_config.get('measurement_name'))
+        self.prompt_object('values', 'Value columns with target types. Example - property:counter property2:gauge')
 
-    def set_target_type(self):
-        if self.config.get('static_what', True):
-            self.config['target_type'] = click.prompt('Target type', type=click.Choice(['counter', 'gauge']),
-                                                      default=self.default_config.get('target_type', 'gauge'))
-        else:
-            self.config['target_type'] = click.prompt('Target type property name', type=click.STRING,
-                                                      default=self.default_config.get('target_type'))
+        if not set(self.config['values'].values()).issubset(('counter', 'gauge')) and self.config.get('static_what',
+                                                                                                      True):
+            raise click.UsageError('Target type should be counter or gauge')
+
+        if not self.config['count_records'] and not self.config['values']:
+            raise click.UsageError('Set value properties or count records flag')
+
+    def set_measurement_names(self):
+        prompt_text = 'Measurement names' if self.config.get('static_what', True) else 'Measurement properties names'
+        self.prompt_object('measurement_names', prompt_text + '. Example -  property:what property2:what2')
+        if not set(self.config['measurement_names'].keys()).issubset(set(self.config['values'].keys())):
+            raise click.UsageError('Wrong property name')
 
     def set_timestamp(self):
         previous_val = self.default_config.get('timestamp', {}).get('name') == 'kafka_timestamp'
@@ -164,10 +179,15 @@ class PromptConfigKafka(PromptConfig):
 
 
 class PromptConfigInflux(PromptConfig):
-    def prompt(self, default_config, advanced=False):
-        super().prompt(default_config, advanced)
+    def set_config(self):
+        self.set_measurement_name()
+        self.set_value()
+        self.set_target_type()
+        self.set_timestamp()
+        self.set_dimensions()
+        self.set_static_properties()
         self.set_delay()
-        return self.config
+        self.set_filtering()
 
     def set_delay(self):
         self.config['delay'] = click.prompt('Delay', type=click.STRING, default=self.default_config.get('delay', '0s'))
@@ -179,12 +199,16 @@ class PromptConfigInflux(PromptConfig):
 
     def set_value(self):
         self.config['value'] = self.default_config.get('value', {'constant': 1, 'values': []})
+
         if self.advanced or self.config['value'].get('type') == 'constant':
             self.config['value']['type'] = click.prompt('Value type', type=click.Choice(['column', 'constant']),
                                                         default=self.config['value'].get('type'))
+            default_values = self.config['value'].get('values')
+            if default_values:
+                default_values = ' '.join(default_values)
 
             value = click.prompt('Value (column name or constant value)', type=click.STRING,
-                                 default=self.config['value'].get('constant'))
+                                 default=default_values)
             if self.config['value']['type'] == 'constant':
                 self.config['value']['constant'] = value
                 self.config['value']['values'] = []
@@ -219,6 +243,11 @@ class PromptConfigInflux(PromptConfig):
                                                                  value_proc=lambda x: x.split(),
                                                                  default=self.config['dimensions'].get('optional',
                                                                                                        []))
+
+    def set_filtering(self):
+        if self.advanced or self.config.get('filtering', ''):
+            self.config['filtering'] = click.prompt('Filtering condition', type=click.STRING,
+                                                    default=self.default_config.get('filtering')).strip()
 
 
 class PromptConfigJDBC(PromptConfig):

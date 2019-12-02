@@ -12,7 +12,8 @@
     "tags": {
       "source": ["anodot-agent"],
       "source_host_id": ["ABCDEF"],
-      "source_host_name": ["agent"]
+      "source_host_name": ["agent"],
+      "pipeline_id": ["pipeline_id"]
     },
     "value": 0.504
   },
@@ -29,7 +30,8 @@
     "tags": {
       "source": ["anodot-agent"],
       "source_host_id": ["ABCDEF"],
-      "source_host_name": ["agent"]
+      "source_host_name": ["agent"],
+      "pipeline_id": ["pipeline_id"]
     },
     "value": 260404905034043060000
   },
@@ -46,7 +48,8 @@
     "tags": {
       "source": ["anodot-agent"],
       "source_host_id": ["ABCDEF"],
-      "source_host_name": ["agent"]
+      "source_host_name": ["agent"],
+      "pipeline_id": ["pipeline_id"]
     },
     "value": 0.504
   },
@@ -63,7 +66,8 @@
     "tags": {
       "source": ["anodot-agent"],
       "source_host_id": ["ABCDEF"],
-      "source_host_name": ["agent"]
+      "source_host_name": ["agent"],
+      "pipeline_id": ["pipeline_id"]
     },
     "value": 26
   }

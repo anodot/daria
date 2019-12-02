@@ -12,9 +12,7 @@ from influxdb.exceptions import InfluxDBClientError
 def get_influx_client(host, username=None, password=None, db=None):
     influx_url_parsed = urlparse(host)
     influx_url = influx_url_parsed.netloc.split(':')
-    args = {'host': influx_url[0]}
-    if len(influx_url) > 1:
-        args['port'] = influx_url[1]
+    args = {'host': influx_url[0], 'port': influx_url[1]}
     if username and username != '':
         args['username'] = username
         args['password'] = password

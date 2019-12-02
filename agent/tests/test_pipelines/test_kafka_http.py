@@ -6,46 +6,59 @@ from agent.pipeline import cli as pipeline_cli
 from agent.source import cli as source_cli, Source
 from agent.streamsets_api_client import api_client
 from .test_pipeline_base import TestPipelineBase, pytest_generate_tests
+from agent.pipeline.config_handlers.kafka import KafkaConfigHandler
+
+
+@pytest.fixture(autouse=True)
+def pipeline_id(monkeypatch):
+    def constant_pipeline_id(self):
+        return 'pipeline_id'
+
+    monkeypatch.setattr(KafkaConfigHandler, 'get_pipeline_id', constant_pipeline_id)
 
 
 class TestKafka(TestPipelineBase):
     __test__ = True
-
     params = {
         'test_source_create': [{'name': 'test_kfk_value_const'}, {'name': 'test_kfk_timestamp_ms'},
                                {'name': 'test_kfk_timestamp_kafka'}, {'name': 'test_kfk_timestamp_string'}],
         'test_create': [
-            {'name': 'test_kfk_timestamp_kafka', 'options': [], 'value': 'clicks\nClicks\n', 'timestamp': 'y',
+            {'name': 'test_kfk_timestamp_kafka', 'options': [], 'value': 'n\nClicks:gauge\nClicks:clicks',
+             'timestamp': 'y',
              'properties': '', 'source_name': 'test_kfk_timestamp_kafka'},
-            {'name': 'test_kfk_value_const', 'options': ['-a'], 'value': 'y\nclicks\n2\nconstant\n',
+            {'name': 'test_kfk_value_const', 'options': ['-a'], 'value': 'y\nclicksS\ny\n \n ',
              'timestamp': 'n\ntimestamp_unix\nunix', 'properties': 'key1:val1',
              'source_name': 'test_kfk_value_const'},
-            {'name': 'test_kfk_timestamp_ms', 'options': [], 'value': 'clicks\nClicks\nproperty\n',
+            {'name': 'test_kfk_timestamp_ms', 'options': [], 'value': 'n\nClicks:gauge\nClicks:clicks',
              'timestamp': 'n\ntimestamp_unix_ms\nunix_ms', 'properties': '',
              'source_name': 'test_kfk_timestamp_ms'},
-            {'name': 'test_kfk_timestamp_string', 'options': ['-a'], 'value': 'y\nclicks\nClicks\nconstant\n',
+            {'name': 'test_kfk_timestamp_string', 'options': ['-a'], 'value': 'y\nclicks\ny\n \n ',
              'timestamp': 'n\ntimestamp_string\nstring\nM/d/yyyy H:mm:ss', 'properties': 'key1:val1',
              'source_name': 'test_kfk_timestamp_string'}],
-        'test_create_with_file': [{'file_name': 'kafka_pipelines'}],
         'test_create_source_with_file': [{'file_name': 'kafka_sources'}],
-        'test_edit': [{'options': ['test_kfk_value_const'], 'value': '\n1\n\n'},
+        'test_create_with_file': [{'file_name': 'kafka_pipelines'}],
+        'test_edit': [{'options': ['test_kfk_value_const'], 'value': 'y\nclicks\n\n'},
                       {'options': ['test_kfk_timestamp_string', '-a'],
-                       'value': 'n\nAdType\nClicks\nproperty\nagg_type'}],
+                       'value': 'n\nn\nClicks:agg_type\nClicks:AdType'}],
         'test_start': [{'name': 'test_kfk_value_const'}, {'name': 'test_kfk_timestamp_ms'},
                        {'name': 'test_kfk_timestamp_string'}, {'name': 'test_kfk_timestamp_kafka'},
-                       {'name': 'test_kfk_kafka_file_short'}, {'name': 'test_kfk_kafka_file_full'}],
+                       {'name': 'test_kfk_kafka_file_short'}, {'name': 'test_kfk_kafka_file_full'},
+                       {'name': 'test_csv'}],
         'test_stop': [{'name': 'test_kfk_value_const'}, {'name': 'test_kfk_timestamp_ms'},
                       {'name': 'test_kfk_timestamp_string'}, {'name': 'test_kfk_timestamp_kafka'},
-                      {'name': 'test_kfk_kafka_file_short'}, {'name': 'test_kfk_kafka_file_full'}],
+                      {'name': 'test_kfk_kafka_file_short'}, {'name': 'test_kfk_kafka_file_full'},
+                      {'name': 'test_csv'}],
         'test_output': [{'name': 'test_kfk_value_const', 'output': 'json_value_const_adv.json'},
                         {'name': 'test_kfk_timestamp_ms', 'output': 'json_value_property.json'},
+                        {'name': 'test_csv', 'output': 'json_value_property.json'},
                         {'name': 'test_kfk_timestamp_string', 'output': 'json_value_property_kafka_adv.json'}],
         'test_delete_pipeline': [{'name': 'test_kfk_value_const'}, {'name': 'test_kfk_timestamp_ms'},
                                  {'name': 'test_kfk_timestamp_string'}, {'name': 'test_kfk_timestamp_kafka'},
-                                 {'name': 'test_kfk_kafka_file_short'}, {'name': 'test_kfk_kafka_file_full'}],
+                                 {'name': 'test_kfk_kafka_file_short'}, {'name': 'test_kfk_kafka_file_full'},
+                                 {'name': 'test_csv'}],
         'test_source_delete': [{'name': 'test_kfk_value_const'}, {'name': 'test_kfk_timestamp_ms'},
                                {'name': 'test_kfk_timestamp_kafka'}, {'name': 'test_kfk_timestamp_string'},
-                               {'name': 'test_kafka_1'}],
+                               {'name': 'test_kafka_1'}, {'name': 'test_csv'}],
     }
 
     def test_source_create(self, cli_runner, name):

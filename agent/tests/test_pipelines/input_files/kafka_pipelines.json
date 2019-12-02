@@ -2,18 +2,17 @@
   {
     "source": "test_kfk_timestamp_kafka",
     "pipeline_id": "test_kfk_kafka_file_short",
-    "measurement_name": "clicks",
-    "value": "Clicks",
+    "measurement_names": {"Clicks":  "clicks"},
+    "values": {"Clicks":  "gauge"},
     "dimensions": ["ver", "Country"]
   },
   {
     "source": "test_kfk_timestamp_string",
     "pipeline_id": "test_kfk_kafka_file_full",
-    "measurement_name": "clicks",
-    "value": {
-      "type": "constant",
-      "value": "1"
-    },
+    "count_records_measurement_name": "clicks",
+    "count_records": true,
+    "values": {},
+    "measurement_names": {},
     "dimensions": {
       "required": ["ver", "Country"],
       "optional": ["Exchange", "optional_dim"]
@@ -23,7 +22,20 @@
       "name": "timestamp_string",
       "format": "M/d/yyyy H:mm:ss"
     },
-    "target_type": "counter",
     "properties": {"test": "val"}
+  },
+  {
+    "source": "test_csv",
+    "pipeline_id": "test_csv",
+    "values": {"Clicks": "gauge"},
+    "measurement_names": {"Clicks": "clicks"},
+    "dimensions": {
+      "required": ["ver", "Country"],
+      "optional": ["Exchange", "optional_dim"]
+    },
+    "timestamp": {
+      "type": "unix",
+      "name": "timestamp_unix"
+    }
   }
 ]

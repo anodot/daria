@@ -6,5 +6,15 @@
       "kafkaConfigBean.metadataBrokerList": "kafka:29092",
       "kafkaConfigBean.topic": "test"
     }
+  },
+  {
+    "type": "kafka",
+    "name": "test_csv",
+    "config": {
+      "kafkaConfigBean.metadataBrokerList": "kafka:29092",
+      "kafkaConfigBean.topic": "test_csv",
+      "kafkaConfigBean.dataFormat": "DELIMITED",
+      "csv_mapping": {"0": "timestamp_unix", "2": "ver", "4": "Country", "6": "Exchange", "7": "Clicks"}
+    }
   }
 ]

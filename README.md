@@ -1,24 +1,24 @@
-##Python agent
+## Python agent
 With this CLI tool you can create pipelines in Streamsets Data collector which will 
 pull data from different sources and push it to anodot
 
-###How to build
+### How to build
 ```
 docker-compose up -d
 ```
 
-###How to use
+### How to use
 Attach to docker container with agent and that's all - you can use CLI
 ```
 docker attach anodot-agent
 ```
     
-###Run tests
+### Run tests
 1. Run `./setup_tests.sh`
 2. Run `pytest` command inside agent container. 
 
 
-###Docs
+### Docs
 [Github Wiki](https://github.com/anodot/daria/wiki)
     
 

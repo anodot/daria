@@ -1298,7 +1298,7 @@
         "value" : "JSON"
       }, {
         "name" : "conf.resourceUrl",
-        "value" : "http://localhost:18630/rest/v1/system/jmx"
+        "value" : "http://localhost:18630/rest/v1/system/jmx?qry=java.lang:type=*"
       }, {
         "name" : "conf.headers",
         "value" : [ ]
