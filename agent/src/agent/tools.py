@@ -1,4 +1,5 @@
 import click
+import json
 
 from agent.constants import ENV_PROD, VALIDATION_ENABLED
 from urllib.parse import urlparse
@@ -30,6 +31,14 @@ def is_url(url):
 
 def print_dicts(dicts: list):
     print(tabulate(list(zip(*[[f'{idx}: {item}' for idx, item in dict_item.items()] for dict_item in dicts]))))
+
+
+def print_json(records):
+    print('\n', '=========', sep='')
+    for record in records:
+        print(json.dumps(record, indent=4, sort_keys=True))
+        print('=========')
+    print('\n')
 
 
 def if_validation_enabled(func):

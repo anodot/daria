@@ -2,7 +2,7 @@ import click
 import re
 
 from .abstract_source import Source, SourceException
-from agent.tools import infinite_retry
+from agent.tools import infinite_retry, print_json
 from pymongo import MongoClient
 
 
@@ -148,3 +148,10 @@ class MongoSource(Source):
         else:
             self.config[self.CONFIG_AUTH_TYPE] = self.AUTH_TYPE_NONE
             del self.config[self.CONFIG_USERNAME]
+
+    def print_sample_data(self):
+        records = self.get_sample_records()
+        if not records:
+            return
+
+        print_json(records)

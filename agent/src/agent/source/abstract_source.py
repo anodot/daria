@@ -4,7 +4,7 @@ import time
 
 from abc import ABC, abstractmethod
 from agent.constants import DATA_DIR
-from agent.tools import if_validation_enabled
+from agent.tools import if_validation_enabled, print_json
 from jsonschema import validate, ValidationError
 from agent.streamsets_api_client import api_client
 
@@ -138,19 +138,9 @@ class Source(ABC):
             return
         return [self.sdc_record_map_to_dict(record['value']) for record in data[:max_records]]
 
-    def print_json(self, records):
-        print('\n', '=========', sep='')
-        for record in records:
-            print(json.dumps(record, indent=4, sort_keys=True))
-            print('=========')
-        print('\n')
-
+    @abstractmethod
     def print_sample_data(self):
-        records = self.get_sample_records()
-        if not records:
-            return
-
-        self.print_json(records)
+        pass
 
 
 class SourceException(Exception):
