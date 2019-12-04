@@ -457,7 +457,7 @@
         "xPos" : 143
       },
       "inputLanes" : [ ],
-      "outputLanes" : [ "KafkaConsumer_01OutputLane15687289061640" ],
+      "outputLanes" : [ "source_outputLane" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -647,7 +647,7 @@
         "yPos" : 115,
         "stageType" : "TARGET"
       },
-      "inputLanes" : [ "KafkaConsumer_01OutputLane15687289061640" ],
+      "inputLanes" : [ "source_outputLane" ],
       "outputLanes" : [ ],
       "eventLanes" : [ ],
       "services" : [ ]

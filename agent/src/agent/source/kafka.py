@@ -1,11 +1,7 @@
 import click
 import json
-import os
-import time
-
 from .abstract_source import Source, SourceException
 from agent.tools import infinite_retry, print_dicts, if_validation_enabled
-from agent.streamsets_api_client import api_client
 
 
 class KafkaSource(Source):
@@ -48,51 +44,6 @@ class KafkaSource(Source):
                          '2.0+': 'streamsets-datacollector-apache-kafka_2_0-lib'}
 
     data_formats = [DATA_FORMAT_JSON, DATA_FORMAT_CSV, DATA_FORMAT_AVRO]
-
-    def wait_for_preview(self, preview_id, tries=5, initial_delay=2):
-        for i in range(1, tries + 1):
-            response = api_client.get_preview_status(self.TEST_PIPELINE_NAME, preview_id)
-
-            if response['status'] not in ['VALIDATING', 'CREATED', 'RUNNING', 'STARTING', 'FINISHING', 'CANCELLING',
-                                          'TIMING_OUT']:
-                return response
-
-            delay = initial_delay ** i
-            if i == tries:
-                raise SourceException(f"Can't connect to kafka")
-            print(f"Connecting to kafka. Check again after {delay} seconds...")
-            time.sleep(delay)
-
-    def create_test_pipeline(self):
-        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'test_pipelines',
-                               self.TEST_PIPELINE_NAME + '.json'), 'r') as f:
-            data = json.load(f)
-
-        pipeline_config = data['pipelineConfig']
-        new_pipeline = api_client.create_pipeline(self.TEST_PIPELINE_NAME)
-        if self.CONFIG_VERSION in self.config:
-            pipeline_config['stages'][0]['library'] = self.version_libraries[self.config[self.CONFIG_VERSION]]
-        for conf in pipeline_config['stages'][0]['configuration']:
-            if conf['name'] in self.config:
-                conf['value'] = self.config[conf['name']]
-        pipeline_config['uuid'] = new_pipeline['uuid']
-        api_client.update_pipeline(self.TEST_PIPELINE_NAME, pipeline_config)
-
-    @if_validation_enabled
-    def validate_connection(self):
-        self.create_test_pipeline()
-        validate_status = api_client.validate(self.TEST_PIPELINE_NAME)
-        self.wait_for_preview(validate_status['previewerId'])
-        preview_data = api_client.get_preview_data(self.TEST_PIPELINE_NAME, validate_status['previewerId'])
-        api_client.delete_pipeline(self.TEST_PIPELINE_NAME)
-        if preview_data['status'] == 'INVALID':
-            errors = []
-            for issue in preview_data['issues']['stageIssues']['KafkaConsumer_01']:
-                errors.append(issue['message'])
-
-            raise SourceException('Connection error. ' + '. '.join(errors))
-
-        return True
 
     @infinite_retry
     def prompt_connection(self, default_config, advanced=False):
@@ -181,32 +132,10 @@ class KafkaSource(Source):
 
         return self.config
 
-    def sdc_record_map_to_dict(self, record: dict):
-        if 'value' in record:
-            if type(record['value']) is list:
-                return {key: self.sdc_record_map_to_dict(item) for key, item in enumerate(record['value'])}
-            elif type(record['value']) is dict:
-                return {key: self.sdc_record_map_to_dict(item) for key, item in record['value'].items()}
-            else:
-                return record['value']
-        return record
-
-    def get_sample_records(self, max_records=3):
-        self.create_test_pipeline()
-        preview = api_client.create_preview(self.TEST_PIPELINE_NAME)
-        self.wait_for_preview(preview['previewerId'])
-        preview_data = api_client.get_preview_data(self.TEST_PIPELINE_NAME, preview['previewerId'])
-        api_client.delete_pipeline(self.TEST_PIPELINE_NAME)
-        if not preview_data:
-            print('No preview data available')
-            return
-
-        try:
-            data = preview_data['batchesOutput'][0][0]['output']['KafkaConsumer_01OutputLane15687289061640']
-        except ValueError:
-            print('No preview data available')
-            return
-        return [self.sdc_record_map_to_dict(record['value']) for record in data[:max_records]]
+    def update_test_source_config(self, stage):
+        if self.CONFIG_VERSION in self.config:
+            stage['library'] = self.version_libraries[self.config[self.CONFIG_VERSION]]
+        super().update_test_source_config(stage)
 
     def change_field_names(self, default_config):
         previous_val = default_config.get(self.CONFIG_CSV_MAPPING, {})
@@ -259,11 +188,7 @@ class KafkaSource(Source):
         if self.config.get(self.CONFIG_DATA_FORMAT) == self.DATA_FORMAT_CSV:
             print_dicts(self.map_keys(records, self.config.get(self.CONFIG_CSV_MAPPING, {})))
         else:
-            print('\n', '=========')
-            for record in records:
-                print(json.dumps(record, indent=4, sort_keys=True))
-                print('=========')
-            print('\n')
+            self.print_json(records)
 
     def map_keys(self, records, mapping):
         return [{new_key: record[int(idx)] for idx, new_key in mapping.items()} for record in records]
