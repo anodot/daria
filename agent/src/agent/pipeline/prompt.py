@@ -6,12 +6,18 @@ from agent.pipeline.config_handlers import filtering_condition_parser
 
 
 class PromptConfig:
-    def __init__(self, default_config, advanced=False):
+    def __init__(self):
+        self.advanced = False
+        self.default_config = {}
+        self.config = {}
+
+    def prompt(self, default_config, advanced=False):
         self.advanced = advanced
         self.default_config = default_config
         self.config = dict()
 
         self.set_config()
+        return self.config
 
     def set_config(self):
         pass
@@ -251,9 +257,7 @@ class PromptConfigInflux(PromptConfig):
 
 
 class PromptConfigJDBC(PromptConfig):
-    def prompt(self, default_config, advanced=False):
-        self.advanced = advanced
-        self.default_config = default_config
+    def set_config(self):
         self.set_table()
         self.set_values()
         self.set_timestamp()
@@ -261,7 +265,6 @@ class PromptConfigJDBC(PromptConfig):
         self.set_static_properties()
         self.set_pagination()
         self.set_condition()
-        return self.config
 
     def set_table(self):
         self.config['table'] = click.prompt('Table name', type=click.STRING, default=self.default_config.get('table'))
