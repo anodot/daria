@@ -3,13 +3,15 @@ import os
 
 from agent.tools import infinite_retry
 from agent.pipeline.config_handlers import filtering_condition_parser
+from agent.pipeline.pipeline import Pipeline
 
 
 class PromptConfig:
-    def __init__(self):
+    def __init__(self, pipeline: Pipeline):
         self.advanced = False
         self.default_config = {}
         self.config = {}
+        self.pipeline = pipeline
 
     def prompt(self, default_config, advanced=False):
         self.advanced = advanced
@@ -81,6 +83,7 @@ class PromptConfig:
 
 class PromptConfigMongo(PromptConfig):
     def set_config(self):
+        self.pipeline.source.print_sample_data()
         self.set_measurement_name()
         self.set_value()
         self.set_target_type()
@@ -103,6 +106,7 @@ class PromptConfigMongo(PromptConfig):
 
 class PromptConfigKafka(PromptConfig):
     def set_config(self):
+        self.pipeline.source.print_sample_data()
         self.set_values()
         self.set_measurement_names()
         self.set_timestamp()
@@ -187,6 +191,7 @@ class PromptConfigKafka(PromptConfig):
 class PromptConfigInflux(PromptConfig):
     def set_config(self):
         self.set_measurement_name()
+        self.pipeline.source.print_sample_data()
         self.set_value()
         self.set_target_type()
         self.set_timestamp()
@@ -259,6 +264,7 @@ class PromptConfigInflux(PromptConfig):
 class PromptConfigJDBC(PromptConfig):
     def set_config(self):
         self.set_table()
+        self.pipeline.source.print_sample_data()
         self.set_values()
         self.set_timestamp()
         self.set_dimensions()

@@ -1,13 +1,11 @@
 import json
 import os
-import shutil
 import time
 
 from .. import source
-from agent.constants import DATA_DIR, ERRORS_DIR
+from agent.constants import DATA_DIR
 from agent.destination import HttpDestination
-from agent.streamsets_api_client import api_client, StreamSetsApiClientException
-from . import prompt, config_handlers, load_client_data
+from agent.streamsets_api_client import api_client
 
 
 class Pipeline:
@@ -18,17 +16,11 @@ class Pipeline:
     def __init__(self, pipeline_id: str,
                  source_obj: source.Source,
                  config: dict,
-                 destination: HttpDestination,
-                 config_handler: config_handlers.BaseConfigHandler,
-                 prompter: prompt.PromptConfig,
-                 loader: load_client_data.LoadClientData):
+                 destination: HttpDestination):
         self.id = pipeline_id
         self.config = config
         self.source = source_obj
         self.destination = destination
-        self.config_handler = config_handler
-        self.prompter = prompter
-        self.loader = loader
 
     @property
     def file_path(self) -> str:
@@ -56,63 +48,6 @@ class Pipeline:
     def save(self):
         with open(self.file_path, 'w') as f:
             json.dump(self.to_dict(), f)
-
-    def create(self):
-        try:
-            pipeline_obj = api_client.create_pipeline(self.id)
-            new_config = self.config_handler.override_base_config(self.to_dict(), new_uuid=pipeline_obj['uuid'],
-                                                                  new_pipeline_title=self.id)
-
-            api_client.update_pipeline(self.id, new_config)
-        except (config_handlers.ConfigHandlerException, StreamSetsApiClientException) as e:
-            self.delete()
-            raise PipelineException(str(e))
-
-        self.save()
-
-    def update(self):
-        try:
-            start_pipeline = False
-            if self.check_status(self.STATUS_RUNNING):
-                self.stop()
-                start_pipeline = True
-
-            pipeline_obj = api_client.get_pipeline(self.id)
-            new_config = self.config_handler.override_base_config(self.to_dict(), new_uuid=pipeline_obj['uuid'],
-                                                                  new_pipeline_title=self.id)
-            api_client.update_pipeline(self.id, new_config)
-
-            if start_pipeline:
-                self.start()
-        except StreamSetsApiClientException as e:
-            raise PipelineException(str(e))
-        except config_handlers.ConfigHandlerException as e:
-            self.delete()
-            raise PipelineException(str(e))
-
-        self.save()
-
-    def reset(self):
-        try:
-            api_client.reset_pipeline(self.id)
-            self.config_handler.set_initial_offset(self.to_dict())
-        except (config_handlers.ConfigHandlerException, StreamSetsApiClientException) as e:
-            raise PipelineException(str(e))
-
-    def delete(self):
-        try:
-            api_client.delete_pipeline(self.id)
-            if self.exists(self.id):
-                os.remove(self.file_path)
-            errors_dir = os.path.join(ERRORS_DIR, self.id)
-            if os.path.isdir(errors_dir):
-                shutil.rmtree(errors_dir)
-        except StreamSetsApiClientException as e:
-            raise PipelineException(str(e))
-
-    def enable_destination_logs(self, enable):
-        self.destination.enable_logs(enable)
-        self.update()
 
     def check_status(self, status):
         response = api_client.get_pipeline_status(self.id)

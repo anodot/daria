@@ -2,7 +2,6 @@ import click
 
 from .http import HttpDestination, DestinationException
 from .. import source, pipeline
-from ..streamsets_api_client import api_client
 from agent.constants import ENV_PROD, MONITORING_SOURCE_NAME
 from agent.tools import infinite_retry
 
@@ -11,23 +10,21 @@ def monitoring():
 
     try:
         if pipeline.Pipeline.exists('Monitoring'):
-            pipeline_monitoring = pipeline.load_object('Monitoring')
+            pipeline_manager = pipeline.PipelineManager(pipeline.load_object('Monitoring'))
             click.secho('Updating Monitoring pipeline...')
-            api_client.stop_pipeline(pipeline_monitoring.id)
-            pipeline_monitoring.wait_for_status(pipeline.Pipeline.STATUS_STOPPED)
-            pipeline_monitoring.update()
+            pipeline_manager.pipeline.stop()
+            pipeline_manager.update()
         else:
-            pipeline_monitoring = pipeline.create_object('Monitoring', MONITORING_SOURCE_NAME)
+            pipeline_manager = pipeline.PipelineManager(pipeline.create_object('Monitoring', MONITORING_SOURCE_NAME))
             click.secho('Starting Monitoring pipeline...')
             source.create_dir()
             pipeline.create_dir()
-            pipeline_monitoring.create()
+            pipeline_manager.create()
 
-        api_client.start_pipeline(pipeline_monitoring.id)
-        pipeline_monitoring.wait_for_status(pipeline.Pipeline.STATUS_RUNNING)
+        pipeline_manager.pipeline.start()
         click.secho('Monitoring pipeline is running')
         if ENV_PROD:
-            pipeline_monitoring.wait_for_sending_data()
+            pipeline_manager.pipeline.wait_for_sending_data()
             click.secho('Monitoring pipeline is sending data')
     except pipeline.PipelineException as e:
         raise click.ClickException(str(e))

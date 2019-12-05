@@ -71,3 +71,6 @@ class JDBCSource(Source):
         super().validate()
         self.validate_connection_string()
         self.validate_connection()
+
+    def print_sample_data(self):
+        pass

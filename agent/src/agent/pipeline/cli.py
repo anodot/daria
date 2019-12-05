@@ -1,6 +1,7 @@
 import click
 import json
 
+from .pipeline_manager import PipelineManager
 from .. import pipeline, source
 from ..streamsets_api_client import api_client, StreamSetsApiClientException
 from agent.destination.http import HttpDestination
@@ -72,9 +73,9 @@ def create_multiple(file):
     validate(data, json_schema)
 
     for item in data:
-        pipeline_obj = pipeline.create_object(item['pipeline_id'], item['source'])
-        pipeline_obj.set_config(pipeline_obj.loader.load(item))
-        pipeline_obj.create()
+        pipeline_manager = PipelineManager(pipeline.create_object(item['pipeline_id'], item['source']))
+        pipeline_manager.load_config(item)
+        pipeline_manager.create()
 
         click.secho('Created pipeline {}'.format(item['pipeline_id']), fg='green')
 
@@ -112,12 +113,10 @@ def create(advanced, file):
     source_config_name = click.prompt('Choose source config', type=click.Choice(sources), default=default_source)
 
     pipeline_id = prompt_pipeline_id()
-    pipeline_obj = pipeline.create_object(pipeline_id, source_config_name)
-
-    pipeline_obj.source.print_sample_data()
-    previous_config = get_previous_pipeline_config(pipeline_obj.source.type)
-    pipeline_obj.set_config(pipeline_obj.prompter.prompt(previous_config, advanced))
-    pipeline_obj.create()
+    pipeline_manager = PipelineManager(pipeline.create_object(pipeline_id, source_config_name))
+    previous_config = get_previous_pipeline_config(pipeline_manager.pipeline.source.type)
+    pipeline_manager.prompt(previous_config, advanced)
+    pipeline_manager.create()
 
     click.secho('Created pipeline {}'.format(pipeline_id), fg='green')
 
@@ -138,9 +137,9 @@ def edit_multiple(file):
     validate(data, json_schema)
 
     for item in data:
-        pipeline_obj = pipeline.load_object(item['pipeline_id'])
-        pipeline_obj.set_config(pipeline_obj.loader.load(item, edit=True))
-        pipeline_obj.update()
+        pipeline_manager = PipelineManager(pipeline.load_object(item['pipeline_id']))
+        pipeline_manager.load_config(item, edit=True)
+        pipeline_manager.update()
 
         click.secho('Updated pipeline {}'.format(item['pipeline_id']), fg='green')
 
@@ -160,9 +159,9 @@ def edit(pipeline_id, advanced, file):
         edit_multiple(file)
         return
 
-    pipeline_obj = pipeline.load_object(pipeline_id)
-    pipeline_obj.set_config(pipeline_obj.prompter.prompt(pipeline_obj.to_dict(), advanced=advanced))
-    pipeline_obj.update()
+    pipeline_manager = PipelineManager(pipeline.load_object(pipeline_id))
+    pipeline_manager.prompt(pipeline_manager.pipeline.to_dict(), advanced=advanced)
+    pipeline_manager.update()
 
     click.secho('Updated pipeline {}'.format(pipeline_id), fg='green')
 
@@ -175,8 +174,8 @@ def destination_logs(pipeline_id, enable):
     Enable destination response logs for a pipeline (for debugging purposes only)
     """
 
-    pipeline_obj = pipeline.load_object(pipeline_id)
-    pipeline_obj.enable_destination_logs(enable)
+    pipeline_manager = PipelineManager(pipeline.load_object(pipeline_id))
+    pipeline_manager.enable_destination_logs(enable)
 
     click.secho('Updated pipeline {}'.format(pipeline_id), fg='green')
 
@@ -241,8 +240,8 @@ def delete(pipeline_id):
     Delete pipeline
     """
     try:
-        pipeline_obj = pipeline.load_object(pipeline_id)
-        pipeline_obj.delete()
+        pipeline_manager = PipelineManager(pipeline.load_object(pipeline_id))
+        pipeline_manager.delete()
     except StreamSetsApiClientException as e:
         click.secho(str(e), err=True, fg='red')
         return
@@ -336,8 +335,8 @@ def reset(pipeline_id):
     Reset pipeline's offset
     """
     try:
-        pipeline_obj = pipeline.load_object(pipeline_id)
-        pipeline_obj.reset()
+        pipeline_manager = PipelineManager(pipeline.load_object(pipeline_id))
+        pipeline_manager.reset()
 
     except StreamSetsApiClientException as e:
         click.secho(str(e), err=True, fg='red')
