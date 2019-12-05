@@ -1,3 +1,3 @@
-__version__ = "1.5.0"
-__git_sha1__ = "l"
-__build_time__ = "2019-11-28 15:06:42"
+__version__ = "1.5.2"
+__git_sha1__ = "local"
+__build_time__ = "2019-12-05 15:26:53"

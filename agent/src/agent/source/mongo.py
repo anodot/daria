@@ -2,7 +2,7 @@ import click
 import re
 
 from .abstract_source import Source, SourceException
-from agent.tools import infinite_retry
+from agent.tools import infinite_retry, print_json
 from pymongo import MongoClient
 
 
@@ -29,6 +29,7 @@ class MongoSource(Source):
     AUTH_TYPE_USER_PASS = 'USER_PASS'
 
     VALIDATION_SCHEMA_FILE_NAME = 'mongo.json'
+    TEST_PIPELINE_NAME = 'test_mongo_rand847'
 
     offset_types = [OFFSET_TYPE_OBJECT_ID, OFFSET_TYPE_STRING, OFFSET_TYPE_DATE]
 
@@ -56,15 +57,11 @@ class MongoSource(Source):
     def prompt_auth(self, default_config: dict):
         self.config[self.CONFIG_USERNAME] = click.prompt('Username', type=click.STRING,
                                                          default=default_config.get(self.CONFIG_USERNAME, '')).strip()
-
         if self.config[self.CONFIG_USERNAME] == '':
-            del self.config[self.CONFIG_USERNAME]
-            self.config[self.CONFIG_AUTH_TYPE] = self.AUTH_TYPE_NONE
             return
 
         self.config[self.CONFIG_PASSWORD] = click.prompt('Password', type=click.STRING,
                                                          default=default_config.get(self.CONFIG_PASSWORD, ''))
-        self.config[self.CONFIG_AUTH_TYPE] = self.AUTH_TYPE_USER_PASS
         self.config[self.CONFIG_AUTH_SOURCE] = click.prompt('Authentication Source', type=click.STRING,
                                                             default=default_config.get(self.CONFIG_AUTH_SOURCE, '')).strip()
         self.validate_connection()
@@ -143,3 +140,18 @@ class MongoSource(Source):
         self.validate_connection()
         self.validate_db()
         self.validate_collection()
+
+    def set_config(self, config):
+        super().set_config(config)
+        if self.config[self.CONFIG_USERNAME] != '':
+            self.config[self.CONFIG_AUTH_TYPE] = self.AUTH_TYPE_USER_PASS
+        else:
+            self.config[self.CONFIG_AUTH_TYPE] = self.AUTH_TYPE_NONE
+            del self.config[self.CONFIG_USERNAME]
+
+    def print_sample_data(self):
+        records = self.get_sample_records()
+        if not records:
+            return
+
+        print_json(records)

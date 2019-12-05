@@ -2,7 +2,7 @@ import click
 import time
 
 from .abstract_source import Source
-from agent.tools import infinite_retry, is_url
+from agent.tools import infinite_retry, is_url, print_dicts, map_keys
 from datetime import datetime
 from urllib.parse import urlparse
 from influxdb import InfluxDBClient
@@ -44,6 +44,7 @@ def has_write_access(client):
 
 class InfluxSource(Source):
     VALIDATION_SCHEMA_FILE_NAME = 'influx.json'
+    TEST_PIPELINE_NAME = 'test_influx_qwe093'
 
     def validate_connection(self):
         if not is_url(self.config['host']):
@@ -158,3 +159,11 @@ class InfluxSource(Source):
             self.validate_write_db()
             self.validate_write_access()
         self.validate_offset()
+
+    def print_sample_data(self):
+        records = self.get_sample_records()
+        if not records or 'series' not in records[0]['results'][0]:
+            print('No preview data available')
+            return
+        series = records[0]['results'][0]['series'][0]
+        print_dicts(map_keys([item for key, item in series['values'].items()], series['columns']))

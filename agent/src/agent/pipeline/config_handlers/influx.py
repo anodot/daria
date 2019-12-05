@@ -72,7 +72,9 @@ state['PIPELINE_ID'] = '{pipeline_id}'
             config['conf.client.basicAuth.password'] = password
         return config
 
-    def set_initial_offset(self):
+    def set_initial_offset(self, client_config=None):
+        if client_config:
+            self.client_config = client_config
         source_config = self.client_config['source']['config']
         if not source_config.get('offset'):
             source_config['offset'] = '0'

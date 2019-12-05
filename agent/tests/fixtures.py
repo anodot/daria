@@ -7,7 +7,7 @@ from agent.streamsets_api_client import api_client
 from click.testing import CliRunner
 from agent.constants import SDC_DATA_PATH, SDC_RESULTS_PATH
 from agent.destination.http import HttpDestination
-from agent.pipeline import Pipeline
+from agent.pipeline import load_object, PipelineManager
 
 
 @pytest.fixture(scope="session")
@@ -20,8 +20,7 @@ def cli_runner():
         api_client.stop_pipeline('Monitoring')
         api_client.force_stop_pipeline('Monitoring')
         time.sleep(2)
-        pipeline_monitoring = Pipeline('Monitoring')
-        pipeline_monitoring.delete()
+        PipelineManager(load_object('Monitoring')).delete()
 
     for filename in os.listdir(SDC_DATA_PATH):
         if filename.startswith('error-test_'):

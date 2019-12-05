@@ -2,8 +2,8 @@ import click
 import time
 import readline
 
-from .pipeline import Pipeline
-from .pipeline.cli import pipeline
+from . import pipeline
+from .pipeline.cli import pipeline_group
 from .source.cli import source_group
 from .destination.cli import destination
 from agent.streamsets_api_client import api_client, StreamSetsApiClientException
@@ -41,7 +41,7 @@ def update():
     running_pipelines = []
     for p in api_client.get_pipelines():
         try:
-            pipeline_obj = Pipeline(p['pipelineId'])
+            pipeline_obj = pipeline.load_object(p['pipelineId'])
             pipeline_obj.stop()
         except StreamSetsApiClientException:
             continue
@@ -49,10 +49,8 @@ def update():
 
     time.sleep(3)
     for p in api_client.get_pipelines():
-        pipeline_obj = Pipeline(p['pipelineId'])
-        pipeline_obj.load()
-        pipeline_obj.delete()
-        pipeline_obj.create()
+        pipeline_obj = pipeline.load_object(p['pipelineId'])
+        pipeline_obj.update()
 
         if p['pipelineId'] in running_pipelines:
             pipeline_obj.start()
@@ -60,7 +58,7 @@ def update():
 
 
 agent.add_command(source_group)
-agent.add_command(pipeline)
+agent.add_command(pipeline_group)
 agent.add_command(destination)
 agent.add_command(update)
 

@@ -6,7 +6,10 @@ from .jdbc import JDBCSource
 from .influx import InfluxSource
 from .kafka import KafkaSource
 from .mongo import MongoSource
+from .monitoring import MonitoringSource
 from typing import Iterable
+
+from agent.constants import MONITORING_SOURCE_NAME
 
 
 TYPE_INFLUX = 'influx'
@@ -43,7 +46,7 @@ types = {
     TYPE_KAFKA: KafkaSource,
     TYPE_MONGO: MongoSource,
     TYPE_MYSQL: JDBCSource,
-    TYPE_POSTGRES: JDBCSource,
+    TYPE_POSTGRES: JDBCSource
 }
 
 
@@ -52,12 +55,18 @@ def get_types() -> Iterable:
 
 
 def create_object(name: str, source_type: str) -> Source:
+    if name == MONITORING_SOURCE_NAME:
+        return MonitoringSource(MONITORING_SOURCE_NAME, TYPE_MONITORING, {})
+
     if source_type not in types:
         raise ValueError(f'{source_type} isn\'t supported')
     return types[source_type](name, source_type, {})
 
 
 def load_object(name: str) -> Source:
+    if name == MONITORING_SOURCE_NAME:
+        return MonitoringSource(MONITORING_SOURCE_NAME, TYPE_MONITORING, {})
+
     if not Source.exists(name):
         raise SourceNotExists(f"Source config {name} doesn't exist")
 
