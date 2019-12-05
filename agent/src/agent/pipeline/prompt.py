@@ -271,12 +271,15 @@ class PromptConfigInflux(PromptConfig):
 class PromptConfigJDBC(PromptConfig):
     def set_config(self):
         self.set_table()
+        self.set_pagination()
+        query = f'SELECT * FROM {self.config["table"]}  WHERE {self.config["offset_column"]} > ${{OFFSET}} ORDER BY {self.config["offset_column"]} LIMIT {self.pipeline.source.MAX_SAMPLE_RECORDS}'
+        self.pipeline.source.config['query'] = query
+        self.pipeline.source.config['offsetColumn'] = self.config['offset_column']
         self.pipeline.source.print_sample_data()
         self.set_values()
         self.set_timestamp()
         self.set_dimensions()
         self.set_static_properties()
-        self.set_pagination()
         self.set_condition()
 
     def set_table(self):

@@ -40,7 +40,7 @@ class PipelineManager:
         self.pipeline = pipeline
         self.prompter = prompters[pipeline.source.type](self.pipeline)
         self.file_loader = loaders[pipeline.source.type]()
-        self.sdc_creator = handlers[pipeline.source.type]()
+        self.sdc_creator = handlers[pipeline.source.type](self.pipeline)
 
     def prompt(self, default_config, advanced=False):
         self.pipeline.set_config(self.prompter.prompt(default_config, advanced))

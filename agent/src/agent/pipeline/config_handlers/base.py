@@ -4,6 +4,7 @@ import os
 from abc import ABC, abstractmethod
 from agent.logger import get_logger
 from agent.constants import ERRORS_DIR, HOSTNAME
+from agent.pipeline.pipeline import Pipeline
 from copy import deepcopy
 
 logger = get_logger(__name__)
@@ -15,9 +16,10 @@ class BaseConfigHandler(ABC):
     """
     PIPELINES_BASE_CONFIGS_PATH = 'base_pipelines/{source_name}_{destination_name}.json'
 
-    def __init__(self):
+    def __init__(self, pipeline: Pipeline):
         self.client_config = {}
         self.config = {}
+        self.pipeline = pipeline
 
     def get_pipeline_id(self):
         return self.client_config['pipeline_id']

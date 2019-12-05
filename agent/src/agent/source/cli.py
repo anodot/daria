@@ -126,7 +126,7 @@ def create(advanced, file):
     try:
         source_instance = source.create_object(source_name, source_type)
         recent_pipeline_config = get_previous_source_config(source_type)
-        source_instance.config = source_instance.prompt(recent_pipeline_config, advanced)
+        source_instance.set_config(source_instance.prompt(recent_pipeline_config, advanced))
 
         source_instance.create()
     except source.SourceException as e:
@@ -156,7 +156,7 @@ def edit(name, advanced, file):
     source_instance = source.load_object(name)
 
     try:
-        source_instance.config = source_instance.prompt(source_instance.config, advanced=advanced)
+        source_instance.set_config(source_instance.prompt(source_instance.config, advanced=advanced))
         source_instance.save()
     except source.SourceException as e:
         raise click.ClickException(str(e))

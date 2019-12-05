@@ -79,7 +79,6 @@ class KafkaSource(Source):
                                                             type=click.Choice(self.version_libraries.keys()),
                                                             default=default_config.get(self.CONFIG_VERSION,
                                                                                        self.DEFAULT_KAFKA_VERSION))
-            self.config[self.CONFIG_LIBRARY] = self.version_libraries[self.config[self.CONFIG_VERSION]]
         self.prompt_connection(default_config, advanced)
 
         self.config[self.CONFIG_CONSUMER_GROUP] = click.prompt('Consumer group', type=click.STRING,
@@ -145,7 +144,7 @@ class KafkaSource(Source):
             print_dicts(records)
             if previous_val:
                 print('Previous mapping:')
-                print_dicts(self.map_keys(records, previous_val))
+                print_dicts(map_keys(records, previous_val))
         self.prompt_field_mapping(records, previous_val)
 
     @infinite_retry
@@ -165,7 +164,7 @@ class KafkaSource(Source):
             data[int(key_val[0])] = key_val[1]
 
         print('Current mapping:')
-        print_dicts(self.map_keys(records, data))
+        print_dicts(map_keys(records, data))
         if not click.confirm('Confirm?'):
             raise ValueError('Try again')
 
