@@ -2,9 +2,9 @@ import click
 import time
 
 from .abstract_source import Source
-from agent.tools import infinite_retry, is_url, print_dicts
+from agent.tools import infinite_retry, is_url, print_dicts, map_keys
 from datetime import datetime
-from urllib.parse import urlparse, urljoin
+from urllib.parse import urlparse
 from influxdb import InfluxDBClient
 from influxdb.exceptions import InfluxDBClientError
 
@@ -162,8 +162,8 @@ class InfluxSource(Source):
 
     def print_sample_data(self):
         records = self.get_sample_records()
-        if not records:
+        if not records or 'series' not in records[0]['results'][0]:
+            print('No preview data available')
             return
-        print(records)
-
-        print_dicts(records)
+        series = records[0]['results'][0]['series'][0]
+        print_dicts(map_keys([item for key, item in series['values'].items()], series['columns']))

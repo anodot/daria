@@ -399,7 +399,7 @@
         "value" : [ ]
       }, {
         "name" : "conf.httpMethod",
-        "value" : "GET"
+        "value" : "POST"
       }, {
         "name" : "conf.timeZoneID",
         "value" : "UTC"

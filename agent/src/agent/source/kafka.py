@@ -1,7 +1,7 @@
 import click
 import json
 from .abstract_source import Source, SourceException
-from agent.tools import infinite_retry, print_dicts, print_json
+from agent.tools import infinite_retry, print_dicts, print_json, map_keys
 
 
 class KafkaSource(Source):
@@ -186,9 +186,6 @@ class KafkaSource(Source):
             return
 
         if self.config.get(self.CONFIG_DATA_FORMAT) == self.DATA_FORMAT_CSV:
-            print_dicts(self.map_keys(records, self.config.get(self.CONFIG_CSV_MAPPING, {})))
+            print_dicts(map_keys(records, self.config.get(self.CONFIG_CSV_MAPPING, {})))
         else:
             print_json(records)
-
-    def map_keys(self, records, mapping):
-        return [{new_key: record[int(idx)] for idx, new_key in mapping.items()} for record in records]

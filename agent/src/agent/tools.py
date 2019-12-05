@@ -41,6 +41,10 @@ def print_json(records):
     print('\n')
 
 
+def map_keys(records, mapping):
+    return [{new_key: record[int(idx)] for idx, new_key in mapping.items()} for record in records]
+
+
 def if_validation_enabled(func):
     if not VALIDATION_ENABLED:
         def new_func(*args, **kwargs):

@@ -13,6 +13,7 @@ class Source(ABC):
     VALIDATION_SCHEMA_FILE_NAME = ''
     TEST_PIPELINE_NAME = ''
     DIR = os.path.join(DATA_DIR, 'sources')
+    MAX_SAMPLE_RECORDS = 3
 
     def __init__(self, name: str, source_type: str, config: dict):
         self.config = config
@@ -121,7 +122,7 @@ class Source(ABC):
                 return record['value']
         return record
 
-    def get_sample_records(self, max_records=3):
+    def get_sample_records(self):
         self.create_test_pipeline()
         preview = api_client.create_preview(self.TEST_PIPELINE_NAME)
         self.wait_for_preview(preview['previewerId'])
@@ -136,7 +137,7 @@ class Source(ABC):
         except (ValueError, TypeError):
             print('No preview data available')
             return
-        return [self.sdc_record_map_to_dict(record['value']) for record in data[:max_records]]
+        return [self.sdc_record_map_to_dict(record['value']) for record in data[:self.MAX_SAMPLE_RECORDS]]
 
     @abstractmethod
     def print_sample_data(self):
