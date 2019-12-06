@@ -97,7 +97,15 @@ class Source(ABC):
         pipeline_config['uuid'] = new_pipeline['uuid']
         api_client.update_pipeline(self.TEST_PIPELINE_NAME, pipeline_config)
 
-    def get_preview_errors(self, preview_data):
+    def get_preview_data(self):
+        self.create_test_pipeline()
+        preview = api_client.create_preview(self.TEST_PIPELINE_NAME)
+        self.wait_for_preview(preview['previewerId'])
+        preview_data = api_client.get_preview_data(self.TEST_PIPELINE_NAME, preview['previewerId'])
+        api_client.delete_pipeline(self.TEST_PIPELINE_NAME)
+        if not preview_data:
+            raise SourceException('Connection error')
+
         errors = []
         if preview_data['status'] == 'INVALID':
             for stage, data in preview_data['issues']['stageIssues'].items():
@@ -105,19 +113,14 @@ class Source(ABC):
                     errors.append(issue['message'])
             for issue in preview_data['issues']['pipelineIssues']:
                 errors.append(issue['message'])
-        return errors
-
-    @if_validation_enabled
-    def validate_connection(self):
-        self.create_test_pipeline()
-        validate_status = api_client.validate(self.TEST_PIPELINE_NAME)
-        self.wait_for_preview(validate_status['previewerId'])
-        preview_data = api_client.get_preview_data(self.TEST_PIPELINE_NAME, validate_status['previewerId'])
-        api_client.delete_pipeline(self.TEST_PIPELINE_NAME)
-        errors = self.get_preview_errors(preview_data)
         if errors:
             raise SourceException('Connection error.\n' + '\n'.join(errors))
 
+        return preview_data
+
+    @if_validation_enabled
+    def validate_connection(self):
+        self.get_preview_data()
         return True
 
     def sdc_record_map_to_dict(self, record: dict):
@@ -131,18 +134,11 @@ class Source(ABC):
         return record
 
     def get_sample_records(self):
-        self.create_test_pipeline()
-        preview = api_client.create_preview(self.TEST_PIPELINE_NAME)
-        self.wait_for_preview(preview['previewerId'])
-        preview_data = api_client.get_preview_data(self.TEST_PIPELINE_NAME, preview['previewerId'])
-        api_client.delete_pipeline(self.TEST_PIPELINE_NAME)
+        preview_data = self.get_preview_data()
+
         if not preview_data:
             print('No preview data available')
             return
-
-        errors = self.get_preview_errors(preview_data)
-        if errors:
-            raise SourceException('Connection error. ' + '. '.join(errors))
 
         try:
             data = preview_data['batchesOutput'][0][0]['output']['source_outputLane']
