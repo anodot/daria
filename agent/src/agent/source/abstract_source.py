@@ -97,6 +97,16 @@ class Source(ABC):
         pipeline_config['uuid'] = new_pipeline['uuid']
         api_client.update_pipeline(self.TEST_PIPELINE_NAME, pipeline_config)
 
+    def get_preview_errors(self, preview_data):
+        errors = []
+        if preview_data['status'] == 'INVALID':
+            for stage, data in preview_data['issues']['stageIssues'].items():
+                for issue in data:
+                    errors.append(issue['message'])
+            for issue in preview_data['issues']['pipelineIssues']:
+                errors.append(issue['message'])
+        return errors
+
     @if_validation_enabled
     def validate_connection(self):
         self.create_test_pipeline()
@@ -104,12 +114,9 @@ class Source(ABC):
         self.wait_for_preview(validate_status['previewerId'])
         preview_data = api_client.get_preview_data(self.TEST_PIPELINE_NAME, validate_status['previewerId'])
         api_client.delete_pipeline(self.TEST_PIPELINE_NAME)
-        if preview_data['status'] == 'INVALID':
-            errors = []
-            for issue in preview_data['issues']['stageIssues']['KafkaConsumer_01']:
-                errors.append(issue['message'])
-
-            raise SourceException('Connection error. ' + '. '.join(errors))
+        errors = self.get_preview_errors(preview_data)
+        if errors:
+            raise SourceException('Connection error.\n' + '\n'.join(errors))
 
         return True
 
@@ -132,6 +139,10 @@ class Source(ABC):
         if not preview_data:
             print('No preview data available')
             return
+
+        errors = self.get_preview_errors(preview_data)
+        if errors:
+            raise SourceException('Connection error. ' + '. '.join(errors))
 
         try:
             data = preview_data['batchesOutput'][0][0]['output']['source_outputLane']
