@@ -185,6 +185,8 @@ class KafkaSource(Source):
             return
 
         if self.config.get(self.CONFIG_DATA_FORMAT) == self.DATA_FORMAT_CSV:
-            print_dicts(map_keys(records, self.config.get(self.CONFIG_CSV_MAPPING, {})))
+            self.sample_data = map_keys(records, self.config.get(self.CONFIG_CSV_MAPPING, {}))
+            print_dicts(self.sample_data)
         else:
+            self.sample_data = records
             print_json(records)

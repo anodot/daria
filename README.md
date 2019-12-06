@@ -4,7 +4,7 @@ pull data from different sources and push it to anodot
 
 ### How to build
 ```
-docker-compose up -d
+docker-compose up -d --build
 ```
 
 ### How to use

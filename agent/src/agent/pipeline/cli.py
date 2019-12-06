@@ -137,9 +137,12 @@ def edit_multiple(file):
     validate(data, json_schema)
 
     for item in data:
-        pipeline_manager = PipelineManager(pipeline.load_object(item['pipeline_id']))
-        pipeline_manager.load_config(item, edit=True)
-        pipeline_manager.update()
+        try:
+            pipeline_manager = PipelineManager(pipeline.load_object(item['pipeline_id']))
+            pipeline_manager.load_config(item, edit=True)
+            pipeline_manager.update()
+        except pipeline.PipelineNotExists:
+            raise click.UsageError(f'{item["pipeline_id"]} does not exist')
 
         click.secho('Updated pipeline {}'.format(item['pipeline_id']), fg='green')
 
@@ -159,9 +162,12 @@ def edit(pipeline_id, advanced, file):
         edit_multiple(file)
         return
 
-    pipeline_manager = PipelineManager(pipeline.load_object(pipeline_id))
-    pipeline_manager.prompt(pipeline_manager.pipeline.to_dict(), advanced=advanced)
-    pipeline_manager.update()
+    try:
+        pipeline_manager = PipelineManager(pipeline.load_object(pipeline_id))
+        pipeline_manager.prompt(pipeline_manager.pipeline.to_dict(), advanced=advanced)
+        pipeline_manager.update()
+    except pipeline.PipelineNotExists:
+        raise click.UsageError(f'{pipeline_id} does not exist')
 
     click.secho('Updated pipeline {}'.format(pipeline_id), fg='green')
 

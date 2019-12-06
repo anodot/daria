@@ -19,6 +19,7 @@ class Source(ABC):
         self.config = config
         self.type = source_type
         self.name = name
+        self.sample_data = None
 
     def to_dict(self) -> dict:
         return {'name': self.name, 'type': self.type, 'config': self.config}

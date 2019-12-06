@@ -51,3 +51,12 @@ def if_validation_enabled(func):
             return True
         return new_func
     return func
+
+
+def dict_get_nested(dictionary: dict, keys: list):
+    element = dictionary
+    for key in keys:
+        if key not in element:
+            return None
+        element = element[key]
+    return element
