@@ -1136,7 +1136,7 @@
         "stageType" : "PROCESSOR"
       },
       "inputLanes" : [ "destination_stream_lane" ],
-      "outputLanes" : [ "JavaScriptEvaluator_02OutputLane15518690029440" ],
+      "outputLanes" : [ "destination_OutputLane" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -1434,7 +1434,7 @@
         "yPos" : 245.06565856933594,
         "stageType" : "TARGET"
       },
-      "inputLanes" : [ "JavaScriptEvaluator_02OutputLane15518690029440" ],
+      "inputLanes" : [ "destination_OutputLane" ],
       "outputLanes" : [ ],
       "eventLanes" : [ ],
       "services" : [ ]

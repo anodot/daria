@@ -1,3 +1,4 @@
+import json
 import os
 import shutil
 
@@ -100,6 +101,15 @@ class PipelineManager:
                 shutil.rmtree(errors_dir)
         except StreamSetsApiClientException as e:
             raise PipelineException(str(e))
+
+    def show_preview(self):
+        preview_data = api_client.get_preview_data(self.pipeline.id)
+
+        for output in preview_data['batchesOutput'][0]:
+            if 'destination_OutputLane' not in output['output']:
+                continue
+
+            print(json.dumps(output['output']['destination_OutputLane'], indent=2, sort_keys=True))
 
     def enable_destination_logs(self, enable):
         self.pipeline.destination.enable_logs(enable)

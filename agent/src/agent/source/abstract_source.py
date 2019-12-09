@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 from agent.constants import DATA_DIR
 from agent.tools import if_validation_enabled, print_json
 from jsonschema import validate, ValidationError
-from agent.streamsets_api_client import api_client
+from agent.streamsets_api_client import api_client, StreamSetsApiClientException
 
 
 class Source(ABC):
@@ -66,20 +66,6 @@ class Source(ABC):
     def set_config(self, config):
         self.config = config
 
-    def wait_for_preview(self, preview_id, tries=5, initial_delay=2):
-        for i in range(1, tries + 1):
-            response = api_client.get_preview_status(self.TEST_PIPELINE_NAME, preview_id)
-
-            if response['status'] not in ['VALIDATING', 'CREATED', 'RUNNING', 'STARTING', 'FINISHING', 'CANCELLING',
-                                          'TIMING_OUT']:
-                return response
-
-            delay = initial_delay ** i
-            if i == tries:
-                raise SourceException(f"Can't connect to the source")
-            print(f"Connecting to the source. Check again after {delay} seconds...")
-            time.sleep(delay)
-
     def update_test_source_config(self, stage):
         for conf in stage['configuration']:
             if conf['name'] in self.config:
@@ -99,22 +85,16 @@ class Source(ABC):
 
     def get_preview_data(self):
         self.create_test_pipeline()
-        preview = api_client.create_preview(self.TEST_PIPELINE_NAME)
-        self.wait_for_preview(preview['previewerId'])
-        preview_data = api_client.get_preview_data(self.TEST_PIPELINE_NAME, preview['previewerId'])
+
+        try:
+            preview_data = api_client.get_preview_data(self.TEST_PIPELINE_NAME)
+        except Exception:
+            api_client.delete_pipeline(self.TEST_PIPELINE_NAME)
+            raise
         api_client.delete_pipeline(self.TEST_PIPELINE_NAME)
+
         if not preview_data:
             raise SourceException('Connection error')
-
-        errors = []
-        if preview_data['status'] == 'INVALID':
-            for stage, data in preview_data['issues']['stageIssues'].items():
-                for issue in data:
-                    errors.append(issue['message'])
-            for issue in preview_data['issues']['pipelineIssues']:
-                errors.append(issue['message'])
-        if errors:
-            raise SourceException('Connection error.\n' + '\n'.join(errors))
 
         return preview_data
 
