@@ -1,7 +1,7 @@
 import click
 
 from .abstract_source import Source
-from agent.tools import infinite_retry, is_url, print_dicts
+from agent.tools import infinite_retry, is_url, print_dicts, if_validation_enabled
 from sqlalchemy import create_engine
 from urllib.parse import urlparse, urlunparse
 
@@ -39,6 +39,7 @@ class JDBCSource(Source):
                                                         default=default_config.get('connection_string')).strip()
         self.validate_connection_string()
 
+    @if_validation_enabled
     def validate_connection(self):
         eng = create_engine(self.get_connection_url())
         eng.connect()
@@ -78,6 +79,7 @@ class JDBCSource(Source):
         self.config['hikariConfigBean.connectionString'] = 'jdbc:' + self.config['connection_string']
         self.config['queryInterval'] = '${' + str(self.config.get('query_interval', '10')) + ' * SECONDS}'
 
+    @if_validation_enabled
     def print_sample_data(self):
         records = self.get_sample_records()
         if not records:

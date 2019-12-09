@@ -7,7 +7,7 @@ from . import prompt, config_handlers, load_client_data
 from .. import source
 from agent.constants import ERRORS_DIR
 from agent.streamsets_api_client import api_client, StreamSetsApiClientException
-from agent.tools import print_json, sdc_record_map_to_dict
+from agent.tools import print_json, sdc_record_map_to_dict, if_validation_enabled
 
 prompters = {
     source.TYPE_MONITORING: prompt.PromptConfig,
@@ -103,6 +103,7 @@ class PipelineManager:
         except StreamSetsApiClientException as e:
             raise PipelineException(str(e))
 
+    @if_validation_enabled
     def show_preview(self):
         preview_data = api_client.get_preview_data(self.pipeline.id)
 

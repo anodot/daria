@@ -2,7 +2,7 @@ import click
 import re
 
 from .abstract_source import Source, SourceException
-from agent.tools import infinite_retry, print_json
+from agent.tools import infinite_retry, print_json, if_validation_enabled
 from pymongo import MongoClient
 
 
@@ -41,6 +41,7 @@ class MongoSource(Source):
             args['password'] = self.config.get(self.CONFIG_PASSWORD)
         return MongoClient(self.config[self.CONFIG_CONNECTION_STRING], **args)
 
+    @if_validation_enabled
     def validate_connection(self):
         client = self.get_mongo_client()
         client.server_info()
@@ -92,6 +93,7 @@ class MongoSource(Source):
                                                              default=default_config.get(self.CONFIG_OFFSET_FIELD,
                                                                                         '_id')).strip()
 
+    @if_validation_enabled
     def validate_db(self):
         client = self.get_mongo_client()
         if self.config[self.CONFIG_DATABASE] not in client.list_database_names():
@@ -104,6 +106,7 @@ class MongoSource(Source):
                                                          default=default_config.get(self.CONFIG_DATABASE)).strip()
         self.validate_db()
 
+    @if_validation_enabled
     def validate_collection(self):
         client = self.get_mongo_client()
         if self.config[self.CONFIG_COLLECTION] not in client[self.config[self.CONFIG_DATABASE]].list_collection_names():
@@ -149,6 +152,7 @@ class MongoSource(Source):
             self.config[self.CONFIG_AUTH_TYPE] = self.AUTH_TYPE_NONE
             del self.config[self.CONFIG_USERNAME]
 
+    @if_validation_enabled
     def print_sample_data(self):
         records = self.get_sample_records()
         if not records:

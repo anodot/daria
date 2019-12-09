@@ -2,7 +2,7 @@ import click
 import time
 
 from .abstract_source import Source
-from agent.tools import infinite_retry, is_url, print_dicts, map_keys
+from agent.tools import infinite_retry, is_url, print_dicts, map_keys, if_validation_enabled
 from datetime import datetime
 from urllib.parse import urlparse
 from influxdb import InfluxDBClient
@@ -46,6 +46,7 @@ class InfluxSource(Source):
     VALIDATION_SCHEMA_FILE_NAME = 'influx.json'
     TEST_PIPELINE_NAME = 'test_influx_qwe093'
 
+    @if_validation_enabled
     def validate_connection(self):
         if not is_url(self.config['host']):
             raise click.UsageError(f"{self.config['host']} - wrong url format. Correct format is `scheme://host:port`")
@@ -58,6 +59,7 @@ class InfluxSource(Source):
         self.validate_connection()
         click.secho('Connection successful')
 
+    @if_validation_enabled
     def validate_db(self):
         client = get_influx_client(self.config['host'], self.config.get('username'), self.config.get('password'))
         if not any([db['name'] == self.config['db'] for db in client.get_list_database()]):
@@ -73,6 +75,7 @@ class InfluxSource(Source):
         self.validate_db()
         click.secho('Access authorized')
 
+    @if_validation_enabled
     def validate_write_host(self):
         if not is_url(self.config['write_host']):
             raise click.UsageError(f"{self.config['write_host']} - wrong url format. Correct format is `scheme://host:port`")
@@ -86,6 +89,7 @@ class InfluxSource(Source):
         self.validate_write_host()
         click.secho('Connection successful')
 
+    @if_validation_enabled
     def validate_write_db(self):
         client = get_influx_client(self.config['write_host'], self.config.get('write_username'),
                                    self.config.get('write_password'))
@@ -104,6 +108,7 @@ class InfluxSource(Source):
         self.validate_write_access()
         click.secho('Access authorized')
 
+    @if_validation_enabled
     def validate_write_access(self):
         client = get_influx_client(self.config['write_host'], self.config.get('write_username'),
                                    self.config.get('write_password'),
@@ -160,6 +165,7 @@ class InfluxSource(Source):
             self.validate_write_access()
         self.validate_offset()
 
+    @if_validation_enabled
     def print_sample_data(self):
         records = self.get_sample_records()
         if not records or 'series' not in records[0]['results'][0]:
