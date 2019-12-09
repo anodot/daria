@@ -28,7 +28,7 @@ class PromptConfig:
     def set_timestamp(self):
         self.config['timestamp'] = self.default_config.get('timestamp', {})
         self.config['timestamp']['name'] = self.prompt_property('Timestamp property name',
-                                                                default=self.config['timestamp'].get('name'))
+                                                                self.config['timestamp'].get('name'))
         self.config['timestamp']['type'] = click.prompt('Timestamp property type',
                                                         type=click.Choice(
                                                             ['string', 'datetime', 'unix', 'unix_ms']),

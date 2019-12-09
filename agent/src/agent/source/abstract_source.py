@@ -4,7 +4,7 @@ import time
 
 from abc import ABC, abstractmethod
 from agent.constants import DATA_DIR
-from agent.tools import if_validation_enabled, print_json
+from agent.tools import if_validation_enabled, sdc_record_map_to_dict
 from jsonschema import validate, ValidationError
 from agent.streamsets_api_client import api_client, StreamSetsApiClientException
 
@@ -103,16 +103,6 @@ class Source(ABC):
         self.get_preview_data()
         return True
 
-    def sdc_record_map_to_dict(self, record: dict):
-        if 'value' in record:
-            if type(record['value']) is list:
-                return {key: self.sdc_record_map_to_dict(item) for key, item in enumerate(record['value'])}
-            elif type(record['value']) is dict:
-                return {key: self.sdc_record_map_to_dict(item) for key, item in record['value'].items()}
-            else:
-                return record['value']
-        return record
-
     def get_sample_records(self):
         preview_data = self.get_preview_data()
 
@@ -125,7 +115,7 @@ class Source(ABC):
         except (ValueError, TypeError):
             print('No preview data available')
             return
-        return [self.sdc_record_map_to_dict(record['value']) for record in data[:self.MAX_SAMPLE_RECORDS]]
+        return [sdc_record_map_to_dict(record['value']) for record in data[:self.MAX_SAMPLE_RECORDS]]
 
     @abstractmethod
     def print_sample_data(self):

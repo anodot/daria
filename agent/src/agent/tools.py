@@ -60,3 +60,14 @@ def dict_get_nested(dictionary: dict, keys: list):
             return None
         element = element[key]
     return element
+
+
+def sdc_record_map_to_dict(record: dict):
+    if 'value' in record:
+        if type(record['value']) is list:
+            return {key: sdc_record_map_to_dict(item) for key, item in enumerate(record['value'])}
+        elif type(record['value']) is dict:
+            return {key: sdc_record_map_to_dict(item) for key, item in record['value'].items()}
+        else:
+            return record['value']
+    return record

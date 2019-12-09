@@ -7,6 +7,7 @@ from . import prompt, config_handlers, load_client_data
 from .. import source
 from agent.constants import ERRORS_DIR
 from agent.streamsets_api_client import api_client, StreamSetsApiClientException
+from agent.tools import print_json, sdc_record_map_to_dict
 
 prompters = {
     source.TYPE_MONITORING: prompt.PromptConfig,
@@ -108,8 +109,8 @@ class PipelineManager:
         for output in preview_data['batchesOutput'][0]:
             if 'destination_OutputLane' not in output['output']:
                 continue
-
-            print(json.dumps(output['output']['destination_OutputLane'], indent=2, sort_keys=True))
+            data = output['output']['destination_OutputLane'][:self.pipeline.source.MAX_SAMPLE_RECORDS]
+            print_json([sdc_record_map_to_dict(record['value']) for record in data])
 
     def enable_destination_logs(self, enable):
         self.pipeline.destination.enable_logs(enable)
