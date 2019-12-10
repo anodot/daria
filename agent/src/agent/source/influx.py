@@ -52,18 +52,19 @@ class InfluxSource(Source):
             raise click.UsageError(f"{self.config['host']} - wrong url format. Correct format is `scheme://host:port`")
         client = get_influx_client(self.config['host'])
         client.ping()
+        click.secho('Connection successful')
 
     @infinite_retry
     def prompt_connection(self, default_config):
         self.config['host'] = click.prompt('InfluxDB API url', type=click.STRING, default=default_config.get('host')).strip()
         self.validate_connection()
-        click.secho('Connection successful')
 
     @if_validation_enabled
     def validate_db(self):
         client = get_influx_client(self.config['host'], self.config.get('username'), self.config.get('password'))
         if not any([db['name'] == self.config['db'] for db in client.get_list_database()]):
             raise click.UsageError(f"Database {self.config['db']} not found. Please check your credentials again")
+        click.secho('Access authorized')
 
     @infinite_retry
     def prompt_db(self, default_config):
@@ -73,7 +74,6 @@ class InfluxSource(Source):
                                                default=default_config.get('password', ''))
         self.config['db'] = click.prompt('Database', type=click.STRING, default=default_config.get('db')).strip()
         self.validate_db()
-        click.secho('Access authorized')
 
     @if_validation_enabled
     def validate_write_host(self):
@@ -81,13 +81,13 @@ class InfluxSource(Source):
             raise click.UsageError(f"{self.config['write_host']} - wrong url format. Correct format is `scheme://host:port`")
         client = get_influx_client(self.config['write_host'])
         client.ping()
+        click.secho('Connection successful')
 
     @infinite_retry
     def prompt_write_host(self, default_config):
         self.config['write_host'] = click.prompt('InfluxDB API url for writing data', type=click.STRING,
                                                  default=default_config.get('write_host')).strip()
         self.validate_write_host()
-        click.secho('Connection successful')
 
     @if_validation_enabled
     def validate_write_db(self):
@@ -106,7 +106,6 @@ class InfluxSource(Source):
                                                default=default_config.get('write_db', '')).strip()
         self.validate_write_db()
         self.validate_write_access()
-        click.secho('Access authorized')
 
     @if_validation_enabled
     def validate_write_access(self):
@@ -116,6 +115,8 @@ class InfluxSource(Source):
         if not has_write_access(client):
             raise click.UsageError(f"""User {self.config.get('write_username')} does not have write permissions for db
              {self.config['write_db']} at {self.config['write_host']}""")
+
+        click.secho('Access authorized')
 
     def validate_offset(self):
         if not self.config.get('offset'):

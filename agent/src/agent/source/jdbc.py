@@ -43,6 +43,7 @@ class JDBCSource(Source):
     def validate_connection(self):
         eng = create_engine(self.get_connection_url())
         eng.connect()
+        click.secho('Connection successful')
 
     @infinite_retry
     def prompt_connection(self, default_config):
@@ -59,7 +60,6 @@ class JDBCSource(Source):
             self.config['hikariConfigBean.useCredentials'] = True
 
         self.validate_connection()
-        click.secho('Connection successful')
 
     def prompt(self, default_config, advanced=False):
         self.config = dict()

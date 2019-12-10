@@ -109,7 +109,7 @@ class Source(ABC):
             api_client.delete_pipeline(self.TEST_PIPELINE_NAME)
             raise
         api_client.delete_pipeline(self.TEST_PIPELINE_NAME)
-
+        print('Successfully connected to the source')
         return True
 
     def get_sample_records(self):

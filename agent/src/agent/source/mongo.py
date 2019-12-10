@@ -45,6 +45,7 @@ class MongoSource(Source):
     def validate_connection(self):
         client = self.get_mongo_client()
         client.server_info()
+        click.echo('Connected to Mongo server')
 
     @infinite_retry
     def prompt_connection(self, default_config: dict):
@@ -52,7 +53,6 @@ class MongoSource(Source):
                                                                   default=default_config.get(
                                                                       self.CONFIG_CONNECTION_STRING)).strip()
         self.validate_connection()
-        click.echo('Connected to Mongo server')
 
     @infinite_retry
     def prompt_auth(self, default_config: dict):
@@ -66,7 +66,6 @@ class MongoSource(Source):
         self.config[self.CONFIG_AUTH_SOURCE] = click.prompt('Authentication Source', type=click.STRING,
                                                             default=default_config.get(self.CONFIG_AUTH_SOURCE, '')).strip()
         self.validate_connection()
-        click.echo('Authentication successful')
 
     def prompt_batch_wait_time(self, default_config: dict):
         default_batch_wait_time = default_config.get(self.CONFIG_MAX_BATCH_WAIT_TIME)

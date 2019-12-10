@@ -54,7 +54,6 @@ class KafkaSource(Source):
             self.prompt_consumer_params(default_config)
 
         self.validate_connection()
-        click.echo('Successfully connected to kafka')
 
     @infinite_retry
     def prompt_consumer_params(self, default_config):
