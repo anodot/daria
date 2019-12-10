@@ -87,7 +87,8 @@ class Source(ABC):
         self.create_test_pipeline()
 
         try:
-            preview_data = api_client.get_preview_data(self.TEST_PIPELINE_NAME)
+            preview = api_client.create_preview(self.TEST_PIPELINE_NAME)
+            preview_data = api_client.wait_for_preview(self.TEST_PIPELINE_NAME, preview['previewerId'])
         except Exception:
             api_client.delete_pipeline(self.TEST_PIPELINE_NAME)
             raise
@@ -100,7 +101,15 @@ class Source(ABC):
 
     @if_validation_enabled
     def validate_connection(self):
-        self.get_preview_data()
+        self.create_test_pipeline()
+        try:
+            validate_status = api_client.validate(self.TEST_PIPELINE_NAME)
+            api_client.wait_for_preview(self.TEST_PIPELINE_NAME, validate_status['previewerId'])
+        except Exception:
+            api_client.delete_pipeline(self.TEST_PIPELINE_NAME)
+            raise
+        api_client.delete_pipeline(self.TEST_PIPELINE_NAME)
+
         return True
 
     def get_sample_records(self):

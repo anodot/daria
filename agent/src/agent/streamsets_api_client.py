@@ -262,9 +262,12 @@ class StreamSetsApiClient:
     def wait_for_preview(self, pipeline_id, preview_id, tries=5, initial_delay=2):
         for i in range(1, tries + 1):
             response = self.get_preview_status(pipeline_id, preview_id)
+            if response['status'] == 'TIMED_OUT':
+                raise StreamSetsApiClientException(f"Can't connect to the source")
+
             if response['status'] not in ['VALIDATING', 'CREATED', 'RUNNING', 'STARTING', 'FINISHING', 'CANCELLING',
                                           'TIMING_OUT']:
-                return response
+                break
 
             delay = initial_delay ** i
             if i == tries:
@@ -272,10 +275,7 @@ class StreamSetsApiClient:
             print(f"Connecting to the source. Check again after {delay} seconds...")
             time.sleep(delay)
 
-    def get_preview_data(self, pipeline_id):
-        preview = api_client.create_preview(pipeline_id)
-        self.wait_for_preview(pipeline_id, preview['previewerId'])
-        preview_data = self.get_preview(pipeline_id, preview['previewerId'])
+        preview_data = self.get_preview(pipeline_id, preview_id)
         if preview_data['status'] == 'INVALID':
             errors = []
             for stage, data in preview_data['issues']['stageIssues'].items():

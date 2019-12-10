@@ -105,7 +105,8 @@ class PipelineManager:
 
     @if_validation_enabled
     def show_preview(self):
-        preview_data = api_client.get_preview_data(self.pipeline.id)
+        preview = api_client.create_preview(self.pipeline.id)
+        preview_data = api_client.wait_for_preview(self.pipeline.id, preview['previewerId'])
 
         for output in preview_data['batchesOutput'][0]:
             if 'destination_OutputLane' not in output['output']:

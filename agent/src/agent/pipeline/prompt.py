@@ -54,8 +54,9 @@ class PromptConfig:
         self.config['dimensions'] = self.default_config.get('dimensions', {})
         self.config['dimensions']['required'] = self.prompt_dimensions('Required dimensions',
                                                                        self.config['dimensions'].get('required', []))
-        self.config['dimensions']['optional'] = self.prompt_dimensions('Optional dimensions',
-                                                                       self.config['dimensions'].get('optional', []))
+        self.config['dimensions']['optional'] = click.prompt('Optional dimensions', type=click.STRING,
+                                                             value_proc=lambda x: x.split(),
+                                                             default=self.config['dimensions'].get('optional', []))
 
     @infinite_retry
     def prompt_object(self, property_name, prompt_text):
@@ -93,9 +94,11 @@ class PromptConfig:
             return
         errors = []
         for value in names:
-            if not dict_get_nested(self.pipeline.source.sample_data, value.split('/')):
-                print(f'Property {value} is not present in a sample data')
-                errors.append(value)
+            for record in self.pipeline.source.sample_data:
+                if not dict_get_nested(record, value.split('/')):
+                    print(f'Property {value} is not present in a sample record')
+                    errors.append(value)
+                    break
         if errors and not click.confirm('Continue?'):
             raise click.UsageError('Try again')
 
@@ -266,9 +269,9 @@ class PromptConfigInflux(PromptConfig):
         required = self.config['dimensions'].get('required', [])
         if self.advanced or len(required) > 0:
             self.config['dimensions']['required'] = self.prompt_dimensions('Required dimensions', required)
-            self.config['dimensions']['optional'] = self.prompt_dimensions('Optional dimensions',
-                                                                           self.config['dimensions'].get('optional',
-                                                                                                         []))
+            self.config['dimensions']['optional'] = click.prompt('Optional dimensions', type=click.STRING,
+                                                                 value_proc=lambda x: x.split(),
+                                                                 default=self.config['dimensions'].get('optional', []))
         else:
             self.config['dimensions']['required'] = []
             self.config['dimensions']['optional'] = self.prompt_dimensions('Dimensions',
