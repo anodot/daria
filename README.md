@@ -29,4 +29,3 @@ docker attach anodot-agent
 python setup.py develop
 ```
 Now when you change the code you don't need to rebuild the image
-    
