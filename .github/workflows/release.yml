@@ -1,0 +1,32 @@
+name: Release
+
+on:
+  release:
+    types:
+      - created
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build
+      run: docker-compose up -d --build
+
+    - name: Prepare env
+      run: ./setup_tests.sh
+
+    - name: Test
+      run: docker exec -i anodot-agent pytest -x 
+      
+    - name: Tag latest
+      run: docker image tag daria_agent:latest anodot/daria:latest && docker image tag daria_dc:latest anodot/streamsets:latest 
+      
+    - name: Tag version
+      run: docker image tag daria_agent:latest anodot/daria:${{ github.ref }} && docker image tag daria_dc:latest anodot/streamsets:${{ github.ref }}
+      
+    - name: Push images
+      run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} && docker push anodot/daria && docker push anodot/streamsets
