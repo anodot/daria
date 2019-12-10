@@ -32,17 +32,3 @@ jobs:
       
     - name: Push images
       run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} && docker push anodot/daria && docker push anodot/streamsets
-      
-    - name: Dump agent
-      run: docker save anodot/daria:$VERSION | gzip > anodot_daria_agent_$VERSION.tar.gz
-    
-    - name: Dump SDC
-      run: docker save anodot/streamsets:$VERSION | gzip > anodot_streamsets_$VERSION.tar.gz
-    
-    - name: Install hub
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: curl -L https://github.com/github/hub/releases/download/v2.13.0/hub-linux-amd64-2.13.0.tgz -o hub_cli.tgz && tar -C hub_cli -xzvf hub_cli.tgz
-      
-    - name: Update release
-      run: ./hub_cli/bin/hub release edit $VERSION -m "" -a anodot_daria_agent_$VERSION.tar.gz -a anodot_streamsets_$VERSION.tar.gz
