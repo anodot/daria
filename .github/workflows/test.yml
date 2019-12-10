@@ -1,0 +1,15 @@
+name: Run tests
+
+on:
+  push:
+    branches:
+    - master
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v1
+      - name: Run tests
+        run: docker-compose down -v && docker-compose up -d --build && ./setup_tests.sh && docker exec -i anodot-agent pytest -x
