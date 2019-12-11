@@ -117,9 +117,12 @@ def create(advanced, file):
     previous_config = get_previous_pipeline_config(pipeline_manager.pipeline.source.type)
     pipeline_manager.prompt(previous_config, advanced)
     pipeline_manager.create()
-    pipeline_manager.show_preview()
 
     click.secho('Created pipeline {}'.format(pipeline_id), fg='green')
+
+    if click.confirm('Would you like to see the result data preview?', default=True):
+        pipeline_manager.show_preview()
+        print('To change the config use `agent pipeline edit`')
 
 
 def edit_multiple(file):
@@ -167,11 +170,13 @@ def edit(pipeline_id, advanced, file):
         pipeline_manager = PipelineManager(pipeline.load_object(pipeline_id))
         pipeline_manager.prompt(pipeline_manager.pipeline.to_dict(), advanced=advanced)
         pipeline_manager.update()
-        pipeline_manager.show_preview()
+
+        click.secho('Updated pipeline {}'.format(pipeline_id), fg='green')
+        if click.confirm('Would you like to see the result data preview?', default=True):
+            pipeline_manager.show_preview()
+            print('To change the config use `agent pipeline edit`')
     except pipeline.PipelineNotExists:
         raise click.UsageError(f'{pipeline_id} does not exist')
-
-    click.secho('Updated pipeline {}'.format(pipeline_id), fg='green')
 
 
 @click.command()

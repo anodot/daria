@@ -64,7 +64,7 @@ class TestMongo(TestPipelineBase):
 
     def test_create(self, cli_runner, name, options, value, timestamp, timestamp_type, properties):
         result = cli_runner.invoke(pipeline_cli.create, options,
-                                   input=f"""test_mongo\n{name}\nclicks\n{value}\n{timestamp}\n{timestamp_type}\nver Country\nExchange optional_dim\n{properties}\n""")
+                                   input=f"""test_mongo\n{name}\n\nclicks\n{value}\n{timestamp}\n{timestamp_type}\nver Country\nExchange optional_dim\n{properties}\n\n\n""")
         assert result.exit_code == 0
         assert api_client.get_pipeline(name)
 

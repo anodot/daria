@@ -47,7 +47,7 @@ class TestInflux(TestPipelineBase):
 
     def test_create(self, cli_runner, name, source):
         result = cli_runner.invoke(pipeline_cli.create,
-                                   input=f'{source}\n{name}\ncpu_test\nusage_active usage_idle\n\ncpu zone host\n\n7000000\n')
+                                   input=f'{source}\n{name}\ncpu_test\n\nusage_active usage_idle\n\ncpu zone host\n\n7000000\n\n\n')
         assert result.exit_code == 0
         assert api_client.get_pipeline(name)
 

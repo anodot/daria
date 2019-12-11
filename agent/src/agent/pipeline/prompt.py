@@ -102,10 +102,15 @@ class PromptConfig:
         if errors and not click.confirm('Continue?'):
             raise click.UsageError('Try again')
 
+    @if_validation_enabled
+    def data_preview(self):
+        if click.confirm('Would you like to see the data preview?', default=True):
+            self.pipeline.source.print_sample_data()
+
 
 class PromptConfigMongo(PromptConfig):
     def set_config(self):
-        self.pipeline.source.print_sample_data()
+        self.data_preview()
         self.set_measurement_name()
         self.set_value()
         self.set_target_type()
@@ -133,7 +138,7 @@ class PromptConfigMongo(PromptConfig):
 
 class PromptConfigKafka(PromptConfig):
     def set_config(self):
-        self.pipeline.source.print_sample_data()
+        self.data_preview()
         self.set_values()
         self.set_measurement_names()
         self.set_timestamp()
@@ -146,7 +151,7 @@ class PromptConfigKafka(PromptConfig):
 
     @infinite_retry
     def prompt_values(self):
-        self.prompt_object('values', 'Value columns with target types. Example - property:counter property2:gauge')
+        self.prompt_object('values', 'Value properties with target types. Example - property:counter property2:gauge')
 
         if not set(self.config['values'].values()).issubset(('counter', 'gauge')) and self.static_what():
             raise click.UsageError('Target type should be counter or gauge')
@@ -175,7 +180,7 @@ class PromptConfigKafka(PromptConfig):
     @infinite_retry
     def set_measurement_names(self):
         prompt_text = 'Measurement names' if self.config.get('static_what', True) else 'Measurement properties names'
-        self.prompt_object('measurement_names', prompt_text + '. Example -  property:what property2:what2')
+        self.prompt_object('measurement_names', prompt_text + '. Example -  property:measure property2:measure2')
         if not set(self.config['measurement_names'].keys()).issubset(set(self.config['values'].keys())):
             raise click.UsageError('Wrong property name')
         if not self.static_what():
@@ -230,7 +235,7 @@ class PromptConfigInflux(PromptConfig):
     def set_config(self):
         self.set_measurement_name()
         self.pipeline.source.config['conf.resourceUrl'] = self.get_test_url()
-        self.pipeline.source.print_sample_data()
+        self.data_preview()
         self.set_value()
         self.set_target_type()
         self.set_timestamp()
@@ -291,7 +296,7 @@ class PromptConfigJDBC(PromptConfig):
         query = f'SELECT * FROM {self.config["table"]}  WHERE {self.config["offset_column"]} > ${{OFFSET}} ORDER BY {self.config["offset_column"]} LIMIT {self.pipeline.source.MAX_SAMPLE_RECORDS}'
         self.pipeline.source.config['query'] = query
         self.pipeline.source.config['offsetColumn'] = self.config['offset_column']
-        self.pipeline.source.print_sample_data()
+        self.data_preview()
         self.set_values()
         self.set_timestamp()
         self.set_dimensions()

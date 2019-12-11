@@ -1,4 +1,4 @@
-import json
+import click
 import os
 import shutil
 
@@ -109,10 +109,12 @@ class PipelineManager:
         preview_data = api_client.wait_for_preview(self.pipeline.id, preview['previewerId'])
 
         for output in preview_data['batchesOutput'][0]:
-            if 'destination_OutputLane' not in output['output']:
-                continue
-            data = output['output']['destination_OutputLane'][:self.pipeline.source.MAX_SAMPLE_RECORDS]
-            print_json([sdc_record_map_to_dict(record['value']) for record in data])
+            if 'destination_OutputLane' in output['output']:
+                data = output['output']['destination_OutputLane'][:self.pipeline.source.MAX_SAMPLE_RECORDS]
+                print_json([sdc_record_map_to_dict(record['value']) for record in data])
+                break
+        else:
+            print('Could not fetch any data matching the provided config')
 
     def enable_destination_logs(self, enable):
         self.pipeline.destination.enable_logs(enable)
