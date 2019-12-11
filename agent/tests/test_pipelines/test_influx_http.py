@@ -16,6 +16,13 @@ def pipeline_id(monkeypatch):
     monkeypatch.setattr(InfluxConfigHandler, 'get_pipeline_id', constant_pipeline_id)
 
 
+@pytest.fixture(autouse=True)
+def pipeline_type(monkeypatch):
+    def constant_pipeline_type(self):
+        return 'type'
+    monkeypatch.setattr(InfluxConfigHandler, 'get_pipeline_type', constant_pipeline_type)
+
+
 class TestInflux(TestPipelineBase):
     __test__ = True
 

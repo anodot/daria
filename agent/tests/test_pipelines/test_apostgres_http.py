@@ -13,8 +13,14 @@ from agent.pipeline.config_handlers.jdbc import JDBCConfigHandler
 def pipeline_id(monkeypatch):
     def constant_pipeline_id(self):
         return 'pipeline_id'
-    # monkeypatch.setattr(BaseConfigHandler, 'get_pipeline_id', constant_pipeline_id)
     monkeypatch.setattr(JDBCConfigHandler, 'get_pipeline_id', constant_pipeline_id)
+
+
+@pytest.fixture(autouse=True)
+def pipeline_type(monkeypatch):
+    def constant_pipeline_type(self):
+        return 'type'
+    monkeypatch.setattr(JDBCConfigHandler, 'get_pipeline_type', constant_pipeline_type)
 
 
 class TestPostgreSQL(TestPipelineBase):
