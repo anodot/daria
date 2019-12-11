@@ -2,7 +2,7 @@ import click
 import time
 
 from .abstract_source import Source
-from agent.tools import infinite_retry, is_url, print_dicts, map_keys
+from agent.tools import infinite_retry, is_url, print_dicts, map_keys, if_validation_enabled
 from datetime import datetime
 from urllib.parse import urlparse
 from influxdb import InfluxDBClient
@@ -46,22 +46,25 @@ class InfluxSource(Source):
     VALIDATION_SCHEMA_FILE_NAME = 'influx.json'
     TEST_PIPELINE_NAME = 'test_influx_qwe093'
 
+    @if_validation_enabled
     def validate_connection(self):
         if not is_url(self.config['host']):
             raise click.UsageError(f"{self.config['host']} - wrong url format. Correct format is `scheme://host:port`")
         client = get_influx_client(self.config['host'])
         client.ping()
+        click.secho('Connection successful')
 
     @infinite_retry
     def prompt_connection(self, default_config):
         self.config['host'] = click.prompt('InfluxDB API url', type=click.STRING, default=default_config.get('host')).strip()
         self.validate_connection()
-        click.secho('Connection successful')
 
+    @if_validation_enabled
     def validate_db(self):
         client = get_influx_client(self.config['host'], self.config.get('username'), self.config.get('password'))
         if not any([db['name'] == self.config['db'] for db in client.get_list_database()]):
             raise click.UsageError(f"Database {self.config['db']} not found. Please check your credentials again")
+        click.secho('Access authorized')
 
     @infinite_retry
     def prompt_db(self, default_config):
@@ -71,21 +74,22 @@ class InfluxSource(Source):
                                                default=default_config.get('password', ''))
         self.config['db'] = click.prompt('Database', type=click.STRING, default=default_config.get('db')).strip()
         self.validate_db()
-        click.secho('Access authorized')
 
+    @if_validation_enabled
     def validate_write_host(self):
         if not is_url(self.config['write_host']):
             raise click.UsageError(f"{self.config['write_host']} - wrong url format. Correct format is `scheme://host:port`")
         client = get_influx_client(self.config['write_host'])
         client.ping()
+        click.secho('Connection successful')
 
     @infinite_retry
     def prompt_write_host(self, default_config):
         self.config['write_host'] = click.prompt('InfluxDB API url for writing data', type=click.STRING,
                                                  default=default_config.get('write_host')).strip()
         self.validate_write_host()
-        click.secho('Connection successful')
 
+    @if_validation_enabled
     def validate_write_db(self):
         client = get_influx_client(self.config['write_host'], self.config.get('write_username'),
                                    self.config.get('write_password'))
@@ -102,8 +106,8 @@ class InfluxSource(Source):
                                                default=default_config.get('write_db', '')).strip()
         self.validate_write_db()
         self.validate_write_access()
-        click.secho('Access authorized')
 
+    @if_validation_enabled
     def validate_write_access(self):
         client = get_influx_client(self.config['write_host'], self.config.get('write_username'),
                                    self.config.get('write_password'),
@@ -111,6 +115,8 @@ class InfluxSource(Source):
         if not has_write_access(client):
             raise click.UsageError(f"""User {self.config.get('write_username')} does not have write permissions for db
              {self.config['write_db']} at {self.config['write_host']}""")
+
+        click.secho('Access authorized')
 
     def validate_offset(self):
         if not self.config.get('offset'):
@@ -160,6 +166,7 @@ class InfluxSource(Source):
             self.validate_write_access()
         self.validate_offset()
 
+    @if_validation_enabled
     def print_sample_data(self):
         records = self.get_sample_records()
         if not records or 'series' not in records[0]['results'][0]:

@@ -1,7 +1,7 @@
 import click
 import json
 from .abstract_source import Source, SourceException
-from agent.tools import infinite_retry, print_dicts, print_json, map_keys
+from agent.tools import infinite_retry, print_dicts, print_json, map_keys, if_validation_enabled
 
 
 class KafkaSource(Source):
@@ -54,7 +54,6 @@ class KafkaSource(Source):
             self.prompt_consumer_params(default_config)
 
         self.validate_connection()
-        click.echo('Successfully connected to kafka')
 
     @infinite_retry
     def prompt_consumer_params(self, default_config):
@@ -179,12 +178,15 @@ class KafkaSource(Source):
         self.config[self.CONFIG_LIBRARY] = self.version_libraries[self.config.get(self.CONFIG_VERSION,
                                                                                   self.DEFAULT_KAFKA_VERSION)]
 
+    @if_validation_enabled
     def print_sample_data(self):
         records = self.get_sample_records()
         if not records:
             return
 
         if self.config.get(self.CONFIG_DATA_FORMAT) == self.DATA_FORMAT_CSV:
-            print_dicts(map_keys(records, self.config.get(self.CONFIG_CSV_MAPPING, {})))
+            self.sample_data = map_keys(records, self.config.get(self.CONFIG_CSV_MAPPING, {}))
+            print_dicts(self.sample_data)
         else:
+            self.sample_data = records
             print_json(records)

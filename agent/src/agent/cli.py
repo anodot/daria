@@ -1,5 +1,6 @@
 import click
-import time
+
+# for using arrows in cli
 import readline
 
 from . import pipeline
@@ -47,13 +48,12 @@ def update():
             continue
         running_pipelines.append(p['pipelineId'])
 
-    time.sleep(3)
     for p in api_client.get_pipelines():
-        pipeline_obj = pipeline.load_object(p['pipelineId'])
-        pipeline_obj.update()
+        pipeline_manager = pipeline.PipelineManager(pipeline.load_object(p['pipelineId']))
+        pipeline_manager.update()
 
         if p['pipelineId'] in running_pipelines:
-            pipeline_obj.start()
+            pipeline_manager.pipeline.start()
         click.secho(f'Pipeline {p["pipelineId"]} updated', fg='green')
 
 

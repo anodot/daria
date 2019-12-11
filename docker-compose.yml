@@ -32,6 +32,7 @@ services:
       ANODOT_API_URL: 'http://dummy_destination'
       SDC_DATA_PATH: '/sdc-data'
       ENV_PROD: 'false'
+#      VALIDATION_ENABLED: 'false'
     stdin_open: true
     tty: true
     depends_on:

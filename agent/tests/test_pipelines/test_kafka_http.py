@@ -69,12 +69,12 @@ class TestKafka(TestPipelineBase):
 
     def test_create(self, cli_runner, source_name, name, options, value, timestamp, properties):
         result = cli_runner.invoke(pipeline_cli.create, options,
-                                   input=f"{source_name}\n{name}\n{value}\n{timestamp}\nver Country\nExchange optional_dim\n{properties}\n")
+                                   input=f"{source_name}\n{name}\n\n{value}\n{timestamp}\nver Country\nExchange optional_dim\n{properties}\n\n\n")
         assert result.exit_code == 0
         assert api_client.get_pipeline(name)
 
     def test_edit(self, cli_runner, options, value):
-        result = cli_runner.invoke(pipeline_cli.edit, options, input=f"{value}\n\n\n\n\n\n\n\n")
+        result = cli_runner.invoke(pipeline_cli.edit, options, input=f"\n{value}\n\n\n\n\n\n\n\n\n")
         assert result.exit_code == 0
 
     def test_edit_with_file(self, cli_runner, file_name=None):
