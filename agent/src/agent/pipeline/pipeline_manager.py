@@ -111,10 +111,11 @@ class PipelineManager:
         for output in preview_data['batchesOutput'][0]:
             if 'destination_OutputLane' in output['output']:
                 data = output['output']['destination_OutputLane'][:self.pipeline.source.MAX_SAMPLE_RECORDS]
-                print_json([sdc_record_map_to_dict(record['value']) for record in data])
+                if data:
+                    print_json([sdc_record_map_to_dict(record['value']) for record in data])
+                else:
+                    print('Could not fetch any data matching the provided config')
                 break
-        else:
-            print('Could not fetch any data matching the provided config')
 
     def enable_destination_logs(self, enable):
         self.pipeline.destination.enable_logs(enable)
