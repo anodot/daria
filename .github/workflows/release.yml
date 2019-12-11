@@ -14,10 +14,10 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Build
-      run: docker-compose up -d --build
+      run: docker-compose build --build-arg GIT_SHA1=$(git describe --dirty --always)
 
     - name: Prepare env
-      run: ./setup_tests.sh
+      run: docker-compose up -d && ./setup_tests.sh
 
     - name: Test
       run: docker exec -i anodot-agent pytest -x 
