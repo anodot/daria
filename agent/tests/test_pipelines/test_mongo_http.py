@@ -69,7 +69,7 @@ class TestMongo(TestPipelineBase):
         assert api_client.get_pipeline(name)
 
     def test_edit(self, cli_runner, options, value):
-        result = cli_runner.invoke(pipeline_cli.edit, options, input=f"\n{value}\n\n\n\n\n\n\n\n")
+        result = cli_runner.invoke(pipeline_cli.edit, options, input=f"\n\n{value}\n\n\n\n\n\n\n\n\n")
         assert result.exit_code == 0
 
     def test_edit_with_file(self, cli_runner, file_name=None):
