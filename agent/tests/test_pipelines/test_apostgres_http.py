@@ -13,8 +13,14 @@ from agent.pipeline.config_handlers.jdbc import JDBCConfigHandler
 def pipeline_id(monkeypatch):
     def constant_pipeline_id(self):
         return 'pipeline_id'
-    # monkeypatch.setattr(BaseConfigHandler, 'get_pipeline_id', constant_pipeline_id)
     monkeypatch.setattr(JDBCConfigHandler, 'get_pipeline_id', constant_pipeline_id)
+
+
+@pytest.fixture(autouse=True)
+def pipeline_type(monkeypatch):
+    def constant_pipeline_type(self):
+        return 'type'
+    monkeypatch.setattr(JDBCConfigHandler, 'get_pipeline_type', constant_pipeline_type)
 
 
 class TestPostgreSQL(TestPipelineBase):
@@ -50,13 +56,13 @@ class TestPostgreSQL(TestPipelineBase):
 
     def test_create(self, cli_runner, name, source, timestamp_type, timestamp_name):
         result = cli_runner.invoke(pipeline_cli.create,
-                                   input=f'{source}\n{name}\ntest\n\n\n1000\n\nclicks:gauge impressions:gauge\n{timestamp_name}\n{timestamp_type}\nadsize country\n')
+                                   input=f'{source}\n{name}\ntest\n\n\n1000\n\n\nclicks:gauge impressions:gauge\n{timestamp_name}\n{timestamp_type}\nadsize country\n\n\n')
         assert result.exit_code == 0
         assert api_client.get_pipeline(name)
 
     def test_create_advanced(self, cli_runner, name, source):
         result = cli_runner.invoke(pipeline_cli.create, ['-a'],
-                                   input=f'{source}\n{name}\ntest\n\n\n1000\ny\nclicks:gauge impressions:gauge\ntimestamp_unix\nunix\nadsize country\nkey1:val1 key2:val2\ncountry = \'USA\'\n')
+                                   input=f'{source}\n{name}\ntest\n\n\n1000\n\ny\nclicks:gauge impressions:gauge\ntimestamp_unix\nunix\nadsize country\nkey1:val1 key2:val2\ncountry = \'USA\'\n\n\n')
         assert result.exit_code == 0
         assert api_client.get_pipeline(name)
 

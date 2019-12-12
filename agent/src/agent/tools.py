@@ -51,3 +51,23 @@ def if_validation_enabled(func):
             return True
         return new_func
     return func
+
+
+def dict_get_nested(dictionary: dict, keys: list):
+    element = dictionary
+    for key in keys:
+        if key not in element:
+            return None
+        element = element[key]
+    return element
+
+
+def sdc_record_map_to_dict(record: dict):
+    if 'value' in record:
+        if type(record['value']) is list:
+            return {key: sdc_record_map_to_dict(item) for key, item in enumerate(record['value'])}
+        elif type(record['value']) is dict:
+            return {key: sdc_record_map_to_dict(item) for key, item in record['value'].items()}
+        else:
+            return record['value']
+    return record

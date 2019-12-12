@@ -14,7 +14,8 @@
       "source": ["anodot-agent"],
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
-      "pipeline_id": ["pipeline_id"]
+      "pipeline_id": ["pipeline_id"],
+      "pipeline_type": ["influx"]
     },
     "value": 0.204
   },
@@ -33,7 +34,8 @@
       "source": ["anodot-agent"],
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
-      "pipeline_id": ["pipeline_id"]
+      "pipeline_id": ["pipeline_id"],
+      "pipeline_type": ["influx"]
     },
     "value": 62.53
   },
@@ -52,7 +54,8 @@
       "source": ["anodot-agent"],
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
-      "pipeline_id": ["pipeline_id"]
+      "pipeline_id": ["pipeline_id"],
+      "pipeline_type": ["influx"]
     },
     "value": 0.224
   },
@@ -71,7 +74,8 @@
       "source": ["anodot-agent"],
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
-      "pipeline_id": ["pipeline_id"]
+      "pipeline_id": ["pipeline_id"],
+      "pipeline_type": ["influx"]
     },
     "value": 14.247
   },
@@ -90,7 +94,8 @@
       "source": ["anodot-agent"],
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
-      "pipeline_id": ["pipeline_id"]
+      "pipeline_id": ["pipeline_id"],
+      "pipeline_type": ["influx"]
     },
     "value": 0.22432747346756737
   },
@@ -109,7 +114,8 @@
       "source": ["anodot-agent"],
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
-      "pipeline_id": ["pipeline_id"]
+      "pipeline_id": ["pipeline_id"],
+      "pipeline_type": ["influx"]
     },
     "value": 14.247
   },
@@ -127,7 +133,8 @@
       "source": ["anodot-agent"],
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
-      "pipeline_id": ["pipeline_id"]
+      "pipeline_id": ["pipeline_id"],
+      "pipeline_type": ["influx"]
     },
     "value": 0.224
   },
@@ -145,7 +152,8 @@
       "source": ["anodot-agent"],
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
-      "pipeline_id": ["pipeline_id"]
+      "pipeline_id": ["pipeline_id"],
+      "pipeline_type": ["influx"]
     },
     "value": 14.247
   },
@@ -164,7 +172,8 @@
       "source": ["anodot-agent"],
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
-      "pipeline_id": ["pipeline_id"]
+      "pipeline_id": ["pipeline_id"],
+      "pipeline_type": ["influx"]
     },
     "value": 0.504
   },
@@ -183,7 +192,8 @@
       "source": ["anodot-agent"],
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
-      "pipeline_id": ["pipeline_id"]
+      "pipeline_id": ["pipeline_id"],
+      "pipeline_type": ["influx"]
     },
     "value": 260404905034043060000
   },
@@ -202,7 +212,8 @@
       "source": ["anodot-agent"],
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
-      "pipeline_id": ["pipeline_id"]
+      "pipeline_id": ["pipeline_id"],
+      "pipeline_type": ["influx"]
     },
     "value": 0.504
   },
@@ -221,7 +232,8 @@
       "source": ["anodot-agent"],
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
-      "pipeline_id": ["pipeline_id"]
+      "pipeline_id": ["pipeline_id"],
+      "pipeline_type": ["influx"]
     },
     "value": 26
   }

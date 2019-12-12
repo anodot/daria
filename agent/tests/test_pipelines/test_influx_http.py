@@ -16,6 +16,13 @@ def pipeline_id(monkeypatch):
     monkeypatch.setattr(InfluxConfigHandler, 'get_pipeline_id', constant_pipeline_id)
 
 
+@pytest.fixture(autouse=True)
+def pipeline_type(monkeypatch):
+    def constant_pipeline_type(self):
+        return 'type'
+    monkeypatch.setattr(InfluxConfigHandler, 'get_pipeline_type', constant_pipeline_type)
+
+
 class TestInflux(TestPipelineBase):
     __test__ = True
 
@@ -47,7 +54,7 @@ class TestInflux(TestPipelineBase):
 
     def test_create(self, cli_runner, name, source):
         result = cli_runner.invoke(pipeline_cli.create,
-                                   input=f'{source}\n{name}\ncpu_test\nusage_active usage_idle\n\ncpu zone host\n\n7000000\n')
+                                   input=f'{source}\n{name}\ncpu_test\n\nusage_active usage_idle\n\ncpu zone host\n\n7000000\n\n\n')
         assert result.exit_code == 0
         assert api_client.get_pipeline(name)
 

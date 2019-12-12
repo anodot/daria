@@ -120,6 +120,10 @@ def create(advanced, file):
 
     click.secho('Created pipeline {}'.format(pipeline_id), fg='green')
 
+    if click.confirm('Would you like to see the result data preview?', default=True):
+        pipeline_manager.show_preview()
+        print('To change the config use `agent pipeline edit`')
+
 
 def edit_multiple(file):
     data = json.load(file)
@@ -137,9 +141,12 @@ def edit_multiple(file):
     validate(data, json_schema)
 
     for item in data:
-        pipeline_manager = PipelineManager(pipeline.load_object(item['pipeline_id']))
-        pipeline_manager.load_config(item, edit=True)
-        pipeline_manager.update()
+        try:
+            pipeline_manager = PipelineManager(pipeline.load_object(item['pipeline_id']))
+            pipeline_manager.load_config(item, edit=True)
+            pipeline_manager.update()
+        except pipeline.PipelineNotExists:
+            raise click.UsageError(f'{item["pipeline_id"]} does not exist')
 
         click.secho('Updated pipeline {}'.format(item['pipeline_id']), fg='green')
 
@@ -159,11 +166,17 @@ def edit(pipeline_id, advanced, file):
         edit_multiple(file)
         return
 
-    pipeline_manager = PipelineManager(pipeline.load_object(pipeline_id))
-    pipeline_manager.prompt(pipeline_manager.pipeline.to_dict(), advanced=advanced)
-    pipeline_manager.update()
+    try:
+        pipeline_manager = PipelineManager(pipeline.load_object(pipeline_id))
+        pipeline_manager.prompt(pipeline_manager.pipeline.to_dict(), advanced=advanced)
+        pipeline_manager.update()
 
-    click.secho('Updated pipeline {}'.format(pipeline_id), fg='green')
+        click.secho('Updated pipeline {}'.format(pipeline_id), fg='green')
+        if click.confirm('Would you like to see the result data preview?', default=True):
+            pipeline_manager.show_preview()
+            print('To change the config use `agent pipeline edit`')
+    except pipeline.PipelineNotExists:
+        raise click.UsageError(f'{pipeline_id} does not exist')
 
 
 @click.command()

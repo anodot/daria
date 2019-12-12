@@ -1,10 +1,13 @@
-## Python agent
+[![Latest Release](https://img.shields.io/github/release/anodot/daria.svg)](https://github.com/anodot/daria/releases/latest)
+[![Docker pulls](https://img.shields.io/docker/pulls/anodot/daria.svg)](https://hub.docker.com/r/anodot/daria)
+
+## Anodot Daria agent
 With this CLI tool you can create pipelines in Streamsets Data collector which will 
 pull data from different sources and push it to anodot
 
 ### How to build
 ```
-docker-compose up -d
+docker-compose up -d --build
 ```
 
 ### How to use
