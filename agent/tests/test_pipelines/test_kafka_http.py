@@ -6,22 +6,6 @@ from agent.pipeline import cli as pipeline_cli
 from agent.source import cli as source_cli, Source
 from agent.streamsets_api_client import api_client
 from .test_pipeline_base import TestPipelineBase, pytest_generate_tests
-from agent.pipeline.config_handlers.kafka import KafkaConfigHandler
-
-
-@pytest.fixture(autouse=True)
-def pipeline_id(monkeypatch):
-    def constant_pipeline_id(self):
-        return 'pipeline_id'
-
-    monkeypatch.setattr(KafkaConfigHandler, 'get_pipeline_id', constant_pipeline_id)
-
-
-@pytest.fixture(autouse=True)
-def pipeline_type(monkeypatch):
-    def constant_pipeline_type(self):
-        return 'type'
-    monkeypatch.setattr(KafkaConfigHandler, 'get_pipeline_type', constant_pipeline_type)
 
 
 class TestKafka(TestPipelineBase):
@@ -55,10 +39,10 @@ class TestKafka(TestPipelineBase):
                       {'name': 'test_kfk_timestamp_string'}, {'name': 'test_kfk_timestamp_kafka'},
                       {'name': 'test_kfk_kafka_file_short'}, {'name': 'test_kfk_kafka_file_full'},
                       {'name': 'test_csv'}],
-        'test_output': [{'name': 'test_kfk_value_const', 'output': 'json_value_const_adv.json'},
-                        {'name': 'test_kfk_timestamp_ms', 'output': 'json_value_property.json'},
-                        {'name': 'test_csv', 'output': 'json_value_property.json'},
-                        {'name': 'test_kfk_timestamp_string', 'output': 'json_value_property_kafka_adv.json'}],
+        'test_output': [{'name': 'test_kfk_value_const', 'output': 'json_value_const_adv.json', 'pipeline_type': 'kafka'},
+                        {'name': 'test_kfk_timestamp_ms', 'output': 'json_value_property.json', 'pipeline_type': 'kafka'},
+                        {'name': 'test_csv', 'output': 'json_value_property.json', 'pipeline_type': 'kafka'},
+                        {'name': 'test_kfk_timestamp_string', 'output': 'json_value_property_kafka_adv.json', 'pipeline_type': 'kafka'}],
         'test_delete_pipeline': [{'name': 'test_kfk_value_const'}, {'name': 'test_kfk_timestamp_ms'},
                                  {'name': 'test_kfk_timestamp_string'}, {'name': 'test_kfk_timestamp_kafka'},
                                  {'name': 'test_kfk_kafka_file_short'}, {'name': 'test_kfk_kafka_file_full'},

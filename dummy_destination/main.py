@@ -14,7 +14,8 @@ app.secret_key = b"\xf9\x19\x8d\xd2\xb7N\x84\xae\x16\x0f'`U\x88x&\nF\xa2\xe9\xa1
 def to_file():
     data = request.json
     if len(data) > 0:
-        with open(os.path.join(OUTPUT_DIR, data[0]['tags']['pipeline_id'][0] + '.json'), 'a+') as f:
+        file_name = data[0]['tags']['pipeline_id'][0] + '_' + data[0]['tags']['pipeline_type'][0]
+        with open(os.path.join(OUTPUT_DIR, file_name + '.json'), 'a+') as f:
             json.dump(request.json, f)
             f.write('\n')
     return 'ok'

@@ -46,10 +46,11 @@ def replace_destination(name):
     api_client.update_pipeline(name, pipeline)
 
 
-def get_output(pipeline_name):
-    for filename in os.listdir(SDC_RESULTS_PATH):
-        if filename.startswith(f'sdc-{pipeline_name}-'):
-            with open(os.path.join(SDC_RESULTS_PATH, filename)) as f:
+def get_output(pipeline_name, pipeline_type):
+    dummy_destination_output_path = '/output'
+    for filename in os.listdir(dummy_destination_output_path):
+        if filename == pipeline_name + '_' + pipeline_type + '.json':
+            with open(os.path.join(dummy_destination_output_path, filename)) as f:
                 return json.load(f)
 
 

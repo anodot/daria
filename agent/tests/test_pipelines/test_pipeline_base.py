@@ -48,7 +48,6 @@ class TestPipelineBase(object):
         assert result.exit_code == 0
 
     def test_start(self, cli_runner, name):
-        replace_destination(name)
         result = cli_runner.invoke(pipeline_cli.start, [name])
         assert result.exit_code == 0
         assert api_client.get_pipeline_status(name)['status'] == 'RUNNING'
@@ -58,13 +57,16 @@ class TestPipelineBase(object):
         assert result.exit_code == 0
         assert api_client.get_pipeline_status(name)['status'] in ['STOPPED']
 
-    def test_output(self, name, output):
+    def test_output(self, name, pipeline_type, output):
         with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), f'expected_output/{output}')) as f:
             expected_output = json.load(f)
-        assert get_output(name) == expected_output
+            for item in expected_output:
+                item['tags']['pipeline_id'] = [name]
+                item['tags']['pipeline_type'] = [pipeline_type]
+        assert get_output(name, pipeline_type) == expected_output
 
-    def test_output_exists(self, name):
-        assert get_output(name) is not None
+    def test_output_exists(self, name, pipeline_type):
+        assert get_output(name, pipeline_type) is not None
 
     def test_delete_pipeline(self, cli_runner, name):
         result = cli_runner.invoke(pipeline_cli.delete, [name])

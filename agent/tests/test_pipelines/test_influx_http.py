@@ -6,21 +6,6 @@ from agent.pipeline import cli as pipeline_cli
 from agent.source import cli as source_cli, Source
 from agent.streamsets_api_client import api_client
 from .test_pipeline_base import TestPipelineBase, pytest_generate_tests
-from agent.pipeline.config_handlers.influx import InfluxConfigHandler
-
-
-@pytest.fixture(autouse=True)
-def pipeline_id(monkeypatch):
-    def constant_pipeline_id(self):
-        return 'pipeline_id'
-    monkeypatch.setattr(InfluxConfigHandler, 'get_pipeline_id', constant_pipeline_id)
-
-
-@pytest.fixture(autouse=True)
-def pipeline_type(monkeypatch):
-    def constant_pipeline_type(self):
-        return 'type'
-    monkeypatch.setattr(InfluxConfigHandler, 'get_pipeline_type', constant_pipeline_type)
 
 
 class TestInflux(TestPipelineBase):
@@ -38,10 +23,10 @@ class TestInflux(TestPipelineBase):
                        {'name': 'test_influx_file_full'}],
         'test_stop': [{'name': 'test_basic'}, {'name': 'test_basic_offset'}, {'name': 'test_influx_file_short'},
                       {'name': 'test_influx_file_full'}],
-        'test_output': [{'name': 'test_basic', 'output': 'influx.json'},
-                        {'name': 'test_basic_offset', 'output': 'influx_offset.json'},
-                        {'name': 'test_influx_file_short', 'output': 'influx.json'},
-                        {'name': 'test_influx_file_full', 'output': 'influx_file_full.json'}],
+        'test_output': [{'name': 'test_basic', 'output': 'influx.json', 'pipeline_type': 'influx'},
+                        {'name': 'test_basic_offset', 'output': 'influx_offset.json', 'pipeline_type': 'influx'},
+                        {'name': 'test_influx_file_short', 'output': 'influx.json', 'pipeline_type': 'influx'},
+                        {'name': 'test_influx_file_full', 'output': 'influx_file_full.json', 'pipeline_type': 'influx'}],
         'test_delete_pipeline': [{'name': 'test_basic'}, {'name': 'test_basic_offset'},
                                  {'name': 'test_influx_file_short'}, {'name': 'test_influx_file_full'}],
         'test_source_delete': [{'name': 'test_influx'}, {'name': 'test_influx_offset'}, {'name': 'test_influx_1'}],
