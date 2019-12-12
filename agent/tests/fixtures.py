@@ -34,18 +34,6 @@ def cli_runner():
         os.remove(HttpDestination.FILE)
 
 
-def replace_destination(name):
-    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'test_pipelines/test_destination.json')) as f:
-        test_destination = json.load(f)
-    pipeline = api_client.get_pipeline(name)
-    test_destination['inputLanes'] = [pipeline['stages'][-2]['outputLanes'][0]]
-    for key, stage in enumerate(pipeline['stages']):
-        if stage['instanceName'] == 'destination':
-            test_destination['inputLanes'] = [pipeline['stages'][key-1]['outputLanes'][0]]
-            pipeline['stages'][key] = test_destination
-    api_client.update_pipeline(name, pipeline)
-
-
 def get_output(pipeline_name, pipeline_type):
     dummy_destination_output_path = '/output'
     for filename in os.listdir(dummy_destination_output_path):

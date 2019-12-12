@@ -18,7 +18,7 @@ def to_file():
         with open(os.path.join(OUTPUT_DIR, file_name + '.json'), 'a+') as f:
             json.dump(request.json, f)
             f.write('\n')
-    return 'ok'
+    return json.dumps({'errors': []})
 
 
 if __name__ == '__main__':
