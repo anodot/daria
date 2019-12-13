@@ -14,6 +14,7 @@ state['host_id'] = 'host_id';
 
 state['host_id'] = '{host_id}';
 state['host_name'] = '{host_name}';
+state['previous'] = {{}};
 """
 
     def load_base_config(self):
