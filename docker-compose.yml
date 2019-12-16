@@ -29,7 +29,7 @@ services:
       STREAMSETS_PASSWORD: 'admin'
       STREAMSETS_URL: 'http://dc:18630'
       LOG_FILE_PATH: '/var/log/agent.log'
-      ANODOT_API_URL: 'http://dummy_destination'
+      ANODOT_API_URL: 'http://prom-operator-onprem.ano-dev.com'
       SDC_DATA_PATH: '/sdc-data'
       ENV_PROD: 'false'
 #      VALIDATION_ENABLED: 'false'
@@ -97,8 +97,8 @@ services:
 
   influx:
     image: influxdb
-#    ports:
-#      - "8086:8086"
+    ports:
+      - "8086:8086"
     volumes:
       - /var/lib/influxdb
       - ./volumes/influx-initdb:/docker-entrypoint-initdb.d
