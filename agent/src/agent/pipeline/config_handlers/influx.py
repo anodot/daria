@@ -24,9 +24,7 @@ state['HOST_ID'] = 'acgdhjehfje'
 state['MEASUREMENT_NAME'] = '{measurement_name}';
 state['REQUIRED_DIMENSIONS'] = {required_dimensions};
 state['OPTIONAL_DIMENSIONS'] = {optional_dimensions};
-state['VALUES_COLUMNS'] = {values};
 state['TARGET_TYPE'] = '{target_type}';
-state['VALUE_CONSTANT'] = {value_constant}
 state['CONSTANT_PROPERTIES'] = {constant_properties}
 state['HOST_ID'] = '{host_id}'
 state['HOST_NAME'] = '{host_name}'
@@ -107,9 +105,7 @@ state['PIPELINE_ID'] = '{pipeline_id}'
                             required_dimensions=str(self.client_config['dimensions']['required']),
                             optional_dimensions=str(self.client_config['dimensions']['optional']),
                             measurement_name=self.client_config['measurement_name'],
-                            values=str(self.client_config['value'].get('values', [])),
                             target_type=self.client_config.get('target_type', 'gauge'),
-                            value_constant=self.client_config['value'].get('constant', '1'),
                             constant_properties=str(self.client_config.get('properties', {})),
                             host_id=self.client_config['destination']['host_id'],
                             host_name=HOSTNAME,
@@ -131,8 +127,8 @@ state['PIPELINE_ID'] = '{pipeline_id}'
 
         dimensions = self.get_dimensions()
         source_config = self.client_config['source']['config']
-        dimensions_to_select = [f'%22{d}%22' + '%3A%3Atag' for d in dimensions]
-        values_to_select = [f'%22{v}%22' + '%3A%3Afield' for v in self.client_config['value']['values']]
+        dimensions_to_select = [f'"{d}"::tag' for d in dimensions]
+        values_to_select = ['*::field' if v == '*' else f'"{v}"::field' for v in self.client_config['value']['values']]
         username = source_config.get('username', '')
         password = source_config.get('password', '')
         if username != '':
@@ -142,7 +138,7 @@ state['PIPELINE_ID'] = '{pipeline_id}'
 
         delay = self.client_config.get('delay', '0s')
         interval = self.client_config.get('interval', 60)
-        columns = ','.join(dimensions_to_select + values_to_select)
+        columns = quote_plus(','.join(dimensions_to_select + values_to_select))
         self.set_initial_offset()
 
         write_config = self.set_write_config_pipeline()
