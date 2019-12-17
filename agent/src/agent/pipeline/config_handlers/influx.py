@@ -90,21 +90,26 @@ state['PIPELINE_ID'] = '{pipeline_id}'
             'fields': {'last_timestamp': source_config['offset']}
         }])
 
+    def replace_illegal_chars(self, string: str) -> str:
+        return string.replace(' ', '_').replace('.', '_').replace('<', '_')
+
     def override_stages(self):
 
         self.update_source_configs()
+        required = [self.replace_illegal_chars(d) for d in self.client_config['dimensions']['required']]
+        optional = [self.replace_illegal_chars(d) for d in self.client_config['dimensions']['optional']]
 
         for stage in self.config['stages']:
             if stage['instanceName'] == 'JavaScriptEvaluator_02':
                 for conf in stage['configuration']:
                     if conf['name'] == 'stageRequiredFields':
-                        conf['value'] = ['/' + d for d in self.client_config['dimensions']['required']]
+                        conf['value'] = ['/' + d for d in required]
 
                     if conf['name'] == 'initScript':
                         conf['value'] = self.DECLARE_VARS_JS.format(
-                            required_dimensions=str(self.client_config['dimensions']['required']),
-                            optional_dimensions=str(self.client_config['dimensions']['optional']),
-                            measurement_name=self.client_config['measurement_name'],
+                            required_dimensions=str(required),
+                            optional_dimensions=str(optional),
+                            measurement_name=self.replace_illegal_chars(self.client_config['measurement_name']),
                             target_type=self.client_config.get('target_type', 'gauge'),
                             constant_properties=str(self.client_config.get('properties', {})),
                             host_id=self.client_config['destination']['host_id'],
@@ -114,11 +119,11 @@ state['PIPELINE_ID'] = '{pipeline_id}'
 
                     if conf['name'] == 'stageRecordPreconditions':
                         conf['value'] = []
-                        for d in self.client_config['dimensions']['required']:
+                        for d in required:
                             conf['value'].append(f"${{record:type('/{d}') == 'STRING'}}")
-                        for d in self.client_config['dimensions']['optional']:
+                        for d in optional:
                             conf['value'].append(f"${{record:type('/{d}') == 'STRING' or record:type('/{d}') == NULL}}")
-                        for v in self.client_config['value']['values']:
+                        for v in [self.replace_illegal_chars(s) for s in self.client_config['value']['values']]:
                             conf['value'].append(f"${{record:type('/{v}') != 'STRING'}}")
 
         self.update_destination_config()
