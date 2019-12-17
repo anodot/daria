@@ -22,7 +22,7 @@ jobs:
     - name: Check version
       env:
         GIT_REF: ${{ github.ref }}
-      run: VERSION=${GIT_REF/refs\/tags\//} && ver=$(docker exec -i anodot-agent agent -v | grep version) && if [ ${ver#*:} != VERSION ]; then exit 1; fi 
+      run: VERSION=${GIT_REF/refs\/tags\//} && ver=$(docker exec -i anodot-agent agent -v | grep version) && if [ ${ver#*:} != $VERSION ]; then exit 1; fi 
 
     - name: Test
       run: docker exec -i anodot-agent pytest -x 
