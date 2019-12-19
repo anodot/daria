@@ -105,8 +105,12 @@ class PipelineManager:
 
     @if_validation_enabled
     def show_preview(self):
-        preview = api_client.create_preview(self.pipeline.id)
-        preview_data = api_client.wait_for_preview(self.pipeline.id, preview['previewerId'])
+        try:
+            preview = api_client.create_preview(self.pipeline.id)
+            preview_data = api_client.wait_for_preview(self.pipeline.id, preview['previewerId'])
+        except StreamSetsApiClientException as e:
+            print(str(e))
+            return
 
         for output in preview_data['batchesOutput'][0]:
             if 'destination_OutputLane' in output['output']:
