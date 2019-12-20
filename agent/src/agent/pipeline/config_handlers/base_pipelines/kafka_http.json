@@ -759,7 +759,7 @@
         "value" : "\""
       }, {
         "name" : "conf.dataGeneratorFormatConfig.jsonMode",
-        "value" : "ARRAY_OBJECTS"
+        "value" : "MULTIPLE_OBJECTS"
       }, {
         "name" : "conf.dataGeneratorFormatConfig.textFieldPath",
         "value" : "/text"
