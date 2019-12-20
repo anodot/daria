@@ -97,6 +97,9 @@ def edit_with_file(file):
             source_instance.validate()
             source_instance.save()
             click.secho(f"Source {item['name']} edited")
+            for pipeline_obj in pipeline.get_pipelines(source_name=item['name']):
+                pipeline.PipelineManager(pipeline_obj).update()
+                print(f'Pipeline {pipeline_obj.id} updated')
         except Exception as e:
             exceptions[item['name']] = str(e)
     if exceptions:
@@ -162,6 +165,10 @@ def edit(name, advanced, file):
         raise click.ClickException(str(e))
 
     click.secho('Source config updated', fg='green')
+
+    for pipeline_obj in pipeline.get_pipelines(source_name=name):
+        pipeline.PipelineManager(pipeline_obj).update()
+        print(f'Pipeline {pipeline_obj.id} updated')
 
 
 @click.command(name='list')
