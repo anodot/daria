@@ -1,11 +1,10 @@
 import json
 import os
-import time
 
 from abc import ABC, abstractmethod
 from agent.constants import DATA_DIR
 from agent.tools import if_validation_enabled, sdc_record_map_to_dict
-from jsonschema import validate, ValidationError
+from jsonschema import validate
 from agent.streamsets_api_client import api_client, StreamSetsApiClientException
 
 

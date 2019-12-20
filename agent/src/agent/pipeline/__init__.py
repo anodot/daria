@@ -29,3 +29,13 @@ def create_object(pipeline_id: str, source_name: str) -> Pipeline:
     destination = HttpDestination()
     destination.load()
     return Pipeline(pipeline_id, source_obj, {}, destination)
+
+
+def get_pipelines(source_name: str = None) -> list:
+    pipelines = []
+    for file in os.listdir(Pipeline.DIR):
+        obj = load_object(file.replace('.json', ''))
+        if source_name and obj.source.name != source_name:
+            continue
+        pipelines.append(obj)
+    return pipelines
