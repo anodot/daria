@@ -14,24 +14,24 @@ from agent.pipeline import load_object, PipelineManager
 def cli_runner():
 
     yield CliRunner()
-    #
-    # api_client.delete_by_filtering('test_')
-    # if api_client.get_pipelines(text='Monitoring'):
-    #     api_client.stop_pipeline('Monitoring')
-    #     api_client.force_stop_pipeline('Monitoring')
-    #     time.sleep(2)
-    #     PipelineManager(load_object('Monitoring')).delete()
-    #
-    # for filename in os.listdir(SDC_DATA_PATH):
-    #     if filename.startswith('error-test_'):
-    #         os.remove(os.path.join(SDC_DATA_PATH, filename))
-    # if os.path.isdir(SDC_RESULTS_PATH):
-    #     for filename in os.listdir(SDC_RESULTS_PATH):
-    #         if filename.startswith('sdc-test_'):
-    #             os.remove(os.path.join(SDC_RESULTS_PATH, filename))
-    #
-    # if os.path.isfile(HttpDestination.FILE):
-    #     os.remove(HttpDestination.FILE)
+
+    api_client.delete_by_filtering('test_')
+    if api_client.get_pipelines(text='Monitoring'):
+        api_client.stop_pipeline('Monitoring')
+        api_client.force_stop_pipeline('Monitoring')
+        time.sleep(2)
+        PipelineManager(load_object('Monitoring')).delete()
+
+    for filename in os.listdir(SDC_DATA_PATH):
+        if filename.startswith('error-test_'):
+            os.remove(os.path.join(SDC_DATA_PATH, filename))
+    if os.path.isdir(SDC_RESULTS_PATH):
+        for filename in os.listdir(SDC_RESULTS_PATH):
+            if filename.startswith('sdc-test_'):
+                os.remove(os.path.join(SDC_RESULTS_PATH, filename))
+
+    if os.path.isfile(HttpDestination.FILE):
+        os.remove(HttpDestination.FILE)
 
 
 def get_output(pipeline_name, pipeline_type):
