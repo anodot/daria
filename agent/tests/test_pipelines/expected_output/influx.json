@@ -1,4 +1,4 @@
-[[
+[
   {
     "timestamp": 1552654426.147,
     "properties": {
@@ -214,4 +214,4 @@
       "pipeline_type": ["influx"]},
     "value": 26
   }
-]]
+]
