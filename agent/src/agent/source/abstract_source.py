@@ -2,6 +2,7 @@ import json
 import os
 
 from abc import ABC, abstractmethod
+from agent import pipeline
 from agent.constants import DATA_DIR
 from agent.tools import if_validation_enabled, sdc_record_map_to_dict
 from jsonschema import validate
@@ -48,6 +49,10 @@ class Source(ABC):
     def delete(self):
         if not self.exists(self.name):
             raise SourceNotExists(f"Source config {self.name} doesn't exist")
+
+        pipelines = pipeline.get_pipelines(source_name=self.name)
+        if pipelines:
+            raise SourceException(f"Can't delete. Source is used by {', '.join([p.id for p in pipelines])} pipelines")
 
         os.remove(self.file_path)
 
