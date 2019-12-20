@@ -3,7 +3,7 @@
     "timestamp": 1553054426.168,
     "properties": {
       "target_type": "gauge",
-      "cpu": "cpu-total-usage",
+      "cp_u": "cpu-total-usage",
       "zone": "GF",
       "host": "msk-air-trn1",
       "measurement_category": "cpu_test",
@@ -22,7 +22,7 @@
     "timestamp": 1553054426.168,
     "properties": {
       "target_type": "gauge",
-      "cpu": "cpu-total-usage",
+      "cp_u": "cpu-total-usage",
       "zone": "GF",
       "host": "msk-air-trn1",
       "measurement_category": "cpu_test",
@@ -41,7 +41,7 @@
     "timestamp": 1553154426.168,
     "properties": {
       "target_type": "gauge",
-      "cpu": "cpu-total-usage",
+      "cp_u": "cpu-total-usage",
       "zone": "GEO",
       "host": "msk-air-trn1",
       "measurement_category": "cpu_test",
@@ -60,7 +60,7 @@
     "timestamp": 1553154426.168,
     "properties": {
       "target_type": "gauge",
-      "cpu": "cpu-total-usage",
+      "cp_u": "cpu-total-usage",
       "zone": "GEO",
       "host": "msk-air-trn1",
       "measurement_category": "cpu_test",

@@ -51,8 +51,9 @@ state['STATIC_WHAT'] = {static_what};
                 self.set_constant_properties(stage)
                 self.convert_timestamp_to_unix(stage)
 
-            if stage['instanceName'] == 'FieldFlattener_01':
+            if stage['instanceName'] == 'ExpressionEvaluator_03':
                 self.set_preconditions(stage)
+                self.check_dimensions(stage)
 
         self.update_destination_config()
 
@@ -64,6 +65,18 @@ state['STATIC_WHAT'] = {static_what};
             else:
                 measurement_names.append(key)
         return measurement_names
+
+    def check_dimensions(self, stage):
+        for conf in stage['configuration']:
+            if conf['name'] != 'expressionProcessorConfigs':
+                continue
+            dimensions = self.client_config['dimensions']['required'] + self.client_config['dimensions']['optional']
+            for d in dimensions:
+                d_path = self.get_property_mapping(d)
+                conf['value'].append({
+                    'fieldToSet': f'/{d_path}',
+                    'expression': '${' + f"record:exists('/{d_path}') ? (record:value('/{d_path}') == null) ? 'NULL' : record:value('/{d_path}') : null" + '}'
+                })
 
     def set_variables_js(self, stage):
         for conf in stage['configuration']:
