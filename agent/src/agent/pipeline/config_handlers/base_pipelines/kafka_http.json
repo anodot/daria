@@ -2,10 +2,10 @@
   "pipelineConfig" : {
     "schemaVersion" : 6,
     "version" : 12,
-    "pipelineId" : "kafkahttp34ded56a-b061-48df-9d4d-cfac949c912c",
+    "pipelineId" : "kafkahttpb9b53694-b790-4a68-8f9b-727bac52065c",
     "title" : "kafka_http",
     "description" : "",
-    "uuid" : "d9a9ad14-96be-4f6f-bb58-44e2e5b8e87d",
+    "uuid" : "4d935222-ff24-49c5-ba5d-8e2d1b7e367f",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -171,268 +171,265 @@
     },
     "fragments" : [ ],
     "stages" : [ {
-      "instanceName" : "KafkaConsumer_01",
+      "instanceName" : "KafkaMultitopicConsumer_01",
       "library" : "streamsets-datacollector-apache-kafka_2_0-lib",
-      "stageName" : "com_streamsets_pipeline_stage_origin_kafka_KafkaDSource",
-      "stageVersion" : "7",
+      "stageName" : "com_streamsets_pipeline_stage_origin_multikafka_MultiKafkaDSource",
+      "stageVersion" : "2",
       "configuration" : [ {
-        "name" : "kafkaConfigBean.dataFormatConfig.filePatternInArchive",
+        "name" : "conf.dataFormatConfig.compression",
+        "value" : "NONE"
+      }, {
+        "name" : "conf.dataFormatConfig.filePatternInArchive",
         "value" : "*"
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.charset",
+        "name" : "conf.dataFormatConfig.charset",
         "value" : "UTF-8"
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.removeCtrlChars",
+        "name" : "conf.dataFormatConfig.removeCtrlChars",
         "value" : false
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.textMaxLineLen",
+        "name" : "conf.dataFormatConfig.textMaxLineLen",
         "value" : 1024
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.useCustomDelimiter",
+        "name" : "conf.dataFormatConfig.useCustomDelimiter",
         "value" : false
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.customDelimiter",
+        "name" : "conf.dataFormatConfig.customDelimiter",
         "value" : "\\r\\n"
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.includeCustomDelimiterInTheText",
+        "name" : "conf.dataFormatConfig.includeCustomDelimiterInTheText",
         "value" : false
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.jsonContent",
+        "name" : "conf.dataFormatConfig.jsonContent",
         "value" : "MULTIPLE_OBJECTS"
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.jsonMaxObjectLen",
+        "name" : "conf.dataFormatConfig.jsonMaxObjectLen",
         "value" : 4096
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.csvFileFormat",
+        "name" : "conf.dataFormatConfig.csvFileFormat",
         "value" : "CSV"
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.csvHeader",
+        "name" : "conf.dataFormatConfig.csvHeader",
         "value" : "NO_HEADER"
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.csvAllowExtraColumns",
+        "name" : "conf.dataFormatConfig.csvAllowExtraColumns",
         "value" : false
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.csvExtraColumnPrefix",
+        "name" : "conf.dataFormatConfig.csvExtraColumnPrefix",
         "value" : "_extra_"
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.csvMaxObjectLen",
+        "name" : "conf.dataFormatConfig.csvMaxObjectLen",
         "value" : 1024
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.csvCustomDelimiter",
+        "name" : "conf.dataFormatConfig.csvCustomDelimiter",
         "value" : "|"
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.csvCustomEscape",
+        "name" : "conf.dataFormatConfig.multiCharacterFieldDelimiter",
+        "value" : "||"
+      }, {
+        "name" : "conf.dataFormatConfig.multiCharacterLineDelimiter",
+        "value" : "${str:unescapeJava('\\\\n')}"
+      }, {
+        "name" : "conf.dataFormatConfig.csvCustomEscape",
         "value" : "\\"
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.csvCustomQuote",
+        "name" : "conf.dataFormatConfig.csvCustomQuote",
         "value" : "\""
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.csvEnableComments",
+        "name" : "conf.dataFormatConfig.csvEnableComments",
         "value" : false
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.csvCommentMarker",
+        "name" : "conf.dataFormatConfig.csvCommentMarker",
         "value" : "#"
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.csvIgnoreEmptyLines",
+        "name" : "conf.dataFormatConfig.csvIgnoreEmptyLines",
         "value" : true
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.csvRecordType",
+        "name" : "conf.dataFormatConfig.csvRecordType",
         "value" : "LIST_MAP"
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.csvSkipStartLines",
+        "name" : "conf.dataFormatConfig.csvSkipStartLines",
         "value" : 0
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.parseNull",
+        "name" : "conf.dataFormatConfig.parseNull",
         "value" : false
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.nullConstant",
+        "name" : "conf.dataFormatConfig.nullConstant",
         "value" : "\\\\N"
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.xmlRecordElement",
+        "name" : "conf.dataFormatConfig.xmlRecordElement",
         "value" : null
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.includeFieldXpathAttributes",
+        "name" : "conf.dataFormatConfig.includeFieldXpathAttributes",
         "value" : false
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.xPathNamespaceContext",
+        "name" : "conf.dataFormatConfig.xPathNamespaceContext",
         "value" : [ ]
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.outputFieldAttributes",
+        "name" : "conf.dataFormatConfig.outputFieldAttributes",
         "value" : false
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.xmlMaxObjectLen",
+        "name" : "conf.dataFormatConfig.xmlMaxObjectLen",
         "value" : 4096
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.logMode",
+        "name" : "conf.dataFormatConfig.logMode",
         "value" : "COMMON_LOG_FORMAT"
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.logMaxObjectLen",
+        "name" : "conf.dataFormatConfig.logMaxObjectLen",
         "value" : 1024
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.retainOriginalLine",
+        "name" : "conf.dataFormatConfig.retainOriginalLine",
         "value" : false
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.customLogFormat",
+        "name" : "conf.dataFormatConfig.customLogFormat",
         "value" : "%h %l %u %t \"%r\" %>s %b"
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.regex",
+        "name" : "conf.dataFormatConfig.regex",
         "value" : "^(\\S+) (\\S+) (\\S+) \\[([\\w:/]+\\s[+\\-]\\d{4})\\] \"(\\S+) (\\S+) (\\S+)\" (\\d{3}) (\\d+)"
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.fieldPathsToGroupName",
+        "name" : "conf.dataFormatConfig.fieldPathsToGroupName",
         "value" : [ {
           "fieldPath" : "/",
           "group" : 1
         } ]
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.grokPatternDefinition",
+        "name" : "conf.dataFormatConfig.grokPatternDefinition",
         "value" : null
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.grokPattern",
+        "name" : "conf.dataFormatConfig.grokPattern",
         "value" : "%{COMMONAPACHELOG}"
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.onParseError",
+        "name" : "conf.dataFormatConfig.onParseError",
         "value" : "ERROR"
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.maxStackTraceLines",
+        "name" : "conf.dataFormatConfig.maxStackTraceLines",
         "value" : 50
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.enableLog4jCustomLogFormat",
+        "name" : "conf.dataFormatConfig.enableLog4jCustomLogFormat",
         "value" : false
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.log4jCustomLogFormat",
+        "name" : "conf.dataFormatConfig.log4jCustomLogFormat",
         "value" : "%r [%t] %-5p %c %x - %m%n"
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.avroSchemaSource",
+        "name" : "conf.dataFormatConfig.avroSchemaSource",
         "value" : null
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.avroSchema",
+        "name" : "conf.dataFormatConfig.avroSchema",
         "value" : null
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.schemaRegistryUrls",
+        "name" : "conf.dataFormatConfig.schemaRegistryUrls",
         "value" : [ ]
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.schemaLookupMode",
+        "name" : "conf.dataFormatConfig.schemaLookupMode",
         "value" : "SUBJECT"
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.subject",
+        "name" : "conf.dataFormatConfig.subject",
         "value" : null
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.schemaId",
+        "name" : "conf.dataFormatConfig.schemaId",
         "value" : null
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.protoDescriptorFile",
+        "name" : "conf.dataFormatConfig.protoDescriptorFile",
         "value" : null
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.messageType",
+        "name" : "conf.dataFormatConfig.messageType",
         "value" : null
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.isDelimited",
+        "name" : "conf.dataFormatConfig.isDelimited",
         "value" : true
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.binaryMaxObjectLen",
+        "name" : "conf.dataFormatConfig.binaryMaxObjectLen",
         "value" : 1024
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.datagramMode",
+        "name" : "conf.dataFormatConfig.datagramMode",
         "value" : "SYSLOG"
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.typesDbPath",
+        "name" : "conf.dataFormatConfig.typesDbPath",
         "value" : null
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.convertTime",
+        "name" : "conf.dataFormatConfig.convertTime",
         "value" : false
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.excludeInterval",
+        "name" : "conf.dataFormatConfig.excludeInterval",
         "value" : true
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.authFilePath",
+        "name" : "conf.dataFormatConfig.authFilePath",
         "value" : null
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.netflowOutputValuesMode",
+        "name" : "conf.dataFormatConfig.netflowOutputValuesMode",
         "value" : "RAW_AND_INTERPRETED"
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.maxTemplateCacheSize",
+        "name" : "conf.dataFormatConfig.maxTemplateCacheSize",
         "value" : -1
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.templateCacheTimeoutMs",
+        "name" : "conf.dataFormatConfig.templateCacheTimeoutMs",
         "value" : -1
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.netflowOutputValuesModeDatagram",
+        "name" : "conf.dataFormatConfig.netflowOutputValuesModeDatagram",
         "value" : "RAW_AND_INTERPRETED"
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.maxTemplateCacheSizeDatagram",
+        "name" : "conf.dataFormatConfig.maxTemplateCacheSizeDatagram",
         "value" : -1
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.templateCacheTimeoutMsDatagram",
+        "name" : "conf.dataFormatConfig.templateCacheTimeoutMsDatagram",
         "value" : -1
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.wholeFileMaxObjectLen",
+        "name" : "conf.dataFormatConfig.wholeFileMaxObjectLen",
         "value" : 8192
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.rateLimit",
+        "name" : "conf.dataFormatConfig.rateLimit",
         "value" : "-1"
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.verifyChecksum",
+        "name" : "conf.dataFormatConfig.verifyChecksum",
         "value" : false
       }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.excelHeader",
+        "name" : "conf.dataFormatConfig.excelHeader",
         "value" : null
       }, {
-        "name" : "kafkaConfigBean.dataFormat",
+        "name" : "conf.dataFormat",
         "value" : "JSON"
       }, {
-        "name" : "kafkaConfigBean.metadataBrokerList",
-        "value" : "kafka:29092"
+        "name" : "conf.brokerURI",
+        "value" : "localhost:9092"
       }, {
-        "name" : "kafkaConfigBean.zookeeperConnect",
-        "value" : "zkpr:2181"
+        "name" : "conf.consumerGroup",
+        "value" : "streamsetsDataCollector"
       }, {
-        "name" : "kafkaConfigBean.consumerGroup",
-        "value" : "streamsetsDataCollectord"
+        "name" : "conf.topicList",
+        "value" : [ "myTopic" ]
       }, {
-        "name" : "kafkaConfigBean.topic",
-        "value" : "test"
-      }, {
-        "name" : "kafkaConfigBean.produceSingleRecordPerMessage",
+        "name" : "conf.produceSingleRecordPerMessage",
         "value" : false
       }, {
-        "name" : "kafkaConfigBean.maxBatchSize",
+        "name" : "conf.numberOfThreads",
+        "value" : 1
+      }, {
+        "name" : "conf.maxBatchSize",
         "value" : 1000
       }, {
-        "name" : "kafkaConfigBean.maxWaitTime",
+        "name" : "conf.batchWaitTime",
         "value" : 2000
       }, {
-        "name" : "kafkaConfigBean.maxRatePerPartition",
-        "value" : 1000
-      }, {
-        "name" : "kafkaConfigBean.keyDeserializer",
-        "value" : "STRING"
-      }, {
-        "name" : "kafkaConfigBean.valueDeserializer",
-        "value" : "DEFAULT"
-      }, {
-        "name" : "kafkaConfigBean.kafkaAutoOffsetReset",
+        "name" : "conf.kafkaAutoOffsetReset",
         "value" : "EARLIEST"
       }, {
-        "name" : "kafkaConfigBean.timestampToSearchOffsets",
+        "name" : "conf.timestampToSearchOffsets",
         "value" : 0
       }, {
-        "name" : "kafkaConfigBean.kafkaConsumerConfigs",
+        "name" : "conf.kafkaOptions",
         "value" : [ ]
       }, {
-        "name" : "kafkaConfigBean.timestampsEnabled",
-        "value" : true
+        "name" : "conf.keyDeserializer",
+        "value" : "STRING"
+      }, {
+        "name" : "conf.valueDeserializer",
+        "value" : "DEFAULT"
       }, {
         "name" : "stageOnRecordError",
         "value" : "DISCARD"
-      }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.multiCharacterFieldDelimiter",
-        "value" : "||"
-      }, {
-        "name" : "kafkaConfigBean.dataFormatConfig.multiCharacterLineDelimiter",
-        "value" : "${str:unescapeJava('\\\\n')}"
       } ],
       "uiInfo" : {
-        "yPos" : 50,
+        "yPos" : 45.33333778381348,
         "stageType" : "SOURCE",
         "rawSource" : {
           "configuration" : [ {
@@ -445,19 +442,16 @@
             "name" : "topic",
             "value" : "myTopic"
           }, {
-            "name" : "partition",
-            "value" : 0
-          }, {
-            "name" : "maxWaitTime",
+            "name" : "pollTimeout",
             "value" : 1000
           } ]
         },
         "description" : "",
-        "label" : "Kafka Consumer 1",
-        "xPos" : 60
+        "label" : "Kafka Multitopic Consumer 1",
+        "xPos" : 81.50010681152344
       },
       "inputLanes" : [ ],
-      "outputLanes" : [ "KafkaConsumer_01OutputLane15499645704860" ],
+      "outputLanes" : [ "KafkaMultitopicConsumer_01OutputLane15768412486420" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -496,7 +490,7 @@
         "yPos" : 50,
         "stageType" : "PROCESSOR"
       },
-      "inputLanes" : [ "KafkaConsumer_01OutputLane15499645704860" ],
+      "inputLanes" : [ "KafkaMultitopicConsumer_01OutputLane15768412486420" ],
       "outputLanes" : [ "ExpressionEvaluator_03OutputLane15750326759030" ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -1059,22 +1053,22 @@
       "services" : [ ]
     },
     "info" : {
-      "pipelineId" : "kafkahttp34ded56a-b061-48df-9d4d-cfac949c912c",
+      "pipelineId" : "kafkahttpb9b53694-b790-4a68-8f9b-727bac52065c",
       "title" : "kafka_http",
       "description" : "",
-      "created" : 1576831627040,
-      "lastModified" : 1576832104826,
+      "created" : 1576841226748,
+      "lastModified" : 1576841283207,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "d9a9ad14-96be-4f6f-bb58-44e2e5b8e87d",
+      "uuid" : "4d935222-ff24-49c5-ba5d-8e2d1b7e367f",
       "valid" : true,
       "metadata" : {
         "labels" : [ "mongo", "http" ]
       },
-      "name" : "kafkahttp34ded56a-b061-48df-9d4d-cfac949c912c",
+      "name" : "kafkahttpb9b53694-b790-4a68-8f9b-727bac52065c",
       "sdcVersion" : "3.8.2",
-      "sdcId" : "85069c05-2267-11ea-9158-d19579b68657"
+      "sdcId" : "3a13134e-2317-11ea-85c9-9d3012ac5b4a"
     },
     "metadata" : {
       "labels" : [ "mongo", "http" ]
@@ -1380,8 +1374,8 @@
     "valid" : true,
     "issues" : {
       "stageIssues" : { },
-      "issueCount" : 0,
-      "pipelineIssues" : [ ]
+      "pipelineIssues" : [ ],
+      "issueCount" : 0
     },
     "previewable" : true
   },
@@ -1446,7 +1440,7 @@
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "473fc66f-e716-4ebe-a8b0-544f26e2b24d",
+    "uuid" : "59251a9d-a6ce-4209-ae57-983bfc7ba0f9",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : [ ]
