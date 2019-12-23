@@ -13,6 +13,7 @@ class KafkaSource(Source):
     CONFIG_BATCH_SIZE = 'conf.maxBatchSize'
     CONFIG_BATCH_WAIT_TIME = 'conf.batchWaitTime'
     CONFIG_CONSUMER_PARAMS = 'conf.kafkaOptions'
+    CONFIG_N_THREADS = 'conf.numberOfThreads'
     CONFIG_LIBRARY = 'library'
     CONFIG_VERSION = 'version'
     CONFIG_DATA_FORMAT = 'conf.dataFormat'
@@ -80,12 +81,11 @@ class KafkaSource(Source):
                                                                                        self.DEFAULT_KAFKA_VERSION))
         self.prompt_connection(default_config, advanced)
 
-        # self.config[self.CONFIG_CONSUMER_GROUP] = click.prompt('Consumer group', type=click.STRING,
-        #                                                        default=default_config.get(self.CONFIG_CONSUMER_GROUP,
-        #                                                                                   'anodotAgent')).strip()
         self.config[self.CONFIG_TOPIC_LIST] = click.prompt('Topic list', type=click.STRING,
                                                            value_proc=lambda x: x.split(','),
                                                            default=default_config.get(self.CONFIG_TOPIC_LIST))
+        self.config[self.CONFIG_N_THREADS] = click.prompt('Number of threads', type=click.INT,
+                                                          default=default_config.get(self.CONFIG_N_THREADS, 1))
         self.config[self.CONFIG_OFFSET_TYPE] = click.prompt('Initial offset',
                                                             type=click.Choice([self.OFFSET_EARLIEST, self.OFFSET_LATEST,
                                                                                self.OFFSET_TIMESTAMP]),
