@@ -54,7 +54,7 @@ class TestKafka(TestPipelineBase):
 
     def test_source_create(self, cli_runner, name):
         result = cli_runner.invoke(source_cli.create,
-                                   input=f"kafka\n{name}\nkafka:29092\n{name}\n{name}\n\n")
+                                   input=f"kafka\n{name}\nkafka:29092\ntest_kfk\n\n")
         assert result.exit_code == 0
         assert os.path.isfile(os.path.join(Source.DIR, f'{name}.json'))
 

@@ -28,7 +28,7 @@ state['STATIC_WHAT'] = {static_what};
 """
 
     def override_stages(self):
-
+        self.client_config['source']['config']['conf.consumerGroup'] = 'anodot_agent_' + self.get_pipeline_id()
         self.update_source_configs()
 
         # for old config <=v1.4

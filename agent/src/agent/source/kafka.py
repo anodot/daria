@@ -80,9 +80,9 @@ class KafkaSource(Source):
                                                                                        self.DEFAULT_KAFKA_VERSION))
         self.prompt_connection(default_config, advanced)
 
-        self.config[self.CONFIG_CONSUMER_GROUP] = click.prompt('Consumer group', type=click.STRING,
-                                                               default=default_config.get(self.CONFIG_CONSUMER_GROUP,
-                                                                                          'anodotAgent')).strip()
+        # self.config[self.CONFIG_CONSUMER_GROUP] = click.prompt('Consumer group', type=click.STRING,
+        #                                                        default=default_config.get(self.CONFIG_CONSUMER_GROUP,
+        #                                                                                   'anodotAgent')).strip()
         self.config[self.CONFIG_TOPIC_LIST] = click.prompt('Topic list', type=click.STRING,
                                                            value_proc=lambda x: x.split(','),
                                                            default=default_config.get(self.CONFIG_TOPIC_LIST))
