@@ -4,7 +4,11 @@
     "pipeline_id": "test_kfk_kafka_file_short",
     "measurement_names": {"Clicks":  "clicks"},
     "values": {"Clicks":  "gauge"},
-    "dimensions": ["ver", "Country"]
+    "dimensions": ["ver", "Country"],
+    "timestamp": {
+      "type": "unix",
+      "name": "timestamp_unix"
+    }
   },
   {
     "source": "test_kfk",

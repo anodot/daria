@@ -462,8 +462,6 @@
       "configuration" : [ {
         "name" : "expressionProcessorConfigs",
         "value" : [ {
-          "fieldToSet" : "/kafka_timestamp",
-          "expression" : "${record:attribute('timestamp')}"
         } ]
       }, {
         "name" : "headerAttributeConfigs",

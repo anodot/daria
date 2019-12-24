@@ -19,5 +19,5 @@
     }, "required": ["name", "type"]},
     "properties": {"type": "object"}
   },
-  "required": ["values", "measurement_names", "dimensions"]
+  "required": ["values", "measurement_names", "dimensions", "timestamp"]
 }
