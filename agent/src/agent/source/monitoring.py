@@ -8,3 +8,6 @@ class MonitoringSource(Source):
 
     def print_sample_data(self):
         pass
+
+    def validate(self):
+        pass

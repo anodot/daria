@@ -3,11 +3,10 @@ import click
 # for using arrows in cli
 import readline
 
-from . import pipeline
+from . import pipeline, source
 from .pipeline.cli import pipeline_group
 from .source.cli import source_group
 from .destination.cli import destination
-from agent.streamsets_api_client import api_client, StreamSetsApiClientException
 from agent.version import __version__, __build_time__, __git_sha1__
 
 
@@ -39,22 +38,12 @@ def update():
     """
     Update all pipelines configuration, recreate and restart them
     """
-    running_pipelines = []
-    for p in api_client.get_pipelines():
-        try:
-            pipeline_obj = pipeline.load_object(p['pipelineId'])
-            pipeline_obj.stop()
-        except StreamSetsApiClientException:
-            continue
-        running_pipelines.append(p['pipelineId'])
 
-    for p in api_client.get_pipelines():
-        pipeline_manager = pipeline.PipelineManager(pipeline.load_object(p['pipelineId']))
+    for p in pipeline.get_pipelines():
+        pipeline_manager = pipeline.PipelineManager(p)
         pipeline_manager.update()
 
-        if p['pipelineId'] in running_pipelines:
-            pipeline_manager.pipeline.start()
-        click.secho(f'Pipeline {p["pipelineId"]} updated', fg='green')
+        click.secho(f'Pipeline {p.id} updated', fg='green')
 
 
 agent.add_command(source_group)

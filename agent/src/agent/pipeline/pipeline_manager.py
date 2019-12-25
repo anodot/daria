@@ -64,8 +64,8 @@ class PipelineManager:
         self.pipeline.save()
 
     def update(self):
+        start_pipeline = False
         try:
-            start_pipeline = False
             if self.pipeline.check_status(self.pipeline.STATUS_RUNNING):
                 self.pipeline.stop()
                 start_pipeline = True
@@ -75,13 +75,11 @@ class PipelineManager:
                                                                new_pipeline_title=self.pipeline.id)
             api_client.update_pipeline(self.pipeline.id, new_config)
 
+        except (config_handlers.ConfigHandlerException, StreamSetsApiClientException) as e:
+            raise PipelineException(str(e))
+        finally:
             if start_pipeline:
                 self.pipeline.start()
-        except StreamSetsApiClientException as e:
-            raise PipelineException(str(e))
-        except config_handlers.ConfigHandlerException as e:
-            self.delete()
-            raise PipelineException(str(e))
 
         self.pipeline.save()
 

@@ -28,7 +28,7 @@ state['STATIC_WHAT'] = {static_what};
 """
 
     def override_stages(self):
-
+        self.client_config['source']['config']['conf.consumerGroup'] = 'anodot_agent_' + self.get_pipeline_id()
         self.update_source_configs()
 
         # for old config <=v1.4
@@ -81,7 +81,6 @@ state['STATIC_WHAT'] = {static_what};
     def set_variables_js(self, stage):
         for conf in stage['configuration']:
             if conf['name'] == 'initScript':
-                topic_name = self.client_config['source']['config']['kafkaConfigBean.topic']
                 dimensions_names = self.client_config['dimensions']['required'] + self.client_config['dimensions']['optional']
                 conf['value'] = self.DECLARE_VARS_JS.format(
                     timestamp_column=str(self.get_property_mapping(self.client_config['timestamp']['name'])),
@@ -92,7 +91,7 @@ state['STATIC_WHAT'] = {static_what};
                     measurement_names=str(list(self.get_measurement_names())),
                     count_records=int(self.client_config.get('count_records', False)),
                     count_records_measurement_name=str(
-                        self.client_config.get('count_records_measurement_name', topic_name)),
+                        self.client_config.get('count_records_measurement_name', 'count')),
                     static_what=int(self.client_config.get('static_what', True)),
                 )
 

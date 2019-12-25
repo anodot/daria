@@ -6,6 +6,7 @@ from .pipeline import Pipeline, PipelineException, PipelineNotExists
 from .pipeline_manager import PipelineManager
 from .. import source
 from agent.destination import HttpDestination
+from typing import List
 
 
 def create_dir():
@@ -31,10 +32,14 @@ def create_object(pipeline_id: str, source_name: str) -> Pipeline:
     return Pipeline(pipeline_id, source_obj, {}, destination)
 
 
-def get_pipelines(source_name: str = None) -> list:
+def get_pipelines(source_name: str = None) -> List[Pipeline]:
     pipelines = []
     for file in os.listdir(Pipeline.DIR):
-        obj = load_object(file.replace('.json', ''))
+        try:
+            obj = load_object(file.replace('.json', ''))
+        except source.SourceConfigDeprecated as e:
+            print(f'Error getting pipeline {file}. {str(e)}')
+            continue
         if source_name and obj.source.name != source_name:
             continue
         pipelines.append(obj)

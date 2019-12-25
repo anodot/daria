@@ -1,3 +1,4 @@
+import click
 import json
 import os
 import time
@@ -91,7 +92,7 @@ class Pipeline:
         self.wait_for_status(self.STATUS_RUNNING)
 
 
-class PipelineException(Exception):
+class PipelineException(click.ClickException):
     pass
 
 

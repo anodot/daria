@@ -187,20 +187,16 @@ class PromptConfigKafka(PromptConfig):
             self.validate_properties_names(self.config['measurement_names'].values())
 
     def set_timestamp(self):
-        previous_val = self.default_config.get('timestamp', {}).get('name') == 'kafka_timestamp'
-        if click.confirm('Use kafka timestamp?', default=previous_val):
-            self.config['timestamp'] = {'name': 'kafka_timestamp', 'type': 'unix_ms'}
-        else:
-            self.config['timestamp'] = self.default_config.get('timestamp', {})
-            self.config['timestamp']['name'] = self.prompt_property('Timestamp property name',
-                                                                    self.config['timestamp'].get('name'))
-            self.config['timestamp']['type'] = click.prompt('Timestamp property type',
-                                                            type=click.Choice(['string', 'unix', 'unix_ms']),
-                                                            default=self.config['timestamp'].get('type', 'unix'))
+        self.config['timestamp'] = self.default_config.get('timestamp', {})
+        self.config['timestamp']['name'] = self.prompt_property('Timestamp property name',
+                                                                self.config['timestamp'].get('name'))
+        self.config['timestamp']['type'] = click.prompt('Timestamp property type',
+                                                        type=click.Choice(['string', 'unix', 'unix_ms']),
+                                                        default=self.config['timestamp'].get('type', 'unix'))
 
-            if self.config['timestamp']['type'] == 'string':
-                self.config['timestamp']['format'] = click.prompt('Timestamp format string', type=click.STRING,
-                                                                  default=self.config['timestamp'].get('format'))
+        if self.config['timestamp']['type'] == 'string':
+            self.config['timestamp']['format'] = click.prompt('Timestamp format string', type=click.STRING,
+                                                              default=self.config['timestamp'].get('format'))
 
     @infinite_retry
     def prompt_files(self):

@@ -8,12 +8,11 @@
     "configBean.mongoConfig.authenticationType": {"type": "string"},
     "configBean.mongoConfig.database": {"type": "string"},
     "configBean.mongoConfig.collection": {"type": "string"},
-    "configBean.isCapped": {"type": "string"},
     "configBean.offsetType": {"type": "string"},
     "configBean.initialOffset": {"type": "string"},
     "configBean.offsetField": {"type": "string"},
     "configBean.batchSize": {"type": "integer"},
-    "configBean.maxBatchWaitTime": {"type": "integer"}
+    "configBean.maxBatchWaitTime": {"type": "string"}
   },
   "required": ["configBean.mongoConfig.connectionString", "configBean.mongoConfig.database",
     "configBean.mongoConfig.collection"]

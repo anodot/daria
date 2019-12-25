@@ -70,7 +70,7 @@ class JDBCSource(Source):
         return self.config
 
     def validate(self):
-        super().validate()
+        self.validate_json()
         self.validate_connection_string()
         self.validate_connection()
 

@@ -1,3 +1,4 @@
+import click
 import json
 import os
 
@@ -60,7 +61,11 @@ class Source(ABC):
     def prompt(self, default_config, advanced=False):
         pass
 
+    @abstractmethod
     def validate(self):
+        pass
+
+    def validate_json(self):
         with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                'json_schema_definitions', self.VALIDATION_SCHEMA_FILE_NAME)) as f:
             json_schema = json.load(f)
@@ -135,9 +140,13 @@ class Source(ABC):
         pass
 
 
-class SourceException(Exception):
+class SourceException(click.ClickException):
     pass
 
 
 class SourceNotExists(SourceException):
+    pass
+
+
+class SourceConfigDeprecated(SourceException):
     pass

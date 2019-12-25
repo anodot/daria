@@ -5,25 +5,26 @@ from agent.tools import infinite_retry, print_dicts, print_json, map_keys, if_va
 
 
 class KafkaSource(Source):
-    CONFIG_BROKER_LIST = 'kafkaConfigBean.metadataBrokerList'
-    CONFIG_CONSUMER_GROUP = 'kafkaConfigBean.consumerGroup'
-    CONFIG_TOPIC = 'kafkaConfigBean.topic'
-    CONFIG_OFFSET_TYPE = 'kafkaConfigBean.kafkaAutoOffsetReset'
-    CONFIG_OFFSET_TIMESTAMP = 'kafkaConfigBean.timestampToSearchOffsets'
-    CONFIG_BATCH_SIZE = 'kafkaConfigBean.maxBatchSize'
-    CONFIG_BATCH_WAIT_TIME = 'kafkaConfigBean.maxWaitTime'
-    CONFIG_CONSUMER_PARAMS = 'kafkaConfigBean.kafkaConsumerConfigs'
+    CONFIG_BROKER_LIST = 'conf.brokerURI'
+    CONFIG_CONSUMER_GROUP = 'conf.consumerGroup'
+    CONFIG_TOPIC_LIST = 'conf.topicList'
+    CONFIG_OFFSET_TYPE = 'conf.kafkaAutoOffsetReset'
+    CONFIG_OFFSET_TIMESTAMP = 'conf.timestampToSearchOffsets'
+    CONFIG_BATCH_SIZE = 'conf.maxBatchSize'
+    CONFIG_BATCH_WAIT_TIME = 'conf.batchWaitTime'
+    CONFIG_CONSUMER_PARAMS = 'conf.kafkaOptions'
+    CONFIG_N_THREADS = 'conf.numberOfThreads'
     CONFIG_LIBRARY = 'library'
     CONFIG_VERSION = 'version'
-    CONFIG_DATA_FORMAT = 'kafkaConfigBean.dataFormat'
+    CONFIG_DATA_FORMAT = 'conf.dataFormat'
     CONFIG_CSV_MAPPING = 'csv_mapping'
 
     DATA_FORMAT_JSON = 'JSON'
     DATA_FORMAT_CSV = 'DELIMITED'
     DATA_FORMAT_AVRO = 'AVRO'
 
-    CONFIG_AVRO_SCHEMA_SOURCE = 'kafkaConfigBean.dataFormatConfig.avroSchemaSource'
-    CONFIG_AVRO_SCHEMA = 'kafkaConfigBean.dataFormatConfig.avroSchema'
+    CONFIG_AVRO_SCHEMA_SOURCE = 'conf.dataFormatConfig.avroSchemaSource'
+    CONFIG_AVRO_SCHEMA = 'conf.dataFormatConfig.avroSchema'
     CONFIG_AVRO_SCHEMA_FILE = 'schema_file'
 
     AVRO_SCHEMA_SOURCE_SOURCE = 'SOURCE'
@@ -80,11 +81,11 @@ class KafkaSource(Source):
                                                                                        self.DEFAULT_KAFKA_VERSION))
         self.prompt_connection(default_config, advanced)
 
-        self.config[self.CONFIG_CONSUMER_GROUP] = click.prompt('Consumer group', type=click.STRING,
-                                                               default=default_config.get(self.CONFIG_CONSUMER_GROUP,
-                                                                                          'anodotAgent')).strip()
-        self.config[self.CONFIG_TOPIC] = click.prompt('Topic', type=click.STRING,
-                                                      default=default_config.get(self.CONFIG_TOPIC)).strip()
+        self.config[self.CONFIG_TOPIC_LIST] = click.prompt('Topic list', type=click.STRING,
+                                                           value_proc=lambda x: x.split(','),
+                                                           default=default_config.get(self.CONFIG_TOPIC_LIST))
+        self.config[self.CONFIG_N_THREADS] = click.prompt('Number of threads', type=click.INT,
+                                                          default=default_config.get(self.CONFIG_N_THREADS, 1))
         self.config[self.CONFIG_OFFSET_TYPE] = click.prompt('Initial offset',
                                                             type=click.Choice([self.OFFSET_EARLIEST, self.OFFSET_LATEST,
                                                                                self.OFFSET_TIMESTAMP]),
@@ -170,7 +171,7 @@ class KafkaSource(Source):
         self.config[self.CONFIG_CSV_MAPPING] = data
 
     def validate(self):
-        super().validate()
+        self.validate_json()
         self.validate_connection()
 
     def set_config(self, config):
