@@ -1,3 +1,4 @@
+import click
 import json
 import os
 
@@ -139,9 +140,13 @@ class Source(ABC):
         pass
 
 
-class SourceException(Exception):
+class SourceException(click.ClickException):
     pass
 
 
 class SourceNotExists(SourceException):
+    pass
+
+
+class SourceConfigDeprecated(SourceException):
     pass

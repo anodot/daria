@@ -13,11 +13,14 @@ from texttable import Texttable
 
 
 def get_previous_pipeline_config(label):
-    pipelines_with_source = api_client.get_pipelines(order_by='CREATED', order='DESC',
-                                                     label=label)
-    if len(pipelines_with_source) > 0:
-        pipeline_obj = pipeline.load_object(pipelines_with_source[-1]['pipelineId'])
-        return pipeline_obj.to_dict()
+    try:
+        pipelines_with_source = api_client.get_pipelines(order_by='CREATED', order='DESC',
+                                                         label=label)
+        if len(pipelines_with_source) > 0:
+            pipeline_obj = pipeline.load_object(pipelines_with_source[-1]['pipelineId'])
+            return pipeline_obj.to_dict()
+    except source.SourceConfigDeprecated:
+        pass
     return {}
 
 
@@ -105,7 +108,7 @@ def create(advanced, file):
     if file:
         try:
             create_multiple(file)
-        except (StreamSetsApiClientException, pipeline.PipelineException, ValidationError) as e:
+        except (StreamSetsApiClientException, ValidationError) as e:
             raise click.ClickException(str(e))
         return
 

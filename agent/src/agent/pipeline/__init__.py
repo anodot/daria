@@ -35,7 +35,11 @@ def create_object(pipeline_id: str, source_name: str) -> Pipeline:
 def get_pipelines(source_name: str = None) -> List[Pipeline]:
     pipelines = []
     for file in os.listdir(Pipeline.DIR):
-        obj = load_object(file.replace('.json', ''))
+        try:
+            obj = load_object(file.replace('.json', ''))
+        except source.SourceConfigDeprecated as e:
+            print(f'Error getting pipeline {file}. {str(e)}')
+            continue
         if source_name and obj.source.name != source_name:
             continue
         pipelines.append(obj)

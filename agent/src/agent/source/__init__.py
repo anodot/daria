@@ -1,7 +1,7 @@
 import os
 import json
 
-from .abstract_source import Source, SourceNotExists, SourceException
+from .abstract_source import Source, SourceNotExists, SourceException, SourceConfigDeprecated
 from .jdbc import JDBCSource
 from .influx import InfluxSource
 from .kafka import KafkaSource
@@ -78,6 +78,6 @@ def load_object(name: str) -> Source:
     try:
         obj.validate_json()
     except ValidationError:
-        raise SourceException(f'Config for source {name} is no longer supported. Please edit the source')
+        raise SourceConfigDeprecated(f'Config for source {name} is no longer supported. Please recreate the source')
 
     return obj

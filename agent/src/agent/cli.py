@@ -7,7 +7,6 @@ from . import pipeline, source
 from .pipeline.cli import pipeline_group
 from .source.cli import source_group
 from .destination.cli import destination
-from agent.streamsets_api_client import api_client, StreamSetsApiClientException
 from agent.version import __version__, __build_time__, __git_sha1__
 
 
@@ -41,13 +40,10 @@ def update():
     """
 
     for p in pipeline.get_pipelines():
-        try:
-            pipeline_manager = pipeline.PipelineManager(p)
-            pipeline_manager.update()
+        pipeline_manager = pipeline.PipelineManager(p)
+        pipeline_manager.update()
 
-            click.secho(f'Pipeline {p.id} updated', fg='green')
-        except (pipeline.PipelineException, source.SourceException) as e:
-            click.secho(f'Error updating {p.id}. {str(e)}', fg='red')
+        click.secho(f'Pipeline {p.id} updated', fg='green')
 
 
 agent.add_command(source_group)
