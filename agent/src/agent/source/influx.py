@@ -157,7 +157,7 @@ class InfluxSource(Source):
         return self.config
 
     def validate(self):
-        super().validate()
+        self.validate_json()
         self.validate_connection()
         self.validate_db()
         if 'write_host' in self.config:

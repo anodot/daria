@@ -154,7 +154,7 @@ def edit(name, advanced, file):
             edit_with_file(file)
             return
         except (source.SourceException, ValidationError, SchemaError) as e:
-            raise click.ClickException(str(e))
+            raise click.UsageError(str(e))
 
     source_instance = source.load_object(name)
 
@@ -162,7 +162,7 @@ def edit(name, advanced, file):
         source_instance.set_config(source_instance.prompt(source_instance.config, advanced=advanced))
         source_instance.save()
     except source.SourceException as e:
-        raise click.ClickException(str(e))
+        raise click.UsageError(str(e))
 
     click.secho('Source config updated', fg='green')
 

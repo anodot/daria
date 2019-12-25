@@ -138,7 +138,7 @@ class MongoSource(Source):
         return self.config
 
     def validate(self):
-        super().validate()
+        self.validate_json()
         self.validate_connection()
         self.validate_db()
         self.validate_collection()

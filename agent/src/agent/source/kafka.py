@@ -171,7 +171,7 @@ class KafkaSource(Source):
         self.config[self.CONFIG_CSV_MAPPING] = data
 
     def validate(self):
-        super().validate()
+        self.validate_json()
         self.validate_connection()
 
     def set_config(self, config):

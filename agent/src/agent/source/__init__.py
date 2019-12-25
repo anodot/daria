@@ -7,6 +7,7 @@ from .influx import InfluxSource
 from .kafka import KafkaSource
 from .mongo import MongoSource
 from .monitoring import MonitoringSource
+from jsonschema import ValidationError
 from typing import Iterable
 
 from agent.constants import MONITORING_SOURCE_NAME
@@ -73,4 +74,10 @@ def load_object(name: str) -> Source:
     with open(Source.get_file_path(name), 'r') as f:
         config = json.load(f)
 
-    return types[config['type']](name, config['type'], config['config'])
+    obj = types[config['type']](name, config['type'], config['config'])
+    try:
+        obj.validate_json()
+    except ValidationError:
+        raise SourceException(f'Config for source {name} is no longer supported. Please edit the source')
+
+    return obj
