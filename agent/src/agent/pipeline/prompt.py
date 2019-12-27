@@ -1,7 +1,7 @@
 import click
 import os
 
-from agent.pipeline.config_handlers import condition_parser
+from agent.pipeline.config_handlers.expression_parser import condition
 from agent.tools import infinite_retry, if_validation_enabled, dict_get_nested
 from agent.pipeline.pipeline import Pipeline
 from urllib.parse import urljoin
@@ -215,7 +215,7 @@ class PromptConfigKafka(PromptConfig):
                                  default=self.config['filter'].get('condition', '')).strip()
         if not condition:
             return
-        condition_parser.validate_condition(condition)
+        condition.validate_condition(condition)
         self.config['filter']['condition'] = condition
 
     def filter(self):

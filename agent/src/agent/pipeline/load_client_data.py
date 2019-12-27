@@ -2,8 +2,7 @@ import os
 import json
 
 from jsonschema import validate
-from agent.pipeline.config_handlers import condition_parser
-
+from agent.pipeline.config_handlers.expression_parser import condition
 
 definitions_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'json_schema_definitions')
 
@@ -56,7 +55,7 @@ class KafkaLoadClientData(LoadClientData):
             self.client_config['timestamp'] = {'name': 'kafka_timestamp', 'type': 'unix_ms'}
         condition = self.client_config.get('filter', {}).get('condition')
         if condition:
-            condition_parser.validate_condition(condition)
+            condition.validate_condition(condition)
         return self.client_config
 
 

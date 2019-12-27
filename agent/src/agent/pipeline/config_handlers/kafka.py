@@ -2,7 +2,7 @@ import csv
 
 from .base import BaseConfigHandler
 from agent.logger import get_logger
-from agent.pipeline.config_handlers import condition_parser
+from .expression_parser import condition
 
 logger = get_logger(__name__)
 
@@ -91,7 +91,7 @@ state['STATIC_WHAT'] = {static_what};
             for row in csv.reader(f):
                 exp = row[1]
                 if row[2]:
-                    exp = condition_parser.get_expression(row[2]) + '?' + exp + ':' + f"record:value('/{row[0]}')"
+                    exp = condition.get_expression(row[2]) + '?' + exp + ':' + f"record:value('/{row[0]}')"
 
                 transformations.append({'fieldToSet': '/' + row[0], 'expression': '${' + exp + '}'})
         return transformations
@@ -131,7 +131,7 @@ state['STATIC_WHAT'] = {static_what};
                         expression = "record:value('/{0}') == 'gauge' || record:value('/{0}') == 'counter'"
                         conf['value'].append('${' + expression.format(self.get_property_mapping(target_type)) + '}')
                 if self.client_config.get('filter', {}).get('condition'):
-                    conf['value'].append('${' + condition_parser.get_expression(
+                    conf['value'].append('${' + condition.get_expression(
                         self.client_config['filter']['condition']) + '}')
 
 
