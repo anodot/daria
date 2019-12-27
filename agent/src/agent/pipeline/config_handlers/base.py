@@ -4,6 +4,7 @@ import os
 from abc import ABC, abstractmethod
 from agent.logger import get_logger
 from agent.constants import ERRORS_DIR, HOSTNAME
+from agent.pipeline.pipeline import Pipeline
 from copy import deepcopy
 
 logger = get_logger(__name__)
@@ -15,16 +16,16 @@ class BaseConfigHandler(ABC):
     """
     PIPELINES_BASE_CONFIGS_PATH = 'base_pipelines/{source_name}_{destination_name}.json'
 
-    def __init__(self, client_config, base_config=None):
-        self.client_config = deepcopy(client_config)
+    def __init__(self, pipeline: Pipeline):
+        self.client_config = {}
+        self.config = {}
+        self.pipeline = pipeline
 
-        self.config = base_config if base_config else self.load_base_config()
+    def get_pipeline_id(self):
+        return self.client_config['pipeline_id']
 
-        # create errors dir
-        errors_dir = os.path.join(ERRORS_DIR, self.client_config['pipeline_id'])
-        if not os.path.isdir(errors_dir):
-            os.makedirs(errors_dir)
-            os.chmod(errors_dir, 0o777)
+    def get_pipeline_type(self) -> str:
+        return self.pipeline.source.type
 
     def load_base_config(self):
         base_path = self.PIPELINES_BASE_CONFIGS_PATH.format(**{
@@ -44,7 +45,16 @@ class BaseConfigHandler(ABC):
         self.config['metadata']['labels'] = [self.client_config['source']['type'],
                                              self.client_config['destination']['type']]
 
-    def override_base_config(self, new_uuid=None, new_pipeline_title=None):
+    def override_base_config(self, client_config, new_uuid=None, new_pipeline_title=None, base_config=None):
+        self.client_config = deepcopy(client_config)
+
+        self.config = base_config if base_config else self.load_base_config()
+
+        # create errors dir
+        errors_dir = os.path.join(ERRORS_DIR, self.client_config['pipeline_id'])
+        if not os.path.isdir(errors_dir):
+            os.makedirs(errors_dir)
+            os.chmod(errors_dir, 0o777)
         if new_uuid:
             self.config['uuid'] = new_uuid
         if new_pipeline_title:
@@ -106,15 +116,27 @@ class BaseConfigHandler(ABC):
             conf['value'].append({'fieldToSet': '/tags/source', 'expression': '${emptyList()}'})
             conf['value'].append({'fieldToSet': '/tags/source_host_id', 'expression': '${emptyList()}'})
             conf['value'].append({'fieldToSet': '/tags/source_host_name', 'expression': '${emptyList()}'})
+            conf['value'].append({'fieldToSet': '/tags/pipeline_id', 'expression': '${emptyList()}'})
+            conf['value'].append({'fieldToSet': '/tags/pipeline_type', 'expression': '${emptyList()}'})
             conf['value'].append({'fieldToSet': '/tags/source[0]', 'expression': 'anodot-agent'})
             conf['value'].append({'fieldToSet': '/tags/source_host_id[0]',
                                   'expression': self.client_config['destination']['host_id']})
             conf['value'].append({'fieldToSet': '/tags/source_host_name[0]',
                                   'expression': HOSTNAME})
+            conf['value'].append({'fieldToSet': '/tags/pipeline_id[0]', 'expression': self.get_pipeline_id()})
+            conf['value'].append({'fieldToSet': '/tags/pipeline_type[0]', 'expression': self.get_pipeline_type()})
             return
 
-    def set_initial_offset(self):
+    def set_initial_offset(self, client_config=None):
         pass
+
+    def get_property_mapping(self, property_value):
+        mapping = self.client_config['source']['config'].get('csv_mapping', {})
+        for idx, item in mapping.items():
+            if item == property_value:
+                return idx
+
+        return property_value
 
 
 class ConfigHandlerException(Exception):

@@ -19,11 +19,11 @@ def count_closed_parenthesis(literal: str) -> int:
 
 
 def first_operand_enclosed_in_quotes(literal: str) -> bool:
-    return bool(re.search(r'^(\![\(]+|[\(]+)?\".*\"$', literal))
+    return bool(re.search(r'^(\![\(]+|[\(]+)?(\".*\"|\'.*\')$', literal))
 
 
 def last_operand_enclosed_in_quotes(literal: str) -> bool:
-    return bool(re.search(r'^\".*\"[\)]*$', literal))
+    return bool(re.search(r'^(\".*\"|\'.*\')[\)]*$', literal))
 
 
 def validate_comparison_literal(literal: str) -> bool:
@@ -70,6 +70,20 @@ def validate_condition(condition: str) -> bool:
     return True
 
 
+def get_start_quote_idx(literal: str) -> int:
+    try:
+        return literal.index('"')
+    except ValueError:
+        return literal.index("'")
+
+
+def get_end_quote_idx(literal: str) -> int:
+    try:
+        return literal.rindex('"')
+    except ValueError:
+        return literal.rindex("'")
+
+
 def get_expression(condition: str) -> str:
     validate_condition(condition)
     expressions = split_to_expressions(condition)
@@ -78,7 +92,7 @@ def get_expression(condition: str) -> str:
     for expression in expressions:
         literals = split_to_literals(expression)
 
-        start_quote_idx = literals[0].index('"')
+        start_quote_idx = get_start_quote_idx(literals[0])
         exp_start = literals[0][:start_quote_idx]
         operand = f"record:value('/{literals[0][start_quote_idx + 1:-1]}')"
 
@@ -87,7 +101,7 @@ def get_expression(condition: str) -> str:
             condition.append(' '.join(literals))
             continue
 
-        end_quote_idx = literals[2].rindex('"')
+        end_quote_idx = get_end_quote_idx(literals[2])
         exp_end = literals[2][end_quote_idx + 1:]
         sdc_function = f'str:{literals[1]}({operand}, {literals[2][:end_quote_idx + 1]})'
         condition.append(exp_start + sdc_function + exp_end)

@@ -1,0 +1,1669 @@
+{
+  "eventsFilter": {
+    "presets": [],
+    "current": {},
+    "shouldShowEvents": false
+  },
+  "name": "Agent Monitoring",
+  "timeRangesFilter": {
+    "timeRanges": []
+  },
+  "autoRefreshInterval": -1,
+  "dateRange": {
+    "constRange": "c",
+    "startDate": 1562453769683,
+    "endDate": 1562492692455,
+    "dateText": "7/7/2019 01:56 - 7/7/2019 12:44"
+  },
+  "tags": [],
+  "editableBy": [],
+  "star": [],
+  "tileAlerts": [],
+  "tiles": [
+    {
+      "col": 0,
+      "row": 0,
+      "freeText": {
+        "class": "dashboard-title",
+        "type": "plain",
+        "text": "Agent health"
+      },
+      "sizeY": 1,
+      "sizeX": 6,
+      "id": "4b96-da043a03bc00",
+      "title": {}
+    },
+    {
+      "col": 6,
+      "row": 0,
+      "freeText": {
+        "class": "dashboard-title",
+        "type": "plain",
+        "text": "Resources usage"
+      },
+      "sizeY": 1,
+      "sizeX": 6,
+      "id": "b67f-47b23dedad1f",
+      "title": {}
+    },
+    {
+      "id": "f0ed-e8fe6def3c25",
+      "sizeX": 2,
+      "sizeY": 7,
+      "title": {
+        "text": "Health check"
+      },
+      "lineChart": {
+        "height": 1,
+        "gridster": {},
+        "expressionTrees": {
+          "5dc4-f88e8e7a1b90": {
+            "compositeCount": 0,
+            "displayOnly": true,
+            "expressionTree": {
+              "root": {
+                "searchObject": {
+                  "expression": [
+                    {
+                      "type": "property",
+                      "key": "source",
+                      "value": "agent_monitoring",
+                      "isExact": true
+                    },
+                    {
+                      "type": "property",
+                      "key": "what",
+                      "value": "health_check",
+                      "isExact": true
+                    },
+                    {
+                      "type": "selector",
+                      "value": "$host_id"
+                    }
+                  ]
+                },
+                "children": [],
+                "type": "metric",
+                "id": "93f3-406a97486968",
+                "uiIndex": 0
+              }
+            },
+            "filter": {
+              "function": "alphanumeric",
+              "parameters": [
+                {
+                  "name": "Top N",
+                  "value": 10
+                }
+              ],
+              "children": [],
+              "id": "2d32-5b580e3a20e6",
+              "type": "function"
+            },
+            "id": "5dc4-f88e8e7a1b90",
+            "name": {
+              "auto": true,
+              "prefix": null
+            },
+            "scalarTransforms": [
+              {
+                "function": "current",
+                "children": [],
+                "id": "9a07-1267017329c3",
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "uiIndex": 0
+          }
+        },
+        "seriesProperties": {
+          "byTreeExp": [
+            {
+              "id": "5dc4-f88e8e7a1b90",
+              "options": {
+                "yAxis": {},
+                "andtGauge": {
+                  "type": "andtGauge",
+                  "mainValue": {
+                    "fontSize": 100,
+                    "decimalPlaces": 4,
+                    "unitText": "",
+                    "abbreviate": true,
+                    "thousandsSeparator": true
+                  },
+                  "prefix": {
+                    "text": "",
+                    "fontSize": 50
+                  },
+                  "suffix": {
+                    "text": "",
+                    "fontSize": 50
+                  },
+                  "orientation": "leftRight",
+                  "thresholdColorElement": "foreground",
+                  "defaultColor": {
+                    "hex": "",
+                    "text": "Transparent"
+                  },
+                  "thresholds": [
+                    {
+                      "order": 1,
+                      "color": {
+                        "hex": "#94D85F",
+                        "text": "Light Green"
+                      },
+                      "value": "",
+                      "operator": ">="
+                    },
+                    {
+                      "order": 2,
+                      "color": {
+                        "hex": "#FF9936",
+                        "text": "Orange"
+                      },
+                      "value": "",
+                      "operator": ">="
+                    },
+                    {
+                      "order": 3,
+                      "color": {
+                        "hex": "#F21224",
+                        "text": "Red"
+                      },
+                      "value": "",
+                      "operator": ">="
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "legend": {
+          "enabled": true,
+          "pinned": true,
+          "isPinnable": true,
+          "position": "bottom",
+          "layout": "table",
+          "isLayoutChangable": true,
+          "ratio": 0.4388349514563107,
+          "horizontalRatio": 0.3
+        },
+        "userTimeZone": "Browser",
+        "bucketStartTimeFF": false,
+        "resolution": {
+          "value": "medium"
+        },
+        "eventListeners": {}
+      },
+      "isSimpleSearchMode": false,
+      "row": 1,
+      "col": 0
+    },
+    {
+      "col": 2,
+      "row": 1,
+      "isSimpleSearchMode": false,
+      "lineChart": {
+        "legend": {
+          "ratio": 0.2,
+          "isLayoutChangable": true,
+          "layout": "table",
+          "position": "bottom",
+          "isPinnable": true,
+          "pinned": false,
+          "enabled": true,
+          "horizontalRatio": 0.3
+        },
+        "seriesProperties": {
+          "byTreeExp": [
+            {
+              "options": {
+                "andtGauge": {
+                  "thresholds": [
+                    {
+                      "operator": ">=",
+                      "value": "",
+                      "color": {
+                        "text": "Light Green",
+                        "hex": "#94D85F"
+                      },
+                      "order": 1
+                    },
+                    {
+                      "operator": ">=",
+                      "value": "",
+                      "color": {
+                        "text": "Orange",
+                        "hex": "#FF9936"
+                      },
+                      "order": 2
+                    },
+                    {
+                      "operator": ">=",
+                      "value": "",
+                      "color": {
+                        "text": "Red",
+                        "hex": "#F21224"
+                      },
+                      "order": 3
+                    }
+                  ],
+                  "defaultColor": {
+                    "text": "Transparent",
+                    "hex": ""
+                  },
+                  "thresholdColorElement": "foreground",
+                  "orientation": "leftRight",
+                  "suffix": {
+                    "fontSize": 50,
+                    "text": ""
+                  },
+                  "prefix": {
+                    "fontSize": 50,
+                    "text": ""
+                  },
+                  "mainValue": {
+                    "thousandsSeparator": true,
+                    "abbreviate": true,
+                    "unitText": "",
+                    "decimalPlaces": 4,
+                    "fontSize": 100
+                  },
+                  "type": "andtGauge"
+                },
+                "yAxis": {}
+              },
+              "id": "d501-b551aff7de4e"
+            }
+          ]
+        },
+        "expressionTrees": {
+          "d501-b551aff7de4e": {
+            "uiIndex": 0,
+            "scalarTransforms": [
+              {
+                "type": "function",
+                "parameters": [],
+                "id": "aff9-cad0b81e29b3",
+                "children": [],
+                "function": "current"
+              }
+            ],
+            "name": {
+              "prefix": null,
+              "auto": true
+            },
+            "id": "d501-b551aff7de4e",
+            "filter": {
+              "type": "function",
+              "id": "67c8-0de18681ffdb",
+              "children": [],
+              "parameters": [
+                {
+                  "value": 10,
+                  "name": "Top N"
+                }
+              ],
+              "function": "alphanumeric"
+            },
+            "expressionTree": {
+              "root": {
+                "uiIndex": 0,
+                "id": "2a70-ac5b71ef6a7e",
+                "type": "metric",
+                "children": [],
+                "searchObject": {
+                  "expression": [
+                    {
+                      "isExact": true,
+                      "value": "agent_monitoring",
+                      "key": "source",
+                      "type": "property"
+                    },
+                    {
+                      "isExact": true,
+                      "value": "destination_latency",
+                      "key": "what",
+                      "type": "property"
+                    }
+                  ]
+                }
+              }
+            },
+            "displayOnly": true,
+            "compositeCount": 0
+          }
+        },
+        "gridster": {},
+        "height": 1,
+        "userTimeZone": "Browser",
+        "bucketStartTimeFF": false,
+        "resolution": {
+          "value": ""
+        },
+        "eventListeners": {}
+      },
+      "title": {
+        "text": "Destination latency"
+      },
+      "sizeY": 7,
+      "sizeX": 4,
+      "id": "1503-84f5e93ec097"
+    },
+    {
+      "col": 6,
+      "row": 1,
+      "isSimpleSearchMode": false,
+      "lineChart": {
+        "legend": {
+          "ratio": 0.27165354330708663,
+          "isLayoutChangable": true,
+          "layout": "table",
+          "position": "bottom",
+          "isPinnable": true,
+          "pinned": true,
+          "enabled": true,
+          "horizontalRatio": 0.3
+        },
+        "seriesProperties": {
+          "byTreeExp": [
+            {
+              "options": {
+                "andtGauge": {
+                  "thresholds": [
+                    {
+                      "operator": ">=",
+                      "value": "",
+                      "color": {
+                        "text": "Light Green",
+                        "hex": "#94D85F"
+                      },
+                      "order": 1
+                    },
+                    {
+                      "operator": ">=",
+                      "value": "",
+                      "color": {
+                        "text": "Orange",
+                        "hex": "#FF9936"
+                      },
+                      "order": 2
+                    },
+                    {
+                      "operator": ">=",
+                      "value": "",
+                      "color": {
+                        "text": "Red",
+                        "hex": "#F21224"
+                      },
+                      "order": 3
+                    }
+                  ],
+                  "defaultColor": {
+                    "text": "Transparent",
+                    "hex": ""
+                  },
+                  "thresholdColorElement": "foreground",
+                  "orientation": "leftRight",
+                  "suffix": {
+                    "fontSize": 50,
+                    "text": ""
+                  },
+                  "prefix": {
+                    "fontSize": 50,
+                    "text": ""
+                  },
+                  "mainValue": {
+                    "thousandsSeparator": true,
+                    "abbreviate": true,
+                    "unitText": "",
+                    "decimalPlaces": 4,
+                    "fontSize": 100
+                  },
+                  "type": "andtGauge"
+                },
+                "yAxis": {}
+              },
+              "id": "caee-14a990940c72"
+            },
+            {
+              "options": {
+                "andtGauge": {
+                  "thresholds": [
+                    {
+                      "operator": ">=",
+                      "value": "",
+                      "color": {
+                        "text": "Light Green",
+                        "hex": "#94D85F"
+                      },
+                      "order": 1
+                    },
+                    {
+                      "operator": ">=",
+                      "value": "",
+                      "color": {
+                        "text": "Orange",
+                        "hex": "#FF9936"
+                      },
+                      "order": 2
+                    },
+                    {
+                      "operator": ">=",
+                      "value": "",
+                      "color": {
+                        "text": "Red",
+                        "hex": "#F21224"
+                      },
+                      "order": 3
+                    }
+                  ],
+                  "defaultColor": {
+                    "text": "Transparent",
+                    "hex": ""
+                  },
+                  "thresholdColorElement": "foreground",
+                  "orientation": "leftRight",
+                  "suffix": {
+                    "fontSize": 50,
+                    "text": ""
+                  },
+                  "prefix": {
+                    "fontSize": 50,
+                    "text": ""
+                  },
+                  "mainValue": {
+                    "thousandsSeparator": true,
+                    "abbreviate": true,
+                    "unitText": "",
+                    "decimalPlaces": 4,
+                    "fontSize": 100
+                  },
+                  "type": "andtGauge"
+                },
+                "yAxis": {}
+              },
+              "id": "44e5-566ce8b0744b"
+            }
+          ]
+        },
+        "expressionTrees": {
+          "44e5-566ce8b0744b": {
+            "uiIndex": 1,
+            "scalarTransforms": [
+              {
+                "type": "function",
+                "parameters": [],
+                "id": "798a-1a95ac569def",
+                "children": [],
+                "function": "current"
+              }
+            ],
+            "name": {
+              "prefix": null,
+              "auto": true
+            },
+            "id": "44e5-566ce8b0744b",
+            "filter": {
+              "type": "function",
+              "id": "67c8-0de18681ffdb",
+              "children": [],
+              "parameters": [
+                {
+                  "value": 10,
+                  "name": "Top N"
+                }
+              ],
+              "function": "alphanumeric"
+            },
+            "expressionTree": {
+              "root": {
+                "uiIndex": 1,
+                "id": "5499-512f80436448",
+                "type": "metric",
+                "children": [],
+                "searchObject": {
+                  "expression": [
+                    {
+                      "type": "property",
+                      "key": "source",
+                      "value": "agent_monitoring",
+                      "isExact": true
+                    },
+                    {
+                      "type": "property",
+                      "key": "what",
+                      "value": "non_heap_memory_usage",
+                      "isExact": true
+                    },
+                    {
+                      "type": "selector",
+                      "value": "$host_id"
+                    }
+                  ]
+                }
+              }
+            },
+            "displayOnly": true,
+            "compositeCount": 0
+          },
+          "caee-14a990940c72": {
+            "uiIndex": 0,
+            "scalarTransforms": [
+              {
+                "type": "function",
+                "parameters": [],
+                "id": "2b98-606105f89857",
+                "children": [],
+                "function": "current"
+              }
+            ],
+            "name": {
+              "prefix": null,
+              "auto": true
+            },
+            "id": "caee-14a990940c72",
+            "filter": {
+              "type": "function",
+              "id": "67c8-0de18681ffdb",
+              "children": [],
+              "parameters": [
+                {
+                  "value": 10,
+                  "name": "Top N"
+                }
+              ],
+              "function": "alphanumeric"
+            },
+            "expressionTree": {
+              "root": {
+                "uiIndex": 0,
+                "id": "5203-fb522760dd0f",
+                "type": "metric",
+                "children": [],
+                "searchObject": {
+                  "expression": [
+                    {
+                      "type": "property",
+                      "key": "source",
+                      "value": "agent_monitoring",
+                      "isExact": true
+                    },
+                    {
+                      "type": "property",
+                      "key": "what",
+                      "value": "heap_memory_usage",
+                      "isExact": true
+                    },
+                    {
+                      "type": "selector",
+                      "value": "$host_id"
+                    }
+                  ]
+                }
+              }
+            },
+            "displayOnly": true,
+            "compositeCount": 0
+          }
+        },
+        "gridster": {},
+        "height": 1,
+        "userTimeZone": "Browser",
+        "bucketStartTimeFF": false,
+        "resolution": {
+          "value": "medium"
+        },
+        "eventListeners": {}
+      },
+      "title": {
+        "text": "Memory usage"
+      },
+      "sizeY": 7,
+      "sizeX": 6,
+      "id": "3294-c1a124678ae4"
+    },
+    {
+      "col": 0,
+      "row": 8,
+      "isSimpleSearchMode": false,
+      "lineChart": {
+        "legend": {
+          "ratio": 0.2,
+          "isLayoutChangable": true,
+          "layout": "table",
+          "position": "bottom",
+          "isPinnable": true,
+          "pinned": false,
+          "enabled": false,
+          "horizontalRatio": 0.3
+        },
+        "seriesProperties": {
+          "byTreeExp": [
+            {
+              "options": {
+                "andtGauge": {
+                  "thresholds": [
+                    {
+                      "operator": ">=",
+                      "value": "",
+                      "color": {
+                        "text": "Light Green",
+                        "hex": "#94D85F"
+                      },
+                      "order": 1
+                    },
+                    {
+                      "operator": ">=",
+                      "value": "",
+                      "color": {
+                        "text": "Orange",
+                        "hex": "#FF9936"
+                      },
+                      "order": 2
+                    },
+                    {
+                      "operator": ">=",
+                      "value": "",
+                      "color": {
+                        "text": "Red",
+                        "hex": "#F21224"
+                      },
+                      "order": 3
+                    }
+                  ],
+                  "defaultColor": {
+                    "text": "Transparent",
+                    "hex": ""
+                  },
+                  "thresholdColorElement": "foreground",
+                  "orientation": "leftRight",
+                  "suffix": {
+                    "fontSize": 50,
+                    "text": ""
+                  },
+                  "prefix": {
+                    "fontSize": 50,
+                    "text": ""
+                  },
+                  "mainValue": {
+                    "thousandsSeparator": true,
+                    "abbreviate": true,
+                    "unitText": "",
+                    "decimalPlaces": 4,
+                    "fontSize": 100
+                  },
+                  "type": "andtGauge"
+                },
+                "yAxis": {}
+              },
+              "id": "b269-ca0103e80ab4"
+            }
+          ]
+        },
+        "expressionTrees": {
+          "b269-ca0103e80ab4": {
+            "uiIndex": 0,
+            "scalarTransforms": [
+              {
+                "type": "function",
+                "parameters": [],
+                "id": "2146-7e8ac040f6e1",
+                "children": [],
+                "function": "current"
+              }
+            ],
+            "name": {
+              "prefix": null,
+              "auto": true
+            },
+            "id": "b269-ca0103e80ab4",
+            "filter": {
+              "type": "function",
+              "id": "67c8-0de18681ffdb",
+              "children": [],
+              "parameters": [
+                {
+                  "value": 10,
+                  "name": "Top N"
+                }
+              ],
+              "function": "alphanumeric"
+            },
+            "expressionTree": {
+              "root": {
+                "uiIndex": 0,
+                "id": "d6dc-8a09a8434e95",
+                "type": "metric",
+                "children": [],
+                "searchObject": {
+                  "expression": [
+                    {
+                      "type": "property",
+                      "key": "source",
+                      "value": "agent_monitoring",
+                      "isExact": true
+                    },
+                    {
+                      "type": "property",
+                      "key": "what",
+                      "value": "cpu_load",
+                      "isExact": true
+                    },
+                    {
+                      "type": "selector",
+                      "value": "$host_id"
+                    }
+                  ]
+                }
+              }
+            },
+            "displayOnly": true,
+            "compositeCount": 0
+          }
+        },
+        "gridster": {},
+        "height": 1,
+        "userTimeZone": "Browser",
+        "bucketStartTimeFF": false,
+        "resolution": {
+          "value": ""
+        },
+        "eventListeners": {}
+      },
+      "title": {
+        "text": "CPU usage"
+      },
+      "sizeY": 3,
+      "sizeX": 12,
+      "id": "6fe5-ec1aa915a7e6"
+    },
+    {
+      "col": 0,
+      "row": 11,
+      "freeText": {
+        "class": "dashboard-title",
+        "type": "plain",
+        "text": "Pipelines"
+      },
+      "sizeY": 1,
+      "sizeX": 12,
+      "id": "c107-0c2bbea63d86",
+      "title": {}
+    },
+    {
+      "id": "1b70-e6ce87ba2b00",
+      "sizeX": 6,
+      "sizeY": 7,
+      "title": {
+        "text": "Output Records Rate"
+      },
+      "lineChart": {
+        "height": 1,
+        "gridster": {},
+        "expressionTrees": {
+          "2747-8b3ea8174b55": {
+            "compositeCount": 0,
+            "displayOnly": true,
+            "expressionTree": {
+              "root": {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "searchObject": {
+                          "expression": [
+                            {
+                              "type": "property",
+                              "key": "what",
+                              "value": "pipeline_batchOutputRecords",
+                              "isExact": true
+                            },
+                            {
+                              "type": "selector",
+                              "value": "$host_id"
+                            }
+                          ]
+                        },
+                        "children": [],
+                        "type": "metric",
+                        "id": "5e22-64e07bbf30d7",
+                        "uiIndex": 0
+                      }
+                    ],
+                    "function": "groupBy",
+                    "id": "2bb7-aee6f0fcb793",
+                    "parameters": [
+                      {
+                        "name": "Aggregation",
+                        "value": "Sum"
+                      },
+                      {
+                        "name": "Group By",
+                        "value": "{\"properties\":[\"host_id\"]}"
+                      }
+                    ],
+                    "type": "function"
+                  }
+                ],
+                "function": "nonNegativeDerivative",
+                "id": "9eae-d77f3c68b801",
+                "parameters": [
+                  {
+                    "name": "Max Value",
+                    "value": null
+                  },
+                  {
+                    "name": "Keep Last Value Limit",
+                    "value": null
+                  }
+                ],
+                "type": "function",
+                "uiIndex": 0
+              }
+            },
+            "filter": {
+              "function": "highestCurrent",
+              "parameters": [
+                {
+                  "name": "Top N",
+                  "value": 30
+                }
+              ],
+              "children": [],
+              "id": "4be3-f6bf057e40b9",
+              "type": "function"
+            },
+            "id": "2747-8b3ea8174b55",
+            "name": {
+              "auto": true,
+              "prefix": null
+            },
+            "scalarTransforms": [
+              {
+                "function": "current",
+                "children": [],
+                "id": "a510-0610a71171f5",
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "uiIndex": 0,
+            "excludeComposites": true
+          }
+        },
+        "seriesProperties": {
+          "byTreeExp": [
+            {
+              "id": "2747-8b3ea8174b55",
+              "options": {
+                "yAxis": {},
+                "andtGauge": {
+                  "type": "andtGauge",
+                  "mainValue": {
+                    "fontSize": 100,
+                    "decimalPlaces": 4,
+                    "unitText": "",
+                    "abbreviate": true,
+                    "thousandsSeparator": true
+                  },
+                  "prefix": {
+                    "text": "",
+                    "fontSize": 50
+                  },
+                  "suffix": {
+                    "text": "",
+                    "fontSize": 50
+                  },
+                  "orientation": "leftRight",
+                  "thresholdColorElement": "foreground",
+                  "defaultColor": {
+                    "hex": "",
+                    "text": "Transparent"
+                  },
+                  "thresholds": [
+                    {
+                      "order": 1,
+                      "color": {
+                        "hex": "#94D85F",
+                        "text": "Light Green"
+                      },
+                      "value": "",
+                      "operator": ">="
+                    },
+                    {
+                      "order": 2,
+                      "color": {
+                        "hex": "#FF9936",
+                        "text": "Orange"
+                      },
+                      "value": "",
+                      "operator": ">="
+                    },
+                    {
+                      "order": 3,
+                      "color": {
+                        "hex": "#F21224",
+                        "text": "Red"
+                      },
+                      "value": "",
+                      "operator": ">="
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "legend": {
+          "enabled": true,
+          "pinned": true,
+          "isPinnable": true,
+          "position": "bottom",
+          "layout": "table",
+          "isLayoutChangable": true,
+          "ratio": 0.14536340852130325,
+          "horizontalRatio": 0.3
+        },
+        "userTimeZone": "Browser",
+        "bucketStartTimeFF": false,
+        "resolution": {
+          "value": ""
+        },
+        "eventListeners": {}
+      },
+      "isSimpleSearchMode": false,
+      "row": 12,
+      "col": 0
+    },
+    {
+      "id": "337e-ac7f21b34b90",
+      "sizeX": 6,
+      "sizeY": 7,
+      "title": {
+        "text": "Input Messages Rate "
+      },
+      "lineChart": {
+        "height": 1,
+        "gridster": {},
+        "expressionTrees": {
+          "2747-8b3ea8174b55": {
+            "compositeCount": 0,
+            "displayOnly": true,
+            "expressionTree": {
+              "root": {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "searchObject": {
+                          "expression": [
+                            {
+                              "type": "property",
+                              "key": "what",
+                              "value": "pipeline_batchInputRecords",
+                              "isExact": false
+                            },
+                            {
+                              "type": "selector",
+                              "value": "$host_id"
+                            }
+                          ]
+                        },
+                        "children": [],
+                        "type": "metric",
+                        "id": "5e22-64e07bbf30d7",
+                        "uiIndex": 0
+                      }
+                    ],
+                    "function": "groupBy",
+                    "id": "6be0-3d592210b9b8",
+                    "parameters": [
+                      {
+                        "name": "Aggregation",
+                        "value": "Sum"
+                      },
+                      {
+                        "name": "Group By",
+                        "value": "{\"properties\":[\"host_id\"]}"
+                      }
+                    ],
+                    "type": "function"
+                  }
+                ],
+                "function": "nonNegativeDerivative",
+                "id": "9eae-d77f3c68b801",
+                "parameters": [
+                  {
+                    "name": "Max Value",
+                    "value": null
+                  },
+                  {
+                    "name": "Keep Last Value Limit",
+                    "value": null
+                  }
+                ],
+                "type": "function",
+                "uiIndex": 0
+              }
+            },
+            "filter": {
+              "function": "highestCurrent",
+              "parameters": [
+                {
+                  "name": "Top N",
+                  "value": 30
+                }
+              ],
+              "children": [],
+              "id": "4be3-f6bf057e40b9",
+              "type": "function"
+            },
+            "id": "2747-8b3ea8174b55",
+            "name": {
+              "auto": true,
+              "prefix": null
+            },
+            "scalarTransforms": [
+              {
+                "function": "current",
+                "children": [],
+                "id": "a510-0610a71171f5",
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "uiIndex": 0,
+            "excludeComposites": true
+          }
+        },
+        "seriesProperties": {
+          "byTreeExp": [
+            {
+              "id": "2747-8b3ea8174b55",
+              "options": {
+                "yAxis": {},
+                "andtGauge": {
+                  "type": "andtGauge",
+                  "mainValue": {
+                    "fontSize": 100,
+                    "decimalPlaces": 4,
+                    "unitText": "",
+                    "abbreviate": true,
+                    "thousandsSeparator": true
+                  },
+                  "prefix": {
+                    "text": "",
+                    "fontSize": 50
+                  },
+                  "suffix": {
+                    "text": "",
+                    "fontSize": 50
+                  },
+                  "orientation": "leftRight",
+                  "thresholdColorElement": "foreground",
+                  "defaultColor": {
+                    "hex": "",
+                    "text": "Transparent"
+                  },
+                  "thresholds": [
+                    {
+                      "order": 1,
+                      "color": {
+                        "hex": "#94D85F",
+                        "text": "Light Green"
+                      },
+                      "value": "",
+                      "operator": ">="
+                    },
+                    {
+                      "order": 2,
+                      "color": {
+                        "hex": "#FF9936",
+                        "text": "Orange"
+                      },
+                      "value": "",
+                      "operator": ">="
+                    },
+                    {
+                      "order": 3,
+                      "color": {
+                        "hex": "#F21224",
+                        "text": "Red"
+                      },
+                      "value": "",
+                      "operator": ">="
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "legend": {
+          "enabled": true,
+          "pinned": true,
+          "isPinnable": true,
+          "position": "bottom",
+          "layout": "table",
+          "isLayoutChangable": true,
+          "ratio": 0.14536340852130325,
+          "horizontalRatio": 0.3
+        },
+        "userTimeZone": "Browser",
+        "bucketStartTimeFF": false,
+        "resolution": {
+          "value": "medium"
+        },
+        "eventListeners": {}
+      },
+      "isSimpleSearchMode": false,
+      "row": 12,
+      "col": 6
+    },
+    {
+      "id": "6dac-38ea9585e3dd",
+      "sizeX": 6,
+      "sizeY": 3,
+      "title": {
+        "text": "Batch Records Erros"
+      },
+      "andtGauge": {
+        "gridster": {},
+        "resolution": {
+          "value": ""
+        },
+        "expressionTrees": {
+          "873e-7a7fcdb36fdc": {
+            "compositeCount": 0,
+            "displayOnly": true,
+            "expressionTree": {
+              "root": {
+                "children": [
+                  {
+                    "searchObject": {
+                      "expression": [
+                        {
+                          "type": "property",
+                          "key": "what",
+                          "value": "pipeline_batchErrorRecords",
+                          "isExact": true
+                        }
+                      ]
+                    },
+                    "children": [],
+                    "type": "metric",
+                    "id": "3904-959628c6e06f",
+                    "uiIndex": 0
+                  }
+                ],
+                "function": "sumSeries",
+                "id": "fb53-1d971cbc275d",
+                "parameters": [],
+                "type": "function",
+                "uiIndex": 0
+              }
+            },
+            "filter": {
+              "function": "alphanumeric",
+              "parameters": [
+                {
+                  "name": "Top N",
+                  "value": 1
+                }
+              ],
+              "children": [],
+              "id": "4be3-f6bf057e40b9",
+              "type": "function"
+            },
+            "id": "873e-7a7fcdb36fdc",
+            "name": {
+              "auto": true,
+              "prefix": null
+            },
+            "scalarTransforms": [
+              {
+                "function": "current",
+                "children": [],
+                "id": "c50a-0ac803d154d5",
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "uiIndex": 0,
+            "excludeComposites": true
+          }
+        },
+        "displayProperties": {
+          "byTreeExp": [
+            {
+              "id": "873e-7a7fcdb36fdc",
+              "options": {
+                "andtGauge": {
+                  "type": "andtGauge",
+                  "mainValue": {
+                    "fontSize": 100,
+                    "decimalPlaces": 4,
+                    "unitText": "",
+                    "abbreviate": true,
+                    "thousandsSeparator": true
+                  },
+                  "prefix": {
+                    "text": "",
+                    "fontSize": 50
+                  },
+                  "suffix": {
+                    "text": "",
+                    "fontSize": 50
+                  },
+                  "orientation": "leftRight",
+                  "thresholdColorElement": "foreground",
+                  "defaultColor": {
+                    "hex": "",
+                    "text": "Transparent"
+                  },
+                  "thresholds": [
+                    {
+                      "order": 1,
+                      "color": {
+                        "hex": "#94D85F",
+                        "text": "Light Green"
+                      },
+                      "value": "",
+                      "operator": ">="
+                    },
+                    {
+                      "order": 2,
+                      "color": {
+                        "hex": "#FF9936",
+                        "text": "Orange"
+                      },
+                      "value": "",
+                      "operator": ">="
+                    },
+                    {
+                      "order": 3,
+                      "color": {
+                        "hex": "#F21224",
+                        "text": "Red"
+                      },
+                      "value": "",
+                      "operator": ">="
+                    }
+                  ]
+                },
+                "type": "line",
+                "stacking": null,
+                "yAxis": {
+                  "opposite": false,
+                  "max": null,
+                  "min": null,
+                  "type": "linear",
+                  "minorTickInterval": "auto"
+                }
+              }
+            }
+          ]
+        },
+        "eventListeners": {}
+      },
+      "isSimpleSearchMode": false,
+      "row": 19,
+      "col": 0
+    },
+    {
+      "id": "458a-7ea51c97b247",
+      "sizeX": 6,
+      "sizeY": 3,
+      "title": {
+        "text": "Number of Pipelines"
+      },
+      "andtGauge": {
+        "gridster": {},
+        "resolution": {
+          "value": ""
+        },
+        "expressionTrees": {
+          "3503-4763ba9e90b4": {
+            "compositeCount": 0,
+            "displayOnly": true,
+            "expressionTree": {
+              "root": {
+                "children": [
+                  {
+                    "searchObject": {
+                      "expression": [
+                        {
+                          "type": "property",
+                          "key": "pipeline_id",
+                          "value": "*",
+                          "isExact": false
+                        },
+                        {
+                          "type": "selector",
+                          "value": "$host_id"
+                        },
+                        {
+                          "type": "property",
+                          "key": "what",
+                          "value": "pipeline_batchCount",
+                          "isExact": true
+                        }
+                      ]
+                    },
+                    "children": [],
+                    "type": "metric",
+                    "id": "c46a-5faec1a3c07e",
+                    "uiIndex": 0
+                  }
+                ],
+                "function": "countSeries",
+                "id": "ceb3-2ff1db3a1207",
+                "parameters": [],
+                "type": "function",
+                "uiIndex": 0
+              }
+            },
+            "filter": {
+              "function": "alphanumeric",
+              "parameters": [
+                {
+                  "name": "Top N",
+                  "value": 1
+                }
+              ],
+              "children": [],
+              "id": "d4be-79c332f73c66",
+              "type": "function"
+            },
+            "id": "3503-4763ba9e90b4",
+            "name": {
+              "auto": true,
+              "prefix": null
+            },
+            "scalarTransforms": [
+              {
+                "function": "current",
+                "children": [],
+                "id": "782e-88a82bb0e5c4",
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "uiIndex": 0,
+            "excludeComposites": true
+          }
+        },
+        "displayProperties": {
+          "byTreeExp": [
+            {
+              "id": "3503-4763ba9e90b4",
+              "options": {
+                "andtGauge": {
+                  "type": "andtGauge",
+                  "mainValue": {
+                    "fontSize": 100,
+                    "decimalPlaces": 0,
+                    "unitText": "",
+                    "abbreviate": true,
+                    "thousandsSeparator": true
+                  },
+                  "prefix": {
+                    "text": "",
+                    "fontSize": 50
+                  },
+                  "suffix": {
+                    "text": "",
+                    "fontSize": 50
+                  },
+                  "orientation": "leftRight",
+                  "thresholdColorElement": "foreground",
+                  "defaultColor": {
+                    "hex": "",
+                    "text": "Transparent"
+                  },
+                  "thresholds": [
+                    {
+                      "order": 1,
+                      "color": {
+                        "hex": "#94D85F",
+                        "text": "Light Green"
+                      },
+                      "value": 1,
+                      "operator": ">="
+                    },
+                    {
+                      "order": 2,
+                      "color": {
+                        "hex": "#FF9936",
+                        "text": "Orange"
+                      },
+                      "value": 20,
+                      "operator": ">="
+                    },
+                    {
+                      "order": 3,
+                      "color": {
+                        "hex": "#F21224",
+                        "text": "Red"
+                      },
+                      "value": 30,
+                      "operator": ">="
+                    }
+                  ]
+                },
+                "type": "line",
+                "stacking": null,
+                "yAxis": {
+                  "opposite": false,
+                  "max": null,
+                  "min": null,
+                  "type": "linear",
+                  "minorTickInterval": "auto"
+                }
+              }
+            }
+          ]
+        },
+        "eventListeners": {}
+      },
+      "isSimpleSearchMode": false,
+      "row": 19,
+      "col": 6
+    },
+    {
+      "title": {},
+      "col": 0,
+      "row": 22,
+      "freeText": {
+        "class": "dashboard-title",
+        "type": "html",
+        "text": "<strong>HELP</strong>\n<p>Health Check: every 60 seconds monitoring pipeline must send heath check with value 1 to indicate that it’s working (normal value is 4-5 every 5 minutes)</p> <p>Destination Latency: how long the request to Anodot API is executed</p><p>Memory Usage, CPU Usage:  Limits depend on clients machine capacity</p><p>Pipeline Charts: these are Sum Series from all pipelines (Input, Output and Errors Numbers)</p>"
+      },
+      "sizeY": 2,
+      "sizeX": 12,
+      "id": "fa32-81d1ce4bbe3c"
+    },
+    {
+      "col": 0,
+      "row": 24,
+      "isSimpleSearchMode": false,
+      "lineChart": {
+        "legend": {
+          "horizontalRatio": 0.3,
+          "ratio": 0.2,
+          "isLayoutChangable": true,
+          "layout": "table",
+          "position": "bottom",
+          "isPinnable": true,
+          "pinned": false,
+          "enabled": false
+        },
+        "seriesProperties": {
+          "byTreeExp": [
+            {
+              "options": {
+                "andtGauge": {
+                  "thresholds": [
+                    {
+                      "operator": ">=",
+                      "value": "",
+                      "color": {
+                        "text": "Light Green",
+                        "hex": "#94D85F"
+                      },
+                      "order": 1
+                    },
+                    {
+                      "operator": ">=",
+                      "value": "",
+                      "color": {
+                        "text": "Orange",
+                        "hex": "#FF9936"
+                      },
+                      "order": 2
+                    },
+                    {
+                      "operator": ">=",
+                      "value": "",
+                      "color": {
+                        "text": "Red",
+                        "hex": "#F21224"
+                      },
+                      "order": 3
+                    }
+                  ],
+                  "defaultColor": {
+                    "text": "Transparent",
+                    "hex": ""
+                  },
+                  "thresholdColorElement": "foreground",
+                  "orientation": "leftRight",
+                  "suffix": {
+                    "fontSize": 50,
+                    "text": ""
+                  },
+                  "prefix": {
+                    "fontSize": 50,
+                    "text": ""
+                  },
+                  "mainValue": {
+                    "thousandsSeparator": true,
+                    "abbreviate": true,
+                    "unitText": "",
+                    "decimalPlaces": 4,
+                    "fontSize": 100
+                  },
+                  "type": "andtGauge"
+                },
+                "yAxis": {}
+              },
+              "id": "9017-dfc586ee755c"
+            }
+          ]
+        },
+        "expressionTrees": {
+          "9017-dfc586ee755c": {
+            "uiIndex": 1,
+            "scalarTransforms": [
+              {
+                "type": "function",
+                "parameters": [],
+                "id": "c5c7-2580924515c3",
+                "children": [],
+                "function": "current"
+              }
+            ],
+            "name": {
+              "prefix": null,
+              "auto": true
+            },
+            "id": "9017-dfc586ee755c",
+            "filter": {
+              "function": "alphanumeric",
+              "parameters": [
+                {
+                  "name": "Top N",
+                  "value": 50
+                }
+              ],
+              "children": [],
+              "id": "d408-4906888d4cff",
+              "type": "function"
+            },
+            "expressionTree": {
+              "root": {
+                "children": [
+                  {
+                    "searchObject": {
+                      "expression": [
+                        {
+                          "type": "property",
+                          "key": "measurement_category",
+                          "value": "sla_details",
+                          "isExact": true
+                        }
+                      ]
+                    },
+                    "children": [],
+                    "type": "metric",
+                    "id": "27b5-e58b2c1ef722",
+                    "uiIndex": 0
+                  }
+                ],
+                "function": "PercentMissingValues",
+                "id": "fedb-5076abe0ae29",
+                "parameters": [],
+                "type": "function",
+                "uiIndex": 1
+              }
+            },
+            "displayOnly": true,
+            "compositeCount": 0
+          }
+        },
+        "bucketStartTimeFF": false,
+        "userTimeZone": "Browser",
+        "gridster": {},
+        "height": 1,
+        "resolution": {
+          "value": ""
+        },
+        "eventListeners": {}
+      },
+      "title": {
+        "text": "Процент потерянных метрик"
+      },
+      "sizeY": 3,
+      "sizeX": 6,
+      "id": "43d8-9b84e15d34ce"
+    }
+  ],
+  "selectorsFilter": {
+    "selectors": [
+      {
+        "id": "8a5d-1a0401b6f118",
+        "name": "host_id",
+        "expressions": [
+          {
+            "type": "property",
+            "key": "host_id",
+            "value": ""
+          }
+        ],
+        "selectedValue": {
+          "name": "All",
+          "value": "*",
+          "isAll": true,
+          "_uiSelectChoiceDisabled": false
+        },
+        "dependencyGroup": {
+          "text": "Group A",
+          "id": "groupA"
+        }
+      }
+    ]
+  }
+}

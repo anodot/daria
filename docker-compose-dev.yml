@@ -31,6 +31,7 @@ services:
       ANODOT_API_URL: 'http://dummy_destination'
       SDC_DATA_PATH: '/sdc-data'
       ENV_PROD: 'false'
+      GIT_SHA1: 'local'
     stdin_open: true
     tty: true
     depends_on:
@@ -137,7 +138,7 @@ services:
   dummy_destination:
     build: dummy_destination
     volumes:
-      - dummy-destination-data:/app
+      - dummy-destination-data:/app/log
 
 
 volumes:

@@ -3,7 +3,7 @@
     "value": 1.0,
     "properties": {
       "what": "clicks",
-      "target_type": "gauge",
+      "target_type": "counter",
       "ver": "AD200",
       "Country": "USA",
       "Exchange": "DoubleClick"
@@ -11,7 +11,9 @@
     "tags": {
       "source": ["anodot-agent"],
       "source_host_id": ["ABCDEF"],
-      "source_host_name": ["agent"]
+      "source_host_name": ["agent"],
+      "pipeline_id": ["pipeline_id"],
+      "pipeline_type": ["type"]
     },
     "timestamp": 1512867600
   },
@@ -19,7 +21,7 @@
     "value": 1.0,
     "properties": {
       "what": "clicks",
-      "target_type": "gauge",
+      "target_type": "counter",
       "ver": "AD200",
       "Country": "USA",
       "Exchange": "DoubleClick"
@@ -27,7 +29,9 @@
     "tags": {
       "source": ["anodot-agent"],
       "source_host_id": ["ABCDEF"],
-      "source_host_name": ["agent"]
+      "source_host_name": ["agent"],
+      "pipeline_id": ["pipeline_id"],
+      "pipeline_type": ["type"]
     },
     "timestamp": 1512871200
   },
@@ -35,7 +39,7 @@
     "value": 1.0,
     "properties": {
       "what": "clicks",
-      "target_type": "gauge",
+      "target_type": "counter",
       "ver": "AD200",
       "Country": "USA",
       "Exchange": "DoubleClick"
@@ -43,7 +47,9 @@
     "tags": {
       "source": ["anodot-agent"],
       "source_host_id": ["ABCDEF"],
-      "source_host_name": ["agent"]
+      "source_host_name": ["agent"],
+      "pipeline_id": ["pipeline_id"],
+      "pipeline_type": ["type"]
     },
     "timestamp": 1512874800
   },
@@ -51,7 +57,7 @@
     "value": 1.0,
     "properties": {
       "what": "clicks",
-      "target_type": "gauge",
+      "target_type": "counter",
       "ver": "AD200",
       "Country": "USA",
       "Exchange": "DoubleClick"
@@ -59,7 +65,9 @@
     "tags": {
       "source": ["anodot-agent"],
       "source_host_id": ["ABCDEF"],
-      "source_host_name": ["agent"]
+      "source_host_name": ["agent"],
+      "pipeline_id": ["pipeline_id"],
+      "pipeline_type": ["type"]
     },
     "timestamp": 1512878400
   },
@@ -67,7 +75,7 @@
     "value": 1.0,
     "properties": {
       "what": "clicks",
-      "target_type": "gauge",
+      "target_type": "counter",
       "ver": "AD200",
       "Country": "USA",
       "Exchange": "DoubleClick"
@@ -75,7 +83,9 @@
     "tags": {
       "source": ["anodot-agent"],
       "source_host_id": ["ABCDEF"],
-      "source_host_name": ["agent"]
+      "source_host_name": ["agent"],
+      "pipeline_id": ["pipeline_id"],
+      "pipeline_type": ["type"]
     },
     "timestamp": 1512882000
   },
@@ -83,7 +93,7 @@
     "value": 1.0,
     "properties": {
       "what": "clicks",
-      "target_type": "gauge",
+      "target_type": "counter",
       "ver": "AD200",
       "Country": "USA",
       "Exchange": "DoubleClick"
@@ -91,7 +101,9 @@
     "tags": {
       "source": ["anodot-agent"],
       "source_host_id": ["ABCDEF"],
-      "source_host_name": ["agent"]
+      "source_host_name": ["agent"],
+      "pipeline_id": ["pipeline_id"],
+      "pipeline_type": ["type"]
     },
     "timestamp": 1512885600
   },
@@ -99,7 +111,7 @@
     "value": 1.0,
     "properties": {
       "what": "clicks",
-      "target_type": "gauge",
+      "target_type": "counter",
       "ver": "AD200",
       "Country": "",
       "Exchange": "DoubleClick",
@@ -107,7 +119,9 @@
     "tags": {
       "source": ["anodot-agent"],
       "source_host_id": ["ABCDEF"],
-      "source_host_name": ["agent"]
+      "source_host_name": ["agent"],
+      "pipeline_id": ["pipeline_id"],
+      "pipeline_type": ["type"]
     },
     "timestamp": 1512889200
   }

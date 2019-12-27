@@ -67,11 +67,3 @@ class JsonConfigHandler(BaseConfigHandler):
                 self.convert_timestamp_to_unix(stage)
 
         self.update_destination_config()
-
-    def get_property_mapping(self, property_value):
-        mapping = self.client_config['source']['config'].get('csv_mapping', {})
-        for idx, item in mapping.items():
-            if item == property_value:
-                return idx
-
-        return property_value

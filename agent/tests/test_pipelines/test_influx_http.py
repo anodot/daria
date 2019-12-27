@@ -23,10 +23,10 @@ class TestInflux(TestPipelineBase):
                        {'name': 'test_influx_file_full'}],
         'test_stop': [{'name': 'test_basic'}, {'name': 'test_basic_offset'}, {'name': 'test_influx_file_short'},
                       {'name': 'test_influx_file_full'}],
-        'test_output': [{'name': 'test_basic', 'output': 'influx.json'},
-                        {'name': 'test_basic_offset', 'output': 'influx_offset.json'},
-                        {'name': 'test_influx_file_short', 'output': 'influx.json'},
-                        {'name': 'test_influx_file_full', 'output': 'influx_file_full.json'}],
+        'test_output': [{'name': 'test_basic', 'output': 'influx.json', 'pipeline_type': 'influx'},
+                        {'name': 'test_basic_offset', 'output': 'influx_offset.json', 'pipeline_type': 'influx'},
+                        {'name': 'test_influx_file_short', 'output': 'influx.json', 'pipeline_type': 'influx'},
+                        {'name': 'test_influx_file_full', 'output': 'influx_file_full.json', 'pipeline_type': 'influx'}],
         'test_delete_pipeline': [{'name': 'test_basic'}, {'name': 'test_basic_offset'},
                                  {'name': 'test_influx_file_short'}, {'name': 'test_influx_file_full'}],
         'test_source_delete': [{'name': 'test_influx'}, {'name': 'test_influx_offset'}, {'name': 'test_influx_1'}],
@@ -39,7 +39,7 @@ class TestInflux(TestPipelineBase):
 
     def test_create(self, cli_runner, name, source):
         result = cli_runner.invoke(pipeline_cli.create,
-                                   input=f'{source}\n{name}\ncpu_test\nusage_active usage_idle\n\ncpu zone host\n\n7000000\n')
+                                   input=f'{source}\n{name}\ncpu_test\n\nusage_active usage_idle\n\ncp<u zone host\n\n7000000\n\n\n')
         assert result.exit_code == 0
         assert api_client.get_pipeline(name)
 

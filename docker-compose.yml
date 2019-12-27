@@ -32,6 +32,7 @@ services:
       ANODOT_API_URL: 'http://dummy_destination'
       SDC_DATA_PATH: '/sdc-data'
       ENV_PROD: 'false'
+#      VALIDATION_ENABLED: 'false'
     stdin_open: true
     tty: true
     depends_on:
@@ -45,8 +46,8 @@ services:
   mongo:
     image: mongo
     restart: always
-    ports:
-      - "27017:27017"
+#    ports:
+#      - "27017:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: root
@@ -57,17 +58,17 @@ services:
 
   zookeeper:
     image: wurstmeister/zookeeper
-    ports:
-      - "2181:2181"
+#    ports:
+#      - "2181:2181"
   kafka:
 #    image: wurstmeister/kafka:0.10.2.1
     image: wurstmeister/kafka
     container_name: agent-kafka
-    ports:
-      - "9092:9092"
-    expose:
-      - "9093"
-      - "9094"
+#    ports:
+#      - "9092:9092"
+#    expose:
+#      - "9093"
+#      - "9094"
     environment:
       KAFKA_LISTENERS: PLAINTEXT://:29092,PLAINTEXT_HOST://:9092
 #      KAFKA_LISTENERS: PLAINTEXT://:29092,PLAINTEXT_HOST://:9092,SSL://:9093,SSL_DOCKER://:9094
@@ -96,8 +97,8 @@ services:
 
   influx:
     image: influxdb
-    ports:
-      - "8086:8086"
+#    ports:
+#      - "8086:8086"
     volumes:
       - /var/lib/influxdb
       - ./volumes/influx-initdb:/docker-entrypoint-initdb.d
@@ -120,8 +121,8 @@ services:
     environment:
       MYSQL_ROOT_HOST: "%"
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-    ports:
-      - "3306:3306"
+#    ports:
+#      - "3306:3306"
     volumes:
       - /var/lib/mysql
       - ./volumes/mysql-initdb:/docker-entrypoint-initdb.d
@@ -138,7 +139,7 @@ services:
   dummy_destination:
     build: dummy_destination
     volumes:
-      - dummy-destination-data:/app
+      - dummy-destination-data:/app/log
 
 
 volumes:

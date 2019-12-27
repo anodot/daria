@@ -22,12 +22,12 @@ class TestMySQL(TestPipelineBase):
                        {'name': 'test_mysql_advanced'}, {'name': 'test_jdbc_file_short'}, {'name': 'test_jdbc_file_full'}],
         'test_stop': [{'name': 'test_mysql'}, {'name': 'test_mysql_timestamp_ms'}, {'name': 'test_mysql_timestamp_datetime'},
                       {'name': 'test_mysql_advanced'}, {'name': 'test_jdbc_file_short'}, {'name': 'test_jdbc_file_full'}],
-        'test_output': [{'name': 'test_mysql', 'output': 'jdbc.json'},
-                        {'name': 'test_mysql_timestamp_ms', 'output': 'jdbc.json'},
-                        {'name': 'test_mysql_timestamp_datetime', 'output': 'jdbc.json'},
-                        {'name': 'test_mysql_advanced', 'output': 'jdbc_file_full.json'},
-                        {'name': 'test_jdbc_file_short', 'output': 'jdbc.json'},
-                        {'name': 'test_jdbc_file_full', 'output': 'jdbc_file_full.json'}],
+        'test_output': [{'name': 'test_mysql', 'output': 'jdbc.json', 'pipeline_type': 'mysql'},
+                        {'name': 'test_mysql_timestamp_ms', 'output': 'jdbc.json', 'pipeline_type': 'mysql'},
+                        {'name': 'test_mysql_timestamp_datetime', 'output': 'jdbc.json', 'pipeline_type': 'mysql'},
+                        {'name': 'test_mysql_advanced', 'output': 'jdbc_file_full.json', 'pipeline_type': 'mysql'},
+                        {'name': 'test_jdbc_file_short', 'output': 'jdbc.json', 'pipeline_type': 'mysql'},
+                        {'name': 'test_jdbc_file_full', 'output': 'jdbc_file_full.json', 'pipeline_type': 'mysql'}],
         'test_delete_pipeline': [{'name': 'test_mysql'}, {'name': 'test_mysql_timestamp_ms'}, {'name': 'test_mysql_timestamp_datetime'},
                                  {'name': 'test_mysql_advanced'}, {'name': 'test_jdbc_file_short'}, {'name': 'test_jdbc_file_full'}],
         'test_source_delete': [{'name': 'test_jdbc'}, {'name': 'test_mysql_1'}]
@@ -40,13 +40,13 @@ class TestMySQL(TestPipelineBase):
 
     def test_create(self, cli_runner, name, source, timestamp_type, timestamp_name):
         result = cli_runner.invoke(pipeline_cli.create,
-                                   input=f'{source}\n{name}\ntest\n\nclicks:gauge impressions:gauge\n{timestamp_name}\n{timestamp_type}\nadsize country\n\n\n1000\n')
+                                   input=f'{source}\n{name}\ntest\n\n\n1000\n\n\nclicks:gauge impressions:gauge\n{timestamp_name}\n{timestamp_type}\nadsize country\n\n\n')
         assert result.exit_code == 0
         assert api_client.get_pipeline(name)
 
     def test_create_advanced(self, cli_runner, name, source):
         result = cli_runner.invoke(pipeline_cli.create, ['-a'],
-                                   input=f'{source}\n{name}\ntest\ny\nclicks:gauge impressions:gauge\ntimestamp_unix\nunix\nadsize country\nkey1:val1 key2:val2\n\n\n1000\ncountry = \'USA\'\n')
+                                   input=f'{source}\n{name}\ntest\n\n\n1000\n\ny\nclicks:gauge impressions:gauge\ntimestamp_unix\nunix\nadsize country\nkey1:val1 key2:val2\ncountry = \'USA\'\n\n\n')
         assert result.exit_code == 0
         assert api_client.get_pipeline(name)
 

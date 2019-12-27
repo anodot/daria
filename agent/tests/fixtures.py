@@ -7,7 +7,7 @@ from agent.streamsets_api_client import api_client
 from click.testing import CliRunner
 from agent.constants import SDC_DATA_PATH, SDC_RESULTS_PATH
 from agent.destination.http import HttpDestination
-from agent.pipeline import Pipeline
+from agent.pipeline import load_object, PipelineManager
 
 
 @pytest.fixture(scope="session")
@@ -20,8 +20,7 @@ def cli_runner():
         api_client.stop_pipeline('Monitoring')
         api_client.force_stop_pipeline('Monitoring')
         time.sleep(2)
-        pipeline_monitoring = Pipeline('Monitoring')
-        pipeline_monitoring.delete()
+        PipelineManager(load_object('Monitoring')).delete()
 
     for filename in os.listdir(SDC_DATA_PATH):
         if filename.startswith('error-test_'):
@@ -35,22 +34,11 @@ def cli_runner():
         os.remove(HttpDestination.FILE)
 
 
-def replace_destination(name):
-    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'test_pipelines/test_destination.json')) as f:
-        test_destination = json.load(f)
-    pipeline = api_client.get_pipeline(name)
-    test_destination['inputLanes'] = [pipeline['stages'][-2]['outputLanes'][0]]
-    for key, stage in enumerate(pipeline['stages']):
-        if stage['instanceName'] == 'destination':
-            test_destination['inputLanes'] = [pipeline['stages'][key-1]['outputLanes'][0]]
-            pipeline['stages'][key] = test_destination
-    api_client.update_pipeline(name, pipeline)
-
-
-def get_output(pipeline_name):
-    for filename in os.listdir(SDC_RESULTS_PATH):
-        if filename.startswith(f'sdc-{pipeline_name}-'):
-            with open(os.path.join(SDC_RESULTS_PATH, filename)) as f:
+def get_output(pipeline_name, pipeline_type):
+    dummy_destination_output_path = '/output'
+    for filename in os.listdir(dummy_destination_output_path):
+        if filename == pipeline_name + '_' + pipeline_type + '.json':
+            with open(os.path.join(dummy_destination_output_path, filename)) as f:
                 return json.load(f)
 
 

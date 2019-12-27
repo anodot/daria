@@ -2,7 +2,7 @@ import click
 import re
 
 from .abstract_source import Source, SourceException
-from agent.tools import infinite_retry
+from agent.tools import infinite_retry, print_json, if_validation_enabled
 from pymongo import MongoClient
 
 
@@ -29,6 +29,7 @@ class MongoSource(Source):
     AUTH_TYPE_USER_PASS = 'USER_PASS'
 
     VALIDATION_SCHEMA_FILE_NAME = 'mongo.json'
+    TEST_PIPELINE_NAME = 'test_mongo_rand847'
 
     offset_types = [OFFSET_TYPE_OBJECT_ID, OFFSET_TYPE_STRING, OFFSET_TYPE_DATE]
 
@@ -40,9 +41,11 @@ class MongoSource(Source):
             args['password'] = self.config.get(self.CONFIG_PASSWORD)
         return MongoClient(self.config[self.CONFIG_CONNECTION_STRING], **args)
 
+    @if_validation_enabled
     def validate_connection(self):
         client = self.get_mongo_client()
         client.server_info()
+        click.echo('Connected to Mongo server')
 
     @infinite_retry
     def prompt_connection(self, default_config: dict):
@@ -50,25 +53,19 @@ class MongoSource(Source):
                                                                   default=default_config.get(
                                                                       self.CONFIG_CONNECTION_STRING)).strip()
         self.validate_connection()
-        click.echo('Connected to Mongo server')
 
     @infinite_retry
     def prompt_auth(self, default_config: dict):
         self.config[self.CONFIG_USERNAME] = click.prompt('Username', type=click.STRING,
                                                          default=default_config.get(self.CONFIG_USERNAME, '')).strip()
-
         if self.config[self.CONFIG_USERNAME] == '':
-            del self.config[self.CONFIG_USERNAME]
-            self.config[self.CONFIG_AUTH_TYPE] = self.AUTH_TYPE_NONE
             return
 
         self.config[self.CONFIG_PASSWORD] = click.prompt('Password', type=click.STRING,
                                                          default=default_config.get(self.CONFIG_PASSWORD, ''))
-        self.config[self.CONFIG_AUTH_TYPE] = self.AUTH_TYPE_USER_PASS
         self.config[self.CONFIG_AUTH_SOURCE] = click.prompt('Authentication Source', type=click.STRING,
                                                             default=default_config.get(self.CONFIG_AUTH_SOURCE, '')).strip()
         self.validate_connection()
-        click.echo('Authentication successful')
 
     def prompt_batch_wait_time(self, default_config: dict):
         default_batch_wait_time = default_config.get(self.CONFIG_MAX_BATCH_WAIT_TIME)
@@ -95,6 +92,7 @@ class MongoSource(Source):
                                                              default=default_config.get(self.CONFIG_OFFSET_FIELD,
                                                                                         '_id')).strip()
 
+    @if_validation_enabled
     def validate_db(self):
         client = self.get_mongo_client()
         if self.config[self.CONFIG_DATABASE] not in client.list_database_names():
@@ -107,6 +105,7 @@ class MongoSource(Source):
                                                          default=default_config.get(self.CONFIG_DATABASE)).strip()
         self.validate_db()
 
+    @if_validation_enabled
     def validate_collection(self):
         client = self.get_mongo_client()
         if self.config[self.CONFIG_COLLECTION] not in client[self.config[self.CONFIG_DATABASE]].list_collection_names():
@@ -139,7 +138,23 @@ class MongoSource(Source):
         return self.config
 
     def validate(self):
-        super().validate()
+        self.validate_json()
         self.validate_connection()
         self.validate_db()
         self.validate_collection()
+
+    def set_config(self, config):
+        super().set_config(config)
+        if self.config[self.CONFIG_USERNAME] != '':
+            self.config[self.CONFIG_AUTH_TYPE] = self.AUTH_TYPE_USER_PASS
+        else:
+            self.config[self.CONFIG_AUTH_TYPE] = self.AUTH_TYPE_NONE
+            del self.config[self.CONFIG_USERNAME]
+
+    @if_validation_enabled
+    def print_sample_data(self):
+        records = self.get_sample_records()
+        if not records:
+            return
+
+        print_json(records)

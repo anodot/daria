@@ -610,7 +610,7 @@
         "stageType" : "PROCESSOR"
       },
       "inputLanes" : [ "ExpressionEvaluator_02OutputLane15480856372920" ],
-      "outputLanes" : [ "FieldTypeConverter_01OutputLane15480748187410" ],
+      "outputLanes" : [ "destination_OutputLane" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -908,7 +908,7 @@
         "yPos" : 135.9935302734375,
         "stageType" : "TARGET"
       },
-      "inputLanes" : [ "FieldTypeConverter_01OutputLane15480748187410" ],
+      "inputLanes" : [ "destination_OutputLane" ],
       "outputLanes" : [ ],
       "eventLanes" : [ ],
       "services" : [ ]

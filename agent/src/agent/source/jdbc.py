@@ -1,13 +1,14 @@
 import click
 
 from .abstract_source import Source
-from agent.tools import infinite_retry, is_url
+from agent.tools import infinite_retry, is_url, print_dicts, if_validation_enabled
 from sqlalchemy import create_engine
 from urllib.parse import urlparse, urlunparse
 
 
 class JDBCSource(Source):
     VALIDATION_SCHEMA_FILE_NAME = 'jdbc.json'
+    TEST_PIPELINE_NAME = 'test_jdbc_pdsf4587'
 
     def get_connection_url(self):
         conn_info = urlparse(self.config['connection_string'])
@@ -38,9 +39,11 @@ class JDBCSource(Source):
                                                         default=default_config.get('connection_string')).strip()
         self.validate_connection_string()
 
+    @if_validation_enabled
     def validate_connection(self):
         eng = create_engine(self.get_connection_url())
         eng.connect()
+        click.secho('Connection successful')
 
     @infinite_retry
     def prompt_connection(self, default_config):
@@ -57,7 +60,6 @@ class JDBCSource(Source):
             self.config['hikariConfigBean.useCredentials'] = True
 
         self.validate_connection()
-        click.secho('Connection successful')
 
     def prompt(self, default_config, advanced=False):
         self.config = dict()
@@ -68,6 +70,19 @@ class JDBCSource(Source):
         return self.config
 
     def validate(self):
-        super().validate()
+        self.validate_json()
         self.validate_connection_string()
         self.validate_connection()
+
+    def set_config(self, config):
+        super().set_config(config)
+        self.config['hikariConfigBean.connectionString'] = 'jdbc:' + self.config['connection_string']
+        self.config['queryInterval'] = '${' + str(self.config.get('query_interval', '10')) + ' * SECONDS}'
+
+    @if_validation_enabled
+    def print_sample_data(self):
+        records = self.get_sample_records()
+        if not records:
+            return
+
+        print_dicts(records)

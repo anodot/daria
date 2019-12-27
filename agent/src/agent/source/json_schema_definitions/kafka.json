@@ -1,15 +1,15 @@
 {
   "type": "object",
   "properties": {
-    "kafkaConfigBean.metadataBrokerList": {"type": "string"},
-    "kafkaConfigBean.consumerGroup": {"type": "string"},
-    "kafkaConfigBean.topic": {"type": "string"},
-    "kafkaConfigBean.kafkaAutoOffsetReset": {"type": "string"},
-    "kafkaConfigBean.maxBatchSize": {"type": "integer"},
-    "kafkaConfigBean.maxWaitTime": {"type": "integer"},
-    "kafkaConfigBean.kafkaConsumerConfigs": {"type": "string"},
+    "conf.brokerURI": {"type": "string"},
+    "conf.consumerGroup": {"type": "string"},
+    "conf.topicList": {"type": "array"},
+    "conf.kafkaAutoOffsetReset": {"type": "string"},
+    "conf.maxBatchSize": {"type": "integer"},
+    "conf.maxWaitTime": {"type": "integer"},
+    "conf.kafkaOptions": {"type": "array"},
     "version": {"type": "string", "enum": ["2.0+", "0.10", "0.11"]},
     "csv_mapping": {"type": "object"}
   },
-  "required": ["kafkaConfigBean.metadataBrokerList", "kafkaConfigBean.topic"]
+  "required": ["conf.brokerURI", "conf.topicList"]
 }
