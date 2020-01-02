@@ -1,5 +1,6 @@
 import click
 import json
+
 from .abstract_source import Source, SourceException
 from agent.tools import infinite_retry, print_dicts, print_json, map_keys, if_validation_enabled
 
@@ -133,7 +134,8 @@ class KafkaSource(Source):
 
     def update_test_source_config(self, stage):
         if self.CONFIG_VERSION in self.config:
-            stage['library'] = self.version_libraries[self.config[self.CONFIG_VERSION]]
+            self.config['library'] = self.version_libraries[self.config[self.CONFIG_VERSION]]
+
         super().update_test_source_config(stage)
 
     def change_field_names(self, default_config):
