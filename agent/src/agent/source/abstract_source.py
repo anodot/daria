@@ -130,7 +130,7 @@ class Source(ABC):
 
         try:
             data = preview_data['batchesOutput'][0][0]['output']['source_outputLane']
-        except (ValueError, TypeError):
+        except (ValueError, TypeError, IndexError):
             print('No preview data available')
             return
         return [sdc_record_map_to_dict(record['value']) for record in data[:self.MAX_SAMPLE_RECORDS]]
