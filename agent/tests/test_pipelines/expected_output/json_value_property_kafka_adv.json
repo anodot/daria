@@ -8,7 +8,8 @@
       "Country": "USA",
       "Exchange": "DoubleClick",
       "key1": "val1",
-      "ad_type": "d"
+      "ad_type": "d",
+      "GEN": "G"
     },
     "tags": {
       "source": ["anodot-agent"],
@@ -28,7 +29,8 @@
       "Country": "USA",
       "Exchange": "DoubleClick",
       "key1": "val1",
-      "ad_type": "d"
+      "ad_type": "d",
+      "GEN": "G"
     },
     "tags": {
       "source": ["anodot-agent"],
@@ -49,7 +51,8 @@
       "Exchange": "DoubleClick",
       "key1": "val1",
       "ad_type": "s",
-      "ADTYPE": "S"
+      "ADTYPE": "S",
+      "GEN": "G"
     },
     "tags": {
       "source": ["anodot-agent"],
@@ -69,7 +72,8 @@
       "Country": "USA",
       "Exchange": "DoubleClick",
       "key1": "val1",
-      "ad_type": "d"
+      "ad_type": "d",
+      "GEN": "G"
     },
     "tags": {
       "source": ["anodot-agent"],
@@ -90,7 +94,8 @@
       "Exchange": "DoubleClick",
       "key1": "val1",
       "ad_type": "s",
-      "ADTYPE": "S"
+      "ADTYPE": "S",
+      "GEN": "G"
     },
     "tags": {
       "source": ["anodot-agent"],

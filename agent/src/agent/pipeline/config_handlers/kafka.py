@@ -89,9 +89,9 @@ state['STATIC_WHAT'] = {static_what};
             return transformations
         with open(file) as f:
             for row in csv.DictReader(f, fieldnames=['result', 'value', 'condition']):
-                exp = row['value']
+                exp = f"'{row['value']}'"
                 if row['condition']:
-                    exp = f"{condition.get_expression(row['condition'])} ? '{exp}' : record:value('/{row['result']}')"
+                    exp = f"{condition.get_expression(row['condition'])} ? {exp} : record:value('/{row['result']}')"
 
                 transformations.append({'fieldToSet': '/' + row['result'], 'expression': '${' + exp + '}'})
         return transformations

@@ -51,7 +51,7 @@ class TestKafka(TestPipelineBase):
 
     def test_create(self, cli_runner, name, options, value, timestamp, advanced_options):
         result = cli_runner.invoke(pipeline_cli.create, options,
-                                   input=f"test_kfk\n{name}\n\n{value}\n{timestamp}\nver Country\nExchange optional_dim ad_type ADTYPE\n{advanced_options}\n")
+                                   input=f"test_kfk\n{name}\n\n{value}\n{timestamp}\nver Country\nExchange optional_dim ad_type ADTYPE GEN\n{advanced_options}\n")
         assert result.exit_code == 0
         assert api_client.get_pipeline(name)
 
