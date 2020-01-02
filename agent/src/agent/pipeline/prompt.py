@@ -1,5 +1,6 @@
 import click
 import os
+import csv
 
 from agent.pipeline.config_handlers.expression_parser import condition
 from agent.tools import infinite_retry, if_validation_enabled, dict_get_nested
@@ -201,22 +202,27 @@ class PromptConfigKafka(PromptConfig):
 
     @infinite_retry
     def prompt_files(self):
-        files = click.prompt('Transformations files paths', type=click.STRING,
-                             default=','.join(self.config['transform'].get('files', []))).strip()
-        files = files.split(',') if files else []
-        for file in files:
-            if not os.path.isfile(file):
-                raise click.UsageError(f'{file} doesn\'t exist')
-        self.config['transform']['files'] = files
+        file = click.prompt('Transformations files paths', type=click.File(),
+                            default=self.config['transform'].get('file', '')).strip()
+        if not file:
+            return
+        with open(file, 'r') as f:
+            for row in csv.reader(f):
+                if len(row) < 3:
+                    raise click.UsageError('Wrong csv format. Missing fields')
+                if row[2]:
+                    condition.validate_condition(row[2])
+
+        self.config['transform']['files'] = file
 
     @infinite_retry
     def prompt_condition(self):
-        condition = click.prompt('Filter condition', type=click.STRING,
-                                 default=self.config['filter'].get('condition', '')).strip()
-        if not condition:
+        condition_str = click.prompt('Filter condition', type=click.STRING,
+                                     default=self.config['filter'].get('condition', '')).strip()
+        if not condition_str:
             return
-        condition.validate_condition(condition)
-        self.config['filter']['condition'] = condition
+        condition.validate_condition(condition_str)
+        self.config['filter']['condition'] = condition_str
 
     def filter(self):
         if not self.advanced and not self.default_config.get('filter'):

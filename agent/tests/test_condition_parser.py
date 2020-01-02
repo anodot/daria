@@ -1,6 +1,6 @@
 import pytest
 
-from agent.pipeline.config_handlers.expression_parser import condition
+from agent.pipeline.config_handlers import expression_parser
 
 
 @pytest.mark.parametrize("literal, expected_result", [
@@ -13,7 +13,7 @@ from agent.pipeline.config_handlers.expression_parser import condition
     ('("(test"', 1),
 ])
 def test_count_opened_parenthesis(literal, expected_result):
-    assert condition.count_opened_parenthesis(literal) == expected_result
+    assert expression_parser.condition.count_opened_parenthesis(literal) == expected_result
 
 
 @pytest.mark.parametrize("literal, expected_result", [
@@ -24,7 +24,7 @@ def test_count_opened_parenthesis(literal, expected_result):
     ('"test)"', 0),
 ])
 def test_count_closed_parenthesis(literal, expected_result):
-    assert condition.count_closed_parenthesis(literal) == expected_result
+    assert expression_parser.condition.count_closed_parenthesis(literal) == expected_result
 
 
 @pytest.mark.parametrize("literal, expected_result", [
@@ -43,7 +43,7 @@ def test_count_closed_parenthesis(literal, expected_result):
     ('!("test', False),
 ])
 def test_first_operand_enclosed_in_quotes(literal, expected_result):
-    assert condition.first_operand_enclosed_in_quotes(literal) == expected_result
+    assert expression_parser.condition.first_operand_enclosed_in_quotes(literal) == expected_result
 
 
 @pytest.mark.parametrize("literal, expected_result", [
@@ -61,7 +61,7 @@ def test_first_operand_enclosed_in_quotes(literal, expected_result):
     ('!("test"', False)
 ])
 def test_last_operand_enclosed_in_quotes(literal, expected_result):
-    assert condition.last_operand_enclosed_in_quotes(literal) == expected_result
+    assert expression_parser.condition.last_operand_enclosed_in_quotes(literal) == expected_result
 
 
 @pytest.mark.parametrize("condition, expected_result", [
@@ -75,7 +75,7 @@ def test_last_operand_enclosed_in_quotes(literal, expected_result):
     ('"prop" == "val"   &&', ['"prop" == "val"', '&&']),
 ])
 def test_split_to_expressions(condition, expected_result):
-    assert condition.split_to_expressions(condition) == expected_result
+    assert expression_parser.condition.split_to_expressions(condition) == expected_result
 
 
 @pytest.mark.parametrize("expression, expected_result", [
@@ -91,7 +91,7 @@ def test_split_to_expressions(condition, expected_result):
     ('!("prop"  ==   "val"))', ['!("prop"', '==', '"val"))']),
 ])
 def test_split_to_literals(expression, expected_result):
-    assert condition.split_to_literals(expression) == expected_result
+    assert expression_parser.condition.split_to_literals(expression) == expected_result
 
 
 @pytest.mark.parametrize("condition, expected_result", [
@@ -103,4 +103,4 @@ def test_split_to_literals(expression, expected_result):
     ('"prop" endsWith "val"', 'str:endsWith(record:value(\'/prop\'), "val")'),
 ])
 def test_get_filtering_expression(condition, expected_result):
-    assert condition.get_expression(condition) == expected_result
+    assert expression_parser.condition.get_expression(condition) == expected_result
