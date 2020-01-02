@@ -42,6 +42,7 @@ services:
       - sdc-data:/sdc-data
       - agent-data:/usr/src/app/data
       - dummy-destination-data:/output
+      - ./test-datasets:/home
 
   mongo:
     image: mongo

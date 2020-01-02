@@ -2,7 +2,7 @@ import click
 import os
 import csv
 
-from agent.pipeline.config_handlers.expression_parser import condition
+from agent.pipeline.config_handlers import expression_parser
 from agent.tools import infinite_retry, if_validation_enabled, dict_get_nested
 from agent.pipeline.pipeline import Pipeline
 from urllib.parse import urljoin
@@ -202,27 +202,23 @@ class PromptConfigKafka(PromptConfig):
 
     @infinite_retry
     def prompt_files(self):
-        file = click.prompt('Transformations files paths', type=click.File(),
+        file = click.prompt('Transformations files paths', type=click.Path(),
                             default=self.config['transform'].get('file', '')).strip()
         if not file:
             return
-        with open(file, 'r') as f:
-            for row in csv.reader(f):
-                if len(row) < 3:
-                    raise click.UsageError('Wrong csv format. Missing fields')
-                if row[2]:
-                    condition.validate_condition(row[2])
 
-        self.config['transform']['files'] = file
+        expression_parser.transformation.validate_file(file)
+
+        self.config['transform']['file'] = file
 
     @infinite_retry
     def prompt_condition(self):
-        condition_str = click.prompt('Filter condition', type=click.STRING,
-                                     default=self.config['filter'].get('condition', '')).strip()
-        if not condition_str:
+        condition = click.prompt('Filter condition', type=click.STRING,
+                                 default=self.config['filter'].get('condition', '')).strip()
+        if not condition:
             return
-        condition.validate_condition(condition_str)
-        self.config['filter']['condition'] = condition_str
+        expression_parser.condition.validate(condition)
+        self.config['filter']['condition'] = condition
 
     def filter(self):
         if not self.advanced and not self.default_config.get('filter'):

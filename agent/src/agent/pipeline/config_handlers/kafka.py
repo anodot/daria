@@ -88,12 +88,12 @@ state['STATIC_WHAT'] = {static_what};
         if not file:
             return transformations
         with open(file) as f:
-            for row in csv.reader(f):
-                exp = row[1]
-                if row[2]:
-                    exp = condition.get_expression(row[2]) + '?' + exp + ':' + f"record:value('/{row[0]}')"
+            for row in csv.DictReader(f, fieldnames=['result', 'value', 'condition']):
+                exp = row['value']
+                if row['condition']:
+                    exp = f"{condition.get_expression(row['condition'])} ? '{exp}' : record:value('/{row['result']}')"
 
-                transformations.append({'fieldToSet': '/' + row[0], 'expression': '${' + exp + '}'})
+                transformations.append({'fieldToSet': '/' + row['result'], 'expression': '${' + exp + '}'})
         return transformations
 
     def set_variables_js(self, stage):

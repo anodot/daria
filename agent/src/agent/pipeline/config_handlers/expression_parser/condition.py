@@ -44,7 +44,7 @@ def replace_conjunction_operator(literal: str) -> str:
     return re.sub(r'^(\&\&|\|\|)[ ]+', '', literal)
 
 
-def validate_condition(condition: str) -> bool:
+def validate(condition: str) -> bool:
     parentheses_count_total = 0
     expressions = split_to_expressions(condition)
     for expression in expressions:
@@ -85,7 +85,7 @@ def get_end_quote_idx(literal: str) -> int:
 
 
 def get_expression(condition: str) -> str:
-    validate_condition(condition)
+    validate(condition)
     expressions = split_to_expressions(condition)
 
     condition = []

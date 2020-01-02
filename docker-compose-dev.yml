@@ -42,6 +42,7 @@ services:
       - agent-data:/data
       - dummy-destination-data:/output
       - ./agent:/usr/src/app
+      - ./test-datasets:/home
 
   mongo:
     image: mongo

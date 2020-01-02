@@ -7,7 +7,8 @@
       "ver": "AD200",
       "Country": "USA",
       "Exchange": "DoubleClick",
-      "key1": "val1"
+      "key1": "val1",
+      "ad_type": "d"
     },
     "tags": {
       "source": ["anodot-agent"],
@@ -26,7 +27,8 @@
       "ver": "AD200",
       "Country": "USA",
       "Exchange": "DoubleClick",
-      "key1": "val1"
+      "key1": "val1",
+      "ad_type": "d"
     },
     "tags": {
       "source": ["anodot-agent"],
@@ -45,7 +47,9 @@
       "ver": "AD200",
       "Country": "USA",
       "Exchange": "DoubleClick",
-      "key1": "val1"
+      "key1": "val1",
+      "ad_type": "s",
+      "ADTYPE": "S"
     },
     "tags": {
       "source": ["anodot-agent"],
@@ -64,7 +68,8 @@
       "ver": "AD200",
       "Country": "USA",
       "Exchange": "DoubleClick",
-      "key1": "val1"
+      "key1": "val1",
+      "ad_type": "d"
     },
     "tags": {
       "source": ["anodot-agent"],
@@ -83,7 +88,9 @@
       "ver": "AD200",
       "Country": "USA",
       "Exchange": "DoubleClick",
-      "key1": "val1"
+      "key1": "val1",
+      "ad_type": "s",
+      "ADTYPE": "S"
     },
     "tags": {
       "source": ["anodot-agent"],
@@ -93,24 +100,5 @@
       "pipeline_type": ["type"]
     },
     "timestamp": 1512882000
-  },
-  {
-    "value": 7427.7744,
-    "properties": {
-      "what": "Display",
-      "target_type": "gauge",
-      "ver": "AD200",
-      "Country": "",
-      "Exchange": "DoubleClick",
-      "key1": "val1"
-    },
-    "tags": {
-      "source": ["anodot-agent"],
-      "source_host_id": ["ABCDEF"],
-      "source_host_name": ["agent"],
-      "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"]
-    },
-    "timestamp": 1512889200
   }
 ]
