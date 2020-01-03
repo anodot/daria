@@ -13,11 +13,12 @@ class TestKafka(TestPipelineBase):
     params = {
         'test_create': [
             {'name': 'test_kfk_value_const', 'options': ['-a'], 'value': 'y\nclicksS\ny\n \n ',
-             'timestamp': 'timestamp_unix\nunix', 'properties': 'key1:val1'},
+             'timestamp': 'timestamp_unix\nunix', 'advanced_options': 'key1:val1\n\n'},
             {'name': 'test_kfk_timestamp_ms', 'options': [], 'value': 'n\nClicks:gauge\nClicks:clicks',
-             'timestamp': 'timestamp_unix_ms\nunix_ms', 'properties': ''},
+             'timestamp': 'timestamp_unix_ms\nunix_ms', 'advanced_options': '\n\n'},
             {'name': 'test_kfk_timestamp_string', 'options': ['-a'], 'value': 'y\nclicks\ny\n \n ',
-             'timestamp': 'timestamp_string\nstring\nM/d/yyyy H:mm:ss', 'properties': 'key1:val1'}],
+             'timestamp': 'timestamp_string\nstring\nM/d/yyyy H:mm:ss',
+             'advanced_options': 'key1:val1\n"Country" == "USA"\n/home/kafka_transform.csv'}],
         'test_create_source_with_file': [{'file_name': 'kafka_sources'}],
         'test_create_with_file': [{'file_name': 'kafka_pipelines'}],
         'test_edit': [{'options': ['test_kfk_value_const'], 'value': 'y\nclicks\n\n'},
@@ -48,9 +49,9 @@ class TestKafka(TestPipelineBase):
         assert result.exit_code == 0
         assert os.path.isfile(os.path.join(Source.DIR, 'test_kfk.json'))
 
-    def test_create(self, cli_runner, name, options, value, timestamp, properties):
+    def test_create(self, cli_runner, name, options, value, timestamp, advanced_options):
         result = cli_runner.invoke(pipeline_cli.create, options,
-                                   input=f"test_kfk\n{name}\n\n{value}\n{timestamp}\nver Country\nExchange optional_dim\n{properties}\n\n\n")
+                                   input=f"test_kfk\n{name}\n\n{value}\n{timestamp}\nver Country\nExchange optional_dim ad_type ADTYPE GEN\n{advanced_options}\n")
         assert result.exit_code == 0
         assert api_client.get_pipeline(name)
 

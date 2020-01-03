@@ -1,6 +1,8 @@
+import csv
+
 from .base import BaseConfigHandler
 from agent.logger import get_logger
-from agent.pipeline.config_handlers import filtering_condition_parser
+from .expression_parser import condition
 
 logger = get_logger(__name__)
 
@@ -78,6 +80,22 @@ state['STATIC_WHAT'] = {static_what};
                     'expression': '${' + f"record:exists('/{d_path}') ? (record:value('/{d_path}') == null) ? 'NULL' : record:value('/{d_path}') : null" + '}'
                 })
 
+            conf['value'] += self.get_transformations()
+
+    def get_transformations(self):
+        transformations = []
+        file = self.client_config.get('transform', {}).get('file')
+        if not file:
+            return transformations
+        with open(file) as f:
+            for row in csv.DictReader(f, fieldnames=['result', 'value', 'condition']):
+                exp = f"'{row['value']}'"
+                if row['condition']:
+                    exp = f"{condition.get_expression(row['condition'])} ? {exp} : record:value('/{row['result']}')"
+
+                transformations.append({'fieldToSet': '/' + row['result'], 'expression': '${' + exp + '}'})
+        return transformations
+
     def set_variables_js(self, stage):
         for conf in stage['configuration']:
             if conf['name'] == 'initScript':
@@ -113,7 +131,7 @@ state['STATIC_WHAT'] = {static_what};
                         expression = "record:value('/{0}') == 'gauge' || record:value('/{0}') == 'counter'"
                         conf['value'].append('${' + expression.format(self.get_property_mapping(target_type)) + '}')
                 if self.client_config.get('filter', {}).get('condition'):
-                    conf['value'].append(filtering_condition_parser.get_filtering_expression(
-                        self.client_config['filter']['condition']))
+                    conf['value'].append('${' + condition.get_expression(
+                        self.client_config['filter']['condition']) + '}')
 
 

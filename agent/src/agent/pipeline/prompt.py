@@ -1,8 +1,9 @@
 import click
 import os
+import csv
 
+from agent.pipeline.config_handlers import expression_parser
 from agent.tools import infinite_retry, if_validation_enabled, dict_get_nested
-from agent.pipeline.config_handlers import filtering_condition_parser
 from agent.pipeline.pipeline import Pipeline
 from urllib.parse import urljoin
 
@@ -144,7 +145,8 @@ class PromptConfigKafka(PromptConfig):
         self.set_timestamp()
         self.set_dimensions()
         self.set_static_properties()
-        self.filter_messages()
+        self.filter()
+        self.transform()
 
     def static_what(self):
         return self.config.get('static_what', True)
@@ -200,13 +202,14 @@ class PromptConfigKafka(PromptConfig):
 
     @infinite_retry
     def prompt_files(self):
-        files = click.prompt('Lookup tables files paths', type=click.STRING,
-                             default=','.join(self.config['filter'].get('files', []))).strip()
-        files = files.split(',') if files else []
-        for file in files:
-            if not os.path.isfile(file):
-                raise click.UsageError(f'{file} doesn\'t exist')
-        self.config['filter']['files'] = files
+        file = click.prompt('Transformations files paths', type=click.Path(),
+                            default=self.config['transform'].get('file', '')).strip()
+        if not file:
+            return
+
+        expression_parser.transformation.validate_file(file)
+
+        self.config['transform']['file'] = file
 
     @infinite_retry
     def prompt_condition(self):
@@ -214,17 +217,20 @@ class PromptConfigKafka(PromptConfig):
                                  default=self.config['filter'].get('condition', '')).strip()
         if not condition:
             return
-        filtering_condition_parser.validate_filtering_condition(condition)
+        expression_parser.condition.validate(condition)
         self.config['filter']['condition'] = condition
 
-    def filter_messages(self):
+    def filter(self):
         if not self.advanced and not self.default_config.get('filter'):
             return
-        # if not click.confirm('Filter messages?', default=True if self.config.get('filter') else None):
-        #     return
         self.config['filter'] = self.default_config.get('filter', {})
         self.prompt_condition()
-        # self.prompt_files()
+
+    def transform(self):
+        if not self.advanced and not self.default_config.get('transform'):
+            return
+        self.config['transform'] = self.default_config.get('transform', {})
+        self.prompt_files()
 
 
 class PromptConfigInflux(PromptConfig):
