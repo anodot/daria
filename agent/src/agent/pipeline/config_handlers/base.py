@@ -104,6 +104,16 @@ class BaseConfigHandler(ABC):
             conf['value'][0]['expression'] = '${' + expression + '}'
             return
 
+    def get_tags(self) -> dict:
+        return {
+            'source': ['anodot-agent'],
+            'source_host_id': [self.client_config['destination']['host_id']],
+            'source_host_name': [HOSTNAME],
+            'pipeline_id': [self.get_pipeline_id()],
+            'pipeline_type': [self.get_pipeline_type()],
+            **self.client_config.get('tags', {})
+        }
+
     def set_constant_properties(self, stage):
         for conf in stage['configuration']:
             if conf['name'] != 'expressionProcessorConfigs':
@@ -113,18 +123,10 @@ class BaseConfigHandler(ABC):
                 conf['value'].append({'fieldToSet': '/properties/' + key, 'expression': val})
 
             conf['value'].append({'fieldToSet': '/tags', 'expression': '${emptyMap()}'})
-            conf['value'].append({'fieldToSet': '/tags/source', 'expression': '${emptyList()}'})
-            conf['value'].append({'fieldToSet': '/tags/source_host_id', 'expression': '${emptyList()}'})
-            conf['value'].append({'fieldToSet': '/tags/source_host_name', 'expression': '${emptyList()}'})
-            conf['value'].append({'fieldToSet': '/tags/pipeline_id', 'expression': '${emptyList()}'})
-            conf['value'].append({'fieldToSet': '/tags/pipeline_type', 'expression': '${emptyList()}'})
-            conf['value'].append({'fieldToSet': '/tags/source[0]', 'expression': 'anodot-agent'})
-            conf['value'].append({'fieldToSet': '/tags/source_host_id[0]',
-                                  'expression': self.client_config['destination']['host_id']})
-            conf['value'].append({'fieldToSet': '/tags/source_host_name[0]',
-                                  'expression': HOSTNAME})
-            conf['value'].append({'fieldToSet': '/tags/pipeline_id[0]', 'expression': self.get_pipeline_id()})
-            conf['value'].append({'fieldToSet': '/tags/pipeline_type[0]', 'expression': self.get_pipeline_type()})
+            for tag_name, tag_values in self.get_tags().items():
+                conf['value'].append({'fieldToSet': f'/tags/{tag_name}', 'expression': '${emptyList()}'})
+                for idx, val in enumerate(tag_values):
+                    conf['value'].append({'fieldToSet': f'/tags/{tag_name}[{idx}]', 'expression': val})
             return
 
     def set_initial_offset(self, client_config=None):

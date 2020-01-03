@@ -1,0 +1,94 @@
+[
+  {
+    "timestamp": 1552654426.147,
+    "properties": {
+      "target_type": "gauge",
+      "cp_u": "cpu-total-usage",
+      "zone": "GEO",
+      "host": "msk-air-trn5",
+      "measurement_category": "cpu_test",
+      "what": "usage_active",
+      "key": "val",
+      "key1": "val1"
+    },
+    "tags": {
+      "source": ["anodot-agent"],
+      "source_host_id": ["ABCDEF"],
+      "source_host_name": ["agent"],
+      "pipeline_id": ["pipeline_id"],
+      "pipeline_type": ["influx"],
+      "key": ["val"],
+      "key1": ["val1"]
+    },
+    "value": 0.204
+  },
+  {
+    "timestamp": 1552654426.147,
+    "properties": {
+      "target_type": "gauge",
+      "cp_u": "cpu-total-usage",
+      "zone": "GEO",
+      "host": "msk-air-trn5",
+      "measurement_category": "cpu_test",
+      "what": "usage_idle",
+      "key": "val",
+      "key1": "val1"
+    },
+    "tags": {
+      "source": ["anodot-agent"],
+      "source_host_id": ["ABCDEF"],
+      "source_host_name": ["agent"],
+      "pipeline_id": ["pipeline_id"],
+      "pipeline_type": ["influx"],
+      "key": ["val"],
+      "key1": ["val1"]
+    },
+    "value": 62.53
+  },
+  {
+    "timestamp": 1553154426.168,
+    "properties": {
+      "target_type": "gauge",
+      "cp_u": "cpu-total-usage",
+      "zone": "GEO",
+      "host": "msk-air-trn1",
+      "measurement_category": "cpu_test",
+      "what": "usage_active",
+      "key": "val",
+      "key1": "val1"
+    },
+    "tags": {
+      "source": ["anodot-agent"],
+      "source_host_id": ["ABCDEF"],
+      "source_host_name": ["agent"],
+      "pipeline_id": ["pipeline_id"],
+      "pipeline_type": ["influx"],
+      "key": ["val"],
+      "key1": ["val1"]
+    },
+    "value": 0.504
+  },
+  {
+    "timestamp": 1553154426.168,
+    "properties": {
+      "target_type": "gauge",
+      "cp_u": "cpu-total-usage",
+      "zone": "GEO",
+      "host": "msk-air-trn1",
+      "measurement_category": "cpu_test",
+      "what": "usage_idle",
+      "key": "val",
+      "key1": "val1"
+    },
+    "tags": {
+      "source": ["anodot-agent"],
+      "source_host_id": ["ABCDEF"],
+      "source_host_name": ["agent"],
+      "pipeline_id": ["pipeline_id"],
+      "pipeline_type": ["influx"],
+      "key": ["val"],
+      "key1": ["val1"]
+    },
+    "value": 26
+  }
+]

@@ -1,6 +1,4 @@
 import click
-import os
-import csv
 
 from agent.pipeline.config_handlers import expression_parser
 from agent.tools import infinite_retry, if_validation_enabled, dict_get_nested
@@ -60,6 +58,24 @@ class PromptConfig:
                                                              default=self.config['dimensions'].get('optional', []))
 
     @infinite_retry
+    def prompt_tags(self):
+        self.config['tags'] = self.default_config.get('tags', {})
+
+        properties_str = ''
+        if self.config['tags']:
+            properties_str = ' '.join([key + ':' + val for key, val in self.config['tags'].items()])
+
+        self.config['tags'] = {}
+
+        properties_str = click.prompt('Tags', type=click.STRING, default=properties_str)
+        for i in properties_str.split():
+            pair = i.split(':')
+            if len(pair) != 2:
+                raise click.UsageError('Wrong format, correct example - key:val key2:val2')
+
+            self.config['tags'][pair[0]] = [pair[1]]
+
+    @infinite_retry
     def prompt_object(self, property_name, prompt_text):
         self.config[property_name] = self.default_config.get(property_name, {})
 
@@ -80,6 +96,10 @@ class PromptConfig:
     def set_static_properties(self):
         if self.advanced:
             self.prompt_object('properties', 'Additional properties')
+
+    def set_tags(self):
+        if self.advanced:
+            self.prompt_tags()
 
     def set_measurement_name(self):
         self.config['measurement_name'] = click.prompt('Measurement name', type=click.STRING,
@@ -118,6 +138,7 @@ class PromptConfigMongo(PromptConfig):
         self.set_timestamp()
         self.set_dimensions()
         self.set_static_properties()
+        self.set_tags()
 
     @infinite_retry
     def prompt_value(self):
@@ -145,6 +166,7 @@ class PromptConfigKafka(PromptConfig):
         self.set_timestamp()
         self.set_dimensions()
         self.set_static_properties()
+        self.set_tags()
         self.filter()
         self.transform()
 
@@ -240,9 +262,9 @@ class PromptConfigInflux(PromptConfig):
         self.data_preview()
         self.set_value()
         self.set_target_type()
-        self.set_timestamp()
         self.set_dimensions()
         self.set_static_properties()
+        self.set_tags()
         self.set_delay()
         self.set_filtering()
 
@@ -255,9 +277,6 @@ class PromptConfigInflux(PromptConfig):
         self.config['delay'] = click.prompt('Delay', type=click.STRING, default=self.default_config.get('delay', '0s'))
         self.config['interval'] = click.prompt('Interval, seconds', type=click.INT,
                                                default=self.default_config.get('interval', 60))
-
-    def set_timestamp(self):
-        pass
 
     @infinite_retry
     def set_value(self):
@@ -288,7 +307,7 @@ class PromptConfigInflux(PromptConfig):
     def set_filtering(self):
         if self.advanced or self.config.get('filtering', ''):
             self.config['filtering'] = click.prompt('Filtering condition', type=click.STRING,
-                                                    default=self.default_config.get('filtering')).strip()
+                                                    default=self.default_config.get('filtering', '')).strip()
 
 
 class PromptConfigJDBC(PromptConfig):
@@ -303,6 +322,7 @@ class PromptConfigJDBC(PromptConfig):
         self.set_timestamp()
         self.set_dimensions()
         self.set_static_properties()
+        self.set_tags()
         self.set_condition()
 
     @infinite_retry

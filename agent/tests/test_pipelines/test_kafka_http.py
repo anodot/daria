@@ -13,12 +13,12 @@ class TestKafka(TestPipelineBase):
     params = {
         'test_create': [
             {'name': 'test_kfk_value_const', 'options': ['-a'], 'value': 'y\nclicksS\ny\n \n ',
-             'timestamp': 'timestamp_unix\nunix', 'advanced_options': 'key1:val1\n\n'},
+             'timestamp': 'timestamp_unix\nunix', 'advanced_options': 'key1:val1\n\n\n'},
             {'name': 'test_kfk_timestamp_ms', 'options': [], 'value': 'n\nClicks:gauge\nClicks:clicks',
              'timestamp': 'timestamp_unix_ms\nunix_ms', 'advanced_options': '\n\n'},
             {'name': 'test_kfk_timestamp_string', 'options': ['-a'], 'value': 'y\nclicks\ny\n \n ',
              'timestamp': 'timestamp_string\nstring\nM/d/yyyy H:mm:ss',
-             'advanced_options': 'key1:val1\n"Country" == "USA"\n/home/kafka_transform.csv'}],
+             'advanced_options': 'key1:val1\n\n"Country" == "USA"\n/home/kafka_transform.csv'}],
         'test_create_source_with_file': [{'file_name': 'kafka_sources'}],
         'test_create_with_file': [{'file_name': 'kafka_pipelines'}],
         'test_edit': [{'options': ['test_kfk_value_const'], 'value': 'y\nclicks\n\n'},

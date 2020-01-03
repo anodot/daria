@@ -15,6 +15,7 @@
       }}
     ]},
     "properties": {"type": "object"},
+    "tags": {"type": "object"},
     "delay": {"type": "string"},
     "interval": {"type": "integer"}
   },
