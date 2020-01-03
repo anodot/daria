@@ -46,7 +46,7 @@ class TestMySQL(TestPipelineBase):
 
     def test_create_advanced(self, cli_runner, name, source):
         result = cli_runner.invoke(pipeline_cli.create, ['-a'],
-                                   input=f'{source}\n{name}\ntest\n\n\n1000\n\ny\nclicks:gauge impressions:gauge\ntimestamp_unix\nunix\nadsize country\nkey1:val1 key2:val2\ncountry = \'USA\'\n\n\n')
+                                   input=f'{source}\n{name}\ntest\n\n\n1000\n\ny\nclicks:gauge impressions:gauge\ntimestamp_unix\nunix\nadsize country\nkey1:val1 key2:val2\n\ncountry = \'USA\'\n\n\n')
         assert result.exit_code == 0
         assert api_client.get_pipeline(name)
 

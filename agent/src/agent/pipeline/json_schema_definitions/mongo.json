@@ -22,7 +22,8 @@
       "type": {"type":  "string", "enum": ["string", "datetime", "unix", "unix_ms"]},
       "format": {"type": "string", "minLength": 1}
     }, "required": ["name", "type"]},
-    "properties": {"type": "object"}
+    "properties": {"type": "object"},
+    "tags": {"type": "object"}
   },
   "required": ["measurement_name", "value", "timestamp", "dimensions"]
 }

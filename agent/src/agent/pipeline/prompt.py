@@ -1,6 +1,4 @@
 import click
-import os
-import csv
 
 from agent.pipeline.config_handlers import expression_parser
 from agent.tools import infinite_retry, if_validation_enabled, dict_get_nested
@@ -81,6 +79,10 @@ class PromptConfig:
         if self.advanced:
             self.prompt_object('properties', 'Additional properties')
 
+    def set_tags(self):
+        if self.advanced:
+            self.prompt_object('tags', 'Tags')
+
     def set_measurement_name(self):
         self.config['measurement_name'] = click.prompt('Measurement name', type=click.STRING,
                                                        default=self.default_config.get('measurement_name'))
@@ -118,6 +120,7 @@ class PromptConfigMongo(PromptConfig):
         self.set_timestamp()
         self.set_dimensions()
         self.set_static_properties()
+        self.set_tags()
 
     @infinite_retry
     def prompt_value(self):
@@ -145,6 +148,7 @@ class PromptConfigKafka(PromptConfig):
         self.set_timestamp()
         self.set_dimensions()
         self.set_static_properties()
+        self.set_tags()
         self.filter()
         self.transform()
 
@@ -243,6 +247,7 @@ class PromptConfigInflux(PromptConfig):
         self.set_timestamp()
         self.set_dimensions()
         self.set_static_properties()
+        self.set_tags()
         self.set_delay()
         self.set_filtering()
 
@@ -303,6 +308,7 @@ class PromptConfigJDBC(PromptConfig):
         self.set_timestamp()
         self.set_dimensions()
         self.set_static_properties()
+        self.set_tags()
         self.set_condition()
 
     @infinite_retry

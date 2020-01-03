@@ -112,19 +112,19 @@ class BaseConfigHandler(ABC):
             for key, val in self.client_config.get('properties', {}).items():
                 conf['value'].append({'fieldToSet': '/properties/' + key, 'expression': val})
 
+            tags = {
+                'source': 'anodot-agent',
+                'source_host_id': self.client_config['destination']['host_id'],
+                'source_host_name': HOSTNAME,
+                'pipeline_id': self.get_pipeline_id(),
+                'pipeline_type': self.get_pipeline_type(),
+                **self.client_config.get('tags', {})
+            }
+
             conf['value'].append({'fieldToSet': '/tags', 'expression': '${emptyMap()}'})
-            conf['value'].append({'fieldToSet': '/tags/source', 'expression': '${emptyList()}'})
-            conf['value'].append({'fieldToSet': '/tags/source_host_id', 'expression': '${emptyList()}'})
-            conf['value'].append({'fieldToSet': '/tags/source_host_name', 'expression': '${emptyList()}'})
-            conf['value'].append({'fieldToSet': '/tags/pipeline_id', 'expression': '${emptyList()}'})
-            conf['value'].append({'fieldToSet': '/tags/pipeline_type', 'expression': '${emptyList()}'})
-            conf['value'].append({'fieldToSet': '/tags/source[0]', 'expression': 'anodot-agent'})
-            conf['value'].append({'fieldToSet': '/tags/source_host_id[0]',
-                                  'expression': self.client_config['destination']['host_id']})
-            conf['value'].append({'fieldToSet': '/tags/source_host_name[0]',
-                                  'expression': HOSTNAME})
-            conf['value'].append({'fieldToSet': '/tags/pipeline_id[0]', 'expression': self.get_pipeline_id()})
-            conf['value'].append({'fieldToSet': '/tags/pipeline_type[0]', 'expression': self.get_pipeline_type()})
+            for tag_name, tag_value in tags.items():
+                conf['value'].append({'fieldToSet': f'/tags/{tag_name}', 'expression': '${emptyList()}'})
+                conf['value'].append({'fieldToSet': f'/tags/{tag_name}[0]', 'expression': tag_value})
             return
 
     def set_initial_offset(self, client_config=None):
