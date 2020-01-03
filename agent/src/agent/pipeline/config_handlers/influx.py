@@ -1,4 +1,4 @@
-import os
+import json
 
 from .base import BaseConfigHandler, ConfigHandlerException
 from ...logger import get_logger
@@ -29,6 +29,7 @@ state['CONSTANT_PROPERTIES'] = {constant_properties}
 state['HOST_ID'] = '{host_id}'
 state['HOST_NAME'] = '{host_name}'
 state['PIPELINE_ID'] = '{pipeline_id}'
+state['TAGS'] = {tags}
 """
 
     QUERY_GET_DATA = "SELECT+{dimensions}+FROM+%22{metric}%22+WHERE+%28%22time%22+%3E%3D+${{record:value('/last_timestamp')}}+AND+%22time%22+%3C+${{record:value('/last_timestamp')}}%2B{interval}+AND+%22time%22+%3C+now%28%29-{delay}%29+{where}"
@@ -114,7 +115,8 @@ state['PIPELINE_ID'] = '{pipeline_id}'
                             constant_properties=str(self.client_config.get('properties', {})),
                             host_id=self.client_config['destination']['host_id'],
                             host_name=HOSTNAME,
-                            pipeline_id=self.get_pipeline_id()
+                            pipeline_id=self.get_pipeline_id(),
+                            tags=json.dumps(self.get_tags())
                         )
 
                     if conf['name'] == 'stageRecordPreconditions':

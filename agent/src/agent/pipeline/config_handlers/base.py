@@ -104,6 +104,16 @@ class BaseConfigHandler(ABC):
             conf['value'][0]['expression'] = '${' + expression + '}'
             return
 
+    def get_tags(self) -> dict:
+        return {
+            'source': ['anodot-agent'],
+            'source_host_id': [self.client_config['destination']['host_id']],
+            'source_host_name': [HOSTNAME],
+            'pipeline_id': [self.get_pipeline_id()],
+            'pipeline_type': [self.get_pipeline_type()],
+            **self.client_config.get('tags', {})
+        }
+
     def set_constant_properties(self, stage):
         for conf in stage['configuration']:
             if conf['name'] != 'expressionProcessorConfigs':
@@ -112,19 +122,11 @@ class BaseConfigHandler(ABC):
             for key, val in self.client_config.get('properties', {}).items():
                 conf['value'].append({'fieldToSet': '/properties/' + key, 'expression': val})
 
-            tags = {
-                'source': 'anodot-agent',
-                'source_host_id': self.client_config['destination']['host_id'],
-                'source_host_name': HOSTNAME,
-                'pipeline_id': self.get_pipeline_id(),
-                'pipeline_type': self.get_pipeline_type(),
-                **self.client_config.get('tags', {})
-            }
-
             conf['value'].append({'fieldToSet': '/tags', 'expression': '${emptyMap()}'})
-            for tag_name, tag_value in tags.items():
+            for tag_name, tag_values in self.get_tags().items():
                 conf['value'].append({'fieldToSet': f'/tags/{tag_name}', 'expression': '${emptyList()}'})
-                conf['value'].append({'fieldToSet': f'/tags/{tag_name}[0]', 'expression': tag_value})
+                for idx, val in enumerate(tag_values):
+                    conf['value'].append({'fieldToSet': f'/tags/{tag_name}[{idx}]', 'expression': val})
             return
 
     def set_initial_offset(self, client_config=None):
