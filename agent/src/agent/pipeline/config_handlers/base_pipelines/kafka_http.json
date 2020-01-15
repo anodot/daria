@@ -722,9 +722,9 @@
       "services" : [ ]
     }, {
       "instanceName" : "destination",
-      "library" : "streamsets-datacollector-basic-lib",
-      "stageName" : "com_streamsets_pipeline_stage_destination_http_HttpClientDTarget",
-      "stageVersion" : "4",
+      "library" : "anodot",
+      "stageName" : "anodot_stage_destination_AnodotDTarget",
+      "stageVersion" : "1",
       "configuration" : [ {
         "name" : "conf.dataGeneratorFormatConfig.charset",
         "value" : "UTF-8"
