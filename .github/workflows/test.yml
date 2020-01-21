@@ -15,6 +15,10 @@ jobs:
     
     steps:
       - uses: actions/checkout@v1
+
+      - name: Get streamsets stages
+        run: curl -L https://github.com/anodot/anodot-sdc-stage/releases/download/v1.0/anodot-1.0.tar.gz -o sdc.tar.gz && tar xvfz sdc.tar.gz -C streamsets/lib
+
       - name: Build
         run: docker-compose up -d --build
       

@@ -18,3 +18,4 @@ VOLUME /data
 
 # This build uses variable sasl.kerberos.domain.name
 COPY ./kafka-clients-0.11.0.4-SNAPSHOT.jar ${SDC_DIST}/streamsets-libs/streamsets-datacollector-apache-kafka_0_11-lib/lib/kafka-clients-0.11.0.3.jar
+COPY ./lib ${USER_LIBRARIES_DIR}
