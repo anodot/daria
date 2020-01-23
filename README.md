@@ -7,6 +7,7 @@ pull data from different sources and push it to anodot
 
 ### How to build
 ```
+curl -L https://github.com/anodot/anodot-sdc-stage/releases/download/v1.0/anodot-1.0.tar.gz -o sdc.tar.gz && tar xvfz sdc.tar.gz -C streamsets/lib
 docker-compose up -d --build
 ```
 
