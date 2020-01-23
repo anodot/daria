@@ -47,3 +47,31 @@ class ElasticSource(Source):
             return
 
         print_json(records)
+
+    def prompt_index(self, default_config):
+        self.config[self.CONFIG_INDEX] = click.prompt('Index', type=click.STRING,
+                                                      default=default_config.get(self.CONFIG_INDEX, ''))
+
+    @infinite_retry
+    def prompt_query(self, default_config):
+        self.config['query_file'] = click.prompt('Query file path', type=click.Path(exists=True),
+                                                 default=default_config.get('query_file')).strip()
+        self.config[self.CONFIG_QUERY] = json.load(self.config['query_file'])
+
+    def prompt_offset_field(self, default_config):
+        self.config[self.CONFIG_OFFSET_FIELD] = click.prompt('Offset field', type=click.STRING,
+                                                             default=default_config.get(self.CONFIG_OFFSET_FIELD,
+                                                                                        'timestamp'))
+
+    def prompt_initial_offset(self, default_config):
+        self.config[self.CONFIG_INITIAL_OFFSET] = click.prompt('Initial offset', type=click.STRING,
+                                                               default=default_config.get(self.CONFIG_INITIAL_OFFSET,
+                                                                                          'now-3d/d'))
+
+    def prompt_interval(self, default_config):
+        self.config['query_interval_sec'] = click.prompt('Query interval (seconds)', type=click.IntRange(1),
+                                                             default=default_config.get('query_interval_sec', 1))
+
+    def set_config(self, config):
+        super().set_config(config)
+        self.config[self.CONFIG_QUERY_INTERVAL] = '${' + str(self.config['query_interval_sec']) + ' * SECONDS}'
