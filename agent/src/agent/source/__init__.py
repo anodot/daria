@@ -6,6 +6,7 @@ from .jdbc import JDBCSource
 from .influx import InfluxSource
 from .kafka import KafkaSource
 from .mongo import MongoSource
+from .elastic import ElasticSource
 from .monitoring import MonitoringSource
 from jsonschema import ValidationError
 from typing import Iterable
@@ -18,6 +19,7 @@ TYPE_KAFKA = 'kafka'
 TYPE_MONGO = 'mongo'
 TYPE_MYSQL = 'mysql'
 TYPE_POSTGRES = 'postgres'
+TYPE_ELASTIC = 'elastic'
 TYPE_MONITORING = 'Monitoring'
 
 
@@ -47,7 +49,8 @@ types = {
     TYPE_KAFKA: KafkaSource,
     TYPE_MONGO: MongoSource,
     TYPE_MYSQL: JDBCSource,
-    TYPE_POSTGRES: JDBCSource
+    TYPE_POSTGRES: JDBCSource,
+    TYPE_ELASTIC: ElasticSource,
 }
 
 

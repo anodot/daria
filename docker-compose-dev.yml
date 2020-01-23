@@ -30,7 +30,7 @@ services:
       LOG_FILE_PATH: '/var/log/agent.log'
       ANODOT_API_URL: 'http://dummy_destination'
       SDC_DATA_PATH: '/sdc-data'
-      ENV_PROD: 'false'
+#      ENV_PROD: 'false'
       GIT_SHA1: 'local'
     stdin_open: true
     tty: true
