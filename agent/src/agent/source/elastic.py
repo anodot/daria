@@ -33,6 +33,11 @@ class ElasticSource(Source):
     def prompt(self, default_config, advanced=False):
         self.config = {}
         self.prompt_connection(default_config)
+        self.prompt_index(default_config)
+        self.prompt_query(default_config)
+        self.prompt_offset_field(default_config)
+        self.prompt_initial_offset(default_config)
+        self.prompt_interval(default_config)
 
         return self.config
 

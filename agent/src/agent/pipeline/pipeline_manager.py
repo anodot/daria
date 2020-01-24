@@ -16,6 +16,7 @@ prompters = {
     source.TYPE_MONGO: prompt.PromptConfigMongo,
     source.TYPE_MYSQL: prompt.PromptConfigJDBC,
     source.TYPE_POSTGRES: prompt.PromptConfigJDBC,
+    source.TYPE_ELASTIC: prompt.PromptConfigElastic,
 }
 
 loaders = {
@@ -25,6 +26,7 @@ loaders = {
     source.TYPE_KAFKA: load_client_data.KafkaLoadClientData,
     source.TYPE_MYSQL: load_client_data.JDBCLoadClientData,
     source.TYPE_POSTGRES: load_client_data.JDBCLoadClientData,
+    source.TYPE_ELASTIC: load_client_data.ElasticLoadClientData,
 }
 
 handlers = {
@@ -33,7 +35,8 @@ handlers = {
     source.TYPE_MONGO: config_handlers.MongoConfigHandler,
     source.TYPE_KAFKA: config_handlers.KafkaConfigHandler,
     source.TYPE_MYSQL: config_handlers.JDBCConfigHandler,
-    source.TYPE_POSTGRES: config_handlers.JDBCConfigHandler
+    source.TYPE_POSTGRES: config_handlers.JDBCConfigHandler,
+    source.TYPE_ELASTIC: config_handlers.ElasticConfigHandler,
 }
 
 

@@ -1,11 +1,16 @@
-import click
-import json
 
-from agent.tools import infinite_retry
-from .base import PromptConfig
+from .kafka import PromptConfigKafka
 
 
-class PromptConfigElastic(PromptConfig):
-    def set_index(self):
-        self.pipeline.source.config['index'] = click.prompt('Index', type=click.STRING, default=self.default_config.get('index', ''))
+class PromptConfigElastic(PromptConfigKafka):
+    timestamp_types = ['datetime', 'string', 'unix', 'unix_ms']
+
+    def set_config(self):
+        self.data_preview()
+        self.set_values()
+        self.set_measurement_names()
+        self.set_timestamp()
+        self.set_dimensions()
+        self.set_static_properties()
+        self.set_tags()
 

@@ -6,6 +6,8 @@ from .base import PromptConfig
 
 
 class PromptConfigKafka(PromptConfig):
+    timestamp_types = ['string', 'unix', 'unix_ms']
+
     def set_config(self):
         self.data_preview()
         self.set_values()
@@ -62,7 +64,7 @@ class PromptConfigKafka(PromptConfig):
         self.config['timestamp']['name'] = self.prompt_property('Timestamp property name',
                                                                 self.config['timestamp'].get('name'))
         self.config['timestamp']['type'] = click.prompt('Timestamp property type',
-                                                        type=click.Choice(['string', 'unix', 'unix_ms']),
+                                                        type=click.Choice(self.timestamp_types),
                                                         default=self.config['timestamp'].get('type', 'unix'))
 
         if self.config['timestamp']['type'] == 'string':

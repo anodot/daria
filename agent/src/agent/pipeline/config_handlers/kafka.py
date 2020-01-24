@@ -9,7 +9,6 @@ logger = get_logger(__name__)
 
 class KafkaConfigHandler(BaseConfigHandler):
     DECLARE_VARS_JS = """/*
-state['TOPIC_NAME'] = 'test';
 state['TIMESTAMP_COLUMN'] = 'timestamp_unix';
 state['DIMENSIONS'] = ['ver', 'AdSize', 'Country', 'AdType', 'Exchange'];
 state['VALUES_COLUMNS'] = ['Clicks', 'Impressions'];
@@ -45,6 +44,11 @@ state['STATIC_WHAT'] = {static_what};
                 self.client_config['measurement_names'] = {
                     self.client_config['value']['value']: self.client_config['measurement_name']}
 
+        self.update_stages()
+
+        self.update_destination_config()
+
+    def update_stages(self):
         for stage in self.config['stages']:
             if stage['instanceName'] == 'JavaScriptEvaluator_01':
                 self.set_variables_js(stage)
@@ -56,8 +60,6 @@ state['STATIC_WHAT'] = {static_what};
             if stage['instanceName'] == 'ExpressionEvaluator_03':
                 self.set_preconditions(stage)
                 self.check_dimensions(stage)
-
-        self.update_destination_config()
 
     def get_measurement_names(self) -> list:
         measurement_names = []
