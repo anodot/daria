@@ -4,13 +4,13 @@
     "conf.index": {"type": "string"},
     "conf.mapping": {"type": "string"},
     "conf.isIncrementalMode": {"type": "boolean"},
-    "conf.queryInterval": {"type": "int"},
+    "conf.queryInterval": {"type": "string"},
     "conf.maxBatchSize": {"type": "integer"},
     "conf.cursorTimeout": {"type": "string"},
     "conf.offsetField": {"type": "string"},
     "conf.initialOffset": {"type": "string"},
     "conf.query": {"type": "string"},
-    "conf.httpUris": {"type": "string"}
+    "conf.httpUris": {"type": "array", "items": {"type": "string"}}
   },
   "required": ["conf.httpUris", "conf.query"]
 }

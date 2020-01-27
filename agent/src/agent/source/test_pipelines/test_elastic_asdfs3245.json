@@ -256,7 +256,7 @@
         "stageType" : "SOURCE"
       },
       "inputLanes" : [ ],
-      "outputLanes" : [ "Elasticsearch_01OutputLane15797772796400" ],
+      "outputLanes" : [ "source_outputLane" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -272,7 +272,7 @@
         "yPos" : 50,
         "stageType" : "TARGET"
       },
-      "inputLanes" : [ "Elasticsearch_01OutputLane15797772796400" ],
+      "inputLanes" : [ "source_outputLane" ],
       "outputLanes" : [ ],
       "eventLanes" : [ ],
       "services" : [ ]

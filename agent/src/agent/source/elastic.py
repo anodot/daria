@@ -25,8 +25,8 @@ class ElasticSource(Source):
     def prompt_connection(self, default_config):
         self.config[self.CONFIG_HTTP_URIS] = click.prompt('Cluster HTTP URIs',
                                                           type=click.STRING,
-                                                          default=default_config.get(
-                                                              self.CONFIG_HTTP_URIS)).strip().split(',')
+                                                          default=','.join(default_config.get(
+                                                              self.CONFIG_HTTP_URIS))).strip().split(',')
 
         self.validate_connection()
 
@@ -60,8 +60,9 @@ class ElasticSource(Source):
     @infinite_retry
     def prompt_query(self, default_config):
         self.config['query_file'] = click.prompt('Query file path', type=click.Path(exists=True),
-                                                 default=default_config.get('query_file')).strip()
-        self.config[self.CONFIG_QUERY] = json.load(self.config['query_file'])
+                                                 default=default_config.get('query_file'))
+        with open(self.config['query_file'], 'r') as f:
+            self.config[self.CONFIG_QUERY] = json.dumps(json.load(f))
 
     def prompt_offset_field(self, default_config):
         self.config[self.CONFIG_OFFSET_FIELD] = click.prompt('Offset field', type=click.STRING,
