@@ -4,11 +4,7 @@
     "name": "test_elastic_1",
     "config": {
       "conf.httpUris": ["es:9200"],
-      "conf.query": {
-          "query": {
-              "match_all": {}
-          }
-      }
+      "conf.query": "{\n  \"sort\": [{\"timestamp_unix\": {\"order\": \"asc\"}}],\n  \"query\": {\"range\": {\"timestamp_unix\": {\"gt\": ${OFFSET}}}}\n}"
     }
   }
 ]

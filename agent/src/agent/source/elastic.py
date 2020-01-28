@@ -62,8 +62,6 @@ class ElasticSource(Source):
     def prompt_query(self, default_config):
         self.config['query_file'] = click.prompt('Query file path', type=click.Path(exists=True, dir_okay=False),
                                                  default=default_config.get('query_file'))
-        with open(self.config['query_file'], 'r') as f:
-            self.config[self.CONFIG_QUERY] = json.load(f)
 
     def prompt_offset_field(self, default_config):
         self.config[self.CONFIG_OFFSET_FIELD] = click.prompt('Offset field', type=click.STRING,
@@ -81,5 +79,8 @@ class ElasticSource(Source):
 
     def set_config(self, config):
         super().set_config(config)
-        if self.config.get('query_interval_sec'):
+        if 'query_interval_sec' in self.config:
             self.config[self.CONFIG_QUERY_INTERVAL] = '${' + str(self.config['query_interval_sec']) + ' * SECONDS}'
+        if 'query_file' in self.config:
+            with open(self.config['query_file'], 'r') as f:
+                self.config[self.CONFIG_QUERY] = f.read()

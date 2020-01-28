@@ -45,7 +45,7 @@ class TestElastic(TestPipelineBase):
     def test_source_create(self, cli_runner):
         query_file_path = get_input_file_path('elastic_query')
         result = cli_runner.invoke(source_cli.create,
-                                   input=f"elastic\ntest_es\nhttp://es:9200\ntest\n{query_file_path}\n_timestamp\n\n\n")
+                                   input=f"elastic\ntest_es\nhttp://es:9200\ntest\n{query_file_path}\ntimestamp_unix\n0\n\n")
         assert result.exit_code == 0
         assert os.path.isfile(os.path.join(Source.DIR, 'test_es.json'))
 
