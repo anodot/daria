@@ -23,10 +23,11 @@ class ElasticSource(Source):
 
     @infinite_retry
     def prompt_connection(self, default_config):
-        self.config[self.CONFIG_HTTP_URIS] = click.prompt('Cluster HTTP URIs',
-                                                          type=click.STRING,
-                                                          default=','.join(default_config.get(
-                                                              self.CONFIG_HTTP_URIS))).strip().split(',')
+        default_uris = default_config.get(self.CONFIG_HTTP_URIS)
+        if default_uris:
+            default_uris = ','.join(default_uris)
+        self.config[self.CONFIG_HTTP_URIS] = click.prompt('Cluster HTTP URIs', type=click.STRING,
+                                                          default=default_uris).strip().split(',')
 
         self.validate_connection()
 
@@ -59,10 +60,10 @@ class ElasticSource(Source):
 
     @infinite_retry
     def prompt_query(self, default_config):
-        self.config['query_file'] = click.prompt('Query file path', type=click.Path(exists=True),
+        self.config['query_file'] = click.prompt('Query file path', type=click.Path(exists=True, dir_okay=False),
                                                  default=default_config.get('query_file'))
         with open(self.config['query_file'], 'r') as f:
-            self.config[self.CONFIG_QUERY] = json.dumps(json.load(f))
+            self.config[self.CONFIG_QUERY] = json.load(f)
 
     def prompt_offset_field(self, default_config):
         self.config[self.CONFIG_OFFSET_FIELD] = click.prompt('Offset field', type=click.STRING,
@@ -80,4 +81,5 @@ class ElasticSource(Source):
 
     def set_config(self, config):
         super().set_config(config)
-        self.config[self.CONFIG_QUERY_INTERVAL] = '${' + str(self.config['query_interval_sec']) + ' * SECONDS}'
+        if self.config.get('query_interval_sec'):
+            self.config[self.CONFIG_QUERY_INTERVAL] = '${' + str(self.config['query_interval_sec']) + ' * SECONDS}'
