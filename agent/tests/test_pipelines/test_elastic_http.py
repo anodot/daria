@@ -23,7 +23,7 @@ class TestElastic(TestPipelineBase):
         'test_create_with_file': [{'file_name': 'elastic_pipelines'}],
         'test_edit': [{'options': ['test_es_value_const'], 'value': 'y\nclicks\n\n'},
                       {'options': ['test_es_timestamp_string', '-a'],
-                       'value': 'n\nn\n_source/Clicks:agg_type\n_source/Clicks:AdType'}],
+                       'value': 'n\nn\n_source/Clicks:_source/agg_type\n_source/Clicks:_source/AdType'}],
         'test_start': [{'name': 'test_es_value_const'}, {'name': 'test_es_timestamp_ms'},
                        {'name': 'test_es_timestamp_string'},
                        {'name': 'test_es_file_short'}, {'name': 'test_es_file_full'}],
