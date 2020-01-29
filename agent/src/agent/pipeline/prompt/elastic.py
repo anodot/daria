@@ -1,6 +1,6 @@
 
-from .kafka import PromptConfigKafka
+from .json import PromptConfigJson
 
 
-class PromptConfigElastic(PromptConfigKafka):
+class PromptConfigElastic(PromptConfigJson):
     timestamp_types = ['datetime', 'string', 'unix', 'unix_ms']
