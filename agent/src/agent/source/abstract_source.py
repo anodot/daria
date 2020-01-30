@@ -102,11 +102,8 @@ class Source(ABC):
         try:
             preview = api_client.create_preview(self.TEST_PIPELINE_NAME)
             preview_data = api_client.wait_for_preview(self.TEST_PIPELINE_NAME, preview['previewerId'])
-        except StreamSetsApiClientException as e:
+        except (Exception, KeyboardInterrupt) as e:
             logger.exception(str(e))
-            api_client.delete_pipeline(self.TEST_PIPELINE_NAME)
-            return None
-        except (Exception, KeyboardInterrupt):
             api_client.delete_pipeline(self.TEST_PIPELINE_NAME)
             raise
         api_client.delete_pipeline(self.TEST_PIPELINE_NAME)

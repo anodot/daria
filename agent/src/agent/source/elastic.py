@@ -28,19 +28,25 @@ class ElasticSource(Source):
             default_uris = ','.join(default_uris)
         self.config[self.CONFIG_HTTP_URIS] = click.prompt('Cluster HTTP URIs', type=click.STRING,
                                                           default=default_uris).strip().split(',')
-
+        self.config[self.CONFIG_IS_INCREMENTAL] = False
         self.validate_connection()
 
     def prompt(self, default_config, advanced=False):
         self.config = {}
         self.prompt_connection(default_config)
+        self.prompt_query_params(default_config)
+
+        return self.config
+
+    @infinite_retry
+    def prompt_query_params(self, default_config):
         self.prompt_index(default_config)
         self.prompt_query(default_config)
         self.prompt_offset_field(default_config)
         self.prompt_initial_offset(default_config)
         self.prompt_interval(default_config)
-
-        return self.config
+        self.set_config(self.config)
+        self.validate_connection()
 
     def validate(self):
         self.validate_json()
@@ -84,3 +90,5 @@ class ElasticSource(Source):
         if 'query_file' in self.config:
             with open(self.config['query_file'], 'r') as f:
                 self.config[self.CONFIG_QUERY] = f.read()
+
+        self.config[self.CONFIG_IS_INCREMENTAL] = True
