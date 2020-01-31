@@ -256,11 +256,11 @@ def delete(pipeline_id):
     Delete pipeline
     """
     try:
-        pipeline_manager = PipelineManager(pipeline.load_object(pipeline_id))
-        pipeline_manager.delete()
-    except StreamSetsApiClientException as e:
+        PipelineManager.delete_pipeline(pipeline_id)
+    except (StreamSetsApiClientException, pipeline.PipelineException) as e:
         click.secho(str(e), err=True, fg='red')
         return
+
     click.echo('Pipeline deleted')
 
 

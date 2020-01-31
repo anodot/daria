@@ -90,16 +90,20 @@ class PipelineManager:
         except (config_handlers.ConfigHandlerException, StreamSetsApiClientException) as e:
             raise PipelineException(str(e))
 
-    def delete(self):
+    @classmethod
+    def delete_pipeline(cls, pipeline_id: str):
         try:
-            api_client.delete_pipeline(self.pipeline.id)
-            if self.pipeline.exists(self.pipeline.id):
-                os.remove(self.pipeline.file_path)
-            errors_dir = os.path.join(ERRORS_DIR, self.pipeline.id)
+            api_client.delete_pipeline(pipeline_id)
+            if Pipeline.exists(pipeline_id):
+                os.remove(Pipeline.get_file_path(pipeline_id))
+            errors_dir = os.path.join(ERRORS_DIR, pipeline_id)
             if os.path.isdir(errors_dir):
                 shutil.rmtree(errors_dir)
         except StreamSetsApiClientException as e:
             raise PipelineException(str(e))
+
+    def delete(self):
+        self.delete_pipeline(self.pipeline.id)
 
     @if_validation_enabled
     def show_preview(self):
