@@ -183,8 +183,7 @@ def delete(name):
     """
     Delete source
     """
-    source_instance = source.load_object(name)
-    source_instance.delete()
+    source.Source.delete_source(name)
 
 
 source_group.add_command(create)

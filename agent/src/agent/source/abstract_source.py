@@ -47,15 +47,19 @@ class Source(ABC):
 
         self.save()
 
-    def delete(self):
-        if not self.exists(self.name):
-            raise SourceNotExists(f"Source config {self.name} doesn't exist")
+    @classmethod
+    def delete_source(cls, source_name):
+        if not cls.exists(source_name):
+            raise SourceNotExists(f"Source config {source_name} doesn't exist")
 
-        pipelines = pipeline.get_pipelines(source_name=self.name)
+        pipelines = pipeline.get_pipelines(source_name=source_name)
         if pipelines:
             raise SourceException(f"Can't delete. Source is used by {', '.join([p.id for p in pipelines])} pipelines")
 
-        os.remove(self.file_path)
+        os.remove(cls.get_file_path(source_name))
+
+    def delete(self):
+        self.delete_source(self.name)
 
     @abstractmethod
     def prompt(self, default_config, advanced=False):
