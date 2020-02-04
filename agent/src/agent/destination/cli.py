@@ -31,37 +31,46 @@ def monitoring():
 
 
 @infinite_retry
-def create_destination():
-    try:
-        dest = HttpDestination()
-        if dest.exists():
-            dest.load()
+def prompt_destination(dest: HttpDestination):
 
-        dest.update_url(click.prompt('Anodot api token', type=click.STRING))
+    token = click.prompt('Anodot api token', type=click.STRING)
+    dest.update_url(token)
 
-        use_proxy = click.confirm('Use proxy for connecting to Anodot?')
-        if use_proxy:
-            uri = click.prompt('Proxy uri', type=click.STRING, default=dest.get_proxy_url())
-            username = click.prompt('Proxy username', type=click.STRING, default=dest.get_proxy_username() or '')
-            password = click.prompt('Proxy password', type=click.STRING, default='')
-            dest.set_proxy(use_proxy, uri, username, password)
-        else:
-            dest.set_proxy(use_proxy)
+    use_proxy = click.confirm('Use proxy for connecting to Anodot?')
+    if use_proxy:
+        uri = click.prompt('Proxy uri', type=click.STRING, default=dest.get_proxy_url())
+        username = click.prompt('Proxy username', type=click.STRING, default=dest.get_proxy_username() or '')
+        password = click.prompt('Proxy password', type=click.STRING, default='')
+        dest.set_proxy(use_proxy, uri, username, password)
+    else:
+        dest.set_proxy(use_proxy)
 
-        dest.save()
-    except DestinationException as e:
-        raise click.ClickException(str(e))
+    dest.validate()
 
 
 @click.command()
-def destination():
+@click.option('-t', '--token', type=click.STRING, default=None)
+@click.option('--proxy/--no-proxy', default=False)
+@click.option('--proxy-host', type=click.STRING, default=None)
+@click.option('--proxy-user', type=click.STRING, default=None)
+@click.option('--proxy-password', type=click.STRING, default=None)
+def destination(token, proxy, proxy_host, proxy_user, proxy_password):
     """
     Data destination config.
     Anodot API token - You can copy it from Settings > API tokens > Data Collection in your Anodot account
     Proxy for connecting to Anodot
     """
+    dest = HttpDestination()
+    if dest.exists():
+        dest.load()
 
-    create_destination()
+    if token:
+        dest.update_url(token)
+        dest.set_proxy(proxy, proxy_host, proxy_user, proxy_password)
+    else:
+        prompt_destination(dest)
+
+    dest.save()
     click.secho('Connection to Anodot established')
     monitoring()
 
