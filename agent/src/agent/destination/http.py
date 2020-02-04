@@ -1,3 +1,4 @@
+import click
 import json
 import os
 import urllib.parse
@@ -97,5 +98,5 @@ class HttpDestination:
         return True
 
 
-class DestinationException(Exception):
+class DestinationException(click.ClickException):
     pass
