@@ -18,7 +18,7 @@ jobs:
       run: curl -L https://github.com/anodot/anodot-sdc-stage/releases/download/v1.0/anodot-1.0.tar.gz -o sdc.tar.gz && tar xvfz sdc.tar.gz -C streamsets/lib
 
     - name: Build
-      run: docker-compose build --build-arg GIT_SHA1=$(git describe --dirty --always)
+      run: sudo sysctl -w vm.max_map_count=262144 && docker-compose build --build-arg GIT_SHA1=$(git describe --dirty --always)
 
     - name: Prepare env
       run: docker-compose up -d && sleep 30 && ./setup_tests.sh
