@@ -21,12 +21,9 @@ jobs:
 
       - name: Build
         run: sudo sysctl -w vm.max_map_count=262144 && docker-compose up -d --build
-      
-      - name: Es logs
-        run: sleep 20 && docker-compose logs es
         
       - name: Prepare env
-        run: ./setup_tests.sh
+        run: sleep 60 && ./setup_tests.sh
         
       - name: Test
         run: docker exec -i anodot-agent pytest -x 
