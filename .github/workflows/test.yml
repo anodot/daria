@@ -23,7 +23,7 @@ jobs:
         run: sudo sysctl -w vm.max_map_count=262144 && docker-compose up -d --build
       
       - name: Es logs
-        run: sleep 120 && docker-compose logs es
+        run: sleep 20 && docker-compose logs es
         
       - name: Prepare env
         run: ./setup_tests.sh
