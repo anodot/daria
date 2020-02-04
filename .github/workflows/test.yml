@@ -22,8 +22,11 @@ jobs:
       - name: Build
         run: docker-compose up -d --build
       
+      - name: Es logs
+        run: sleep 300 && docker-compose logs es
+        
       - name: Prepare env
-        run: sleep 150 && ./setup_tests.sh
+        run: ./setup_tests.sh
         
       - name: Test
         run: docker exec -i anodot-agent pytest -x 
