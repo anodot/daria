@@ -1,0 +1,23 @@
+{
+  "type": "object",
+  "properties": {
+    "count_records": {"type": "boolean"},
+    "values": {"type": "object"},
+    "measurement_names": {"type": "object"},
+    "dimensions": {"oneOf": [
+      {"type": "array", "items": {"type": "string"}},
+      {"type": "object", "properties": {
+        "required": {"type": "array", "items": {"type": "string"}},
+        "optional": {"type": "array", "items": {"type": "string"}}
+      }}
+    ]},
+    "timestamp": {"type":  "object", "properties": {
+      "name": {"type": "string", "minLength": 1},
+      "type": {"type":  "string", "enum": ["string", "unix", "unix_ms"]},
+      "format": {"type": "string", "minLength": 1}
+    }, "required": ["name", "type"]},
+    "properties": {"type": "object"},
+    "tags": {"type": "object"}
+  },
+  "required": ["values", "measurement_names", "dimensions", "timestamp"]
+}

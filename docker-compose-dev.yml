@@ -30,7 +30,7 @@ services:
       LOG_FILE_PATH: '/var/log/agent.log'
       ANODOT_API_URL: 'http://dummy_destination'
       SDC_DATA_PATH: '/sdc-data'
-      ENV_PROD: 'false'
+#      ENV_PROD: 'false'
       GIT_SHA1: 'local'
     stdin_open: true
     tty: true
@@ -135,6 +135,19 @@ services:
     volumes:
       - /var/lib/postgresql/data
       - ./volumes/postgres-initdb:/docker-entrypoint-initdb.d
+
+  es:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+    container_name: agent-es
+    environment:
+      - node.name=es01
+      - cluster.name=es-docker-cluster
+      - cluster.initial_master_nodes=es01
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - /usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
 
   dummy_destination:
     build: dummy_destination

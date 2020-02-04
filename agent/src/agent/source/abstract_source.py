@@ -8,6 +8,10 @@ from agent.constants import DATA_DIR
 from agent.tools import if_validation_enabled, sdc_record_map_to_dict
 from jsonschema import validate
 from agent.streamsets_api_client import api_client, StreamSetsApiClientException
+from agent.logger import get_logger
+
+
+logger = get_logger(__name__)
 
 
 class Source(ABC):
@@ -102,10 +106,8 @@ class Source(ABC):
         try:
             preview = api_client.create_preview(self.TEST_PIPELINE_NAME)
             preview_data = api_client.wait_for_preview(self.TEST_PIPELINE_NAME, preview['previewerId'])
-        except StreamSetsApiClientException:
-            api_client.delete_pipeline(self.TEST_PIPELINE_NAME)
-            return None
-        except (Exception, KeyboardInterrupt):
+        except (Exception, KeyboardInterrupt) as e:
+            logger.exception(str(e))
             api_client.delete_pipeline(self.TEST_PIPELINE_NAME)
             raise
         api_client.delete_pipeline(self.TEST_PIPELINE_NAME)
@@ -134,7 +136,8 @@ class Source(ABC):
 
         try:
             data = preview_data['batchesOutput'][0][0]['output']['source_outputLane']
-        except (ValueError, TypeError, IndexError):
+        except (ValueError, TypeError, IndexError) as e:
+            logger.exception(str(e))
             print('No preview data available')
             return
         return [sdc_record_map_to_dict(record['value']) for record in data[:self.MAX_SAMPLE_RECORDS]]

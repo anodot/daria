@@ -1,0 +1,4 @@
+ad_type,d,'_source/AdType' == 'Display'
+ad_type,s,'_source/AdType' == 'Search'
+ADTYPE,S,'ad_type' == 's'
+GEN,G

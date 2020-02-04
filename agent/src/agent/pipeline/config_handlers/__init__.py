@@ -6,3 +6,4 @@ from .base import ConfigHandlerException
 from .jdbc import JDBCConfigHandler
 from .mongo import MongoConfigHandler
 from .base import BaseConfigHandler
+from .elastic import ElasticConfigHandler
