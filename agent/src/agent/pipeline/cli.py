@@ -259,7 +259,6 @@ def force_stop(pipeline_id):
         pipeline_obj.force_stop()
         click.secho('Pipeline is stopped', fg='green')
     except (StreamSetsApiClientException, pipeline.PipelineException) as e:
-        print("Can't stop pipeline. Please restart the agent")
         click.secho(str(e), err=True, fg='red')
         return
 
