@@ -148,7 +148,7 @@ def edit_multiple(file):
             pipeline_manager = PipelineManager(pipeline.load_object(item['pipeline_id']))
             pipeline_manager.load_config(item, edit=True)
             pipeline_manager.update()
-        except pipeline.PipelineNotExists:
+        except pipeline.PipelineNotExistsException:
             raise click.UsageError(f'{item["pipeline_id"]} does not exist')
 
         click.secho('Updated pipeline {}'.format(item['pipeline_id']), fg='green')
@@ -178,7 +178,7 @@ def edit(pipeline_id, advanced, file):
         if click.confirm('Would you like to see the result data preview?', default=True):
             pipeline_manager.show_preview()
             print('To change the config use `agent pipeline edit`')
-    except pipeline.PipelineNotExists:
+    except pipeline.PipelineNotExistsException:
         raise click.UsageError(f'{pipeline_id} does not exist')
 
 
@@ -219,10 +219,9 @@ def start(pipeline_id):
     Start pipeline
     """
     try:
-        api_client.start_pipeline(pipeline_id)
-        click.echo('Pipeline is starting...')
         pipeline_obj = pipeline.load_object(pipeline_id)
-        pipeline_obj.wait_for_status(pipeline.Pipeline.STATUS_RUNNING)
+        click.echo('Pipeline is starting...')
+        pipeline_obj.start()
         click.secho('Pipeline is running', fg='green')
         if ENV_PROD:
             pipeline_obj.wait_for_sending_data()
@@ -239,12 +238,28 @@ def stop(pipeline_id):
     Stop pipeline
     """
     try:
-        api_client.stop_pipeline(pipeline_id)
-        click.echo('Pipeline is stopping...')
         pipeline_obj = pipeline.load_object(pipeline_id)
-        pipeline_obj.wait_for_status(pipeline.Pipeline.STATUS_STOPPED)
+        click.echo('Pipeline is stopping...')
+        pipeline_obj.stop()
         click.secho('Pipeline is stopped', fg='green')
     except (StreamSetsApiClientException, pipeline.PipelineException) as e:
+        click.secho(str(e), err=True, fg='red')
+        return
+
+
+@click.command()
+@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
+def force_stop(pipeline_id):
+    """
+    Force stop pipeline
+    """
+    try:
+        pipeline_obj = pipeline.load_object(pipeline_id)
+        click.echo('Force pipeline stopping...')
+        pipeline_obj.force_stop()
+        click.secho('Pipeline is stopped', fg='green')
+    except (StreamSetsApiClientException, pipeline.PipelineException) as e:
+        print("Can't stop pipeline. Please restart the agent")
         click.secho(str(e), err=True, fg='red')
         return
 
@@ -372,6 +387,7 @@ pipeline_group.add_command(create)
 pipeline_group.add_command(list_pipelines)
 pipeline_group.add_command(start)
 pipeline_group.add_command(stop)
+pipeline_group.add_command(force_stop)
 pipeline_group.add_command(delete)
 pipeline_group.add_command(logs)
 pipeline_group.add_command(info)

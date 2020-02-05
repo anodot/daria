@@ -2,7 +2,7 @@ import json
 import os
 
 # from . import prompt, config_handlers, load_client_data
-from .pipeline import Pipeline, PipelineException, PipelineNotExists
+from .pipeline import Pipeline, PipelineException, PipelineNotExistsException
 from .pipeline_manager import PipelineManager
 from .. import source
 from agent.destination import HttpDestination
@@ -16,7 +16,7 @@ def create_dir():
 
 def load_object(pipeline_id: str) -> Pipeline:
     if not Pipeline.exists(pipeline_id):
-        raise PipelineNotExists(f"Pipeline {pipeline_id} doesn't exist")
+        raise PipelineNotExistsException(f"Pipeline {pipeline_id} doesn't exist")
     with open(Pipeline.get_file_path(pipeline_id), 'r') as f:
         config = json.load(f)
     source_obj = source.load_object(config['source']['name'])

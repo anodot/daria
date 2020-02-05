@@ -61,7 +61,7 @@ class Pipeline:
                 return True
             delay = initial_delay ** i
             if i == tries:
-                raise PipelineException(f"Pipeline {self.id} is still {response['status']} after {tries} tries")
+                raise PipelineFreezeException(f"Pipeline {self.id} is still {response['status']} after {tries} tries")
             print(f"Pipeline {self.id} is {response['status']}. Check again after {delay} seconds...")
             time.sleep(delay)
 
@@ -85,7 +85,16 @@ class Pipeline:
 
     def stop(self):
         api_client.stop_pipeline(self.id)
+        try:
+            self.wait_for_status(self.STATUS_STOPPED)
+        except PipelineFreezeException:
+            self.force_stop()
+
+    def force_stop(self):
+        print("Force stopping the pipeline")
+        api_client.force_stop_pipeline(self.id)
         self.wait_for_status(self.STATUS_STOPPED)
+
 
     def start(self):
         api_client.start_pipeline(self.id)
@@ -96,5 +105,9 @@ class PipelineException(click.ClickException):
     pass
 
 
-class PipelineNotExists(PipelineException):
+class PipelineNotExistsException(PipelineException):
+    pass
+
+
+class PipelineFreezeException(PipelineException):
     pass
