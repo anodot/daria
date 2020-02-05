@@ -13,6 +13,7 @@ class Pipeline:
     DIR = os.path.join(DATA_DIR, 'pipelines')
     STATUS_RUNNING = 'RUNNING'
     STATUS_STOPPED = 'STOPPED'
+    STATUS_STOPPING = 'STOPPING'
 
     def __init__(self, pipeline_id: str,
                  source_obj: source.Source,
@@ -55,13 +56,13 @@ class Pipeline:
         return response['status'] == status
 
     def wait_for_status(self, status, tries=5, initial_delay=3):
-        for i in range(1, tries):
+        for i in range(1, tries + 1):
             response = api_client.get_pipeline_status(self.id)
             if response['status'] == status:
                 return True
             delay = initial_delay ** i
             if i == tries:
-                raise PipelineException(f"Pipeline {self.id} is still {response['status']} after {tries} tries")
+                raise PipelineFreezeException(f"Pipeline {self.id} is still {response['status']} after {tries} tries")
             print(f"Pipeline {self.id} is {response['status']}. Check again after {delay} seconds...")
             time.sleep(delay)
 
@@ -85,6 +86,17 @@ class Pipeline:
 
     def stop(self):
         api_client.stop_pipeline(self.id)
+        try:
+            self.wait_for_status(self.STATUS_STOPPED)
+        except PipelineFreezeException:
+            print("Force stopping the pipeline")
+            self.force_stop()
+
+    def force_stop(self):
+        if not self.check_status(self.STATUS_STOPPING):
+            raise PipelineException("Can't force stop a pipeline not in the STOPPING state")
+
+        api_client.force_stop_pipeline(self.id)
         self.wait_for_status(self.STATUS_STOPPED)
 
     def start(self):
@@ -96,5 +108,9 @@ class PipelineException(click.ClickException):
     pass
 
 
-class PipelineNotExists(PipelineException):
+class PipelineNotExistsException(PipelineException):
+    pass
+
+
+class PipelineFreezeException(PipelineException):
     pass
