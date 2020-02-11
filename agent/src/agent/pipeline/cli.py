@@ -1,11 +1,10 @@
 import click
 import json
 
-from .pipeline_manager import PipelineManager
+from .pipeline_manager import PipelineManager, delete_pipeline, stop_pipeline, force_stop_pipeline
 from .. import pipeline, source
 from ..streamsets_api_client import api_client, StreamSetsApiClientException
 from agent.destination.http import HttpDestination
-from agent.constants import ENV_PROD
 from agent.tools import infinite_retry
 from jsonschema import validate, ValidationError
 from datetime import datetime
@@ -219,13 +218,9 @@ def start(pipeline_id):
     Start pipeline
     """
     try:
-        pipeline_obj = pipeline.load_object(pipeline_id)
+        pipeline_manager = PipelineManager(pipeline.load_object(pipeline_id))
         click.echo('Pipeline is starting...')
-        pipeline_obj.start()
-        click.secho('Pipeline is running', fg='green')
-        if ENV_PROD:
-            pipeline_obj.wait_for_sending_data()
-            click.secho('Pipeline is sending data', fg='green')
+        pipeline_manager.start()
     except (StreamSetsApiClientException, pipeline.PipelineException) as e:
         click.secho(str(e), err=True, fg='red')
         return
@@ -238,9 +233,7 @@ def stop(pipeline_id):
     Stop pipeline
     """
     try:
-        pipeline_obj = pipeline.load_object(pipeline_id)
-        click.echo('Pipeline is stopping...')
-        pipeline_obj.stop()
+        stop_pipeline(pipeline_id)
         click.secho('Pipeline is stopped', fg='green')
     except (StreamSetsApiClientException, pipeline.PipelineException) as e:
         click.secho(str(e), err=True, fg='red')
@@ -254,9 +247,8 @@ def force_stop(pipeline_id):
     Force stop pipeline
     """
     try:
-        pipeline_obj = pipeline.load_object(pipeline_id)
         click.echo('Force pipeline stopping...')
-        pipeline_obj.force_stop()
+        force_stop_pipeline(pipeline_id)
         click.secho('Pipeline is stopped', fg='green')
     except (StreamSetsApiClientException, pipeline.PipelineException) as e:
         click.secho(str(e), err=True, fg='red')
@@ -270,7 +262,7 @@ def delete(pipeline_id):
     Delete pipeline
     """
     try:
-        PipelineManager.delete_pipeline(pipeline_id)
+        delete_pipeline(pipeline_id)
     except (StreamSetsApiClientException, pipeline.PipelineException) as e:
         click.secho(str(e), err=True, fg='red')
         return
