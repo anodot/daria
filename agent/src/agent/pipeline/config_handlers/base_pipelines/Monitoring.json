@@ -411,10 +411,10 @@
         "value" : "NONE"
       }, {
         "name" : "conf.client.connectTimeoutMillis",
-        "value" : 0
+        "value" : 300000
       }, {
         "name" : "conf.client.readTimeoutMillis",
-        "value" : 0
+        "value" : 300000
       }, {
         "name" : "conf.client.authType",
         "value" : "BASIC"
@@ -903,10 +903,10 @@
         "value" : "NONE"
       }, {
         "name" : "conf.client.connectTimeoutMillis",
-        "value" : 0
+        "value" : 300000
       }, {
         "name" : "conf.client.readTimeoutMillis",
-        "value" : 0
+        "value" : 300000
       }, {
         "name" : "conf.client.numThreads",
         "value" : 1
@@ -1322,10 +1322,10 @@
         "value" : "NONE"
       }, {
         "name" : "conf.client.connectTimeoutMillis",
-        "value" : 0
+        "value" : 300000
       }, {
         "name" : "conf.client.readTimeoutMillis",
-        "value" : 0
+        "value" : 300000
       }, {
         "name" : "conf.client.numThreads",
         "value" : 1
@@ -1650,10 +1650,10 @@
         "value" : "NONE"
       }, {
         "name" : "conf.client.connectTimeoutMillis",
-        "value" : 0
+        "value" : 300000
       }, {
         "name" : "conf.client.readTimeoutMillis",
-        "value" : 0
+        "value" : 300000
       }, {
         "name" : "conf.client.numThreads",
         "value" : 1
