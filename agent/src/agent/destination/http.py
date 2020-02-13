@@ -20,12 +20,18 @@ class HttpDestination:
     CONFIG_RESOURCE_URL = 'conf.resourceUrl'
     CONFIG_ENABLE_REQUEST_LOGGING = 'conf.client.requestLoggingConfig.enableRequestLogging'
 
+    CONFIG_MONITORING_URL = 'monitoring_url'
+
     def __init__(self):
         self.config = {}
         self.host_id = self.generate_host_id()
 
     def to_dict(self) -> dict:
         return {'config': self.config, 'type': self.TYPE, 'host_id': self.host_id}
+
+    @property
+    def monitoring_url(self):
+        return self.config[self.CONFIG_MONITORING_URL]
 
     @classmethod
     def generate_host_id(cls, length: int = 10) -> str:
@@ -50,6 +56,7 @@ class HttpDestination:
     def update_url(self, token: str):
         self.config[self.CONFIG_RESOURCE_URL] = urllib.parse.urljoin(
             ANODOT_API_URL, f'api/v1/metrics?token={token}&protocol=anodot20')
+        self.config[self.CONFIG_MONITORING_URL] = urllib.parse.urljoin(ANODOT_API_URL, f'api/v1/agents?token={token}')
 
     def save(self):
         try:

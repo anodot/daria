@@ -1,8 +1,10 @@
 import json
 import os
+import requests
 
 from .base import BaseConfigHandler
 from agent.constants import HOSTNAME
+from copy import deepcopy
 
 
 class MonitoringConfigHandler(BaseConfigHandler):
@@ -25,20 +27,32 @@ state['previous'] = {{}};
         return data['pipelineConfig']
 
     def override_stages(self):
-
+        anodot_monitoring_stage = None
         for stage in self.config['stages']:
             if stage['instanceName'] == 'HTTPClient_03':
                 for conf in stage['configuration']:
-                    if conf['name'] in self.client_config['destination']['config']:
-                        conf['value'] = self.client_config['destination']['config'][conf['name']]
+                    if conf['name'] in self.pipeline.destination.config:
+                        conf['value'] = self.pipeline.destination.config[conf['name']]
+                anodot_monitoring_stage = deepcopy(stage)
+                anodot_monitoring_stage['instanceName'] = 'send_to_monitoring'
 
             if stage['instanceName'] == 'JavaScriptEvaluator_01':
                 for conf in stage['configuration']:
                     if conf['name'] == 'initScript':
                         conf['value'] = self.DECLARE_VARS_JS.format(
-                            host_id=self.client_config['destination']['host_id'],
+                            host_id=self.pipeline.destination.host_id,
                             host_name=HOSTNAME
                         )
+
+        # check if monitoring is available
+        r = requests.post(self.pipeline.destination.monitoring_url, json=[])
+        if r.status_code == 200:
+            for conf in anodot_monitoring_stage['configuration']:
+                if conf['name'] == self.pipeline.destination.CONFIG_RESOURCE_URL:
+                    conf['value'] = self.pipeline.destination.monitoring_url
+            anodot_monitoring_stage['uiInfo']['yPos'] += 100
+            anodot_monitoring_stage['uiInfo']['label'] = 'Anodot agents API'
+            self.config['stages'].append(anodot_monitoring_stage)
 
     def set_labels(self):
         pass

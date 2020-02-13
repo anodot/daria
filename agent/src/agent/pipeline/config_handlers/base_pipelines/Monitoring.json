@@ -1810,7 +1810,7 @@
       } ],
       "uiInfo" : {
         "description" : "",
-        "label" : "HTTP Client 3",
+        "label" : "Anodot metrics API",
         "xPos" : 1003,
         "yPos" : 109,
         "stageType" : "TARGET"
