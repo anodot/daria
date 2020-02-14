@@ -16,7 +16,9 @@
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
       "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"]
+      "pipeline_type": ["type"],
+      "tag1": ["tagval"],
+      "tag2": ["tagval"]
     },
     "timestamp": 1512867600
   },
@@ -37,7 +39,9 @@
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
       "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"]
+      "pipeline_type": ["type"],
+      "tag1": ["tagval"],
+      "tag2": ["tagval"]
     },
     "timestamp": 1512871200
   },
@@ -59,7 +63,9 @@
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
       "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"]
+      "pipeline_type": ["type"],
+      "tag1": ["tagval"],
+      "tag2": ["tagval"]
     },
     "timestamp": 1512874800
   },
@@ -80,7 +86,9 @@
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
       "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"]
+      "pipeline_type": ["type"],
+      "tag1": ["tagval"],
+      "tag2": ["tagval"]
     },
     "timestamp": 1512878400
   },
@@ -102,7 +110,9 @@
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
       "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"]
+      "pipeline_type": ["type"],
+      "tag1": ["tagval"],
+      "tag2": ["tagval"]
     },
     "timestamp": 1512882000
   }
