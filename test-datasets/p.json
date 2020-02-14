@@ -1,0 +1,16 @@
+[
+  {
+    "source": "monitoring-prod-kafka",
+    "pipeline_id": "monitoring-prod-kafka_lag",
+    "count_records": false,
+    "values": {"value/value": "gauge"},
+    "measurement_names": {"value/value": "value"},
+    "dimensions": {
+      "required": ["topic", "consumer_group", "global_dc"],
+      "optional": []
+    },
+    "timestamp": {"type": "string", "name": "@timestamp", "format": "yyyy-MM-dd\\'T\\'H:mm:ss.S\\'Z\\'"},
+    "filter": {"condition": "\"partition\" == \"all\""},
+    "tags": {"studio": "sm"}
+  }
+]
