@@ -23,7 +23,10 @@
       "format": {"type": "string", "minLength": 1}
     }, "required": ["name", "type"]},
     "properties": {"type": "object"},
-    "tags": {"type": "object"}
+    "tags": {
+      "type": "object",
+      "patternProperties":  {"[^ \\.]+": {"type": "array", "items": {"type": "string"}}}
+    }
   },
   "required": ["measurement_name", "value", "timestamp", "dimensions"]
 }

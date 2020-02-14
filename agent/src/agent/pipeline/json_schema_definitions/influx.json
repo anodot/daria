@@ -15,7 +15,10 @@
       }}
     ]},
     "properties": {"type": "object"},
-    "tags": {"type": "object"},
+    "tags": {
+      "type": "object",
+      "patternProperties":  {"[^ \\.]+": {"type": "array", "items": {"type": "string"}}}
+    },
     "delay": {"type": "string"},
     "interval": {"type": "integer"}
   },

@@ -34,7 +34,7 @@ class TestKafka(TestPipelineBase):
                       {'name': 'test_csv'}],
         'test_output': [{'name': 'test_kfk_value_const', 'output': 'json_value_const_adv.json', 'pipeline_type': 'kafka'},
                         {'name': 'test_kfk_timestamp_ms', 'output': 'json_value_property.json', 'pipeline_type': 'kafka'},
-                        {'name': 'test_csv', 'output': 'json_value_property.json', 'pipeline_type': 'kafka'},
+                        {'name': 'test_csv', 'output': 'json_value_property_tags.json', 'pipeline_type': 'kafka'},
                         {'name': 'test_kfk_timestamp_string', 'output': 'json_value_property_transformations.json', 'pipeline_type': 'kafka'}],
         'test_delete_pipeline': [{'name': 'test_kfk_value_const'}, {'name': 'test_kfk_timestamp_ms'},
                                  {'name': 'test_kfk_timestamp_string'},
