@@ -198,7 +198,7 @@
         "value" : "{\n  \"query\": {\n    \"match_all\": {}\n  }\n}"
       }, {
         "name" : "conf.cursorTimeout",
-        "value" : "1m"
+        "value" : "5m"
       }, {
         "name" : "conf.deleteCursor",
         "value" : false
