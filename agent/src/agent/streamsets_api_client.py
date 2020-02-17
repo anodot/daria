@@ -276,15 +276,24 @@ class StreamSetsApiClient:
             time.sleep(delay)
 
         preview_data = self.get_preview(pipeline_id, preview_id)
-        if preview_data['status'] == 'INVALID':
-            errors = []
-            for stage, data in preview_data['issues']['stageIssues'].items():
-                for issue in data:
-                    errors.append(issue['message'])
-            for issue in preview_data['issues']['pipelineIssues']:
-                errors.append(issue['message'])
 
-            raise StreamSetsApiClientException('Connection error.\n' + '\n'.join(errors))
+        errors = []
+        for stage, data in preview_data['issues']['stageIssues'].items():
+            for issue in data:
+                errors.append(issue['message'])
+        for issue in preview_data['issues']['pipelineIssues']:
+            errors.append(issue['message'])
+
+        if preview_data['batchesOutput']:
+            for batch in preview_data['batchesOutput']:
+                for stage in batch:
+                    if stage['errorRecords']:
+                        for record in stage['errorRecords']:
+                            errors.append(record['header']['errorMessage'])
+
+        if errors:
+            raise StreamSetsApiClientException('\n'.join(errors))
+
         return preview_data
 
 
