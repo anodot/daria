@@ -4,7 +4,7 @@
     "properties": {
       "what": "Display",
       "target_type": "gauge",
-      "ver": "AD200",
+      "ver": "1",
       "Country": "USA",
       "Exchange": "DoubleClick",
       "key1": "val1",
@@ -27,7 +27,7 @@
     "properties": {
       "what": "Display",
       "target_type": "gauge",
-      "ver": "AD200",
+      "ver": "1",
       "Country": "USA",
       "Exchange": "DoubleClick",
       "key1": "val1",
@@ -50,7 +50,7 @@
     "properties": {
       "what": "Search",
       "target_type": "counter",
-      "ver": "AD200",
+      "ver": "1",
       "Country": "USA",
       "Exchange": "DoubleClick",
       "key1": "val1",
@@ -74,7 +74,7 @@
     "properties": {
       "what": "Display",
       "target_type": "gauge",
-      "ver": "AD200",
+      "ver": "1",
       "Country": "USA",
       "Exchange": "DoubleClick",
       "key1": "val1",
@@ -97,7 +97,7 @@
     "properties": {
       "what": "Search",
       "target_type": "counter",
-      "ver": "AD200",
+      "ver": "1",
       "Country": "USA",
       "Exchange": "DoubleClick",
       "key1": "val1",

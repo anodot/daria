@@ -4,7 +4,7 @@
     "properties": {
       "what": "clicks",
       "target_type": "counter",
-      "ver": "AD200",
+      "ver": "1",
       "Country": "USA",
       "Exchange": "DoubleClick",
       "key1": "val1"
@@ -23,7 +23,7 @@
     "properties": {
       "what": "clicks",
       "target_type": "counter",
-      "ver": "AD200",
+      "ver": "1",
       "Country": "USA",
       "Exchange": "DoubleClick",
       "key1": "val1"
@@ -42,7 +42,7 @@
     "properties": {
       "what": "clicks",
       "target_type": "counter",
-      "ver": "AD200",
+      "ver": "1",
       "Country": "USA",
       "Exchange": "DoubleClick",
       "key1": "val1"
@@ -61,7 +61,7 @@
     "properties": {
       "what": "clicks",
       "target_type": "counter",
-      "ver": "AD200",
+      "ver": "1",
       "Country": "USA",
       "Exchange": "DoubleClick",
       "key1": "val1"
@@ -80,7 +80,7 @@
     "properties": {
       "what": "clicks",
       "target_type": "counter",
-      "ver": "AD200",
+      "ver": "1",
       "Country": "USA",
       "Exchange": "DoubleClick",
       "key1": "val1"
@@ -99,7 +99,7 @@
     "properties": {
       "what": "clicks",
       "target_type": "counter",
-      "ver": "AD200",
+      "ver": "1",
       "Country": "USA",
       "Exchange": "DoubleClick",
       "key1": "val1"
@@ -118,7 +118,7 @@
     "properties": {
       "what": "clicks",
       "target_type": "counter",
-      "ver": "AD200",
+      "ver": "1",
       "Country": "",
       "Exchange": "DoubleClick",
       "key1": "val1"
