@@ -20,7 +20,8 @@
     "tags": {
       "type": "object",
       "patternProperties":  {"[^ \\.]+": {"type": "array", "items": {"type": "string"}}}
-    }
+    },
+    "query_file": {"type": "string"}
   },
-  "required": ["values", "measurement_names", "dimensions", "timestamp"]
+  "required": ["values", "measurement_names", "dimensions", "timestamp", "query_file"]
 }
