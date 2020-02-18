@@ -3,6 +3,7 @@ import os
 import requests
 import time
 import urllib.parse
+import click
 
 from .logger import get_logger
 from agent.constants import STREAMSETS_PREVIEW_TIMEOUT
@@ -38,7 +39,7 @@ def endpoint(func):
     return wrapper
 
 
-class StreamSetsApiClientException(Exception):
+class StreamSetsApiClientException(click.ClickException):
     pass
 
 
@@ -278,11 +279,14 @@ class StreamSetsApiClient:
         preview_data = self.get_preview(pipeline_id, preview_id)
 
         errors = []
-        for stage, data in preview_data['issues']['stageIssues'].items():
-            for issue in data:
+        if preview_data['status'] == 'RUN_ERROR':
+            errors.append(preview_data['message'])
+        if preview_data['issues']:
+            for stage, data in preview_data['issues']['stageIssues'].items():
+                for issue in data:
+                    errors.append(issue['message'])
+            for issue in preview_data['issues']['pipelineIssues']:
                 errors.append(issue['message'])
-        for issue in preview_data['issues']['pipelineIssues']:
-            errors.append(issue['message'])
 
         if preview_data['batchesOutput']:
             for batch in preview_data['batchesOutput']:
