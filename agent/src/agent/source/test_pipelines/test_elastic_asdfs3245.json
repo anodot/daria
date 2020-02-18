@@ -183,7 +183,7 @@
         "value" : null
       }, {
         "name" : "conf.isIncrementalMode",
-        "value" : true
+        "value" : false
       }, {
         "name" : "conf.queryInterval",
         "value" : "${1 * HOURS}"

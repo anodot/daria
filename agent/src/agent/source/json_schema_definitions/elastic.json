@@ -2,7 +2,6 @@
   "type": "object",
   "properties": {
     "conf.index": {"type": "string"},
-    "query_file": {"type": "string"},
     "conf.mapping": {"type": "string"},
     "conf.isIncrementalMode": {"type": "boolean"},
     "conf.queryInterval": {"type": "string"},
@@ -13,5 +12,5 @@
     "conf.query": {"type": "string"},
     "conf.httpUris": {"type": "array", "items": {"type": "string"}}
   },
-  "required": ["conf.httpUris", "query_file"]
+  "required": ["conf.httpUris"]
 }

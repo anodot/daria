@@ -6,15 +6,16 @@
       "target_type": "gauge",
       "ver": "1",
       "Country": "USA",
-      "Exchange": "DoubleClick",
-      "key1": "val1"
+      "Exchange": "DoubleClick"
     },
     "tags": {
       "source": ["anodot-agent"],
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
       "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"]
+      "pipeline_type": ["type"],
+      "tag1": ["tagval"],
+      "tag2": ["tagval"]
     },
     "timestamp": 1512867600
   },
@@ -25,15 +26,16 @@
       "target_type": "gauge",
       "ver": "1",
       "Country": "USA",
-      "Exchange": "DoubleClick",
-      "key1": "val1"
+      "Exchange": "DoubleClick"
     },
     "tags": {
       "source": ["anodot-agent"],
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
       "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"]
+      "pipeline_type": ["type"],
+      "tag1": ["tagval"],
+      "tag2": ["tagval"]
     },
     "timestamp": 1512871200
   },
@@ -44,15 +46,16 @@
       "target_type": "gauge",
       "ver": "1",
       "Country": "USA",
-      "Exchange": "DoubleClick",
-      "key1": "val1"
+      "Exchange": "DoubleClick"
     },
     "tags": {
       "source": ["anodot-agent"],
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
       "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"]
+      "pipeline_type": ["type"],
+      "tag1": ["tagval"],
+      "tag2": ["tagval"]
     },
     "timestamp": 1512874800
   },
@@ -63,15 +66,16 @@
       "target_type": "gauge",
       "ver": "1",
       "Country": "USA",
-      "Exchange": "DoubleClick",
-      "key1": "val1"
+      "Exchange": "DoubleClick"
     },
     "tags": {
       "source": ["anodot-agent"],
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
       "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"]
+      "pipeline_type": ["type"],
+      "tag1": ["tagval"],
+      "tag2": ["tagval"]
     },
     "timestamp": 1512878400
   },
@@ -82,15 +86,16 @@
       "target_type": "gauge",
       "ver": "1",
       "Country": "USA",
-      "Exchange": "DoubleClick",
-      "key1": "val1"
+      "Exchange": "DoubleClick"
     },
     "tags": {
       "source": ["anodot-agent"],
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
       "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"]
+      "pipeline_type": ["type"],
+      "tag1": ["tagval"],
+      "tag2": ["tagval"]
     },
     "timestamp": 1512882000
   },
@@ -101,15 +106,16 @@
       "target_type": "gauge",
       "ver": "1",
       "Country": "",
-      "Exchange": "DoubleClick",
-      "key1": "val1"
+      "Exchange": "DoubleClick"
     },
     "tags": {
       "source": ["anodot-agent"],
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
       "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"]
+      "pipeline_type": ["type"],
+      "tag1": ["tagval"],
+      "tag2": ["tagval"]
     },
     "timestamp": 1512889200
   }

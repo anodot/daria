@@ -10,7 +10,10 @@
       "type": {"type":  "string", "enum": ["datetime", "unix", "unix_ms"]}
     }, "required": ["name", "type"]},
     "properties": {"type": "object"},
-    "tags": {"type": "object"},
+    "tags": {
+      "type": "object",
+      "patternProperties":  {"[^ \\.]+": {"type": "array", "items": {"type": "string"}}}
+    },
     "offset_column": {"type": "string", "minLength": 1},
     "initial_offset": {"oneOf": [{"type": "string", "minLength": 1}, {"type": "integer", "minimum": 0}]},
     "limit": {"type": "integer", "minimum": 1}

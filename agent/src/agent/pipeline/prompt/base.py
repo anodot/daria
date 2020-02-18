@@ -61,7 +61,7 @@ class PromptConfig:
 
         properties_str = ''
         if self.config['tags']:
-            properties_str = ' '.join([key + ':' + val for key, val in self.config['tags'].items()])
+            properties_str = ' '.join([key + ':' + ','.join(val) for key, val in self.config['tags'].items()])
 
         self.config['tags'] = {}
 
@@ -71,7 +71,7 @@ class PromptConfig:
             if len(pair) != 2:
                 raise click.UsageError('Wrong format, correct example - key:val key2:val2')
 
-            self.config['tags'][pair[0]] = [pair[1]]
+            self.config['tags'][pair[0]] = pair[1].split(',')
 
     @infinite_retry
     def prompt_object(self, property_name, prompt_text):

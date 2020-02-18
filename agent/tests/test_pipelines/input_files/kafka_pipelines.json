@@ -40,6 +40,7 @@
     "timestamp": {
       "type": "unix",
       "name": "timestamp_unix"
-    }
+    },
+    "tags": {"tag1": ["tagval"], "tag2": ["tagval"]}
   }
 ]
