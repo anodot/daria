@@ -17,7 +17,11 @@
       "format": {"type": "string", "minLength": 1}
     }, "required": ["name", "type"]},
     "properties": {"type": "object"},
-    "tags": {"type": "object"}
+    "tags": {
+      "type": "object",
+      "patternProperties":  {"[^ \\.]+": {"type": "array", "items": {"type": "string"}}}
+    },
+    "query_file": {"type": "string"}
   },
-  "required": ["values", "measurement_names", "dimensions", "timestamp"]
+  "required": ["values", "measurement_names", "dimensions", "timestamp", "query_file"]
 }

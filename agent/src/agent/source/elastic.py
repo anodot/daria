@@ -28,25 +28,23 @@ class ElasticSource(Source):
             default_uris = ','.join(default_uris)
         self.config[self.CONFIG_HTTP_URIS] = click.prompt('Cluster HTTP URIs', type=click.STRING,
                                                           default=default_uris).strip().split(',')
-        self.config[self.CONFIG_IS_INCREMENTAL] = False
+
         self.validate_connection()
 
     def prompt(self, default_config, advanced=False):
         self.config = {}
         self.prompt_connection(default_config)
-        self.prompt_query_params(default_config)
-
-        return self.config
-
-    @infinite_retry
-    def prompt_query_params(self, default_config):
         self.prompt_index(default_config)
-        self.prompt_query(default_config)
         self.prompt_offset_field(default_config)
         self.prompt_initial_offset(default_config)
         self.prompt_interval(default_config)
         self.set_config(self.config)
-        self.validate_connection()
+
+        return self.config
+
+    def validate_connection(self):
+        self.config[self.CONFIG_IS_INCREMENTAL] = False
+        super().validate_connection()
 
     def validate(self):
         self.validate_json()
@@ -64,11 +62,6 @@ class ElasticSource(Source):
         self.config[self.CONFIG_INDEX] = click.prompt('Index', type=click.STRING,
                                                       default=default_config.get(self.CONFIG_INDEX, ''))
 
-    @infinite_retry
-    def prompt_query(self, default_config):
-        self.config['query_file'] = click.prompt('Query file path', type=click.Path(exists=True, dir_okay=False),
-                                                 default=default_config.get('query_file'))
-
     def prompt_offset_field(self, default_config):
         self.config[self.CONFIG_OFFSET_FIELD] = click.prompt('Offset field', type=click.STRING,
                                                              default=default_config.get(self.CONFIG_OFFSET_FIELD,
@@ -81,14 +74,10 @@ class ElasticSource(Source):
 
     def prompt_interval(self, default_config):
         self.config['query_interval_sec'] = click.prompt('Query interval (seconds)', type=click.IntRange(1),
-                                                             default=default_config.get('query_interval_sec', 1))
+                                                         default=default_config.get('query_interval_sec', 1))
 
     def set_config(self, config):
         super().set_config(config)
         if 'query_interval_sec' in self.config:
             self.config[self.CONFIG_QUERY_INTERVAL] = '${' + str(self.config['query_interval_sec']) + ' * SECONDS}'
-        if 'query_file' in self.config:
-            with open(self.config['query_file'], 'r') as f:
-                self.config[self.CONFIG_QUERY] = f.read()
-
         self.config[self.CONFIG_IS_INCREMENTAL] = True
