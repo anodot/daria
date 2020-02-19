@@ -5,7 +5,7 @@ from agent.tools import infinite_retry
 from .base import PromptConfig
 
 
-class PromptConfigJson(PromptConfig):
+class PromptConfigSchemaless(PromptConfig):
     timestamp_types = ['string', 'unix', 'unix_ms']
 
     def set_config(self):

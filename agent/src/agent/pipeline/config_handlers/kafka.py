@@ -1,10 +1,10 @@
-from .json import JsonConfigHandler
+from .schemaless import SchemalessConfigHandler
 from agent.logger import get_logger
 
 logger = get_logger(__name__)
 
 
-class KafkaConfigHandler(JsonConfigHandler):
+class KafkaConfigHandler(SchemalessConfigHandler):
     def override_stages(self):
         self.client_config['source']['config']['conf.consumerGroup'] = 'anodot_agent_' + self.get_pipeline_id()
         self.update_source_configs()

@@ -1,35 +1,19 @@
 import click
-import json
-
-from .abstract_source import Source, SourceException
-from agent.tools import infinite_retry, print_dicts, print_json, map_keys, if_validation_enabled
+from .schemaless import SchemalessSource
+from agent.tools import infinite_retry
 
 
-class KafkaSource(Source):
+class KafkaSource(SchemalessSource):
     CONFIG_BROKER_LIST = 'conf.brokerURI'
     CONFIG_CONSUMER_GROUP = 'conf.consumerGroup'
     CONFIG_TOPIC_LIST = 'conf.topicList'
     CONFIG_OFFSET_TYPE = 'conf.kafkaAutoOffsetReset'
     CONFIG_OFFSET_TIMESTAMP = 'conf.timestampToSearchOffsets'
-    CONFIG_BATCH_SIZE = 'conf.maxBatchSize'
-    CONFIG_BATCH_WAIT_TIME = 'conf.batchWaitTime'
+
     CONFIG_CONSUMER_PARAMS = 'conf.kafkaOptions'
     CONFIG_N_THREADS = 'conf.numberOfThreads'
     CONFIG_LIBRARY = 'library'
     CONFIG_VERSION = 'version'
-    CONFIG_DATA_FORMAT = 'conf.dataFormat'
-    CONFIG_CSV_MAPPING = 'csv_mapping'
-
-    DATA_FORMAT_JSON = 'JSON'
-    DATA_FORMAT_CSV = 'DELIMITED'
-    DATA_FORMAT_AVRO = 'AVRO'
-
-    CONFIG_AVRO_SCHEMA_SOURCE = 'conf.dataFormatConfig.avroSchemaSource'
-    CONFIG_AVRO_SCHEMA = 'conf.dataFormatConfig.avroSchema'
-    CONFIG_AVRO_SCHEMA_FILE = 'schema_file'
-
-    AVRO_SCHEMA_SOURCE_SOURCE = 'SOURCE'
-    AVRO_SCHEMA_SOURCE_INLINE = 'INLINE'
 
     OFFSET_EARLIEST = 'EARLIEST'
     OFFSET_LATEST = 'LATEST'
@@ -44,8 +28,6 @@ class KafkaSource(Source):
     version_libraries = {'0.10': 'streamsets-datacollector-apache-kafka_0_11-lib',
                          '0.11': 'streamsets-datacollector-apache-kafka_0_11-lib',
                          '2.0+': 'streamsets-datacollector-apache-kafka_2_0-lib'}
-
-    data_formats = [DATA_FORMAT_JSON, DATA_FORMAT_CSV, DATA_FORMAT_AVRO]
 
     @infinite_retry
     def prompt_connection(self, default_config, advanced=False):
@@ -100,35 +82,7 @@ class KafkaSource(Source):
 
         if advanced:
             self.prompt_data_format(default_config)
-
-        return self.config
-
-    def prompt_data_format(self, default_config):
-        self.config[self.CONFIG_DATA_FORMAT] = click.prompt('Data format',
-                                                            type=click.Choice(self.data_formats),
-                                                            default=default_config.get(self.CONFIG_DATA_FORMAT,
-                                                                                       self.DATA_FORMAT_JSON))
-        if self.config[self.CONFIG_DATA_FORMAT] == self.DATA_FORMAT_CSV:
-            self.change_field_names(default_config)
-        elif self.config[self.CONFIG_DATA_FORMAT] == self.DATA_FORMAT_AVRO:
-            default_schema_location = default_config.get(self.CONFIG_AVRO_SCHEMA_SOURCE,
-                                                         self.AVRO_SCHEMA_SOURCE_SOURCE)
-            schema_in_source = click.confirm('Does messages include schema?',
-                                             default=default_schema_location == self.AVRO_SCHEMA_SOURCE_SOURCE)
-            if not schema_in_source:
-                self.config[self.CONFIG_AVRO_SCHEMA_SOURCE] = self.AVRO_SCHEMA_SOURCE_INLINE
-                schema_file = click.prompt('Schema file path', type=click.File(),
-                                           default=default_config.get(self.CONFIG_AVRO_SCHEMA_FILE))
-                self.config[self.CONFIG_AVRO_SCHEMA] = json.dumps(json.load(schema_file))
-            else:
-                self.config[self.CONFIG_AVRO_SCHEMA_SOURCE] = self.AVRO_SCHEMA_SOURCE_SOURCE
-
-        self.config[self.CONFIG_BATCH_SIZE] = click.prompt('Max Batch Size (records)', type=click.IntRange(1),
-                                                           default=default_config.get(self.CONFIG_BATCH_SIZE, 1000))
-        self.config[self.CONFIG_BATCH_WAIT_TIME] = click.prompt('Batch Wait Time (ms)', type=click.IntRange(1),
-                                                                default=default_config.get(
-                                                                    self.CONFIG_BATCH_WAIT_TIME,
-                                                                    1000))
+            self.prompt_batch_size(default_config)
 
         return self.config
 
@@ -138,40 +92,6 @@ class KafkaSource(Source):
 
         super().update_test_source_config(stage)
 
-    def change_field_names(self, default_config):
-        previous_val = default_config.get(self.CONFIG_CSV_MAPPING, {})
-        records = self.get_sample_records()
-        if records:
-            print('Records example:')
-            print_dicts(records)
-            if previous_val:
-                print('Previous mapping:')
-                print_dicts(map_keys(records, previous_val))
-        self.prompt_field_mapping(records, previous_val)
-
-    @infinite_retry
-    def prompt_field_mapping(self, records, previous_val):
-        new_names = click.prompt('Change fields names (format - key:val,key2:val2,key3:val3)',
-                                 type=click.STRING,
-                                 default=','.join([f'{idx}:{item}' for idx, item in previous_val.items()])).strip()
-        if not new_names:
-            self.config[self.CONFIG_CSV_MAPPING] = {}
-            print('Saved default mapping')
-            return
-        data = {}
-        for item in new_names.split(','):
-            key_val = item.split(':')
-            if not key_val or len(key_val) != 2:
-                raise click.UsageError('Wrong format. Correct example: `key:val,key2:val2,key3:val3`')
-            data[int(key_val[0])] = key_val[1]
-
-        print('Current mapping:')
-        print_dicts(map_keys(records, data))
-        if not click.confirm('Confirm?'):
-            raise ValueError('Try again')
-
-        self.config[self.CONFIG_CSV_MAPPING] = data
-
     def validate(self):
         self.validate_json()
         self.validate_connection()
@@ -180,16 +100,3 @@ class KafkaSource(Source):
         super().set_config(config)
         self.config[self.CONFIG_LIBRARY] = self.version_libraries[self.config.get(self.CONFIG_VERSION,
                                                                                   self.DEFAULT_KAFKA_VERSION)]
-
-    @if_validation_enabled
-    def print_sample_data(self):
-        records = self.get_sample_records()
-        if not records:
-            return
-
-        if self.config.get(self.CONFIG_DATA_FORMAT) == self.DATA_FORMAT_CSV:
-            self.sample_data = map_keys(records, self.config.get(self.CONFIG_CSV_MAPPING, {}))
-            print_dicts(self.sample_data)
-        else:
-            self.sample_data = records
-            print_json(records)
