@@ -63,14 +63,15 @@ class ElasticSource(Source):
                                                       default=default_config.get(self.CONFIG_INDEX, ''))
 
     def prompt_offset_field(self, default_config):
-        self.config[self.CONFIG_OFFSET_FIELD] = click.prompt('Offset field', type=click.STRING,
+        self.config[self.CONFIG_OFFSET_FIELD] = click.prompt('Offset field (Elasticsearch Date field)',
+                                                             type=click.STRING,
                                                              default=default_config.get(self.CONFIG_OFFSET_FIELD,
                                                                                         'timestamp'))
 
     def prompt_initial_offset(self, default_config):
         self.config[self.CONFIG_INITIAL_OFFSET] = click.prompt('Initial offset', type=click.STRING,
                                                                default=default_config.get(self.CONFIG_INITIAL_OFFSET,
-                                                                                          'now-3d/d'))
+                                                                                          'now'))
 
     def prompt_interval(self, default_config):
         self.config['query_interval_sec'] = click.prompt('Query interval (seconds)', type=click.IntRange(1),
