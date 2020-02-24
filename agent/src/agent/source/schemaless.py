@@ -46,6 +46,9 @@ class SchemalessSource(Source, metaclass=ABCMeta):
     CONFIG_BATCH_SIZE = 'conf.maxBatchSize'
     CONFIG_BATCH_WAIT_TIME = 'conf.batchWaitTime'
 
+    CONFIG_GROK_PATTERN_DEFINITION = 'conf.dataFormatConfig.grokPatternDefinition'
+    CONFIG_GROK_PATTERN = 'conf.dataFormatConfig.grokPattern'
+
     data_formats = [DATA_FORMAT_JSON, DATA_FORMAT_CSV, DATA_FORMAT_AVRO, DATA_FORMAT_LOG]
 
     @infinite_retry
@@ -104,7 +107,15 @@ class SchemalessSource(Source, metaclass=ABCMeta):
             self.prompt_avro_registry(default_config)
 
     def prompt_log(self, default_config):
-        pass
+        self.config[self.CONFIG_GROK_PATTERN_DEFINITION] = click.prompt('Grok pattern definition',
+                                                                        type=click.STRING,
+                                                                        default=default_config.get(
+                                                                            self.config[
+                                                                                self.CONFIG_GROK_PATTERN_DEFINITION]))
+        self.config[self.CONFIG_GROK_PATTERN] = click.prompt('Grok pattern',
+                                                             type=click.STRING,
+                                                             default=default_config.get(
+                                                                 self.config[self.CONFIG_GROK_PATTERN]))
 
     def prompt_data_format(self, default_config):
         self.config[self.CONFIG_DATA_FORMAT] = click.prompt('Data format',
