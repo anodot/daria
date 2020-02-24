@@ -22,6 +22,3 @@ class TCPSource(SchemalessSource):
     def validate(self):
         self.validate_json()
         self.validate_connection()
-
-    def print_sample_data(self):
-        pass

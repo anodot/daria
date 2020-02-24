@@ -40,6 +40,9 @@ class SchemalessSource(Source, metaclass=ABCMeta):
     AVRO_LOOKUP_AUTO = 'AUTO'
     avro_lookup_modes = [AVRO_LOOKUP_SUBJECT, AVRO_LOOKUP_ID, AVRO_LOOKUP_AUTO]
 
+    CONFIG_AVRO_LOOKUP_ID = 'conf.dataFormatConfig.schemaId'
+    CONFIG_AVRO_LOOKUP_SUBJECT = 'conf.dataFormatConfig.subject'
+
     CONFIG_BATCH_SIZE = 'conf.maxBatchSize'
     CONFIG_BATCH_WAIT_TIME = 'conf.batchWaitTime'
 
@@ -62,18 +65,43 @@ class SchemalessSource(Source, metaclass=ABCMeta):
             self.prompt_custom_delimiter(default_config)
         self.change_field_names(default_config)
 
-    def prompt_avro(self, default_config):
-        default_schema_location = default_config.get(self.CONFIG_AVRO_SCHEMA_SOURCE,
-                                                     self.AVRO_SCHEMA_SOURCE_SOURCE)
-        schema_in_source = click.confirm('Does messages include schema?',
-                                         default=default_schema_location == self.AVRO_SCHEMA_SOURCE_SOURCE)
-        if not schema_in_source:
-            self.config[self.CONFIG_AVRO_SCHEMA_SOURCE] = self.AVRO_SCHEMA_SOURCE_INLINE
-            schema_file = click.prompt('Schema file path', type=click.File(),
-                                       default=default_config.get(self.CONFIG_AVRO_SCHEMA_FILE))
-            self.config[self.CONFIG_AVRO_SCHEMA] = json.dumps(json.load(schema_file))
+    def prompt_avro_registry(self, default_config):
+        self.config[self.CONFIG_AVRO_SCHEMA_REGISTRY_URLS] = click.prompt('Registry Urls', type=click.STRING,
+                                                                          value_proc=lambda x: x.split(','),
+                                                                          default=default_config.get(
+                                                                              self.CONFIG_AVRO_SCHEMA_REGISTRY_URLS))
+        self.config[self.CONFIG_AVRO_SCHEMA_LOOKUP_MODE] = click.prompt('Lookup mode',
+                                                                        type=click.Choice(self.avro_lookup_modes),
+                                                                        default=default_config.get(
+                                                                            self.config[
+                                                                                self.CONFIG_AVRO_SCHEMA_LOOKUP_MODE]))
+        if self.config[self.CONFIG_AVRO_SCHEMA_LOOKUP_MODE] == self.AVRO_LOOKUP_ID:
+            self.config[self.CONFIG_AVRO_LOOKUP_ID] = click.prompt('Schema ID',
+                                                                   type=click.STRING,
+                                                                   default=default_config.get(
+                                                                       self.config[self.CONFIG_AVRO_LOOKUP_ID]))
+        elif self.config[self.CONFIG_AVRO_SCHEMA_LOOKUP_MODE] == self.AVRO_LOOKUP_SUBJECT:
+            self.config[self.CONFIG_AVRO_LOOKUP_SUBJECT] = click.prompt('Schema ID',
+                                                                        type=click.STRING,
+                                                                        default=default_config.get(
+                                                                            self.config[
+                                                                                self.CONFIG_AVRO_LOOKUP_SUBJECT]))
         else:
-            self.config[self.CONFIG_AVRO_SCHEMA_SOURCE] = self.AVRO_SCHEMA_SOURCE_SOURCE
+            self.config[self.CONFIG_KEY_DESERIALIZER] = 'CONFLUENT'
+            self.config[self.CONFIG_VALUE_DESERIALIZER] = 'CONFLUENT'
+
+    def prompt_avro(self, default_config):
+        self.config[self.CONFIG_AVRO_SCHEMA_SOURCE] = click.prompt('Schema location',
+                                                                   type=click.Choice(self.avro_sources),
+                                                                   default=default_config.get(
+                                                                       self.config[self.CONFIG_AVRO_SCHEMA_SOURCE]))
+        if self.config[self.CONFIG_AVRO_SCHEMA_SOURCE] == self.AVRO_SCHEMA_SOURCE_INLINE:
+            self.config[self.CONFIG_AVRO_SCHEMA_FILE] = click.prompt('Schema file path', type=click.File(),
+                                                                     default=default_config.get(
+                                                                         self.CONFIG_AVRO_SCHEMA_FILE))
+            self.config[self.CONFIG_AVRO_SCHEMA] = json.dumps(json.load(self.config[self.CONFIG_AVRO_SCHEMA_FILE]))
+        elif self.config[self.CONFIG_AVRO_SCHEMA_SOURCE] == self.AVRO_SCHEMA_SOURCE_REGISTRY:
+            self.prompt_avro_registry(default_config)
 
     def prompt_log(self, default_config):
         pass
