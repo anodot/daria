@@ -276,7 +276,7 @@
         "value" : 4096
       }, {
         "name" : "conf.dataFormatConfig.logMode",
-        "value" : "COMMON_LOG_FORMAT"
+        "value" : "GROK"
       }, {
         "name" : "conf.dataFormatConfig.logMaxObjectLen",
         "value" : 1024

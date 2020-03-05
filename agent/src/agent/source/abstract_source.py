@@ -66,7 +66,7 @@ class Source(ABC):
         self.delete_source(self.name)
 
     @abstractmethod
-    def prompt(self, default_config, advanced=False):
+    def prompt(self, default_config, advanced=False) -> dict:
         pass
 
     @abstractmethod

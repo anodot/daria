@@ -9,11 +9,10 @@ from .mongo import MongoSource
 from .elastic import ElasticSource
 from .tcp import TCPSource
 from .monitoring import MonitoringSource
-from jsonschema import ValidationError
+from jsonschema import ValidationError, validate
 from typing import Iterable
 
 from agent.constants import MONITORING_SOURCE_NAME
-
 
 TYPE_INFLUX = 'influx'
 TYPE_KAFKA = 'kafka'
@@ -70,6 +69,17 @@ def create_object(name: str, source_type: str) -> Source:
     return types[source_type](name, source_type, {})
 
 
+json_schema = {
+    'type': 'object',
+    'properties': {
+        'type': {'type': 'string', 'enum': list(get_types())},
+        'name': {'type': 'string', 'minLength': 1, 'maxLength': 100},
+        'config': {'type': 'object'}
+    },
+    'required': ['type', 'name', 'config']
+}
+
+
 def load_object(name: str) -> Source:
     if name == MONITORING_SOURCE_NAME:
         return MonitoringSource(MONITORING_SOURCE_NAME, TYPE_MONITORING, {})
@@ -80,10 +90,12 @@ def load_object(name: str) -> Source:
     with open(Source.get_file_path(name), 'r') as f:
         config = json.load(f)
 
+    validate(config, json_schema)
+
     obj = types[config['type']](name, config['type'], config['config'])
     try:
         obj.validate_json()
     except ValidationError:
-        raise SourceConfigDeprecated(f'Config for source {name} is no longer supported. Please recreate the source')
+        raise SourceConfigDeprecated(f'Config for source {name} is not supported. Please recreate the source')
 
     return obj

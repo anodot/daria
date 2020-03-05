@@ -5,7 +5,7 @@ from ..fixtures import cli_runner
 from agent.pipeline import cli as pipeline_cli
 from agent.source import cli as source_cli, Source
 from agent.streamsets_api_client import api_client
-from .test_pipeline_base import pytest_generate_tests, TestPipelineBase
+from .test_zpipeline_base import pytest_generate_tests, TestPipelineBase
 
 
 class TestPostgreSQL(TestPipelineBase):

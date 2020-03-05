@@ -18,6 +18,7 @@ prompters = {
     source.TYPE_MYSQL: prompt.PromptConfigJDBC,
     source.TYPE_POSTGRES: prompt.PromptConfigJDBC,
     source.TYPE_ELASTIC: prompt.PromptConfigElastic,
+    source.TYPE_TCP: prompt.PromptConfigTCP
 }
 
 loaders = {
@@ -28,6 +29,7 @@ loaders = {
     source.TYPE_MYSQL: load_client_data.JDBCLoadClientData,
     source.TYPE_POSTGRES: load_client_data.JDBCLoadClientData,
     source.TYPE_ELASTIC: load_client_data.ElasticLoadClientData,
+    source.TYPE_TCP: load_client_data.TcpLoadClientData
 }
 
 handlers = {
@@ -38,6 +40,7 @@ handlers = {
     source.TYPE_MYSQL: config_handlers.JDBCConfigHandler,
     source.TYPE_POSTGRES: config_handlers.JDBCConfigHandler,
     source.TYPE_ELASTIC: config_handlers.ElasticConfigHandler,
+    source.TYPE_TCP: config_handlers.TCPConfigHandler
 }
 
 
@@ -188,6 +191,10 @@ class PipelineManager:
             preview_data = api_client.wait_for_preview(self.pipeline.id, preview['previewerId'])
         except StreamSetsApiClientException as e:
             print(str(e))
+            return
+
+        if not preview_data['batchesOutput']:
+            print('Could not fetch any data matching the provided config')
             return
 
         for output in preview_data['batchesOutput'][0]:

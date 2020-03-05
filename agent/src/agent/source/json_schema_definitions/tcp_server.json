@@ -17,5 +17,5 @@
     },
     "csv_mapping": {"type": "object"}
   },
-  "required": ["conf.tcpMode", "conf.ports", "conf.dataFormat"]
+  "required": ["conf.ports", "conf.dataFormat"]
 }

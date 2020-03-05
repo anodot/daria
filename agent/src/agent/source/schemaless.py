@@ -1,5 +1,6 @@
 import click
 import json
+import os
 
 from .abstract_source import Source, SourceException
 from abc import ABCMeta
@@ -76,19 +77,17 @@ class SchemalessSource(Source, metaclass=ABCMeta):
         self.config[self.CONFIG_AVRO_SCHEMA_LOOKUP_MODE] = click.prompt('Lookup mode',
                                                                         type=click.Choice(self.avro_lookup_modes),
                                                                         default=default_config.get(
-                                                                            self.config[
-                                                                                self.CONFIG_AVRO_SCHEMA_LOOKUP_MODE]))
+                                                                            self.CONFIG_AVRO_SCHEMA_LOOKUP_MODE))
         if self.config[self.CONFIG_AVRO_SCHEMA_LOOKUP_MODE] == self.AVRO_LOOKUP_ID:
             self.config[self.CONFIG_AVRO_LOOKUP_ID] = click.prompt('Schema ID',
                                                                    type=click.STRING,
                                                                    default=default_config.get(
-                                                                       self.config[self.CONFIG_AVRO_LOOKUP_ID]))
+                                                                       self.CONFIG_AVRO_LOOKUP_ID))
         elif self.config[self.CONFIG_AVRO_SCHEMA_LOOKUP_MODE] == self.AVRO_LOOKUP_SUBJECT:
             self.config[self.CONFIG_AVRO_LOOKUP_SUBJECT] = click.prompt('Schema ID',
                                                                         type=click.STRING,
                                                                         default=default_config.get(
-                                                                            self.config[
-                                                                                self.CONFIG_AVRO_LOOKUP_SUBJECT]))
+                                                                            self.CONFIG_AVRO_LOOKUP_SUBJECT))
         else:
             self.config[self.CONFIG_KEY_DESERIALIZER] = 'CONFLUENT'
             self.config[self.CONFIG_VALUE_DESERIALIZER] = 'CONFLUENT'
@@ -97,7 +96,7 @@ class SchemalessSource(Source, metaclass=ABCMeta):
         self.config[self.CONFIG_AVRO_SCHEMA_SOURCE] = click.prompt('Schema location',
                                                                    type=click.Choice(self.avro_sources),
                                                                    default=default_config.get(
-                                                                       self.config[self.CONFIG_AVRO_SCHEMA_SOURCE]))
+                                                                       self.CONFIG_AVRO_SCHEMA_SOURCE))
         if self.config[self.CONFIG_AVRO_SCHEMA_SOURCE] == self.AVRO_SCHEMA_SOURCE_INLINE:
             self.config[self.CONFIG_AVRO_SCHEMA_FILE] = click.prompt('Schema file path', type=click.File(),
                                                                      default=default_config.get(
@@ -106,16 +105,23 @@ class SchemalessSource(Source, metaclass=ABCMeta):
         elif self.config[self.CONFIG_AVRO_SCHEMA_SOURCE] == self.AVRO_SCHEMA_SOURCE_REGISTRY:
             self.prompt_avro_registry(default_config)
 
+    def validate_grok_file(self):
+        if self.config.get('grok_definition_file') and not os.path.isfile(self.config['grok_definition_file']):
+            raise click.UsageError('File does not exist')
+
+    @infinite_retry
+    def prompt_grok_definition_file(self, default_config):
+        self.config['grok_definition_file'] = click.prompt('Grok pattern definitions file path',
+                                                           type=click.STRING,
+                                                           default=default_config.get('grok_definition_file', ''))
+        self.validate_grok_file()
+
     def prompt_log(self, default_config):
-        self.config[self.CONFIG_GROK_PATTERN_DEFINITION] = click.prompt('Grok pattern definition',
-                                                                        type=click.STRING,
-                                                                        default=default_config.get(
-                                                                            self.config[
-                                                                                self.CONFIG_GROK_PATTERN_DEFINITION]))
+        self.prompt_grok_definition_file(default_config)
+
         self.config[self.CONFIG_GROK_PATTERN] = click.prompt('Grok pattern',
                                                              type=click.STRING,
-                                                             default=default_config.get(
-                                                                 self.config[self.CONFIG_GROK_PATTERN]))
+                                                             default=default_config.get(self.CONFIG_GROK_PATTERN))
 
     def prompt_data_format(self, default_config):
         self.config[self.CONFIG_DATA_FORMAT] = click.prompt('Data format',
@@ -185,3 +191,14 @@ class SchemalessSource(Source, metaclass=ABCMeta):
         else:
             self.sample_data = records
             print_json(records)
+
+    def set_config(self, config):
+        super().set_config(config)
+
+        if self.config.get('grok_definition_file'):
+            with open(self.config['grok_definition_file'], 'r') as f:
+                self.config[self.CONFIG_GROK_PATTERN_DEFINITION] = f.read()
+
+    def validate(self):
+        super().validate()
+        self.validate_grok_file()

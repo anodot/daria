@@ -8,6 +8,7 @@ from .schemaless import SchemalessSource
 
 class TCPSource(SchemalessSource):
     CONFIG_PORTS = 'conf.ports'
+    TEST_PIPELINE_NAME = 'test_tcp_server_jksrj322'
 
     VALIDATION_SCHEMA_FILE_NAME = 'tcp_server.json'
 
@@ -18,6 +19,7 @@ class TCPSource(SchemalessSource):
         self.prompt_data_format(default_config)
         if advanced:
             self.prompt_batch_size(default_config)
+        return self.config
 
     def validate(self):
         self.validate_json()
