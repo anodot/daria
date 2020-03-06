@@ -5,6 +5,7 @@ services:
     build: streamsets
     ports:
       - "18630:18630"
+      - "9999:9999"
     restart: on-failure
     volumes:
       - sdc-data:/data

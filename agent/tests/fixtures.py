@@ -43,4 +43,4 @@ def get_output(pipeline_name, pipeline_type):
 
 
 def get_input_file_path(name):
-    return os.path.join(os.path.dirname(os.path.realpath(__file__)), 'test_pipelines', 'input_files', f'{name}.json')
+    return os.path.join(os.path.dirname(os.path.realpath(__file__)), 'test_pipelines', 'input_files', f'{name}')

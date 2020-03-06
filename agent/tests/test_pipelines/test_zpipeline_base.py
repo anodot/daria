@@ -25,7 +25,7 @@ class TestPipelineBase(object):
     params = {}
 
     def test_create_source_with_file(self, cli_runner, file_name):
-        input_file_path = get_input_file_path(file_name)
+        input_file_path = get_input_file_path(file_name + '.json')
         result = cli_runner.invoke(source_cli.create, ['-f', input_file_path])
         assert result.exit_code == 0
         with open(input_file_path, 'r') as f:
@@ -34,7 +34,7 @@ class TestPipelineBase(object):
                 assert os.path.isfile(os.path.join(Source.DIR, f"{source['name']}.json"))
 
     def test_create_with_file(self, cli_runner, file_name):
-        input_file_path = get_input_file_path(file_name)
+        input_file_path = get_input_file_path(file_name + '.json')
         result = cli_runner.invoke(pipeline_cli.create, ['-f', input_file_path])
         assert result.exit_code == 0
         with open(input_file_path, 'r') as f:
@@ -43,7 +43,7 @@ class TestPipelineBase(object):
                 assert api_client.get_pipeline(pipeline['pipeline_id'])
 
     def test_edit_with_file(self, cli_runner, file_name):
-        input_file_path = get_input_file_path(file_name)
+        input_file_path = get_input_file_path(file_name + '.json')
         result = cli_runner.invoke(pipeline_cli.edit, ['-f', input_file_path])
         assert result.exit_code == 0
 

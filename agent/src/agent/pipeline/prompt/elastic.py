@@ -1,8 +1,9 @@
 import click
-from .json import PromptConfigJson
+from .schemaless import PromptConfigSchemaless
 
 
-class PromptConfigElastic(PromptConfigJson):
+class PromptConfigElastic(PromptConfigSchemaless):
+    timestamp_types = ['datetime', 'string', 'unix', 'unix_ms']
 
     def set_config(self):
         self.prompt_query()

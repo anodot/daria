@@ -46,18 +46,12 @@ def parse_config(file):
 
 def create_with_file(file):
     data = parse_config(file)
+
     json_schema = {
         'type': 'array',
-        'items': {
-            'type': 'object',
-            'properties': {
-                'type': {'type': 'string', 'enum': list(source.get_types())},
-                'name': {'type': 'string', 'minLength': 1, 'maxLength': 100},
-                'config': {'type': 'object'}
-            },
-            'required': ['type', 'name', 'config']
-        }
+        'items': source.json_schema
     }
+
     validate(data, json_schema)
 
     exceptions = {}

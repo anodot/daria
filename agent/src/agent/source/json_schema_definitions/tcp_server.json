@@ -1,0 +1,21 @@
+{
+  "type": "object",
+  "properties": {
+    "conf.maxBatchSize": {"type": "integer"},
+    "conf.maxWaitTime": {"type": "integer"},
+    "conf.ports": {"type": "array", "items": {"type": "string"}},
+    "conf.tcpMode": {
+      "type": "string",
+      "enum": ["SYSLOG", "NETFLOW", "DELIMITED_RECORDS", "CHARACTER_BASED_LENGTH_FIELD", "FLUME_AVRO_IPC"]
+    },
+    "conf.recordSeparatorStr": {"type": "string"},
+    "conf.dataFormat": {"type": "string", "enum": ["JSON", "DELIMITED", "AVRO", "LOG"]},
+    "conf.dataFormatConfig.logMode": {
+      "type": "string",
+      "enum": ["COMMON_LOG_FORMAT", "COMBINED_LOG_FORMAT", "APACHE_ERROR_LOG_FORMAT", "APACHE_CUSTOM_LOG_FORMAT",
+        "REGEX", "GROK", "LOG4J", "CEF", "LEEF"]
+    },
+    "csv_mapping": {"type": "object"}
+  },
+  "required": ["conf.ports", "conf.dataFormat"]
+}

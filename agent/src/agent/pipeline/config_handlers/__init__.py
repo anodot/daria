@@ -1,9 +1,9 @@
 from .influx import InfluxConfigHandler
-from .json import JsonConfigHandler
+from .schemaless import SchemalessConfigHandler
 from .kafka import KafkaConfigHandler
 from .monitoring import MonitoringConfigHandler
-from .base import ConfigHandlerException
+from .base import BaseConfigHandler, ConfigHandlerException
 from .jdbc import JDBCConfigHandler
 from .mongo import MongoConfigHandler
-from .base import BaseConfigHandler
 from .elastic import ElasticConfigHandler
+from .tcp import TCPConfigHandler

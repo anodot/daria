@@ -95,3 +95,11 @@ class ElasticLoadClientData(LoadClientData):
         self.load_dimensions()
         return self.client_config
 
+
+class TcpLoadClientData(LoadClientData):
+    VALIDATION_SCHEMA_FILE_NAME = 'tcp_server'
+
+    def load(self, client_config, edit=False):
+        super().load(client_config, edit)
+        self.load_dimensions()
+        return self.client_config

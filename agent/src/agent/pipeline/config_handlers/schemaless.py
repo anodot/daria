@@ -7,7 +7,7 @@ from agent.logger import get_logger
 logger = get_logger(__name__)
 
 
-class JsonConfigHandler(BaseConfigHandler):
+class SchemalessConfigHandler(BaseConfigHandler):
     DECLARE_VARS_JS = """/*
 state['TIMESTAMP_COLUMN'] = 'timestamp_unix';
 state['DIMENSIONS'] = ['ver', 'AdSize', 'Country', 'AdType', 'Exchange'];

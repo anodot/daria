@@ -1,5 +1,6 @@
+
 from .schemaless import PromptConfigSchemaless
 
 
-class PromptConfigKafka(PromptConfigSchemaless):
+class PromptConfigTCP(PromptConfigSchemaless):
     pass
