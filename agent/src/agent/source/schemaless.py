@@ -16,7 +16,7 @@ class SchemalessSource(Source, metaclass=ABCMeta):
     DATA_FORMAT_AVRO = 'AVRO'
     DATA_FORMAT_LOG = 'LOG'
 
-    CONFIG_CSV_TYPE = 'conf.csvFileFormat'
+    CONFIG_CSV_TYPE = 'conf.dataFormatConfig.csvFileFormat'
     CONFIG_CSV_TYPE_DEFAULT = 'CSV'
     CONFIG_CSV_TYPE_CUSTOM = 'CUSTOM'
     csv_types = [CONFIG_CSV_TYPE_DEFAULT, CONFIG_CSV_TYPE_CUSTOM]
@@ -49,6 +49,7 @@ class SchemalessSource(Source, metaclass=ABCMeta):
 
     CONFIG_GROK_PATTERN_DEFINITION = 'conf.dataFormatConfig.grokPatternDefinition'
     CONFIG_GROK_PATTERN = 'conf.dataFormatConfig.grokPattern'
+    CONFIG_GROK_PATTERN_FILE = 'grok_definition_file'
 
     data_formats = [DATA_FORMAT_JSON, DATA_FORMAT_CSV, DATA_FORMAT_AVRO, DATA_FORMAT_LOG]
 
@@ -57,7 +58,7 @@ class SchemalessSource(Source, metaclass=ABCMeta):
         self.config[self.CONFIG_CSV_CUSTOM_DELIMITER] = click.prompt('Custom delimiter character',
                                                                      type=click.STRING,
                                                                      default=default_config.get(
-                                                                         self.CONFIG_CSV_CUSTOM_DELIMITER)).trim()
+                                                                         self.CONFIG_CSV_CUSTOM_DELIMITER)).strip()
         if len(self.config[self.CONFIG_CSV_CUSTOM_DELIMITER]) != 1:
             raise SourceException(f'{self.config[self.CONFIG_CSV_CUSTOM_DELIMITER]} is not a character')
 
@@ -106,14 +107,14 @@ class SchemalessSource(Source, metaclass=ABCMeta):
             self.prompt_avro_registry(default_config)
 
     def validate_grok_file(self):
-        if self.config.get('grok_definition_file') and not os.path.isfile(self.config['grok_definition_file']):
+        if self.config.get(self.CONFIG_GROK_PATTERN_FILE) and not os.path.isfile(self.config[self.CONFIG_GROK_PATTERN_FILE]):
             raise click.UsageError('File does not exist')
 
     @infinite_retry
     def prompt_grok_definition_file(self, default_config):
-        self.config['grok_definition_file'] = click.prompt('Grok pattern definitions file path',
+        self.config[self.CONFIG_GROK_PATTERN_FILE] = click.prompt('Grok pattern definitions file path',
                                                            type=click.STRING,
-                                                           default=default_config.get('grok_definition_file', ''))
+                                                           default=default_config.get(self.CONFIG_GROK_PATTERN_FILE, ''))
         self.validate_grok_file()
 
     def prompt_log(self, default_config):
@@ -172,10 +173,11 @@ class SchemalessSource(Source, metaclass=ABCMeta):
                 raise click.UsageError('Wrong format. Correct example: `key:val,key2:val2,key3:val3`')
             data[int(key_val[0])] = key_val[1]
 
-        print('Current mapping:')
-        print_dicts(map_keys(records, data))
-        if not click.confirm('Confirm?'):
-            raise ValueError('Try again')
+        if records:
+            print('Current mapping:')
+            print_dicts(map_keys(records, data))
+            if not click.confirm('Confirm?'):
+                raise ValueError('Try again')
 
         self.config[self.CONFIG_CSV_MAPPING] = data
 
