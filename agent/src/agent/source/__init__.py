@@ -26,6 +26,9 @@ TYPE_MONITORING = 'Monitoring'
 
 def get_list() -> list:
     configs = []
+    if not os.path.exists(Source.DIR):
+        return configs
+
     for filename in os.listdir(Source.DIR):
         if filename.endswith('.json'):
             configs.append(filename.replace('.json', ''))
