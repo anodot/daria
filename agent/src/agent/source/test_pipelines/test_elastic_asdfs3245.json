@@ -192,7 +192,7 @@
         "value" : "timestamp"
       }, {
         "name" : "conf.initialOffset",
-        "value" : "now-1d/d"
+        "value" : "now"
       }, {
         "name" : "conf.query",
         "value" : "{\n  \"query\": {\n    \"match_all\": {}\n  }\n}"
