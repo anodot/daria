@@ -490,7 +490,7 @@
         "stageType" : "SOURCE"
       },
       "inputLanes" : [ ],
-      "outputLanes" : [ "TCPServer_01OutputLane15834041990300" ],
+      "outputLanes" : [ "source_outputLane" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -506,7 +506,7 @@
         "yPos" : 50,
         "stageType" : "TARGET"
       },
-      "inputLanes" : [ "TCPServer_01OutputLane15834041990300" ],
+      "inputLanes" : [ "source_outputLane" ],
       "outputLanes" : [ ],
       "eventLanes" : [ ],
       "services" : [ ]

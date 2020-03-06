@@ -118,6 +118,10 @@ class SchemalessSource(Source, metaclass=ABCMeta):
         self.validate_grok_file()
 
     def prompt_log(self, default_config):
+        records = self.get_sample_records()
+        if records:
+            print_json(records)
+
         self.prompt_grok_definition_file(default_config)
 
         self.config[self.CONFIG_GROK_PATTERN] = click.prompt('Grok pattern',
