@@ -18,7 +18,7 @@ prompters = {
     source.TYPE_MYSQL: prompt.PromptConfigJDBC,
     source.TYPE_POSTGRES: prompt.PromptConfigJDBC,
     source.TYPE_ELASTIC: prompt.PromptConfigElastic,
-    source.TYPE_TCP: prompt.PromptConfigTCP
+    source.TYPE_SPLUNK: prompt.PromptConfigTCP
 }
 
 loaders = {
@@ -29,7 +29,7 @@ loaders = {
     source.TYPE_MYSQL: load_client_data.JDBCLoadClientData,
     source.TYPE_POSTGRES: load_client_data.JDBCLoadClientData,
     source.TYPE_ELASTIC: load_client_data.ElasticLoadClientData,
-    source.TYPE_TCP: load_client_data.TcpLoadClientData
+    source.TYPE_SPLUNK: load_client_data.TcpLoadClientData
 }
 
 handlers = {
@@ -40,7 +40,7 @@ handlers = {
     source.TYPE_MYSQL: config_handlers.JDBCConfigHandler,
     source.TYPE_POSTGRES: config_handlers.JDBCConfigHandler,
     source.TYPE_ELASTIC: config_handlers.ElasticConfigHandler,
-    source.TYPE_TCP: config_handlers.TCPConfigHandler
+    source.TYPE_SPLUNK: config_handlers.TCPConfigHandler
 }
 
 

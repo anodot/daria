@@ -8,7 +8,7 @@ from copy import deepcopy
 
 
 class MonitoringConfigHandler(BaseConfigHandler):
-    PIPELINES_BASE_CONFIGS_PATH = 'base_pipelines/Monitoring.json'
+    PIPELINE_BASE_CONFIG_NAME = 'Monitoring.json'
 
     DECLARE_VARS_JS = """/*
 state['host_id'] = 'host_id';
@@ -18,13 +18,6 @@ state['host_id'] = '{host_id}';
 state['host_name'] = '{host_name}';
 state['previous'] = {{}};
 """
-
-    def load_base_config(self):
-        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                               self.PIPELINES_BASE_CONFIGS_PATH), 'r') as f:
-            data = json.load(f)
-
-        return data['pipelineConfig']
 
     def override_stages(self):
         anodot_monitoring_stage = None

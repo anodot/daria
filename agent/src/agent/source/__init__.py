@@ -20,7 +20,7 @@ TYPE_MONGO = 'mongo'
 TYPE_MYSQL = 'mysql'
 TYPE_POSTGRES = 'postgres'
 TYPE_ELASTIC = 'elastic'
-TYPE_TCP = 'tcp_server'
+TYPE_SPLUNK = 'splunk'
 TYPE_MONITORING = 'Monitoring'
 
 
@@ -55,7 +55,7 @@ types = {
     TYPE_MYSQL: JDBCSource,
     TYPE_POSTGRES: JDBCSource,
     TYPE_ELASTIC: ElasticSource,
-    TYPE_TCP: TCPSource
+    TYPE_SPLUNK: TCPSource
 }
 
 

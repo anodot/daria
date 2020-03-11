@@ -4,7 +4,7 @@ import socket
 
 from ..fixtures import cli_runner, get_input_file_path
 from agent.pipeline import cli as pipeline_cli, load_object as load_pipeline
-from agent.source import cli as source_cli, Source, TYPE_TCP
+from agent.source import cli as source_cli, Source, TYPE_SPLUNK
 from agent.streamsets_api_client import api_client
 from .test_zpipeline_base import TestPipelineBase, pytest_generate_tests
 
@@ -18,9 +18,9 @@ class TestTCPServer(TestPipelineBase):
         'test_start': [{'name': 'test_tcp_log'}, {'name': 'test_tcp_json'}, {'name': 'test_tcp_csv'}],
         'test_stop': [{'name': 'test_tcp_log'}, {'name': 'test_tcp_json'}, {'name': 'test_tcp_csv'}],
         'test_output': [
-            {'name': 'test_tcp_csv', 'output': 'json_value_property_tags.json', 'pipeline_type': TYPE_TCP},
-            {'name': 'test_tcp_log', 'output': 'log.json', 'pipeline_type': TYPE_TCP},
-            {'name': 'test_tcp_json', 'output': 'json_value_property.json', 'pipeline_type': TYPE_TCP}
+            {'name': 'test_tcp_csv', 'output': 'json_value_property_tags.json', 'pipeline_type': TYPE_SPLUNK},
+            {'name': 'test_tcp_log', 'output': 'log.json', 'pipeline_type': TYPE_SPLUNK},
+            {'name': 'test_tcp_json', 'output': 'json_value_property.json', 'pipeline_type': TYPE_SPLUNK}
         ],
         'test_delete_pipeline': [{'name': 'test_tcp_log'}, {'name': 'test_tcp_json'}, {'name': 'test_tcp_csv'}],
         'test_source_delete': [{'name': 'test_tcp_log'}, {'name': 'test_tcp_json'}, {'name': 'test_tcp_csv'}],
@@ -29,7 +29,7 @@ class TestTCPServer(TestPipelineBase):
     def test_source_create(self, cli_runner):
         grok_file_path = get_input_file_path('grok_patterns.txt')
         result = cli_runner.invoke(source_cli.create,
-                                   input="tcp_server\ntest_tcp_log\n9999\nLOG\n" + grok_file_path + "\n%{NONNEGINT:timestamp_unix_ms} %{TIMESTAMP:timestamp_string} %{NONNEGINT:ver} %{WORD} %{WORD:Country} %{WORD:AdType} %{WORD:Exchange} %{NUMBER:Clicks}\n")
+                                   input="splunk\ntest_tcp_log\n9999\nLOG\n" + grok_file_path + "\n%{NONNEGINT:timestamp_unix_ms} %{TIMESTAMP:timestamp_string} %{NONNEGINT:ver} %{WORD} %{WORD:Country} %{WORD:AdType} %{WORD:Exchange} %{NUMBER:Clicks}\n")
         assert result.exit_code == 0
         assert os.path.isfile(os.path.join(Source.DIR, 'test_tcp_log.json'))
 

@@ -1,6 +1,6 @@
 [
   {
-    "type": "tcp_server",
+    "type": "splunk",
     "name": "test_tcp_json",
     "config": {
       "conf.ports": ["9998"],
@@ -8,7 +8,7 @@
     }
   },
   {
-    "type": "tcp_server",
+    "type": "splunk",
     "name": "test_tcp_csv",
     "config": {
       "conf.ports": ["9997"],
