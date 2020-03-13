@@ -1,7 +1,7 @@
 import click
 
 # for using arrows in cli
-import readline
+# import readline
 
 from . import pipeline, source
 from .pipeline.cli import pipeline_group

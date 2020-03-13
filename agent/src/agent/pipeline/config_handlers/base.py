@@ -14,7 +14,7 @@ class BaseConfigHandler(ABC):
     """
     Overrides base config file
     """
-    PIPELINES_BASE_CONFIGS_PATH = 'base_pipelines/{source_name}_{destination_name}.json'
+    PIPELINE_BASE_CONFIG_NAME = ''
 
     def __init__(self, pipeline: Pipeline):
         self.client_config = {}
@@ -28,11 +28,8 @@ class BaseConfigHandler(ABC):
         return self.pipeline.source.type
 
     def load_base_config(self):
-        base_path = self.PIPELINES_BASE_CONFIGS_PATH.format(**{
-            'source_name': self.client_config['source']['type'],
-            'destination_name': self.client_config['destination']['type']
-        })
-        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), base_path), 'r') as f:
+        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'base_pipelines',
+                               self.PIPELINE_BASE_CONFIG_NAME), 'r') as f:
             data = json.load(f)
 
         return data['pipelineConfig']

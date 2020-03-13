@@ -6,4 +6,4 @@ logger = get_logger(__name__)
 
 
 class TCPConfigHandler(SchemalessConfigHandler):
-    pass
+    PIPELINE_BASE_CONFIG_NAME = 'tcp_server_http.json'

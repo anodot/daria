@@ -6,6 +6,8 @@ logger = get_logger(__name__)
 
 
 class MongoConfigHandler(BaseConfigHandler):
+    PIPELINE_BASE_CONFIG_NAME = 'mongo_http.json'
+
     def update_expression_processor(self, conf):
         if self.client_config.get('static_what', True):
             conf['value'][1]['expression'] = self.client_config['measurement_name']

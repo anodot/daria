@@ -9,6 +9,7 @@ logger = get_logger(__name__)
 
 
 class JDBCConfigHandler(BaseConfigHandler):
+    PIPELINE_BASE_CONFIG_NAME = 'jdbc_http.json'
     DECLARE_VARS_JS = """/*
 state['TABLE_NAME'] = 'test';
 state['TIMESTAMP_COLUMN'] = 'timestamp_unix';
