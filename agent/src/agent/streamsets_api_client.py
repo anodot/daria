@@ -260,11 +260,11 @@ class StreamSetsApiClient:
         logger.info(f'Validate pipeline {pipeline_id}')
         return self.session.get(self.build_url('pipeline', pipeline_id, 'preview', previewer_id, 'status'))
 
-    def wait_for_preview(self, pipeline_id, preview_id, tries=5, initial_delay=2):
+    def wait_for_preview(self, pipeline_id, preview_id, tries=3, initial_delay=3):
         for i in range(1, tries + 1):
             response = self.get_preview_status(pipeline_id, preview_id)
             if response['status'] == 'TIMED_OUT':
-                raise StreamSetsApiClientException(f"Can't connect to the source")
+                raise StreamSetsApiClientException(f"No data. Connection timed out")
 
             if response['status'] not in ['VALIDATING', 'CREATED', 'RUNNING', 'STARTING', 'FINISHING', 'CANCELLING',
                                           'TIMING_OUT']:
@@ -272,8 +272,8 @@ class StreamSetsApiClient:
 
             delay = initial_delay ** i
             if i == tries:
-                raise StreamSetsApiClientException(f"Can't connect to the source")
-            print(f"Connecting to the source. Check again after {delay} seconds...")
+                raise StreamSetsApiClientException(f"No data")
+            print(f"Waiting for data. Check again after {delay} seconds...")
             time.sleep(delay)
 
         preview_data = self.get_preview(pipeline_id, preview_id)
