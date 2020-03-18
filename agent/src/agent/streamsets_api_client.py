@@ -260,7 +260,7 @@ class StreamSetsApiClient:
         logger.info(f'Validate pipeline {pipeline_id}')
         return self.session.get(self.build_url('pipeline', pipeline_id, 'preview', previewer_id, 'status'))
 
-    def wait_for_preview(self, pipeline_id, preview_id, tries=3, initial_delay=3):
+    def wait_for_preview(self, pipeline_id, preview_id, tries=6, initial_delay=2):
         for i in range(1, tries + 1):
             response = self.get_preview_status(pipeline_id, preview_id)
             if response['status'] == 'TIMED_OUT':
