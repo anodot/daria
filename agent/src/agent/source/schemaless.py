@@ -112,7 +112,7 @@ class SchemalessSource(Source, metaclass=ABCMeta):
 
     @infinite_retry
     def prompt_grok_definition_file(self, default_config):
-        self.config[self.CONFIG_GROK_PATTERN_FILE] = click.prompt('Grok pattern definitions file path',
+        self.config[self.CONFIG_GROK_PATTERN_FILE] = click.prompt('Custom grok patterns file path',
                                                            type=click.STRING,
                                                            default=default_config.get(self.CONFIG_GROK_PATTERN_FILE, ''))
         self.validate_grok_file()
