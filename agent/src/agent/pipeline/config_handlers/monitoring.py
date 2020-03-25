@@ -38,7 +38,10 @@ state['previous'] = {{}};
                         )
 
         # check if monitoring is available
-        r = requests.post(self.pipeline.destination.monitoring_url, json=[], timeout=2)
+        r = requests.post(self.pipeline.destination.monitoring_url,
+                          proxies=self.pipeline.destination.get_proxy_configs(),
+                          json=[],
+                          timeout=2)
         if r.status_code == 200:
             for conf in anodot_monitoring_stage['configuration']:
                 if conf['name'] == self.pipeline.destination.CONFIG_RESOURCE_URL:
