@@ -25,8 +25,8 @@ class KafkaSource(SchemalessSource):
 
     DEFAULT_KAFKA_VERSION = '2.0+'
 
-    version_libraries = {'0.10': 'streamsets-datacollector-apache-kafka_0_11-lib',
-                         '0.11': 'streamsets-datacollector-apache-kafka_0_11-lib',
+    version_libraries = {'0.10': 'streamsets-datacollector-apache-kafka_2_0-lib',
+                         '0.11': 'streamsets-datacollector-apache-kafka_2_0-lib',
                          '2.0+': 'streamsets-datacollector-apache-kafka_2_0-lib'}
 
     @infinite_retry
