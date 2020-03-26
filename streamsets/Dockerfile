@@ -1,4 +1,4 @@
-FROM streamsets/datacollector:3.8.2
+FROM streamsets/datacollector:3.14
 
 RUN MSQL_DRIVER_DIR=/opt/sdc-extras/streamsets-datacollector-jdbc-lib/lib/ \
         && MYSQL_CONNECTOR_VERSION=mysql-connector-java-8.0.18 \
