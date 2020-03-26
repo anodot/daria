@@ -207,7 +207,7 @@
         "value" : false
       }, {
         "name" : "conf.dataFormatConfig.jsonContent",
-        "value" : "MULTIPLE_OBJECTS"
+        "value" : "ARRAY_OBJECTS"
       }, {
         "name" : "conf.dataFormatConfig.jsonMaxObjectLen",
         "value" : 409600
