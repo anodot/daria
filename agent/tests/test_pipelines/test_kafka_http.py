@@ -23,7 +23,7 @@ class TestKafka(TestPipelineBase):
         'test_create_with_file': [{'file_name': 'kafka_pipelines'}],
         'test_edit': [{'options': ['test_kfk_value_const'], 'value': 'y\nclicks\n\n'},
                       {'options': ['test_kfk_timestamp_string', '-a'],
-                       'value': 'n\nn\nClicks:agg_type\nClicks:AdType'}],
+                       'value': 'n\nn\nClicks:agg_type\nClicks:metric'}],
         'test_start': [{'name': 'test_kfk_value_const'}, {'name': 'test_kfk_timestamp_ms'},
                        {'name': 'test_kfk_timestamp_string'},
                        {'name': 'test_kfk_kafka_file_short'}, {'name': 'test_kfk_kafka_file_full'},
