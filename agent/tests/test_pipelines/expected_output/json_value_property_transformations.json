@@ -2,7 +2,7 @@
   {
     "value": 6784.6904,
     "properties": {
-      "what": "Display",
+      "what": "clicks_display",
       "target_type": "gauge",
       "ver": "1",
       "Country": "USA",
@@ -25,7 +25,7 @@
   {
     "value": 6839.0,
     "properties": {
-      "what": "Display",
+      "what": "clicks_display",
       "target_type": "gauge",
       "ver": "1",
       "Country": "USA",
@@ -48,7 +48,7 @@
   {
     "value": 6.9099935E18,
     "properties": {
-      "what": "Search",
+      "what": "clicks_search",
       "target_type": "counter",
       "ver": "1",
       "Country": "USA",
@@ -72,7 +72,7 @@
   {
     "value": 7158.9727,
     "properties": {
-      "what": "Display",
+      "what": "clicks_display",
       "target_type": "gauge",
       "ver": "1",
       "Country": "USA",
@@ -95,7 +95,7 @@
   {
     "value": 7235.7573,
     "properties": {
-      "what": "Search",
+      "what": "clicks_search",
       "target_type": "counter",
       "ver": "1",
       "Country": "USA",

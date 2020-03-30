@@ -33,3 +33,8 @@ def test_edit_destination(cli_runner):
     assert curr_dest['host_id'] == prev_dest['host_id']
     time.sleep(WAITING_TIME)
     assert api_client.get_pipeline_status('Monitoring')['status'] == 'RUNNING'
+
+
+def test_update(cli_runner):
+    result = cli_runner.invoke(agent_cli.update)
+    assert result.exit_code == 0
