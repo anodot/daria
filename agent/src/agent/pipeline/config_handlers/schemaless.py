@@ -26,6 +26,7 @@ state['TARGET_TYPES'] = {target_types};
 state['COUNT_RECORDS'] = {count_records};
 state['COUNT_RECORDS_MEASUREMENT_NAME'] = '{count_records_measurement_name}';
 state['STATIC_WHAT'] = {static_what};
+state['metrics'] = {{}}
 """
 
     def override_stages(self):
@@ -115,10 +116,6 @@ state['STATIC_WHAT'] = {static_what};
                         conf['value'].append('/' + self.get_property_mapping(value))
             if conf['name'] == 'stageRecordPreconditions':
                 conf['value'] = []
-                if not self.client_config.get('static_what', True):
-                    for target_type in self.client_config['values'].values():
-                        expression = "record:value('/{0}') == 'gauge' || record:value('/{0}') == 'counter'"
-                        conf['value'].append('${' + expression.format(self.get_property_mapping(target_type)) + '}')
                 if self.client_config.get('filter', {}).get('condition'):
                     conf['value'].append('${' + condition.get_expression(
                         self.client_config['filter']['condition']) + '}')
