@@ -7,6 +7,7 @@ from .base import PromptConfig
 
 class PromptConfigSchemaless(PromptConfig):
     timestamp_types = ['string', 'unix', 'unix_ms']
+    target_types = ['counter', 'gauge']
 
     def set_config(self):
         self.data_preview()
@@ -26,8 +27,8 @@ class PromptConfigSchemaless(PromptConfig):
     def prompt_values(self):
         self.prompt_object('values', 'Value properties with target types. Example - property:counter property2:gauge')
 
-        if not set(self.config['values'].values()).issubset(('counter', 'gauge')) and self.static_what():
-            raise click.UsageError('Target type should be counter or gauge')
+        if not set(self.config['values'].values()).issubset(self.target_types) and self.static_what():
+            raise click.UsageError(f'Target type should be on of: {", ".join(self.target_types)}')
         self.validate_properties_names(self.config['values'].keys())
         if not self.static_what():
             self.validate_properties_names(self.config['values'].values())
@@ -76,6 +77,7 @@ class PromptConfigSchemaless(PromptConfig):
         file = click.prompt('Transformations files paths', type=click.Path(),
                             default=self.config['transform'].get('file', '')).strip()
         if not file:
+            del self.config['transform']
             return
 
         expression_parser.transformation.validate_file(file)
@@ -87,6 +89,7 @@ class PromptConfigSchemaless(PromptConfig):
         condition = click.prompt('Filter condition', type=click.STRING,
                                  default=self.config['filter'].get('condition', '')).strip()
         if not condition:
+            del self.config['filter']
             return
         expression_parser.condition.validate(condition)
         self.config['filter']['condition'] = condition
