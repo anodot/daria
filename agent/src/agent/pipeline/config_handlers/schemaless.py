@@ -28,6 +28,7 @@ state['COUNT_RECORDS_MEASUREMENT_NAME'] = '{count_records_measurement_name}';
 state['STATIC_WHAT'] = {static_what};
 state['metrics'] = {{}}
 """
+    target_types = ['counter', 'gauge']
 
     def override_stages(self):
         self.update_source_configs()
@@ -112,8 +113,12 @@ state['metrics'] = {{}}
                 if self.client_config['timestamp']['name'] != 'kafka_timestamp':
                     conf['value'].append('/' + self.get_property_mapping(self.client_config['timestamp']['name']))
                 if not self.client_config.get('static_what', True):
-                    for value in list(self.client_config['measurement_names'].values()) + list(self.client_config['values'].values()):
+                    for value in list(self.client_config['measurement_names'].values()):
                         conf['value'].append('/' + self.get_property_mapping(value))
+                    for value in list(self.client_config['values'].values()):
+                        if value not in self.target_types:
+                            conf['value'].append('/' + self.get_property_mapping(value))
+
             if conf['name'] == 'stageRecordPreconditions':
                 conf['value'] = []
                 if self.client_config.get('filter', {}).get('condition'):

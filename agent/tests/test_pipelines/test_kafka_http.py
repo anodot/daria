@@ -26,6 +26,9 @@ class TestKafka(TestPipelineBase):
             {'source_name': 'test_running_counters', 'name': 'test_kfk_running_counter', 'options': ['-a'],
              'value': 'n\ny\nClicks:running_counter\nClicks:clicks',
              'timestamp': 'timestamp_unix_ms\nunix_ms', 'advanced_options': 'key1:val1\n \n \n '},
+            {'source_name': 'test_running_counters', 'name': 'test_kfk_running_counter_static_tt', 'options': ['-a'],
+             'value': 'n\nn\nClicks:running_counter\ny\nClicks:metric',
+             'timestamp': 'timestamp_unix_ms\nunix_ms', 'advanced_options': 'key1:val1\n \n \n '},
             {'source_name': 'test_running_counters', 'name': 'test_kfk_running_counter_dynamic_what', 'options': ['-a'],
              'value': 'n\nn\nClicks:agg_type\nClicks:metric',
              'timestamp': 'timestamp_unix_ms\nunix_ms', 'advanced_options': 'key1:val1\n \n \n '}
@@ -39,12 +42,14 @@ class TestKafka(TestPipelineBase):
                        {'name': 'test_kfk_timestamp_string'},
                        {'name': 'test_kfk_kafka_file_short'}, {'name': 'test_kfk_kafka_file_full'},
                        {'name': 'test_csv'}, {'name': 'test_kfk_running_counter'},
-                       {'name': 'test_kfk_running_counter_dynamic_what'}],
+                       {'name': 'test_kfk_running_counter_dynamic_what'},
+                       {'name': 'test_kfk_running_counter_static_tt'}],
         'test_stop': [{'name': 'test_kfk_value_const'}, {'name': 'test_kfk_timestamp_ms'},
                       {'name': 'test_kfk_timestamp_string'},
                       {'name': 'test_kfk_kafka_file_short'}, {'name': 'test_kfk_kafka_file_full'},
                       {'name': 'test_csv'}, {'name': 'test_kfk_running_counter'},
-                      {'name': 'test_kfk_running_counter_dynamic_what'}],
+                      {'name': 'test_kfk_running_counter_dynamic_what'},
+                       {'name': 'test_kfk_running_counter_static_tt'}],
         'test_output': [
             {'name': 'test_kfk_value_const', 'output': 'json_value_const_adv.json', 'pipeline_type': 'kafka'},
             {'name': 'test_kfk_timestamp_ms', 'output': 'json_value_property.json', 'pipeline_type': 'kafka'},
@@ -54,12 +59,16 @@ class TestKafka(TestPipelineBase):
             {'name': 'test_kfk_running_counter', 'output': 'running_counter.json', 'pipeline_type': 'kafka'},
             {'name': 'test_kfk_running_counter_dynamic_what', 'output': 'running_counter_dynamic_what.json',
              'pipeline_type': 'kafka'},
+            {'name': 'test_kfk_running_counter_static_tt', 'output': 'running_counter_static_tt.json',
+             'pipeline_type': 'kafka'}
+
         ],
         'test_delete_pipeline': [{'name': 'test_kfk_value_const'}, {'name': 'test_kfk_timestamp_ms'},
                                  {'name': 'test_kfk_timestamp_string'},
                                  {'name': 'test_kfk_kafka_file_short'}, {'name': 'test_kfk_kafka_file_full'},
                                  {'name': 'test_csv'}, {'name': 'test_kfk_running_counter'},
-                                 {'name': 'test_kfk_running_counter_dynamic_what'}],
+                                 {'name': 'test_kfk_running_counter_dynamic_what'},
+                       {'name': 'test_kfk_running_counter_static_tt'}],
         'test_source_delete': [{'name': 'test_kfk'}],
     }
 
