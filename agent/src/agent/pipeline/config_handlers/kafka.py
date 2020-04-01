@@ -6,6 +6,7 @@ logger = get_logger(__name__)
 
 class KafkaConfigHandler(SchemalessConfigHandler):
     PIPELINE_BASE_CONFIG_NAME = 'kafka_http.json'
+    target_types = ['counter', 'gauge', 'running_counter']
 
     def override_stages(self):
         self.client_config['source']['config']['conf.consumerGroup'] = 'anodot_agent_' + self.get_pipeline_id()
