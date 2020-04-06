@@ -18,7 +18,7 @@ def host_id(monkeypatch):
 
 
 def test_destination(cli_runner):
-    result = cli_runner.invoke(agent_cli.destination, input='toke\ny\nhttp://squid:312\n\n\n')
+    result = cli_runner.invoke(agent_cli.destination, input='toke\ny\nhttp://squid:3128\n\n\n')
     assert result.exit_code == 0
     assert HttpDestination.exists()
     time.sleep(WAITING_TIME)
@@ -30,8 +30,11 @@ def test_edit_destination(cli_runner):
     result = cli_runner.invoke(agent_cli.destination, input='y\ntoken\ny\nhttp://squid:3128\n\n\n')
     curr_dest = HttpDestination().load()
     assert result.exit_code == 0
-    assert curr_dest['config'][HttpDestination.CONFIG_PROXY_USE]
-    assert curr_dest['config'][HttpDestination.CONFIG_PROXY_URI] == 'http://squid:3128'
     assert curr_dest['host_id'] == prev_dest['host_id']
     time.sleep(WAITING_TIME)
     assert api_client.get_pipeline_status('Monitoring')['status'] == 'RUNNING'
+
+
+def test_update(cli_runner):
+    result = cli_runner.invoke(agent_cli.update)
+    assert result.exit_code == 0

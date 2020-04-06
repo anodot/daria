@@ -1,0 +1,7 @@
+{"timestamp_unix_ms" : 1512867600000, "ver" : 1, "AdSize" : {"type": "Small"}, "Country" : "USA", "AdType" : "Display", "metric": "clicks.display", "Clicks" : -10, "agg_type": "running_counter" }
+{"timestamp_unix_ms" : 1512871200000, "ver" : 1, "AdSize" : {"type": "Small"}, "Country" : "USA", "AdType" : "Display", "metric": "clicks.display", "Clicks" : -3, "agg_type": "running_counter" }
+{"timestamp_unix_ms" : 1512874800000, "ver" : 1, "AdSize" : {"type": "Small"}, "Country" : "USA", "AdType" : "Search", "metric": "clicks search", "Clicks" : 0, "agg_type": "running_counter" }
+{"timestamp_unix_ms" : 1512878400000, "ver" : 1, "AdSize" : {"type": "Small"}, "Country" : "USA", "AdType" : "Display", "metric": "clicks.display", "Clicks" : 3, "agg_type": "running_counter" }
+{"timestamp_unix_ms" : 1512882000000, "ver" : 1, "AdSize" : {"type": "Small"}, "Country" : "USA", "AdType" : "Search", "metric": "clicks search", "Clicks" : 10, "agg_type": "running_counter" }
+{"timestamp_unix_ms" : 1512885600000, "ver" : 1, "AdSize" : {"type": "Small"}, "Country" : "USA", "AdType" : "Display", "metric": "clicks.display", "Clicks" : 155, "agg_type": "counter" }
+{"timestamp_unix_ms" : 1512889200000, "ver" : 1, "AdSize" : {"type": "Small"}, "Country" : "", "AdType" : "Display", "metric": "clicks.display", "Clicks" : 203, "agg_type": "running_counter" }

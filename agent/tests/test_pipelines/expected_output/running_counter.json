@@ -1,0 +1,92 @@
+[
+  {
+    "value": 7.0,
+    "properties": {
+      "what": "clicks",
+      "target_type": "counter",
+      "ver": "1",
+      "Country": "USA",
+      "key1": "val1"
+    },
+    "tags": {
+      "source": ["anodot-agent"],
+      "source_host_id": ["ABCDEF"],
+      "source_host_name": ["agent"],
+      "pipeline_id": ["pipeline_id"],
+      "pipeline_type": ["type"]
+    },
+    "timestamp": 1512871200
+  },
+  {
+    "value": 3.0,
+    "properties": {
+      "what": "clicks",
+      "target_type": "counter",
+      "ver": "1",
+      "Country": "USA",
+      "key1": "val1"
+    },
+    "tags": {
+      "source": ["anodot-agent"],
+      "source_host_id": ["ABCDEF"],
+      "source_host_name": ["agent"],
+      "pipeline_id": ["pipeline_id"],
+      "pipeline_type": ["type"]
+    },
+    "timestamp": 1512874800
+  },
+  {
+    "value": 3.0,
+    "properties": {
+      "what": "clicks",
+      "target_type": "counter",
+      "ver": "1",
+      "Country": "USA",
+      "key1": "val1"
+    },
+    "tags": {
+      "source": ["anodot-agent"],
+      "source_host_id": ["ABCDEF"],
+      "source_host_name": ["agent"],
+      "pipeline_id": ["pipeline_id"],
+      "pipeline_type": ["type"]
+    },
+    "timestamp": 1512878400
+  },
+  {
+    "value": 7.0,
+    "properties": {
+      "what": "clicks",
+      "target_type": "counter",
+      "ver": "1",
+      "Country": "USA",
+      "key1": "val1"
+    },
+    "tags": {
+      "source": ["anodot-agent"],
+      "source_host_id": ["ABCDEF"],
+      "source_host_name": ["agent"],
+      "pipeline_id": ["pipeline_id"],
+      "pipeline_type": ["type"]
+    },
+    "timestamp": 1512882000
+  },
+  {
+    "value": 145.0,
+    "properties": {
+      "what": "clicks",
+      "target_type": "counter",
+      "ver": "1",
+      "Country": "USA",
+      "key1": "val1"
+    },
+    "tags": {
+      "source": ["anodot-agent"],
+      "source_host_id": ["ABCDEF"],
+      "source_host_name": ["agent"],
+      "pipeline_id": ["pipeline_id"],
+      "pipeline_type": ["type"]
+    },
+    "timestamp": 1512885600
+  }
+]

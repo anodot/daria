@@ -26,7 +26,9 @@ state['TARGET_TYPES'] = {target_types};
 state['COUNT_RECORDS'] = {count_records};
 state['COUNT_RECORDS_MEASUREMENT_NAME'] = '{count_records_measurement_name}';
 state['STATIC_WHAT'] = {static_what};
+state['metrics'] = {{}}
 """
+    target_types = ['counter', 'gauge']
 
     def override_stages(self):
         self.update_source_configs()
@@ -111,14 +113,14 @@ state['STATIC_WHAT'] = {static_what};
                 if self.client_config['timestamp']['name'] != 'kafka_timestamp':
                     conf['value'].append('/' + self.get_property_mapping(self.client_config['timestamp']['name']))
                 if not self.client_config.get('static_what', True):
-                    for value in list(self.client_config['measurement_names'].values()) + list(self.client_config['values'].values()):
+                    for value in list(self.client_config['measurement_names'].values()):
                         conf['value'].append('/' + self.get_property_mapping(value))
+                    for value in list(self.client_config['values'].values()):
+                        if value not in self.target_types:
+                            conf['value'].append('/' + self.get_property_mapping(value))
+
             if conf['name'] == 'stageRecordPreconditions':
                 conf['value'] = []
-                if not self.client_config.get('static_what', True):
-                    for target_type in self.client_config['values'].values():
-                        expression = "record:value('/{0}') == 'gauge' || record:value('/{0}') == 'counter'"
-                        conf['value'].append('${' + expression.format(self.get_property_mapping(target_type)) + '}')
                 if self.client_config.get('filter', {}).get('condition'):
                     conf['value'].append('${' + condition.get_expression(
                         self.client_config['filter']['condition']) + '}')
