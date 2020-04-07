@@ -51,5 +51,8 @@ class TestInflux(TestPipelineBase):
         assert result.exit_code == 0
         assert api_client.get_pipeline('test_influx_adv')
 
+    def test_info(self, cli_runner, name=None):
+        pytest.skip()
+
     def test_output_exists(self, cli_runner, name=None):
         pytest.skip()

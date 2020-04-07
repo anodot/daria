@@ -1,5 +1,6 @@
 import click
 import json
+import re
 
 from .pipeline_manager import PipelineManager, delete_pipeline, stop_pipeline, force_stop_pipeline
 from .. import pipeline, source
@@ -309,6 +310,9 @@ def info(pipeline_id, lines):
     click.secho('=== STATUS ===', fg='green')
     click.echo('{status} {message}'.format(**status))
 
+    def get_timestamp(utc_time):
+        return datetime.utcfromtimestamp(utc_time / 1000).strftime('%Y-%m-%d %H:%M:%S')
+
     # metrics
     metrics = json.loads(status['metrics']) if status['metrics'] else api_client.get_pipeline_metrics(pipeline_id)
 
@@ -323,6 +327,16 @@ def info(pipeline_id, lines):
 
     if metrics:
         click.echo(get_metrics_string(metrics))
+
+    for name, counter in metrics['counters'].items():
+        stage_name = re.search('stage\.(.+)\.errorRecords\.counter', name)
+        if counter['count'] == 0 or not stage_name:
+            continue
+
+        click.echo('')
+        click.secho('=== ERRORS ===', fg='red')
+        for error in api_client.get_pipeline_errors(pipeline_id, stage_name.group(1)):
+            click.echo(f'{get_timestamp(error["header"]["errorTimestamp"])} - {error["header"]["errorMessage"]}')
 
     # issues
     pipeline_info = api_client.get_pipeline(pipeline_id)
@@ -340,8 +354,7 @@ def info(pipeline_id, lines):
     def get_row(item):
         metrics_str = get_metrics_string(json.loads(item['metrics'])) if item['metrics'] else ' '
         message = item['message'] if item['message'] else ' '
-        return [datetime.utcfromtimestamp(item['timeStamp'] / 1000).strftime('%Y-%m-%d %H:%M:%S'), item['status'],
-                message, metrics_str]
+        return [get_timestamp(item['timeStamp']), item['status'], message, metrics_str]
 
     history = api_client.get_pipeline_history(pipeline_id)
     table = build_table(['Timestamp', 'Status', 'Message', 'Records count'], history[:lines], get_row)

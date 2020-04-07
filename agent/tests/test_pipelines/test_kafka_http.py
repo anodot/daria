@@ -44,6 +44,7 @@ class TestKafka(TestPipelineBase):
                        {'name': 'test_csv'}, {'name': 'test_kfk_running_counter'},
                        {'name': 'test_kfk_running_counter_dynamic_what'},
                        {'name': 'test_kfk_running_counter_static_tt'}],
+        'test_info': [{'name': 'test_kfk_value_const'}, {'name': 'test_kfk_running_counter'}],
         'test_stop': [{'name': 'test_kfk_value_const'}, {'name': 'test_kfk_timestamp_ms'},
                       {'name': 'test_kfk_timestamp_string'},
                       {'name': 'test_kfk_kafka_file_short'}, {'name': 'test_kfk_kafka_file_full'},

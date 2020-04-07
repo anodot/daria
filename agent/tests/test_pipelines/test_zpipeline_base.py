@@ -52,6 +52,10 @@ class TestPipelineBase(object):
         assert result.exit_code == 0
         assert api_client.get_pipeline_status(name)['status'] == 'RUNNING'
 
+    def test_info(self, cli_runner, name):
+        result = cli_runner.invoke(pipeline_cli.info, [name])
+        assert result.exit_code == 0
+
     def test_stop(self, cli_runner, name):
         result = cli_runner.invoke(pipeline_cli.stop, [name])
         assert result.exit_code == 0

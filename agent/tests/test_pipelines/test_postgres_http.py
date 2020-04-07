@@ -53,5 +53,8 @@ class TestPostgreSQL(TestPipelineBase):
     def test_edit_with_file(self, cli_runner, file_name=None):
         pytest.skip()
 
+    def test_info(self, cli_runner, name=None):
+        pytest.skip()
+
     def test_output_exists(self, cli_runner, name=None):
         pytest.skip()
