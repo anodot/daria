@@ -66,8 +66,8 @@ services:
 #    image: wurstmeister/kafka:0.10.2.1
     image: wurstmeister/kafka
     container_name: agent-kafka
-    ports:
-      - "9092:9092"
+#    ports:
+#      - "9092:9092"
 #    expose:
 #      - "9093"
 #      - "9094"
