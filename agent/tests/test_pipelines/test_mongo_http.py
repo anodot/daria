@@ -64,5 +64,8 @@ class TestMongo(TestPipelineBase):
         result = cli_runner.invoke(pipeline_cli.edit, options, input=f"\n\n{value}\n\n\n\n\n\n\n\n\n")
         assert result.exit_code == 0
 
+    def test_info(self, cli_runner, name=None):
+        pytest.skip()
+
     def test_edit_with_file(self, cli_runner, file_name=None):
         pytest.skip()
