@@ -1,9 +1,9 @@
 [
   {
-    "value": 7.0,
+    "value": 1.0,
     "properties": {
       "what": "clicks",
-      "target_type": "counter",
+      "target_type": "gauge",
       "ver": "1",
       "Country": "USA",
       "key1": "val1"
@@ -18,10 +18,10 @@
     "timestamp": 1512871200
   },
   {
-    "value": 3.0,
+    "value": 2.0,
     "properties": {
       "what": "clicks",
-      "target_type": "counter",
+      "target_type": "gauge",
       "ver": "1",
       "Country": "USA",
       "key1": "val1"
@@ -36,10 +36,10 @@
     "timestamp": 1512874800
   },
   {
-    "value": 3.0,
+    "value": 2.0,
     "properties": {
       "what": "clicks",
-      "target_type": "counter",
+      "target_type": "gauge",
       "ver": "1",
       "Country": "USA",
       "key1": "val1"
@@ -54,10 +54,10 @@
     "timestamp": 1512878400
   },
   {
-    "value": 7.0,
+    "value": 1.0,
     "properties": {
       "what": "clicks",
-      "target_type": "counter",
+      "target_type": "gauge",
       "ver": "1",
       "Country": "USA",
       "key1": "val1"
@@ -72,10 +72,10 @@
     "timestamp": 1512882000
   },
   {
-    "value": 145.0,
+    "value": 7.0,
     "properties": {
       "what": "clicks",
-      "target_type": "counter",
+      "target_type": "gauge",
       "ver": "1",
       "Country": "USA",
       "key1": "val1"
