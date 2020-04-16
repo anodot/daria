@@ -3,7 +3,7 @@
     "timestamp": 1512867600,
     "properties": {
       "table_name": "test",
-      "adsize": "Small",
+      "adsize": "Sma_ll",
       "country": "USA",
       "what": "clicks",
       "target_type": "gauge"
@@ -21,7 +21,7 @@
     "timestamp": 1512867600,
     "properties": {
       "table_name": "test",
-      "adsize": "Small",
+      "adsize": "Sma_ll",
       "country": "USA",
       "what": "impressions",
       "target_type": "gauge"
@@ -39,7 +39,7 @@
     "timestamp": 1512871200,
     "properties": {
       "table_name": "test",
-      "adsize": "Small",
+      "adsize": "Sma_ll",
       "country": "USA",
       "what": "clicks",
       "target_type": "gauge"
@@ -57,7 +57,7 @@
     "timestamp": 1512871200,
     "properties": {
       "table_name": "test",
-      "adsize": "Small",
+      "adsize": "Sma_ll",
       "country": "USA",
       "what": "impressions",
       "target_type": "gauge"
@@ -75,7 +75,7 @@
     "timestamp": 1512874800,
     "properties": {
       "table_name": "test",
-      "adsize": "Small",
+      "adsize": "Sma_ll",
       "country": "USA",
       "what": "clicks",
       "target_type": "gauge"
@@ -93,7 +93,7 @@
     "timestamp": 1512874800,
     "properties": {
       "table_name": "test",
-      "adsize": "Small",
+      "adsize": "Sma_ll",
       "country": "USA",
       "what": "impressions",
       "target_type": "gauge"
@@ -111,7 +111,7 @@
     "timestamp": 1512878400,
     "properties": {
       "table_name": "test",
-      "adsize": "Small",
+      "adsize": "Sma_ll",
       "country": "USA",
       "what": "clicks",
       "target_type": "gauge"
@@ -129,7 +129,7 @@
     "timestamp": 1512878400,
     "properties": {
       "table_name": "test",
-      "adsize": "Small",
+      "adsize": "Sma_ll",
       "country": "USA",
       "what": "impressions",
       "target_type": "gauge"
@@ -147,7 +147,7 @@
     "timestamp": 1512885600,
     "properties": {
       "table_name": "test",
-      "adsize": "Small",
+      "adsize": "Sma_ll",
       "country": "USA",
       "what": "clicks",
       "target_type": "gauge"
@@ -165,7 +165,7 @@
     "timestamp": 1512885600,
     "properties": {
       "table_name": "test",
-      "adsize": "Small",
+      "adsize": "Sma_ll",
       "country": "USA",
       "what": "impressions",
       "target_type": "gauge"
@@ -183,7 +183,7 @@
     "timestamp": 1512889200,
     "properties": {
       "table_name": "test",
-      "adsize": "Small",
+      "adsize": "Sma_ll",
       "what": "clicks",
       "target_type": "gauge"
     },
@@ -200,7 +200,7 @@
     "timestamp": 1512889200,
     "properties": {
       "table_name": "test",
-      "adsize": "Small",
+      "adsize": "Sma_ll",
       "what": "impressions",
       "target_type": "gauge"
     },
