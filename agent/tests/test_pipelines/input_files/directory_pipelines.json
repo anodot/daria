@@ -1,0 +1,28 @@
+[
+  {
+    "source": "test_dir_json",
+    "pipeline_id": "test_dir_json",
+    "measurement_names": {"Clicks":  "clicks"},
+    "values": {"Clicks":  "gauge"},
+    "dimensions": ["ver", "Country", "Exchange"],
+    "timestamp": {
+      "type": "unix",
+      "name": "timestamp_unix"
+    }
+  },
+  {
+    "source": "test_dir_csv",
+    "pipeline_id": "test_dir_csv",
+    "values": {"Clicks": "gauge"},
+    "measurement_names": {"Clicks": "clicks"},
+    "dimensions": {
+      "required": ["ver", "Country"],
+      "optional": ["Exchange", "optional_dim"]
+    },
+    "timestamp": {
+      "type": "unix",
+      "name": "timestamp_unix"
+    },
+    "tags": {"tag1": ["tagval"], "tag2": ["tagval"]}
+  }
+]

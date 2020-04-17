@@ -1,0 +1,21 @@
+[
+  {
+    "type": "directory",
+    "name": "test_dir_json",
+    "config": {
+      "conf.spoolDir": "/home/test-directory-collector",
+      "conf.filePattern": "*.json",
+      "conf.dataFormat": "JSON"
+    }
+  },
+  {
+    "type": "directory",
+    "name": "test_dir_csv",
+    "config": {
+      "conf.spoolDir": "/home/test-directory-collector",
+      "conf.filePattern": "*.csv",
+      "conf.dataFormat": "DELIMITED",
+      "csv_mapping": {"0": "timestamp_unix", "2": "ver", "4": "Country", "6": "Exchange", "7": "Clicks"}
+    }
+  }
+]
