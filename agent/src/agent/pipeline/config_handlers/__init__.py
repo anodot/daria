@@ -7,3 +7,4 @@ from .jdbc import JDBCConfigHandler
 from .mongo import MongoConfigHandler
 from .elastic import ElasticConfigHandler
 from .tcp import TCPConfigHandler
+from .directory import DirectoryConfigHandler

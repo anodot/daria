@@ -103,3 +103,12 @@ class TcpLoadClientData(LoadClientData):
         super().load(client_config, edit)
         self.load_dimensions()
         return self.client_config
+
+
+class DirectoryLoadClientData(LoadClientData):
+    VALIDATION_SCHEMA_FILE_NAME = 'directory'
+
+    def load(self, client_config, edit=False):
+        super().load(client_config, edit)
+        self.load_dimensions()
+        return self.client_config
