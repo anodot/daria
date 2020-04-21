@@ -20,6 +20,7 @@ class TestMySQL(TestPipelineBase):
         'test_create_source_with_file': [{'file_name': 'mysql_sources'}],
         'test_start': [{'name': 'test_mysql'}, {'name': 'test_mysql_timestamp_ms'}, {'name': 'test_mysql_timestamp_datetime'},
                        {'name': 'test_mysql_advanced'}, {'name': 'test_jdbc_file_short'}, {'name': 'test_jdbc_file_full'}],
+        'test_reset': [{'name': 'test_mysql'}],
         'test_stop': [{'name': 'test_mysql'}, {'name': 'test_mysql_timestamp_ms'}, {'name': 'test_mysql_timestamp_datetime'},
                       {'name': 'test_mysql_advanced'}, {'name': 'test_jdbc_file_short'}, {'name': 'test_jdbc_file_full'}],
         'test_output': [{'name': 'test_mysql', 'output': 'jdbc.json', 'pipeline_type': 'mysql'},
