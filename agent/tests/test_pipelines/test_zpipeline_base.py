@@ -56,6 +56,10 @@ class TestPipelineBase(object):
         result = cli_runner.invoke(pipeline_cli.info, [name])
         assert result.exit_code == 0
 
+    def test_reset(self, cli_runner, name):
+        result = cli_runner.invoke(pipeline_cli.reset, [name])
+        assert result.exit_code == 0
+
     def test_stop(self, cli_runner, name):
         result = cli_runner.invoke(pipeline_cli.stop, [name])
         assert result.exit_code == 0

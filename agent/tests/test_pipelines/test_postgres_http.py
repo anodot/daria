@@ -20,6 +20,7 @@ class TestPostgreSQL(TestPipelineBase):
         'test_create_source_with_file': [{'file_name': 'postgres_sources'}],
         'test_start': [{'name': 'test_postgres'}, {'name': 'test_postgres_timestamp_ms'}, {'name': 'test_postgres_timestamp_datetime'},
                        {'name': 'test_postgres_advanced'}, {'name': 'test_jdbc_file_short'}, {'name': 'test_jdbc_file_full'}],
+        'test_reset': [{'name': 'test_postgres'}],
         'test_stop': [{'name': 'test_jdbc_file_short'}, {'name': 'test_jdbc_file_full'}],
         'test_output': [{'name': 'test_postgres', 'output': 'jdbc.json', 'pipeline_type': 'postgres'},
                         {'name': 'test_postgres_timestamp_ms', 'output': 'jdbc.json', 'pipeline_type': 'postgres'},
