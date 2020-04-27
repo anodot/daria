@@ -8,7 +8,7 @@ from agent.streamsets_api_client import api_client
 from .test_zpipeline_base import TestPipelineBase, pytest_generate_tests
 
 
-class TestDirctory(TestPipelineBase):
+class TestDirectory(TestPipelineBase):
 
     __test__ = True
     params = {
@@ -17,7 +17,7 @@ class TestDirctory(TestPipelineBase):
         'test_start': [{'name': 'test_dir_log'}, {'name': 'test_dir_json'}, {'name': 'test_dir_csv'}],
         'test_stop': [{'name': 'test_dir_log'}, {'name': 'test_dir_json'}, {'name': 'test_dir_csv'}],
         'test_output': [
-            {'name': 'test_dir_csv', 'output': 'json_value_property_tags.json', 'pipeline_type': TYPE_DIRECTORY},
+            {'name': 'test_dir_csv', 'output': 'json_value_property.json', 'pipeline_type': TYPE_DIRECTORY},
             {'name': 'test_dir_log', 'output': 'log.json', 'pipeline_type': TYPE_DIRECTORY},
             {'name': 'test_dir_json', 'output': 'json_value_property.json', 'pipeline_type': TYPE_DIRECTORY}
         ],
@@ -26,17 +26,16 @@ class TestDirctory(TestPipelineBase):
     }
 
     def test_source_create(self, cli_runner):
-        grok_file_path = get_input_file_path('grok_patterns.txt')
         result = cli_runner.invoke(source_cli.create,
-                                   input="directory\ntest_dir_log\n/home/test-directory-collector\nlog*\nLOG\n" + grok_file_path + "\n%{NONNEGINT:timestamp_unix_ms} %{TIMESTAMP:timestamp_string} %{NONNEGINT:ver} %{WORD} %{WORD:Country} %{WORD:AdType} %{WORD:Exchange} %{NUMBER:Clicks}\n")
+                                   input="directory\ntest_dir_csv\n/home/test-directory-collector\n*.csv\nDELIMITED\n\ny\n\n\n")
         assert result.exit_code == 0
-        assert os.path.isfile(os.path.join(Source.DIR, 'test_dir_log.json'))
+        assert os.path.isfile(os.path.join(Source.DIR, 'test_dir_csv.json'))
 
     def test_create(self, cli_runner):
         result = cli_runner.invoke(pipeline_cli.create,
-                                   input=f"test_dir_log\ntest_dir_log\n\nn\nClicks:gauge\nClicks:clicks\ntimestamp_unix_ms\nunix_ms\nver Country\nExchange optional_dim\n\n")
+                                   input=f"test_dir_csv\ntest_dir_csv\n\nn\nClicks:gauge\nClicks:clicks\ntimestamp_unix\nunix\nver Country\nExchange optional_dim\n\n")
         assert result.exit_code == 0
-        assert api_client.get_pipeline('test_dir_log')
+        assert api_client.get_pipeline('test_dir_csv')
 
     def test_edit(self, cli_runner):
         pytest.skip()

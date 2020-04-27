@@ -10,6 +10,7 @@ services:
     volumes:
       - sdc-data:/data
       - ./certs:/home/certs
+      - ./test-datasets/test-directory-collector:/home/test-directory-collector
 #    environment:
 #      SDC_CONF_PARSER_LIMIT: 2048576
 #      SDC_CONF_RUNNER_THREAD_POOL_SIZE: "200"
