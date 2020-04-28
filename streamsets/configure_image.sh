@@ -21,20 +21,6 @@ function install_stage_libs() {
   "${SDC_DIST}/bin/streamsets" stagelibs -install="streamsets-datacollector-mongodb_3-lib,streamsets-datacollector-apache-kafka_2_0-lib,streamsets-datacollector-jdbc-lib,streamsets-datacollector-elasticsearch_5-lib"
 }
 
-# temporary function to fix https://issues.streamsets.com/browse/SDC-14063
-function apply_kafka_consumer_fix() {
-    wget https://github.com/kiamran/datacollector/releases/download/3.14-consumer-fix/release.zip -O /tmp/release.zip
-    sudo unzip /tmp/release.zip -d /tmp
-
-    sudo chown sdc:sdc /tmp/container/target/*.jar
-    sudo chown sdc:sdc /tmp/kafka_multisource-protolib/target/*.jar
-
-    sudo cp -fv /tmp/container/target/streamsets-datacollector-container-3.14.1-SNAPSHOT.jar "${SDC_DIST}"/container-lib/streamsets-datacollector-container-3.14.0.jar
-    sudo cp -fv /tmp/container/target/streamsets-datacollector-container-3.14.1-SNAPSHOT.jar "${SDC_DIST}"/streamsets-libs/streamsets-datacollector-stats-lib/lib/streamsets-datacollector-container-3.14.0.jar
-    sudo cp -fv /tmp/kafka_multisource-protolib/target/streamsets-datacollector-kafka_multisource-protolib-3.14.1-SNAPSHOT.jar "${SDC_DIST}"/streamsets-libs/streamsets-datacollector-apache-kafka_2_0-lib/lib/streamsets-datacollector-kafka_multisource-protolib-3.14.0.jar
-}
-
 ############################################### execution start here #################################################
 configure_sql_drivers
 install_stage_libs
-apply_kafka_consumer_fix
