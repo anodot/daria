@@ -25,13 +25,13 @@ class TestKafka(TestPipelineBase):
              'advanced_options': 'key1:val1\ntag1:tagval tag2:tagval\n"Country" == "USA"\n/home/kafka_transform.csv'},
             {'source_name': 'test_running_counters', 'name': 'test_kfk_running_counter', 'options': ['-a'],
              'value': 'n\ny\nClicks:running_counter\nClicks:clicks',
-             'timestamp': 'timestamp_unix_ms\nunix_ms', 'advanced_options': 'key1:val1\n \n \n '},
+             'timestamp': 'timestamp_unix\nunix', 'advanced_options': 'key1:val1\n \n \n '},
             {'source_name': 'test_running_counters', 'name': 'test_kfk_running_counter_static_tt', 'options': ['-a'],
              'value': 'n\nn\nClicks:running_counter\ny\nClicks:metric',
-             'timestamp': 'timestamp_unix_ms\nunix_ms', 'advanced_options': 'key1:val1\n \n \n '},
+             'timestamp': 'timestamp_unix\nunix', 'advanced_options': 'key1:val1\n \n \n '},
             {'source_name': 'test_running_counters', 'name': 'test_kfk_running_counter_dynamic_what', 'options': ['-a'],
              'value': 'n\nn\nClicks:agg_type\nClicks:metric',
-             'timestamp': 'timestamp_unix_ms\nunix_ms', 'advanced_options': 'key1:val1\n \n \n '}
+             'timestamp': 'timestamp_unix\nunix', 'advanced_options': 'key1:val1\n \n \n '}
         ],
         'test_create_source_with_file': [{'file_name': 'kafka_sources'}],
         'test_create_with_file': [{'file_name': 'kafka_pipelines'}],
@@ -44,6 +44,7 @@ class TestKafka(TestPipelineBase):
                        {'name': 'test_csv'}, {'name': 'test_kfk_running_counter'},
                        {'name': 'test_kfk_running_counter_dynamic_what'},
                        {'name': 'test_kfk_running_counter_static_tt'}],
+        'test_info': [{'name': 'test_kfk_value_const'}, {'name': 'test_kfk_running_counter'}],
         'test_stop': [{'name': 'test_kfk_value_const'}, {'name': 'test_kfk_timestamp_ms'},
                       {'name': 'test_kfk_timestamp_string'},
                       {'name': 'test_kfk_kafka_file_short'}, {'name': 'test_kfk_kafka_file_full'},
@@ -92,4 +93,7 @@ class TestKafka(TestPipelineBase):
         pytest.skip()
 
     def test_output_exists(self, cli_runner, name=None):
+        pytest.skip()
+
+    def test_reset(self, cli_runner, name=None):
         pytest.skip()

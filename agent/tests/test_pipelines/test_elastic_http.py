@@ -21,6 +21,7 @@ class TestElastic(TestPipelineBase):
         'test_edit': [{'options': ['test_es_value_const'], 'value': 'y\nclicks\n\n'}],
         'test_start': [{'name': 'test_es_value_const'}, {'name': 'test_es_timestamp_ms'},
                        {'name': 'test_es_file_short'}, {'name': 'test_es_file_full'}],
+        'test_reset': [{'name': 'test_es_value_const'}],
         'test_stop': [{'name': 'test_es_value_const'}, {'name': 'test_es_timestamp_ms'},
                       {'name': 'test_es_file_short'}, {'name': 'test_es_file_full'}],
         'test_output': [{'name': 'test_es_value_const', 'output': 'json_value_const_adv.json',
@@ -50,6 +51,9 @@ class TestElastic(TestPipelineBase):
         assert result.exit_code == 0
 
     def test_edit_with_file(self, cli_runner, file_name=None):
+        pytest.skip()
+
+    def test_info(self, cli_runner, name=None):
         pytest.skip()
 
     def test_output_exists(self, cli_runner, name=None):

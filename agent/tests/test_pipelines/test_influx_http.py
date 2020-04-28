@@ -23,6 +23,7 @@ class TestInflux(TestPipelineBase):
                        {'name': 'test_influx_file_full'}, {'name': 'test_influx_adv'}],
         'test_stop': [{'name': 'test_basic'}, {'name': 'test_basic_offset'}, {'name': 'test_influx_file_short'},
                       {'name': 'test_influx_file_full'}, {'name': 'test_influx_adv'}],
+        'test_reset': [{'name': 'test_basic'}],
         'test_output': [{'name': 'test_basic', 'output': 'influx.json', 'pipeline_type': 'influx'},
                         {'name': 'test_basic_offset', 'output': 'influx_offset.json', 'pipeline_type': 'influx'},
                         {'name': 'test_influx_file_short', 'output': 'influx.json', 'pipeline_type': 'influx'},
@@ -50,6 +51,9 @@ class TestInflux(TestPipelineBase):
                                    input="test_influx\ntest_influx_adv\ncpu_test\n\nusage_active usage_idle\n\ncp<u zone host\n \nkey:val key1:val1\nkey:val key1:val1\n\n7000000\nzone = 'GEO'\n\n\n")
         assert result.exit_code == 0
         assert api_client.get_pipeline('test_influx_adv')
+
+    def test_info(self, cli_runner, name=None):
+        pytest.skip()
 
     def test_output_exists(self, cli_runner, name=None):
         pytest.skip()

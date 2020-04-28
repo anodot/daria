@@ -82,7 +82,9 @@ state['COUNT_RECORDS'] = {count_records}
 
         super().update_source_configs()
 
-    def set_initial_offset(self):
+    def set_initial_offset(self, client_config=None):
+        if client_config:
+            self.client_config = client_config
         source_config = self.client_config['source']['config']
 
         timestamp = datetime.now() - timedelta(days=int(self.client_config.get('initial_offset', 3)))

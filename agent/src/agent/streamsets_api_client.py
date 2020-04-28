@@ -300,6 +300,12 @@ class StreamSetsApiClient:
 
         return preview_data
 
+    @endpoint
+    def get_pipeline_errors(self, pipeline_id, stage_name):
+        logger.info(f'Get pipeline {pipeline_id} errors')
+        return self.session.get(self.build_url('pipeline', pipeline_id, 'errorRecords'),
+                                params={'stageInstanceName': stage_name})
+
 
 api_client = StreamSetsApiClient(os.environ.get('STREAMSETS_USERNAME', 'admin'),
                                  os.environ.get('STREAMSETS_PASSWORD', 'admin'),

@@ -52,10 +52,18 @@ class TestPipelineBase(object):
         assert result.exit_code == 0
         assert api_client.get_pipeline_status(name)['status'] == 'RUNNING'
 
+    def test_info(self, cli_runner, name):
+        result = cli_runner.invoke(pipeline_cli.info, [name])
+        assert result.exit_code == 0
+
     def test_stop(self, cli_runner, name):
         result = cli_runner.invoke(pipeline_cli.stop, [name])
         assert result.exit_code == 0
         assert api_client.get_pipeline_status(name)['status'] in ['STOPPED']
+
+    def test_reset(self, cli_runner, name):
+        result = cli_runner.invoke(pipeline_cli.reset, [name])
+        assert result.exit_code == 0
 
     def test_output(self, name, pipeline_type, output):
         with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), f'expected_output/{output}')) as f:

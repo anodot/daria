@@ -12,23 +12,36 @@ class TestPostgreSQL(TestPipelineBase):
     __test__ = True
     params = {
         'test_source_create': [{'name': 'test_jdbc', 'type': 'postgres', 'conn': 'postgresql://postgres:5432/test'}],
-        'test_create': [{'name': 'test_postgres', 'source': 'test_jdbc', 'timestamp_type': '', 'timestamp_name': 'timestamp_unix'},
-                        {'name': 'test_postgres_timestamp_ms', 'source': 'test_jdbc', 'timestamp_type': 'unix_ms', 'timestamp_name': 'timestamp_unix_ms'},
-                        {'name': 'test_postgres_timestamp_datetime', 'source': 'test_jdbc', 'timestamp_type': 'datetime', 'timestamp_name': 'timestamp_datetime'}],
+        'test_create': [
+            {'name': 'test_postgres', 'source': 'test_jdbc', 'timestamp_type': '', 'timestamp_name': 'timestamp_unix'},
+            {'name': 'test_postgres_timestamp_ms', 'source': 'test_jdbc', 'timestamp_type': 'unix_ms',
+             'timestamp_name': 'timestamp_unix_ms'},
+            {'name': 'test_postgres_timestamp_datetime', 'source': 'test_jdbc', 'timestamp_type': 'datetime',
+             'timestamp_name': 'timestamp_datetime'}],
         'test_create_advanced': [{'name': 'test_postgres_advanced', 'source': 'test_jdbc'}],
         'test_create_with_file': [{'file_name': 'jdbc_pipelines'}],
         'test_create_source_with_file': [{'file_name': 'postgres_sources'}],
-        'test_start': [{'name': 'test_postgres'}, {'name': 'test_postgres_timestamp_ms'}, {'name': 'test_postgres_timestamp_datetime'},
-                       {'name': 'test_postgres_advanced'}, {'name': 'test_jdbc_file_short'}, {'name': 'test_jdbc_file_full'}],
-        'test_stop': [{'name': 'test_jdbc_file_short'}, {'name': 'test_jdbc_file_full'}],
+        'test_start': [{'name': 'test_postgres'}, {'name': 'test_postgres_timestamp_ms'},
+                       {'name': 'test_postgres_timestamp_datetime'},
+                       {'name': 'test_postgres_advanced'}, {'name': 'test_jdbc_file_short'},
+                       {'name': 'test_jdbc_file_full'}],
+        'test_reset': [{'name': 'test_postgres'}],
+        'test_stop': [{'name': 'test_postgres'}, {'name': 'test_postgres_timestamp_ms'},
+                      {'name': 'test_postgres_timestamp_datetime'},
+                      {'name': 'test_postgres_advanced'}, {'name': 'test_jdbc_file_short'},
+                      {'name': 'test_jdbc_file_full'}],
         'test_output': [{'name': 'test_postgres', 'output': 'jdbc.json', 'pipeline_type': 'postgres'},
                         {'name': 'test_postgres_timestamp_ms', 'output': 'jdbc.json', 'pipeline_type': 'postgres'},
-                        {'name': 'test_postgres_timestamp_datetime', 'output': 'jdbc.json', 'pipeline_type': 'postgres'},
-                        {'name': 'test_postgres_advanced', 'output': 'jdbc_file_full.json', 'pipeline_type': 'postgres'},
+                        {'name': 'test_postgres_timestamp_datetime', 'output': 'jdbc.json',
+                         'pipeline_type': 'postgres'},
+                        {'name': 'test_postgres_advanced', 'output': 'jdbc_file_full.json',
+                         'pipeline_type': 'postgres'},
                         {'name': 'test_jdbc_file_short', 'output': 'jdbc.json', 'pipeline_type': 'postgres'},
                         {'name': 'test_jdbc_file_full', 'output': 'jdbc_file_full.json', 'pipeline_type': 'postgres'}],
-        'test_delete_pipeline': [{'name': 'test_postgres'}, {'name': 'test_postgres_timestamp_ms'}, {'name': 'test_postgres_timestamp_datetime'},
-                                 {'name': 'test_postgres_advanced'}, {'name': 'test_jdbc_file_short'}, {'name': 'test_jdbc_file_full'}],
+        'test_delete_pipeline': [{'name': 'test_postgres'}, {'name': 'test_postgres_timestamp_ms'},
+                                 {'name': 'test_postgres_timestamp_datetime'},
+                                 {'name': 'test_postgres_advanced'}, {'name': 'test_jdbc_file_short'},
+                                 {'name': 'test_jdbc_file_full'}],
         'test_source_delete': [{'name': 'test_jdbc'}, {'name': 'test_postgres_1'}]
 
     }
@@ -51,6 +64,9 @@ class TestPostgreSQL(TestPipelineBase):
         assert api_client.get_pipeline(name)
 
     def test_edit_with_file(self, cli_runner, file_name=None):
+        pytest.skip()
+
+    def test_info(self, cli_runner, name=None):
         pytest.skip()
 
     def test_output_exists(self, cli_runner, name=None):
