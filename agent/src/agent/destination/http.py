@@ -98,9 +98,7 @@ class HttpDestination:
         return proxies
 
     def validate(self) -> bool:
-        if not ENV_PROD:
-            return True
-        result = requests.post(self.config[self.CONFIG_RESOURCE_URL], proxies=self.get_proxy_configs(), timeout=2)
+        result = requests.post(self.config[self.CONFIG_RESOURCE_URL], proxies=self.get_proxy_configs(), timeout=5)
         result.raise_for_status()
         return True
 

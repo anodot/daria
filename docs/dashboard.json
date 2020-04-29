@@ -8,12 +8,24 @@
   "timeRangesFilter": {
     "timeRanges": []
   },
+  "timeScale": {
+    "value": "medium",
+    "text": "5 Minutes",
+    "shortText": "5min",
+    "rank": 2,
+    "ms": 300000,
+    "enabled": true,
+    "actualResolution": {
+      "value": "medium"
+    }
+  },
   "autoRefreshInterval": -1,
   "dateRange": {
-    "constRange": "c",
-    "startDate": 1562453769683,
-    "endDate": 1562492692455,
-    "dateText": "7/7/2019 01:56 - 7/7/2019 12:44"
+    "constRange": "1d",
+    "startDate": 1587039841157,
+    "endDate": 1587126241157,
+    "dateText": "Last 24 Hours",
+    "shortText": "a day"
   },
   "tags": [],
   "editableBy": [],
@@ -187,24 +199,22 @@
           "position": "bottom",
           "layout": "table",
           "isLayoutChangable": true,
-          "ratio": 0.4388349514563107,
+          "ratio": 0.1278538812785388,
           "horizontalRatio": 0.3
         },
+        "bucketStartTimeFF": true,
         "userTimeZone": "Browser",
-        "bucketStartTimeFF": false,
         "resolution": {
           "value": "medium"
         },
         "eventListeners": {}
       },
-      "isSimpleSearchMode": false,
       "row": 1,
       "col": 0
     },
     {
       "col": 2,
       "row": 1,
-      "isSimpleSearchMode": false,
       "lineChart": {
         "legend": {
           "ratio": 0.2,
@@ -338,8 +348,8 @@
         },
         "gridster": {},
         "height": 1,
+        "bucketStartTimeFF": true,
         "userTimeZone": "Browser",
-        "bucketStartTimeFF": false,
         "resolution": {
           "value": ""
         },
@@ -355,7 +365,6 @@
     {
       "col": 6,
       "row": 1,
-      "isSimpleSearchMode": false,
       "lineChart": {
         "legend": {
           "ratio": 0.27165354330708663,
@@ -611,8 +620,8 @@
         },
         "gridster": {},
         "height": 1,
+        "bucketStartTimeFF": true,
         "userTimeZone": "Browser",
-        "bucketStartTimeFF": false,
         "resolution": {
           "value": "medium"
         },
@@ -628,7 +637,6 @@
     {
       "col": 0,
       "row": 8,
-      "isSimpleSearchMode": false,
       "lineChart": {
         "legend": {
           "ratio": 0.2,
@@ -705,6 +713,7 @@
         },
         "expressionTrees": {
           "b269-ca0103e80ab4": {
+            "excludeComposites": true,
             "uiIndex": 0,
             "scalarTransforms": [
               {
@@ -766,8 +775,8 @@
         },
         "gridster": {},
         "height": 1,
+        "bucketStartTimeFF": true,
         "userTimeZone": "Browser",
-        "bucketStartTimeFF": false,
         "resolution": {
           "value": ""
         },
@@ -798,7 +807,7 @@
       "sizeX": 6,
       "sizeY": 7,
       "title": {
-        "text": "Output Records Rate"
+        "text": "Output Records"
       },
       "lineChart": {
         "height": 1,
@@ -809,59 +818,42 @@
             "displayOnly": true,
             "expressionTree": {
               "root": {
+                "uiIndex": 0,
                 "children": [
                   {
-                    "children": [
-                      {
-                        "searchObject": {
-                          "expression": [
-                            {
-                              "type": "property",
-                              "key": "what",
-                              "value": "pipeline_batchOutputRecords",
-                              "isExact": true
-                            },
-                            {
-                              "type": "selector",
-                              "value": "$host_id"
-                            }
-                          ]
+                    "searchObject": {
+                      "expression": [
+                        {
+                          "type": "property",
+                          "key": "what",
+                          "value": "pipeline_batchOutputRecords",
+                          "isExact": true
                         },
-                        "children": [],
-                        "type": "metric",
-                        "id": "5e22-64e07bbf30d7",
-                        "uiIndex": 0
-                      }
-                    ],
-                    "function": "groupBy",
-                    "id": "2bb7-aee6f0fcb793",
-                    "parameters": [
-                      {
-                        "name": "Aggregation",
-                        "value": "Sum"
-                      },
-                      {
-                        "name": "Group By",
-                        "value": "{\"properties\":[\"host_id\"]}"
-                      }
-                    ],
-                    "type": "function"
+                        {
+                          "type": "selector",
+                          "value": "$host_id"
+                        }
+                      ]
+                    },
+                    "children": [],
+                    "type": "metric",
+                    "id": "5e22-64e07bbf30d7",
+                    "uiIndex": 0
                   }
                 ],
-                "function": "nonNegativeDerivative",
-                "id": "9eae-d77f3c68b801",
+                "function": "groupBy",
+                "id": "2bb7-aee6f0fcb793",
                 "parameters": [
                   {
-                    "name": "Max Value",
-                    "value": null
+                    "name": "Aggregation",
+                    "value": "Sum"
                   },
                   {
-                    "name": "Keep Last Value Limit",
-                    "value": null
+                    "name": "Group By",
+                    "value": "{\"properties\":[\"host_id\"]}"
                   }
                 ],
-                "type": "function",
-                "uiIndex": 0
+                "type": "function"
               }
             },
             "filter": {
@@ -967,14 +959,13 @@
           "ratio": 0.14536340852130325,
           "horizontalRatio": 0.3
         },
+        "bucketStartTimeFF": true,
         "userTimeZone": "Browser",
-        "bucketStartTimeFF": false,
         "resolution": {
-          "value": ""
+          "value": "medium"
         },
         "eventListeners": {}
       },
-      "isSimpleSearchMode": false,
       "row": 12,
       "col": 0
     },
@@ -983,7 +974,7 @@
       "sizeX": 6,
       "sizeY": 7,
       "title": {
-        "text": "Input Messages Rate "
+        "text": "Input Messages"
       },
       "lineChart": {
         "height": 1,
@@ -994,59 +985,42 @@
             "displayOnly": true,
             "expressionTree": {
               "root": {
+                "uiIndex": 0,
                 "children": [
                   {
-                    "children": [
-                      {
-                        "searchObject": {
-                          "expression": [
-                            {
-                              "type": "property",
-                              "key": "what",
-                              "value": "pipeline_batchInputRecords",
-                              "isExact": false
-                            },
-                            {
-                              "type": "selector",
-                              "value": "$host_id"
-                            }
-                          ]
+                    "searchObject": {
+                      "expression": [
+                        {
+                          "type": "property",
+                          "key": "what",
+                          "value": "pipeline_batchInputRecords",
+                          "isExact": false
                         },
-                        "children": [],
-                        "type": "metric",
-                        "id": "5e22-64e07bbf30d7",
-                        "uiIndex": 0
-                      }
-                    ],
-                    "function": "groupBy",
-                    "id": "6be0-3d592210b9b8",
-                    "parameters": [
-                      {
-                        "name": "Aggregation",
-                        "value": "Sum"
-                      },
-                      {
-                        "name": "Group By",
-                        "value": "{\"properties\":[\"host_id\"]}"
-                      }
-                    ],
-                    "type": "function"
+                        {
+                          "type": "selector",
+                          "value": "$host_id"
+                        }
+                      ]
+                    },
+                    "children": [],
+                    "type": "metric",
+                    "id": "5e22-64e07bbf30d7",
+                    "uiIndex": 0
                   }
                 ],
-                "function": "nonNegativeDerivative",
-                "id": "9eae-d77f3c68b801",
+                "function": "groupBy",
+                "id": "6be0-3d592210b9b8",
                 "parameters": [
                   {
-                    "name": "Max Value",
-                    "value": null
+                    "name": "Aggregation",
+                    "value": "Sum"
                   },
                   {
-                    "name": "Keep Last Value Limit",
-                    "value": null
+                    "name": "Group By",
+                    "value": "{\"properties\":[\"host_id\"]}"
                   }
                 ],
-                "type": "function",
-                "uiIndex": 0
+                "type": "function"
               }
             },
             "filter": {
@@ -1152,14 +1126,13 @@
           "ratio": 0.14536340852130325,
           "horizontalRatio": 0.3
         },
+        "bucketStartTimeFF": true,
         "userTimeZone": "Browser",
-        "bucketStartTimeFF": false,
         "resolution": {
           "value": "medium"
         },
         "eventListeners": {}
       },
-      "isSimpleSearchMode": false,
       "row": 12,
       "col": 6
     },
@@ -1307,9 +1280,9 @@
             }
           ]
         },
+        "bucketStartTimeFF": true,
         "eventListeners": {}
       },
-      "isSimpleSearchMode": false,
       "row": 19,
       "col": 0
     },
@@ -1467,9 +1440,9 @@
             }
           ]
         },
+        "bucketStartTimeFF": true,
         "eventListeners": {}
       },
-      "isSimpleSearchMode": false,
       "row": 19,
       "col": 6
     },
@@ -1482,14 +1455,13 @@
         "type": "html",
         "text": "<strong>HELP</strong>\n<p>Health Check: every 60 seconds monitoring pipeline must send heath check with value 1 to indicate that it’s working (normal value is 4-5 every 5 minutes)</p> <p>Destination Latency: how long the request to Anodot API is executed</p><p>Memory Usage, CPU Usage:  Limits depend on clients machine capacity</p><p>Pipeline Charts: these are Sum Series from all pipelines (Input, Output and Errors Numbers)</p>"
       },
-      "sizeY": 2,
+      "sizeY": 3,
       "sizeX": 12,
       "id": "fa32-81d1ce4bbe3c"
     },
     {
       "col": 0,
-      "row": 24,
-      "isSimpleSearchMode": false,
+      "row": 25,
       "lineChart": {
         "legend": {
           "horizontalRatio": 0.3,
@@ -1498,80 +1470,28 @@
           "layout": "table",
           "position": "bottom",
           "isPinnable": true,
-          "pinned": false,
-          "enabled": false
+          "pinned": true,
+          "enabled": true
         },
         "seriesProperties": {
           "byTreeExp": [
             {
               "options": {
-                "andtGauge": {
-                  "thresholds": [
-                    {
-                      "operator": ">=",
-                      "value": "",
-                      "color": {
-                        "text": "Light Green",
-                        "hex": "#94D85F"
-                      },
-                      "order": 1
-                    },
-                    {
-                      "operator": ">=",
-                      "value": "",
-                      "color": {
-                        "text": "Orange",
-                        "hex": "#FF9936"
-                      },
-                      "order": 2
-                    },
-                    {
-                      "operator": ">=",
-                      "value": "",
-                      "color": {
-                        "text": "Red",
-                        "hex": "#F21224"
-                      },
-                      "order": 3
-                    }
-                  ],
-                  "defaultColor": {
-                    "text": "Transparent",
-                    "hex": ""
-                  },
-                  "thresholdColorElement": "foreground",
-                  "orientation": "leftRight",
-                  "suffix": {
-                    "fontSize": 50,
-                    "text": ""
-                  },
-                  "prefix": {
-                    "fontSize": 50,
-                    "text": ""
-                  },
-                  "mainValue": {
-                    "thousandsSeparator": true,
-                    "abbreviate": true,
-                    "unitText": "",
-                    "decimalPlaces": 4,
-                    "fontSize": 100
-                  },
-                  "type": "andtGauge"
-                },
                 "yAxis": {}
               },
-              "id": "9017-dfc586ee755c"
+              "id": "0271-45342ae50e33"
             }
           ]
         },
         "expressionTrees": {
-          "9017-dfc586ee755c": {
-            "uiIndex": 1,
+          "0271-45342ae50e33": {
+            "excludeComposites": true,
+            "uiIndex": 0,
             "scalarTransforms": [
               {
                 "type": "function",
                 "parameters": [],
-                "id": "c5c7-2580924515c3",
+                "id": "e01a-dbc7a59dded3",
                 "children": [],
                 "function": "current"
               }
@@ -1580,65 +1500,80 @@
               "prefix": null,
               "auto": true
             },
-            "id": "9017-dfc586ee755c",
+            "id": "0271-45342ae50e33",
             "filter": {
-              "function": "alphanumeric",
+              "type": "function",
+              "id": "f0dd-8edd4877e8ff",
+              "children": [],
               "parameters": [
                 {
-                  "name": "Top N",
-                  "value": 50
+                  "value": 10,
+                  "name": "Top N"
                 }
               ],
-              "children": [],
-              "id": "d408-4906888d4cff",
-              "type": "function"
+              "function": "highestCurrent"
             },
             "expressionTree": {
               "root": {
+                "uiIndex": 0,
+                "type": "function",
+                "parameters": [
+                  {
+                    "value": "1",
+                    "name": "Threshold"
+                  }
+                ],
+                "id": "c5e5-66db5311f978",
+                "function": "averageAbove",
                 "children": [
                   {
+                    "uiIndex": 0,
+                    "id": "d388-d1ee0f8acb57",
+                    "type": "metric",
+                    "children": [],
                     "searchObject": {
                       "expression": [
                         {
-                          "type": "property",
-                          "key": "measurement_category",
-                          "value": "sla_details",
-                          "isExact": true
+                          "isExact": true,
+                          "value": "agent_monitoring",
+                          "key": "source",
+                          "type": "property"
+                        },
+                        {
+                          "isExact": true,
+                          "value": "pipeline_batchErrorRecords",
+                          "key": "what",
+                          "type": "property"
+                        },
+                        {
+                          "value": "$host_id",
+                          "type": "selector"
                         }
                       ]
-                    },
-                    "children": [],
-                    "type": "metric",
-                    "id": "27b5-e58b2c1ef722",
-                    "uiIndex": 0
+                    }
                   }
-                ],
-                "function": "PercentMissingValues",
-                "id": "fedb-5076abe0ae29",
-                "parameters": [],
-                "type": "function",
-                "uiIndex": 1
+                ]
               }
             },
             "displayOnly": true,
             "compositeCount": 0
           }
         },
-        "bucketStartTimeFF": false,
-        "userTimeZone": "Browser",
+        "bucketStartTimeFF": true,
         "gridster": {},
         "height": 1,
+        "userTimeZone": "Browser",
         "resolution": {
           "value": ""
         },
         "eventListeners": {}
       },
       "title": {
-        "text": "Процент потерянных метрик"
+        "text": "Batch Records Erros"
       },
-      "sizeY": 3,
-      "sizeX": 6,
-      "id": "43d8-9b84e15d34ce"
+      "sizeY": 6,
+      "sizeX": 4,
+      "id": "177f-2443ea285a10"
     }
   ],
   "selectorsFilter": {
@@ -1656,8 +1591,7 @@
         "selectedValue": {
           "name": "All",
           "value": "*",
-          "isAll": true,
-          "_uiSelectChoiceDisabled": false
+          "isAll": true
         },
         "dependencyGroup": {
           "text": "Group A",

@@ -59,4 +59,4 @@ class PromptConfigJDBC(PromptConfig):
     def set_condition(self):
         if self.advanced:
             self.config['condition'] = click.prompt('Condition', type=click.STRING,
-                                                    default=self.default_config.get('condition'))
+                                                    default=self.default_config.get('condition', '')).strip()
