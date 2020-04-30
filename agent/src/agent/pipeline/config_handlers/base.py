@@ -21,9 +21,6 @@ class BaseConfigHandler(ABC):
         self.config = {}
         self.pipeline = pipeline
 
-    def get_pipeline_id(self):
-        return self.client_config['pipeline_id']
-
     def get_pipeline_type(self) -> str:
         return self.pipeline.source.type
 
@@ -106,7 +103,7 @@ class BaseConfigHandler(ABC):
             'source': ['anodot-agent'],
             'source_host_id': [self.client_config['destination']['host_id']],
             'source_host_name': [HOSTNAME],
-            'pipeline_id': [self.get_pipeline_id()],
+            'pipeline_id': [self.pipeline.id],
             'pipeline_type': [self.get_pipeline_type()],
             **self.client_config.get('tags', {})
         }
