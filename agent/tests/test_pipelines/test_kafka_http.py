@@ -94,3 +94,6 @@ class TestKafka(TestPipelineBase):
 
     def test_output_exists(self, cli_runner, name=None):
         pytest.skip()
+
+    def test_reset(self, cli_runner, name=None):
+        pytest.skip()

@@ -25,6 +25,7 @@ class TestMongo(TestPipelineBase):
                        {'name': 'test_timestamp_string'}, {'name': 'test_timestamp_datetime'},
                        {'name': 'test_timestamp_id'}, {'name': 'test_mongo_file_short'},
                        {'name': 'test_mongo_file_full'}],
+        'test_reset': [{'name': 'test_value_const'}],
         'test_stop': [{'name': 'test_value_const'}, {'name': 'test_timestamp_ms'},
                        {'name': 'test_timestamp_string'}, {'name': 'test_timestamp_datetime'},
                        {'name': 'test_timestamp_id'}, {'name': 'test_mongo_file_short'},

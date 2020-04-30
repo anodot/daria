@@ -22,9 +22,9 @@ class HttpDestination:
 
     CONFIG_MONITORING_URL = 'monitoring_url'
 
-    def __init__(self):
+    def __init__(self, host_id=None):
         self.config = {}
-        self.host_id = self.generate_host_id()
+        self.host_id = host_id if host_id else self.generate_host_id()
 
     def to_dict(self) -> dict:
         return {'config': self.config, 'type': self.TYPE, 'host_id': self.host_id}

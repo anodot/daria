@@ -23,6 +23,7 @@ class TestInflux(TestPipelineBase):
                        {'name': 'test_influx_file_full'}, {'name': 'test_influx_adv'}],
         'test_stop': [{'name': 'test_basic'}, {'name': 'test_basic_offset'}, {'name': 'test_influx_file_short'},
                       {'name': 'test_influx_file_full'}, {'name': 'test_influx_adv'}],
+        'test_reset': [{'name': 'test_basic'}],
         'test_output': [{'name': 'test_basic', 'output': 'influx.json', 'pipeline_type': 'influx'},
                         {'name': 'test_basic_offset', 'output': 'influx_offset.json', 'pipeline_type': 'influx'},
                         {'name': 'test_influx_file_short', 'output': 'influx.json', 'pipeline_type': 'influx'},

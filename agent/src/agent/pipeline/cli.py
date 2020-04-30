@@ -128,7 +128,7 @@ def create(advanced, file):
         print('To change the config use `agent pipeline edit`')
 
 
-def edit_multiple(file):
+def get_pipelines_from_file(file):
     data = json.load(file)
 
     json_schema = {
@@ -142,8 +142,11 @@ def edit_multiple(file):
         }
     }
     validate(data, json_schema)
+    return data
 
-    for item in data:
+
+def edit_multiple(file):
+    for item in get_pipelines_from_file(file):
         try:
             pipeline_manager = PipelineManager(pipeline.load_object(item['pipeline_id']))
             pipeline_manager.load_config(item, edit=True)
@@ -213,32 +216,48 @@ def list_pipelines():
 
 
 @click.command()
-@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
-def start(pipeline_id):
+@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, required=False)
+@click.option('-f', '--file', type=click.File())
+def start(pipeline_id, file):
     """
     Start pipeline
     """
-    try:
-        pipeline_manager = PipelineManager(pipeline.load_object(pipeline_id))
-        click.echo('Pipeline is starting...')
-        pipeline_manager.start()
-    except (StreamSetsApiClientException, pipeline.PipelineException) as e:
-        click.secho(str(e), err=True, fg='red')
-        return
+
+    if not file and not pipeline_id:
+        raise click.UsageError('Specify pipeline id or file')
+
+    pipeline_ids = [item['pipeline_id'] for item in get_pipelines_from_file(file)] if file else [pipeline_id]
+
+    for idx in pipeline_ids:
+        try:
+            pipeline_manager = PipelineManager(pipeline.load_object(idx))
+            click.echo(f'Pipeline {idx} is starting...')
+            pipeline_manager.start()
+        except (StreamSetsApiClientException, pipeline.PipelineException) as e:
+            click.secho(str(e), err=True, fg='red')
+            continue
 
 
 @click.command()
-@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
-def stop(pipeline_id):
+@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, required=False)
+@click.option('-f', '--file', type=click.File())
+def stop(pipeline_id, file):
     """
     Stop pipeline
     """
-    try:
-        stop_pipeline(pipeline_id)
-        click.secho('Pipeline is stopped', fg='green')
-    except (StreamSetsApiClientException, pipeline.PipelineException) as e:
-        click.secho(str(e), err=True, fg='red')
-        return
+
+    if not file and not pipeline_id:
+        raise click.UsageError('Specify pipeline id or file')
+
+    pipeline_ids = [item['pipeline_id'] for item in get_pipelines_from_file(file)] if file else [pipeline_id]
+
+    for idx in pipeline_ids:
+        try:
+            stop_pipeline(idx)
+            click.secho(f'Pipeline {idx} is stopped', fg='green')
+        except (StreamSetsApiClientException, pipeline.PipelineException) as e:
+            click.secho(str(e), err=True, fg='red')
+            continue
 
 
 @click.command()
@@ -257,18 +276,24 @@ def force_stop(pipeline_id):
 
 
 @click.command()
-@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
-def delete(pipeline_id):
+@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, required=False)
+@click.option('-f', '--file', type=click.File())
+def delete(pipeline_id, file):
     """
     Delete pipeline
     """
-    try:
-        delete_pipeline(pipeline_id)
-    except (StreamSetsApiClientException, pipeline.PipelineException) as e:
-        click.secho(str(e), err=True, fg='red')
-        return
+    if not file and not pipeline_id:
+        raise click.UsageError('Specify pipeline id or file')
 
-    click.echo('Pipeline deleted')
+    pipeline_ids = [item['pipeline_id'] for item in get_pipelines_from_file(file)] if file else [pipeline_id]
+
+    for idx in pipeline_ids:
+        try:
+            delete_pipeline(idx)
+            click.echo(f'Pipeline {idx} deleted')
+        except (StreamSetsApiClientException, pipeline.PipelineException) as e:
+            click.secho(str(e), err=True, fg='red')
+            continue
 
 
 @click.command()
