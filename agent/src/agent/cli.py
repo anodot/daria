@@ -40,10 +40,13 @@ def update():
     """
 
     for p in pipeline.get_pipelines():
-        pipeline_manager = pipeline.PipelineManager(p)
-        pipeline_manager.update()
-
-        click.secho(f'Pipeline {p.id} updated', fg='green')
+        try:
+            pipeline_manager = pipeline.PipelineManager(p)
+            pipeline_manager.update()
+            click.secho(f'Pipeline {p.id} updated', fg='green')
+        except pipeline.PipelineException as e:
+            print(str(e))
+            continue
 
 
 agent.add_command(source_group)
