@@ -21,6 +21,7 @@ class Pipeline:
         self.config = config
         self.source = source_obj
         self.destination = destination
+        self.old_config = None
 
     @property
     def file_path(self) -> str:

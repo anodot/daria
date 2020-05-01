@@ -156,11 +156,10 @@ class PipelineManager:
 
         except (config_handlers.ConfigHandlerException, StreamSetsApiClientException) as e:
             raise PipelineException(str(e))
-        finally:
-            if start_pipeline:
-                self.start()
 
         self.pipeline.save()
+        if start_pipeline:
+            self.start()
 
     def reset(self):
         try:
