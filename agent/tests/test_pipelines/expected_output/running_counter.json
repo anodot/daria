@@ -1,6 +1,6 @@
 [
   {
-    "value": 1.0,
+    "value": 0.0,
     "properties": {
       "what": "clicks",
       "target_type": "gauge",
@@ -18,7 +18,7 @@
     "timestamp": 1512871200
   },
   {
-    "value": 2.0,
+    "value": 3.0,
     "properties": {
       "what": "clicks",
       "target_type": "gauge",
