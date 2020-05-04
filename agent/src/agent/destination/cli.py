@@ -29,8 +29,10 @@ def monitoring():
 @infinite_retry
 def prompt_destination(dest: HttpDestination):
 
-    token = click.prompt('Anodot api token', type=click.STRING)
+    token = click.prompt('Anodot api data collection token', type=click.STRING)
     dest.update_url(token)
+
+    dest.api_key = click.prompt('Anodot api key', type=click.STRING, default='')
 
     use_proxy = click.confirm('Use proxy for connecting to Anodot?')
     if use_proxy:
@@ -51,13 +53,14 @@ def prompt_destination(dest: HttpDestination):
 @click.option('--proxy-user', type=click.STRING, default=None)
 @click.option('--proxy-password', type=click.STRING, default=None)
 @click.option('--host-id', type=click.STRING, default=None)
-def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id):
+@click.option('--api-key', type=click.STRING, default=None)
+def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, api_key):
     """
     Data destination config.
     Anodot API token - You can copy it from Settings > API tokens > Data Collection in your Anodot account
     Proxy for connecting to Anodot
     """
-    dest = HttpDestination(host_id=host_id)
+    dest = HttpDestination(host_id=host_id, api_key=api_key)
     if dest.exists():
         dest.load()
 
