@@ -50,13 +50,14 @@ def prompt_destination(dest: HttpDestination):
 @click.option('--proxy-host', type=click.STRING, default=None)
 @click.option('--proxy-user', type=click.STRING, default=None)
 @click.option('--proxy-password', type=click.STRING, default=None)
-def destination(token, proxy, proxy_host, proxy_user, proxy_password):
+@click.option('--host-id', type=click.STRING, default=None)
+def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id):
     """
     Data destination config.
     Anodot API token - You can copy it from Settings > API tokens > Data Collection in your Anodot account
     Proxy for connecting to Anodot
     """
-    dest = HttpDestination()
+    dest = HttpDestination(host_id=host_id)
     if dest.exists():
         dest.load()
 
