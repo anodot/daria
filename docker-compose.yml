@@ -2,8 +2,7 @@ version: '3.1'
 
 services:
   dc:
-#    build: streamsets
-    image: anodot/streamsets
+    build: streamsets
     ports:
       - "18630:18630"
     restart: on-failure
