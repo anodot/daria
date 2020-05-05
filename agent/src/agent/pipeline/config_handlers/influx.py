@@ -116,7 +116,7 @@ state['TAGS'] = {tags}
                             constant_properties=str(self.client_config.get('properties', {})),
                             host_id=self.client_config['destination']['host_id'],
                             host_name=HOSTNAME,
-                            pipeline_id=self.get_pipeline_id(),
+                            pipeline_id=self.pipeline.id,
                             tags=json.dumps(self.get_tags())
                         )
 

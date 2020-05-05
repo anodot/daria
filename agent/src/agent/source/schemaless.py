@@ -20,6 +20,11 @@ class SchemalessSource(Source, metaclass=ABCMeta):
     CONFIG_CSV_TYPE_DEFAULT = 'CSV'
     CONFIG_CSV_TYPE_CUSTOM = 'CUSTOM'
     csv_types = [CONFIG_CSV_TYPE_DEFAULT, CONFIG_CSV_TYPE_CUSTOM]
+
+    CONFIG_CSV_HEADER_LINE = 'conf.dataFormatConfig.csvHeader'
+    CONFIG_CSV_HEADER_LINE_NO_HEADER = 'NO_HEADER'
+    CONFIG_CSV_HEADER_LINE_WITH_HEADER = 'WITH_HEADER'
+
     CONFIG_CSV_CUSTOM_DELIMITER = 'conf.dataFormatConfig.csvCustomDelimiter'
 
     CONFIG_AVRO_SCHEMA_SOURCE = 'conf.dataFormatConfig.avroSchemaSource'
@@ -62,12 +67,16 @@ class SchemalessSource(Source, metaclass=ABCMeta):
         if len(self.config[self.CONFIG_CSV_CUSTOM_DELIMITER]) != 1:
             raise SourceException(f'{self.config[self.CONFIG_CSV_CUSTOM_DELIMITER]} is not a character')
 
-    def prompt_csv(self, default_config):
+    def prompt_csv_type(self, default_config):
         self.config[self.CONFIG_CSV_TYPE] = click.prompt('Delimited format type',
                                                          type=click.Choice(self.csv_types),
-                                                         default=default_config.get(self.CONFIG_CSV_TYPE))
+                                                         default=default_config.get(self.CONFIG_CSV_TYPE,
+                                                                                    self.CONFIG_CSV_TYPE_DEFAULT))
         if self.config[self.CONFIG_CSV_TYPE] == self.CONFIG_CSV_TYPE_CUSTOM:
             self.prompt_custom_delimiter(default_config)
+
+    def prompt_csv(self, default_config):
+        self.prompt_csv_type(default_config)
         self.change_field_names(default_config)
 
     def prompt_avro_registry(self, default_config):
@@ -192,7 +201,10 @@ class SchemalessSource(Source, metaclass=ABCMeta):
             return
 
         if self.config.get(self.CONFIG_DATA_FORMAT) == self.DATA_FORMAT_CSV:
-            self.sample_data = map_keys(records, self.config.get(self.CONFIG_CSV_MAPPING, {}))
+            if self.config.get(self.CONFIG_CSV_HEADER_LINE) == self.CONFIG_CSV_HEADER_LINE_NO_HEADER:
+                self.sample_data = map_keys(records, self.config.get(self.CONFIG_CSV_MAPPING, {}))
+            else:
+                self.sample_data = records
             print_dicts(self.sample_data)
         else:
             self.sample_data = records

@@ -9,7 +9,7 @@ class KafkaConfigHandler(SchemalessConfigHandler):
     target_types = ['counter', 'gauge', 'running_counter']
 
     def override_stages(self):
-        self.client_config['source']['config']['conf.consumerGroup'] = 'anodot_agent_' + self.get_pipeline_id()
+        self.client_config['source']['config']['conf.consumerGroup'] = 'anodot_agent_' + self.pipeline.id
         self.update_source_configs()
 
         # for old config <=v1.4
