@@ -76,8 +76,8 @@ class BaseConfigHandler(ABC):
         for stage in self.config['stages']:
             if stage['instanceName'] == 'destination':
                 for conf in stage['configuration']:
-                    if conf['name'] in self.client_config['destination']['config']:
-                        conf['value'] = self.client_config['destination']['config'][conf['name']]
+                    if conf['name'] in self.pipeline.destination['config']:
+                        conf['value'] = self.pipeline.destination['config'][conf['name']]
 
     def convert_timestamp_to_unix(self, stage):
         for conf in stage['configuration']:

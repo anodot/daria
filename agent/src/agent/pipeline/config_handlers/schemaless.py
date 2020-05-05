@@ -31,11 +31,15 @@ state['metrics'] = {{}}
     target_types = ['counter', 'gauge']
 
     def override_stages(self):
+        self.update_pipeline_config()
         self.update_source_configs()
 
         self.update_stages()
 
         self.update_destination_config()
+
+    def update_pipeline_config(self):
+        pass
 
     def update_stages(self):
         for stage in self.config['stages']:

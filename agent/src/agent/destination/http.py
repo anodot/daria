@@ -22,13 +22,21 @@ class HttpDestination:
 
     CONFIG_MONITORING_URL = 'monitoring_url'
 
+    PROTOCOL_20 = 'anodot20'
+    PROTOCOL_30 = 'anodot30'
+
     def __init__(self, host_id=None, api_key=None):
         self.config = {}
         self.host_id = host_id if host_id else self.generate_host_id()
         self.api_key = api_key
 
     def to_dict(self) -> dict:
-        return {'config': self.config, 'type': self.TYPE, 'host_id': self.host_id, 'api_key': self.api_key}
+        return {
+            'config': self.config,
+            'type': self.TYPE,
+            'host_id': self.host_id,
+            'api_key': self.api_key
+        }
 
     @property
     def monitoring_url(self):
@@ -51,13 +59,15 @@ class HttpDestination:
 
         self.config = config['config']
         self.host_id = config['host_id']
+        self.api_key = config['api_key']
 
         return config
 
     def update_url(self, token: str):
+        self.config['token'] = token
         self.config[self.CONFIG_RESOURCE_URL] = urllib.parse.urljoin(
-            ANODOT_API_URL, f'api/v1/metrics?token={token}&protocol=anodot20')
-        self.config[self.CONFIG_MONITORING_URL] = urllib.parse.urljoin(ANODOT_API_URL, f'api/v1/agents?token={token}')
+            ANODOT_API_URL, f'api/v1/metrics?token={self.config["token"]}&protocol=protocol20')
+        self.config[self.CONFIG_MONITORING_URL] = urllib.parse.urljoin(ANODOT_API_URL, f'api/v1/agents?token={self.config["token"]}')
 
     def save(self):
         try:

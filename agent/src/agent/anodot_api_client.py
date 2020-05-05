@@ -1,7 +1,4 @@
-import json
-import os
 import requests
-import time
 import urllib.parse
 import click
 
@@ -23,9 +20,7 @@ def endpoint(func):
         res = func(*args, **kwargs)
         try:
             res.raise_for_status()
-            if res.text:
-                return res.json()
-            return
+            return res.json()
         except requests.exceptions.HTTPError:
             if res.text:
                 logger.error(res.text)
@@ -64,3 +59,11 @@ class AnodotApiClient:
         :return: string
         """
         return urllib.parse.urljoin(self.base_url, '/'.join(['/api/v2', *args]))
+
+    @endpoint
+    def create_schema(self, schema):
+        return self.session.post(self.build_url('stream-schemas'), json=schema)
+
+    @endpoint
+    def delete_schema(self, schema_id):
+        return self.session.delete(self.build_url('stream-schemas', schema_id), params={'deleteOrigin': 'false'})
