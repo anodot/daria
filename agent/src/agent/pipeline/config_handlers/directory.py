@@ -29,7 +29,7 @@ class DirectoryConfigHandler(SchemalessConfigHandler):
                 'fill': 'NULL'
             }
         }
-        api_client = AnodotApiClient(self.pipeline.destination)
+        api_client = AnodotApiClient(self.pipeline.destination, base_url=ANODOT_API_URL)
         if self.pipeline.config.get('schema'):
             if {key: val for key, val in self.pipeline.config['schema'].items() if key not in ['id']} == schema:
                 return self.pipeline.config['schema']['id']
@@ -57,20 +57,21 @@ class DirectoryConfigHandler(SchemalessConfigHandler):
 
     def update_stages(self, stage):
         super().update_stages(stage)
-        self.process_finish_file_event_stage(stage)
+        if stage['instanceName'] == 'process_finish_file_event':
+            self.process_finish_file_event_stage(stage)
 
     def process_finish_file_event_stage(self, stage):
         for conf in stage['configuration']:
             if conf['name'] != 'expressionProcessorConfigs':
                 continue
-            extract_timestamp = "str:split(record:value('/filepath'), '_')[0]"
+            extract_timestamp = "str:regExCapture(record:value('/filepath'), '.*/(.+)_.*', 1)"
             conf['value'] = [
                 {
                     'fieldToSet': '/watermark',
-                    'expression': self.get_convert_timestamp_to_unix_expression(extract_timestamp)
+                    'expression': '${' + self.get_convert_timestamp_to_unix_expression(extract_timestamp) + '}'
                 },
                 {
                     'fieldToSet': '/schemaId',
-                    'expression': self.get_convert_timestamp_to_unix_expression(extract_timestamp)
+                    'expression': self.pipeline.config['schema']['id']
                 },
             ]

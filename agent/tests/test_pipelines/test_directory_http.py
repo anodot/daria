@@ -18,9 +18,9 @@ class TestDirectory(TestPipelineBase):
         'test_stop': [{'name': 'test_dir_log'}, {'name': 'test_dir_json'}, {'name': 'test_dir_csv'}],
         'test_reset': [{'name': 'test_dir_log'}],
         'test_output': [
-            {'name': 'test_dir_csv', 'output': 'json_value_property.json', 'pipeline_type': TYPE_DIRECTORY},
-            {'name': 'test_dir_log', 'output': 'log.json', 'pipeline_type': TYPE_DIRECTORY},
-            {'name': 'test_dir_json', 'output': 'json_value_property.json', 'pipeline_type': TYPE_DIRECTORY}
+            {'name': 'test_dir_csv', 'output': 'json_value_property_30.json', 'pipeline_type': TYPE_DIRECTORY},
+            {'name': 'test_dir_json', 'output': 'json_value_property_30.json', 'pipeline_type': TYPE_DIRECTORY},
+            {'name': 'test_dir_log', 'output': 'log_30.json', 'pipeline_type': TYPE_DIRECTORY}
         ],
         'test_delete_pipeline': [{'name': 'test_dir_log'}, {'name': 'test_dir_json'}, {'name': 'test_dir_csv'}],
         'test_source_delete': [{'name': 'test_dir_log'}, {'name': 'test_dir_json'}, {'name': 'test_dir_csv'}],
