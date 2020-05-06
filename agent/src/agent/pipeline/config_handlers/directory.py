@@ -1,4 +1,3 @@
-import urllib.parse
 from .schemaless import SchemalessConfigHandler
 from agent.logger import get_logger
 from agent.anodot_api_client import AnodotApiClient
@@ -42,10 +41,36 @@ class DirectoryConfigHandler(SchemalessConfigHandler):
     def update_pipeline_config(self):
         for config in self.config['configuration']:
             if config['name'] == 'constants':
-                config['value'] = [{'key': 'schema_id', 'value': self.get_schema_id()}]
+                config['value'] = [
+                    {'key': 'SCHEMA_ID', 'value': self.get_schema_id()},
+                    {'key': 'TOKEN', 'value': self.pipeline.destination.config['token']},
+                    {'key': 'PROTOCOL', 'value': self.pipeline.destination.PROTOCOL_30},
+                    {'key': 'ANODOT_BASE_URL', 'value': ANODOT_API_URL},
+                ]
 
     def update_destination_config(self):
-        self.pipeline.destination.config[self.pipeline.destination.CONFIG_RESOURCE_URL] = urllib.parse.urljoin(
-            ANODOT_API_URL, f'api/v1/metrics?token={self.config["token"]}&protocol=protocol30')
+        for stage in self.config['stages']:
+            if stage['instanceName'] in ['destination', 'destination_watermark']:
+                for conf in stage['configuration']:
+                    if conf['name'] in self.pipeline.destination.config and conf['name'] != self.pipeline.destination.CONFIG_RESOURCE_URL:
+                        conf['value'] = self.pipeline.destination.config[conf['name']]
 
-        super().update_destination_config()
+    def update_stages(self, stage):
+        super().update_stages(stage)
+        self.process_finish_file_event_stage(stage)
+
+    def process_finish_file_event_stage(self, stage):
+        for conf in stage['configuration']:
+            if conf['name'] != 'expressionProcessorConfigs':
+                continue
+            extract_timestamp = "str:split(record:value('/filepath'), '_')[0]"
+            conf['value'] = [
+                {
+                    'fieldToSet': '/watermark',
+                    'expression': self.get_convert_timestamp_to_unix_expression(extract_timestamp)
+                },
+                {
+                    'fieldToSet': '/schemaId',
+                    'expression': self.get_convert_timestamp_to_unix_expression(extract_timestamp)
+                },
+            ]

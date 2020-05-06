@@ -76,26 +76,25 @@ class BaseConfigHandler(ABC):
         for stage in self.config['stages']:
             if stage['instanceName'] == 'destination':
                 for conf in stage['configuration']:
-                    if conf['name'] in self.pipeline.destination['config']:
-                        conf['value'] = self.pipeline.destination['config'][conf['name']]
+                    if conf['name'] in self.pipeline.destination.config:
+                        conf['value'] = self.pipeline.destination.config[conf['name']]
+
+    def get_convert_timestamp_to_unix_expression(self, value):
+        if self.client_config['timestamp']['type'] == 'string':
+            dt_format = self.client_config['timestamp']['format']
+            return f"time:dateTimeToMilliseconds(time:extractDateFromString({value}, '{dt_format}'))/1000"
+        elif self.client_config['timestamp']['type'] == 'datetime':
+            return "time:dateTimeToMilliseconds({value})/1000"
+        elif self.client_config['timestamp']['type'] == 'unix_ms':
+            return f"{value}/1000"
+        return value
 
     def convert_timestamp_to_unix(self, stage):
         for conf in stage['configuration']:
             if conf['name'] != 'expressionProcessorConfigs':
                 continue
-
-            if self.client_config['timestamp']['type'] == 'string':
-                dt_format = self.client_config['timestamp']['format']
-                get_timestamp_exp = f"time:extractDateFromString(record:value('/timestamp'), '{dt_format}')"
-                expression = f"time:dateTimeToMilliseconds({get_timestamp_exp})/1000"
-            elif self.client_config['timestamp']['type'] == 'datetime':
-                expression = "time:dateTimeToMilliseconds(record:value('/timestamp'))/1000"
-            elif self.client_config['timestamp']['type'] == 'unix_ms':
-                expression = "record:value('/timestamp')/1000"
-            else:
-                expression = "record:value('/timestamp')"
-
-            conf['value'][0]['expression'] = '${' + expression + '}'
+            value = "record:value('/timestamp')"
+            conf['value'][0]['expression'] = '${' + self.get_convert_timestamp_to_unix_expression(value) + '}'
             return
 
     def get_tags(self) -> dict:

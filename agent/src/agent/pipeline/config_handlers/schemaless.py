@@ -34,25 +34,25 @@ state['metrics'] = {{}}
         self.update_pipeline_config()
         self.update_source_configs()
 
-        self.update_stages()
+        for stage in self.config['stages']:
+            self.update_stages(stage)
 
         self.update_destination_config()
 
     def update_pipeline_config(self):
         pass
 
-    def update_stages(self):
-        for stage in self.config['stages']:
-            if stage['instanceName'] == 'JavaScriptEvaluator_01':
-                self.set_variables_js(stage)
+    def update_stages(self, stage):
+        if stage['instanceName'] == 'JavaScriptEvaluator_01':
+            self.set_variables_js(stage)
 
-            if stage['instanceName'] == 'ExpressionEvaluator_02':
-                self.set_constant_properties(stage)
-                self.convert_timestamp_to_unix(stage)
+        if stage['instanceName'] == 'ExpressionEvaluator_02':
+            self.set_constant_properties(stage)
+            self.convert_timestamp_to_unix(stage)
 
-            if stage['instanceName'] == 'ExpressionEvaluator_03':
-                self.set_preconditions(stage)
-                self.check_dimensions(stage)
+        if stage['instanceName'] == 'ExpressionEvaluator_03':
+            self.set_preconditions(stage)
+            self.check_dimensions(stage)
 
     def get_measurement_names(self) -> list:
         measurement_names = []

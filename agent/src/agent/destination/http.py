@@ -98,7 +98,7 @@ class HttpDestination:
         return self.config.get(self.CONFIG_PROXY_PASSWORD)
 
     def get_proxy_configs(self) -> dict:
-        proxies = {}
+        proxies = dict()
         if self.config[self.CONFIG_PROXY_USE]:
             proxy_parsed = urlparse(self.get_proxy_url())
             netloc = proxy_parsed.netloc
