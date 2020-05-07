@@ -19,5 +19,5 @@ jobs:
       - name: Increase vm memory
         run: sudo sysctl -w vm.max_map_count=262144
 
-      - name: Test
+      - name: Build and test
         run: make all

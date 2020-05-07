@@ -17,15 +17,12 @@ jobs:
     - name: Increase vm memory
       run: sudo sysctl -w vm.max_map_count=262144
 
-    - name: Build
-      run: make build-all && sleep 60
+    - name: Build and test
+      run: make all
 
     - name: Check version
-      run: VERSION=${GITHUB_REF/refs\/tags\//} && ver=$(docker exec -i anodot-agent agent -v | grep version) && if [ ${ver#*:} != $VERSION ]; then exit 1; fi 
+        run: VERSION=${GITHUB_REF/refs\/tags\//} && ver=$(docker exec -i anodot-agent agent -v | grep version) && if [ ${ver#*:} != $VERSION ]; then exit 1; fi
 
-    - name: Test
-      run: make test-all
-      
     - name: Tag latest
       run: docker image tag daria_agent:latest anodot/daria:latest && docker image tag daria_dc:latest anodot/streamsets:latest
       

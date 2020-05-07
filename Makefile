@@ -4,9 +4,6 @@ DOCKER_COMPOSE_DEV = docker-compose-dev.yml
 DOCKER_TEST = docker exec -i anodot-agent pytest -x
 DOCKER_TEST_DEV = $(DOCKER_TEST) -vv
 
-testt:
-	echo $(test11)
-
 ##------------
 ## RELEASE
 ##------------
