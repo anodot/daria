@@ -48,7 +48,8 @@ test-destination: prepare-source nap
 ## DEPENDENCY TARGETS
 ##--------------------
 build-all: get-streamsets-stages
-	docker-compose up -d --build
+	docker-compose build --build-arg GIT_SHA1=$(git describe --dirty --always)
+	docker-compose up -d
 
 test-all: setup-elastic setup-kafka
 	$(DOCKER_TEST)
@@ -99,7 +100,7 @@ build-postgres:
 	docker-compose up -d postgres
 
 get-streamsets-stages:
-	curl -L https://github.com/anodot/anodot-sdc-stage/releases/download/v1.0/anodot-1.0.tar.gz -o /tmp/sdc.tar.gz && tar xvfz /tmp/sdc.tar.gz -C streamsets/lib
+	curl -L https://github.com/anodot/anodot-sdc-stage/releases/download/v1.0.1/anodot-1.0.1.tar.gz -o /tmp/sdc.tar.gz && tar xvfz /tmp/sdc.tar.gz -C streamsets/lib
 
 sleep:
 	sleep $(SLEEP)
