@@ -34,7 +34,8 @@ class DirectoryConfigHandler(SchemalessConfigHandler):
                 'fill': 'NULL'
             }
         }
-        api_client = AnodotApiClient(self.pipeline.destination, base_url=ANODOT_API_URL)
+        api_client = AnodotApiClient(self.pipeline.destination.api_key, self.pipeline.destination.get_proxy_configs(),
+                                     base_url=ANODOT_API_URL)
         if self.pipeline.config.get('schema'):
             if {key: val for key, val in self.pipeline.config['schema'].items() if key not in ['id']} == schema:
                 return self.pipeline.config['schema']['id']

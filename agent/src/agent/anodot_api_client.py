@@ -3,7 +3,6 @@ import urllib.parse
 import click
 
 from .logger import get_logger
-from agent.destination import HttpDestination
 
 logger = get_logger(__name__)
 
@@ -35,20 +34,22 @@ class AnodotApiClientException(click.ClickException):
 
 class AnodotApiClient:
 
-    def __init__(self, destination: HttpDestination, base_url='https://app.anodot.com'):
+    def __init__(self, api_key, proxies, base_url='https://app.anodot.com'):
         """
 
-        :param destination: HttpDestination
+        :param api_key: api_key
         :param base_url: string
         """
-        self.destination = destination
+        self.api_key = api_key
         self.base_url = base_url
+        self.proxies = proxies
         self.session = requests.Session()
         self.get_auth_token()
 
     def get_auth_token(self):
         auth_token = self.session.post(self.build_url('access-token'),
-                                       json={'refreshToken': 'd584579e098cb95b1b98c9446f05ec00'})
+                                       json={'refreshToken': self.api_key},
+                                       proxies=self.proxies)
         auth_token.raise_for_status()
         self.session.headers.update({'Authorization': 'Bearer ' + auth_token.text.replace('"', '')})
 
@@ -62,8 +63,9 @@ class AnodotApiClient:
 
     @endpoint
     def create_schema(self, schema):
-        return self.session.post(self.build_url('stream-schemas'), json=schema)
+        return self.session.post(self.build_url('stream-schemas'), json=schema, proxies=self.proxies)
 
     @endpoint
     def delete_schema(self, schema_id):
-        return self.session.delete(self.build_url('stream-schemas', schema_id), params={'deleteOrigin': 'false'})
+        return self.session.delete(self.build_url('stream-schemas', schema_id), params={'deleteOrigin': 'false'},
+                                   proxies=self.proxies)

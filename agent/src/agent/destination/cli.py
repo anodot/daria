@@ -29,7 +29,7 @@ def monitoring():
 @infinite_retry
 def prompt_destination(dest: HttpDestination):
 
-    token = click.prompt('Anodot api data collection token', type=click.STRING)
+    token = click.prompt('Anodot api data collection token', type=click.STRING, default=dest.config.get('token'))
     dest.update_url(token)
 
     use_proxy = click.confirm('Use proxy for connecting to Anodot?')
@@ -41,8 +41,14 @@ def prompt_destination(dest: HttpDestination):
     else:
         dest.set_proxy(use_proxy)
 
-    dest.validate()
-    dest.api_key = click.prompt('Anodot api key', type=click.STRING, default='')
+    dest.validate_token()
+
+
+@infinite_retry
+def prompt_api_key(dest: HttpDestination):
+    dest.api_key = click.prompt('Anodot api key', type=click.STRING,
+                                default=dest.api_key if dest.api_key else '')
+    dest.validate_api_key()
 
 
 @click.command()
@@ -68,6 +74,7 @@ def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, a
         dest.set_proxy(proxy, proxy_host, proxy_user, proxy_password)
     else:
         prompt_destination(dest)
+        prompt_api_key(dest)
 
     dest.save()
     click.secho('Connection to Anodot established')
