@@ -61,7 +61,7 @@ class TestTCPServer(TestPipelineBase):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect(('dc', int(pipeline.source.config['conf.ports'][0])))
 
-        data = {'LOG': 'log.txt', 'DELIMITED': '1512889200_test.csv', 'JSON': 'test_json_items'}
+        data = {'LOG': 'log.txt', 'DELIMITED': 'test.csv', 'JSON': 'test_json_items'}
         with open(f'/home/{data[pipeline.source.config["conf.dataFormat"]]}', 'r') as f:
             for line in f.readlines():
                 s.sendall(f'{line}\n'.encode())
