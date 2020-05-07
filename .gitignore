@@ -1,2 +1,6 @@
 .idea
-venv
+venv/
+__pycache__/
+agent/build/
+agent/dist/
+*.egg-info/

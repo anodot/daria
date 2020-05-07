@@ -1,54 +1,108 @@
+NAP = 15
 SLEEP = 60
 DOCKER_COMPOSE_DEV = docker-compose-dev.yml
-DOCKER_TEST = docker exec -i anodot-agent pytest
+DOCKER_TEST = docker exec -i anodot-agent pytest -x
+DOCKER_TEST_DEV = docker exec -i anodot-agent pytest -x -vv
 
-all: build test-all
+##------------
+## RELEASE
+##------------
+all: build-all sleep test-all
 
-build:
+##-------------
+## DEVELOPMENT
+##-------------
+all-dev: clean-docker-volumes build-all-dev sleep test-all-dev
+
+##-----------------------
+## TEST SEPARATE SOURCES
+##-----------------------
+test-directory: prepare-source test-destination
+	$(DOCKER_TEST_DEV) tests/test_pipelines/test_directory_http.py
+
+test-elastic: prepare-source build-elastic setup-elastic test-destination
+	$(DOCKER_TEST_DEV) tests/test_pipelines/test_elastic_http.py
+
+test-influx: prepare-source build-influx test-destination
+	$(DOCKER_TEST_DEV) tests/test_pipelines/test_influx_http.py
+
+test-kafka: prepare-source build-kafka setup-kafka test-destination
+	$(DOCKER_TEST_DEV) tests/test_pipelines/test_kafka_http.py
+
+test-mongo: prepare-source build-mongo test-destination
+	$(DOCKER_TEST_DEV) tests/test_pipelines/test_mongo_http.py
+
+test-mysql: prepare-source build-mysql test-destination
+	$(DOCKER_TEST_DEV) tests/test_pipelines/test_mysql_http.py
+
+test-postgres: prepare-source build-postgres test-destination
+	$(DOCKER_TEST_DEV) tests/test_pipelines/test_postgres_http.py
+
+test-tcp: prepare-source test-destination
+	$(DOCKER_TEST_DEV) tests/test_pipelines/test_tcp_http.py
+
+test-destination: prepare-source nap
+	$(DOCKER_TEST_DEV) tests/test_destination.py
+
+##--------------------
+## DEPENDENCY TARGETS
+##--------------------
+build-all: get-streamsets-stages
 	docker-compose up -d --build
-	sleep $(SLEEP)
-	./setup_tests.sh
 
-test-all:
-	$(DOCKER_TEST) -x
+test-all: setup-elastic setup-kafka
+	$(DOCKER_TEST)
 
-all-dev: build-dev test-all-dev
-
-build-dev:
+build-all-dev:
 	docker-compose -f $(DOCKER_COMPOSE_DEV) up -d --build
-	docker exec -i anodot-agent python setup.py install
+	docker exec -i anodot-agent python setup.py develop
+
+test-all-dev: setup-elastic setup-kafka
+	$(DOCKER_TEST_DEV)
+
+prepare-source: clean-docker-volumes build-base-services
+
+setup-kafka:
+	./upload-test-data-to-kafka.sh
+
+setup-elastic:
+	./upload-test-data-to-elastic.sh
+
+clean-docker-volumes:
+	docker-compose down -v
+
+build-base-services:
+	docker-compose -f $(DOCKER_COMPOSE_DEV) up -d agent dc squid dummy_destination
+	docker exec -i anodot-agent python setup.py develop
+
+build-elastic:
+	docker-compose up -d es
 	sleep $(SLEEP)
-	./setup_tests.sh
 
-test-all-dev:
-	$(DOCKER_TEST) -x
+build-influx:
+	docker-compose up -d influx
 
-test-directory: test-destination
-	$(DOCKER_TEST) tests/test_directory_http.py
+build-kafka: build-zookeeper
+	docker-compose up -d kafka
+	sleep $(SLEEP)
 
-test-elastic: test-destination
-	$(DOCKER_TEST) tests/test_elastic_http.py
+build-zookeeper:
+	docker-compose up -d zookeeper
 
-test-influx: test-destination
-	$(DOCKER_TEST) tests/test_influx_http.py
+build-mongo:
+	docker-compose up -d mongo
 
-test-kafka: test-destination
-	$(DOCKER_TEST) tests/test_kafka_http.py
+build-mysql:
+	docker-compose up -d mysql
 
-test-mongo: test-destination
-	$(DOCKER_TEST) tests/test_mongo_http.py
+build-postgres:
+	docker-compose up -d postgres
 
-test-mysql: test-destination
-	$(DOCKER_TEST) tests/test_mysql_http.py
+get-streamsets-stages:
+	curl -L https://github.com/anodot/anodot-sdc-stage/releases/download/v1.0/anodot-1.0.tar.gz -o /tmp/sdc.tar.gz && tar xvfz /tmp/sdc.tar.gz -C streamsets/lib
 
-test-postgres: test-destination
-	$(DOCKER_TEST) tests/test_postgres_http.py
+sleep:
+	sleep $(SLEEP)
 
-test-tcp: test-destination
-	$(DOCKER_TEST) tests/test_tcp_http.py
-
-test-zpipline: test-destination
-	$(DOCKER_TEST) tests/test_zpipline_base.py
-
-test-destination:
-	$(DOCKER_TEST) tests/test_destination.py
+nap:
+	sleep $(NAP)
