@@ -1,7 +1,8 @@
+import json
 import os
 import pytest
 
-from ..fixtures import cli_runner, get_input_file_path
+from ..fixtures import cli_runner, get_output
 from agent.pipeline import cli as pipeline_cli, load_object as load_pipeline
 from agent.source import cli as source_cli, Source, TYPE_DIRECTORY
 from agent.streamsets_api_client import api_client
@@ -50,3 +51,18 @@ class TestDirectory(TestPipelineBase):
     def test_output_exists(self, cli_runner, name=None):
         pytest.skip()
 
+    def test_create_source_with_file(self, cli_runner, file_name):
+        super().test_create_source_with_file(cli_runner, file_name)
+
+    def test_create_with_file(self, cli_runner, file_name):
+        super().test_create_with_file(cli_runner, file_name)
+
+    def test_start(self, cli_runner, name):
+        super().test_start(cli_runner, name)
+
+    def test_stop(self, cli_runner, name):
+        super().test_stop(cli_runner, name)
+
+    def test_watermark(self):
+        schema_id = '111111-22222-3333-4444'
+        assert get_output(f'{schema_id}_watermark.json') == {'watermark': '1512889200', 'schemaId': schema_id}

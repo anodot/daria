@@ -29,7 +29,7 @@ def monitoring_api_mock():
 @app.route('/api/v1/metrics/watermark', methods=['POST'])
 def watermark_mock():
     data = request.json
-    with open(os.path.join(OUTPUT_DIR, data['schemaId'] + '_watermark.json'), 'a+') as f:
+    with open(os.path.join(OUTPUT_DIR, data['schemaId'] + '_watermark.json'), 'w') as f:
         json.dump(data, f)
     return json.dumps({'errors': []})
 

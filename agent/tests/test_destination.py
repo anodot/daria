@@ -21,7 +21,6 @@ def test_destination(cli_runner):
     result = cli_runner.invoke(agent_cli.destination, input='toke\n\ny\nhttp://squid:3128\n\n\n')
     assert result.exit_code == 0
     assert HttpDestination.exists()
-    time.sleep(WAITING_TIME)
     assert api_client.get_pipeline_status('Monitoring')['status'] == 'RUNNING'
 
 
@@ -31,7 +30,6 @@ def test_edit_destination(cli_runner):
     curr_dest = HttpDestination().load()
     assert result.exit_code == 0
     assert curr_dest['host_id'] == prev_dest['host_id']
-    time.sleep(WAITING_TIME)
     assert api_client.get_pipeline_status('Monitoring')['status'] == 'RUNNING'
 
 
