@@ -84,7 +84,7 @@ class BaseConfigHandler(ABC):
             dt_format = self.client_config['timestamp']['format']
             return f"time:dateTimeToMilliseconds(time:extractDateFromString({value}, '{dt_format}'))/1000"
         elif self.client_config['timestamp']['type'] == 'datetime':
-            return "time:dateTimeToMilliseconds({value})/1000"
+            return f"time:dateTimeToMilliseconds({value})/1000"
         elif self.client_config['timestamp']['type'] == 'unix_ms':
             return f"{value}/1000"
         return value
