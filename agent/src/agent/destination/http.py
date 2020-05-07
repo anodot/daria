@@ -66,7 +66,7 @@ class HttpDestination:
     def update_url(self, token: str):
         self.config['token'] = token
         self.config[self.CONFIG_RESOURCE_URL] = urllib.parse.urljoin(
-            ANODOT_API_URL, f'api/v1/metrics?token={self.config["token"]}&protocol=protocol20')
+            ANODOT_API_URL, f'api/v1/metrics?token={self.config["token"]}&protocol={self.PROTOCOL_20}')
         self.config[self.CONFIG_MONITORING_URL] = urllib.parse.urljoin(ANODOT_API_URL, f'api/v1/agents?token={self.config["token"]}')
 
     def save(self):

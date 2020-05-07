@@ -32,8 +32,6 @@ def prompt_destination(dest: HttpDestination):
     token = click.prompt('Anodot api data collection token', type=click.STRING)
     dest.update_url(token)
 
-    dest.api_key = click.prompt('Anodot api key', type=click.STRING, default='')
-
     use_proxy = click.confirm('Use proxy for connecting to Anodot?')
     if use_proxy:
         uri = click.prompt('Proxy uri', type=click.STRING, default=dest.get_proxy_url())
@@ -44,6 +42,7 @@ def prompt_destination(dest: HttpDestination):
         dest.set_proxy(use_proxy)
 
     dest.validate()
+    dest.api_key = click.prompt('Anodot api key', type=click.STRING, default='')
 
 
 @click.command()
