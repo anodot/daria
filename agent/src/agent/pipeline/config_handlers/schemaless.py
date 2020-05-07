@@ -54,14 +54,10 @@ state['metrics'] = {{}}
             self.set_preconditions(stage)
             self.check_dimensions(stage)
 
-    def get_measurement_names(self) -> list:
-        measurement_names = []
-        for key in self.client_config['values'].keys():
-            if key in self.client_config['measurement_names']:
-                measurement_names.append(self.get_property_mapping(self.client_config['measurement_names'][key]))
-            else:
-                measurement_names.append(key)
-        return measurement_names
+    def get_measurement_name(self, key):
+        if key in self.client_config['measurement_names']:
+            return self.get_property_mapping(self.client_config['measurement_names'][key])
+        return key
 
     def check_dimensions(self, stage):
         for conf in stage['configuration']:
@@ -101,7 +97,7 @@ state['metrics'] = {{}}
                     dimensions_names=dimensions_names,
                     values=str(list([self.get_property_mapping(value) for value in self.client_config['values'].keys()])),
                     target_types=str(list([self.get_property_mapping(value) for value in self.client_config['values'].values()])),
-                    measurement_names=str(list(self.get_measurement_names())),
+                    measurement_names=str(list([self.get_measurement_name(key) for key in self.client_config['values'].keys()])),
                     count_records=int(self.client_config.get('count_records', False)),
                     count_records_measurement_name=str(
                         self.client_config.get('count_records_measurement_name', 'count')),

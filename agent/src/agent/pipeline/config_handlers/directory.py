@@ -15,8 +15,13 @@ class DirectoryConfigHandler(SchemalessConfigHandler):
     def get_schema_id(self):
         measurements = {}
         for name, target_type in self.pipeline.config['values'].items():
-            measurements[self.replace_chars(self.get_property_mapping(name))] = {
+            measurements[self.replace_chars(self.get_measurement_name(name))] = {
                 'aggregation': 'sum' if target_type == 'counter' else 'average',
+                'countBy': 'none'
+            }
+        if self.pipeline.config.get('count_records_measurement_name'):
+            measurements[self.replace_chars(self.pipeline.config.get('count_records_measurement_name'))] = {
+                'aggregation': 'sum',
                 'countBy': 'none'
             }
         schema = {
