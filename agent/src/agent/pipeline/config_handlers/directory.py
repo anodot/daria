@@ -39,7 +39,7 @@ class DirectoryConfigHandler(SchemalessConfigHandler):
         if self.pipeline.config.get('schema'):
             if {key: val for key, val in self.pipeline.config['schema'].items() if key not in ['id']} == schema:
                 return self.pipeline.config['schema']['id']
-            api_client.delete_schema(self.pipeline.config['schema_id'])
+            api_client.delete_schema(self.pipeline.config['schema']['id'])
 
         self.pipeline.config.update(api_client.create_schema(schema))
         return self.pipeline.config['schema']['id']
