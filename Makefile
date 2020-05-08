@@ -14,6 +14,10 @@ all: build-all sleep test-all
 ##-------------
 all-dev: clean-docker-volumes build-all-dev sleep test-all-dev
 
+run-dev:
+	docker-compose -f $(DOCKER_COMPOSE_DEV) up -d
+	docker exec -i anodot-agent python setup.py develop
+
 ##-----------------------
 ## TEST SEPARATE SOURCES
 ##-----------------------

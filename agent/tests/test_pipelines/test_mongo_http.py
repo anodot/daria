@@ -1,5 +1,3 @@
-import json
-import os
 import pytest
 
 from ..fixtures import cli_runner
@@ -41,29 +39,6 @@ class TestMongo(TestPipelineBase):
         'test_source_delete': [{'name': 'test_mongo'}, {'name': 'test_mongo_1'}],
         'test_output_exists': [{'name': 'test_timestamp_id', 'pipeline_type': 'mongo'}]
     }
-
-    def test_source_create(self, cli_runner):
-        result = cli_runner.invoke(source_cli.create,
-                                   input="""mongo\ntest_mongo\nmongodb://mongo:27017\nroot\nroot\nadmin\ntest\nadtech\n\n2015-01-02 00:00:00\n\n\n\n""")
-        assert result.exit_code == 0
-        assert os.path.isfile(os.path.join(Source.DIR, 'test_mongo.json'))
-
-    def test_source_edit(self, cli_runner):
-        result = cli_runner.invoke(source_cli.edit, ['test_mongo'], input="""\n\n\n\n\n\n\n2015-01-01 00:00:00\n\n\n\n""")
-        with open(os.path.join(Source.DIR, 'test_mongo.json'), 'r') as f:
-            source_dict = json.load(f)
-            assert source_dict['config']['configBean.initialOffset'] == '2015-01-01 00:00:00'
-        assert result.exit_code == 0
-
-    def test_create(self, cli_runner, name, options, value, timestamp, timestamp_type, properties):
-        result = cli_runner.invoke(pipeline_cli.create, options,
-                                   input=f"""test_mongo\n{name}\n\nclicks\n{value}\n{timestamp}\n{timestamp_type}\nver Country\nExchange optional_dim\n{properties}\n\n\n""")
-        assert result.exit_code == 0
-        assert api_client.get_pipeline(name)
-
-    def test_edit(self, cli_runner, options, value):
-        result = cli_runner.invoke(pipeline_cli.edit, options, input=f"\n\n{value}\n\n\n\n\n\n\n\n\n")
-        assert result.exit_code == 0
 
     def test_info(self, cli_runner, name=None):
         pytest.skip()
