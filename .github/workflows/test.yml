@@ -16,14 +16,8 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
-      - name: Get streamsets stages
-        run: curl -L https://github.com/anodot/anodot-sdc-stage/releases/download/v1.0/anodot-1.0.tar.gz -o sdc.tar.gz && tar xvfz sdc.tar.gz -C streamsets/lib
+      - name: Increase vm memory
+        run: sudo sysctl -w vm.max_map_count=262144
 
-      - name: Build
-        run: sudo sysctl -w vm.max_map_count=262144 && docker-compose up -d --build
-        
-      - name: Prepare env
-        run: sleep 60 && ./setup_tests.sh
-        
-      - name: Test
-        run: docker exec -i anodot-agent pytest -x 
+      - name: Build and test
+        run: make all

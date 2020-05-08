@@ -14,21 +14,15 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
-    - name: Get streamsets stages
-      run: curl -L https://github.com/anodot/anodot-sdc-stage/releases/download/v1.0.1/anodot-1.0.1.tar.gz -o sdc.tar.gz && tar xvfz sdc.tar.gz -C streamsets/lib
+    - name: Increase vm memory
+      run: sudo sysctl -w vm.max_map_count=262144
 
-    - name: Build
-      run: sudo sysctl -w vm.max_map_count=262144 && docker-compose build --build-arg GIT_SHA1=$(git describe --dirty --always)
+    - name: Build and test
+      run: make all
 
-    - name: Prepare env
-      run: docker-compose up -d && sleep 60 && ./setup_tests.sh
-    
     - name: Check version
-      run: VERSION=${GITHUB_REF/refs\/tags\//} && ver=$(docker exec -i anodot-agent agent -v | grep version) && if [ ${ver#*:} != $VERSION ]; then exit 1; fi 
+      run: VERSION=${GITHUB_REF/refs\/tags\//} && ver=$(docker exec -i anodot-agent agent -v | grep version) && if [ ${ver#*:} != $VERSION ]; then exit 1; fi
 
-    - name: Test
-      run: sleep 10 && docker exec -i anodot-agent pytest -x 
-      
     - name: Tag latest
       run: docker image tag daria_agent:latest anodot/daria:latest && docker image tag daria_dc:latest anodot/streamsets:latest
       
