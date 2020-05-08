@@ -31,7 +31,7 @@ services:
       STREAMSETS_PASSWORD: 'admin'
       STREAMSETS_URL: 'http://dc:18630'
       LOG_FILE_PATH: '/var/log/agent.log'
-      ANODOT_API_URL: 'http://54.196.112.3'
+      ANODOT_API_URL: 'http://dummy_destination'
       SDC_DATA_PATH: '/sdc-data'
       ENV_PROD: 'false'
 #      VALIDATION_ENABLED: 'false'
