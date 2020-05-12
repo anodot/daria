@@ -7,14 +7,23 @@ DOCKER_TEST_DEV = $(DOCKER_TEST) -vv
 ##------------
 ## RELEASE
 ##------------
-all: build-all sleep test-all
+build-all: get-streamsets-stages
+	docker-compose build --build-arg GIT_SHA1=$(git describe --dirty --always)
+	docker-compose up -d
+
+test-all: setup-elastic setup-kafka
+	$(DOCKER_TEST)
 
 ##-------------
 ## DEVELOPMENT
 ##-------------
 all-dev: clean-docker-volumes build-all-dev sleep test-all-dev
 
-run-dev:
+setup-all: clean-docker-volumes run-all-dev sleep setup-elastic setup-kafka
+
+setup-all-build: clean-docker-volumes build-all-dev sleep setup-elastic setup-kafka
+
+run-all-dev: clean-docker-volumes
 	docker-compose -f $(DOCKER_COMPOSE_DEV) up -d
 	docker exec -i anodot-agent python setup.py develop
 
@@ -51,13 +60,6 @@ test-destination: prepare-source nap
 ##--------------------
 ## DEPENDENCY TARGETS
 ##--------------------
-build-all: get-streamsets-stages
-	docker-compose build --build-arg GIT_SHA1=$(git describe --dirty --always)
-	docker-compose up -d
-
-test-all: setup-elastic setup-kafka
-	$(DOCKER_TEST)
-
 build-all-dev:
 	docker-compose -f $(DOCKER_COMPOSE_DEV) up -d --build
 	docker exec -i anodot-agent python setup.py develop
