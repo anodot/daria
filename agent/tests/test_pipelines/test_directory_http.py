@@ -1,10 +1,7 @@
-import os
 import pytest
 
-from ..fixtures import cli_runner, get_input_file_path
-from agent.pipeline import cli as pipeline_cli, load_object as load_pipeline
-from agent.source import cli as source_cli, Source, TYPE_DIRECTORY
-from agent.streamsets_api_client import api_client
+from ..fixtures import cli_runner
+from agent.source import TYPE_DIRECTORY
 from .test_zpipeline_base import TestPipelineBase, pytest_generate_tests
 
 
@@ -12,6 +9,8 @@ class TestDirectory(TestPipelineBase):
 
     __test__ = True
     params = {
+        'test_create_source_with_file': [{'file_name': 'directory_sources'}],
+        'test_create_with_file': [{'file_name': 'directory_pipelines'}],
         'test_start': [{'name': 'test_dir_log'}, {'name': 'test_dir_json'}, {'name': 'test_dir_csv'}],
         'test_stop': [{'name': 'test_dir_log'}, {'name': 'test_dir_json'}, {'name': 'test_dir_csv'}],
         'test_reset': [{'name': 'test_dir_log'}],

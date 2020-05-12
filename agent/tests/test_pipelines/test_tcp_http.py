@@ -1,9 +1,9 @@
 import pytest
 import socket
 
-from ..fixtures import cli_runner, get_input_file_path
+from ..fixtures import cli_runner
 from agent.pipeline import cli as pipeline_cli, load_object as load_pipeline
-from agent.source import cli as source_cli, Source, TYPE_SPLUNK
+from agent.source import TYPE_SPLUNK
 from agent.streamsets_api_client import api_client
 from .test_zpipeline_base import TestPipelineBase, pytest_generate_tests
 

@@ -11,10 +11,6 @@ class TestInflux(TestPipelineBase):
     __test__ = True
 
     params = {
-        'test_source_create': [{'name': 'test_influx', 'offset': '10/03/2019 12:53'},
-                               {'name': 'test_influx_offset', 'offset': '19/03/2019 12:53'}],
-        'test_create': [{'name': 'test_basic', 'source': 'test_influx'},
-                        {'name': 'test_basic_offset', 'source': 'test_influx_offset'}],
         'test_create_with_file': [{'file_name': 'influx_pipelines'}],
         'test_create_source_with_file': [{'file_name': 'influx_sources'}],
         'test_edit_with_file': [{'file_name': 'influx_pipelines_edit'}],

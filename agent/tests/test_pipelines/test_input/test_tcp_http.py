@@ -2,12 +2,14 @@ import os
 
 from ...fixtures import cli_runner, get_input_file_path
 from agent.pipeline import cli as pipeline_cli
-from agent.source import cli as source_cli, Source, TYPE_SPLUNK
+from agent.source import cli as source_cli, Source
 from agent.streamsets_api_client import api_client
 from ..test_zpipeline_base import pytest_generate_tests
 
 
 class TestTCPServer:
+
+    params = {}
 
     def test_source_create(self, cli_runner):
         grok_file_path = get_input_file_path('grok_patterns.txt')
