@@ -67,5 +67,4 @@ class AnodotApiClient:
 
     @endpoint
     def delete_schema(self, schema_id):
-        return self.session.delete(self.build_url('stream-schemas', schema_id), params={'deleteOrigin': 'false'},
-                                   proxies=self.proxies)
+        return self.session.delete(self.build_url('stream-schemas', schema_id), proxies=self.proxies)
