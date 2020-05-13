@@ -19,7 +19,7 @@ class KafkaSource(SchemalessSource):
     OFFSET_LATEST = 'LATEST'
     OFFSET_TIMESTAMP = 'TIMESTAMP'
 
-    TEST_PIPELINE_NAME = 'test_kafka_kjeu4334'
+    TEST_PIPELINE_FILENAME = 'test_kafka_kjeu4334'
 
     VALIDATION_SCHEMA_FILE_NAME = 'kafka.json'
 

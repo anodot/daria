@@ -6,7 +6,7 @@ COPY . .
 ADD .bashrc /root/.bashrc
 
 VOLUME /usr/src/app/data
-RUN apt update && apt install -y vim netcat curl
+RUN apt update && apt install -y vim nano netcat curl
 
 ENV DATA_DIR="/data" STREAMSETS_USERNAME="admin" STREAMSETS_PASSWORD="admin" STREAMSETS_URL="http://localhost:18630" \
     LOG_FILE_PATH="/var/log/agent.log" ANODOT_API_URL="http://api.anodot.com" SDC_DATA_PATH="/sdc-data" ENV_PROD='true' \
