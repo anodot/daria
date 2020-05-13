@@ -2,7 +2,7 @@ NAP = 15
 SLEEP = 60
 DOCKER_COMPOSE_DEV = docker-compose-dev.yml
 DOCKER_TEST = docker exec -i anodot-agent pytest -x
-DOCKER_TEST_PARALLEL = $(DOCKER_TEST) -n auto --dist=loadfile
+DOCKER_TEST_PARALLEL = $(DOCKER_TEST) -n 6 --dist=loadfile
 DOCKER_TEST_DEV = $(DOCKER_TEST) -vv
 DOCKER_TEST_DEV_PARALLEL = $(DOCKER_TEST_PARALLEL) -vv
 
