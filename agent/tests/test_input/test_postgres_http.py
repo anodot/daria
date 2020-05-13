@@ -10,14 +10,14 @@ from ..test_pipelines.test_zpipeline_base import pytest_generate_tests
 class TestPostgreSQL:
 
     params = {
-        'test_source_create': [{'name': 'test_jdbc', 'type': 'postgres', 'conn': 'postgresql://postgres:5432/test'}],
+        'test_source_create': [{'name': 'test_jdbc_postgres', 'type': 'postgres', 'conn': 'postgresql://postgres:5432/test'}],
         'test_create': [
-            {'name': 'test_postgres', 'source': 'test_jdbc', 'timestamp_type': '', 'timestamp_name': 'timestamp_unix'},
-            {'name': 'test_postgres_timestamp_ms', 'source': 'test_jdbc', 'timestamp_type': 'unix_ms',
+            {'name': 'test_postgres', 'source': 'test_jdbc_postgres', 'timestamp_type': '', 'timestamp_name': 'timestamp_unix'},
+            {'name': 'test_postgres_timestamp_ms', 'source': 'test_jdbc_postgres', 'timestamp_type': 'unix_ms',
              'timestamp_name': 'timestamp_unix_ms'},
-            {'name': 'test_postgres_timestamp_datetime', 'source': 'test_jdbc', 'timestamp_type': 'datetime',
+            {'name': 'test_postgres_timestamp_datetime', 'source': 'test_jdbc_postgres', 'timestamp_type': 'datetime',
              'timestamp_name': 'timestamp_datetime'}],
-        'test_create_advanced': [{'name': 'test_postgres_advanced', 'source': 'test_jdbc'}],
+        'test_create_advanced': [{'name': 'test_postgres_advanced', 'source': 'test_jdbc_postgres'}],
     }
 
     def test_source_create(self, cli_runner, name, type, conn):

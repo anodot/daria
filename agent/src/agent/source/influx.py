@@ -44,7 +44,7 @@ def has_write_access(client):
 
 class InfluxSource(Source):
     VALIDATION_SCHEMA_FILE_NAME = 'influx.json'
-    TEST_PIPELINE_NAME = 'test_influx_qwe093'
+    TEST_PIPELINE_FILENAME = 'test_influx_qwe093'
 
     @if_validation_enabled
     def validate_connection(self):

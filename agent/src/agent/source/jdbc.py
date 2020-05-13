@@ -8,7 +8,7 @@ from urllib.parse import urlparse, urlunparse
 
 class JDBCSource(Source):
     VALIDATION_SCHEMA_FILE_NAME = 'jdbc.json'
-    TEST_PIPELINE_NAME = 'test_jdbc_pdsf4587'
+    TEST_PIPELINE_FILENAME = 'test_jdbc_pdsf4587'
 
     def get_connection_url(self):
         conn_info = urlparse(self.config['connection_string'])

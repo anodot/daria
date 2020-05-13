@@ -16,7 +16,7 @@ logger = get_logger(__name__)
 
 class Source(ABC):
     VALIDATION_SCHEMA_FILE_NAME = ''
-    TEST_PIPELINE_NAME = ''
+    TEST_PIPELINE_FILENAME = ''
     DIR = os.path.join(DATA_DIR, 'sources')
     MAX_SAMPLE_RECORDS = 3
 
@@ -25,6 +25,7 @@ class Source(ABC):
         self.type = source_type
         self.name = name
         self.sample_data = None
+        self.test_pipeline_name = self.TEST_PIPELINE_FILENAME + self.name
 
     def to_dict(self) -> dict:
         return {'name': self.name, 'type': self.type, 'config': self.config}
@@ -90,27 +91,27 @@ class Source(ABC):
 
     def create_test_pipeline(self):
         with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'test_pipelines',
-                               self.TEST_PIPELINE_NAME + '.json'), 'r') as f:
+                               self.TEST_PIPELINE_FILENAME + '.json'), 'r') as f:
             data = json.load(f)
 
         pipeline_config = data['pipelineConfig']
-        new_pipeline = api_client.create_pipeline(self.TEST_PIPELINE_NAME)
+        new_pipeline = api_client.create_pipeline(self.test_pipeline_name)
         self.update_test_source_config(pipeline_config['stages'][0])
 
         pipeline_config['uuid'] = new_pipeline['uuid']
-        api_client.update_pipeline(self.TEST_PIPELINE_NAME, pipeline_config)
+        api_client.update_pipeline(self.test_pipeline_name, pipeline_config)
 
     def get_preview_data(self):
         self.create_test_pipeline()
 
         try:
-            preview = api_client.create_preview(self.TEST_PIPELINE_NAME)
-            preview_data = api_client.wait_for_preview(self.TEST_PIPELINE_NAME, preview['previewerId'])
+            preview = api_client.create_preview(self.test_pipeline_name)
+            preview_data = api_client.wait_for_preview(self.test_pipeline_name, preview['previewerId'])
         except (Exception, KeyboardInterrupt) as e:
             logger.exception(str(e))
-            api_client.delete_pipeline(self.TEST_PIPELINE_NAME)
+            api_client.delete_pipeline(self.test_pipeline_name)
             raise
-        api_client.delete_pipeline(self.TEST_PIPELINE_NAME)
+        api_client.delete_pipeline(self.test_pipeline_name)
 
         return preview_data
 
@@ -118,12 +119,12 @@ class Source(ABC):
     def validate_connection(self):
         self.create_test_pipeline()
         try:
-            validate_status = api_client.validate(self.TEST_PIPELINE_NAME)
-            api_client.wait_for_preview(self.TEST_PIPELINE_NAME, validate_status['previewerId'])
+            validate_status = api_client.validate(self.test_pipeline_name)
+            api_client.wait_for_preview(self.test_pipeline_name, validate_status['previewerId'])
         except Exception:
-            api_client.delete_pipeline(self.TEST_PIPELINE_NAME)
+            api_client.delete_pipeline(self.test_pipeline_name)
             raise
-        api_client.delete_pipeline(self.TEST_PIPELINE_NAME)
+        api_client.delete_pipeline(self.test_pipeline_name)
         print('Successfully connected to the source')
         return True
 

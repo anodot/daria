@@ -25,6 +25,7 @@ class TestPipelineBase(object):
     def test_create_source_with_file(self, cli_runner, file_name):
         input_file_path = get_input_file_path(file_name + '.json')
         result = cli_runner.invoke(source_cli.create, ['-f', input_file_path])
+        print(result.output)
         assert result.exit_code == 0
         with open(input_file_path, 'r') as f:
             sources = json.load(f)
@@ -34,6 +35,7 @@ class TestPipelineBase(object):
     def test_create_with_file(self, cli_runner, file_name):
         input_file_path = get_input_file_path(file_name + '.json')
         result = cli_runner.invoke(pipeline_cli.create, ['-f', input_file_path])
+        print(result.output)
         assert result.exit_code == 0
         with open(input_file_path, 'r') as f:
             pipelines = json.load(f)

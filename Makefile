@@ -1,9 +1,8 @@
 NAP = 15
 SLEEP = 60
-THREADS = 4
 DOCKER_COMPOSE_DEV = docker-compose-dev.yml
 DOCKER_TEST = docker exec -i anodot-agent pytest -x
-DOCKER_TEST_PARALLEL = $(DOCKER_TEST) -n=$(THREADS) --dist=loadfile
+DOCKER_TEST_PARALLEL = $(DOCKER_TEST) -n auto --dist=loadfile
 DOCKER_TEST_DEV = $(DOCKER_TEST) -vv
 DOCKER_TEST_DEV_PARALLEL = $(DOCKER_TEST_PARALLEL) -vv
 
@@ -79,7 +78,7 @@ test-destination:
 	$(DOCKER_TEST) tests/test_destination.py
 
 test-input:
-	$(DOCKER_TEST) tests/test_input/
+	$(DOCKER_TEST_PARALLEL) tests/test_input/
 
 test-pipelines:
 	$(DOCKER_TEST_PARALLEL) tests/test_pipelines/
@@ -102,7 +101,7 @@ test-dev-destination:
 	$(DOCKER_TEST_DEV) tests/test_destination.py
 
 test-dev-input:
-	$(DOCKER_TEST_DEV) tests/test_input/
+	$(DOCKER_TEST_DEV_PARALLEL) tests/test_input/
 
 test-dev-pipelines:
 	$(DOCKER_TEST_DEV_PARALLEL) tests/test_pipelines/
