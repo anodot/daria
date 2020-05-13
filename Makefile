@@ -54,7 +54,7 @@ build-all: get-streamsets-stages
 test-all: setup-elastic setup-kafka
 	$(DOCKER_TEST)
 
-build-all-dev:
+build-all-dev: get-streamsets-stages
 	docker-compose -f $(DOCKER_COMPOSE_DEV) up -d --build
 	docker exec -i anodot-agent python setup.py develop
 
@@ -100,6 +100,7 @@ build-postgres:
 	docker-compose up -d postgres
 
 get-streamsets-stages:
+	rm -rf streamsets/lib/anodot
 	curl -L https://github.com/anodot/anodot-sdc-stage/releases/download/v1.0.1/anodot-1.0.1.tar.gz -o /tmp/sdc.tar.gz && tar xvfz /tmp/sdc.tar.gz -C streamsets/lib
 
 sleep:
