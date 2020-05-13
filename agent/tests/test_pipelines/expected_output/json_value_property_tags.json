@@ -105,7 +105,6 @@
       "what": "clicks",
       "target_type": "gauge",
       "ver": "1",
-      "Country": "",
       "Exchange": "DoubleClick"
     },
     "tags": {

@@ -106,7 +106,6 @@
     "measurements": {"clicks": 7427.7744, "count_records": 1},
     "dimensions": {
       "ver": "1",
-      "Country": "",
       "Exchange": "DoubleClick"
     },
     "tags": {
