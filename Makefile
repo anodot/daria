@@ -23,7 +23,7 @@ all-dev: clean-docker-volumes build-all-dev sleep test-all-dev
 
 build-all-dev: build-dev sleep setup-elastic setup-kafka
 
-run-all-dev: clean-docker-volumes sleep setup-kafka setup-elastic
+run-all-dev: clean-docker-volumes run-dev sleep setup-kafka setup-elastic
 
 test-all-dev: test-dev-destination test-dev-input test-dev-pipelines
 
@@ -79,7 +79,7 @@ test-destination:
 	$(DOCKER_TEST) tests/test_destination.py
 
 test-input:
-	$(DOCKER_TEST_PARALLEL) tests/test_input/
+	$(DOCKER_TEST) tests/test_input/
 
 test-pipelines:
 	$(DOCKER_TEST_PARALLEL) tests/test_pipelines/
@@ -102,7 +102,7 @@ test-dev-destination:
 	$(DOCKER_TEST_DEV) tests/test_destination.py
 
 test-dev-input:
-	$(DOCKER_TEST_DEV_PARALLEL) tests/test_input/
+	$(DOCKER_TEST_DEV) tests/test_input/
 
 test-dev-pipelines:
 	$(DOCKER_TEST_DEV_PARALLEL) tests/test_pipelines/
