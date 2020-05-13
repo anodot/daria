@@ -1,8 +1,9 @@
 NAP = 15
 SLEEP = 60
+THREADS = 4
 DOCKER_COMPOSE_DEV = docker-compose-dev.yml
 DOCKER_TEST = docker exec -i anodot-agent pytest -x
-DOCKER_TEST_PARALLEL = $(DOCKER_TEST) -n 6 --dist=loadfile
+DOCKER_TEST_PARALLEL = $(DOCKER_TEST) -n $(THREADS) --dist=loadfile
 DOCKER_TEST_DEV = $(DOCKER_TEST) -vv
 DOCKER_TEST_DEV_PARALLEL = $(DOCKER_TEST_PARALLEL) -vv
 
@@ -13,7 +14,7 @@ all: build-all test-all
 
 build-all: get-streamsets-stages build sleep setup-elastic setup-kafka
 
-test-all: test-destination test-input test-pipelines
+test-all: test-destination test-condition-parser test-input test-pipelines
 
 ##-------------
 ## DEVELOPMENT
@@ -24,7 +25,7 @@ build-all-dev: build-dev sleep setup-elastic setup-kafka
 
 run-all-dev: clean-docker-volumes run-dev sleep setup-kafka setup-elastic
 
-test-all-dev: test-dev-destination test-dev-input test-dev-pipelines
+test-all-dev: test-dev-destination test-dev-condition-parser test-dev-input test-dev-pipelines
 
 ##-----------------------
 ## TEST SEPARATE SOURCES
@@ -77,6 +78,9 @@ build:
 test-destination:
 	$(DOCKER_TEST) tests/test_destination.py
 
+test-condition-parser:
+	$(DOCKER_TEST) tests/test_condition_parser.py
+
 test-input:
 	$(DOCKER_TEST_PARALLEL) tests/test_input/
 
@@ -99,6 +103,9 @@ run-dev:
 
 test-dev-destination:
 	$(DOCKER_TEST_DEV) tests/test_destination.py
+
+test-dev-condition-parser:
+	$(DOCKER_TEST_DEV) tests/test_condition_parser.py
 
 test-dev-input:
 	$(DOCKER_TEST_DEV_PARALLEL) tests/test_input/
