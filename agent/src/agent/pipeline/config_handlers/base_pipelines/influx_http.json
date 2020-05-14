@@ -1126,7 +1126,7 @@
         "value" : [ ]
       }, {
         "name" : "stageRecordPreconditions",
-        "value" : [ "${record:type('/host') == 'STRING' or record:type('/host') == NULL}", "${record:type('/host2') == 'STRING' or record:type('/host2') == NULL}", "${record:type('/usage_active') != 'STRING'}", "${record:type('/usage_idle') != 'STRING'}" ]
+        "value" : [ ]
       } ],
       "uiInfo" : {
         "description" : "",
