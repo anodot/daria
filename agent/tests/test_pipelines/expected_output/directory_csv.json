@@ -14,7 +14,7 @@
       "pipeline_id": ["pipeline_id"],
       "pipeline_type": ["type"]
     },
-    "timestamp": 1512867600
+    "timestamp": 1512864000
   },
   {
     "schemaId": "111111-22222-3333-4444",
@@ -31,7 +31,7 @@
       "pipeline_id": ["pipeline_id"],
       "pipeline_type": ["type"]
     },
-    "timestamp": 1512871200
+    "timestamp": 1512864000
   },
   {
     "schemaId": "111111-22222-3333-4444",
@@ -48,7 +48,7 @@
       "pipeline_id": ["pipeline_id"],
       "pipeline_type": ["type"]
     },
-    "timestamp": 1512874800
+    "timestamp": 1512864000
   },
   {
     "schemaId": "111111-22222-3333-4444",
@@ -65,7 +65,7 @@
       "pipeline_id": ["pipeline_id"],
       "pipeline_type": ["type"]
     },
-    "timestamp": 1512878400
+    "timestamp": 1512864000
   },
   {
     "schemaId": "111111-22222-3333-4444",
@@ -82,7 +82,7 @@
       "pipeline_id": ["pipeline_id"],
       "pipeline_type": ["type"]
     },
-    "timestamp": 1512882000
+    "timestamp": 1512864000
   },
   {
     "schemaId": "111111-22222-3333-4444",
@@ -99,7 +99,7 @@
       "pipeline_id": ["pipeline_id"],
       "pipeline_type": ["type"]
     },
-    "timestamp": 1512885600
+    "timestamp": 1512864000
   },
   {
     "schemaId": "111111-22222-3333-4444",
@@ -115,6 +115,6 @@
       "pipeline_id": ["pipeline_id"],
       "pipeline_type": ["type"]
     },
-    "timestamp": 1512889200
+    "timestamp": 1512864000
   }
 ]

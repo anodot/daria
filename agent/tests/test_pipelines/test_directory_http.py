@@ -11,11 +11,11 @@ class TestDirectory(TestPipelineBase):
     params = {
         'test_create_source_with_file': [{'file_name': 'directory_sources'}],
         'test_create_with_file': [{'file_name': 'directory_pipelines'}],
-        'test_start': [{'name': 'test_dir_log'}, {'name': 'test_dir_json'}, {'name': 'test_dir_csv'}],
+        'test_start': [{'name': 'test_dir_csv'}, {'name': 'test_dir_log'}, {'name': 'test_dir_json'}],
         'test_stop': [{'name': 'test_dir_log'}, {'name': 'test_dir_json'}, {'name': 'test_dir_csv'}],
         'test_reset': [{'name': 'test_dir_log'}],
         'test_output': [
-            {'name': 'test_dir_csv', 'output': 'json_value_property_count_30.json', 'pipeline_type': TYPE_DIRECTORY},
+            {'name': 'test_dir_csv', 'output': 'directory_csv.json', 'pipeline_type': TYPE_DIRECTORY},
             {'name': 'test_dir_json', 'output': 'json_value_property_30.json', 'pipeline_type': TYPE_DIRECTORY},
             {'name': 'test_dir_log', 'output': 'log_30.json', 'pipeline_type': TYPE_DIRECTORY}
         ],
