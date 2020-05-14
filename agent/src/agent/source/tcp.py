@@ -7,7 +7,7 @@ from .schemaless import SchemalessSource
 
 class TCPSource(SchemalessSource):
     CONFIG_PORTS = 'conf.ports'
-    TEST_PIPELINE_NAME = 'test_tcp_server_jksrj322'
+    TEST_PIPELINE_FILENAME = 'test_tcp_server_jksrj322'
 
     VALIDATION_SCHEMA_FILE_NAME = 'tcp_server.json'
 

@@ -9,7 +9,7 @@ class DirectorySource(SchemalessSource):
     CONFIG_FILE_PATTERN = 'conf.filePattern'
     CONFIG_SPOOLING_PERIOD = 'conf.spoolingPeriod'
 
-    TEST_PIPELINE_NAME = 'test_directory_ksdjfjk21'
+    TEST_PIPELINE_FILENAME = 'test_directory_ksdjfjk21'
 
     VALIDATION_SCHEMA_FILE_NAME = 'directory.json'
 

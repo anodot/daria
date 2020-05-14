@@ -1,4 +1,3 @@
-import os
 import pytest
 
 from ..fixtures import cli_runner
@@ -12,10 +11,6 @@ class TestInflux(TestPipelineBase):
     __test__ = True
 
     params = {
-        'test_source_create': [{'name': 'test_influx', 'offset': '10/03/2019 12:53'},
-                               {'name': 'test_influx_offset', 'offset': '19/03/2019 12:53'}],
-        'test_create': [{'name': 'test_basic', 'source': 'test_influx'},
-                        {'name': 'test_basic_offset', 'source': 'test_influx_offset'}],
         'test_create_with_file': [{'file_name': 'influx_pipelines'}],
         'test_create_source_with_file': [{'file_name': 'influx_sources'}],
         'test_edit_with_file': [{'file_name': 'influx_pipelines_edit'}],
@@ -34,23 +29,6 @@ class TestInflux(TestPipelineBase):
                                  {'name': 'test_influx_adv'}],
         'test_source_delete': [{'name': 'test_influx'}, {'name': 'test_influx_offset'}, {'name': 'test_influx_1'}],
     }
-
-    def test_source_create(self, cli_runner, name, offset):
-        result = cli_runner.invoke(source_cli.create, input=f"influx\n{name}\nhttp://influx:8086\nadmin\nadmin\ntest\n{offset}\n\n")
-        assert result.exit_code == 0
-        assert os.path.isfile(os.path.join(Source.DIR, f'{name}.json'))
-
-    def test_create(self, cli_runner, name, source):
-        result = cli_runner.invoke(pipeline_cli.create,
-                                   input=f'{source}\n{name}\ncpu_test\n\nusage_active usage_idle\n\ncp<u zone host\n\n7000000\n\n\n')
-        assert result.exit_code == 0
-        assert api_client.get_pipeline(name)
-
-    def test_create_adv(self, cli_runner):
-        result = cli_runner.invoke(pipeline_cli.create, ['-a'],
-                                   input="test_influx\ntest_influx_adv\ncpu_test\n\nusage_active usage_idle\n\ncp<u zone host\n \nkey:val key1:val1\nkey:val key1:val1\n\n7000000\nzone = 'GEO'\n\n\n")
-        assert result.exit_code == 0
-        assert api_client.get_pipeline('test_influx_adv')
 
     def test_info(self, cli_runner, name=None):
         pytest.skip()

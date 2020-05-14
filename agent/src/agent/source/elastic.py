@@ -17,7 +17,7 @@ class ElasticSource(Source):
     CONFIG_BATCH_SIZE = 'conf.maxBatchSize'
     CONFIG_HTTP_URIS = 'conf.httpUris'
 
-    TEST_PIPELINE_NAME = 'test_elastic_asdfs3245'
+    TEST_PIPELINE_FILENAME = 'test_elastic_asdfs3245'
 
     VALIDATION_SCHEMA_FILE_NAME = 'elastic.json'
 

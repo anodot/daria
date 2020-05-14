@@ -29,7 +29,7 @@ class MongoSource(Source):
     AUTH_TYPE_USER_PASS = 'USER_PASS'
 
     VALIDATION_SCHEMA_FILE_NAME = 'mongo.json'
-    TEST_PIPELINE_NAME = 'test_mongo_rand847'
+    TEST_PIPELINE_FILENAME = 'test_mongo_rand847'
 
     offset_types = [OFFSET_TYPE_OBJECT_ID, OFFSET_TYPE_STRING, OFFSET_TYPE_DATE]
 
