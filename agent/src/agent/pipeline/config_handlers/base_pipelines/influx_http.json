@@ -1077,7 +1077,7 @@
           "outputLane" : "StreamSelectorOutputLane1558022315966",
           "predicate" : "${record:exists('/last_timestamp')}"
         }, {
-          "outputLane" : "send_to_anodot_stream_lane",
+          "outputLane" : "destination_stream_lane",
           "predicate" : "default"
         } ]
       }, {
@@ -1098,7 +1098,7 @@
         "stageType" : "PROCESSOR"
       },
       "inputLanes" : [ "process_responseOutputLane15518645609860" ],
-      "outputLanes" : [ "StreamSelectorOutputLane1566544574508", "StreamSelectorOutputLane1558022315966", "send_to_anodot_stream_lane" ],
+      "outputLanes" : [ "StreamSelectorOutputLane1566544574508", "StreamSelectorOutputLane1558022315966", "destination_stream_lane" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -1135,12 +1135,12 @@
         "yPos" : 243.54216766357422,
         "stageType" : "PROCESSOR"
       },
-      "inputLanes" : [ "send_to_anodot_stream_lane" ],
-      "outputLanes" : [ "send_to_anodot_OutputLane" ],
+      "inputLanes" : [ "destination_stream_lane" ],
+      "outputLanes" : [ "destination_OutputLane" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
-      "instanceName" : "send_to_anodot",
+      "instanceName" : "destination",
       "library" : "anodot",
       "stageName" : "anodot_stage_destination_AnodotDTarget",
       "stageVersion" : "1",
@@ -1429,12 +1429,12 @@
       } ],
       "uiInfo" : {
         "description" : "",
-        "label" : "Send Recods To Anodot",
+        "label" : "Send Records To Anodot",
         "xPos" : 789.0634155273438,
         "yPos" : 245.06565856933594,
         "stageType" : "TARGET"
       },
-      "inputLanes" : [ "send_to_anodot_OutputLane" ],
+      "inputLanes" : [ "destination_OutputLane" ],
       "outputLanes" : [ ],
       "eventLanes" : [ ],
       "services" : [ ]
