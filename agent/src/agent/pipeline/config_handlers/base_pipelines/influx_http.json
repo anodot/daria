@@ -171,7 +171,7 @@
     },
     "fragments" : [ ],
     "stages" : [ {
-      "instanceName" : "HTTPClient_04",
+      "instanceName" : "get_last_agent_timestamp",
       "library" : "streamsets-datacollector-basic-lib",
       "stageName" : "com_streamsets_pipeline_stage_origin_http_HttpClientDSource",
       "stageVersion" : "14",
@@ -603,17 +603,17 @@
       } ],
       "uiInfo" : {
         "description" : "",
-        "label" : "HTTP Client 3",
+        "label" : "Get Last Timesamp",
         "xPos" : -222.93658447265625,
         "yPos" : 144,
         "stageType" : "SOURCE"
       },
       "inputLanes" : [ ],
-      "outputLanes" : [ "HTTPClient_04OutputLane15614572650570" ],
+      "outputLanes" : [ "get_last_agent_timestampOutputLane15614572650570" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
-      "instanceName" : "HTTPClient_03",
+      "instanceName" : "get_interval_records",
       "library" : "streamsets-datacollector-basic-lib",
       "stageName" : "com_streamsets_pipeline_stage_processor_http_HttpDProcessor",
       "stageVersion" : "11",
@@ -1016,17 +1016,17 @@
       } ],
       "uiInfo" : {
         "description" : "",
-        "label" : "HTTP Client 3",
+        "label" : "Get Interval Records",
         "xPos" : -4.93658447265625,
         "yPos" : 160,
         "stageType" : "PROCESSOR"
       },
-      "inputLanes" : [ "HTTPClient_04OutputLane15614572650570" ],
-      "outputLanes" : [ "HTTPClient_03OutputLane15580084532730" ],
+      "inputLanes" : [ "get_last_agent_timestampOutputLane15614572650570" ],
+      "outputLanes" : [ "get_interval_recordsOutputLane15580084532730" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
-      "instanceName" : "JavaScriptEvaluator_01",
+      "instanceName" : "process_response",
       "library" : "streamsets-datacollector-basic-lib",
       "stageName" : "com_streamsets_pipeline_stage_processor_javascript_JavaScriptDProcessor",
       "stageVersion" : "2",
@@ -1054,30 +1054,30 @@
       } ],
       "uiInfo" : {
         "description" : "",
-        "label" : "JavaScript Evaluator 1",
+        "label" : "Process Response",
         "xPos" : 202.23468017578125,
         "yPos" : 139.8766098022461,
         "stageType" : "PROCESSOR"
       },
-      "inputLanes" : [ "HTTPClient_03OutputLane15580084532730" ],
-      "outputLanes" : [ "JavaScriptEvaluator_01OutputLane15518645609860" ],
+      "inputLanes" : [ "get_interval_recordsOutputLane15580084532730" ],
+      "outputLanes" : [ "process_responseOutputLane15518645609860" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
-      "instanceName" : "StreamSelector_01",
+      "instanceName" : "StreamSelector",
       "library" : "streamsets-datacollector-basic-lib",
       "stageName" : "com_streamsets_pipeline_stage_processor_selector_SelectorDProcessor",
       "stageVersion" : "1",
       "configuration" : [ {
         "name" : "lanePredicates",
         "value" : [ {
-          "outputLane" : "StreamSelector_01OutputLane1566544574508",
+          "outputLane" : "StreamSelectorOutputLane1566544574508",
           "predicate" : "${record:exists('/no_data')}"
         }, {
-          "outputLane" : "StreamSelector_01OutputLane1558022315966",
+          "outputLane" : "StreamSelectorOutputLane1558022315966",
           "predicate" : "${record:exists('/last_timestamp')}"
         }, {
-          "outputLane" : "destination_stream_lane",
+          "outputLane" : "send_to_anodot_stream_lane",
           "predicate" : "default"
         } ]
       }, {
@@ -1097,12 +1097,12 @@
         "yPos" : 151,
         "stageType" : "PROCESSOR"
       },
-      "inputLanes" : [ "JavaScriptEvaluator_01OutputLane15518645609860" ],
-      "outputLanes" : [ "StreamSelector_01OutputLane1566544574508", "StreamSelector_01OutputLane1558022315966", "destination_stream_lane" ],
+      "inputLanes" : [ "process_responseOutputLane15518645609860" ],
+      "outputLanes" : [ "StreamSelectorOutputLane1566544574508", "StreamSelectorOutputLane1558022315966", "send_to_anodot_stream_lane" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
-      "instanceName" : "JavaScriptEvaluator_02",
+      "instanceName" : "transform_records",
       "library" : "streamsets-datacollector-basic-lib",
       "stageName" : "com_streamsets_pipeline_stage_processor_javascript_JavaScriptDProcessor",
       "stageVersion" : "2",
@@ -1130,17 +1130,17 @@
       } ],
       "uiInfo" : {
         "description" : "",
-        "label" : "JavaScript Evaluator 2",
+        "label" : "Transform Records",
         "xPos" : 573.6939392089844,
         "yPos" : 243.54216766357422,
         "stageType" : "PROCESSOR"
       },
-      "inputLanes" : [ "destination_stream_lane" ],
-      "outputLanes" : [ "destination_OutputLane" ],
+      "inputLanes" : [ "send_to_anodot_stream_lane" ],
+      "outputLanes" : [ "send_to_anodot_OutputLane" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
-      "instanceName" : "destination",
+      "instanceName" : "send_to_anodot",
       "library" : "anodot",
       "stageName" : "anodot_stage_destination_AnodotDTarget",
       "stageVersion" : "1",
@@ -1429,17 +1429,17 @@
       } ],
       "uiInfo" : {
         "description" : "",
-        "label" : "HTTP Client 1",
+        "label" : "Send Recods To Anodot",
         "xPos" : 789.0634155273438,
         "yPos" : 245.06565856933594,
         "stageType" : "TARGET"
       },
-      "inputLanes" : [ "destination_OutputLane" ],
+      "inputLanes" : [ "send_to_anodot_OutputLane" ],
       "outputLanes" : [ ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
-      "instanceName" : "HTTPClient_06",
+      "instanceName" : "get_next_record_timestamp",
       "library" : "streamsets-datacollector-basic-lib",
       "stageName" : "com_streamsets_pipeline_stage_processor_http_HttpDProcessor",
       "stageVersion" : "11",
@@ -1842,17 +1842,17 @@
       } ],
       "uiInfo" : {
         "description" : "",
-        "label" : "HTTP Client 5",
+        "label" : "Get Next Record Timestamp",
         "xPos" : 613.0634155273438,
         "yPos" : 12,
         "stageType" : "PROCESSOR"
       },
-      "inputLanes" : [ "StreamSelector_01OutputLane1566544574508" ],
-      "outputLanes" : [ "HTTPClient_06OutputLane15665446011070" ],
+      "inputLanes" : [ "StreamSelectorOutputLane1566544574508" ],
+      "outputLanes" : [ "get_next_record_timestampOutputLane15665446011070" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
-      "instanceName" : "ExpressionEvaluator_02",
+      "instanceName" : "process_next_record_timestamp",
       "library" : "streamsets-datacollector-basic-lib",
       "stageName" : "com_streamsets_pipeline_stage_processor_expression_ExpressionDProcessor",
       "stageVersion" : "2",
@@ -1882,17 +1882,17 @@
       } ],
       "uiInfo" : {
         "description" : "",
-        "label" : "Expression Evaluator 1",
+        "label" : "Process Next Record Timestamp",
         "xPos" : 855.0634155273438,
         "yPos" : 12,
         "stageType" : "PROCESSOR"
       },
-      "inputLanes" : [ "HTTPClient_06OutputLane15665446011070" ],
-      "outputLanes" : [ "ExpressionEvaluator_02OutputLane15665447662130" ],
+      "inputLanes" : [ "get_next_record_timestampOutputLane15665446011070" ],
+      "outputLanes" : [ "process_next_record_timestampOutputLane15665447662130" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
-      "instanceName" : "HTTPClient_05",
+      "instanceName" : "save_next_record_timestamp",
       "library" : "streamsets-datacollector-basic-lib",
       "stageName" : "com_streamsets_pipeline_stage_destination_http_HttpClientDTarget",
       "stageVersion" : "4",
@@ -2181,12 +2181,12 @@
       } ],
       "uiInfo" : {
         "description" : "",
-        "label" : "HTTP Client 4",
+        "label" : "Save Next Record Timestamp",
         "xPos" : 1081.0634155273438,
         "yPos" : 150,
         "stageType" : "TARGET"
       },
-      "inputLanes" : [ "StreamSelector_01OutputLane1558022315966", "ExpressionEvaluator_02OutputLane15665447662130" ],
+      "inputLanes" : [ "StreamSelectorOutputLane1558022315966", "process_next_record_timestampOutputLane15665447662130" ],
       "outputLanes" : [ ],
       "eventLanes" : [ ],
       "services" : [ ]

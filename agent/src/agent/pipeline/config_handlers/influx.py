@@ -120,15 +120,6 @@ state['TAGS'] = {tags}
                             tags=json.dumps(self.get_tags())
                         )
 
-                    if conf['name'] == 'stageRecordPreconditions':
-                        conf['value'] = []
-                        for d in required:
-                            conf['value'].append(f"${{record:type('/{d}') == 'STRING'}}")
-                        for d in optional:
-                            conf['value'].append(f"${{record:type('/{d}') == 'STRING' or record:type('/{d}') == NULL}}")
-                        for v in [self.replace_illegal_chars(s) for s in self.client_config['value']['values']]:
-                            conf['value'].append(f"${{record:type('/{v}') != 'STRING'}}")
-
         self.update_destination_config()
 
     def update_source_configs(self):
