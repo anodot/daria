@@ -24,6 +24,7 @@ class KafkaConfigHandler(SchemalessConfigHandler):
                 self.client_config['measurement_names'] = {
                     self.client_config['value']['value']: self.client_config['measurement_name']}
 
-        self.update_stages()
+        for stage in self.config['stages']:
+            self.update_stages(stage)
 
         self.update_destination_config()

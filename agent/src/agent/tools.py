@@ -66,7 +66,15 @@ def sdc_record_map_to_dict(record: dict):
     if 'value' in record:
         if type(record['value']) is list:
             if record['type'] == 'LIST_MAP':
-                return {item['sqpath'].replace('/', ''): sdc_record_map_to_dict(item) for item in record['value']}
+                d = {}
+                for item in record['value']:
+                    key = item['sqpath'].replace('/', '')
+                    try:
+                        key = int(key)
+                    except ValueError:
+                        pass
+                    d[key] = sdc_record_map_to_dict(item)
+                return d
             return {key: sdc_record_map_to_dict(item) for key, item in enumerate(record['value'])}
         elif type(record['value']) is dict:
             return {key: sdc_record_map_to_dict(item) for key, item in record['value'].items()}

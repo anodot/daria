@@ -31,33 +31,33 @@ state['metrics'] = {{}}
     target_types = ['counter', 'gauge']
 
     def override_stages(self):
+        self.update_pipeline_config()
         self.update_source_configs()
 
-        self.update_stages()
+        for stage in self.config['stages']:
+            self.update_stages(stage)
 
         self.update_destination_config()
 
-    def update_stages(self):
-        for stage in self.config['stages']:
-            if stage['instanceName'] == 'JavaScriptEvaluator_01':
-                self.set_variables_js(stage)
+    def update_pipeline_config(self):
+        pass
 
-            if stage['instanceName'] == 'ExpressionEvaluator_02':
-                self.set_constant_properties(stage)
-                self.convert_timestamp_to_unix(stage)
+    def update_stages(self, stage):
+        if stage['instanceName'] == 'JavaScriptEvaluator_01':
+            self.set_variables_js(stage)
 
-            if stage['instanceName'] == 'ExpressionEvaluator_03':
-                self.set_preconditions(stage)
-                self.check_dimensions(stage)
+        if stage['instanceName'] == 'ExpressionEvaluator_02':
+            self.set_constant_properties(stage)
+            self.convert_timestamp_to_unix(stage)
 
-    def get_measurement_names(self) -> list:
-        measurement_names = []
-        for key in self.client_config['values'].keys():
-            if key in self.client_config['measurement_names']:
-                measurement_names.append(self.get_property_mapping(self.client_config['measurement_names'][key]))
-            else:
-                measurement_names.append(key)
-        return measurement_names
+        if stage['instanceName'] == 'ExpressionEvaluator_03':
+            self.set_preconditions(stage)
+            self.check_dimensions(stage)
+
+    def get_measurement_name(self, key):
+        if key in self.client_config['measurement_names']:
+            return self.get_property_mapping(self.client_config['measurement_names'][key])
+        return key
 
     def check_dimensions(self, stage):
         for conf in stage['configuration']:
@@ -97,7 +97,7 @@ state['metrics'] = {{}}
                     dimensions_names=dimensions_names,
                     values=str(list([self.get_property_mapping(value) for value in self.client_config['values'].keys()])),
                     target_types=str(list([self.get_property_mapping(value) for value in self.client_config['values'].values()])),
-                    measurement_names=str(list(self.get_measurement_names())),
+                    measurement_names=str(list([self.get_measurement_name(key) for key in self.client_config['values'].keys()])),
                     count_records=int(self.client_config.get('count_records', False)),
                     count_records_measurement_name=str(
                         self.client_config.get('count_records_measurement_name', 'count')),

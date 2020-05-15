@@ -1,9 +1,8 @@
 [
   {
-    "value": 6784.6904,
-    "properties": {
-      "what": "clicks",
-      "target_type": "gauge",
+    "schemaId": "111111-22222-3333-4444",
+    "measurements": {"clicks": 6784.6904, "count_records": 1},
+    "dimensions": {
       "ver": "1",
       "Country": "USA",
       "Exchange": "DoubleClick"
@@ -15,13 +14,12 @@
       "pipeline_id": ["pipeline_id"],
       "pipeline_type": ["type"]
     },
-    "timestamp": 1512867600
+    "timestamp": 1512864000
   },
   {
-    "value": 6839.0,
-    "properties": {
-      "what": "clicks",
-      "target_type": "gauge",
+    "schemaId": "111111-22222-3333-4444",
+    "measurements": {"clicks": 6839.0, "count_records": 1},
+    "dimensions": {
       "ver": "1",
       "Country": "USA",
       "Exchange": "DoubleClick"
@@ -33,13 +31,12 @@
       "pipeline_id": ["pipeline_id"],
       "pipeline_type": ["type"]
     },
-    "timestamp": 1512871200
+    "timestamp": 1512864000
   },
   {
-    "value": 6.9099935E18,
-    "properties": {
-      "what": "clicks",
-      "target_type": "gauge",
+    "schemaId": "111111-22222-3333-4444",
+    "measurements": {"clicks": 6.909993404034934e+18, "count_records": 1},
+    "dimensions": {
       "ver": "1",
       "Country": "USA",
       "Exchange": "DoubleClick"
@@ -51,13 +48,12 @@
       "pipeline_id": ["pipeline_id"],
       "pipeline_type": ["type"]
     },
-    "timestamp": 1512874800
+    "timestamp": 1512864000
   },
   {
-    "value": 7158.9727,
-    "properties": {
-      "what": "clicks",
-      "target_type": "gauge",
+    "schemaId": "111111-22222-3333-4444",
+    "measurements": {"clicks": 7158.972598273843, "count_records": 1},
+    "dimensions": {
       "ver": "1",
       "Country": "USA",
       "Exchange": "DoubleClick"
@@ -69,13 +65,12 @@
       "pipeline_id": ["pipeline_id"],
       "pipeline_type": ["type"]
     },
-    "timestamp": 1512878400
+    "timestamp": 1512864000
   },
   {
-    "value": 7235.7573,
-    "properties": {
-      "what": "clicks",
-      "target_type": "gauge",
+    "schemaId": "111111-22222-3333-4444",
+    "measurements": {"clicks": 7235.7574, "count_records": 1},
+    "dimensions": {
       "ver": "1",
       "Country": "USA",
       "Exchange": "DoubleClick"
@@ -87,13 +82,29 @@
       "pipeline_id": ["pipeline_id"],
       "pipeline_type": ["type"]
     },
-    "timestamp": 1512882000
+    "timestamp": 1512864000
   },
   {
-    "value": 7427.7744,
-    "properties": {
-      "what": "clicks",
-      "target_type": "gauge",
+    "schemaId": "111111-22222-3333-4444",
+    "measurements": {"count_records": 1},
+    "dimensions": {
+      "ver": "1",
+      "Country": "USA",
+      "Exchange": "DoubleClick"
+    },
+    "tags": {
+      "source": ["anodot-agent"],
+      "source_host_id": ["ABCDEF"],
+      "source_host_name": ["agent"],
+      "pipeline_id": ["pipeline_id"],
+      "pipeline_type": ["type"]
+    },
+    "timestamp": 1512864000
+  },
+  {
+    "schemaId": "111111-22222-3333-4444",
+    "measurements": {"clicks": 7427.7744, "count_records": 1},
+    "dimensions": {
       "ver": "1",
       "Exchange": "DoubleClick"
     },
@@ -104,6 +115,6 @@
       "pipeline_id": ["pipeline_id"],
       "pipeline_type": ["type"]
     },
-    "timestamp": 1512889200
+    "timestamp": 1512864000
   }
 ]

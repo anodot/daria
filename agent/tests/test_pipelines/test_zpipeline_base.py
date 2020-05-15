@@ -69,10 +69,10 @@ class TestPipelineBase(object):
             for item in expected_output:
                 item['tags']['pipeline_id'] = [name]
                 item['tags']['pipeline_type'] = [pipeline_type]
-        assert get_output(name, pipeline_type) == expected_output
+        assert get_output(f'{name}_{pipeline_type}.json') == expected_output
 
     def test_output_exists(self, name, pipeline_type):
-        assert get_output(name, pipeline_type) is not None
+        assert get_output(f'{name}_{pipeline_type}.json') is not None
 
     def test_delete_pipeline(self, cli_runner, name):
         result = cli_runner.invoke(pipeline_cli.delete, [name])

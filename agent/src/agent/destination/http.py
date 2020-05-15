@@ -5,7 +5,8 @@ import urllib.parse
 import uuid
 import requests
 
-from agent.constants import ANODOT_API_URL, DATA_DIR, ENV_PROD
+from agent.anodot_api_client import AnodotApiClient
+from agent.constants import ANODOT_API_URL, DATA_DIR
 from urllib.parse import urlparse, urlunparse
 
 
@@ -22,12 +23,21 @@ class HttpDestination:
 
     CONFIG_MONITORING_URL = 'monitoring_url'
 
-    def __init__(self, host_id=None):
+    PROTOCOL_20 = 'anodot20'
+    PROTOCOL_30 = 'anodot30'
+
+    def __init__(self, host_id=None, api_key=None):
         self.config = {}
         self.host_id = host_id if host_id else self.generate_host_id()
+        self.api_key = api_key
 
     def to_dict(self) -> dict:
-        return {'config': self.config, 'type': self.TYPE, 'host_id': self.host_id}
+        return {
+            'config': self.config,
+            'type': self.TYPE,
+            'host_id': self.host_id,
+            'api_key': self.api_key
+        }
 
     @property
     def monitoring_url(self):
@@ -50,13 +60,15 @@ class HttpDestination:
 
         self.config = config['config']
         self.host_id = config['host_id']
+        self.api_key = config.get('api_key')
 
         return config
 
     def update_url(self, token: str):
+        self.config['token'] = token
         self.config[self.CONFIG_RESOURCE_URL] = urllib.parse.urljoin(
-            ANODOT_API_URL, f'api/v1/metrics?token={token}&protocol=anodot20')
-        self.config[self.CONFIG_MONITORING_URL] = urllib.parse.urljoin(ANODOT_API_URL, f'api/v1/agents?token={token}')
+            ANODOT_API_URL, f'api/v1/metrics?token={self.config["token"]}&protocol={self.PROTOCOL_20}')
+        self.config[self.CONFIG_MONITORING_URL] = urllib.parse.urljoin(ANODOT_API_URL, f'api/v1/agents?token={self.config["token"]}')
 
     def save(self):
         try:
@@ -87,7 +99,7 @@ class HttpDestination:
         return self.config.get(self.CONFIG_PROXY_PASSWORD)
 
     def get_proxy_configs(self) -> dict:
-        proxies = {}
+        proxies = dict()
         if self.config[self.CONFIG_PROXY_USE]:
             proxy_parsed = urlparse(self.get_proxy_url())
             netloc = proxy_parsed.netloc
@@ -97,9 +109,19 @@ class HttpDestination:
             proxies['https'] = proxies['http']
         return proxies
 
-    def validate(self) -> bool:
+    def validate_token(self) -> bool:
         result = requests.post(self.config[self.CONFIG_RESOURCE_URL], proxies=self.get_proxy_configs(), timeout=5)
         result.raise_for_status()
+        return True
+
+    def validate_api_key(self) -> bool:
+        if self.api_key:
+            AnodotApiClient(self.api_key, self.get_proxy_configs(), base_url=ANODOT_API_URL)
+        return True
+
+    def validate(self) -> bool:
+        self.validate_token()
+        self.validate_api_key()
         return True
 
 
