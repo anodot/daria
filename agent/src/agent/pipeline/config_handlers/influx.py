@@ -102,7 +102,7 @@ state['TAGS'] = {tags}
         optional = [self.replace_illegal_chars(d) for d in self.client_config['dimensions']['optional']]
 
         for stage in self.config['stages']:
-            if stage['instanceName'] == 'JavaScriptEvaluator_02':
+            if stage['instanceName'] == 'transform_records':
                 for conf in stage['configuration']:
                     if conf['name'] == 'stageRequiredFields':
                         conf['value'] = ['/' + d for d in required]
@@ -119,15 +119,6 @@ state['TAGS'] = {tags}
                             pipeline_id=self.pipeline.id,
                             tags=json.dumps(self.get_tags())
                         )
-
-                    if conf['name'] == 'stageRecordPreconditions':
-                        conf['value'] = []
-                        for d in required:
-                            conf['value'].append(f"${{record:type('/{d}') == 'STRING'}}")
-                        for d in optional:
-                            conf['value'].append(f"${{record:type('/{d}') == 'STRING' or record:type('/{d}') == NULL}}")
-                        for v in [self.replace_illegal_chars(s) for s in self.client_config['value']['values']]:
-                            conf['value'].append(f"${{record:type('/{v}') != 'STRING'}}")
 
         self.update_destination_config()
 
@@ -157,7 +148,7 @@ state['TAGS'] = {tags}
         where = f'AND+%28{quote_plus(where)}%29' if where else ''
 
         for stage in self.config['stages']:
-            if stage['instanceName'] == 'HTTPClient_03':
+            if stage['instanceName'] == 'get_interval_records':
                 query = f"/query?db={source_config['db']}&epoch=ms&q={self.QUERY_GET_DATA}".format(**{
                     'dimensions': columns,
                     'metric': self.client_config['measurement_name'],
@@ -167,16 +158,16 @@ state['TAGS'] = {tags}
                 })
                 self.update_http_stage(stage, self.client_config['source']['config'], urljoin(source_config['host'], query))
 
-            if stage['instanceName'] == 'HTTPClient_04':
+            if stage['instanceName'] == 'get_last_agent_timestamp':
                 get_timestamp_url = urljoin(write_config['host'],
                                             f"/query?db={write_config['db']}&epoch=ns&q={self.QUERY_GET_TIMESTAMP}")
                 self.update_http_stage(stage, write_config, get_timestamp_url)
 
-            if stage['instanceName'] == 'HTTPClient_05':
+            if stage['instanceName'] == 'save_next_record_timestamp':
                 self.update_http_stage(stage, write_config, urljoin(write_config['host'],
                                                       f"/write?db={write_config['db']}&precision=ns"))
 
-            if stage['instanceName'] == 'HTTPClient_06':
+            if stage['instanceName'] == 'get_next_record_timestamp':
                 query = f"/query?db={source_config['db']}&epoch=ns&q={self.QUERY_CHECK_DATA}".format(**{
                     'dimensions': columns,
                     'metric': self.client_config['measurement_name'],
