@@ -15,6 +15,7 @@ class PromptConfigSchemaless(PromptConfig):
         self.set_measurement_names()
         self.set_timestamp()
         self.set_dimensions()
+        self.set_consumer_group()
         self.set_static_properties()
         self.set_tags()
         self.filter()
@@ -71,6 +72,9 @@ class PromptConfigSchemaless(PromptConfig):
         if self.config['timestamp']['type'] == 'string':
             self.config['timestamp']['format'] = click.prompt('Timestamp format string', type=click.STRING,
                                                               default=self.config['timestamp'].get('format'))
+
+    def set_consumer_group(self):
+        self.config["conf.consumerGroup"] = self.prompt_property('Timestamp property name', "agent_" + self.pipeline.id)
 
     @infinite_retry
     def prompt_files(self):
