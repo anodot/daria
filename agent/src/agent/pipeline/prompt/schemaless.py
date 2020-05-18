@@ -74,7 +74,7 @@ class PromptConfigSchemaless(PromptConfig):
                                                               default=self.config['timestamp'].get('format'))
 
     def set_consumer_group(self):
-        self.config["conf.consumerGroup"] = self.prompt_property('Timestamp property name', "agent_" + self.pipeline.id)
+        self.config["conf.consumerGroup"] = self.prompt_property('Consumer group name', "agent_" + self.pipeline.id)
 
     @infinite_retry
     def prompt_files(self):
