@@ -117,6 +117,7 @@ prepare-source: clean-docker-volumes build-base-services
 
 clean-docker-volumes:
 	rm -rf sdc-data
+	rm -rf agent-data
 	docker-compose -f $(DOCKER_COMPOSE_DEV) down -v
 
 build-base-services:

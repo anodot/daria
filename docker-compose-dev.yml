@@ -41,7 +41,7 @@ services:
       - mongo
     volumes:
       - ./sdc-data:/sdc-data
-      - agent-data:/data
+      - ./agent-data:/data
       - dummy-destination-data:/output
       - ./agent:/usr/src/app
       - ./test-datasets:/home
