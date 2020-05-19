@@ -116,7 +116,8 @@ test-dev-pipelines:
 prepare-source: clean-docker-volumes build-base-services
 
 clean-docker-volumes:
-	docker-compose down -v
+	rm -rf sdc-data
+	docker-compose -f $(DOCKER_COMPOSE_DEV) down -v
 
 build-base-services:
 	docker-compose -f $(DOCKER_COMPOSE_DEV) up -d agent dc squid dummy_destination
