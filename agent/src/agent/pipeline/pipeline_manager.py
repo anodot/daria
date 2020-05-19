@@ -6,7 +6,8 @@ import time
 from .pipeline import Pipeline, PipelineException
 from . import prompt, config_handlers, load_client_data
 from .. import source
-from agent.constants import ERRORS_DIR, ENV_PROD
+from agent.anodot_api_client import AnodotApiClient
+from agent.constants import ERRORS_DIR, ENV_PROD, ANODOT_API_URL
 from agent.streamsets_api_client import api_client, StreamSetsApiClientException
 from agent.tools import print_json, sdc_record_map_to_dict, if_validation_enabled
 
@@ -78,7 +79,8 @@ def wait_for_sending_data(pipeline_id: str, tries: int = 5, initial_delay: int =
             raise PipelineException(f"Pipeline {pipeline_id} is has {stats['errors']} errors")
         delay = initial_delay ** i
         if i == tries:
-            raise PipelineException(f"Pipeline {pipeline_id} did not send any data. Received number of records - {stats['in']}")
+            raise PipelineException(
+                f"Pipeline {pipeline_id} did not send any data. Received number of records - {stats['in']}")
         print(f'Waiting for pipeline {pipeline_id} to send data. Check again after {delay} seconds...')
         time.sleep(delay)
 
@@ -169,6 +171,11 @@ class PipelineManager:
             raise PipelineException(str(e))
 
     def delete(self):
+        if 'schema' in self.pipeline.config:
+            anodot_api_client = AnodotApiClient(self.pipeline.destination.api_key,
+                                                self.pipeline.destination.get_proxy_configs(),
+                                                base_url=ANODOT_API_URL)
+            anodot_api_client.delete_schema(self.pipeline.config['schema']['id'])
         delete_pipeline(self.pipeline.id)
 
     def enable_destination_logs(self, enable):
