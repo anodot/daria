@@ -2,5 +2,7 @@
 venv/
 __pycache__/
 agent/build/
-agent/dist/
+dist/
 *.egg-info/
+agent.log
+agent/data/*

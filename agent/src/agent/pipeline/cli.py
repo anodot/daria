@@ -95,29 +95,20 @@ def prompt_pipeline_id():
 @click.option('-a', '--advanced', is_flag=True)
 @click.option('-f', '--file', type=click.File())
 def create(advanced, file):
-    """
-    Create pipeline
-    """
+    check_destination()
     sources = source.get_list()
-    if len(sources) == 0:
-        raise click.ClickException('No sources configs found. Use "agent source create"')
-
-    if not HttpDestination.exists():
-        raise click.ClickException('Destination is not configured. Use "agent destination"')
+    check_sources(sources)
 
     if file:
-        try:
-            create_multiple(file)
-        except (StreamSetsApiClientException, ValidationError) as e:
-            raise click.ClickException(str(e))
+        create_using_file(file)
         return
 
-    default_source = sources[0] if len(sources) == 1 else None
-    source_config_name = click.prompt('Choose source config', type=click.Choice(sources), default=default_source)
-
+    source_config_name = click.prompt('Choose source config', type=click.Choice(sources),
+                                      default=get_default_source(sources))
     pipeline_id = prompt_pipeline_id()
     pipeline_manager = PipelineManager(pipeline.create_object(pipeline_id, source_config_name))
     previous_config = get_previous_pipeline_config(pipeline_manager.pipeline.source.type)
+    # the rest of the data is prompted in the .prompt() call
     pipeline_manager.prompt(previous_config, advanced)
     pipeline_manager.create()
 
@@ -126,6 +117,27 @@ def create(advanced, file):
     if click.confirm('Would you like to see the result data preview?', default=True):
         pipeline_manager.show_preview()
         print('To change the config use `agent pipeline edit`')
+
+
+def create_using_file(file):
+    try:
+        create_multiple(file)
+    except (StreamSetsApiClientException, ValidationError) as e:
+        raise click.ClickException(str(e))
+
+
+def check_sources(sources):
+    if len(sources) == 0:
+        raise click.ClickException('No sources configs found. Use "agent source create"')
+
+
+def check_destination():
+    if not HttpDestination.exists():
+        raise click.ClickException('Destination is not configured. Use "agent destination"')
+
+
+def get_default_source(sources):
+    return sources[0] if len(sources) == 1 else None
 
 
 def get_pipelines_from_file(file):
