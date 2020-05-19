@@ -8,6 +8,10 @@ class KafkaConfigHandler(SchemalessConfigHandler):
     PIPELINE_BASE_CONFIG_NAME = 'kafka_http.json'
     target_types = ['counter', 'gauge', 'running_counter']
 
+    def update_source_configs(self):
+        self.client_config['source']['config']['conf.consumerGroup'] = self.client_config['conf.consumerGroup']
+        super().update_source_configs()
+
     def override_stages(self):
         self.update_source_configs()
 
