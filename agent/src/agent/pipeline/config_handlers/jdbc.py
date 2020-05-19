@@ -126,3 +126,8 @@ state['COUNT_RECORDS'] = {count_records}
                 source_config['initialOffset'] = str(res[0]) if res else '0'
         except SQLAlchemyError as e:
             raise ConfigHandlerException(str(e))
+
+    def get_default_tags(self) -> dict:
+        default_tags = super().get_default_tags()
+        default_tags['table_name'] = [self.pipeline.config['table']]
+        return default_tags
