@@ -6,3 +6,4 @@ dist/
 *.egg-info/
 agent.log
 agent/data/*
+agent/version.py

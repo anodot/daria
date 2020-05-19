@@ -301,6 +301,10 @@ def delete(pipeline_id, file):
 
     for idx in pipeline_ids:
         try:
+            pipeline_manager = PipelineManager(pipeline.load_object(idx))
+            pipeline_manager.delete()
+            click.echo(f'Pipeline {idx} deleted')
+        except pipeline.PipelineNotExistsException:
             delete_pipeline(idx)
             click.echo(f'Pipeline {idx} deleted')
         except (StreamSetsApiClientException, pipeline.PipelineException) as e:

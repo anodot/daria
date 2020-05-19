@@ -97,13 +97,18 @@ class BaseConfigHandler(ABC):
             conf['value'][0]['expression'] = '${' + self.get_convert_timestamp_to_unix_expression(value) + '}'
             return
 
-    def get_tags(self) -> dict:
+    def get_default_tags(self) -> dict:
         return {
             'source': ['anodot-agent'],
             'source_host_id': [self.client_config['destination']['host_id']],
             'source_host_name': [HOSTNAME],
             'pipeline_id': [self.pipeline.id],
-            'pipeline_type': [self.get_pipeline_type()],
+            'pipeline_type': [self.get_pipeline_type()]
+        }
+
+    def get_tags(self) -> dict:
+        return {
+            **self.get_default_tags(),
             **self.client_config.get('tags', {})
         }
 
