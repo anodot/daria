@@ -129,5 +129,5 @@ state['COUNT_RECORDS'] = {count_records}
 
     def get_default_tags(self) -> dict:
         default_tags = super().get_default_tags()
-        default_tags['table_name'] = self.pipeline.config['table']
+        default_tags['table_name'] = [self.pipeline.config['table']]
         return default_tags
