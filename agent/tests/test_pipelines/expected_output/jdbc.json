@@ -2,7 +2,6 @@
   {
     "timestamp": 1512867600,
     "properties": {
-      "table_name": "test",
       "adsize": "Sma_ll",
       "country": "USA",
       "what": "clicks",
@@ -13,14 +12,14 @@
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
       "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"]
+      "pipeline_type": ["type"],
+      "table_name": ["test"]
     },
     "value": 6784.69
   },
   {
     "timestamp": 1512867600,
     "properties": {
-      "table_name": "test",
       "adsize": "Sma_ll",
       "country": "USA",
       "what": "impressions",
@@ -31,14 +30,14 @@
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
       "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"]
+      "pipeline_type": ["type"],
+      "table_name": ["test"]
     },
     "value": 123.0
   },
   {
     "timestamp": 1512871200,
     "properties": {
-      "table_name": "test",
       "adsize": "Sma_ll",
       "country": "USA",
       "what": "clicks",
@@ -49,14 +48,14 @@
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
       "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"]
+      "pipeline_type": ["type"],
+      "table_name": ["test"]
     },
     "value": 6839.0
   },
   {
     "timestamp": 1512871200,
     "properties": {
-      "table_name": "test",
       "adsize": "Sma_ll",
       "country": "USA",
       "what": "impressions",
@@ -67,14 +66,14 @@
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
       "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"]
+      "pipeline_type": ["type"],
+      "table_name": ["test"]
     },
     "value": 22.0
   },
   {
     "timestamp": 1512874800,
     "properties": {
-      "table_name": "test",
       "adsize": "Sma_ll",
       "country": "USA",
       "what": "clicks",
@@ -85,14 +84,14 @@
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
       "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"]
+      "pipeline_type": ["type"],
+      "table_name": ["test"]
     },
     "value": 690999
   },
   {
     "timestamp": 1512874800,
     "properties": {
-      "table_name": "test",
       "adsize": "Sma_ll",
       "country": "USA",
       "what": "impressions",
@@ -103,14 +102,14 @@
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
       "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"]
+      "pipeline_type": ["type"],
+      "table_name": ["test"]
     },
     "value": 15.0
   },
   {
     "timestamp": 1512878400,
     "properties": {
-      "table_name": "test",
       "adsize": "Sma_ll",
       "country": "USA",
       "what": "clicks",
@@ -121,14 +120,14 @@
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
       "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"]
+      "pipeline_type": ["type"],
+      "table_name": ["test"]
     },
     "value": 7158.97
   },
   {
     "timestamp": 1512878400,
     "properties": {
-      "table_name": "test",
       "adsize": "Sma_ll",
       "country": "USA",
       "what": "impressions",
@@ -139,14 +138,14 @@
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
       "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"]
+      "pipeline_type": ["type"],
+      "table_name": ["test"]
     },
     "value": 3.0
   },
   {
     "timestamp": 1512885600,
     "properties": {
-      "table_name": "test",
       "adsize": "Sma_ll",
       "country": "USA",
       "what": "clicks",
@@ -157,14 +156,14 @@
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
       "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"]
+      "pipeline_type": ["type"],
+      "table_name": ["test"]
     },
     "value": null
   },
   {
     "timestamp": 1512885600,
     "properties": {
-      "table_name": "test",
       "adsize": "Sma_ll",
       "country": "USA",
       "what": "impressions",
@@ -175,14 +174,14 @@
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
       "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"]
+      "pipeline_type": ["type"],
+      "table_name": ["test"]
     },
     "value": 4.0
   },
   {
     "timestamp": 1512889200,
     "properties": {
-      "table_name": "test",
       "adsize": "Sma_ll",
       "what": "clicks",
       "target_type": "gauge"
@@ -192,14 +191,14 @@
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
       "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"]
+      "pipeline_type": ["type"],
+      "table_name": ["test"]
     },
     "value": 7427.77
   },
   {
     "timestamp": 1512889200,
     "properties": {
-      "table_name": "test",
       "adsize": "Sma_ll",
       "what": "impressions",
       "target_type": "gauge"
@@ -209,7 +208,8 @@
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
       "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"]
+      "pipeline_type": ["type"],
+      "table_name": ["test"]
     },
     "value": 0.0
   }

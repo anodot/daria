@@ -4,3 +4,4 @@ __pycache__/
 agent/build/
 agent/dist/
 *.egg-info/
+agent/version.py
