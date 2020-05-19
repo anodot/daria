@@ -8,7 +8,8 @@ services:
       - "9999:9999"
     restart: on-failure
     volumes:
-      - sdc-data:/data
+#      - sdc-data:/data
+      - ./sdc-data:/data
       - ./certs:/home/certs
       - ./test-datasets/test-directory-collector:/home/test-directory-collector
 #    environment:
@@ -156,6 +157,8 @@ services:
     build: dummy_destination
     volumes:
       - dummy-destination-data:/app/log
+    ports:
+      - 8080:80
 
 
 volumes:
