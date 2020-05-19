@@ -8,7 +8,7 @@ services:
       - "9999:9999"
     restart: on-failure
     volumes:
-      - sdc-data:/data
+      - ./sdc-data:/data
       - ./certs:/home/certs
       - ./test-datasets/test-directory-collector:/home/test-directory-collector
 #    environment:
@@ -40,8 +40,8 @@ services:
       - dc
       - mongo
     volumes:
-      - sdc-data:/sdc-data
-      - agent-data:/data
+      - ./sdc-data:/sdc-data
+      - ./agent-data:/data
       - dummy-destination-data:/output
       - ./agent:/usr/src/app
       - ./test-datasets:/home
@@ -156,6 +156,8 @@ services:
     build: dummy_destination
     volumes:
       - dummy-destination-data:/app/log
+    ports:
+      - 8080:80
 
 
 volumes:
