@@ -10,7 +10,7 @@ class KafkaConfigHandler(SchemalessConfigHandler):
     target_types = ['counter', 'gauge', 'running_counter']
 
     def update_source_configs(self):
-        self.client_config['source']['config'][KafkaSource.CONFIG_CONSUMER_GROUP] =\
+        self.pipeline.source.config[KafkaSource.CONFIG_CONSUMER_GROUP] =\
             self.client_config[KafkaSource.CONFIG_CONSUMER_GROUP]
         super().update_source_configs()
 

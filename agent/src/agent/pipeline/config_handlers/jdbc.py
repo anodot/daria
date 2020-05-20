@@ -60,7 +60,7 @@ state['COUNT_RECORDS'] = {count_records}
 
     def update_source_configs(self):
 
-        source_config = self.client_config['source']['config']
+        source_config = self.pipeline.source.config
 
         condition = self.client_config.get('condition')
         condition = f'AND ({condition})' if condition else ''
@@ -85,7 +85,7 @@ state['COUNT_RECORDS'] = {count_records}
     def set_initial_offset(self, client_config=None):
         if client_config:
             self.client_config = client_config
-        source_config = self.client_config['source']['config']
+        source_config = self.pipeline.source.config
 
         timestamp = datetime.now() - timedelta(days=int(self.client_config.get('initial_offset', 3)))
         if self.client_config['timestamp']['type'] == 'datetime':
@@ -102,7 +102,7 @@ state['COUNT_RECORDS'] = {count_records}
         self.get_initial_offset_value_from_db()
 
     def get_initial_offset_value_from_db(self):
-        source_config = self.client_config['source']['config']
+        source_config = self.pipeline.source.config
         conn_info = urlparse(source_config['connection_string'])
         if source_config.get('hikariConfigBean.useCredentials'):
             userpass = source_config['hikariConfigBean.username'] + ':' + source_config['hikariConfigBean.password']
@@ -110,7 +110,7 @@ state['COUNT_RECORDS'] = {count_records}
         else:
             netloc = conn_info.netloc
 
-        scheme = conn_info.scheme + '+mysqlconnector' if self.client_config['source']['type'] == 'mysql' else conn_info.scheme
+        scheme = conn_info.scheme + '+mysqlconnector' if self.pipeline.source.type == 'mysql' else conn_info.scheme
         try:
             eng = create_engine(urlunparse((scheme, netloc, conn_info.path, '', '', '')))
             with eng.connect() as con:

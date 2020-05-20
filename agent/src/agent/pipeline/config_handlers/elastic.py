@@ -10,6 +10,6 @@ class ElasticConfigHandler(SchemalessConfigHandler):
 
     def override_stages(self):
         with open(self.pipeline.config['query_file'], 'r') as f:
-            self.client_config['source']['config'][self.pipeline.source.CONFIG_QUERY] = f.read()
+            self.pipeline.source.config[self.pipeline.source.CONFIG_QUERY] = f.read()
 
         super().override_stages()

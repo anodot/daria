@@ -36,7 +36,7 @@ class BaseConfigHandler(ABC):
         ...
 
     def set_labels(self):
-        self.config['metadata']['labels'] = [self.client_config['source']['type'],
+        self.config['metadata']['labels'] = [self.pipeline.source.type,
                                              self.client_config['destination']['type']]
 
     def override_base_config(self, client_config, new_uuid=None, new_pipeline_title=None, base_config=None):
@@ -60,11 +60,11 @@ class BaseConfigHandler(ABC):
         return self.config
 
     def update_source_configs(self):
-        if 'library' in self.client_config['source']['config']:
-            self.config['stages'][0]['library'] = self.client_config['source']['config']['library']
+        if 'library' in self.pipeline.source.config:
+            self.config['stages'][0]['library'] = self.pipeline.source.config['library']
         for conf in self.config['stages'][0]['configuration']:
-            if conf['name'] in self.client_config['source']['config']:
-                conf['value'] = self.client_config['source']['config'][conf['name']]
+            if conf['name'] in self.pipeline.source.config:
+                conf['value'] = self.pipeline.source.config[conf['name']]
 
     def get_dimensions(self):
         dimensions = self.client_config['dimensions']['required']
@@ -131,7 +131,7 @@ class BaseConfigHandler(ABC):
         pass
 
     def get_property_mapping(self, property_value):
-        mapping = self.client_config['source']['config'].get('csv_mapping', {})
+        mapping = self.pipeline.source.config.get('csv_mapping', {})
         for idx, item in mapping.items():
             if item == property_value:
                 return idx

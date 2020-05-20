@@ -50,7 +50,7 @@ state['TAGS'] = {tags}
         return InfluxDBClient(**args)
 
     def get_write_config(self):
-        source_config = self.client_config['source']['config']
+        source_config = self.pipeline.source.config
         if 'write_host' in source_config:
             host = source_config['write_host']
             db = source_config['write_db']
@@ -75,7 +75,7 @@ state['TAGS'] = {tags}
     def set_initial_offset(self, client_config=None):
         if client_config:
             self.client_config = client_config
-        source_config = self.client_config['source']['config']
+        source_config = self.pipeline.source.config
         if not source_config.get('offset'):
             source_config['offset'] = '0'
 
@@ -125,15 +125,15 @@ state['TAGS'] = {tags}
     def update_source_configs(self):
 
         dimensions = self.get_dimensions()
-        source_config = self.client_config['source']['config']
+        source_config = self.pipeline.source.config
         dimensions_to_select = [f'"{d}"::tag' for d in dimensions]
         values_to_select = ['*::field' if v == '*' else f'"{v}"::field' for v in self.client_config['value']['values']]
         username = source_config.get('username', '')
         password = source_config.get('password', '')
         if username != '':
-            self.client_config['source']['config']['conf.client.authType'] = 'BASIC'
-            self.client_config['source']['config']['conf.client.basicAuth.username'] = username
-            self.client_config['source']['config']['conf.client.basicAuth.password'] = password
+            self.pipeline.source.config['conf.client.authType'] = 'BASIC'
+            self.pipeline.source.config['conf.client.basicAuth.username'] = username
+            self.pipeline.source.config['conf.client.basicAuth.password'] = password
 
         delay = self.client_config.get('delay', '0s')
         interval = self.client_config.get('interval', 60)
@@ -156,7 +156,7 @@ state['TAGS'] = {tags}
                     'interval': str(interval) + 's',
                     'where': where
                 })
-                self.update_http_stage(stage, self.client_config['source']['config'], urljoin(source_config['host'], query))
+                self.update_http_stage(stage, self.pipeline.source.config, urljoin(source_config['host'], query))
 
             if stage['instanceName'] == 'get_last_agent_timestamp':
                 get_timestamp_url = urljoin(write_config['host'],
@@ -174,7 +174,7 @@ state['TAGS'] = {tags}
                     'delay': delay,
                     'where': where
                 })
-                self.update_http_stage(stage, self.client_config['source']['config'], urljoin(source_config['host'], query))
+                self.update_http_stage(stage, self.pipeline.source.config, urljoin(source_config['host'], query))
 
     def update_http_stage(self, stage, config, url=None):
         for conf in stage['configuration']:
