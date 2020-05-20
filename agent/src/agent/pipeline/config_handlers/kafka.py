@@ -1,6 +1,5 @@
 from .schemaless import SchemalessConfigHandler
 from agent.logger import get_logger
-from agent.source import KafkaSource
 
 logger = get_logger(__name__)
 
@@ -8,11 +7,6 @@ logger = get_logger(__name__)
 class KafkaConfigHandler(SchemalessConfigHandler):
     PIPELINE_BASE_CONFIG_NAME = 'kafka_http.json'
     target_types = ['counter', 'gauge', 'running_counter']
-
-    def update_source_configs(self):
-        self.pipeline.source.config[KafkaSource.CONFIG_CONSUMER_GROUP] =\
-            self.client_config[KafkaSource.CONFIG_CONSUMER_GROUP]
-        super().update_source_configs()
 
     def override_stages(self):
         self.update_source_configs()

@@ -4,4 +4,4 @@ from agent.source import cli as source_cli
 
 # cli.destination()
 # source_cli.create()
-pipeline_cli.delete_pipeline("test_dir_log")
+pipeline_cli.create()

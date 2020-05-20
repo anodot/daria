@@ -20,4 +20,5 @@ class PromptConfigKafka(PromptConfigSchemaless):
         self.transform()
 
     def set_consumer_group(self):
-        self.config[KafkaSource.CONFIG_CONSUMER_GROUP] = click.prompt('Consumer group name', "agent_" + self.pipeline.id)
+        self.pipeline.source.config[KafkaSource.CONFIG_CONSUMER_GROUP] =\
+            click.prompt('Consumer group name', "agent_" + self.pipeline.id)
