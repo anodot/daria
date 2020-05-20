@@ -1,5 +1,6 @@
 from .schemaless import SchemalessConfigHandler
 from agent.logger import get_logger
+from agent.source import KafkaSource
 
 logger = get_logger(__name__)
 
@@ -9,7 +10,8 @@ class KafkaConfigHandler(SchemalessConfigHandler):
     target_types = ['counter', 'gauge', 'running_counter']
 
     def update_source_configs(self):
-        self.client_config['source']['config']['conf.consumerGroup'] = self.client_config['conf.consumerGroup']
+        self.client_config['source']['config'][KafkaSource.CONFIG_CONSUMER_GROUP] =\
+            self.client_config[KafkaSource.CONFIG_CONSUMER_GROUP]
         super().update_source_configs()
 
     def override_stages(self):

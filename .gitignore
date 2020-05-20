@@ -8,4 +8,4 @@ agent.log
 agent/data/*
 version.py
 sdc-data/
-agent-data/
+agent/agent-data/

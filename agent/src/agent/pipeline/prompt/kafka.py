@@ -1,5 +1,6 @@
 import click
 from .schemaless import PromptConfigSchemaless
+from agent.source import KafkaSource
 
 
 class PromptConfigKafka(PromptConfigSchemaless):
@@ -19,4 +20,4 @@ class PromptConfigKafka(PromptConfigSchemaless):
         self.transform()
 
     def set_consumer_group(self):
-        self.config["conf.consumerGroup"] = click.prompt('Consumer group name', "agent_" + self.pipeline.id)
+        self.config[KafkaSource.CONFIG_CONSUMER_GROUP] = click.prompt('Consumer group name', "agent_" + self.pipeline.id)
