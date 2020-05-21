@@ -12,6 +12,7 @@ class Pipeline:
     STATUS_RUNNING = 'RUNNING'
     STATUS_STOPPED = 'STOPPED'
     STATUS_STOPPING = 'STOPPING'
+    OVERRIDE_SOURCE = 'override_source'
 
     def __init__(self, pipeline_id: str,
                  source_obj: source.Source,
@@ -22,6 +23,7 @@ class Pipeline:
         self.source = source_obj
         self.destination = destination
         self.old_config = None
+        self.override_source = config.pop(self.OVERRIDE_SOURCE) if self.OVERRIDE_SOURCE in config else {}
 
     @property
     def file_path(self) -> str:
@@ -31,6 +33,8 @@ class Pipeline:
         return {
             **self.config,
             'pipeline_id': self.id,
+            self.OVERRIDE_SOURCE: self.override_source,
+            # TODO remove?
             'source': self.source.to_dict() if self.source else None,
             'destination': self.destination.to_dict()
         }

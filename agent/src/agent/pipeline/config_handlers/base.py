@@ -62,6 +62,21 @@ class BaseConfigHandler(ABC):
     def update_source_configs(self):
         if 'library' in self.pipeline.source.config:
             self.config['stages'][0]['library'] = self.pipeline.source.config['library']
+        self.__override_source_using_pipeline()
+        self.__write_source_config_to_stage()
+
+    def __override_source_using_pipeline(self):
+        for k, v in self.pipeline.override_source.items():
+            if not self.__is_in_base_source_config(k):
+                raise ConfigHandlerException(
+                    "pipeline.override_source contains a key that's not present in the base source config"
+                )
+            self.pipeline.source.config[k] = v
+
+    def __is_in_base_source_config(self, key: str):
+        return bool(next((item for item in self.config['stages'][0]['configuration'] if item['name'] == key), None))
+
+    def __write_source_config_to_stage(self):
         for conf in self.config['stages'][0]['configuration']:
             if conf['name'] in self.pipeline.source.config:
                 conf['value'] = self.pipeline.source.config[conf['name']]
