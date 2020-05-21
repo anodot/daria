@@ -32,11 +32,9 @@ class Pipeline:
     def to_dict(self):
         return {
             **self.config,
-            'pipeline_id': self.id,
             self.OVERRIDE_SOURCE: self.override_source,
-            # TODO remove?
-            'source': self.source.to_dict() if self.source else None,
-            'destination': self.destination.to_dict()
+            'pipeline_id': self.id,
+            'source_name': self.source.name,
         }
 
     @classmethod
