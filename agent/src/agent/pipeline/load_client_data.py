@@ -54,8 +54,6 @@ class KafkaLoadClientData(LoadClientData):
         self.load_dimensions()
         if 'timestamp' not in self.client_config and not self.edit:
             self.client_config['timestamp'] = {'name': 'kafka_timestamp', 'type': 'unix_ms'}
-        if KafkaSource.CONFIG_CONSUMER_GROUP not in self.client_config:
-            self.client_config[KafkaSource.CONFIG_CONSUMER_GROUP] = 'agent_' + self.client_config['pipeline_id']
         condition = self.client_config.get('filter', {}).get('condition')
         if condition:
             expression_parser.condition.validate(condition)

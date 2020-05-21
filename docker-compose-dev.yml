@@ -38,7 +38,6 @@ services:
     tty: true
     depends_on:
       - dc
-      - mongo
     volumes:
       - ./sdc-data:/sdc-data
       - ./agent-data:/data
