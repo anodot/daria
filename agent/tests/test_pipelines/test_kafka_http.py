@@ -33,7 +33,6 @@ class TestKafka(TestPipelineBase):
              'pipeline_type': 'kafka'},
             {'name': 'test_kfk_running_counter_static_tt', 'output': 'running_counter_static_tt.json',
              'pipeline_type': 'kafka'}
-
         ],
         'test_delete_pipeline': [{'name': 'test_kfk_value_const'}, {'name': 'test_kfk_timestamp_ms'},
                                  {'name': 'test_kfk_timestamp_string'},
