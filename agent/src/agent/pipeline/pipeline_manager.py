@@ -76,7 +76,7 @@ def wait_for_sending_data(pipeline_id: str, tries: int = 5, initial_delay: int =
         if stats['out'] > 0 and stats['errors'] == 0:
             return True
         if stats['errors'] > 0:
-            raise PipelineException(f"Pipeline {pipeline_id} is has {stats['errors']} errors")
+            raise PipelineException(f"Pipeline {pipeline_id} has {stats['errors']} errors")
         delay = initial_delay ** i
         if i == tries:
             raise PipelineException(

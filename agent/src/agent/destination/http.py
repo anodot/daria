@@ -51,6 +51,22 @@ class HttpDestination:
     def exists(cls) -> bool:
         return os.path.isfile(cls.FILE)
 
+    @property
+    def address(self):
+        return self.config.get('address', ANODOT_API_URL)
+
+    @address.setter
+    def address(self, value: str):
+        self.config['address'] = value
+
+    @property
+    def token(self):
+        return self.config.get('token', None)
+
+    @token.setter
+    def token(self, value: str):
+        self.config['token'] = value
+
     def load(self) -> dict:
         if not self.exists():
             raise DestinationException('Destination wasn\'t configured')
@@ -64,11 +80,13 @@ class HttpDestination:
 
         return config
 
-    def update_url(self, token: str):
-        self.config['token'] = token
-        self.config[self.CONFIG_RESOURCE_URL] = urllib.parse.urljoin(
-            ANODOT_API_URL, f'api/v1/metrics?token={self.config["token"]}&protocol={self.PROTOCOL_20}')
-        self.config[self.CONFIG_MONITORING_URL] = urllib.parse.urljoin(ANODOT_API_URL, f'api/v1/agents?token={self.config["token"]}')
+    def update_urls(self):
+        if not self.token:
+            raise DestinationException('Token is empty')
+        self.config[self.CONFIG_RESOURCE_URL] =\
+            urllib.parse.urljoin(self.address, f'api/v1/metrics?token={self.token}&protocol={self.PROTOCOL_20}')
+        self.config[self.CONFIG_MONITORING_URL] =\
+            urllib.parse.urljoin(self.address, f'api/v1/agents?token={self.token}')
 
     def save(self):
         try:

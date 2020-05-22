@@ -2,8 +2,9 @@ import click
 
 from .http import HttpDestination, DestinationException
 from .. import source, pipeline
-from agent.constants import MONITORING_SOURCE_NAME
+from agent.constants import MONITORING_SOURCE_NAME, ANODOT_API_URL
 from agent.tools import infinite_retry
+from urllib.parse import urlparse
 
 
 def monitoring():
@@ -28,20 +29,28 @@ def monitoring():
 
 @infinite_retry
 def prompt_destination(dest: HttpDestination):
+    dest.address = __prompt_address(default=dest.address)
+    dest.token = click.prompt('Anodot api data collection token', type=click.STRING, default=dest.config.get('token'))
+    dest.update_urls()
 
-    token = click.prompt('Anodot api data collection token', type=click.STRING, default=dest.config.get('token'))
-    dest.update_url(token)
-
-    use_proxy = click.confirm('Use proxy for connecting to Anodot?')
-    if use_proxy:
+    if click.confirm('Use proxy for connecting to Anodot?'):
         uri = click.prompt('Proxy uri', type=click.STRING, default=dest.get_proxy_url())
         username = click.prompt('Proxy username', type=click.STRING, default=dest.get_proxy_username() or '')
         password = click.prompt('Proxy password', type=click.STRING, default='')
-        dest.set_proxy(use_proxy, uri, username, password)
+        dest.set_proxy(True, uri, username, password)
     else:
-        dest.set_proxy(use_proxy)
+        dest.set_proxy(False)
 
     dest.validate_token()
+
+
+@infinite_retry
+def __prompt_address(default: str):
+    url = click.prompt('Destination url', type=click.STRING, default=default)
+    result = urlparse(url)
+    if not result.netloc or not result.scheme:
+        raise click.ClickException('Wrong url format, please specify the protocol and domain name')
+    return url
 
 
 @infinite_retry
@@ -70,7 +79,8 @@ def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, a
         dest.load()
 
     if token:
-        dest.update_url(token)
+        dest.token = token
+        dest.update_urls()
         dest.set_proxy(proxy, proxy_host, proxy_user, proxy_password)
     else:
         prompt_destination(dest)

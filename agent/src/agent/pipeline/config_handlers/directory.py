@@ -49,7 +49,7 @@ class DirectoryConfigHandler(SchemalessConfigHandler):
             if config['name'] == 'constants':
                 config['value'] = [
                     {'key': 'SCHEMA_ID', 'value': self.get_schema_id()},
-                    {'key': 'TOKEN', 'value': self.pipeline.destination.config['token']},
+                    {'key': 'TOKEN', 'value': self.pipeline.destination.token},
                     {'key': 'PROTOCOL', 'value': self.pipeline.destination.PROTOCOL_30},
                     {'key': 'ANODOT_BASE_URL', 'value': ANODOT_API_URL},
                 ]

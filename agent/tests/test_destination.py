@@ -18,7 +18,7 @@ def host_id(monkeypatch):
 
 
 def test_destination(cli_runner):
-    result = cli_runner.invoke(agent_cli.destination, input='toke\n\ny\nhttp://squid:3128\n\n\n')
+    result = cli_runner.invoke(agent_cli.destination, input='\ntoken\ny\nhttp://squid:3128\n\n\n')
     print(result.output)
     assert result.exit_code == 0
     assert HttpDestination.exists()
@@ -27,7 +27,8 @@ def test_destination(cli_runner):
 
 def test_edit_destination(cli_runner):
     prev_dest = HttpDestination().load()
-    result = cli_runner.invoke(agent_cli.destination, input='y\ntoken\n\ny\nhttp://squid:3128\n\n\n')
+    result = cli_runner.invoke(agent_cli.destination, input='\ntoken\ny\nhttp://squid:3128\n\n\n')
+    print(result.output)
     curr_dest = HttpDestination().load()
     assert result.exit_code == 0
     assert curr_dest['host_id'] == prev_dest['host_id']
