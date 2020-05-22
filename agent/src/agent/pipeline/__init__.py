@@ -27,10 +27,10 @@ def load_object(pipeline_id: str) -> Pipeline:
             'source': {'type': 'object'},
             'pipeline_id': {'type': 'string', 'minLength': 1, 'maxLength': 100}
         },
-        'required': ['source_name', 'pipeline_id']
+        'required': ['source', 'pipeline_id']
     })
 
-    source_obj = source.load_object(config['source_name'])
+    source_obj = source.load_object(config['source']['name'])
     destination = HttpDestination()
     destination.load()
     return Pipeline(pipeline_id, source_obj, config, destination)

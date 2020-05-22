@@ -124,7 +124,8 @@ class Source(ABC):
         except Exception:
             api_client.delete_pipeline(self.test_pipeline_name)
             raise
-        api_client.delete_pipeline(self.test_pipeline_name)
+        finally:
+            api_client.delete_pipeline(self.test_pipeline_name)
         print('Successfully connected to the source')
         return True
 

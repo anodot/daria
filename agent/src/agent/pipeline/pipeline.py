@@ -23,7 +23,7 @@ class Pipeline:
         self.source = source_obj
         self.destination = destination
         self.old_config = None
-        self.override_source = config.pop(self.OVERRIDE_SOURCE) if self.OVERRIDE_SOURCE in config else {}
+        self.override_source = config.pop(self.OVERRIDE_SOURCE, {})
 
     @property
     def file_path(self) -> str:
@@ -34,7 +34,7 @@ class Pipeline:
             **self.config,
             self.OVERRIDE_SOURCE: self.override_source,
             'pipeline_id': self.id,
-            'source_name': self.source.name,
+            'source': {'name': self.source.name},
         }
 
     @classmethod
