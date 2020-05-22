@@ -19,6 +19,7 @@ def host_id(monkeypatch):
 
 def test_destination(cli_runner):
     result = cli_runner.invoke(agent_cli.destination, input='toke\n\ny\nhttp://squid:3128\n\n\n')
+    print(result.output)
     assert result.exit_code == 0
     assert HttpDestination.exists()
     assert api_client.get_pipeline_status('Monitoring')['status'] == 'RUNNING'

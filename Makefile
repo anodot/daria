@@ -62,7 +62,7 @@ test-tcp: prepare-source test-destination-dev
 	$(DOCKER_TEST_DEV) tests/test_input/test_tcp_http.py
 	$(DOCKER_TEST_DEV) tests/test_pipelines/test_tcp_http.py
 
-test-destination-dev: prepare-source nap
+ test-destination-dev: prepare-source nap
 	$(DOCKER_TEST_DEV) tests/test_destination.py
 
 

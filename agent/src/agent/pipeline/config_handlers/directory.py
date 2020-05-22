@@ -81,3 +81,7 @@ class DirectoryConfigHandler(SchemalessConfigHandler):
                     'expression': self.pipeline.config['schema']['id']
                 },
             ]
+
+    @classmethod
+    def _get_dimension_field_path(cls, key):
+        return '/dimensions/' + key

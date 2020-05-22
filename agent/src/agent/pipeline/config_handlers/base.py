@@ -120,13 +120,17 @@ class BaseConfigHandler(ABC):
             **self.client_config.get('tags', {})
         }
 
+    @classmethod
+    def _get_dimension_field_path(cls, key):
+        return '/properties/' + key
+
     def set_constant_properties(self, stage):
         for conf in stage['configuration']:
             if conf['name'] != 'expressionProcessorConfigs':
                 continue
 
             for key, val in self.client_config.get('properties', {}).items():
-                conf['value'].append({'fieldToSet': '/properties/' + key, 'expression': val})
+                conf['value'].append({'fieldToSet': self._get_dimension_field_path(key), 'expression': val})
 
             conf['value'].append({'fieldToSet': '/tags', 'expression': '${emptyMap()}'})
             for tag_name, tag_values in self.get_tags().items():
