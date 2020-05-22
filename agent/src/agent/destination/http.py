@@ -52,12 +52,12 @@ class HttpDestination:
         return os.path.isfile(cls.FILE)
 
     @property
-    def address(self):
-        return self.config.get('address', ANODOT_API_URL)
+    def url(self):
+        return self.config.get('url', ANODOT_API_URL)
 
-    @address.setter
-    def address(self, value: str):
-        self.config['address'] = value
+    @url.setter
+    def url(self, value: str):
+        self.config['url'] = value
 
     @property
     def token(self):
@@ -84,9 +84,9 @@ class HttpDestination:
         if not self.token:
             raise DestinationException('Token is empty')
         self.config[self.CONFIG_RESOURCE_URL] =\
-            urllib.parse.urljoin(self.address, f'api/v1/metrics?token={self.token}&protocol={self.PROTOCOL_20}')
+            urllib.parse.urljoin(self.url, f'api/v1/metrics?token={self.token}&protocol={self.PROTOCOL_20}')
         self.config[self.CONFIG_MONITORING_URL] =\
-            urllib.parse.urljoin(self.address, f'api/v1/agents?token={self.token}')
+            urllib.parse.urljoin(self.url, f'api/v1/agents?token={self.token}')
 
     def save(self):
         try:

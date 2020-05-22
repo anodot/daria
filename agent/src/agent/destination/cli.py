@@ -29,7 +29,7 @@ def monitoring():
 
 @infinite_retry
 def prompt_destination(dest: HttpDestination):
-    dest.address = __prompt_address(default=dest.address)
+    dest.url = __prompt_url(default=dest.url)
     dest.token = click.prompt('Anodot api data collection token', type=click.STRING, default=dest.config.get('token'))
     dest.update_urls()
 
@@ -45,7 +45,7 @@ def prompt_destination(dest: HttpDestination):
 
 
 @infinite_retry
-def __prompt_address(default: str):
+def __prompt_url(default: str):
     url = click.prompt('Destination url', type=click.STRING, default=default)
     result = urlparse(url)
     if not result.netloc or not result.scheme:
