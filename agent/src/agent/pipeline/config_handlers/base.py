@@ -36,8 +36,8 @@ class BaseConfigHandler(ABC):
         ...
 
     def set_labels(self):
-        self.config['metadata']['labels'] = [self.client_config['source']['type'],
-                                             self.client_config['destination']['type']]
+        self.config['metadata']['labels'] = [self.pipeline.source.type,
+                                             self.pipeline.destination.TYPE]
 
     def override_base_config(self, client_config, new_uuid=None, new_pipeline_title=None, base_config=None):
         self.client_config = deepcopy(client_config)
@@ -60,11 +60,19 @@ class BaseConfigHandler(ABC):
         return self.config
 
     def update_source_configs(self):
-        if 'library' in self.client_config['source']['config']:
-            self.config['stages'][0]['library'] = self.client_config['source']['config']['library']
+        if 'library' in self.pipeline.source.config:
+            self.config['stages'][0]['library'] = self.pipeline.source.config['library']
+        self.__override_source_using_pipeline()
+        self.__write_source_config_to_stage()
+
+    def __override_source_using_pipeline(self):
+        for k, v in self.pipeline.override_source.items():
+            self.pipeline.source.config[k] = v
+
+    def __write_source_config_to_stage(self):
         for conf in self.config['stages'][0]['configuration']:
-            if conf['name'] in self.client_config['source']['config']:
-                conf['value'] = self.client_config['source']['config'][conf['name']]
+            if conf['name'] in self.pipeline.source.config:
+                conf['value'] = self.pipeline.source.config[conf['name']]
 
     def get_dimensions(self):
         dimensions = self.client_config['dimensions']['required']
@@ -100,7 +108,7 @@ class BaseConfigHandler(ABC):
     def get_default_tags(self) -> dict:
         return {
             'source': ['anodot-agent'],
-            'source_host_id': [self.client_config['destination']['host_id']],
+            'source_host_id': [self.pipeline.destination.host_id],
             'source_host_name': [HOSTNAME],
             'pipeline_id': [self.pipeline.id],
             'pipeline_type': [self.get_pipeline_type()]
@@ -135,7 +143,7 @@ class BaseConfigHandler(ABC):
         pass
 
     def get_property_mapping(self, property_value):
-        mapping = self.client_config['source']['config'].get('csv_mapping', {})
+        mapping = self.pipeline.source.config.get('csv_mapping', {})
         for idx, item in mapping.items():
             if item == property_value:
                 return idx

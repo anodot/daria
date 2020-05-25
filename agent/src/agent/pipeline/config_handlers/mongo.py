@@ -74,7 +74,7 @@ class MongoConfigHandler(BaseConfigHandler):
     def set_initial_offset(self, client_config=None):
         if client_config:
             self.client_config = client_config
-        source_config = self.client_config['source']['config']
+        source_config = self.pipeline.source.config
 
         initial_offset = str(source_config.get('configBean.initialOffset', '3'))
         if initial_offset.isdigit():
@@ -82,6 +82,6 @@ class MongoConfigHandler(BaseConfigHandler):
             source_config['configBean.initialOffset'] = timestamp.strftime('%Y-%m-%d %H:%M:%S')
 
     def update_source_configs(self):
-        if self.client_config['source']['config'].get('configBean.offsetType', 'OBJECTID') != 'STRING':
+        if self.pipeline.source.config.get('configBean.offsetType', 'OBJECTID') != 'STRING':
             self.set_initial_offset()
         super().update_source_configs()
