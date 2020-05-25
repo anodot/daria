@@ -1,0 +1,33 @@
+version: '3.1'
+
+services:
+  dc:
+    image: anodot/streamsets:latest
+    restart: on-failure
+    container_name: anodot-sdc
+    env_file:
+      - dc.env
+    environment:
+      SDC_JAVA_OPTS: "${SDC_JAVA_OPTS} -Xmx1024m -Xms1024m -server"
+    volumes:
+      - sdc-data:/data
+
+  agent:
+    image: anodot/daria:latest
+    container_name: anodot-agent-my
+    hostname: agent
+    restart: always
+    env_file:
+      - agent.env
+    stdin_open: true
+    tty: true
+    depends_on:
+      - dc
+
+    volumes:
+      - sdc-data:/sdc-data
+      - agent-data:/usr/src/app/data
+
+volumes:
+  sdc-data:
+  agent-data:
