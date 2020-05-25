@@ -1,5 +1,6 @@
 from .schemaless import SchemalessConfigHandler
 from agent.logger import get_logger
+from ...source import KafkaSource
 
 logger = get_logger(__name__)
 
@@ -9,6 +10,9 @@ class KafkaConfigHandler(SchemalessConfigHandler):
     target_types = ['counter', 'gauge', 'running_counter']
 
     def override_stages(self):
+        # using 'anodot_agent_' + self.id as a default value in order not to break old configs
+        if KafkaSource.CONFIG_CONSUMER_GROUP not in self.pipeline.override_source:
+            self.pipeline.override_source[KafkaSource.CONFIG_CONSUMER_GROUP] = 'anodot_agent_' + self.pipeline.id
         self.update_source_configs()
 
         # for old config <=v1.4

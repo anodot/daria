@@ -5,7 +5,6 @@ import os
 from .. import source
 from agent.constants import DATA_DIR
 from agent.destination import HttpDestination
-from ..source import KafkaSource
 
 
 class Pipeline:
@@ -24,9 +23,7 @@ class Pipeline:
         self.source = source_obj
         self.destination = destination
         self.old_config = None
-        # using 'anodot_agent_' + self.id as a default value in order not to break old configs
-        self.override_source = config.pop(self.OVERRIDE_SOURCE,
-                                          {KafkaSource.CONFIG_CONSUMER_GROUP: 'anodot_agent_' + self.id})
+        self.override_source = config.pop(self.OVERRIDE_SOURCE, {})
 
     @property
     def file_path(self) -> str:
