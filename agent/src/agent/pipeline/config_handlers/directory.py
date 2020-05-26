@@ -51,7 +51,7 @@ class DirectoryConfigHandler(SchemalessConfigHandler):
                     {'key': 'SCHEMA_ID', 'value': self.get_schema_id()},
                     {'key': 'TOKEN', 'value': self.pipeline.destination.token},
                     {'key': 'PROTOCOL', 'value': self.pipeline.destination.PROTOCOL_30},
-                    {'key': 'ANODOT_BASE_URL', 'value': ANODOT_API_URL},
+                    {'key': 'ANODOT_BASE_URL', 'value': self.pipeline.destination.url},
                 ]
 
     def update_destination_config(self):

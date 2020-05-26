@@ -1,14 +1,13 @@
 import click
 
-from .http import HttpDestination, DestinationException
+from .http import HttpDestination
 from .. import source, pipeline
-from agent.constants import MONITORING_SOURCE_NAME, ANODOT_API_URL
+from agent.constants import MONITORING_SOURCE_NAME
 from agent.tools import infinite_retry
 from urllib.parse import urlparse
 
 
 def monitoring():
-
     try:
         if pipeline.Pipeline.exists('Monitoring'):
             pipeline_manager = pipeline.PipelineManager(pipeline.load_object('Monitoring'))
@@ -29,7 +28,8 @@ def monitoring():
 
 @infinite_retry
 def prompt_destination(dest: HttpDestination):
-    dest.url = __prompt_url(default=dest.url)
+    if not dest.url:
+        dest.url = __prompt_url(default=dest.url)
     dest.token = click.prompt('Anodot api data collection token', type=click.STRING, default=dest.config.get('token'))
     dest.update_urls()
 
@@ -47,10 +47,14 @@ def prompt_destination(dest: HttpDestination):
 @infinite_retry
 def __prompt_url(default: str):
     url = click.prompt('Destination url', type=click.STRING, default=default)
+    __check_url(url)
+    return url
+
+
+def __check_url(url: str):
     result = urlparse(url)
     if not result.netloc or not result.scheme:
         raise click.ClickException('Wrong url format, please specify the protocol and domain name')
-    return url
 
 
 @infinite_retry
@@ -68,7 +72,8 @@ def prompt_api_key(dest: HttpDestination):
 @click.option('--proxy-password', type=click.STRING, default=None)
 @click.option('--host-id', type=click.STRING, default=None)
 @click.option('--api-key', type=click.STRING, default=None)
-def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, api_key):
+@click.option('--url', type=click.STRING, default=None)
+def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, api_key, url):
     """
     Data destination config.
     Anodot API token - You can copy it from Settings > API tokens > Data Collection in your Anodot account
@@ -77,6 +82,9 @@ def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, a
     dest = HttpDestination(host_id=host_id, api_key=api_key)
     if dest.exists():
         dest.load()
+    if url:
+        __check_url(url)
+        destination.url = url
 
     if token:
         dest.token = token
