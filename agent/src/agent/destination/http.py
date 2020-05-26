@@ -134,7 +134,7 @@ class HttpDestination:
 
     def validate_api_key(self) -> bool:
         if self.api_key:
-            AnodotApiClient(self.api_key, self.get_proxy_configs(), base_url=ANODOT_API_URL)
+            AnodotApiClient(self.api_key, self.get_proxy_configs(), base_url=self.url)
         return True
 
     def validate(self) -> bool:

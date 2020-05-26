@@ -7,7 +7,7 @@ from .pipeline import Pipeline, PipelineException
 from . import prompt, config_handlers, load_client_data
 from .. import source
 from agent.anodot_api_client import AnodotApiClient
-from agent.constants import ERRORS_DIR, ENV_PROD, ANODOT_API_URL
+from agent.constants import ERRORS_DIR, ENV_PROD
 from agent.streamsets_api_client import api_client, StreamSetsApiClientException
 from agent.tools import print_json, sdc_record_map_to_dict, if_validation_enabled
 
@@ -174,7 +174,7 @@ class PipelineManager:
         if 'schema' in self.pipeline.config:
             anodot_api_client = AnodotApiClient(self.pipeline.destination.api_key,
                                                 self.pipeline.destination.get_proxy_configs(),
-                                                base_url=ANODOT_API_URL)
+                                                base_url=self.pipeline.destination.url)
             anodot_api_client.delete_schema(self.pipeline.config['schema']['id'])
         delete_pipeline(self.pipeline.id)
 
