@@ -6,7 +6,8 @@ services:
     restart: on-failure
     container_name: anodot-sdc
     environment:
-      SDC_JAVA_OPTS: "${SDC_JAVA_OPTS} -Xmx1024m -Xms1024m -server"
+      SDC_JAVA_OPTS: SDC_JAVA_OPTS_VALUE
+      SDC_CONF_RUNNER_THREAD_POOL_SIZE: SDC_THREAD_POOL_SIZE_VALUE
     volumes:
       - sdc-data:/data
 
