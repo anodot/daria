@@ -25,7 +25,7 @@ class DirectoryConfigHandler(SchemalessConfigHandler):
                 'countBy': 'none'
             }
 
-        dimensions = self.get_dimensions() + self.pipeline.constant_dimensions.keys()
+        dimensions = self.get_dimensions() + list(self.pipeline.constant_dimensions.keys())
         schema = {
             'version': '1',
             'name': self.pipeline.id,
