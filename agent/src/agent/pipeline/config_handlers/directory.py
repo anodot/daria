@@ -24,10 +24,12 @@ class DirectoryConfigHandler(SchemalessConfigHandler):
                 'aggregation': 'sum',
                 'countBy': 'none'
             }
+
+        dimensions = self.get_dimensions() + list(self.pipeline.constant_dimensions.keys())
         schema = {
             'version': '1',
             'name': self.pipeline.id,
-            'dimensions': [self.replace_chars(d) for d in self.get_dimensions()],
+            'dimensions': [self.replace_chars(d) for d in dimensions],
             'measurements': measurements,
             'missingDimPolicy': {
                 'action': 'fill',

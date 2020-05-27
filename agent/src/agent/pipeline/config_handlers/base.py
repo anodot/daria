@@ -129,7 +129,7 @@ class BaseConfigHandler(ABC):
             if conf['name'] != 'expressionProcessorConfigs':
                 continue
 
-            for key, val in self.client_config.get('properties', {}).items():
+            for key, val in self.pipeline.constant_dimensions.items():
                 conf['value'].append({'fieldToSet': self._get_dimension_field_path(key), 'expression': val})
 
             conf['value'].append({'fieldToSet': '/tags', 'expression': '${emptyMap()}'})

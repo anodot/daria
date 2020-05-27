@@ -29,6 +29,10 @@ class Pipeline:
     def file_path(self) -> str:
         return self.get_file_path(self.id)
 
+    @property
+    def constant_dimensions(self):
+        return self.config.get('properties', {})
+
     def to_dict(self):
         return {
             **self.config,
