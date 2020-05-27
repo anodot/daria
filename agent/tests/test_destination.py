@@ -18,7 +18,8 @@ def host_id(monkeypatch):
 
 
 def test_destination(cli_runner):
-    result = cli_runner.invoke(agent_cli.destination, input='\ntoken\ny\nhttp://squid:3128\n\n\napi_key\n')
+    result = cli_runner.invoke(agent_cli.destination, args=['--url=http://wrong-url'],
+                               input='http://dummy_destination\ntoken\ny\nhttp://squid:3128\n\n\napi_key\n')
     print(result.output)
     assert result.exit_code == 0
     assert HttpDestination.exists()

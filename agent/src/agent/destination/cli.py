@@ -28,8 +28,7 @@ def monitoring():
 
 @infinite_retry
 def prompt_destination(dest: HttpDestination):
-    if not dest.url:
-        dest.url = __prompt_url(default=dest.url)
+    dest.url = __prompt_url(default=dest.url)
     dest.token = click.prompt('Anodot api data collection token', type=click.STRING, default=dest.config.get('token'))
     dest.update_urls()
 
@@ -84,7 +83,7 @@ def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, a
         dest.load()
     if url:
         __check_url(url)
-        destination.url = url
+        dest.url = url
 
     if token:
         dest.token = token
