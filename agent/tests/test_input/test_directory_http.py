@@ -28,7 +28,7 @@ class TestDirectory:
             'id': '111111-22222-3333-4444',
             'version': '1',
             'name': pipeline_id,
-            'dimensions': ['ver', 'Country', 'Exchange', 'optional_dim'],
+            'dimensions': ['ver', 'Country', 'Exchange', 'optional_dim', 'version'],
             'measurements': {'clicks': {'aggregation': 'average', 'countBy': 'none'},
                              'count_records': {'aggregation': 'sum', 'countBy': 'none'}},
             'missingDimPolicy': {
