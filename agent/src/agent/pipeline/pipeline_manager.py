@@ -139,7 +139,6 @@ class PipelineManager:
 
             api_client.update_pipeline(self.pipeline.id, new_config)
         except (config_handlers.ConfigHandlerException, StreamSetsApiClientException) as e:
-            self.delete()
             raise PipelineException(str(e))
 
         self.pipeline.save()
