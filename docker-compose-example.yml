@@ -13,7 +13,6 @@ services:
     restart: always
     environment:
       STREAMSETS_URL: 'http://dc:18630'
-      ANODOT_API_URL: 'https://api.anodot.com'
     stdin_open: true
     tty: true
     depends_on:
