@@ -58,7 +58,7 @@ def __check_url(url: str):
 
 @infinite_retry
 def prompt_api_key(dest: HttpDestination):
-    dest.api_key = click.prompt('Anodot api key', type=click.STRING,
+    dest.api_key = click.prompt('Anodot access key', type=click.STRING,
                                 default=dest.api_key if dest.api_key else '')
     dest.validate_api_key()
 
