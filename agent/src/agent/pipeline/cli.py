@@ -76,6 +76,7 @@ def create_multiple(file):
     validate(data, json_schema)
 
     for item in data:
+        check_pipeline_id(item['pipeline_id'])
         pipeline_manager = PipelineManager(pipeline.create_object(item['pipeline_id'], item['source']))
         pipeline_manager.load_config(item)
         pipeline_manager.create()
@@ -83,12 +84,9 @@ def create_multiple(file):
         click.secho('Created pipeline {}'.format(item['pipeline_id']), fg='green')
 
 
-@infinite_retry
-def prompt_pipeline_id():
-    pipeline_id = click.prompt('Pipeline ID (must be unique)', type=click.STRING).strip()
+def check_pipeline_id(pipeline_id: str):
     if pipeline.Pipeline.exists(pipeline_id):
         raise click.UsageError(f"Pipeline {pipeline_id} already exists")
-    return pipeline_id
 
 
 @click.command()
@@ -105,7 +103,8 @@ def create(advanced, file):
 
     source_config_name = click.prompt('Choose source config', type=click.Choice(sources),
                                       default=get_default_source(sources))
-    pipeline_id = prompt_pipeline_id()
+    pipeline_id = click.prompt('Pipeline ID (must be unique)', type=click.STRING).strip()
+    check_pipeline_id(pipeline_id)
     pipeline_manager = PipelineManager(pipeline.create_object(pipeline_id, source_config_name))
     previous_config = get_previous_pipeline_config(pipeline_manager.pipeline.source.type)
     # the rest of the data is prompted in the .prompt() call
