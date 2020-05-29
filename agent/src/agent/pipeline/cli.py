@@ -86,7 +86,7 @@ def create_multiple(file):
 
 def check_pipeline_id(pipeline_id: str):
     if pipeline.Pipeline.exists(pipeline_id):
-        raise click.UsageError(f"Pipeline {pipeline_id} already exists")
+        raise click.ClickException(f"Pipeline {pipeline_id} already exists")
 
 
 @click.command()
@@ -103,8 +103,7 @@ def create(advanced, file):
 
     source_config_name = click.prompt('Choose source config', type=click.Choice(sources),
                                       default=get_default_source(sources))
-    pipeline_id = click.prompt('Pipeline ID (must be unique)', type=click.STRING).strip()
-    check_pipeline_id(pipeline_id)
+    pipeline_id = prompt_pipeline_id()
     pipeline_manager = PipelineManager(pipeline.create_object(pipeline_id, source_config_name))
     previous_config = get_previous_pipeline_config(pipeline_manager.pipeline.source.type)
     # the rest of the data is prompted in the .prompt() call
@@ -116,6 +115,13 @@ def create(advanced, file):
     if click.confirm('Would you like to see the result data preview?', default=True):
         pipeline_manager.show_preview()
         print('To change the config use `agent pipeline edit`')
+
+
+@infinite_retry
+def prompt_pipeline_id():
+    pipeline_id = click.prompt('Pipeline ID (must be unique)', type=click.STRING).strip()
+    check_pipeline_id(pipeline_id)
+    return pipeline_id
 
 
 def create_using_file(file):
