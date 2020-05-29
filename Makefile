@@ -27,6 +27,8 @@ run-all-dev: clean-docker-volumes run-dev sleep setup-kafka setup-elastic
 
 test-all-dev: test-dev-destination test-dev-condition-parser test-dev-input test-dev-pipelines
 
+rerun: clean-docker-volumes run-base-services
+
 ##-----------------------
 ## TEST SEPARATE SOURCES
 ##-----------------------
@@ -113,14 +115,14 @@ test-dev-input:
 test-dev-pipelines:
 	$(DOCKER_TEST_DEV_PARALLEL) tests/test_pipelines/
 
-prepare-source: clean-docker-volumes build-base-services
+prepare-source: clean-docker-volumes run-base-services
 
 clean-docker-volumes:
 	rm -rf sdc-data
-	rm -rf agent-data
+	rm -rf agent/agent-data
 	docker-compose -f $(DOCKER_COMPOSE_DEV) down -v
 
-build-base-services:
+run-base-services:
 	docker-compose -f $(DOCKER_COMPOSE_DEV) up -d agent dc squid dummy_destination
 	docker exec -i anodot-agent python setup.py develop
 
