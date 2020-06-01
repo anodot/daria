@@ -14,7 +14,7 @@ all: build-all test-all
 
 build-all: get-streamsets-stages build sleep setup-elastic setup-kafka
 
-test-all: test-destination test-condition-parser test-input test-pipelines run-unit-tests
+test-all: test-destination test-input test-pipelines run-unit-tests
 
 ##-------------
 ## DEVELOPMENT
@@ -81,9 +81,6 @@ build:
 
 test-destination:
 	$(DOCKER_TEST) tests/test_destination.py
-
-test-condition-parser:
-	$(DOCKER_TEST) tests/test_condition_parser.py
 
 test-input:
 	$(DOCKER_TEST_PARALLEL) tests/test_input/
