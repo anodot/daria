@@ -6,6 +6,7 @@ from agent.pipeline.prompt import elastic
 @pytest.mark.parametrize("query, offset_field, er", [
     ('"sort": [{"timestamp": {"order": "asc"}}],', 'timestamp', True),
     ('"sort":\n   [{"timestamp":\n\n       { "order": "asc" }}],', 'timestamp', True),
+    ('"sort": [{"timestamp_unix_ms": {"order": "asc"}}],', 'timestamp', False),
     ('"sort": [{"timestamp": {"order": "asc"}}],', 'bla', False),
     ('"sort": [{"timestamp":\n {"bla": "desc"}}],', 'timestamp', False),
     ('"aort":\n   [{"timestamp":\n\n       { "order": "asc" }}],', 'timestamp', False),

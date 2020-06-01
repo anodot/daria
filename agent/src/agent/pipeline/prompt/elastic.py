@@ -34,7 +34,7 @@ class PromptConfigElastic(PromptConfigSchemaless):
 
 
 def is_valid_timestamp(query: str, offset_field: str) -> bool:
-    regexp = re.compile(rf'"sort"[\s\S]*{offset_field}[\s\S]*"order"[\s\S]*"asc"')
+    regexp = re.compile(rf'"sort"[\s\S]*"{offset_field}"[\s\S]*"order"[\s\S]*"asc"')
     if regexp.search(query):
         return True
     return False
