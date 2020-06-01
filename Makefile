@@ -14,7 +14,7 @@ all: build-all test-all
 
 build-all: get-streamsets-stages build sleep setup-elastic setup-kafka
 
-test-all: test-destination test-condition-parser test-input test-pipelines
+test-all: test-destination test-condition-parser test-input test-pipelines run-unit-tests
 
 ##-------------
 ## DEVELOPMENT
@@ -25,9 +25,7 @@ build-all-dev: build-dev sleep setup-elastic setup-kafka
 
 run-all-dev: clean-docker-volumes run-dev sleep setup-kafka setup-elastic
 
-test-all-dev: test-dev-destination test-dev-condition-parser test-dev-input test-dev-pipelines
-
-rerun: clean-docker-volumes run-base-services
+test-all-dev: test-dev-destination test-dev-condition-parser test-dev-input test-dev-pipelines run-unit-tests-dev
 
 ##-----------------------
 ## TEST SEPARATE SOURCES
@@ -64,9 +62,11 @@ test-tcp: prepare-source test-destination-dev
 	$(DOCKER_TEST_DEV) tests/test_input/test_tcp_http.py
 	$(DOCKER_TEST_DEV) tests/test_pipelines/test_tcp_http.py
 
- test-destination-dev: prepare-source nap
+test-destination-dev: prepare-source nap
 	$(DOCKER_TEST_DEV) tests/test_destination.py
 
+run-unit-tests-dev:
+	$(DOCKER_TEST_DEV_PARALLEL) tests/unit/
 
 
 
@@ -88,6 +88,9 @@ test-input:
 
 test-pipelines:
 	$(DOCKER_TEST_PARALLEL) tests/test_pipelines/
+
+run-unit-tests:
+	$(DOCKER_TEST_PARALLEL) tests/unit/
 
 get-streamsets-stages:
 	curl -L https://github.com/anodot/anodot-sdc-stage/releases/download/v1.0.1/anodot-1.0.1.tar.gz -o /tmp/sdc.tar.gz && tar xvfz /tmp/sdc.tar.gz -C streamsets/lib
