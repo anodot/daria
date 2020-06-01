@@ -27,6 +27,8 @@ run-all-dev: clean-docker-volumes run-dev sleep setup-kafka setup-elastic
 
 test-all-dev: test-dev-destination test-dev-condition-parser test-dev-input test-dev-pipelines run-unit-tests-dev
 
+rerun: clean-docker-volumes run-base-services
+
 ##-----------------------
 ## TEST SEPARATE SOURCES
 ##-----------------------
