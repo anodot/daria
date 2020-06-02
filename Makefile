@@ -74,7 +74,7 @@ test-tcp: prepare-source test-destination-dev
 ## RELEASE DEPENDENCY TARGETS
 ##---------------------------
 build:
-	docker-compose build --build-arg GIT_SHA1=$(git describe --dirty --always)
+	docker-compose build --build-arg GIT_SHA1="$(shell git describe --dirty --always)"
 	docker-compose up -d
 
 test-destination:
