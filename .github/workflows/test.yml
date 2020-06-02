@@ -20,7 +20,7 @@ jobs:
         run: sudo sysctl -w vm.max_map_count=262144
 
       - name: Build
-        run: make build-all && make sleep
+        run: make build-all
 
       - name: Test
         run: make test-all

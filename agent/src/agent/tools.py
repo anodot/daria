@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import click
 import json
 
@@ -79,5 +81,7 @@ def sdc_record_map_to_dict(record: dict):
         elif type(record['value']) is dict:
             return {key: sdc_record_map_to_dict(item) for key, item in record['value'].items()}
         else:
+            if 'type' in record and record['type'] == 'DATETIME':
+                return datetime.fromtimestamp(record['value'] // 1000).strftime('%Y-%m-%d %H:%M:%S')
             return record['value']
     return record

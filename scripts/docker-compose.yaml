@@ -4,19 +4,23 @@ services:
   dc:
     image: anodot/streamsets:latest
     restart: on-failure
+    container_name: anodot-sdc
+    environment:
+      SDC_JAVA_OPTS: "-Xmx1024m -Xms1024m -server"
+      SDC_CONF_RUNNER_THREAD_POOL_SIZE: "200"
     volumes:
       - sdc-data:/data
 
   agent:
     image: anodot/daria:latest
     container_name: anodot-agent
+    hostname: agent
     restart: always
-    environment:
-      STREAMSETS_URL: 'http://dc:18630'
     stdin_open: true
     tty: true
     depends_on:
       - dc
+
     volumes:
       - sdc-data:/sdc-data
       - agent-data:/usr/src/app/data

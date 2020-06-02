@@ -76,6 +76,7 @@ def create_multiple(file):
     validate(data, json_schema)
 
     for item in data:
+        check_pipeline_id(item['pipeline_id'])
         pipeline_manager = PipelineManager(pipeline.create_object(item['pipeline_id'], item['source']))
         pipeline_manager.load_config(item)
         pipeline_manager.create()
@@ -83,12 +84,9 @@ def create_multiple(file):
         click.secho('Created pipeline {}'.format(item['pipeline_id']), fg='green')
 
 
-@infinite_retry
-def prompt_pipeline_id():
-    pipeline_id = click.prompt('Pipeline ID (must be unique)', type=click.STRING).strip()
+def check_pipeline_id(pipeline_id: str):
     if pipeline.Pipeline.exists(pipeline_id):
-        raise click.UsageError(f"Pipeline {pipeline_id} already exists")
-    return pipeline_id
+        raise click.ClickException(f"Pipeline {pipeline_id} already exists")
 
 
 @click.command()
@@ -117,6 +115,13 @@ def create(advanced, file):
     if click.confirm('Would you like to see the result data preview?', default=True):
         pipeline_manager.show_preview()
         print('To change the config use `agent pipeline edit`')
+
+
+@infinite_retry
+def prompt_pipeline_id():
+    pipeline_id = click.prompt('Pipeline ID (must be unique)', type=click.STRING).strip()
+    check_pipeline_id(pipeline_id)
+    return pipeline_id
 
 
 def create_using_file(file):

@@ -64,8 +64,6 @@ class JDBCSource(Source):
     def prompt(self, default_config, advanced=False):
         self.config = dict()
         self.prompt_connection(default_config)
-        self.config['query_interval'] = click.prompt('Query interval (seconds)', type=click.IntRange(1),
-                                                     default=default_config.get('query_interval', 10))
 
         return self.config
 
@@ -77,7 +75,6 @@ class JDBCSource(Source):
     def set_config(self, config):
         super().set_config(config)
         self.config['hikariConfigBean.connectionString'] = 'jdbc:' + self.config['connection_string']
-        self.config['queryInterval'] = '${' + str(self.config.get('query_interval', '10')) + ' * SECONDS}'
 
     @if_validation_enabled
     def print_sample_data(self):

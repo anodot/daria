@@ -15,6 +15,7 @@ class PromptConfigJDBC(PromptConfig):
         self.set_values()
         self.set_timestamp()
         self.set_dimensions()
+        self.set_query_interval()
         self.set_static_properties()
         self.set_tags()
         self.set_condition()
@@ -36,6 +37,15 @@ class PromptConfigJDBC(PromptConfig):
 
         if not self.config['count_records'] and not self.config['values']:
             raise click.UsageError('Set value columns or count records flag')
+
+    def set_query_interval(self):
+        self.pipeline.config['queryInterval'] = click.prompt(
+            'Query interval (in seconds)',
+            type=click.IntRange(1),
+            default=self.pipeline.config.get('queryInterval', 10)
+        )
+        self.pipeline.override_source['queryInterval'] =\
+            '${' + str(self.pipeline.config['queryInterval']) + ' * SECONDS}'
 
     def set_timestamp(self):
         self.config['timestamp'] = self.default_config.get('timestamp', {})

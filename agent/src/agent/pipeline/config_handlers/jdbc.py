@@ -31,7 +31,6 @@ state['COUNT_RECORDS'] = {count_records}
     QUERY = "SELECT * FROM {table} WHERE {offset_column} > ${{OFFSET}} {condition} ORDER BY {offset_column} LIMIT {limit}"
 
     def override_stages(self):
-
         self.update_source_configs()
 
         for stage in self.config['stages']:
@@ -59,7 +58,6 @@ state['COUNT_RECORDS'] = {count_records}
         self.update_destination_config()
 
     def update_source_configs(self):
-
         source_config = self.pipeline.source.config
 
         condition = self.client_config.get('condition')

@@ -1,7 +1,6 @@
 from .schemaless import SchemalessConfigHandler
 from agent.logger import get_logger
 from agent.anodot_api_client import AnodotApiClient
-from agent.constants import ANODOT_API_URL
 
 logger = get_logger(__name__)
 
@@ -37,7 +36,7 @@ class DirectoryConfigHandler(SchemalessConfigHandler):
             }
         }
         api_client = AnodotApiClient(self.pipeline.destination.api_key, self.pipeline.destination.get_proxy_configs(),
-                                     base_url=ANODOT_API_URL)
+                                     base_url=self.pipeline.destination.url)
         if self.pipeline.config.get('schema'):
             if {key: val for key, val in self.pipeline.config['schema'].items() if key not in ['id']} == schema:
                 return self.pipeline.config['schema']['id']
@@ -51,9 +50,9 @@ class DirectoryConfigHandler(SchemalessConfigHandler):
             if config['name'] == 'constants':
                 config['value'] = [
                     {'key': 'SCHEMA_ID', 'value': self.get_schema_id()},
-                    {'key': 'TOKEN', 'value': self.pipeline.destination.config['token']},
+                    {'key': 'TOKEN', 'value': self.pipeline.destination.token},
                     {'key': 'PROTOCOL', 'value': self.pipeline.destination.PROTOCOL_30},
-                    {'key': 'ANODOT_BASE_URL', 'value': ANODOT_API_URL},
+                    {'key': 'ANODOT_BASE_URL', 'value': self.pipeline.destination.url},
                 ]
 
     def update_destination_config(self):
