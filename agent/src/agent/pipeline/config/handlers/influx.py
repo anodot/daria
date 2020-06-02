@@ -149,7 +149,7 @@ state['TAGS'] = {tags}
 
         for stage in self.config['stages']:
             if stage['instanceName'] == 'get_interval_records':
-                query = f"/cls?db={source_config['db']}&epoch=ms&q={self.QUERY_GET_DATA}".format(**{
+                query = f"/query?db={source_config['db']}&epoch=ms&q={self.QUERY_GET_DATA}".format(**{
                     'dimensions': columns,
                     'metric': self.client_config['measurement_name'],
                     'delay': delay,
@@ -160,7 +160,7 @@ state['TAGS'] = {tags}
 
             if stage['instanceName'] == 'get_last_agent_timestamp':
                 get_timestamp_url = urljoin(write_config['host'],
-                                            f"/cls?db={write_config['db']}&epoch=ns&q={self.QUERY_GET_TIMESTAMP}")
+                                            f"/query?db={write_config['db']}&epoch=ns&q={self.QUERY_GET_TIMESTAMP}")
                 self.update_http_stage(stage, write_config, get_timestamp_url)
 
             if stage['instanceName'] == 'save_next_record_timestamp':
@@ -168,7 +168,7 @@ state['TAGS'] = {tags}
                                                       f"/write?db={write_config['db']}&precision=ns"))
 
             if stage['instanceName'] == 'get_next_record_timestamp':
-                query = f"/cls?db={source_config['db']}&epoch=ns&q={self.QUERY_CHECK_DATA}".format(**{
+                query = f"/query?db={source_config['db']}&epoch=ns&q={self.QUERY_CHECK_DATA}".format(**{
                     'dimensions': columns,
                     'metric': self.client_config['measurement_name'],
                     'delay': delay,

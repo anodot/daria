@@ -8,7 +8,7 @@ class Validator:
     def get_errors(query: str, offset_field: str):
         errors = []
         if not Validator.__is_valid_timestamp(query, offset_field):
-            errors.append(f'The cls should have ascending ordering by {offset_field}')
+            errors.append(f'The query should have ascending ordering by {offset_field}')
         if not Validator.__is_valid_offset(query):
             errors.append('Please use ${OFFSET} with a gt condition (not gte)')
         return errors
