@@ -1,6 +1,6 @@
 [
   {
-    "source": "test_es",
+    "source": "e",
     "pipeline_id": "test_es_file_short",
     "measurement_names": {"Clicks":  "clicks"},
     "values": {"Clicks":  "gauge"},
@@ -9,25 +9,6 @@
       "type": "unix",
       "name": "_source/timestamp_unix"
     },
-    "query_file": "/usr/src/app/tests/test_pipelines/input_files/elastic_query.json"
-  },
-  {
-    "source": "test_es",
-    "pipeline_id": "test_es_file_full",
-    "count_records_measurement_name": "clicks",
-    "count_records": true,
-    "values": {},
-    "measurement_names": {},
-    "dimensions": {
-      "required": ["_source/ver", "_source/Country"],
-      "optional": ["_source/Exchange", "optional_dim"]
-    },
-    "timestamp": {
-      "type": "string",
-      "name": "_source/timestamp_string",
-      "format": "M/d/yyyy H:mm:ss"
-    },
-    "properties": {"test": "val"},
-    "query_file": "/usr/src/app/tests/test_pipelines/input_files/elastic_query.json"
+    "query_file": "/Users/antonzelenin/Workspace/daria/agent/tests/test_pipelines/input_files/elastic_query.json"
   }
 ]

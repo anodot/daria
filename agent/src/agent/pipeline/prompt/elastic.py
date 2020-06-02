@@ -1,9 +1,9 @@
 import click
-import re
 
 from .schemaless import PromptConfigSchemaless
 from agent.source import ElasticSource
 from agent.tools import infinite_retry
+from agent.pipeline.elastic.query import Validator
 
 
 class PromptConfigElastic(PromptConfigSchemaless):
@@ -26,22 +26,7 @@ class PromptConfigElastic(PromptConfigSchemaless):
         with open(self.config['query_file']) as f:
             query = f.read()
             offset_field = self.pipeline.source.config[ElasticSource.CONFIG_OFFSET_FIELD]
-            if not is_valid_timestamp(query, offset_field):
-                raise click.ClickException(f'The query should have ascending ordering by {offset_field}')
-            if not is_valid_offset(query):
-                raise click.ClickException('Please use ${OFFSET} with a gt condition (not gte)')
+            errors = Validator.get_errors(query, offset_field)
+            if errors:
+                raise click.ClickException(errors)
             self.pipeline.source.config[self.pipeline.source.CONFIG_QUERY] = query
-
-
-def is_valid_timestamp(query: str, offset_field: str) -> bool:
-    regexp = re.compile(rf'"sort"[\s\S]*"{offset_field}"[\s\S]*"order"[\s\S]*"asc"')
-    if regexp.search(query):
-        return True
-    return False
-
-
-def is_valid_offset(query: str) -> bool:
-    regexp = re.compile(r'"gt"[\s\S]*\${OFFSET}')
-    if regexp.search(query):
-        return True
-    return False

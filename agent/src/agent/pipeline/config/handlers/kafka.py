@@ -1,6 +1,6 @@
 from .schemaless import SchemalessConfigHandler
 from agent.logger import get_logger
-from ...source import KafkaSource
+from agent.source import KafkaSource
 
 logger = get_logger(__name__)
 

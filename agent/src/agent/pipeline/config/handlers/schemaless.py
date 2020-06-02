@@ -1,6 +1,6 @@
 import csv
 
-from .expression_parser import condition
+from agent.pipeline.config.expression_parser import condition
 from .base import BaseConfigHandler
 from agent.logger import get_logger
 
