@@ -5,6 +5,7 @@ COPY ./sdc-security.policy ${SDC_CONF}/sdc-security.policy
 
 COPY ./lib ${USER_LIBRARIES_DIR}
 COPY ./configure_image.sh /tmp/configure_image.sh
+COPY ./custom_entrypoint.sh /
 
 RUN sudo chmod +x /tmp/configure_image.sh && /tmp/configure_image.sh
 
@@ -12,3 +13,6 @@ RUN sudo chmod +x /tmp/configure_image.sh && /tmp/configure_image.sh
 COPY ./kafka-clients-2.0.2-SNAPSHOT.jar ${SDC_DIST}/streamsets-libs/streamsets-datacollector-apache-kafka_2_0-lib/lib/kafka-clients-2.0.1.jar
 
 VOLUME /data
+
+ENTRYPOINT ["/custom_entrypoint.sh"]
+CMD ["dc", "-exec"]
