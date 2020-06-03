@@ -16,6 +16,7 @@ class BaseConfigHandler(ABC):
     Overrides base config file
     """
     PIPELINE_BASE_CONFIG_NAME = ''
+    BASE_PIPELINE_CONFIGS_PATH = os.path.join('pipeline', 'config', 'base_pipelines')
 
     def __init__(self, pipeline: Pipeline):
         self.client_config = {}
@@ -26,7 +27,7 @@ class BaseConfigHandler(ABC):
         return self.pipeline.source.type
 
     def load_base_config(self):
-        with open(os.path.join(ROOT_DIR, 'pipeline', 'config', 'base_pipelines', self.PIPELINE_BASE_CONFIG_NAME)) as f:
+        with open(os.path.join(ROOT_DIR, self.BASE_PIPELINE_CONFIGS_PATH, self.PIPELINE_BASE_CONFIG_NAME)) as f:
             data = json.load(f)
 
         return data['pipelineConfig']
