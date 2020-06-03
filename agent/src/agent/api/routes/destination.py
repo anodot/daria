@@ -1,18 +1,25 @@
-from flask import Flask
+from flask import Blueprint
+from flask import request
 
-app = Flask(__name__)
+destination = Blueprint('destination', __name__)
 
 
-@app.route('/destination', methods=['POST'])
+@destination.route('/bye', methods=['GET'])
 def create():
-    return 'Create destination'
+    return 'Bye world!'
 
 
-@app.route('/destination', methods=['PUT'])
-def edit():
-    return 'Edit destination'
+@destination.route('/dust', methods=['POST', 'GET'])
+def foo():
+    data = request.args
+    return data
 
 
-@app.route('/destination', methods=['DELETE'])
-def delete():
-    return 'Delete destination'
+# @destination.route('/destination', methods=['PUT'])
+# def edit():
+#     return 'Edit destination'
+#
+#
+# @destination.route('/destination', methods=['DELETE'])
+# def delete():
+#     return 'Delete destination'

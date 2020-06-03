@@ -3,3 +3,5 @@ function get_errors { tail /sdc-data/errors/$1/$(ls -t /sdc-data/errors/$1 | hea
 function get_destination_url { cat /usr/src/app/data/destination.json | grep -oP '"conf.resourceUrl":.*?[^\\]",'; }
 
 function destination_logs { cat /sdc-data/logs/sdc.log | grep -A 5 RequestLogger; }
+
+alias ll="ls -ls"

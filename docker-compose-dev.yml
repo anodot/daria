@@ -43,6 +43,9 @@ services:
       - dummy-destination-data:/output
       - ./agent:/usr/src/app
       - ./test-datasets:/home
+      - ./agent/src/agent/api:/app
+    ports:
+      - 80:80
 
   mongo:
     image: mongo
