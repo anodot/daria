@@ -2,9 +2,11 @@ import click
 import os
 import shutil
 import time
+import agent.pipeline.config.handlers as config_handlers
 
 from .pipeline import Pipeline, PipelineException
-from . import prompt, config_handlers, load_client_data
+from agent.pipeline.config.validators import get_config_validator
+from agent.pipeline import prompt, load_client_data
 from .. import source
 from agent.anodot_api_client import AnodotApiClient
 from agent.constants import ERRORS_DIR, ENV_PROD
@@ -130,6 +132,9 @@ class PipelineManager:
 
     def load_config(self, config, edit=False):
         self.pipeline.set_config(self.file_loader.load(config, edit))
+
+    def validate_config(self):
+        get_config_validator(self.pipeline).validate(self.pipeline)
 
     def create(self):
         try:

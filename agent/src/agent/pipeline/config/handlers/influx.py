@@ -1,8 +1,8 @@
 import json
 
 from .base import BaseConfigHandler, ConfigHandlerException
-from ...logger import get_logger
-from ...constants import HOSTNAME
+from agent.logger import get_logger
+from agent.constants import HOSTNAME
 from datetime import datetime, timedelta
 from influxdb import InfluxDBClient
 from urllib.parse import urljoin, urlparse, quote_plus

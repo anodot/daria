@@ -14,7 +14,7 @@ all: build-all test-all
 
 build-all: get-streamsets-stages build sleep setup-elastic setup-kafka
 
-test-all: test-destination test-condition-parser test-input test-pipelines
+test-all: run-unit-tests test-destination test-input test-pipelines
 
 ##-------------
 ## DEVELOPMENT
@@ -25,7 +25,7 @@ build-all-dev: build-dev sleep setup-elastic setup-kafka
 
 run-all-dev: clean-docker-volumes run-dev sleep setup-kafka setup-elastic
 
-test-all-dev: test-dev-destination test-dev-condition-parser test-dev-input test-dev-pipelines
+test-all-dev: run-unit-tests-dev test-dev-destination test-dev-condition-parser test-dev-input test-dev-pipelines
 
 rerun: clean-docker-volumes run-base-services
 
@@ -64,9 +64,11 @@ test-tcp: prepare-source test-destination-dev
 	$(DOCKER_TEST_DEV) tests/test_input/test_tcp_http.py
 	$(DOCKER_TEST_DEV) tests/test_pipelines/test_tcp_http.py
 
- test-destination-dev: prepare-source nap
+test-destination-dev: prepare-source nap
 	$(DOCKER_TEST_DEV) tests/test_destination.py
 
+run-unit-tests-dev:
+	$(DOCKER_TEST_DEV_PARALLEL) tests/unit/
 
 
 
@@ -80,14 +82,14 @@ build:
 test-destination:
 	$(DOCKER_TEST) tests/test_destination.py
 
-test-condition-parser:
-	$(DOCKER_TEST) tests/test_condition_parser.py
-
 test-input:
 	$(DOCKER_TEST_PARALLEL) tests/test_input/
 
 test-pipelines:
 	$(DOCKER_TEST_PARALLEL) tests/test_pipelines/
+
+run-unit-tests:
+	$(DOCKER_TEST_PARALLEL) tests/unit/
 
 get-streamsets-stages:
 	rm -rf streamsets/lib/*

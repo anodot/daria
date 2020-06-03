@@ -1,6 +1,6 @@
 import pytest
 
-from agent.pipeline.config_handlers import expression_parser
+from agent.pipeline.config import expression_parser
 
 
 @pytest.mark.parametrize("literal, expected_result", [

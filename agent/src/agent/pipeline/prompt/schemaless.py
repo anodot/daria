@@ -1,6 +1,6 @@
 import click
 
-from agent.pipeline.config_handlers import expression_parser
+from agent.pipeline.config import expression_parser
 from agent.tools import infinite_retry
 from .base import PromptConfig
 
