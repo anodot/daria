@@ -90,6 +90,7 @@ test-pipelines:
 	$(DOCKER_TEST_PARALLEL) tests/test_pipelines/
 
 get-streamsets-stages:
+	rm -rf streamsets/lib/*
 	curl -L https://github.com/anodot/anodot-sdc-stage/releases/download/v1.0.1/anodot-1.0.1.tar.gz -o /tmp/sdc.tar.gz && tar xvfz /tmp/sdc.tar.gz -C streamsets/lib
 
 ##-----------------------
