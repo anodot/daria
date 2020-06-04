@@ -49,3 +49,5 @@ texttable==1.6.0
 urllib3==1.24.2
 pytest-xdist==1.27
 flask==1.1.2
+Flask-WTF==0.14
+werkzeug==0.16.1

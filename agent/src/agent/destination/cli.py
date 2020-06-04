@@ -30,7 +30,7 @@ def monitoring():
 def prompt_destination(dest: HttpDestination):
     dest.url = __prompt_url(default=dest.url)
     dest.token = click.prompt('Anodot api data collection token', type=click.STRING, default=dest.config.get('token'))
-    dest.update_urls()
+    dest.build_urls()
 
     if click.confirm('Use proxy for connecting to Anodot?'):
         uri = click.prompt('Proxy uri', type=click.STRING, default=dest.get_proxy_url())
@@ -87,7 +87,7 @@ def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, a
 
     if token:
         dest.token = token
-        dest.update_urls()
+        dest.build_urls()
         dest.set_proxy(proxy, proxy_host, proxy_user, proxy_password)
     else:
         prompt_destination(dest)
