@@ -4,4 +4,4 @@ function get_destination_url { cat /usr/src/app/data/destination.json | grep -oP
 
 function destination_logs { cat /sdc-data/logs/sdc.log | grep -A 5 RequestLogger; }
 
-alias ll="ls -ls"
+alias ll="ls -l"

@@ -31,6 +31,13 @@ class HttpDestination:
         self.host_id = host_id if host_id else self.generate_host_id()
         self.api_key = api_key
 
+    @staticmethod
+    def get():
+        dest = HttpDestination()
+        if dest.exists():
+            dest.load()
+        return dest
+
     def to_dict(self) -> dict:
         return {
             'config': self.config,
@@ -80,12 +87,14 @@ class HttpDestination:
 
         return config
 
-    def update_urls(self):
+    def build_urls(self):
         if not self.token:
             raise DestinationException('Token is empty')
-        self.config[self.CONFIG_RESOURCE_URL] =\
+        if not self.url:
+            raise DestinationException('Url is empty')
+        self.config[self.CONFIG_RESOURCE_URL] = \
             urllib.parse.urljoin(self.url, f'api/v1/metrics?token={self.token}&protocol={self.PROTOCOL_20}')
-        self.config[self.CONFIG_MONITORING_URL] =\
+        self.config[self.CONFIG_MONITORING_URL] = \
             urllib.parse.urljoin(self.url, f'api/v1/agents?token={self.token}')
 
     def save(self):

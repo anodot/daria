@@ -5,6 +5,7 @@
     "table": "test",
     "values": {"clicks": "gauge", "impressions": "gauge"},
     "dimensions": ["adsize", "country"],
+    "queryInterval": 20,
     "timestamp": {
       "type": "unix_ms",
       "name": "timestamp_unix_ms"
@@ -20,6 +21,7 @@
     "values": {"clicks": "gauge", "impressions": "gauge"},
     "count_records": true,
     "dimensions": ["adsize", "country"],
+    "queryInterval": 20,
     "timestamp": {
       "type": "datetime",
       "name": "timestamp_datetime"

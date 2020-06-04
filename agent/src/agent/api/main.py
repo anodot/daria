@@ -3,11 +3,7 @@ from agent.api.routes.destination import destination
 
 app = Flask(__name__)
 app.register_blueprint(destination)
-
-
-@app.route('/', methods=['GET'])
-def hello():
-    return 'Hello world!'
+app.config['WTF_CSRF_ENABLED'] = False
 
 
 if __name__ == "__main__":
