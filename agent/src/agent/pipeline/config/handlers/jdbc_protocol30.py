@@ -11,6 +11,19 @@ class JDBCProtocol30SDCConfigHandler(BaseConfigHandler):
 
     stages = {'JavaScriptEvaluator_01': JSConvertMetrics}
 
+    def override_stages(self):
+        self.update_pipeline_config()
+        self.update_source_configs()
+
+        for stage in self.config['stages']:
+            if stage['instanceName'] in self.stages:
+                stage_config = self.stages[stage['instanceName']](self.pipeline, stage).get_config()
+                for conf in stage['configuration']:
+                    if conf['name'] in stage_config:
+                        conf['value'] = stage_config[conf['name']]
+
+        self.update_destination_config()
+
     def update_pipeline_config(self):
         schema_definition = schema.update(self.pipeline)
         self.pipeline.config.update(schema_definition)
@@ -29,27 +42,6 @@ class JDBCProtocol30SDCConfigHandler(BaseConfigHandler):
                 for conf in stage['configuration']:
                     if conf['name'] in self.pipeline.destination.config and conf['name'] != self.pipeline.destination.CONFIG_RESOURCE_URL:
                         conf['value'] = self.pipeline.destination.config[conf['name']]
-
-    def update_stages(self, stage):
-        super().update_stages(stage)
-        if stage['instanceName'] == 'process_finish_file_event':
-            self.process_finish_file_event_stage(stage)
-
-    def process_finish_file_event_stage(self, stage):
-        for conf in stage['configuration']:
-            if conf['name'] != 'expressionProcessorConfigs':
-                continue
-            extract_timestamp = "str:regExCapture(record:value('/filepath'), '.*/(.+)_.*', 1)"
-            conf['value'] = [
-                {
-                    'fieldToSet': '/watermark',
-                    'expression': '${' + self.get_convert_timestamp_to_unix_expression(extract_timestamp) + '}'
-                },
-                {
-                    'fieldToSet': '/schemaId',
-                    'expression': self.pipeline.config['schema']['id']
-                },
-            ]
 
     @classmethod
     def _get_dimension_field_path(cls, key):

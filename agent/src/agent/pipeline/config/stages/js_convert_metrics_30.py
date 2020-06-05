@@ -1,4 +1,4 @@
-from . import Stage
+from .base import Stage
 
 
 class JSConvertMetrics(Stage):
