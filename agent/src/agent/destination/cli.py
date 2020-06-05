@@ -5,9 +5,55 @@ from .. import source, pipeline
 from agent.constants import MONITORING_SOURCE_NAME
 from agent.tools import infinite_retry
 from urllib.parse import urlparse
+from agent.destination.http import build
+from agent.destination import Proxy
+from typing import Optional
 
 
-def monitoring():
+def __validate_url(url: str):
+    result = urlparse(url)
+    if not result.netloc or not result.scheme:
+        raise click.ClickException('Wrong url format, please specify the protocol and domain name')
+
+
+@infinite_retry
+def __prompt_url(default: str):
+    url = click.prompt('Destination url', type=click.STRING, default=default)
+    __validate_url(url)
+    return url
+
+
+def __prompt_token(default: str):
+    return click.prompt('Anodot api data collection token', type=click.STRING, default=default)
+
+
+def __prompt_proxy(default_dest: HttpDestination) -> Optional[Proxy]:
+    if click.confirm('Use proxy for connecting to Anodot?'):
+        uri = __prompt_proxy_uri(default_dest.get_proxy_url())
+        username = __prompt_proxy_username(default_dest.get_proxy_username())
+        password = __prompt_proxy_password()
+        return Proxy(uri, username, password)
+    return None
+
+
+def __prompt_proxy_uri(default: str) -> str:
+    return click.prompt('Proxy uri', type=click.STRING, default=default)
+
+
+def __prompt_proxy_username(default: str) -> str:
+    return click.prompt('Proxy username', type=click.STRING, default=default)
+
+
+def __prompt_proxy_password() -> str:
+    return click.prompt('Proxy password', type=click.STRING, default='')
+
+
+@infinite_retry
+def __prompt_access_key(default: str):
+    return click.prompt('Anodot access key', type=click.STRING, default=default)
+
+
+def start_monitoring_pipeline():
     try:
         if pipeline.Pipeline.exists('Monitoring'):
             pipeline_manager = pipeline.PipelineManager(pipeline.load_object('Monitoring'))
@@ -26,43 +72,6 @@ def monitoring():
         raise click.ClickException(str(e))
 
 
-@infinite_retry
-def prompt_destination(dest: HttpDestination):
-    dest.url = __prompt_url(default=dest.url)
-    dest.token = click.prompt('Anodot api data collection token', type=click.STRING, default=dest.config.get('token'))
-    dest.build_urls()
-
-    if click.confirm('Use proxy for connecting to Anodot?'):
-        uri = click.prompt('Proxy uri', type=click.STRING, default=dest.get_proxy_url())
-        username = click.prompt('Proxy username', type=click.STRING, default=dest.get_proxy_username() or '')
-        password = click.prompt('Proxy password', type=click.STRING, default='')
-        dest.set_proxy(True, uri, username, password)
-    else:
-        dest.set_proxy(False)
-
-    dest.validate_token()
-
-
-@infinite_retry
-def __prompt_url(default: str):
-    url = click.prompt('Destination url', type=click.STRING, default=default)
-    __check_url(url)
-    return url
-
-
-def __check_url(url: str):
-    result = urlparse(url)
-    if not result.netloc or not result.scheme:
-        raise click.ClickException('Wrong url format, please specify the protocol and domain name')
-
-
-@infinite_retry
-def prompt_api_key(dest: HttpDestination):
-    dest.api_key = click.prompt('Anodot access key', type=click.STRING,
-                                default=dest.api_key if dest.api_key else '')
-    dest.validate_api_key()
-
-
 @click.command()
 @click.option('-t', '--token', type=click.STRING, default=None)
 @click.option('--proxy/--no-proxy', default=False)
@@ -78,23 +87,26 @@ def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, a
     Anodot API token - You can copy it from Settings > API tokens > Data Collection in your Anodot account
     Proxy for connecting to Anodot
     """
-    dest = HttpDestination(host_id=host_id, api_key=api_key)
-    if dest.exists():
-        dest.load()
-    if url:
-        __check_url(url)
-        dest.url = url
-
+    # take all data from command arguments if token is provided, otherwise ask for input
     if token:
-        dest.token = token
-        dest.build_urls()
-        dest.set_proxy(proxy, proxy_host, proxy_user, proxy_password)
+        if url:
+            __validate_url(url)
+        proxy_obj = None
+        if proxy:
+            if not proxy_host:
+                raise click.ClickException('Proxy user is not provided')
+            proxy_obj = Proxy(proxy_host, proxy_user, proxy_password)
+
+        dest = build(token, url, api_key, proxy_obj, host_id)
     else:
-        prompt_destination(dest)
-        prompt_api_key(dest)
+        default_dest = HttpDestination.get()
+        url = __prompt_url(default=default_dest.url)
+        token = __prompt_token(default_dest.config.get('token'))
+        proxy_obj = __prompt_proxy(default_dest)
+        access_key = __prompt_access_key(default_dest.api_key)
+        dest = build(token, url, access_key, proxy_obj)
 
     dest.save()
     click.secho('Connection to Anodot established')
-    monitoring()
-
+    start_monitoring_pipeline()
     click.secho('Destination configured', fg='green')

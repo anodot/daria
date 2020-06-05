@@ -3,7 +3,7 @@ import json
 
 from .. import source, pipeline
 from agent.constants import ENV_PROD
-from agent.destination import HttpDestination
+from agent.destination.http import HttpDestination
 from agent.streamsets_api_client import api_client
 from agent.tools import infinite_retry
 from jsonschema import validate, ValidationError, SchemaError

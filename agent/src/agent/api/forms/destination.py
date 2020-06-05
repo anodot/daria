@@ -9,12 +9,13 @@ def validate_proxy(form, field):
 
 
 class DestinationForm(FlaskForm):
-    destination_url = StringField('Destination URL', [DataRequired()])
     data_collection_token = StringField('Data collection token', [DataRequired()])
+    destination_url = StringField('Destination URL')
+    host_id = StringField('Host ID')
     access_key = StringField('Access key')
     use_proxy = BooleanField('Use proxy')
     proxy_uri = StringField('Proxy URI', [
         # URL(False, 'Proxy url is invalid'),
         validate_proxy])
-    proxy_username = StringField('Proxy username', [validate_proxy])
+    proxy_username = StringField('Proxy username')
     proxy_password = StringField('Proxy password')

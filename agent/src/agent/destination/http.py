@@ -1,3 +1,5 @@
+from typing import Optional
+
 import click
 import json
 import os
@@ -8,6 +10,7 @@ import requests
 from agent.anodot_api_client import AnodotApiClient
 from agent.constants import ANODOT_API_URL, DATA_DIR
 from urllib.parse import urlparse, urlunparse
+from agent.destination import Proxy
 
 
 class HttpDestination:
@@ -26,16 +29,16 @@ class HttpDestination:
     PROTOCOL_20 = 'anodot20'
     PROTOCOL_30 = 'anodot30'
 
-    def __init__(self, host_id=None, api_key=None):
-        self.config = {}
-        self.host_id = host_id if host_id else self.generate_host_id()
-        self.api_key = api_key
+    def __init__(self):
+        self.config = {self.CONFIG_PROXY_USE: False}
+        self.host_id = self.generate_host_id()
+        self.api_key = ''
 
     @staticmethod
     def get():
         dest = HttpDestination()
         if dest.exists():
-            dest.load()
+            dest.__load()
         return dest
 
     def to_dict(self) -> dict:
@@ -74,18 +77,12 @@ class HttpDestination:
     def token(self, value: str):
         self.config['token'] = value
 
-    def load(self) -> dict:
-        if not self.exists():
-            raise DestinationException('Destination wasn\'t configured')
-
+    def __load(self):
         with open(self.FILE, 'r') as f:
             config = json.load(f)
-
-        self.config = config['config']
-        self.host_id = config['host_id']
-        self.api_key = config.get('api_key')
-
-        return config
+            self.config = config['config']
+            self.host_id = config['host_id']
+            self.api_key = config.get('api_key')
 
     def build_urls(self):
         if not self.token:
@@ -154,3 +151,26 @@ class HttpDestination:
 
 class DestinationException(click.ClickException):
     pass
+
+
+# todo optional?
+def build(
+        data_collection_token: str,
+        destination_url: str,
+        access_key: str = None,
+        proxy: Proxy = None,
+        host_id: str = None,
+) -> HttpDestination:
+    dest = HttpDestination.get()
+    dest.token = data_collection_token
+    if host_id:
+        dest.host_id = host_id
+    if destination_url:
+        dest.url = destination_url
+    if access_key:
+        dest.api_key = access_key
+    if proxy:
+        dest.set_proxy(True, proxy.uri, proxy.username, proxy.password)
+    dest.build_urls()
+    dest.validate()
+    return dest

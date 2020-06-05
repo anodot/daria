@@ -6,7 +6,7 @@ from .pipeline import Pipeline, PipelineException, PipelineNotExistsException
 from .pipeline_manager import PipelineManager
 from jsonschema import validate
 from .. import source
-from agent.destination import HttpDestination
+from agent.destination.http import HttpDestination
 from typing import List
 
 
@@ -31,15 +31,13 @@ def load_object(pipeline_id: str) -> Pipeline:
     })
 
     source_obj = source.load_object(config['source']['name'])
-    destination = HttpDestination()
-    destination.load()
+    destination = HttpDestination.get()
     return Pipeline(pipeline_id, source_obj, config, destination)
 
 
 def create_object(pipeline_id: str, source_name: str) -> Pipeline:
     source_obj = source.load_object(source_name)
-    destination = HttpDestination()
-    destination.load()
+    destination = HttpDestination.get()
     return Pipeline(pipeline_id, source_obj, {}, destination)
 
 

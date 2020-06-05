@@ -27,12 +27,12 @@ def test_destination(cli_runner):
 
 
 def test_edit_destination(cli_runner):
-    prev_dest = HttpDestination().load()
+    prev_dest = HttpDestination.get()
     result = cli_runner.invoke(agent_cli.destination, input='\ntoken\ny\nhttp://squid:3128\n\n\n')
     print(result.output)
-    curr_dest = HttpDestination().load()
+    curr_dest = HttpDestination.get()
     assert result.exit_code == 0
-    assert curr_dest['host_id'] == prev_dest['host_id']
+    assert curr_dest.host_id == prev_dest.host_id
     assert api_client.get_pipeline_status('Monitoring')['status'] == 'RUNNING'
 
 

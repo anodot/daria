@@ -3,6 +3,6 @@ from agent.pipeline import cli as pipeline_cli
 from agent.destination import cli as destination_cli
 from agent.source import cli as source_cli
 
-cli.destination()
+# cli.destination()
 # source_cli.create()
-# pipeline_cli.create(['-f', '/Users/antonzelenin/Workspace/daria/agent/tests/test_pipelines/input_files/elastic_pipelines.json']);
+# pipeline_cli.create();
