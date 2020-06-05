@@ -5,7 +5,7 @@ from .. import source, pipeline
 from agent.constants import MONITORING_SOURCE_NAME
 from agent.tools import infinite_retry
 from urllib.parse import urlparse
-from agent.destination.http import build
+from agent.destination.http import build as build_destination
 from agent.destination import Proxy
 from typing import Optional
 
@@ -53,7 +53,7 @@ def __prompt_access_key(default: str):
     return click.prompt('Anodot access key', type=click.STRING, default=default)
 
 
-def start_monitoring_pipeline():
+def __start_monitoring_pipeline():
     try:
         if pipeline.Pipeline.exists('Monitoring'):
             pipeline_manager = pipeline.PipelineManager(pipeline.load_object('Monitoring'))
@@ -87,26 +87,23 @@ def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, a
     Anodot API token - You can copy it from Settings > API tokens > Data Collection in your Anodot account
     Proxy for connecting to Anodot
     """
-    # take all data from command arguments if token is provided, otherwise ask for input
+    proxy_obj = None
+    # take all data from the command arguments if token is provided, otherwise ask for input
     if token:
         if url:
             __validate_url(url)
-        proxy_obj = None
         if proxy:
             if not proxy_host:
-                raise click.ClickException('Proxy user is not provided')
+                raise click.ClickException('Proxy host is not provided')
             proxy_obj = Proxy(proxy_host, proxy_user, proxy_password)
-
-        dest = build(token, url, api_key, proxy_obj, host_id)
     else:
         default_dest = HttpDestination.get()
         url = __prompt_url(default=default_dest.url)
         token = __prompt_token(default_dest.config.get('token'))
         proxy_obj = __prompt_proxy(default_dest)
-        access_key = __prompt_access_key(default_dest.api_key)
-        dest = build(token, url, access_key, proxy_obj)
+        api_key = __prompt_access_key(default_dest.api_key)
 
-    dest.save()
+    build_destination(token, url, api_key, proxy_obj, host_id)
     click.secho('Connection to Anodot established')
-    start_monitoring_pipeline()
+    __start_monitoring_pipeline()
     click.secho('Destination configured', fg='green')

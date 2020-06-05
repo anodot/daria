@@ -173,4 +173,5 @@ def build(
         dest.set_proxy(True, proxy.uri, proxy.username, proxy.password)
     dest.build_urls()
     dest.validate()
+    dest.save()
     return dest
