@@ -114,13 +114,13 @@ class HttpDestination:
             self.config[self.CONFIG_PROXY_PASSWORD] = password
 
     def get_proxy_url(self) -> str:
-        return self.config.get(self.CONFIG_PROXY_URI)
+        return self.config.get(self.CONFIG_PROXY_URI, '')
 
     def get_proxy_username(self) -> str:
-        return self.config.get(self.CONFIG_PROXY_USERNAME)
+        return self.config.get(self.CONFIG_PROXY_USERNAME, '')
 
     def get_proxy_password(self) -> str:
-        return self.config.get(self.CONFIG_PROXY_PASSWORD)
+        return self.config.get(self.CONFIG_PROXY_PASSWORD, '')
 
     def get_proxy_configs(self) -> dict:
         proxies = dict()
