@@ -6,7 +6,7 @@ logger = get_logger(__name__)
 
 
 class DirectoryConfigHandler(SchemalessConfigHandler):
-    PIPELINE_BASE_CONFIG_NAME = 'directory_http.json'
+    PIPELINE_BASE_CONFIG_NAME = 'directory_httpv3.json'
 
     def replace_chars(self, property_name):
         return property_name.replace('/', '_').replace('.', '_').replace(' ', '_')
