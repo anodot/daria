@@ -5,7 +5,7 @@ from .. import source, pipeline
 from agent.constants import MONITORING_SOURCE_NAME
 from agent.tools import infinite_retry
 from urllib.parse import urlparse
-from agent.destination.http import build as build_destination
+from agent.destination.http import create
 from agent.destination import Proxy
 from typing import Optional
 
@@ -103,7 +103,7 @@ def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, a
         proxy_obj = __prompt_proxy(default_dest)
         api_key = __prompt_access_key(default_dest.api_key)
 
-    build_destination(token, url, api_key, proxy_obj, host_id)
+    create(token, url, api_key, proxy_obj, host_id)
     click.secho('Connection to Anodot established')
     __start_monitoring_pipeline()
     click.secho('Destination configured', fg='green')

@@ -1,5 +1,3 @@
-from typing import Optional
-
 import click
 import json
 import os
@@ -7,6 +5,7 @@ import urllib.parse
 import uuid
 import requests
 
+from typing import Dict
 from agent.anodot_api_client import AnodotApiClient
 from agent.constants import ANODOT_API_URL, DATA_DIR
 from urllib.parse import urlparse, urlunparse
@@ -30,7 +29,7 @@ class HttpDestination:
     PROTOCOL_30 = 'anodot30'
 
     def __init__(self):
-        self.config = {self.CONFIG_PROXY_USE: False}
+        self.config: Dict[str, any] = {self.CONFIG_PROXY_USE: False}
         self.host_id = self.generate_host_id()
         self.api_key = ''
 
@@ -153,25 +152,45 @@ class DestinationException(click.ClickException):
     pass
 
 
-# todo optional?
-def build(
+def __build(
+        destination: HttpDestination,
+        data_collection_token: str = None,
+        destination_url: str = None,
+        access_key: str = None,
+        proxy: Proxy = None,
+        host_id: str = None,
+) -> HttpDestination:
+    if data_collection_token:
+        destination.token = data_collection_token
+    if destination_url:
+        destination.url = destination_url
+    if access_key:
+        destination.api_key = access_key
+    if proxy:
+        destination.set_proxy(True, proxy.uri, proxy.username, proxy.password)
+    if host_id:
+        destination.host_id = host_id
+    destination.build_urls()
+    destination.validate()
+    destination.save()
+    return destination
+
+
+def create(
         data_collection_token: str,
         destination_url: str,
         access_key: str = None,
         proxy: Proxy = None,
         host_id: str = None,
 ) -> HttpDestination:
-    dest = HttpDestination.get()
-    dest.token = data_collection_token
-    if host_id:
-        dest.host_id = host_id
-    if destination_url:
-        dest.url = destination_url
-    if access_key:
-        dest.api_key = access_key
-    if proxy:
-        dest.set_proxy(True, proxy.uri, proxy.username, proxy.password)
-    dest.build_urls()
-    dest.validate()
-    dest.save()
-    return dest
+    return __build(HttpDestination(), data_collection_token, destination_url, access_key, proxy, host_id)
+
+
+def edit(
+        data_collection_token: str = None,
+        destination_url: str = None,
+        access_key: str = None,
+        proxy: Proxy = None,
+        host_id: str = None,
+) -> HttpDestination:
+    return __build(HttpDestination.get(), data_collection_token, destination_url, access_key, proxy, host_id)
