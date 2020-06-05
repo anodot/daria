@@ -7,7 +7,7 @@ from .. import pipeline, source
 from ..streamsets_api_client import api_client, StreamSetsApiClientException
 from agent.destination.http import HttpDestination
 from agent.tools import infinite_retry
-from jsonschema import validate, ValidationError
+from jsonschema import validate as validate_json, ValidationError
 from datetime import datetime
 from texttable import Texttable
 
@@ -60,7 +60,7 @@ def get_pipelines_ids():
 
 
 def create_multiple(file):
-    data = json.load(file)
+    configs = json.load(file)
 
     json_schema = {
         'type': 'array',
@@ -73,15 +73,16 @@ def create_multiple(file):
             'required': ['source', 'pipeline_id']
         }
     }
-    validate(data, json_schema)
+    validate_json(configs, json_schema)
 
-    for item in data:
-        check_pipeline_id(item['pipeline_id'])
-        pipeline_manager = PipelineManager(pipeline.create_object(item['pipeline_id'], item['source']))
-        pipeline_manager.load_config(item)
+    for config in configs:
+        check_pipeline_id(config['pipeline_id'])
+        pipeline_manager = PipelineManager(pipeline.create_object(config['pipeline_id'], config['source']))
+        pipeline_manager.load_config(config)
+        pipeline_manager.validate_config()
         pipeline_manager.create()
 
-        click.secho('Created pipeline {}'.format(item['pipeline_id']), fg='green')
+        click.secho('Created pipeline {}'.format(config['pipeline_id']), fg='green')
 
 
 def check_pipeline_id(pipeline_id: str):
@@ -158,7 +159,7 @@ def get_pipelines_from_file(file):
             'required': ['pipeline_id']
         }
     }
-    validate(data, json_schema)
+    validate_json(data, json_schema)
     return data
 
 

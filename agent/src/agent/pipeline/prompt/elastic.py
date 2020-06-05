@@ -1,5 +1,9 @@
 import click
+
 from .schemaless import PromptConfigSchemaless
+from agent.source import ElasticSource
+from agent.tools import infinite_retry
+from agent.pipeline.elastic import query_validator
 
 
 class PromptConfigElastic(PromptConfigSchemaless):
@@ -15,8 +19,14 @@ class PromptConfigElastic(PromptConfigSchemaless):
         self.set_static_properties()
         self.set_tags()
 
+    @infinite_retry
     def prompt_query(self):
         self.config['query_file'] = click.prompt('Query file path', type=click.Path(exists=True, dir_okay=False),
                                                  default=self.default_config.get('query_file'))
-        with open(self.config['query_file'], 'r') as f:
-            self.pipeline.source.config[self.pipeline.source.CONFIG_QUERY] = f.read()
+        with open(self.config['query_file']) as f:
+            query = f.read()
+            offset_field = self.pipeline.source.config[ElasticSource.CONFIG_OFFSET_FIELD]
+            errors = query_validator.get_errors(query, offset_field)
+            if errors:
+                raise click.ClickException(errors)
+            self.pipeline.source.config[self.pipeline.source.CONFIG_QUERY] = query

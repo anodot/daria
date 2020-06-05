@@ -2,8 +2,7 @@ import os
 import json
 
 from jsonschema import validate
-from agent.pipeline.config_handlers import expression_parser
-from agent.source.kafka import KafkaSource
+from agent.pipeline.config import expression_parser
 
 definitions_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'json_schema_definitions')
 
