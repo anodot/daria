@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import BooleanField, StringField
-from wtforms.validators import DataRequired, URL, ValidationError
+from wtforms.validators import DataRequired, URL, ValidationError, Optional
 
 
 def validate_proxy_host(form, field):
@@ -10,12 +10,13 @@ def validate_proxy_host(form, field):
 
 class DestinationForm(FlaskForm):
     data_collection_token = StringField('Data collection token', [DataRequired()])
-    destination_url = StringField('Destination URL')
+    destination_url = StringField('Destination URL', [Optional(), URL(False, 'Destination url is invalid')])
     host_id = StringField('Host ID')
     access_key = StringField('Access key')
     use_proxy = BooleanField('Use proxy')
     proxy_uri = StringField('Proxy URI', [
-        # URL(False, 'Proxy url is invalid'),
+        Optional(),
+        URL(False, 'Proxy url is invalid'),
         validate_proxy_host])
     proxy_username = StringField('Proxy username')
     proxy_password = StringField('Proxy password')

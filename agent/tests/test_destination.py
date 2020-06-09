@@ -1,4 +1,3 @@
-import time
 import pytest
 
 from .fixtures import cli_runner

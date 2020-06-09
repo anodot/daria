@@ -23,7 +23,7 @@ def get():
 
 @destination.route('/destination', methods=['POST'])
 def create():
-    form = DestinationForm(request.args)
+    form = DestinationForm(request.form)
     if not form.validate():
         return form.errors, 400
     result = create_destination(
@@ -45,7 +45,6 @@ def edit():
     form = EditDestinationForm(request.args)
     if not form.validate():
         return form.errors, 400
-
     result = edit_destination(
         HttpDestination.get(),
         form.data_collection_token.data,
@@ -54,7 +53,6 @@ def edit():
         __get_proxy(form),
         form.host_id.data,
     )
-
     if result.is_err():
         return result.value, 400
     return result.value.to_dict(), 200
