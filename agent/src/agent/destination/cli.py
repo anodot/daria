@@ -1,4 +1,5 @@
 import click
+from result import Err
 
 from .http import HttpDestination
 from .. import source, pipeline
@@ -103,7 +104,10 @@ def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, a
         proxy_obj = __prompt_proxy(default_dest)
         api_key = __prompt_access_key(default_dest.api_key)
 
-    create(token, url, api_key, proxy_obj, host_id)
+    result = create(token, url, api_key, proxy_obj, host_id)
+    if result.is_err():
+        print(result.value)
+        return
     click.secho('Connection to Anodot established')
     __start_monitoring_pipeline()
     click.secho('Destination configured', fg='green')

@@ -10,6 +10,7 @@ from agent.anodot_api_client import AnodotApiClient
 from agent.constants import ANODOT_API_URL, DATA_DIR
 from urllib.parse import urlparse, urlunparse
 from agent.destination import Proxy
+from result import Result, Ok, Err
 
 
 class HttpDestination:
@@ -102,11 +103,6 @@ class HttpDestination:
             urllib.parse.urljoin(self.url, f'api/v1/agents?token={self.token}')
 
     def save(self):
-        try:
-            self.validate()
-        except requests.exceptions.RequestException as e:
-            raise DestinationException(str(e))
-
         with open(self.FILE, 'w') as f:
             json.dump(self.to_dict(), f)
 
@@ -151,8 +147,14 @@ class HttpDestination:
         return True
 
     def validate(self) -> bool:
-        self.validate_token()
-        self.validate_api_key()
+        try:
+            self.validate_token()
+        except requests.HTTPError:
+            raise DestinationException('Data collection token is invalid')
+        try:
+            self.validate_api_key()
+        except requests.HTTPError:
+            raise DestinationException('API key is invalid')
         return True
 
 
@@ -167,7 +169,7 @@ def __build(
         access_key: str = None,
         proxy: Proxy = None,
         host_id: str = None,
-) -> HttpDestination:
+) -> Result[HttpDestination, str]:
     if data_collection_token:
         destination.token = data_collection_token
     if destination_url:
@@ -178,10 +180,16 @@ def __build(
         destination.set_proxy(True, proxy.uri, proxy.username, proxy.password)
     if host_id:
         destination.host_id = host_id
-    destination.build_urls()
-    destination.validate()
+    try:
+        destination.build_urls()
+    except DestinationException as e:
+        return Err(e.message)
+    try:
+        destination.validate()
+    except DestinationException as e:
+        return Err(e.message)
     destination.save()
-    return destination
+    return Ok(destination)
 
 
 def create(
@@ -190,7 +198,7 @@ def create(
         access_key: str = None,
         proxy: Proxy = None,
         host_id: str = None,
-) -> HttpDestination:
+) -> Result[HttpDestination, str]:
     return __build(HttpDestination(), data_collection_token, destination_url, access_key, proxy, host_id)
 
 
@@ -201,5 +209,5 @@ def edit(
         access_key: str = None,
         proxy: Proxy = None,
         host_id: str = None,
-) -> HttpDestination:
+) -> Result[HttpDestination, str]:
     return __build(destination, data_collection_token, destination_url, access_key, proxy, host_id)

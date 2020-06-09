@@ -1,6 +1,7 @@
 from typing import Optional
 
 from flask import Blueprint, request
+
 from agent.api.forms.destination import DestinationForm, EditDestinationForm
 from agent.destination.http import create as create_destination, edit as edit_destination, HttpDestination
 from agent.destination import Proxy
@@ -17,23 +18,24 @@ def __get_proxy(form: DestinationForm) -> Optional[Proxy]:
 def get():
     if not HttpDestination.exists():
         return 'Destination doesn\'t exist', 400
-    return HttpDestination.get().to_dict()
+    return HttpDestination.get().to_dict(), 200
 
 
 @destination.route('/destination', methods=['POST'])
 def create():
-    # todo wrong token or api key messages
     form = DestinationForm(request.args)
     if not form.validate():
         return form.errors, 400
-    dest = create_destination(
+    result = create_destination(
         form.data_collection_token.data,
         form.destination_url.data,
         form.access_key.data,
         __get_proxy(form),
         form.host_id.data,
     )
-    return dest.to_dict(), 200
+    if result.is_err():
+        return result.value, 400
+    return result.value.to_dict(), 200
 
 
 @destination.route('/destination', methods=['PUT'])
@@ -42,8 +44,9 @@ def edit():
         return 'Destination doesn\'t exist', 400
     form = EditDestinationForm(request.args)
     if not form.validate():
-        return form.errors
-    dest = edit_destination(
+        return form.errors, 400
+
+    result = edit_destination(
         HttpDestination.get(),
         form.data_collection_token.data,
         form.destination_url.data,
@@ -51,4 +54,7 @@ def edit():
         __get_proxy(form),
         form.host_id.data,
     )
-    return dest.to_dict(), 200
+
+    if result.is_err():
+        return result.value, 400
+    return result.value.to_dict(), 200
