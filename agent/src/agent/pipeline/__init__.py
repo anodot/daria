@@ -1,7 +1,6 @@
 import json
 import os
 
-# from . import prompt, config_handlers, load_client_data
 from .pipeline import Pipeline, PipelineException, PipelineNotExistsException
 from .pipeline_manager import PipelineManager
 from jsonschema import validate
@@ -31,12 +30,14 @@ def load_object(pipeline_id: str) -> Pipeline:
     })
 
     source_obj = source.load_object(config['source']['name'])
+    # todo what if does not exist?
     destination = HttpDestination.get()
     return Pipeline(pipeline_id, source_obj, config, destination)
 
 
 def create_object(pipeline_id: str, source_name: str) -> Pipeline:
     source_obj = source.load_object(source_name)
+    # todo what if doesn not exist?
     destination = HttpDestination.get()
     return Pipeline(pipeline_id, source_obj, {}, destination)
 

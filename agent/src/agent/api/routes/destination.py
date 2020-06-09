@@ -22,6 +22,7 @@ def get():
 
 @destination.route('/destination', methods=['POST'])
 def create():
+    # todo wrong token or api key messages
     form = DestinationForm(request.args)
     if not form.validate():
         return form.errors, 400
@@ -43,6 +44,7 @@ def edit():
     if not form.validate():
         return form.errors
     dest = edit_destination(
+        HttpDestination.get(),
         form.data_collection_token.data,
         form.destination_url.data,
         form.access_key.data,

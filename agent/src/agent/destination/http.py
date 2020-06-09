@@ -5,7 +5,7 @@ import urllib.parse
 import uuid
 import requests
 
-from typing import Dict
+from typing import Dict, Optional
 from agent.anodot_api_client import AnodotApiClient
 from agent.constants import ANODOT_API_URL, DATA_DIR
 from urllib.parse import urlparse, urlunparse
@@ -34,9 +34,17 @@ class HttpDestination:
         self.api_key = ''
 
     @staticmethod
-    def get():
+    def get() -> Optional['HttpDestination']:
+        if HttpDestination.exists():
+            dest = HttpDestination()
+            dest.__load()
+            return dest
+        return None
+
+    @staticmethod
+    def get_or_default() -> 'HttpDestination':
         dest = HttpDestination()
-        if dest.exists():
+        if HttpDestination.exists():
             dest.__load()
         return dest
 
@@ -77,7 +85,7 @@ class HttpDestination:
         self.config['token'] = value
 
     def __load(self):
-        with open(self.FILE, 'r') as f:
+        with open(self.FILE) as f:
             config = json.load(f)
             self.config = config['config']
             self.host_id = config['host_id']
@@ -187,10 +195,11 @@ def create(
 
 
 def edit(
+        destination: HttpDestination,
         data_collection_token: str = None,
         destination_url: str = None,
         access_key: str = None,
         proxy: Proxy = None,
         host_id: str = None,
 ) -> HttpDestination:
-    return __build(HttpDestination.get(), data_collection_token, destination_url, access_key, proxy, host_id)
+    return __build(destination, data_collection_token, destination_url, access_key, proxy, host_id)

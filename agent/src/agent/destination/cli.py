@@ -97,7 +97,7 @@ def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, a
                 raise click.ClickException('Proxy host is not provided')
             proxy_obj = Proxy(proxy_host, proxy_user, proxy_password)
     else:
-        default_dest = HttpDestination.get()
+        default_dest = HttpDestination.get_or_default()
         url = __prompt_url(default=default_dest.url)
         token = __prompt_token(default_dest.config.get('token'))
         proxy_obj = __prompt_proxy(default_dest)
