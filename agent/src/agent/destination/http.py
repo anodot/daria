@@ -6,6 +6,9 @@ import uuid
 import requests
 
 from typing import Dict, Optional
+
+from requests.exceptions import ProxyError, ConnectionError
+
 from agent.anodot_api_client import AnodotApiClient
 from agent.constants import ANODOT_API_URL, DATA_DIR
 from urllib.parse import urlparse
@@ -194,7 +197,7 @@ def __build(
         destination.url = url
     if token:
         resource_url, monitoring_url = build_urls(destination.url, token)
-        if not DataValidator.is_valid_url(resource_url, destination.proxy):
+        if not DataValidator.is_valid_resource_url(resource_url, destination.proxy):
             return Err('Data collection token is invalid')
         destination.token = token
         destination.resource_url = resource_url
@@ -211,10 +214,9 @@ def __build(
 class DataValidator:
     @staticmethod
     def is_valid_proxy(proxy: Proxy) -> bool:
-        result = requests.get('http://example.com', proxies=get_config(proxy), timeout=5)
         try:
-            result.raise_for_status()
-        except requests.HTTPError:
+            requests.get('http://example.com', proxies=get_config(proxy), timeout=5)
+        except ProxyError:
             return False
         return True
 
@@ -224,13 +226,17 @@ class DataValidator:
         if not result.netloc or not result.scheme:
             return False
         status_url = urllib.parse.urljoin(url, HttpDestination.STATUS_URL)
-        return DataValidator.is_valid_url(status_url, proxy)
+        try:
+            requests.get(status_url, proxies=get_config(proxy), timeout=5)
+        except ConnectionError:
+            return False
+        return True
 
     @staticmethod
-    def is_valid_url(url: str, proxy: Optional[Proxy]) -> bool:
-        result = requests.post(url, proxies=get_config(proxy), timeout=5)
+    def is_valid_resource_url(resource_url: str, proxy: Proxy) -> bool:
+        response = requests.post(resource_url, proxies=get_config(proxy), timeout=5)
         try:
-            result.raise_for_status()
+            response.raise_for_status()
         except requests.HTTPError:
             return False
         return True

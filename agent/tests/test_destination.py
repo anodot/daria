@@ -18,7 +18,7 @@ def host_id(monkeypatch):
 
 def test_destination(cli_runner):
     result = cli_runner.invoke(agent_cli.destination, args=['--url=http://wrong-url'],
-                               input='http://dummy_destination\ntoken\ny\nhttp://squid:3128\n\n\naccess_key\n')
+                               input='y\nhttp://squid:3128\n\n\nhttp://dummy_destination\ntoken\naccess_key\n')
     print(result.output)
     assert result.exit_code == 0
     assert HttpDestination.exists()
@@ -27,7 +27,7 @@ def test_destination(cli_runner):
 
 def test_edit_destination(cli_runner):
     prev_dest = HttpDestination.get()
-    result = cli_runner.invoke(agent_cli.destination, input='\ntoken\ny\nhttp://squid:3128\n\n\n')
+    result = cli_runner.invoke(agent_cli.destination, input='y\nhttp://squid:3128\n\n\n\ntoken\n')
     print(result.output)
     curr_dest = HttpDestination.get()
     assert result.exit_code == 0

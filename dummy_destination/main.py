@@ -57,5 +57,10 @@ def delete_schema_mock(schema_id):
     return json.dumps({'result': 'ok'})
 
 
+@app.route('/api/v1/status', methods=['GET'])
+def status():
+    return 'ok'
+
+
 if __name__ == '__main__':
     app.run()

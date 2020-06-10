@@ -8,26 +8,7 @@ from agent.proxy import Proxy
 
 
 @infinite_retry
-def __prompt_url(dest: HttpDestination):
-    url = click.prompt('Destination url', type=click.STRING, default=dest.url)
-    if not DataValidator.is_valid_destination_url(url, dest.proxy):
-        raise click.ClickException('Wrong url format, please specify the protocol and domain name')
-    dest.url = url
-
-
-@infinite_retry
-def __prompt_token(dest: HttpDestination):
-    token = click.prompt('Anodot api data collection token', type=click.STRING, default=dest.token)
-    resource_url, monitoring_url = build_urls(dest.url, token)
-    if not DataValidator.is_valid_url(resource_url, dest.proxy):
-        raise click.ClickException('Data collection token is invalid')
-    dest.token = token
-    dest.resource_url = resource_url
-    dest.monitoring_url = monitoring_url
-
-
 def __prompt_proxy(dest: HttpDestination):
-    proxy = None
     if click.confirm('Use proxy for connecting to Anodot?'):
         uri = __prompt_proxy_uri(dest.get_proxy_url())
         username = __prompt_proxy_username(dest.get_proxy_username())
@@ -35,7 +16,7 @@ def __prompt_proxy(dest: HttpDestination):
         proxy = Proxy(uri, username, password)
         if not DataValidator.is_valid_proxy(proxy):
             raise click.ClickException('Proxy is invalid')
-    dest.proxy = proxy
+        dest.proxy = proxy
 
 
 def __prompt_proxy_uri(default: str) -> str:
@@ -51,9 +32,28 @@ def __prompt_proxy_password() -> str:
 
 
 @infinite_retry
+def __prompt_url(dest: HttpDestination):
+    url = click.prompt('Destination url', type=click.STRING, default=dest.url)
+    if not DataValidator.is_valid_destination_url(url, dest.proxy):
+        raise click.ClickException('Wrong url format, please specify the protocol and domain name')
+    dest.url = url
+
+
+@infinite_retry
+def __prompt_token(dest: HttpDestination):
+    token = click.prompt('Anodot api data collection token', type=click.STRING, default=dest.token)
+    resource_url, monitoring_url = build_urls(dest.url, token)
+    if not DataValidator.is_valid_resource_url(resource_url, dest.proxy):
+        raise click.ClickException('Data collection token is invalid')
+    dest.token = token
+    dest.resource_url = resource_url
+    dest.monitoring_url = monitoring_url
+
+
+@infinite_retry
 def __prompt_access_key(dest: HttpDestination):
     access_key = click.prompt('Anodot access key', type=click.STRING, default=dest.access_key) or None
-    if not DataValidator.is_valid_access_key(access_key, dest.url, dest.proxy):
+    if access_key and not DataValidator.is_valid_access_key(access_key, dest.url, dest.proxy):
         raise click.ClickException('Access key is invalid')
     dest.access_key = access_key
 
