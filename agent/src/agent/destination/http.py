@@ -208,6 +208,7 @@ def __build(
         destination.access_key = access_key
     if host_id:
         destination.host_id = host_id
+    destination.save()
     return Ok(destination)
 
 

@@ -103,6 +103,7 @@ def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, a
         __prompt_url(dest)
         __prompt_token(dest)
         __prompt_access_key(dest)
+        dest.save()
 
     click.secho('Connection to Anodot established')
     __start_monitoring_pipeline()
