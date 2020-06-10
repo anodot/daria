@@ -5,6 +5,14 @@ import os
 from .. import source
 from agent.constants import DATA_DIR
 from agent.destination import HttpDestination
+from enum import Enum
+
+
+class TimestampType(Enum):
+    STRING = 'string'
+    DATETIME = 'datetime'
+    UNIX = 'unix'
+    UNIX_MS = 'unix_ms'
 
 
 class Pipeline:
@@ -30,8 +38,85 @@ class Pipeline:
         return self.get_file_path(self.id)
 
     @property
-    def constant_dimensions(self):
+    def constant_dimensions(self) -> dict:
         return self.config.get('properties', {})
+
+    @property
+    def constant_dimensions_names(self):
+        return self.constant_dimensions.keys()
+
+    @property
+    def dimensions_names(self):
+        dimension_names = self.config['dimensions']
+        if self.config['dimensions'] is dict:
+            dimension_names = self.config['dimensions']['required'] + self.config['dimensions'].get('optional', [])
+        return [self.replace_chars(d) for d in dimension_names]
+
+    @property
+    def dimensions_paths(self):
+        return [self.get_property_path(value) for value in self.dimensions_names]
+
+    @property
+    def required_dimensions_paths(self):
+        return [self.get_property_path(value) for value in self.config['dimensions']['required']]
+
+    @property
+    def timestamp_path(self) -> str:
+        return self.get_property_path(self.config['timestamp']['name'])
+
+    @property
+    def timestamp_type(self) -> str:
+        return TimestampType(self.config['timestamp']['type'])
+
+    @property
+    def timestamp_format(self) -> str:
+        return self.config['timestamp']['format']
+
+    @property
+    def values(self):
+        return self.config['values'].keys()
+
+    @property
+    def values_paths(self):
+        return [self.get_property_path(value) for value in self.values]
+
+    @property
+    def target_types(self):
+        return [self.get_property_path(value) for value in self.config['values'].values()]
+
+    @property
+    def measurement_names(self):
+        return [self.replace_chars(self.config['measurement_names'].get(key, key)) for key in self.values]
+
+    @property
+    def count_records(self) -> bool:
+        return self.config.get('count_records', False)
+
+    @property
+    def count_records_measurement_name(self) -> str:
+        return self.replace_chars(self.config.get('count_records_measurement_name', 'count'))
+
+    @property
+    def static_what(self) -> bool:
+        return self.config.get('static_what', True)
+
+    @property
+    def transformations_file_path(self) -> str:
+        return self.config.get('transform', {}).get('file')
+
+    @property
+    def filter_condition(self) -> str:
+        return self.config.get('filter', {}).get('condition')
+
+    @property
+    def tags(self) -> dict:
+        return self.config.get('tags', {})
+
+    def get_schema(self):
+        return self.config.get('schema', {})
+
+    def get_schema_id(self):
+        return self.get_schema().get('id')
 
     def to_dict(self):
         return {
@@ -55,6 +140,18 @@ class Pipeline:
     def save(self):
         with open(self.file_path, 'w') as f:
             json.dump(self.to_dict(), f)
+
+    def get_property_path(self, property_value: str) -> str:
+        mapping = self.source.config.get('csv_mapping', {})
+        for idx, item in mapping.items():
+            if item == property_value:
+                return str(idx)
+
+        return str(property_value)
+
+    @classmethod
+    def replace_chars(cls, property_name):
+        return property_name.replace('/', '_').replace('.', '_').replace(' ', '_')
 
 
 class PipelineException(click.ClickException):
