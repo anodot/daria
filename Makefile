@@ -135,6 +135,10 @@ run-base-services:
 	docker-compose -f $(DOCKER_COMPOSE_DEV) up -d agent dc squid dummy_destination
 	docker exec -i anodot-agent python setup.py develop
 
+build-base-services: clean-docker-volumes
+	docker-compose -f $(DOCKER_COMPOSE_DEV) up -d --build agent dc squid dummy_destination
+	docker exec -i anodot-agent python setup.py develop
+
 build-elastic:
 	docker-compose up -d es
 	sleep $(SLEEP)

@@ -1,5 +1,3 @@
-import os
-import tempfile
 import pytest
 
 from agent.api import main
@@ -8,14 +6,9 @@ from ..test_pipelines.test_zpipeline_base import pytest_generate_tests
 
 @pytest.fixture
 def client():
-    db_fd, main.app.config['DATABASE'] = tempfile.mkstemp()
     main.app.config['TESTING'] = True
-
     with main.app.test_client() as client:
         yield client
-
-    os.close(db_fd)
-    os.unlink(main.app.config['DATABASE'])
 
 
 class TestDestination:
