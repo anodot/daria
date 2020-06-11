@@ -48,7 +48,7 @@ class Pipeline:
     @property
     def dimensions_names(self):
         dimension_names = self.config['dimensions']
-        if self.config['dimensions'] is dict:
+        if type(self.config['dimensions']) is dict:
             dimension_names = self.config['dimensions']['required'] + self.config['dimensions'].get('optional', [])
         return [self.replace_chars(d) for d in dimension_names]
 
