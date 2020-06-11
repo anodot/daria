@@ -112,6 +112,12 @@ class HttpDestination:
         with open(self.FILE, 'w') as f:
             json.dump(self.to_dict(), f)
 
+    def delete(self):
+        try:
+            os.remove(self.FILE)
+        except FileNotFoundError:
+            pass
+
     def enable_logs(self, enable: bool = True):
         self.config[self.CONFIG_ENABLE_REQUEST_LOGGING] = enable
 
@@ -228,19 +234,18 @@ class DataValidator:
             return False
         status_url = urllib.parse.urljoin(url, HttpDestination.STATUS_URL)
         try:
-            requests.get(status_url, proxies=get_config(proxy), timeout=5)
-        except ConnectionError:
+            response = requests.get(status_url, proxies=get_config(proxy), timeout=5)
+            response.raise_for_status()
+        except (ConnectionError, requests.HTTPError):
             return False
         return True
 
     @staticmethod
     def is_valid_resource_url(resource_url: str, proxy: Proxy) -> bool:
         response = requests.post(resource_url, proxies=get_config(proxy), timeout=5)
-        try:
+        if response.status_code != 401:
             response.raise_for_status()
-        except requests.HTTPError:
-            return False
-        return True
+        return response.status_code != 401
 
     @staticmethod
     def is_valid_access_key(access_key: str, url: str, proxy: Optional[Proxy]) -> bool:

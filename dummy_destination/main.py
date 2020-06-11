@@ -1,7 +1,6 @@
 import os
 import json
 import time
-import uuid
 from flask import Flask, request
 
 OUTPUT_DIR = os.environ.get('OUTPUT_DIR', 'log')
@@ -18,6 +17,9 @@ def to_file():
         with open(os.path.join(OUTPUT_DIR, file_name + '.json'), 'a+') as f:
             json.dump(request.json, f)
             f.write('\n')
+    if request.args.get('token'):
+        if request.args.get('token') != 'correct_token':
+            return json.dumps({'errors': ['Data collection token is invalid']}), 401
     return json.dumps({'errors': []})
 
 
@@ -36,7 +38,9 @@ def watermark_mock():
 
 @app.route('/api/v2/access-token', methods=['POST'])
 def access_token_mock():
-    return '"dfsfegfgf"'
+    if request.json['refreshToken'] != 'correct_key':
+        return 'Incorrect key', 401
+    return 'ok', 200
 
 
 @app.route('/api/v2/stream-schemas', methods=['POST'])
