@@ -80,10 +80,11 @@ class Filtering(Stage):
         return check_dims
 
     def get_config(self) -> dict:
-
-        # TODO: add conditions for non-static what
         required_fields = [*self.pipeline.values_paths, *self.pipeline.required_dimensions_paths,
                            self.pipeline.timestamp_path]
+
+        if not self.pipeline.static_what:
+            required_fields += self.pipeline.measurement_names_paths + self.pipeline.target_types_paths
 
         preconditions = []
         if self.pipeline.filter_condition:

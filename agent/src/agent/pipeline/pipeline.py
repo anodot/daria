@@ -22,6 +22,8 @@ class Pipeline:
     STATUS_STOPPING = 'STOPPING'
     OVERRIDE_SOURCE = 'override_source'
 
+    TARGET_TYPES = ['counter', 'gauge', 'running_counter']
+
     def __init__(self, pipeline_id: str,
                  source_obj: source.Source,
                  config: dict,
@@ -82,11 +84,19 @@ class Pipeline:
 
     @property
     def target_types(self):
-        return [self.get_property_path(value) for value in self.config['values'].values()]
+        return self.config['values'].values()
 
     @property
     def measurement_names(self):
         return [self.replace_chars(self.config['measurement_names'].get(key, key)) for key in self.values]
+
+    @property
+    def measurement_names_paths(self):
+        return [self.get_property_path(value) for value in self.config['measurement_names'].values()]
+
+    @property
+    def target_types_paths(self):
+        return [self.get_property_path(t_type) for t_type in self.target_types if t_type not in self.target_types]
 
     @property
     def count_records(self) -> bool:
