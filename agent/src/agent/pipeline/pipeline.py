@@ -92,11 +92,11 @@ class Pipeline:
 
     @property
     def measurement_names_paths(self):
-        return [self.get_property_path(value) for value in self.config['measurement_names'].values()]
+        return [self.get_property_path(value) for value in self.measurement_names]
 
     @property
     def target_types_paths(self):
-        return [self.get_property_path(t_type) for t_type in self.target_types if t_type not in self.target_types]
+        return [self.get_property_path(t_type) for t_type in self.target_types]
 
     @property
     def count_records(self) -> bool:

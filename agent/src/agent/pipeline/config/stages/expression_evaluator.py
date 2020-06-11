@@ -84,7 +84,10 @@ class Filtering(Stage):
                            self.pipeline.timestamp_path]
 
         if not self.pipeline.static_what:
-            required_fields += self.pipeline.measurement_names_paths + self.pipeline.target_types_paths
+            required_fields += self.pipeline.measurement_names_paths
+            for t_type in self.pipeline.target_types_paths:
+                if t_type not in self.pipeline.TARGET_TYPES:
+                    required_fields.append(t_type)
 
         preconditions = []
         if self.pipeline.filter_condition:
