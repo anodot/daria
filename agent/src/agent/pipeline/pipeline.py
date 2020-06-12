@@ -15,12 +15,33 @@ class TimestampType(Enum):
     UNIX_MS = 'unix_ms'
 
 
+class FlushBucketSize(Enum):
+    MIN_1 = '1m'
+    MIN_5 = '5m'
+    HOUR_1 = '1h'
+    DAY_1 = '1d'
+    WEEK_1 = '1w'
+
+    def total_seconds(self):
+        if self == self.MIN_1:
+            return 60
+        if self == self.MIN_5:
+            return 60 * 5
+        if self == self.HOUR_1:
+            return 60 * 60
+        if self == self.DAY_1:
+            return 60 * 60 * 24
+        if self == self.WEEK_1:
+            return 60 * 60 * 24 * 7
+
+
 class Pipeline:
     DIR = os.path.join(DATA_DIR, 'pipelines')
     STATUS_RUNNING = 'RUNNING'
     STATUS_STOPPED = 'STOPPED'
     STATUS_STOPPING = 'STOPPING'
     OVERRIDE_SOURCE = 'override_source'
+    FLUSH_BUCKET_SIZE = 'flush_bucket_size'
 
     TARGET_TYPES = ['counter', 'gauge', 'running_counter']
 
@@ -42,6 +63,14 @@ class Pipeline:
     @property
     def constant_dimensions(self) -> dict:
         return self.config.get('properties', {})
+
+    @property
+    def flush_bucket_size(self) -> FlushBucketSize:
+        return FlushBucketSize(self.config.get(self.FLUSH_BUCKET_SIZE))
+
+    @flush_bucket_size.setter
+    def flush_bucket_size(self, value: str):
+        self.config[self.FLUSH_BUCKET_SIZE] = FlushBucketSize(value).value
 
     @property
     def constant_dimensions_names(self):
