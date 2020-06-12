@@ -17,14 +17,6 @@ class KafkaConfigHandler(BaseConfigHandler):
         'destination': Destination
     }
 
-    def update_stages(self):
-        for stage in self.config['stages']:
-            if stage['instanceName'] in self.stages:
-                stage_config = self.stages[stage['instanceName']](self.pipeline, stage).get_config()
-                for conf in stage['configuration']:
-                    if conf['name'] in stage_config:
-                        conf['value'] = stage_config[conf['name']]
-
     def override_stages(self):
         # using 'anodot_agent_' + self.id as a default value in order not to break old configs
         if KafkaSource.CONFIG_CONSUMER_GROUP not in self.pipeline.override_source:
@@ -42,4 +34,4 @@ class KafkaConfigHandler(BaseConfigHandler):
                 self.client_config['measurement_names'] = {
                     self.client_config['value']['value']: self.client_config['measurement_name']}
 
-        self.update_stages()
+        super().override_stages()

@@ -1,9 +1,8 @@
 import json
 import os
 
-from abc import ABC, abstractmethod
 from agent.logger import get_logger
-from agent.constants import ERRORS_DIR, HOSTNAME
+from agent.constants import ERRORS_DIR
 from agent.pipeline.pipeline import Pipeline
 from copy import deepcopy
 from agent.definitions import ROOT_DIR
@@ -11,12 +10,14 @@ from agent.definitions import ROOT_DIR
 logger = get_logger(__name__)
 
 
-class BaseConfigHandler(ABC):
+class BaseConfigHandler():
     """
     Overrides base config file
     """
     PIPELINE_BASE_CONFIG_NAME = ''
     BASE_PIPELINE_CONFIGS_PATH = os.path.join('pipeline', 'config', 'base_pipelines')
+
+    stages = {}
 
     def __init__(self, pipeline: Pipeline):
         self.client_config = {}
@@ -31,10 +32,6 @@ class BaseConfigHandler(ABC):
             data = json.load(f)
 
         return data['pipelineConfig']
-
-    @abstractmethod
-    def override_stages(self):
-        ...
 
     def set_labels(self):
         self.config['metadata']['labels'] = [self.pipeline.source.type,
@@ -60,96 +57,13 @@ class BaseConfigHandler(ABC):
 
         return self.config
 
-    def update_source_configs(self):
-        if 'library' in self.pipeline.source.config:
-            self.config['stages'][0]['library'] = self.pipeline.source.config['library']
-        self.__override_source_using_pipeline()
-        self.__write_source_config_to_stage()
-
-    def __override_source_using_pipeline(self):
-        for k, v in self.pipeline.override_source.items():
-            self.pipeline.source.config[k] = v
-
-    def __write_source_config_to_stage(self):
-        for conf in self.config['stages'][0]['configuration']:
-            if conf['name'] in self.pipeline.source.config:
-                conf['value'] = self.pipeline.source.config[conf['name']]
-
-    def get_dimensions(self):
-        dimensions = self.client_config['dimensions']['required']
-        if 'optional' in self.client_config['dimensions']:
-            dimensions = self.client_config['dimensions']['required'] + self.client_config['dimensions']['optional']
-        return dimensions
-
-    def update_destination_config(self):
+    def override_stages(self):
         for stage in self.config['stages']:
-            if stage['instanceName'] == 'destination':
+            if stage['instanceName'] in self.stages:
+                stage_config = self.stages[stage['instanceName']](self.pipeline, stage).get_config()
                 for conf in stage['configuration']:
-                    if conf['name'] in self.pipeline.destination.config:
-                        conf['value'] = self.pipeline.destination.config[conf['name']]
-
-    def get_convert_timestamp_to_unix_expression(self, value):
-        if self.client_config['timestamp']['type'] == 'string':
-            dt_format = self.client_config['timestamp']['format']
-            return f"time:dateTimeToMilliseconds(time:extractDateFromString({value}, '{dt_format}'))/1000"
-        elif self.client_config['timestamp']['type'] == 'datetime':
-            return f"time:dateTimeToMilliseconds({value})/1000"
-        elif self.client_config['timestamp']['type'] == 'unix_ms':
-            return f"{value}/1000"
-        return value
-
-    def convert_timestamp_to_unix(self, stage):
-        for conf in stage['configuration']:
-            if conf['name'] != 'expressionProcessorConfigs':
-                continue
-            value = "record:value('/timestamp')"
-            conf['value'][0]['expression'] = '${' + self.get_convert_timestamp_to_unix_expression(value) + '}'
-            return
-
-    def get_default_tags(self) -> dict:
-        return {
-            'source': ['anodot-agent'],
-            'source_host_id': [self.pipeline.destination.host_id],
-            'source_host_name': [HOSTNAME],
-            'pipeline_id': [self.pipeline.id],
-            'pipeline_type': [self.get_pipeline_type()]
-        }
-
-    def get_tags(self) -> dict:
-        return {
-            **self.get_default_tags(),
-            **self.client_config.get('tags', {})
-        }
-
-    @classmethod
-    def _get_dimension_field_path(cls, key):
-        return '/properties/' + key
-
-    def set_constant_properties(self, stage):
-        for conf in stage['configuration']:
-            if conf['name'] != 'expressionProcessorConfigs':
-                continue
-
-            for key, val in self.pipeline.constant_dimensions.items():
-                conf['value'].append({'fieldToSet': self._get_dimension_field_path(key), 'expression': val})
-
-            conf['value'].append({'fieldToSet': '/tags', 'expression': '${emptyMap()}'})
-            for tag_name, tag_values in self.get_tags().items():
-                conf['value'].append({'fieldToSet': f'/tags/{tag_name}', 'expression': '${emptyList()}'})
-                for idx, val in enumerate(tag_values):
-                    conf['value'].append({'fieldToSet': f'/tags/{tag_name}[{idx}]', 'expression': val})
-            return
-
-    def set_initial_offset(self, client_config=None):
-        pass
-
-    def get_property_mapping(self, property_value):
-        mapping = self.pipeline.source.config.get('csv_mapping', {})
-        for idx, item in mapping.items():
-            if item == property_value:
-                return idx
-
-        return property_value
+                    if conf['name'] in stage_config:
+                        conf['value'] = stage_config[conf['name']]
 
 
 class ConfigHandlerException(Exception):
