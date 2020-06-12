@@ -1,4 +1,4 @@
-from agent.proxy import get_config
+from agent import proxy
 from .schemaless import SchemalessConfigHandler
 from agent.logger import get_logger
 from agent.anodot_api_client import AnodotApiClient
@@ -9,7 +9,8 @@ logger = get_logger(__name__)
 class DirectoryConfigHandler(SchemalessConfigHandler):
     PIPELINE_BASE_CONFIG_NAME = 'directory_http.json'
 
-    def replace_chars(self, property_name):
+    @staticmethod
+    def replace_chars(property_name):
         return property_name.replace('/', '_').replace('.', '_').replace(' ', '_')
 
     def get_schema_id(self):
@@ -36,7 +37,7 @@ class DirectoryConfigHandler(SchemalessConfigHandler):
                 'fill': 'NULL'
             }
         }
-        api_client = AnodotApiClient(self.pipeline.destination.access_key, get_config(self.pipeline.destination.proxy),
+        api_client = AnodotApiClient(self.pipeline.destination.access_key, proxy.get_config(self.pipeline.destination.proxy),
                                      base_url=self.pipeline.destination.url)
         if self.pipeline.config.get('schema'):
             if {key: val for key, val in self.pipeline.config['schema'].items() if key not in ['id']} == schema:

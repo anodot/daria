@@ -39,12 +39,12 @@ class HttpDestination:
         self.access_key = ''
 
     @staticmethod
-    def get() -> Optional['HttpDestination']:
-        if HttpDestination.exists():
-            dest = HttpDestination()
-            dest.__load()
-            return dest
-        return None
+    def get() -> 'HttpDestination':
+        if not HttpDestination.exists():
+            raise DestinationException('Destination does not exist')
+        dest = HttpDestination()
+        dest.__load()
+        return dest
 
     @staticmethod
     def get_or_default() -> 'HttpDestination':
@@ -165,7 +165,7 @@ def create(
     proxy_password: str = None,
     host_id: str = None,
 ) -> Result[HttpDestination, str]:
-    return __build(HttpDestination.get_or_default(), token, url, access_key,
+    return __build(HttpDestination(), token, url, access_key,
                    proxy_host, proxy_username, proxy_password, host_id)
 
 

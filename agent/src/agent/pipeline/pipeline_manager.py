@@ -12,7 +12,7 @@ from agent.anodot_api_client import AnodotApiClient
 from agent.constants import ERRORS_DIR, ENV_PROD
 from agent.streamsets_api_client import api_client, StreamSetsApiClientException
 from agent.tools import print_json, sdc_record_map_to_dict, if_validation_enabled
-from ..proxy import get_config
+from .. import proxy
 
 prompters = {
     source.TYPE_MONITORING: prompt.PromptConfig,
@@ -179,7 +179,7 @@ class PipelineManager:
     def delete(self):
         if 'schema' in self.pipeline.config:
             anodot_api_client = AnodotApiClient(self.pipeline.destination.access_key,
-                                                get_config(self.pipeline.destination.proxy),
+                                                proxy.get_config(self.pipeline.destination.proxy),
                                                 base_url=self.pipeline.destination.url)
             anodot_api_client.delete_schema(self.pipeline.config['schema']['id'])
         delete_pipeline(self.pipeline.id)

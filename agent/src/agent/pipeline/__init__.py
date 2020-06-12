@@ -30,14 +30,12 @@ def load_object(pipeline_id: str) -> Pipeline:
     })
 
     source_obj = source.load_object(config['source']['name'])
-    # todo what if does not exist?
     destination = HttpDestination.get()
     return Pipeline(pipeline_id, source_obj, config, destination)
 
 
 def create_object(pipeline_id: str, source_name: str) -> Pipeline:
     source_obj = source.load_object(source_name)
-    # todo what if does not exist?
     destination = HttpDestination.get()
     return Pipeline(pipeline_id, source_obj, {}, destination)
 
