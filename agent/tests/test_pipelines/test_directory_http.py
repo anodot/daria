@@ -49,4 +49,4 @@ class TestDirectory(TestPipelineBase):
 
     def test_watermark(self):
         schema_id = '111111-22222-3333-4444'
-        assert get_output(f'{schema_id}_watermark.json') == {'watermark': '1512889200', 'schemaId': schema_id}
+        assert get_output(f'{schema_id}_watermark.json') == {'watermark': 1512892800.0, 'schemaId': schema_id}

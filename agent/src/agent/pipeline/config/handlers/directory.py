@@ -72,10 +72,13 @@ class DirectoryConfigHandler(SchemalessConfigHandler):
             if conf['name'] != 'expressionProcessorConfigs':
                 continue
             extract_timestamp = "str:regExCapture(record:value('/filepath'), '.*/(.+)_.*', 1)"
+            convert_timestamp_expr = self.get_convert_timestamp_to_unix_expression(extract_timestamp)
+            bucket_size = self.pipeline.flush_bucket_size.total_seconds()
+            watermark = f'math:floor(({convert_timestamp_expr} + {bucket_size})/{bucket_size}) * {bucket_size}'
             conf['value'] = [
                 {
                     'fieldToSet': '/watermark',
-                    'expression': '${' + self.get_convert_timestamp_to_unix_expression(extract_timestamp) + '}'
+                    'expression': '${' + watermark + '}'
                 },
                 {
                     'fieldToSet': '/schemaId',

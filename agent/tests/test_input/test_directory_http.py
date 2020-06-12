@@ -20,7 +20,7 @@ class TestDirectory:
     def test_create(self, cli_runner):
         pipeline_id = 'test_dir_csv'
         result = cli_runner.invoke(pipeline_cli.create, ['-a'],
-                                   input=f"{pipeline_id}\ntest_dir_csv\n\ny\ncount_records\ny\nClicks:gauge\nClicks:clicks\ntimestamp_datetime\nstring\nMMddyyyy\nver Country\nExchange optional_dim\nversion:1\n\n\n\n\n")
+                                   input=f"{pipeline_id}\ntest_dir_csv\n\ny\ncount_records\ny\nClicks:gauge\nClicks:clicks\ntimestamp_datetime\nstring\nMMddyyyy\nver Country\nExchange optional_dim\nversion:1\n\n\n\n1h\n\n\n")
         assert result.exit_code == 0
         assert api_client.get_pipeline(pipeline_id)
         pipeline = load_pipeline(pipeline_id)
