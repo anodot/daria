@@ -1,5 +1,4 @@
 from flask import Blueprint, request
-
 from agent.api.forms.destination import DestinationForm, EditDestinationForm
 from agent.destination.http import create as create_destination, edit as edit_destination, HttpDestination
 
