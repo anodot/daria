@@ -5,6 +5,27 @@ import os
 from .. import source
 from agent.constants import DATA_DIR
 from agent.destination import HttpDestination
+from enum import Enum
+
+
+class FlushBucketSize(Enum):
+    MIN_1 = '1min'
+    MIN_5 = '5min'
+    HOUR_1 = '1h'
+    DAY_1 = '1d'
+    WEEK_1 = '1w'
+
+    def total_seconds(self):
+        if self == self.MIN_1:
+            return 60
+        if self == self.MIN_5:
+            return 60 * 5
+        if self == self.HOUR_1:
+            return 60 * 60
+        if self == self.DAY_1:
+            return 60 * 60 * 24
+        if self == self.WEEK_1:
+            return 60 * 60 * 24 * 7
 
 
 class Pipeline:
@@ -13,6 +34,7 @@ class Pipeline:
     STATUS_STOPPED = 'STOPPED'
     STATUS_STOPPING = 'STOPPING'
     OVERRIDE_SOURCE = 'override_source'
+    FLUSH_BUCKET_SIZE = 'flush_bucket_size'
 
     def __init__(self, pipeline_id: str,
                  source_obj: source.Source,
@@ -32,6 +54,14 @@ class Pipeline:
     @property
     def constant_dimensions(self):
         return self.config.get('properties', {})
+
+    @property
+    def flush_bucket_size(self) -> FlushBucketSize:
+        return FlushBucketSize(self.config.get(self.FLUSH_BUCKET_SIZE))
+
+    @flush_bucket_size.setter
+    def flush_bucket_size(self, value: str):
+        self.config[self.FLUSH_BUCKET_SIZE] = FlushBucketSize(value).value
 
     def to_dict(self):
         return {
