@@ -2,7 +2,7 @@
 _- To learn more about the Daria agent and its main concepts visit the agent's [Wiki page](https://github.com/anodot/daria/wiki)_
 
 _- It is assumed that the port 80 is forwarded from the agent docker container to the port 8080 on your machine. To
-learn more about agent port forwarding visit [Installation guide](https://github.com/anodot/daria/wiki#how-to-install)_
+learn more about agent port forwarding visit the [Installation guide](https://github.com/anodot/daria/wiki#how-to-install)_
 
 ### Contents
 * [Get destination](#get-destination)
@@ -18,12 +18,13 @@ Response codes: `200, 404`
 
 **Request example**:
 ```
-curl -X GET http://localhost:8080/destination/
+curl -X GET http://localhost:8080/destination
 ```
 
 **Response example**:
 ```
 {
+    "access_key": "correct_key",
     "config": {
         "conf.client.useProxy": true,
         "conf.client.proxy.uri": "http://squid:3128",
@@ -34,7 +35,6 @@ curl -X GET http://localhost:8080/destination/
         "token": "correct_token",
         "url": "http://dummy_destination"
     },
-    "access_key": "correct_key",
     "host_id": "ABCDEF",
     "type": "http"
 }
@@ -98,6 +98,7 @@ Response errors:
 | Data collection token is invalid                                                     | 400           | To get a valid token see [Basic flow](https://github.com/anodot/daria/wiki#basic-flow)      |
 | Destination URL is invalid                                                           | 400           | Make sure you provided a valid Anodot application url                                       |
 | Access key is invalid                                                                | 400           | To get a valid access key see [Instructions](https://support.anodot.com/hc/en-us/articles/360002631114-Token-Management-#AccessKeys) |
+| Proxy data is invalid                                                                | 400           | Provided proxy data is invalid, please double-check proxy uri, username and password        |
 
 
 Edit destination
@@ -159,6 +160,8 @@ Response errors:
 | Data collection token is invalid                                                     | 400           | To get a valid token see [Basic flow](https://github.com/anodot/daria/wiki#basic-flow)      |
 | Destination URL is invalid                                                           | 400           | Make sure you provided a valid Anodot application url                                       |
 | Access key is invalid                                                                | 400           | To get a valid access key see [Instructions](https://support.anodot.com/hc/en-us/articles/360002631114-Token-Management-#AccessKeys) |
+| Proxy data is invalid                                                                | 400           | Provided proxy data is invalid, please double-check proxy uri, username and password        |
+
 
 Delete destination
 ------------------
