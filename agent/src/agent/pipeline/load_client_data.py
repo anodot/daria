@@ -41,7 +41,6 @@ class MongoLoadClientData(LoadClientData):
     def load(self, client_config, edit=False):
         super().load(client_config, edit)
         self.load_dimensions()
-        self.load_value()
         return self.client_config
 
 

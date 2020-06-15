@@ -7,7 +7,7 @@ from agent.pipeline.elastic import query_validator
 
 
 class PromptConfigElastic(PromptConfigSchemaless):
-    timestamp_types = ['datetime', 'string', 'unix', 'unix_ms']
+    timestamp_types = ['string', 'unix', 'unix_ms']
 
     def set_config(self):
         self.prompt_query()

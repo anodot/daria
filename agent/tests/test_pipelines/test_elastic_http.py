@@ -28,6 +28,3 @@ class TestElastic(TestPipelineBase):
 
     def test_info(self, cli_runner, name=None):
         pytest.skip()
-
-    def test_output_exists(self, cli_runner, name=None):
-        pytest.skip()
