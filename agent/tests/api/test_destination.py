@@ -62,7 +62,7 @@ class TestDestination:
     }
 
     def test_create(self, client, destination_url, data_collection_token, er, status_code, host_id, access_key):
-        result = client.post('/destination', data=dict(
+        result = client.post('/destination', json=dict(
             destination_url=destination_url,
             data_collection_token=data_collection_token,
             host_id=host_id,
@@ -70,11 +70,12 @@ class TestDestination:
         ))
         # cleanup
         client.delete('/destination')
+        print(result.data)
         assert result.data == er
         assert result.status_code == status_code
 
     def test_create_with_proxy(self, client, proxy_uri, er, status_code):
-        result = client.post('/destination', data=dict(
+        result = client.post('/destination', json=dict(
             proxy_uri=proxy_uri,
             proxy_username='',
             proxy_password='',
@@ -85,5 +86,6 @@ class TestDestination:
         ))
         # cleanup
         client.delete('/destination')
+        print(result.data)
         assert result.data == er
         assert result.status_code == status_code
