@@ -1,7 +1,6 @@
 import csv
 
 from .base import Stage
-from agent.constants import HOSTNAME
 from agent.pipeline.pipeline import TimestampType
 from agent.pipeline.config.expression_parser import condition
 
@@ -22,26 +21,14 @@ def get_convert_timestamp_to_unix_expression(timestamp_type: TimestampType, valu
 
 
 class AddProperties(Stage):
-    def get_default_tags(self) -> dict:
-        return {
-            'source': ['anodot-agent'],
-            'source_host_id': [self.pipeline.destination.host_id],
-            'source_host_name': [HOSTNAME],
-            'pipeline_id': [self.pipeline.id],
-            'pipeline_type': [self.pipeline.source.type]
-        }
 
     @classmethod
     def _get_dimension_field_path(cls, key):
         return '/properties/' + key
 
     def get_tags(self) -> list:
-        tags = {
-            **self.get_default_tags(),
-            **self.pipeline.tags
-        }
         tags_expressions = [get_value('/tags', 'emptyMap()')]
-        for tag_name, tag_values in tags.items():
+        for tag_name, tag_values in self.pipeline.get_tags().items():
             tags_expressions.append(get_value(f'/tags/{tag_name}', 'emptyList()'))
             for idx, val in enumerate(tag_values):
                 tags_expressions.append(get_value(f'/tags/{tag_name}[{idx}]', f'"{val}"'))

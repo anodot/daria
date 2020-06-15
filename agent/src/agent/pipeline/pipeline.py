@@ -3,7 +3,7 @@ import json
 import os
 
 from .. import source
-from agent.constants import DATA_DIR
+from agent.constants import DATA_DIR, HOSTNAME
 from agent.destination import HttpDestination
 from enum import Enum
 
@@ -191,6 +191,16 @@ class Pipeline:
     @classmethod
     def replace_chars(cls, property_name):
         return property_name.replace('/', '_').replace('.', '_').replace(' ', '_')
+
+    def get_tags(self) -> dict:
+        return {
+            'source': ['anodot-agent'],
+            'source_host_id': [self.destination.host_id],
+            'source_host_name': [HOSTNAME],
+            'pipeline_id': [self.id],
+            'pipeline_type': [self.source.type],
+            **self.tags
+        }
 
 
 class PipelineException(click.ClickException):

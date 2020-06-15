@@ -1,6 +1,6 @@
 import json
 
-from .base import BaseConfigHandler, ConfigHandlerException
+from .base import BaseConfigHandler
 from agent.logger import get_logger
 from agent.constants import HOSTNAME
 from datetime import datetime, timedelta
@@ -72,9 +72,7 @@ state['TAGS'] = {tags}
             config['conf.client.basicAuth.password'] = password
         return config
 
-    def set_initial_offset(self, client_config=None):
-        if client_config:
-            self.client_config = client_config
+    def set_initial_offset(self):
         source_config = self.pipeline.source.config
         if not source_config.get('offset'):
             source_config['offset'] = '0'
@@ -88,7 +86,7 @@ state['TAGS'] = {tags}
 
         self.get_write_client().write_points([{
             'measurement': 'agent_timestamps',
-            'tags': {'pipeline_id': self.client_config['pipeline_id']},
+            'tags': {'pipeline_id': self.pipeline.id},
             'fields': {'last_timestamp': source_config['offset']}
         }])
 
@@ -98,8 +96,8 @@ state['TAGS'] = {tags}
     def override_stages(self):
 
         self.update_source_configs()
-        required = [self.replace_illegal_chars(d) for d in self.client_config['dimensions']['required']]
-        optional = [self.replace_illegal_chars(d) for d in self.client_config['dimensions']['optional']]
+        required = [self.replace_illegal_chars(d) for d in self.pipeline.config['dimensions']['required']]
+        optional = [self.replace_illegal_chars(d) for d in self.pipeline.config['dimensions']['optional']]
 
         for stage in self.config['stages']:
             if stage['instanceName'] == 'transform_records':
@@ -111,23 +109,25 @@ state['TAGS'] = {tags}
                         conf['value'] = self.DECLARE_VARS_JS.format(
                             required_dimensions=str(required),
                             optional_dimensions=str(optional),
-                            measurement_name=self.replace_illegal_chars(self.client_config['measurement_name']),
-                            target_type=self.client_config.get('target_type', 'gauge'),
+                            measurement_name=self.replace_illegal_chars(self.pipeline.config['measurement_name']),
+                            target_type=self.pipeline.config.get('target_type', 'gauge'),
                             constant_properties=str(self.pipeline.constant_dimensions),
                             host_id=self.pipeline.destination.host_id,
                             host_name=HOSTNAME,
                             pipeline_id=self.pipeline.id,
-                            tags=json.dumps(self.get_tags())
+                            tags=json.dumps(self.pipeline.get_tags())
                         )
-
-        self.update_destination_config()
+            if stage['instanceName'] == 'destination':
+                for conf in stage['configuration']:
+                    if conf['name'] in self.pipeline.destination.config:
+                        conf['value'] = self.pipeline.destination.config[conf['name']]
 
     def update_source_configs(self):
 
-        dimensions = self.get_dimensions()
+        dimensions = self.pipeline.dimensions_names
         source_config = self.pipeline.source.config
         dimensions_to_select = [f'"{d}"::tag' for d in dimensions]
-        values_to_select = ['*::field' if v == '*' else f'"{v}"::field' for v in self.client_config['value']['values']]
+        values_to_select = ['*::field' if v == '*' else f'"{v}"::field' for v in self.pipeline.config['value']['values']]
         username = source_config.get('username', '')
         password = source_config.get('password', '')
         if username != '':
@@ -135,8 +135,8 @@ state['TAGS'] = {tags}
             self.pipeline.source.config['conf.client.basicAuth.username'] = username
             self.pipeline.source.config['conf.client.basicAuth.password'] = password
 
-        delay = self.client_config.get('delay', '0s')
-        interval = self.client_config.get('interval', 60)
+        delay = self.pipeline.config.get('delay', '0s')
+        interval = self.pipeline.config.get('interval', 60)
         columns = quote_plus(','.join(dimensions_to_select + values_to_select))
         self.set_initial_offset()
 
@@ -144,14 +144,14 @@ state['TAGS'] = {tags}
         write_config['conf.spoolingPeriod'] = interval
         write_config['conf.poolingTimeoutSecs'] = interval
 
-        where = self.client_config.get('filtering')
+        where = self.pipeline.config.get('filtering')
         where = f'AND+%28{quote_plus(where)}%29' if where else ''
 
         for stage in self.config['stages']:
             if stage['instanceName'] == 'get_interval_records':
                 query = f"/query?db={source_config['db']}&epoch=ms&q={self.QUERY_GET_DATA}".format(**{
                     'dimensions': columns,
-                    'metric': self.client_config['measurement_name'],
+                    'metric': self.pipeline.config['measurement_name'],
                     'delay': delay,
                     'interval': str(interval) + 's',
                     'where': where
@@ -170,7 +170,7 @@ state['TAGS'] = {tags}
             if stage['instanceName'] == 'get_next_record_timestamp':
                 query = f"/query?db={source_config['db']}&epoch=ns&q={self.QUERY_CHECK_DATA}".format(**{
                     'dimensions': columns,
-                    'metric': self.client_config['measurement_name'],
+                    'metric': self.pipeline.config['measurement_name'],
                     'delay': delay,
                     'where': where
                 })

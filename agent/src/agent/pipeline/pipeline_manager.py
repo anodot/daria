@@ -171,7 +171,7 @@ class PipelineManager:
     def reset(self):
         try:
             api_client.reset_pipeline(self.pipeline.id)
-            self.sdc_creator.set_initial_offset(self.pipeline.to_dict())
+            self.sdc_creator.set_initial_offset()
         except (config_handlers.ConfigHandlerException, StreamSetsApiClientException) as e:
             raise PipelineException(str(e))
 
