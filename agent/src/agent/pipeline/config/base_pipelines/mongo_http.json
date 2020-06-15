@@ -177,7 +177,7 @@
     },
     "fragments" : [ ],
     "stages" : [ {
-      "instanceName" : "MongoDB_01",
+      "instanceName" : "source",
       "library" : "streamsets-datacollector-mongodb_3-lib",
       "stageName" : "com_streamsets_pipeline_stage_origin_mongodb_MongoDBDSource",
       "stageVersion" : "3",

@@ -121,7 +121,7 @@ class Pipeline:
 
     @property
     def measurement_names(self):
-        return [self.replace_chars(self.config['measurement_names'].get(key, key)) for key in self.values]
+        return [self.replace_chars(self.config.get('measurement_names', {}).get(key, key)) for key in self.values]
 
     @property
     def measurement_names_paths(self):

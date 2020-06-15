@@ -33,6 +33,10 @@ class PromptConfigJDBC(PromptConfig):
     def set_values(self):
         self.config['count_records'] = int(click.confirm('Count records?',
                                                          default=self.default_config.get('count_records', False)))
+        if self.config['count_records']:
+            self.config['count_records_measurement_name'] = click.prompt('Measurement name', type=click.STRING,
+                                                                         default=self.default_config.get(
+                                                                             'count_records_measurement_name'))
         self.prompt_values()
 
         if not self.config['count_records'] and not self.config['values']:
@@ -41,7 +45,7 @@ class PromptConfigJDBC(PromptConfig):
     def set_query_interval(self):
         self.pipeline.config['queryInterval'] = click.prompt(
             'Query interval (in seconds)',
-            type=click.IntRange(1),
+            type=click.IntRange(min=1),
             default=self.pipeline.config.get('queryInterval', 10)
         )
         self.pipeline.override_source['queryInterval'] =\

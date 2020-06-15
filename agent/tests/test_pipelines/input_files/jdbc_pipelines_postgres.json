@@ -19,6 +19,7 @@
     "table": "test",
     "values": {"clicks": "gauge", "impressions": "gauge"},
     "count_records": true,
+    "count_records_measurement_name": "test",
     "dimensions": ["adsize", "country"],
     "timestamp": {
       "type": "datetime",
