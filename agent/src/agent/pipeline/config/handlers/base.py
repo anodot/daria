@@ -10,7 +10,7 @@ from agent.definitions import ROOT_DIR
 logger = get_logger(__name__)
 
 
-class BaseConfigHandler():
+class BaseConfigHandler:
     """
     Overrides base config file
     """
@@ -20,12 +20,8 @@ class BaseConfigHandler():
     stages = {}
 
     def __init__(self, pipeline: Pipeline):
-        self.client_config = {}
         self.config = {}
         self.pipeline = pipeline
-
-    def get_pipeline_type(self) -> str:
-        return self.pipeline.source.type
 
     def load_base_config(self):
         with open(os.path.join(ROOT_DIR, self.BASE_PIPELINE_CONFIGS_PATH, self.PIPELINE_BASE_CONFIG_NAME)) as f:
@@ -37,21 +33,20 @@ class BaseConfigHandler():
         self.config['metadata']['labels'] = [self.pipeline.source.type,
                                              self.pipeline.destination.TYPE]
 
-    def override_base_config(self, client_config, new_uuid=None, new_pipeline_title=None, base_config=None):
-        self.client_config = deepcopy(client_config)
-
-        self.config = base_config if base_config else self.load_base_config()
+    def override_base_config(self, new_uuid=None, new_title=None):
+        self.config = self.load_base_config()
 
         # create errors dir
-        errors_dir = os.path.join(ERRORS_DIR, self.client_config['pipeline_id'])
+        errors_dir = os.path.join(ERRORS_DIR, self.pipeline.id)
         if not os.path.isdir(errors_dir):
             os.makedirs(errors_dir)
             os.chmod(errors_dir, 0o777)
         if new_uuid:
             self.config['uuid'] = new_uuid
-        if new_pipeline_title:
-            self.config['title'] = new_pipeline_title
+        if new_title:
+            self.config['title'] = new_title
 
+        self.override_pipeline_config()
         self.override_stages()
         self.set_labels()
 
@@ -64,6 +59,18 @@ class BaseConfigHandler():
                 for conf in stage['configuration']:
                     if conf['name'] in stage_config:
                         conf['value'] = stage_config[conf['name']]
+
+    def get_pipeline_config(self) -> dict:
+        return {
+            'TOKEN': self.pipeline.destination.token,
+            'PROTOCOL': self.pipeline.destination.PROTOCOL_20,
+            'ANODOT_BASE_URL': self.pipeline.destination.url
+        }
+
+    def override_pipeline_config(self):
+        for config in self.config['configuration']:
+            if config['name'] == 'constants':
+                config['value'] = [{'key': key, 'value': val} for key, val in self.get_pipeline_config()]
 
 
 class ConfigHandlerException(Exception):

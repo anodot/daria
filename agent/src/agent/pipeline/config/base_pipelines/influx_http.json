@@ -1251,7 +1251,7 @@
         "value" : "JSON"
       }, {
         "name" : "conf.resourceUrl",
-        "value" : "http://3.215.226.90/api/v1/metrics?token=test1234test1234&protocol=anodot20"
+        "value" : "${ANODOT_BASE_URL}/api/v1/metrics?token=${TOKEN}&protocol=${PROTOCOL}"
       }, {
         "name" : "conf.headers",
         "value" : [ ]

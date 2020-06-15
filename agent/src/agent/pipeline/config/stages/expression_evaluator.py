@@ -10,6 +10,17 @@ def get_value(path, expr) -> dict:
     return {'fieldToSet': path, 'expression': '${' + expr + '}'}
 
 
+def get_convert_timestamp_to_unix_expression(timestamp_type: TimestampType, value, timestamp_format):
+    if timestamp_type == TimestampType.STRING:
+        dt_format = timestamp_format
+        return f"time:dateTimeToMilliseconds(time:extractDateFromString({value}, '{dt_format}'))/1000"
+    elif timestamp_type == TimestampType.DATETIME:
+        return f"time:dateTimeToMilliseconds({value})/1000"
+    elif timestamp_type == TimestampType.UNIX_MS:
+        return f"{value}/1000"
+    return value
+
+
 class AddProperties(Stage):
     def get_default_tags(self) -> dict:
         return {
@@ -23,16 +34,6 @@ class AddProperties(Stage):
     @classmethod
     def _get_dimension_field_path(cls, key):
         return '/properties/' + key
-
-    def get_convert_timestamp_to_unix_expression(self, value):
-        if self.pipeline.timestamp_type == TimestampType.STRING:
-            dt_format = self.pipeline.timestamp_format
-            return f"time:dateTimeToMilliseconds(time:extractDateFromString({value}, '{dt_format}'))/1000"
-        elif self.pipeline.timestamp_type == TimestampType.DATETIME:
-            return f"time:dateTimeToMilliseconds({value})/1000"
-        elif self.pipeline.timestamp_type == TimestampType.UNIX_MS:
-            return f"{value}/1000"
-        return value
 
     def get_tags(self) -> list:
         tags = {
@@ -50,8 +51,10 @@ class AddProperties(Stage):
         expressions = []
         for key, val in self.pipeline.constant_dimensions.items():
             expressions.append(get_value(self._get_dimension_field_path(key), f'"{val}"'))
-        expressions.append(get_value('/timestamp',
-                                     self.get_convert_timestamp_to_unix_expression("record:value('/timestamp')")))
+        timestamp_to_unix = get_convert_timestamp_to_unix_expression(self.pipeline.timestamp_type,
+                                                                     "record:value('/timestamp')",
+                                                                     self.pipeline.timestamp_format)
+        expressions.append(get_value('/timestamp', timestamp_to_unix))
         return {
             'expressionProcessorConfigs': self.get_tags() + expressions
         }
@@ -97,4 +100,24 @@ class Filtering(Stage):
             'expressionProcessorConfigs': self.check_dimensions() + self.get_transformations(),
             'stageRequiredFields': [f'/{f}' for f in required_fields],
             'stageRecordPreconditions': ['${' + p + '}' for p in preconditions]
+        }
+
+
+class AddProperties30(AddProperties):
+    @classmethod
+    def _get_dimension_field_path(cls, key):
+        return '/dimensions/' + key
+
+
+class SendWatermark(Stage):
+    def get_config(self) -> dict:
+        extract_timestamp = "str:regExCapture(record:value('/filepath'), '.*/(.+)_.*', 1)"
+        timestamp_to_unix = get_convert_timestamp_to_unix_expression(self.pipeline.timestamp_type,
+                                                                     extract_timestamp,
+                                                                     self.pipeline.timestamp_format)
+        bucket_size = self.pipeline.flush_bucket_size.total_seconds()
+        watermark = f'math:floor(({timestamp_to_unix} + {bucket_size})/{bucket_size}) * {bucket_size}'
+        return {
+            'expressionProcessorConfigs': [get_value('/watermark', watermark),
+                                           get_value('/schemaId', self.pipeline.get_schema_id())]
         }

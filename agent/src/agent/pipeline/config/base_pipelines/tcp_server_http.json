@@ -171,7 +171,7 @@
     },
     "fragments" : [ ],
     "stages" : [ {
-      "instanceName" : "TCPServer_01",
+      "instanceName" : "source",
       "library" : "streamsets-datacollector-basic-lib",
       "stageName" : "com_streamsets_pipeline_stage_origin_tcp_TCPServerDSource",
       "stageVersion" : "4",

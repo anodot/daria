@@ -96,7 +96,7 @@ class Pipeline:
         return self.get_property_path(self.config['timestamp']['name'])
 
     @property
-    def timestamp_type(self) -> str:
+    def timestamp_type(self) -> TimestampType:
         return TimestampType(self.config['timestamp']['type'])
 
     @property

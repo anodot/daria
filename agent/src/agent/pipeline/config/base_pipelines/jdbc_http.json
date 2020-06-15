@@ -553,7 +553,7 @@
         "value" : "JSON"
       }, {
         "name" : "conf.resourceUrl",
-        "value" : "http://daria-test2/api/v1/metrics?token=e&protocol=anodot20"
+        "value" : "${ANODOT_BASE_URL}/api/v1/metrics?token=${TOKEN}&protocol=${PROTOCOL}"
       }, {
         "name" : "conf.headers",
         "value" : [ ]

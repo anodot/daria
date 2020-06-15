@@ -1,7 +1,7 @@
 from .base import Stage
 
 
-class JSConvertMetrics20(Stage):
+class JSConvertMetrics(Stage):
     def get_js_vars(self):
         return f"""
 state['TIMESTAMP_COLUMN'] = '{self.pipeline.timestamp_path}';
