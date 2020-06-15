@@ -45,7 +45,7 @@ services:
       - ./test-datasets:/home
       - ./agent/src/agent/api:/app
     ports:
-      - 8080:80
+      - 80:80
 
   mongo:
     image: mongo
@@ -160,7 +160,7 @@ services:
     volumes:
       - dummy-destination-data:/app/log
     ports:
-      - 80:80
+      - 8080:80
 
 
 volumes:

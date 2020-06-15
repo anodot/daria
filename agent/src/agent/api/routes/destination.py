@@ -14,7 +14,7 @@ def get():
 
 @destination.route('/destination', methods=['POST'])
 def create():
-    form = DestinationForm(request.form)
+    form = DestinationForm.from_json(request.get_json())
     if not form.validate():
         return form.errors, 400
     result = create_destination(
@@ -35,7 +35,7 @@ def create():
 def edit():
     if not HttpDestination.exists():
         return 'Destination doesn\'t exist', 400
-    form = EditDestinationForm(request.args)
+    form = EditDestinationForm.from_json(request.get_json())
     if not form.validate():
         return form.errors, 400
     result = edit_destination(
