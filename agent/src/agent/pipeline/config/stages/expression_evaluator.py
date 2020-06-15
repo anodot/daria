@@ -106,5 +106,5 @@ class SendWatermark(Stage):
         watermark = f'math:floor(({timestamp_to_unix} + {bucket_size})/{bucket_size}) * {bucket_size}'
         return {
             'expressionProcessorConfigs': [get_value('/watermark', watermark),
-                                           get_value('/schemaId', self.pipeline.get_schema_id())]
+                                           get_value('/schemaId', f'"{self.pipeline.get_schema_id()}"')]
         }

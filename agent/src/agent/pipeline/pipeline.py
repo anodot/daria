@@ -101,7 +101,7 @@ class Pipeline:
 
     @property
     def timestamp_format(self) -> str:
-        return self.config['timestamp']['format']
+        return self.config['timestamp'].get('format')
 
     @property
     def values(self):
@@ -113,7 +113,7 @@ class Pipeline:
 
     @property
     def target_types(self):
-        return self.config['values'].values()
+        return list(self.config['values'].values())
 
     @property
     def measurement_names(self):

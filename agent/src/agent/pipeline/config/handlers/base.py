@@ -70,7 +70,10 @@ class BaseConfigHandler:
     def override_pipeline_config(self):
         for config in self.config['configuration']:
             if config['name'] == 'constants':
-                config['value'] = [{'key': key, 'value': val} for key, val in self.get_pipeline_config()]
+                config['value'] = [{'key': key, 'value': val} for key, val in self.get_pipeline_config().items()]
+
+    def set_initial_offset(self):
+        pass
 
 
 class ConfigHandlerException(Exception):
