@@ -77,15 +77,19 @@ class Pipeline:
         return self.constant_dimensions.keys()
 
     @property
-    def dimensions_names(self):
-        dimension_names = self.config['dimensions']
+    def dimensions(self):
+        dimensions = self.config['dimensions']
         if type(self.config['dimensions']) is dict:
-            dimension_names = self.config['dimensions']['required'] + self.config['dimensions'].get('optional', [])
-        return [self.replace_chars(d) for d in dimension_names]
+            dimensions = self.config['dimensions']['required'] + self.config['dimensions'].get('optional', [])
+        return dimensions
+
+    @property
+    def dimensions_names(self):
+        return [self.replace_chars(d) for d in self.dimensions]
 
     @property
     def dimensions_paths(self):
-        return [self.get_property_path(value) for value in self.dimensions_names]
+        return [self.get_property_path(value) for value in self.dimensions]
 
     @property
     def required_dimensions_paths(self):
