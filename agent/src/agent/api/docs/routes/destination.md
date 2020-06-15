@@ -4,7 +4,7 @@ _- To learn more about the Daria agent and its main concepts visit the agent's [
 _- It is assumed that the port 80 is forwarded from the agent docker container to the port 8080 on your machine. To
 learn more about agent port forwarding visit [Installation guide](https://github.com/anodot/daria/wiki#how-to-install)_
 
-###Contents
+### Contents
 * [Get destination](#get-destination)
 * [Create destination](#create-destination)
 * [Edit destination](#edit-destination)
@@ -14,15 +14,14 @@ Get destination
 ---------------
 Returns destination configuration if it exists
 
+Response codes: `200, 404`
 
-Request example:
+**Request example**:
 ```
 curl -X GET http://localhost:8080/destination/
 ```
 
-**Possible response codes:** `200, 404`
-
-Response example:
+**Response example**:
 ```
 {
     "config": {
@@ -43,6 +42,8 @@ Response example:
 
 Create destination
 ------------------
+
+Response codes: `200, 400`
 
 Request fields:
 | Field                 | Type     | Description                                                                                                                                          |
@@ -70,15 +71,6 @@ curl -X POST http://localhost:8080/destination \
 }'
 
 ```
-Possible response codes: `200, 400`
-
-Response errors:
-| Error                                                                                | Response code | Description                                                                                 |
-|--------------------------------------------------------------------------------------|---------------|---------------------------------------------------------------------------------------------|
-| "destination_url": ["Wrong url format, please specify the protocol and domain name"] | 400           | URL you provided has incorrect format, make sure you specified the protocol (http, https)   |
-| Data collection token is invalid                                                     | 400           | To get a valid token see [Basic flow](https://github.com/anodot/daria/wiki#basic-flow)      |
-| Destination URL is invalid                                                           | 400           | Make sure you provided a valid Anodot application url                                       |
-| Access key is invalid                                                                | 400           | To get a valid access key see [Instructions](https://support.anodot.com/hc/en-us/articles/360002631114-Token-Management-#AccessKeys) |
 
 **Response example**:
 ```
@@ -99,9 +91,20 @@ Response errors:
 }
 ```
 
+Response errors:
+| Error                                                                                | Response code | Description                                                                                 |
+|--------------------------------------------------------------------------------------|---------------|---------------------------------------------------------------------------------------------|
+| "destination_url": ["Wrong url format, please specify the protocol and domain name"] | 400           | URL you provided has incorrect format, make sure you specified the protocol (http, https)   |
+| Data collection token is invalid                                                     | 400           | To get a valid token see [Basic flow](https://github.com/anodot/daria/wiki#basic-flow)      |
+| Destination URL is invalid                                                           | 400           | Make sure you provided a valid Anodot application url                                       |
+| Access key is invalid                                                                | 400           | To get a valid access key see [Instructions](https://support.anodot.com/hc/en-us/articles/360002631114-Token-Management-#AccessKeys) |
+
+
 Edit destination
 ----------------
-You can pass any parameter to rewrite it in the existing destination.
+You can pass any parameters to rewrite them in the existing destination.
+
+Response codes: `200, 400`
 
 Request fields:
 | Field                 | Type     | Description                                                       |
@@ -129,15 +132,6 @@ curl -X PUT http://localhost:8080/destination \
 }'
 
 ```
-Possible response codes: `200, 400`
-
-Response errors:
-| Error                                                                                | Response code | Description                                                                                 |
-|--------------------------------------------------------------------------------------|---------------|---------------------------------------------------------------------------------------------|
-| "destination_url": ["Wrong url format, please specify the protocol and domain name"] | 400           | URL you provided has incorrect format, make sure you specified the protocol (http, https)   |
-| Data collection token is invalid                                                     | 400           | To get a valid token see [Basic flow](https://github.com/anodot/daria/wiki#basic-flow)      |
-| Destination URL is invalid                                                           | 400           | Make sure you provided a valid Anodot application url                                       |
-| Access key is invalid                                                                | 400           | To get a valid access key see [Instructions](https://support.anodot.com/hc/en-us/articles/360002631114-Token-Management-#AccessKeys) |
 
 **Response example**:
 ```
@@ -158,14 +152,24 @@ Response errors:
 }
 ```
 
+Response errors:
+| Error                                                                                | Response code | Description                                                                                 |
+|--------------------------------------------------------------------------------------|---------------|---------------------------------------------------------------------------------------------|
+| "destination_url": ["Wrong url format, please specify the protocol and domain name"] | 400           | URL you provided has incorrect format, make sure you specified the protocol (http, https)   |
+| Data collection token is invalid                                                     | 400           | To get a valid token see [Basic flow](https://github.com/anodot/daria/wiki#basic-flow)      |
+| Destination URL is invalid                                                           | 400           | Make sure you provided a valid Anodot application url                                       |
+| Access key is invalid                                                                | 400           | To get a valid access key see [Instructions](https://support.anodot.com/hc/en-us/articles/360002631114-Token-Management-#AccessKeys) |
+
 Delete destination
 ------------------
-Request:
+
+Response codes: `200`
+
+Request example:
 ```
-DELETE destination/
+curl -X DELETE http://localhost:8080/destination
 ```
 Response:
 ```
 success
 ```
-**Response codes:** `200`
