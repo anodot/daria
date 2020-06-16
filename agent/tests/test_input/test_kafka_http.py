@@ -15,7 +15,7 @@ class TestKafka:
                 'source_name': 'test_kfk',
                 'name': 'test_kfk_value_const',
                 'options': ['-a'],
-                'value': 'y\nclicks\ny\n \n ',
+                'value': 'y\nclicks\ny\n\n \n ',
                 'timestamp': 'timestamp_unix\nunix',
                 'advanced_options': 'key1:val1\n\n\n'
             },
@@ -31,7 +31,7 @@ class TestKafka:
                 'source_name': 'test_kfk',
                 'name': 'test_kfk_timestamp_string',
                 'options': ['-a'],
-                'value': 'y\nclicks\ny\n \n ',
+                'value': 'y\nclicks\ny\n\n \n ',
                 'timestamp': 'timestamp_string\nstring\nM/d/yyyy H:mm:ss',
                 'advanced_options': 'key1:val1\ntag1:tagval tag2:tagval\n"Country" == "USA"\n/home/kafka_transform.csv'
             },
@@ -39,7 +39,7 @@ class TestKafka:
                 'source_name': 'test_running_counters',
                 'name': 'test_kfk_running_counter',
                 'options': ['-a'],
-                'value': 'n\ny\nClicks:running_counter\nClicks:clicks',
+                'value': 'n\ny\n\nClicks:running_counter\nClicks:clicks',
                 'timestamp': 'timestamp_unix\nunix',
                 'advanced_options': 'key1:val1\n \n \n '
             },
@@ -47,14 +47,14 @@ class TestKafka:
                 'source_name': 'test_running_counters',
                 'name': 'test_kfk_running_counter_static_tt',
                 'options': ['-a'],
-                'value': 'n\nn\nClicks:running_counter\ny\nClicks:metric',
+                'value': 'n\nn\n\nClicks:running_counter\ny\nClicks:metric',
                 'timestamp': 'timestamp_unix\nunix',
                 'advanced_options': 'key1:val1\n \n \n '},
             {
                 'source_name': 'test_running_counters',
                 'name': 'test_kfk_running_counter_dynamic_what',
                 'options': ['-a'],
-                'value': 'n\nn\nClicks:agg_type\nClicks:metric',
+                'value': 'n\nn\n\nClicks:agg_type\nClicks:metric',
                 'timestamp': 'timestamp_unix\nunix',
                 'advanced_options': 'key1:val1\n \n \n '
             }
