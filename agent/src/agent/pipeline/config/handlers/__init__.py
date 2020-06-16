@@ -1,5 +1,4 @@
 from .influx import InfluxConfigHandler
-from .schemaless import SchemalessConfigHandler
 from .kafka import KafkaConfigHandler
 from .monitoring import MonitoringConfigHandler
 from .base import BaseConfigHandler, ConfigHandlerException

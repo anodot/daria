@@ -1,15 +1,9 @@
 {
   "type": "object",
   "properties": {
-    "measurement_name": {"type": "string", "minLength": 1},
-    "target_type": {"type": "string", "enum": ["counter", "gauge"]},
-    "value": {"oneOf": [
-      {"type": "string", "minLength": 1},
-      {"type": "object", "properties": {
-        "type": {"type": "string", "enum": ["property", "constant"]},
-        "value": {"type": "string", "minLength": 1}
-      }, "required": ["type", "value"]}
-    ]},
+    "count_records": {"type": "boolean"},
+    "values": {"type": "object"},
+    "measurement_names": {"type": "object"},
     "dimensions": {"oneOf": [
       {"type": "array", "items": {"type": "string"}},
       {"type": "object", "properties": {
@@ -19,7 +13,7 @@
     ]},
     "timestamp": {"type":  "object", "properties": {
       "name": {"type": "string", "minLength": 1},
-      "type": {"type":  "string", "enum": ["string", "datetime", "unix", "unix_ms"]},
+      "type": {"type":  "string", "enum": ["string", "unix", "unix_ms"]},
       "format": {"type": "string", "minLength": 1}
     }, "required": ["name", "type"]},
     "properties": {"type": "object"},
@@ -28,5 +22,5 @@
       "patternProperties":  {"[^ \\.]+": {"type": "array", "items": {"type": "string"}}}
     }
   },
-  "required": ["measurement_name", "value", "timestamp", "dimensions"]
+  "required": ["values", "measurement_names", "dimensions", "timestamp"]
 }

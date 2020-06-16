@@ -171,7 +171,7 @@
     },
     "fragments" : [ ],
     "stages" : [ {
-      "instanceName" : "Elasticsearch_01",
+      "instanceName" : "source",
       "library" : "streamsets-datacollector-elasticsearch_5-lib",
       "stageName" : "com_streamsets_pipeline_stage_origin_elasticsearch_ElasticsearchDSource",
       "stageVersion" : "1",
@@ -599,7 +599,7 @@
         "value" : "JSON"
       }, {
         "name" : "conf.resourceUrl",
-        "value" : "http://daria-test2/api/v1/metrics?token=e&protocol=anodot20"
+        "value" : "${ANODOT_BASE_URL}/api/v1/metrics?token=${TOKEN}&protocol=${PROTOCOL}"
       }, {
         "name" : "conf.headers",
         "value" : [ ]

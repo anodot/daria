@@ -12,8 +12,7 @@
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
       "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"],
-      "table_name": ["test"]
+      "pipeline_type": ["type"]
     },
     "value": 6784.69
   },
@@ -30,8 +29,7 @@
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
       "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"],
-      "table_name": ["test"]
+      "pipeline_type": ["type"]
     },
     "value": 123.0
   },
@@ -48,8 +46,7 @@
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
       "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"],
-      "table_name": ["test"]
+      "pipeline_type": ["type"]
     },
     "value": 6839.0
   },
@@ -66,8 +63,7 @@
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
       "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"],
-      "table_name": ["test"]
+      "pipeline_type": ["type"]
     },
     "value": 22.0
   },
@@ -84,8 +80,7 @@
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
       "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"],
-      "table_name": ["test"]
+      "pipeline_type": ["type"]
     },
     "value": 690999
   },
@@ -102,8 +97,7 @@
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
       "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"],
-      "table_name": ["test"]
+      "pipeline_type": ["type"]
     },
     "value": 15.0
   },
@@ -120,8 +114,7 @@
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
       "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"],
-      "table_name": ["test"]
+      "pipeline_type": ["type"]
     },
     "value": 7158.97
   },
@@ -138,8 +131,7 @@
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
       "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"],
-      "table_name": ["test"]
+      "pipeline_type": ["type"]
     },
     "value": 3.0
   },
@@ -156,8 +148,7 @@
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
       "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"],
-      "table_name": ["test"]
+      "pipeline_type": ["type"]
     },
     "value": null
   },
@@ -174,8 +165,7 @@
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
       "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"],
-      "table_name": ["test"]
+      "pipeline_type": ["type"]
     },
     "value": 4.0
   },
@@ -191,8 +181,7 @@
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
       "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"],
-      "table_name": ["test"]
+      "pipeline_type": ["type"]
     },
     "value": 7427.77
   },
@@ -208,8 +197,7 @@
       "source_host_id": ["ABCDEF"],
       "source_host_name": ["agent"],
       "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"],
-      "table_name": ["test"]
+      "pipeline_type": ["type"]
     },
     "value": 0.0
   }

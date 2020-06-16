@@ -2,8 +2,8 @@
   {
     "source": "test_mongo",
     "pipeline_id": "test_mongo_file_short",
-    "measurement_name": "clicks",
-    "value": "Clicks",
+    "measurement_names": {"Clicks":  "clicks"},
+    "values": {"Clicks":  "gauge"},
     "dimensions": ["ver", "Country"],
     "timestamp": {
       "type": "unix_ms",
@@ -13,11 +13,8 @@
   {
     "source": "test_mongo",
     "pipeline_id": "test_mongo_file_full",
-    "measurement_name": "clicks",
-    "value": {
-      "type": "constant",
-      "value": "1"
-    },
+    "measurement_names": {"Clicks":  "clicks"},
+    "values": {"Clicks":  "gauge"},
     "dimensions": {
       "required": ["ver", "Country"],
       "optional": ["Exchange", "optional_dim"]
@@ -27,7 +24,6 @@
       "name": "timestamp_string",
       "format": "M/d/yyyy H:mm:ss"
     },
-    "target_type": "counter",
     "properties": {"test": "val"}
   }
 ]

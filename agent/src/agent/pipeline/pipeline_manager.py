@@ -140,8 +140,8 @@ class PipelineManager:
     def create(self):
         try:
             pipeline_obj = api_client.create_pipeline(self.pipeline.id)
-            new_config = self.sdc_creator.override_base_config(self.pipeline.to_dict(), new_uuid=pipeline_obj['uuid'],
-                                                               new_pipeline_title=self.pipeline.id)
+            new_config = self.sdc_creator.override_base_config(new_uuid=pipeline_obj['uuid'],
+                                                               new_title=self.pipeline.id)
 
             api_client.update_pipeline(self.pipeline.id, new_config)
         except (config_handlers.ConfigHandlerException, StreamSetsApiClientException) as e:
@@ -158,8 +158,8 @@ class PipelineManager:
                 start_pipeline = True
 
             pipeline_obj = api_client.get_pipeline(self.pipeline.id)
-            new_config = self.sdc_creator.override_base_config(self.pipeline.to_dict(), new_uuid=pipeline_obj['uuid'],
-                                                               new_pipeline_title=self.pipeline.id)
+            new_config = self.sdc_creator.override_base_config(new_uuid=pipeline_obj['uuid'],
+                                                               new_title=self.pipeline.id)
             api_client.update_pipeline(self.pipeline.id, new_config)
 
         except (config_handlers.ConfigHandlerException, StreamSetsApiClientException) as e:
@@ -172,7 +172,7 @@ class PipelineManager:
     def reset(self):
         try:
             api_client.reset_pipeline(self.pipeline.id)
-            self.sdc_creator.set_initial_offset(self.pipeline.to_dict())
+            self.sdc_creator.set_initial_offset()
         except (config_handlers.ConfigHandlerException, StreamSetsApiClientException) as e:
             raise PipelineException(str(e))
 
