@@ -34,13 +34,13 @@ class AnodotApiClientException(click.ClickException):
 
 class AnodotApiClient:
 
-    def __init__(self, api_key, proxies, base_url='https://app.anodot.com'):
+    def __init__(self, access_key, proxies, base_url='https://app.anodot.com'):
         """
 
-        :param api_key: api_key
+        :param access_key: access_key
         :param base_url: string
         """
-        self.api_key = api_key
+        self.access_key = access_key
         self.base_url = base_url
         self.proxies = proxies
         self.session = requests.Session()
@@ -48,7 +48,7 @@ class AnodotApiClient:
 
     def get_auth_token(self):
         auth_token = self.session.post(self.build_url('access-token'),
-                                       json={'refreshToken': self.api_key},
+                                       json={'refreshToken': self.access_key},
                                        proxies=self.proxies)
         auth_token.raise_for_status()
         self.session.headers.update({'Authorization': 'Bearer ' + auth_token.text.replace('"', '')})

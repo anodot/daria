@@ -1,4 +1,3 @@
-import time
 import pytest
 
 from .fixtures import cli_runner
@@ -19,7 +18,7 @@ def host_id(monkeypatch):
 
 def test_destination(cli_runner):
     result = cli_runner.invoke(agent_cli.destination, args=['--url=http://wrong-url'],
-                               input='http://dummy_destination\ntoken\ny\nhttp://squid:3128\n\n\napi_key\n')
+                               input='y\nhttp://squid:3128\n\n\nhttp://dummy_destination\ncorrect_token\ncorrect_key\n')
     print(result.output)
     assert result.exit_code == 0
     assert HttpDestination.exists()
@@ -27,12 +26,12 @@ def test_destination(cli_runner):
 
 
 def test_edit_destination(cli_runner):
-    prev_dest = HttpDestination().load()
-    result = cli_runner.invoke(agent_cli.destination, input='\ntoken\ny\nhttp://squid:3128\n\n\n')
+    prev_dest = HttpDestination.get()
+    result = cli_runner.invoke(agent_cli.destination, input='y\nhttp://squid:3128\n\n\n\ncorrect_token\n')
     print(result.output)
-    curr_dest = HttpDestination().load()
+    curr_dest = HttpDestination.get()
     assert result.exit_code == 0
-    assert curr_dest['host_id'] == prev_dest['host_id']
+    assert curr_dest.host_id == prev_dest.host_id
     assert api_client.get_pipeline_status('Monitoring')['status'] == 'RUNNING'
 
 

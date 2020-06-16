@@ -20,6 +20,8 @@ services:
     tty: true
     depends_on:
       - dc
+#    ports:
+#    - 8080:80
 
     volumes:
       - sdc-data:/sdc-data
