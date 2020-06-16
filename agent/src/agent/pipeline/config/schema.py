@@ -1,5 +1,6 @@
 from agent.anodot_api_client import AnodotApiClient
 from agent.pipeline import Pipeline
+from agent import proxy
 
 
 def build(pipeline: Pipeline):
@@ -33,7 +34,7 @@ def equal(old_schema, new_schema) -> bool:
 
 def update(pipeline: Pipeline) -> dict:
     new_schema = build(pipeline)
-    api_client = AnodotApiClient(pipeline.destination.api_key, pipeline.destination.get_proxy_configs(),
+    api_client = AnodotApiClient(pipeline.destination.access_key, proxy.get_config(pipeline.destination.proxy),
                                  base_url=pipeline.destination.url)
 
     old_schema = pipeline.get_schema()
