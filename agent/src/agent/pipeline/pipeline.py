@@ -4,7 +4,7 @@ import os
 
 from .. import source
 from agent.constants import DATA_DIR, HOSTNAME
-from agent.destination import HttpDestination
+from agent.destination.http import HttpDestination
 from enum import Enum
 
 

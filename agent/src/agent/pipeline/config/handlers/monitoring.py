@@ -1,7 +1,6 @@
-import json
-import os
 import requests
 
+from agent import proxy
 from .base import BaseConfigHandler
 from agent.constants import HOSTNAME
 from copy import deepcopy
@@ -39,7 +38,7 @@ state['previous'] = {{}};
 
         # check if monitoring is available
         r = requests.post(self.pipeline.destination.monitoring_url,
-                          proxies=self.pipeline.destination.get_proxy_configs(),
+                          proxies=proxy.get_config(self.pipeline.destination.proxy),
                           json=[],
                           timeout=5)
         if r.status_code == 200:

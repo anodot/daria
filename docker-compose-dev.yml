@@ -43,6 +43,9 @@ services:
       - dummy-destination-data:/output
       - ./agent:/usr/src/app
       - ./test-datasets:/home
+      - ./agent/src/agent/api:/app
+    ports:
+      - 80:80
 
   mongo:
     image: mongo
@@ -115,6 +118,8 @@ services:
     image: datadog/squid
     extra_hosts:
       - "daria-test2:10.0.0.28"
+    ports:
+      - "3128:3128"
 
   mysql:
     image: mysql

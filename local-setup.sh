@@ -8,3 +8,5 @@ export DATA_DIR="agent/agent-data" STREAMSETS_USERNAME="admin" STREAMSETS_PASSWO
 
 pip install --upgrade pip && pip install -r agent/requirements.txt
 pip install --editable agent
+
+# add 127.0.0.1 dummy_destination and 127.0.0.1 squid to hosts in order to be able to run api tests locally
