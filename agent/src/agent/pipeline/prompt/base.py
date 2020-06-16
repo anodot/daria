@@ -114,6 +114,8 @@ class PromptConfig:
         errors = []
         for value in names:
             for record in self.pipeline.source.sample_data:
+                if self.config.get('values_array_path'):
+                    record = dict_get_nested(record, self.config['values_array_path'].split('/'))
                 if not dict_get_nested(record, value.split('/')):
                     print(f'Property {value} is not present in a sample record')
                     errors.append(value)

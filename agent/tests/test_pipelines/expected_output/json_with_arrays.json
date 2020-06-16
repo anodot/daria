@@ -1,0 +1,36 @@
+[
+  {
+    "value": 6784.6904,
+    "properties": {
+      "what": "clicks.display",
+      "target_type": "gauge",
+      "ver": "1",
+      "Country": "USA"
+    },
+    "tags": {
+      "source": ["anodot-agent"],
+      "source_host_id": ["ABCDEF"],
+      "source_host_name": ["agent"],
+      "pipeline_id": ["pipeline_id"],
+      "pipeline_type": ["type"]
+    },
+    "timestamp": 1512867600
+  },
+  {
+    "value": 111,
+    "properties": {
+      "what": "clicks.search",
+      "target_type": "gauge",
+      "ver": "1",
+      "Country": "USA"
+    },
+    "tags": {
+      "source": ["anodot-agent"],
+      "source_host_id": ["ABCDEF"],
+      "source_host_name": ["agent"],
+      "pipeline_id": ["pipeline_id"],
+      "pipeline_type": ["type"]
+    },
+    "timestamp": 1512867600
+  }
+]

@@ -9,7 +9,7 @@ from ..test_pipelines.test_zpipeline_base import pytest_generate_tests
 
 class TestKafka:
     params = {
-        'test_source_create': [{'name': 'test_kfk'}, {'name': 'test_running_counters'}],
+        'test_source_create': [{'name': 'test_kfk'}, {'name': 'test_running_counters'}, {'name': 'test_json_arrays'}],
         'test_create': [
             {
                 'source_name': 'test_kfk',
@@ -49,7 +49,8 @@ class TestKafka:
                 'options': ['-a'],
                 'value': 'n\nn\n\nClicks:running_counter\ny\nClicks:metric',
                 'timestamp': 'timestamp_unix\nunix',
-                'advanced_options': 'key1:val1\n \n \n '},
+                'advanced_options': 'key1:val1\n \n \n '
+            },
             {
                 'source_name': 'test_running_counters',
                 'name': 'test_kfk_running_counter_dynamic_what',
@@ -57,6 +58,14 @@ class TestKafka:
                 'value': 'n\nn\n\nClicks:agg_type\nClicks:metric',
                 'timestamp': 'timestamp_unix\nunix',
                 'advanced_options': 'key1:val1\n \n \n '
+            },
+            {
+                'source_name': 'test_json_arrays',
+                'name': 'test_json_arrays',
+                'options': ['-a'],
+                'value': 'n\nn\nkpis\nClicks:gauge\nClicks:metric',
+                'timestamp': 'timestamp_unix\nunix',
+                'advanced_options': ' \n \n \n '
             }
         ],
         'test_edit': [
