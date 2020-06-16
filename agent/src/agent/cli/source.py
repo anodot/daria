@@ -1,7 +1,7 @@
 import click
 import json
 
-from .. import source, pipeline
+from agent import source, pipeline
 from agent.constants import ENV_PROD
 from agent.destination.http import HttpDestination
 from agent.streamsets_api_client import api_client
@@ -129,8 +129,9 @@ def create(advanced, file):
 
     source_instance = source.create_object(source_name, source_type)
     recent_pipeline_config = get_previous_source_config(source_type)
-    source_instance.set_config(source_instance.prompt(recent_pipeline_config, advanced))
 
+    # todo refactor set_config
+    source_instance.set_config(source_instance.prompt(recent_pipeline_config, advanced))
     source_instance.create()
 
     click.secho('Source config created', fg='green')
@@ -155,7 +156,7 @@ def edit(name, advanced, file):
             raise click.UsageError(str(e))
 
     source_instance = source.load_object(name)
-
+    # todo refactor set_config
     source_instance.set_config(source_instance.prompt(source_instance.config, advanced=advanced))
     source_instance.save()
 

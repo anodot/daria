@@ -1,9 +1,6 @@
 import pytest
 
 from ..fixtures import cli_runner
-from agent.pipeline import cli as pipeline_cli
-from agent.source import cli as source_cli, Source
-from agent.streamsets_api_client import api_client
 from .test_zpipeline_base import TestPipelineBase, pytest_generate_tests
 
 

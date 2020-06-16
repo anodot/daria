@@ -86,6 +86,8 @@ class Source(ABC):
 
     def update_test_source_config(self, stage):
         for conf in stage['configuration']:
+            if conf['name'] == 'configBean.mongoConfig.username':
+                stop = 1
             if conf['name'] in self.config:
                 conf['value'] = self.config[conf['name']]
 

@@ -140,27 +140,27 @@ build-base-services: clean-docker-volumes
 	docker exec -i anodot-agent python setup.py develop
 
 build-elastic:
-	docker-compose up -d es
+	docker-compose -f $(DOCKER_COMPOSE_DEV) up -d es
 	sleep $(SLEEP)
 
 build-influx:
 	docker-compose up -d influx
 
 build-kafka: build-zookeeper
-	docker-compose up -d kafka
+	docker-compose -f $(DOCKER_COMPOSE_DEV) up -d kafka
 	sleep $(SLEEP)
 
 build-zookeeper:
-	docker-compose up -d zookeeper
+	docker-compose -f $(DOCKER_COMPOSE_DEV) up -d zookeeper
 
 build-mongo:
-	docker-compose up -d mongo
+	docker-compose -f $(DOCKER_COMPOSE_DEV) up -d mongo
 
 build-mysql:
-	docker-compose up -d mysql
+	docker-compose -f $(DOCKER_COMPOSE_DEV) up -d mysql
 
 build-postgres:
-	docker-compose up -d postgres
+	docker-compose -f $(DOCKER_COMPOSE_DEV) up -d postgres
 
 ##--------------------------
 ## COMMON DEPENDENCY TARGETS
