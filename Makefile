@@ -113,7 +113,7 @@ test-dev-destination:
 	$(DOCKER_TEST_DEV) tests/test_destination.py
 
 test-dev-condition-parser:
-	$(DOCKER_TEST_DEV) tests/test_condition_parser.py
+	$(DOCKER_TEST_DEV) tests/unit/test_condition_parser.py
 
 test-dev-input:
 	$(DOCKER_TEST_DEV_PARALLEL) tests/test_input/

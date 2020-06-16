@@ -81,5 +81,6 @@ class TestPipelineBase(object):
 
     def test_source_delete(self, cli_runner, name):
         result = cli_runner.invoke(source_cli.delete, [name])
+        print(result.output)
         assert result.exit_code == 0
         assert not os.path.isfile(os.path.join(Source.DIR, f'{name}.json'))
