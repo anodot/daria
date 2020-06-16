@@ -2,6 +2,7 @@ import pytest
 
 from .fixtures import cli_runner
 from agent import cli as agent_cli
+from agent.cli.destination import destination
 from agent.destination.http import HttpDestination
 from agent.streamsets_api_client import api_client
 
@@ -17,7 +18,7 @@ def host_id(monkeypatch):
 
 
 def test_destination(cli_runner):
-    result = cli_runner.invoke(agent_cli.destination, args=['--url=http://wrong-url'],
+    result = cli_runner.invoke(destination, args=['--url=http://wrong-url'],
                                input='y\nhttp://squid:3128\n\n\nhttp://dummy_destination\ncorrect_token\ncorrect_key\n')
     print(result.output)
     assert result.exit_code == 0

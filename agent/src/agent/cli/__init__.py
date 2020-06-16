@@ -1,12 +1,9 @@
 import click
 
-# for using arrows in cli
-# import readline
-
-from . import pipeline, source
-from .pipeline.cli import pipeline_group
-from .source.cli import source_group
-from .destination.cli import destination
+from agent import pipeline
+from agent.pipeline.cli import pipeline_group
+from agent.source.cli import source_group
+from agent.cli.destination import destination
 from agent.version import __version__, __build_time__, __git_sha1__
 
 
