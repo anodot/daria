@@ -159,6 +159,10 @@ class Pipeline:
     def values_array_path(self) -> str:
         return self.config.get('values_array_path', '')
 
+    @property
+    def values_array_filter_metrics(self) -> list:
+        return self.config.get('values_array_filter_metrics', [])
+
     def get_schema(self):
         return self.config.get('schema', {})
 

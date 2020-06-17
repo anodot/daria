@@ -41,6 +41,18 @@ class PromptConfigSchemaless(PromptConfig):
             t_types_paths = [t_type for t_type in self.config['values'].values() if t_type not in self.target_types]
             self.validate_properties_names(t_types_paths, values_array)
 
+    def prompt_values_array(self):
+        self.config['values_array_path'] = click.prompt('Values array path', type=click.STRING,
+                                                        default=self.default_config.get('values_array_path',
+                                                                                        '')).strip()
+        if not self.config['values_array_path']:
+            return
+        default_val = self.default_config.get('values_array_filter_metrics', [])
+        self.config['values_array_filter_metrics'] = click.prompt('Filter metrics',
+                                                                  type=click.STRING,
+                                                                  value_proc=lambda x: x.split(','),
+                                                                  default=default_val)
+
     @infinite_retry
     def set_values(self):
         self.config['count_records'] = int(click.confirm('Count records?',
@@ -54,9 +66,7 @@ class PromptConfigSchemaless(PromptConfig):
         if self.advanced or not static_what_default:
             self.config['static_what'] = click.confirm('Is `what` property static?',
                                                        default=self.default_config.get('static_what', True))
-            self.config['values_array_path'] = click.prompt('Values array path', type=click.STRING,
-                                                            default=self.default_config.get('values_array_path',
-                                                                                            '')).strip()
+            self.prompt_values_array()
 
         self.prompt_values()
         if not self.config['count_records'] and not self.config['values']:
