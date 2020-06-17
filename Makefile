@@ -144,7 +144,7 @@ build-elastic:
 	sleep $(SLEEP)
 
 build-influx:
-	docker-compose up -d influx
+	docker-compose -f $(DOCKER_COMPOSE_DEV) up -d influx
 
 build-kafka: build-zookeeper
 	docker-compose -f $(DOCKER_COMPOSE_DEV) up -d kafka

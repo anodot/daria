@@ -6,6 +6,7 @@ from .pipeline_manager import PipelineManager, delete_pipeline, stop_pipeline, f
 from .. import pipeline, source
 from ..streamsets_api_client import api_client, StreamSetsApiClientException
 from agent.destination.http import HttpDestination
+from agent.repository import source_repository
 from agent.tools import infinite_retry
 from jsonschema import validate as validate_json, ValidationError
 from datetime import datetime
@@ -67,7 +68,7 @@ def create_multiple(file):
         'items': {
             'type': 'object',
             'properties': {
-                'source': {'type': 'string', 'enum': source.get_list()},
+                'source': {'type': 'string', 'enum': source_repository.get_all()},
                 'pipeline_id': {'type': 'string', 'minLength': 1, 'maxLength': 100}
             },
             'required': ['source', 'pipeline_id']
@@ -95,7 +96,7 @@ def check_pipeline_id(pipeline_id: str):
 @click.option('-f', '--file', type=click.File())
 def create(advanced, file):
     check_destination()
-    sources = source.get_list()
+    sources = source_repository.get_all()
     check_sources(sources)
 
     if file:

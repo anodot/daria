@@ -1,7 +1,7 @@
 import click
 
-from agent.destination.http import HttpDestination, DataValidator, build_urls, create
 from agent import source, pipeline
+from agent.destination.http import HttpDestination, DataValidator, build_urls, create
 from agent.constants import MONITORING_SOURCE_NAME
 from agent.tools import infinite_retry
 from agent.proxy import Proxy
