@@ -47,7 +47,7 @@ class TestKafka:
                 'source_name': 'test_running_counters',
                 'name': 'test_kfk_running_counter_static_tt',
                 'options': ['-a'],
-                'value': 'n\nn\n\nClicks:running_counter\ny\nClicks:metric',
+                'value': 'n\nn\n \nClicks:running_counter\nClicks:metric',
                 'timestamp': 'timestamp_unix\nunix',
                 'advanced_options': 'key1:val1\n \n \n '
             },

@@ -55,7 +55,8 @@ class PromptConfigSchemaless(PromptConfig):
             self.config['static_what'] = click.confirm('Is `what` property static?',
                                                        default=self.default_config.get('static_what', True))
             self.config['values_array_path'] = click.prompt('Values array path', type=click.STRING,
-                                                            default=self.default_config.get('values_array_path', ''))
+                                                            default=self.default_config.get('values_array_path',
+                                                                                            '')).strip()
 
         self.prompt_values()
         if not self.config['count_records'] and not self.config['values']:
