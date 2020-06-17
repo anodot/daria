@@ -1,7 +1,7 @@
 if [[ $1 == 'upgrade' ]]; then
   docker-compose pull && docker-compose up -d && sleep 30 && docker exec -i anodot-agent agent update
 elif [[ $1 == 'run' ]]; then
-    docker-compose up -d && docker attach anodot-agent
+    docker-compose up -d && docker exec -it anodot-agent bash
 elif [[ $1 == 'set-heap-size' ]]; then
   if ! [[ $2 =~ ^[0-9]+$ ]]; then
     echo "Please use only integers to set the heap size"
