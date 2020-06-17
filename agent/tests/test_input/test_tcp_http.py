@@ -20,6 +20,6 @@ class TestTCPServer:
 
     def test_create(self, cli_runner):
         result = cli_runner.invoke(pipeline_cli.create,
-                                   input=f"test_tcp_log\ntest_tcp_log\n\nn\n\nClicks:gauge\nClicks:clicks\ntimestamp_unix_ms\nunix_ms\nver Country\nExchange optional_dim\n\n")
+                                   input=f"test_tcp_log\ntest_tcp_log\n\nn\nClicks:gauge\nClicks:clicks\ntimestamp_unix_ms\nunix_ms\nver Country\nExchange optional_dim\n\n")
         assert result.exit_code == 0
         assert api_client.get_pipeline('test_tcp_log')
