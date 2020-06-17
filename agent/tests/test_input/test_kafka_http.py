@@ -63,7 +63,7 @@ class TestKafka:
                 'source_name': 'test_json_arrays',
                 'name': 'test_json_arrays',
                 'options': ['-a'],
-                'value': 'n\nn\nkpis\nClicks:gauge\nClicks:metric',
+                'value': 'n\nn\nkpis\nclicks.display,clicks.search\nClicks:gauge\nClicks:metric',
                 'timestamp': 'timestamp_unix\nunix',
                 'advanced_options': ' \n \n \n '
             }
