@@ -25,7 +25,7 @@ class PromptConfigJDBC(PromptConfig):
         self.prompt_object('values', 'Value columns with target types. Example - column:counter column2:gauge')
         if not set(self.config['values'].values()).issubset(('counter', 'gauge')):
             raise click.UsageError('Target type should be counter or gauge')
-        self.validate_properties_names(self.config['values'].keys())
+        self.validate_properties_names(self.config['values'].keys(), self.pipeline.source.sample_data)
 
     def set_table(self):
         self.config['table'] = click.prompt('Table name', type=click.STRING, default=self.default_config.get('table'))

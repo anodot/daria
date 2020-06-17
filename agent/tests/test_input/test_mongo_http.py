@@ -11,13 +11,13 @@ from ..test_pipelines.test_zpipeline_base import pytest_generate_tests
 class TestMongo:
 
     params = {
-        'test_create': [{'name': 'test_value_const', 'options': ['-a'], 'value': 'y\nclicksS\ny\n \n ',
+        'test_create': [{'name': 'test_value_const', 'options': ['-a'], 'value': 'y\nclicksS\ny\n\n \n ',
                          'timestamp': 'timestamp_unix\nunix', 'advanced_options': 'key1:val1\n\n\n'},
                         {'name': 'test_timestamp_ms', 'options': [], 'value': 'n\nClicks:gauge\nClicks:clicks',
                          'timestamp': 'timestamp_unix_ms\nunix_ms', 'advanced_options': '\n\n'},
                         {'name': 'test_timestamp_datetime', 'options': [], 'value': 'n\nClicks:gauge\nClicks:clicks',
                          'timestamp': 'timestamp_datetime\ndatetime', 'advanced_options': '\n\n'},
-                        {'name': 'test_timestamp_string', 'options': ['-a'], 'value': 'n\n\nClicks:gauge\nClicks:clicks',
+                        {'name': 'test_timestamp_string', 'options': ['-a'], 'value': 'n\n\n\nClicks:gauge\nClicks:clicks',
                          'timestamp': 'timestamp_string\nstring\nM/d/yyyy H:mm:ss',
                          'advanced_options': 'key1:val1\n\n\n'}],
         'test_edit': [{'options': ['test_value_const'], 'value': 'y\nclicks\n\n'}],

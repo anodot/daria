@@ -11,11 +11,11 @@ class TestElastic:
 
     params = {
         'test_create': [
-            {'name': 'test_es_value_const', 'options': ['-a'], 'value': 'y\nclicksS\ny\n \n ',
+            {'name': 'test_es_value_const', 'options': ['-a'], 'value': 'y\nclicksS\ny\n\n \n ',
              'timestamp': '_source/timestamp_unix\nunix', 'advanced_options': 'key1:val1\n\n\n'},
             {'name': 'test_es_timestamp_ms', 'options': [], 'value': 'n\n_source/Clicks:gauge\n_source/Clicks:clicks',
              'timestamp': '_source/timestamp_unix_ms\nunix_ms', 'advanced_options': '\n\n'}],
-        'test_edit': [{'options': ['test_es_value_const'], 'value': 'y\nclicks\n\n'}],
+        'test_edit': [{'options': ['test_es_value_const'], 'value': 'y\nclicks\n\n\n'}],
     }
 
     def test_source_create(self, cli_runner):

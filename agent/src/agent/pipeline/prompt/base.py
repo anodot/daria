@@ -38,13 +38,13 @@ class PromptConfig:
     @infinite_retry
     def prompt_property(self, text: str, default_value) -> str:
         value = click.prompt(text, type=click.STRING, default=default_value)
-        self.validate_properties_names([value])
+        self.validate_properties_names([value], self.pipeline.source.sample_data)
         return value
 
     @infinite_retry
     def prompt_dimensions(self, text: str, default_value: list) -> list:
         dimensions = click.prompt(text, type=click.STRING, value_proc=lambda x: x.split(), default=default_value)
-        self.validate_properties_names(dimensions)
+        self.validate_properties_names(dimensions, self.pipeline.source.sample_data)
         return dimensions
 
     def set_dimensions(self):
@@ -108,12 +108,12 @@ class PromptConfig:
                                                   default=self.default_config.get('target_type', 'gauge'))
 
     @if_validation_enabled
-    def validate_properties_names(self, names):
-        if not self.pipeline.source.sample_data:
+    def validate_properties_names(self, names, sample_data):
+        if not sample_data:
             return
         errors = []
         for value in names:
-            for record in self.pipeline.source.sample_data:
+            for record in sample_data:
                 if not dict_get_nested(record, value.split('/')):
                     print(f'Property {value} is not present in a sample record')
                     errors.append(value)

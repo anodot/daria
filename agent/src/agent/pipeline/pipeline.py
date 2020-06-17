@@ -155,6 +155,10 @@ class Pipeline:
     def tags(self) -> dict:
         return self.config.get('tags', {})
 
+    @property
+    def values_array_path(self) -> str:
+        return self.config.get('values_array_path', '')
+
     def get_schema(self):
         return self.config.get('schema', {})
 

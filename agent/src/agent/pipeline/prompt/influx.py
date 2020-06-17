@@ -37,7 +37,7 @@ class PromptConfigInflux(PromptConfig):
         default_names = ' '.join(default_names) if len(default_names) > 0 else None
         self.config['value']['values'] = click.prompt('Value columns names', type=click.STRING,
                                                       default=default_names).split()
-        self.validate_properties_names(self.config['value']['values'])
+        self.validate_properties_names(self.config['value']['values'], self.pipeline.source.sample_data)
         self.config['value']['constant'] = '1'
 
     def set_dimensions(self):

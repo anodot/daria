@@ -70,8 +70,12 @@ class Filtering(Stage):
         return check_dims
 
     def get_config(self) -> dict:
-        required_fields = [*self.pipeline.values_paths, *self.pipeline.required_dimensions_paths,
+        required_fields = [*self.pipeline.required_dimensions_paths,
                            self.pipeline.timestamp_path]
+        if self.pipeline.values_array_path:
+            required_fields.append(self.pipeline.values_array_path)
+        else:
+            required_fields += self.pipeline.values_paths
 
         if not self.pipeline.static_what:
             required_fields += self.pipeline.measurement_names_paths

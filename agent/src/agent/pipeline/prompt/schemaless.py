@@ -1,7 +1,7 @@
 import click
 
 from agent.pipeline.config import expression_parser
-from agent.tools import infinite_retry
+from agent.tools import infinite_retry, dict_get_nested
 from .base import PromptConfig
 
 
@@ -23,15 +23,23 @@ class PromptConfigSchemaless(PromptConfig):
     def static_what(self):
         return self.config.get('static_what', True)
 
+    def __get_values_array(self, records) -> list:
+        if self.config.get('values_array_path') and len(records) > 0:
+            return dict_get_nested(records[0], self.config['values_array_path'].split('/'))
+        return records
+
     @infinite_retry
     def prompt_values(self):
         self.prompt_object('values', 'Value properties with target types. Example - property:counter property2:gauge')
 
         if not set(self.config['values'].values()).issubset(self.target_types) and self.static_what():
             raise click.UsageError(f'Target type should be on of: {", ".join(self.target_types)}')
-        self.validate_properties_names(self.config['values'].keys())
+
+        values_array = self.__get_values_array(self.pipeline.source.sample_data)
+        self.validate_properties_names(self.config['values'].keys(), values_array)
         if not self.static_what():
-            self.validate_properties_names(self.config['values'].values())
+            t_types_paths = [t_type for t_type in self.config['values'].values() if t_type not in self.target_types]
+            self.validate_properties_names(t_types_paths, values_array)
 
     @infinite_retry
     def set_values(self):
@@ -46,6 +54,9 @@ class PromptConfigSchemaless(PromptConfig):
         if self.advanced or not static_what_default:
             self.config['static_what'] = click.confirm('Is `what` property static?',
                                                        default=self.default_config.get('static_what', True))
+            self.config['values_array_path'] = click.prompt('Values array path', type=click.STRING,
+                                                            default=self.default_config.get('values_array_path',
+                                                                                            '')).strip()
 
         self.prompt_values()
         if not self.config['count_records'] and not self.config['values']:
@@ -58,7 +69,8 @@ class PromptConfigSchemaless(PromptConfig):
         if not set(self.config['measurement_names'].keys()).issubset(set(self.config['values'].keys())):
             raise click.UsageError('Wrong property name')
         if not self.static_what():
-            self.validate_properties_names(self.config['measurement_names'].values())
+            values_array = self.__get_values_array(self.pipeline.source.sample_data)
+            self.validate_properties_names(self.config['measurement_names'].values(), values_array)
 
     def set_timestamp(self):
         self.config['timestamp'] = self.default_config.get('timestamp', {})
