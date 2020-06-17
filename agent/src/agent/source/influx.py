@@ -173,4 +173,4 @@ class InfluxSource(Source):
             print('No preview data available')
             return
         series = records[0]['results'][0]['series'][0]
-        print_dicts(map_keys([item for key, item in series['values'].items()], series['columns']))
+        print_dicts(map_keys(series['values'], series['columns']))
