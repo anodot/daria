@@ -1,0 +1,14 @@
+[
+  {
+    "type": "mongo",
+    "name": "test_mongo",
+    "config": {
+      "configBean.mongoConfig.connectionString": "mongodb://mongo:27017",
+      "configBean.mongoConfig.database": "test",
+      "configBean.mongoConfig.collection": "adtech",
+      "configBean.mongoConfig.username": "root",
+      "configBean.mongoConfig.password": "root",
+      "configBean.mongoConfig.authSource": "admin"
+    }
+  }
+]

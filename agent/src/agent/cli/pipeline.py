@@ -2,9 +2,9 @@ import click
 import json
 import re
 
-from .pipeline_manager import PipelineManager, delete_pipeline, stop_pipeline, force_stop_pipeline
-from .. import pipeline, source
-from ..streamsets_api_client import api_client, StreamSetsApiClientException
+from agent.pipeline.pipeline_manager import PipelineManager, delete_pipeline, stop_pipeline, force_stop_pipeline
+from agent import pipeline, source
+from agent.streamsets_api_client import api_client, StreamSetsApiClientException
 from agent.destination.http import HttpDestination
 from agent.repository import source_repository
 from agent.tools import infinite_retry
@@ -15,8 +15,7 @@ from texttable import Texttable
 
 def get_previous_pipeline_config(label):
     try:
-        pipelines_with_source = api_client.get_pipelines(order_by='CREATED', order='DESC',
-                                                         label=label)
+        pipelines_with_source = api_client.get_pipelines(order_by='CREATED', order='DESC', label=label)
         if len(pipelines_with_source) > 0:
             pipeline_obj = pipeline.load_object(pipelines_with_source[-1]['pipelineId'])
             return pipeline_obj.to_dict()
@@ -27,7 +26,6 @@ def get_previous_pipeline_config(label):
 
 def build_table(header, data, get_row, *args):
     """
-
     :param header: list
     :param data: list
     :param get_row: function - accepts item as first argument and *args; return false if row is needed to be skipped
@@ -60,30 +58,33 @@ def get_pipelines_ids():
     return [p['pipelineId'] for p in api_client.get_pipelines()]
 
 
-def create_multiple(file):
-    configs = json.load(file)
-
-    json_schema = {
-        'type': 'array',
-        'items': {
-            'type': 'object',
-            'properties': {
-                'source': {'type': 'string', 'enum': source_repository.get_all()},
-                'pipeline_id': {'type': 'string', 'minLength': 1, 'maxLength': 100}
-            },
-            'required': ['source', 'pipeline_id']
+def create_from_file(file):
+    try:
+        configs = json.load(file)
+    
+        json_schema = {
+            'type': 'array',
+            'items': {
+                'type': 'object',
+                'properties': {
+                    'source': {'type': 'string', 'enum': source_repository.get_all()},
+                    'pipeline_id': {'type': 'string', 'minLength': 1, 'maxLength': 100}
+                },
+                'required': ['source', 'pipeline_id']
+            }
         }
-    }
-    validate_json(configs, json_schema)
-
-    for config in configs:
-        check_pipeline_id(config['pipeline_id'])
-        pipeline_manager = PipelineManager(pipeline.create_object(config['pipeline_id'], config['source']))
-        pipeline_manager.load_config(config)
-        pipeline_manager.validate_config()
-        pipeline_manager.create()
-
-        click.secho('Created pipeline {}'.format(config['pipeline_id']), fg='green')
+        validate_json(configs, json_schema)
+    
+        for config in configs:
+            check_pipeline_id(config['pipeline_id'])
+            pipeline_manager = PipelineManager(pipeline.create_object(config['pipeline_id'], config['source']))
+            pipeline_manager.load_config(config)
+            pipeline_manager.validate_config()
+            pipeline_manager.create()
+    
+            click.secho('Created pipeline {}'.format(config['pipeline_id']), fg='green')
+    except (StreamSetsApiClientException, ValidationError) as e:
+        raise click.ClickException(str(e))
 
 
 def check_pipeline_id(pipeline_id: str):
@@ -100,7 +101,7 @@ def create(advanced, file):
     check_sources(sources)
 
     if file:
-        create_using_file(file)
+        create_from_file(file)
         return
 
     source_config_name = click.prompt('Choose source config', type=click.Choice(sources),
@@ -126,13 +127,6 @@ def prompt_pipeline_id():
     return pipeline_id
 
 
-def create_using_file(file):
-    try:
-        create_multiple(file)
-    except (StreamSetsApiClientException, ValidationError) as e:
-        raise click.ClickException(str(e))
-
-
 def check_sources(sources):
     if len(sources) == 0:
         raise click.ClickException('No sources configs found. Use "agent source create"')
@@ -147,8 +141,10 @@ def get_default_source(sources):
     return sources[0] if len(sources) == 1 else None
 
 
-def get_pipelines_from_file(file):
+def extract_configs(file):
+    # todo refactor
     data = json.load(file)
+    file.seek(0)
 
     json_schema = {
         'type': 'array',
@@ -164,16 +160,26 @@ def get_pipelines_from_file(file):
     return data
 
 
-def edit_multiple(file):
-    for item in get_pipelines_from_file(file):
+def edit_using_file(file):
+    for config in extract_configs(file):
         try:
-            pipeline_manager = PipelineManager(pipeline.load_object(item['pipeline_id']))
-            pipeline_manager.load_config(item, edit=True)
+            pipeline_manager = PipelineManager(pipeline.load_object(config['pipeline_id']))
+            pipeline_manager.load_config(config, edit=True)
             pipeline_manager.update()
         except pipeline.PipelineNotExistsException:
-            raise click.UsageError(f'{item["pipeline_id"]} does not exist')
+            raise click.UsageError(f'{config["pipeline_id"]} does not exist')
 
-        click.secho('Updated pipeline {}'.format(item['pipeline_id']), fg='green')
+        click.secho('Updated pipeline {}'.format(config['pipeline_id']), fg='green')
+
+
+def populate_from_file(file):
+    for config in extract_configs(file):
+        if 'pipeline_id' not in config:
+            raise Exception('Pipeline config should contain a pipeline_id')
+        if pipeline.Pipeline.exists(config['pipeline_id']):
+            edit_using_file(file)
+        else:
+            create_from_file(file)
 
 
 @click.command()
@@ -188,7 +194,7 @@ def edit(pipeline_id, advanced, file):
         raise click.UsageError('Specify pipeline id or file')
 
     if file:
-        edit_multiple(file)
+        edit_using_file(file)
         return
 
     try:
@@ -245,7 +251,7 @@ def start(pipeline_id, file):
     if not file and not pipeline_id:
         raise click.UsageError('Specify pipeline id or file')
 
-    pipeline_ids = [item['pipeline_id'] for item in get_pipelines_from_file(file)] if file else [pipeline_id]
+    pipeline_ids = [item['pipeline_id'] for item in extract_configs(file)] if file else [pipeline_id]
 
     for idx in pipeline_ids:
         try:
@@ -268,7 +274,7 @@ def stop(pipeline_id, file):
     if not file and not pipeline_id:
         raise click.UsageError('Specify pipeline id or file')
 
-    pipeline_ids = [item['pipeline_id'] for item in get_pipelines_from_file(file)] if file else [pipeline_id]
+    pipeline_ids = [item['pipeline_id'] for item in extract_configs(file)] if file else [pipeline_id]
 
     for idx in pipeline_ids:
         try:
@@ -304,7 +310,7 @@ def delete(pipeline_id, file):
     if not file and not pipeline_id:
         raise click.UsageError('Specify pipeline id or file')
 
-    pipeline_ids = [item['pipeline_id'] for item in get_pipelines_from_file(file)] if file else [pipeline_id]
+    pipeline_ids = [item['pipeline_id'] for item in extract_configs(file)] if file else [pipeline_id]
 
     for idx in pipeline_ids:
         try:

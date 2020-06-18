@@ -1,0 +1,16 @@
+[{
+  "source": "test_mongo",
+  "pipeline_id": "test_mongo_file_full",
+  "measurement_names": {"Clicks":  "clicks"},
+  "values": {"Clicks":  "gauge"},
+  "dimensions": {
+    "required": ["ver", "Country"],
+    "optional": ["Exchange", "optional_dim"]
+  },
+  "timestamp": {
+    "type": "string",
+    "name": "timestamp_string",
+    "format": "M/d/yyyy H:mm:ss"
+  },
+  "properties": {"test": "val"}
+}]
