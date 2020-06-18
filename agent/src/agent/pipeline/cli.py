@@ -164,15 +164,15 @@ def get_pipelines_from_file(file):
 
 
 def edit_multiple(file):
-    for pipeline_config in get_pipelines_from_file(file):
+    for item in get_pipelines_from_file(file):
         try:
-            pipeline_manager = PipelineManager(pipeline.load_object(pipeline_config['pipeline_id']))
-            pipeline_manager.load_config(pipeline_config, edit=True)
+            pipeline_manager = PipelineManager(pipeline.load_object(item['pipeline_id']))
+            pipeline_manager.load_config(item, edit=True)
             pipeline_manager.update()
         except pipeline.PipelineNotExistsException:
-            raise click.UsageError(f'{pipeline_config["pipeline_id"]} does not exist')
+            raise click.UsageError(f'{item["pipeline_id"]} does not exist')
 
-        click.secho('Updated pipeline {}'.format(pipeline_config['pipeline_id']), fg='green')
+        click.secho('Updated pipeline {}'.format(item['pipeline_id']), fg='green')
 
 
 @click.command()
