@@ -18,7 +18,7 @@ def create(directory, create_function):
 
 def main():
     create(SOURCES, source.populate_from_file)
-    create(PIPELINES, pipeline.create_from_file)
+    create(PIPELINES, pipeline.populate_from_file)
 
 
 main()
