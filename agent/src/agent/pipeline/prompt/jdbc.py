@@ -48,8 +48,8 @@ class PromptConfigJDBC(PromptConfig):
             type=click.IntRange(min=1),
             default=self.pipeline.config.get('queryInterval', 10)
         )
-        self.pipeline.override_source['queryInterval'] =\
-            '${' + str(self.pipeline.config['queryInterval']) + ' * SECONDS}'
+        self.pipeline.add_to_override_source('queryInterval',
+                                             '${' + str(self.pipeline.config['queryInterval']) + ' * SECONDS}')
 
     def set_timestamp(self):
         self.config['timestamp'] = self.default_config.get('timestamp', {})

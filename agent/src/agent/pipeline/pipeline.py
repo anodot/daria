@@ -54,7 +54,14 @@ class Pipeline:
         self.source = source_obj
         self.destination = destination
         self.old_config = None
-        self.override_source = config.pop(self.OVERRIDE_SOURCE, {})
+
+    def get_override_source(self) -> dict:
+        return self.config.pop(self.OVERRIDE_SOURCE, {})
+
+    def add_to_override_source(self, key: str, value: str):
+        if self.OVERRIDE_SOURCE not in self.config:
+            self.config[self.OVERRIDE_SOURCE] = {}
+        self.config[self.OVERRIDE_SOURCE][key] = value
 
     @property
     def file_path(self) -> str:
@@ -172,7 +179,6 @@ class Pipeline:
     def to_dict(self):
         return {
             **self.config,
-            self.OVERRIDE_SOURCE: self.override_source,
             'pipeline_id': self.id,
             'source': {'name': self.source.name},
         }
