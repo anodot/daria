@@ -20,6 +20,10 @@ class KafkaConfigHandler(BaseConfigHandler):
     def override_stages(self):
         # using 'anodot_agent_' + self.id as a default value in order not to break old configs
         if KafkaSource.CONFIG_CONSUMER_GROUP not in self.pipeline.override_source:
-            self.pipeline.override_source[KafkaSource.CONFIG_CONSUMER_GROUP] = 'anodot_agent_' + self.pipeline.id
+            if KafkaSource.CONFIG_CONSUMER_GROUP in self.pipeline.config:
+                self.pipeline.override_source[KafkaSource.CONFIG_CONSUMER_GROUP] = \
+                    self.pipeline.config[KafkaSource.CONFIG_CONSUMER_GROUP]
+            else:
+                self.pipeline.override_source[KafkaSource.CONFIG_CONSUMER_GROUP] = 'anodot_agent_' + self.pipeline.id
 
         super().override_stages()
