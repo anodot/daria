@@ -186,6 +186,7 @@ class Pipeline:
         return os.path.isfile(cls.get_file_path(pipeline_id))
 
     def set_config(self, config: dict):
+        self.override_source = config.pop(self.OVERRIDE_SOURCE, {})
         self.config.update(config)
 
     def save(self):
