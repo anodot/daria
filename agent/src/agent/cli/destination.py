@@ -79,13 +79,14 @@ def __start_monitoring_pipeline():
 
 @click.command()
 @click.option('-t', '--token', type=click.STRING, default=None)
+@click.option('--proxy/--no-proxy', default=False)
 @click.option('--proxy-host', type=click.STRING, default=None)
 @click.option('--proxy-user', type=click.STRING, default=None)
 @click.option('--proxy-password', type=click.STRING, default=None)
 @click.option('--host-id', type=click.STRING, default=None)
 @click.option('--access-key', type=click.STRING, default=None)
 @click.option('--url', type=click.STRING, default=None)
-def destination(token, proxy_host, proxy_user, proxy_password, host_id, access_key, url):
+def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, access_key, url):
     """
     Data destination config.
     Anodot API token - You can copy it from Settings > API tokens > Data Collection in your Anodot account
