@@ -143,6 +143,7 @@ class MongoSource(Source):
         self.validate_db()
         self.validate_collection()
 
+    # todo refactor
     def set_config(self, config):
         super().set_config(config)
         if self.config[self.CONFIG_USERNAME] != '':

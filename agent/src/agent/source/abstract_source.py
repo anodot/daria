@@ -3,11 +3,10 @@ import json
 import os
 
 from abc import ABC, abstractmethod
-from agent import pipeline
 from agent.constants import DATA_DIR
 from agent.tools import if_validation_enabled, sdc_record_map_to_dict
 from jsonschema import validate
-from agent.streamsets_api_client import api_client, StreamSetsApiClientException
+from agent.streamsets_api_client import api_client
 from agent.logger import get_logger
 
 
@@ -17,6 +16,7 @@ logger = get_logger(__name__)
 class Source(ABC):
     VALIDATION_SCHEMA_FILE_NAME = ''
     TEST_PIPELINE_FILENAME = ''
+    # todo remove DIR from here
     DIR = os.path.join(DATA_DIR, 'sources')
     MAX_SAMPLE_RECORDS = 3
 
@@ -29,42 +29,6 @@ class Source(ABC):
 
     def to_dict(self) -> dict:
         return {'name': self.name, 'type': self.type, 'config': self.config}
-
-    @classmethod
-    def get_file_path(cls, name: str) -> str:
-        return os.path.join(cls.DIR, name + '.json')
-
-    @classmethod
-    def exists(cls, name: str) -> bool:
-        return os.path.isfile(cls.get_file_path(name))
-
-    @property
-    def file_path(self) -> str:
-        return self.get_file_path(self.name)
-
-    def save(self):
-        with open(self.file_path, 'w') as f:
-            json.dump(self.to_dict(), f)
-
-    def create(self):
-        if self.exists(self.name):
-            raise SourceException(f"Source config {self.name} already exists")
-
-        self.save()
-
-    @classmethod
-    def delete_source(cls, source_name):
-        if not cls.exists(source_name):
-            raise SourceNotExists(f"Source config {source_name} doesn't exist")
-
-        pipelines = pipeline.get_pipelines(source_name=source_name)
-        if pipelines:
-            raise SourceException(f"Can't delete. Source is used by {', '.join([p.id for p in pipelines])} pipelines")
-
-        os.remove(cls.get_file_path(source_name))
-
-    def delete(self):
-        self.delete_source(self.name)
 
     @abstractmethod
     def prompt(self, default_config, advanced=False) -> dict:
@@ -89,9 +53,10 @@ class Source(ABC):
             if conf['name'] in self.config:
                 conf['value'] = self.config[conf['name']]
 
+    # todo move pipeline creation out of source package
     def create_test_pipeline(self):
         with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'test_pipelines',
-                               self.TEST_PIPELINE_FILENAME + '.json'), 'r') as f:
+                               self.TEST_PIPELINE_FILENAME + '.json')) as f:
             data = json.load(f)
 
         pipeline_config = data['pipelineConfig']
@@ -103,7 +68,6 @@ class Source(ABC):
 
     def get_preview_data(self):
         self.create_test_pipeline()
-
         try:
             preview = api_client.create_preview(self.test_pipeline_name)
             preview_data = api_client.wait_for_preview(self.test_pipeline_name, preview['previewerId'])

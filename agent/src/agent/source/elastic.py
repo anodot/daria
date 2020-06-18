@@ -1,7 +1,6 @@
 import click
-import json
 
-from .abstract_source import Source, SourceException
+from .abstract_source import Source
 from agent.tools import infinite_retry, print_json, if_validation_enabled
 
 
