@@ -3,7 +3,7 @@
   "pipeline_id": "test_mongo_file_short",
   "measurement_names": {"Clicks":  "clicks"},
   "values": {"Clicks":  "gauge"},
-  "dimensions": ["ver", "Country"],
+  "dimensions": ["Country"],
   "timestamp": {
     "type": "unix_ms",
     "name": "timestamp_unix_ms"

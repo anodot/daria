@@ -9,16 +9,14 @@ SOURCES = os.path.join(ROOT_DIR, 'sources')
 PIPELINES = os.path.join(ROOT_DIR, 'pipelines')
 
 
-def create(directory, create_function):
+def process(directory, create, start=None):
     for root, _, filenames in os.walk(directory):
         for file in filenames:
-            with open(os.path.join(root, file)) as f:
-                create_function(f)
+            with open(os.path.join(root, file)) as handle:
+                create(handle)
+            if start:
+                start(['-f', os.path.join(root, file)])
 
 
-def main():
-    create(SOURCES, source.populate_from_file)
-    create(PIPELINES, pipeline.populate_from_file)
-
-
-main()
+process(SOURCES, source.populate_from_file)
+process(PIPELINES, pipeline.populate_from_file, pipeline.start)

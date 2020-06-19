@@ -39,6 +39,8 @@ class Pipeline:
     DIR = os.path.join(DATA_DIR, 'pipelines')
     STATUS_RUNNING = 'RUNNING'
     STATUS_STOPPED = 'STOPPED'
+    STATUS_EDITED = 'EDITED'
+    STATUS_RETRY = 'RETRY'
     STATUS_STOPPING = 'STOPPING'
     OVERRIDE_SOURCE = 'override_source'
     FLUSH_BUCKET_SIZE = 'flush_bucket_size'

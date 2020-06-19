@@ -52,7 +52,7 @@ def __prompt_token(dest: HttpDestination):
 
 @infinite_retry
 def __prompt_access_key(dest: HttpDestination):
-    access_key = click.prompt('Anodot access key', type=click.STRING, default=dest.access_key) or None
+    access_key = click.prompt('Anodot access key', type=click.STRING, default=dest.access_key or '')
     if access_key and not DataValidator.is_valid_access_key(access_key, dest.url, dest.proxy):
         raise click.ClickException('Access key is invalid')
     dest.access_key = access_key
@@ -72,7 +72,9 @@ def __start_monitoring_pipeline():
             pipeline.create_dir()
             pipeline_manager.create()
 
-        pipeline_manager.start()
+        result = pipeline_manager.start()
+        if result.is_err():
+            print(result.value)
     except pipeline.PipelineException as e:
         raise click.ClickException(str(e))
 
