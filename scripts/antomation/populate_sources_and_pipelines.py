@@ -4,8 +4,12 @@ import csv
 import shutil
 
 from tempfile import NamedTemporaryFile
-from agent.cli import source
-from agent.cli import pipeline
+from agent import pipeline
+from agent.cli.source import extract_configs as extract_source_configs, edit_using_file as edit_source_using_file, \
+    create_from_file as create_source_from_file
+from agent.cli.pipeline import extract_configs as extract_pipeline_configs, \
+    edit_using_file as edit_pipeline_using_file, create_from_file as create_pipeline_from_file, start as start_pipeline
+from agent.repository import source_repository
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 FAIL = '\033[91m'
@@ -15,6 +19,27 @@ SOURCES = os.path.join(ROOT_DIR, 'sources')
 PIPELINES = os.path.join(ROOT_DIR, 'pipelines')
 SOURCES_CHECKSUMS = os.path.join(ROOT_DIR, 'checksums', 'sources.csv')
 PIPELINES_CHECKSUMS = os.path.join(ROOT_DIR, 'checksums', 'pipelines.csv')
+
+
+def populate_source_from_file(file):
+    for config in extract_source_configs(file):
+        if 'name' not in config:
+            raise Exception('Source config should contain a source name')
+        if source_repository.exists(config['name']):
+            edit_source_using_file(file)
+        else:
+            create_source_from_file(file)
+
+
+def populate_pipeline_from_file(file):
+    for config in extract_pipeline_configs(file):
+        if 'pipeline_id' not in config:
+            raise Exception('Pipeline config should contain a pipeline_id')
+        if pipeline.Pipeline.exists(config['pipeline_id']):
+            edit_pipeline_using_file(file)
+        else:
+            create_pipeline_from_file(file)
+            start_pipeline(['-f', file.name])
 
 
 def get_checksum(file_path):
@@ -53,7 +78,7 @@ def update_checksum(checksum_file, filename, root):
             file.write(f'{filename},{get_checksum(file_path)}')
 
 
-def process(directory, checksum_file, create, start=None):
+def process(directory, checksum_file, create):
     for root, _, filenames in os.walk(directory):
         for filename in filenames:
             file_path = os.path.join(root, filename)
@@ -63,13 +88,11 @@ def process(directory, checksum_file, create, start=None):
             try:
                 with open(file_path) as file:
                     create(file)
-                if start:
-                    start(['-f', file_path])
             except Exception as e:
                 print(f'{FAIL}{e}{ENDC}')
                 continue
             update_checksum(checksum_file, filename, root)
 
 
-process(SOURCES, SOURCES_CHECKSUMS, source.populate_from_file)
-process(PIPELINES, PIPELINES_CHECKSUMS, pipeline.populate_from_file, pipeline.start)
+process(SOURCES, SOURCES_CHECKSUMS, populate_source_from_file)
+process(PIPELINES, PIPELINES_CHECKSUMS, populate_pipeline_from_file)

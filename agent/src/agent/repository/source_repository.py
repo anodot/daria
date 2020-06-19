@@ -18,15 +18,19 @@ def exists(name: str) -> bool:
     return os.path.isfile(__get_file_path(name))
 
 
-def update(source: Source):
+def __save(source: Source):
     with open(__get_file_path(source.name), 'w') as f:
         json.dump(source.to_dict(), f)
+
+
+def update(source: Source):
+    __save(source)
 
 
 def create(source: Source):
     if exists(source.name):
         raise SourceException(f"Source config {source.name} already exists")
-    update(source)
+    __save(source)
 
 
 def delete(source: Source):

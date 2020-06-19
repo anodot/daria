@@ -2,9 +2,6 @@ import click
 import os
 import shutil
 import time
-
-from result import Result, Ok, Err
-
 import agent.pipeline.config.handlers as config_handlers
 
 from .pipeline import Pipeline, PipelineException
@@ -173,9 +170,7 @@ class PipelineManager:
 
         self.pipeline.save()
         if start_pipeline:
-            result = self.start()
-            if result.is_err():
-                raise Exception(result.value)
+            self.start()
 
     def reset(self):
         try:
@@ -199,19 +194,13 @@ class PipelineManager:
     def stop(self):
         stop_pipeline(self.pipeline.id)
 
-    def start(self) -> Result[bool, str]:
-        status = get_pipeline_status(self.pipeline.id)
-        if status == Pipeline.STATUS_RUNNING:
-            return Err(f'Pipeline {self.pipeline.id} is already running')
-        if status not in [Pipeline.STATUS_STOPPED, Pipeline.STATUS_EDITED]:
-            return Err(f'Cannot start the pipeline {self.pipeline.id} that is in status {status}')
+    def start(self):
         api_client.start_pipeline(self.pipeline.id)
         wait_for_status(self.pipeline.id, Pipeline.STATUS_RUNNING)
         click.secho(f'{self.pipeline.id} pipeline is running')
         if ENV_PROD:
             wait_for_sending_data(self.pipeline.id)
             click.secho(f'{self.pipeline.id} pipeline is sending data')
-        return Ok()
 
     @if_validation_enabled
     def show_preview(self):

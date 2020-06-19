@@ -47,16 +47,6 @@ def extract_configs(file):
         raise click.ClickException(str(e))
 
 
-def populate_from_file(file):
-    for config in extract_configs(file):
-        if 'name' not in config:
-            raise Exception('Source config should contain a source name')
-        if source_repository.exists(config['name']):
-            edit_using_file(file)
-        else:
-            create_from_file(file)
-
-
 def create_from_file(file):
     configs = extract_configs(file)
     json_schema = {

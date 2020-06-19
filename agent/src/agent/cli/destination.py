@@ -72,9 +72,7 @@ def __start_monitoring_pipeline():
             pipeline.create_dir()
             pipeline_manager.create()
 
-        result = pipeline_manager.start()
-        if result.is_err():
-            print(result.value)
+        pipeline_manager.start()
     except pipeline.PipelineException as e:
         raise click.ClickException(str(e))
 

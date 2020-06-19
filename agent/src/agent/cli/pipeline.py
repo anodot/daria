@@ -171,16 +171,6 @@ def edit_using_file(file):
         click.secho('Updated pipeline {}'.format(config['pipeline_id']), fg='green')
 
 
-def populate_from_file(file):
-    for config in extract_configs(file):
-        if 'pipeline_id' not in config:
-            raise Exception('Pipeline config should contain a pipeline_id')
-        if pipeline.Pipeline.exists(config['pipeline_id']):
-            edit_using_file(file)
-        else:
-            create_from_file(file)
-
-
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, required=False)
 @click.option('-a', '--advanced', is_flag=True)
@@ -256,9 +246,7 @@ def start(pipeline_id, file):
         try:
             pipeline_manager = PipelineManager(pipeline.load_object(idx))
             click.echo(f'Pipeline {idx} is starting...')
-            result = pipeline_manager.start()
-            if result.is_err():
-                print(result.value)
+            pipeline_manager.start()
         except (StreamSetsApiClientException, pipeline.PipelineException) as e:
             click.secho(str(e), err=True, fg='red')
             continue
