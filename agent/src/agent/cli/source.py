@@ -40,7 +40,6 @@ def prompt_source_name():
 
 def extract_configs(file):
     try:
-        # todo refactor
         configs = json.load(file)
         file.seek(0)
         return configs

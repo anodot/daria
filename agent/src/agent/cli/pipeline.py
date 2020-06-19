@@ -142,7 +142,6 @@ def get_default_source(sources):
 
 
 def extract_configs(file):
-    # todo refactor
     data = json.load(file)
     file.seek(0)
 
@@ -257,7 +256,9 @@ def start(pipeline_id, file):
         try:
             pipeline_manager = PipelineManager(pipeline.load_object(idx))
             click.echo(f'Pipeline {idx} is starting...')
-            pipeline_manager.start()
+            result = pipeline_manager.start()
+            if result.is_err():
+                print(result.value)
         except (StreamSetsApiClientException, pipeline.PipelineException) as e:
             click.secho(str(e), err=True, fg='red')
             continue

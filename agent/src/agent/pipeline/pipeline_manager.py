@@ -2,6 +2,9 @@ import click
 import os
 import shutil
 import time
+
+from result import Result, Ok, Err
+
 import agent.pipeline.config.handlers as config_handlers
 
 from .pipeline import Pipeline, PipelineException
@@ -51,9 +54,12 @@ handlers = {
 }
 
 
-def check_status(pipeline_id: str, status: str):
-    response = api_client.get_pipeline_status(pipeline_id)
-    return response['status'] == status
+def get_pipeline_status(pipeline_id: str) -> str:
+    return api_client.get_pipeline_status(pipeline_id)['status']
+
+
+def check_status(pipeline_id: str, status: str) -> bool:
+    return get_pipeline_status(pipeline_id) == status
 
 
 def wait_for_status(pipeline_id: str, status: str, tries: int = 5, initial_delay: int = 3):
@@ -153,7 +159,7 @@ class PipelineManager:
     def update(self):
         start_pipeline = False
         try:
-            if check_status(self.pipeline.id, Pipeline.STATUS_RUNNING):
+            if get_pipeline_status(self.pipeline.id) in [Pipeline.STATUS_RUNNING, Pipeline.STATUS_RETRY]:
                 self.stop()
                 start_pipeline = True
 
@@ -167,7 +173,9 @@ class PipelineManager:
 
         self.pipeline.save()
         if start_pipeline:
-            self.start()
+            result = self.start()
+            if result.is_err():
+                raise Exception(result.value)
 
     def reset(self):
         try:
@@ -191,13 +199,19 @@ class PipelineManager:
     def stop(self):
         stop_pipeline(self.pipeline.id)
 
-    def start(self):
+    def start(self) -> Result[bool, str]:
+        status = get_pipeline_status(self.pipeline.id)
+        if status == Pipeline.STATUS_RUNNING:
+            return Err(f'Pipeline {self.pipeline.id} is already running')
+        if status not in [Pipeline.STATUS_STOPPED, Pipeline.STATUS_EDITED]:
+            return Err(f'Cannot start the pipeline {self.pipeline.id} that is in status {status}')
         api_client.start_pipeline(self.pipeline.id)
         wait_for_status(self.pipeline.id, Pipeline.STATUS_RUNNING)
         click.secho(f'{self.pipeline.id} pipeline is running')
         if ENV_PROD:
             wait_for_sending_data(self.pipeline.id)
             click.secho(f'{self.pipeline.id} pipeline is sending data')
+        return Ok()
 
     @if_validation_enabled
     def show_preview(self):
