@@ -38,41 +38,41 @@ def prompt_source_name():
     return source_name
 
 
-def parse_config(file):
+def extract_configs(file):
     try:
-        return json.load(file)
+        configs = json.load(file)
+        file.seek(0)
+        return configs
     except json.decoder.JSONDecodeError as e:
         raise click.ClickException(str(e))
 
 
-def create_with_file(file):
-    data = parse_config(file)
-
+def create_from_file(file):
+    configs = extract_configs(file)
     json_schema = {
         'type': 'array',
         'items': source.json_schema
     }
-
-    validate(data, json_schema)
+    validate(configs, json_schema)
 
     exceptions = {}
-    for item in data:
+    for config in configs:
         try:
-            source_instance = source.create_object(item['name'], item['type'])
-            source_instance.set_config(item['config'])
+            source_instance = source.create_object(config['name'], config['type'])
+            source_instance.set_config(config['config'])
             source_instance.validate()
             source_repository.create(source_instance)
-            click.secho(f"Source {item['name']} created")
+            click.secho(f"Source {config['name']} created")
         except Exception as e:
             if not ENV_PROD:
                 raise e
-            exceptions[item['name']] = str(e)
+            exceptions[config['name']] = str(e)
     if exceptions:
         raise source.SourceException(json.dumps(exceptions))
 
 
-def edit_with_file(file):
-    data = parse_config(file)
+def edit_using_file(file):
+    configs = extract_configs(file)
     json_schema = {
         'type': 'array',
         'items': {
@@ -84,17 +84,17 @@ def edit_with_file(file):
             'required': ['name', 'config']
         }
     }
-    validate(data, json_schema)
+    validate(configs, json_schema)
 
     exceptions = {}
-    for item in data:
+    for config in configs:
         try:
-            source_instance = source_repository.get(item['name'])
-            source_instance.set_config(item['config'])
+            source_instance = source_repository.get(config['name'])
+            source_instance.set_config(config['config'])
             source_instance.validate()
-            source_repository.save(source_instance)
-            click.secho(f"Source {item['name']} edited")
-            for pipeline_obj in pipeline.get_pipelines(source_name=item['name']):
+            source_repository.update(source_instance)
+            click.secho(f"Source {config['name']} updated")
+            for pipeline_obj in pipeline.get_pipelines(source_name=config['name']):
                 try:
                     pipeline.PipelineManager(pipeline_obj).update()
                 except pipeline.PipelineException as e:
@@ -102,7 +102,7 @@ def edit_with_file(file):
                     continue
                 print(f'Pipeline {pipeline_obj.id} updated')
         except Exception as e:
-            exceptions[item['name']] = str(e)
+            exceptions[config['name']] = str(e)
     if exceptions:
         raise source.SourceException(json.dumps(exceptions))
 
@@ -119,7 +119,7 @@ def create(advanced, file):
 
     if file:
         try:
-            create_with_file(file)
+            create_from_file(file)
             return
         except (ValidationError, SchemaError) as e:
             raise click.ClickException(str(e))
@@ -150,7 +150,7 @@ def edit(name, advanced, file):
 
     if file:
         try:
-            edit_with_file(file)
+            edit_using_file(file)
             return
         except (ValidationError, SchemaError) as e:
             raise click.UsageError(str(e))
@@ -158,7 +158,7 @@ def edit(name, advanced, file):
     source_instance = source_repository.get(name)
     # todo refactor set_config
     source_instance.set_config(source_instance.prompt(source_instance.config, advanced=advanced))
-    source_repository.save(source_instance)
+    source_repository.update(source_instance)
 
     click.secho('Source config updated', fg='green')
 
