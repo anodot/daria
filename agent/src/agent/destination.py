@@ -3,16 +3,11 @@ import json
 import os
 import urllib.parse
 import uuid
-import requests
 
 from typing import Dict, Optional
-
-from requests.exceptions import ProxyError, ConnectionError
-
-from agent.anodot_api_client import AnodotApiClient
+from agent import validator
 from agent.constants import ANODOT_API_URL, DATA_DIR
-from urllib.parse import urlparse
-from agent.proxy import Proxy, get_config
+from agent.proxy import Proxy
 from result import Result, Ok, Err
 
 
@@ -194,64 +189,25 @@ def __build(
 ) -> Result[HttpDestination, str]:
     proxy = Proxy(proxy_host, proxy_username, proxy_password) if proxy_host else None
     if proxy:
-        if not DataValidator.is_valid_proxy(proxy):
+        if not validator.proxy.is_valid(proxy):
             return Err('Proxy data is invalid')
         destination.proxy = proxy
     if url:
-        if not DataValidator.is_valid_destination_url(url, destination.proxy):
+        if not validator.destination.is_valid_destination_url(url):
             return Err('Destination URL is invalid')
         destination.url = url
     if token:
         resource_url, monitoring_url = build_urls(destination.url, token)
-        if not DataValidator.is_valid_resource_url(resource_url, destination.proxy):
+        if not validator.destination.is_valid_resource_url(resource_url):
             return Err('Data collection token is invalid')
         destination.token = token
         destination.resource_url = resource_url
         destination.monitoring_url = monitoring_url
     if access_key:
-        if not DataValidator.is_valid_access_key(access_key, destination.url, destination.proxy):
+        if not validator.destination.is_valid_access_key(access_key, destination.url):
             return Err('Access key is invalid')
         destination.access_key = access_key
     if host_id:
         destination.host_id = host_id
     destination.save()
     return Ok(destination)
-
-
-class DataValidator:
-    @staticmethod
-    def is_valid_proxy(proxy: Proxy) -> bool:
-        try:
-            requests.get('http://example.com', proxies=get_config(proxy), timeout=5)
-        except ProxyError:
-            return False
-        return True
-
-    @staticmethod
-    def is_valid_destination_url(url: str, proxy: Optional[Proxy]) -> bool:
-        result = urlparse(url)
-        if not result.netloc or not result.scheme:
-            return False
-        status_url = urllib.parse.urljoin(url, HttpDestination.STATUS_URL)
-        try:
-            response = requests.get(status_url, proxies=get_config(proxy), timeout=5)
-            response.raise_for_status()
-        except (ConnectionError, requests.HTTPError):
-            return False
-        return True
-
-    @staticmethod
-    def is_valid_resource_url(resource_url: str, proxy: Proxy) -> bool:
-        response = requests.post(resource_url, proxies=get_config(proxy), timeout=5)
-        if response.status_code != 401:
-            response.raise_for_status()
-        return response.status_code != 401
-
-    @staticmethod
-    def is_valid_access_key(access_key: str, url: str, proxy: Optional[Proxy]) -> bool:
-        try:
-            # todo refactor validation?
-            AnodotApiClient(access_key, get_config(proxy), base_url=url)
-        except requests.HTTPError:
-            return False
-        return True

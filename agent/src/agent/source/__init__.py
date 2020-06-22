@@ -10,6 +10,7 @@ from .tcp import TCPSource
 from .directory import DirectorySource
 from .monitoring import MonitoringSource
 from agent.constants import MONITORING_SOURCE_NAME
+from agent.repository import source_repository
 
 TYPE_INFLUX = 'influx'
 TYPE_KAFKA = 'kafka'
@@ -63,3 +64,11 @@ def create_object(name: str, source_type: str) -> Source:
     if source_type not in types:
         raise ValueError(f'{source_type} isn\'t supported')
     return types[source_type](name, source_type, {})
+
+
+def create_from_json(config: dict) -> Source:
+    source_instance = create_object(config['name'], config['type'])
+    source_instance.set_config(config['config'])
+    source_instance.validate()
+    source_repository.create(source_instance)
+    return source_instance

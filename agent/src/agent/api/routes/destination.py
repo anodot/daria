@@ -1,18 +1,16 @@
+import agent.destination
+
 from flask import Blueprint, request
 from agent.api.forms.destination import DestinationForm, EditDestinationForm
-from agent.destination.http import create as create_destination, edit as edit_destination, HttpDestination
 
 destination = Blueprint('destination', __name__)
-
-# todo return json?
-# todo remove form?
 
 
 @destination.route('/destination', methods=['GET'])
 def get():
-    if not HttpDestination.exists():
+    if not agent.destination.HttpDestination.exists():
         return 'Destination doesn\'t exist', 404
-    return HttpDestination.get().to_dict(), 200
+    return agent.destination.HttpDestination.get().to_dict(), 200
 
 
 @destination.route('/destination', methods=['POST'])
@@ -20,7 +18,7 @@ def create():
     form = DestinationForm.from_json(request.get_json())
     if not form.validate():
         return form.errors, 400
-    result = create_destination(
+    result = agent.destination.create(
         form.data_collection_token.data,
         form.destination_url.data,
         form.access_key.data,
@@ -36,13 +34,13 @@ def create():
 
 @destination.route('/destination', methods=['PUT'])
 def edit():
-    if not HttpDestination.exists():
+    if not agent.destination.HttpDestination.exists():
         return 'Destination doesn\'t exist', 400
     form = EditDestinationForm.from_json(request.get_json())
     if not form.validate():
         return form.errors, 400
-    result = edit_destination(
-        HttpDestination.get(),
+    result = agent.destination.edit(
+        agent.destination.HttpDestination.get(),
         form.data_collection_token.data,
         form.destination_url.data,
         form.access_key.data,
@@ -58,6 +56,6 @@ def edit():
 
 @destination.route('/destination', methods=['DELETE'])
 def delete():
-    if HttpDestination.exists():
-        HttpDestination.get().delete()
+    if agent.destination.HttpDestination.exists():
+        agent.destination.HttpDestination.get().delete()
     return 'success', 200

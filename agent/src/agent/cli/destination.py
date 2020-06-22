@@ -1,10 +1,12 @@
 import click
 
 from agent import source, pipeline
-from agent.destination.http import HttpDestination, DataValidator, build_urls, create
+from agent.destination import HttpDestination, build_urls, create
+from agent import validator
 from agent.constants import MONITORING_SOURCE_NAME
 from agent.tools import infinite_retry
 from agent.proxy import Proxy
+from agent.pipeline import manager
 
 
 @infinite_retry
@@ -14,7 +16,7 @@ def __prompt_proxy(dest: HttpDestination):
         username = __prompt_proxy_username(dest.get_proxy_username())
         password = __prompt_proxy_password()
         proxy = Proxy(uri, username, password)
-        if not DataValidator.is_valid_proxy(proxy):
+        if not validator.proxy.is_valid(proxy):
             raise click.ClickException('Proxy is invalid')
         dest.proxy = proxy
 
@@ -34,7 +36,7 @@ def __prompt_proxy_password() -> str:
 @infinite_retry
 def __prompt_url(dest: HttpDestination):
     url = click.prompt('Destination url', type=click.STRING, default=dest.url)
-    if not DataValidator.is_valid_destination_url(url, dest.proxy):
+    if not validator.destination.is_valid_destination_url(url):
         raise click.ClickException('Wrong url format, please specify the protocol and domain name')
     dest.url = url
 
@@ -43,7 +45,7 @@ def __prompt_url(dest: HttpDestination):
 def __prompt_token(dest: HttpDestination):
     token = click.prompt('Anodot api data collection token', type=click.STRING, default=dest.token)
     resource_url, monitoring_url = build_urls(dest.url, token)
-    if not DataValidator.is_valid_resource_url(resource_url, dest.proxy):
+    if not validator.destination.is_valid_resource_url(resource_url):
         raise click.ClickException('Data collection token is invalid')
     dest.token = token
     dest.resource_url = resource_url
@@ -53,7 +55,7 @@ def __prompt_token(dest: HttpDestination):
 @infinite_retry
 def __prompt_access_key(dest: HttpDestination):
     access_key = click.prompt('Anodot access key', type=click.STRING, default=dest.access_key or '')
-    if access_key and not DataValidator.is_valid_access_key(access_key, dest.url, dest.proxy):
+    if access_key and not validator.destination.is_valid_access_key(access_key, dest.url):
         raise click.ClickException('Access key is invalid')
     dest.access_key = access_key
 
@@ -61,12 +63,12 @@ def __prompt_access_key(dest: HttpDestination):
 def __start_monitoring_pipeline():
     try:
         if pipeline.Pipeline.exists('Monitoring'):
-            pipeline_manager = pipeline.PipelineManager(pipeline.load_object('Monitoring'))
+            pipeline_manager = manager.PipelineManager(pipeline.load_object('Monitoring'))
             click.secho('Updating Monitoring pipeline...')
             pipeline_manager.stop()
             pipeline_manager.update()
         else:
-            pipeline_manager = pipeline.PipelineManager(pipeline.create_object('Monitoring', MONITORING_SOURCE_NAME))
+            pipeline_manager = manager.PipelineManager(pipeline.create_object('Monitoring', MONITORING_SOURCE_NAME))
             click.secho('Starting Monitoring pipeline...')
             source.create_dir()
             pipeline.create_dir()

@@ -3,7 +3,8 @@ import json
 
 from agent import source, pipeline
 from agent.constants import ENV_PROD
-from agent.destination.http import HttpDestination
+from agent.destination import HttpDestination
+from agent.pipeline import manager
 from agent.repository import source_repository
 from agent.streamsets_api_client import api_client
 from agent.tools import infinite_retry
@@ -58,10 +59,7 @@ def create_from_file(file):
     exceptions = {}
     for config in configs:
         try:
-            source_instance = source.create_object(config['name'], config['type'])
-            source_instance.set_config(config['config'])
-            source_instance.validate()
-            source_repository.create(source_instance)
+            source.create_from_json(config)
             click.secho(f"Source {config['name']} created")
         except Exception as e:
             if not ENV_PROD:
@@ -96,7 +94,7 @@ def edit_using_file(file):
             click.secho(f"Source {config['name']} updated")
             for pipeline_obj in pipeline.get_pipelines(source_name=config['name']):
                 try:
-                    pipeline.PipelineManager(pipeline_obj).update()
+                    manager.PipelineManager(pipeline_obj).update()
                 except pipeline.PipelineException as e:
                     print(str(e))
                     continue
@@ -142,9 +140,6 @@ def create(advanced, file):
 @click.option('-a', '--advanced', is_flag=True)
 @click.option('-f', '--file', type=click.File())
 def edit(name, advanced, file):
-    """
-    Edit source
-    """
     if not file and not name:
         raise click.UsageError('Specify source name or file path')
 
@@ -164,7 +159,7 @@ def edit(name, advanced, file):
 
     for pipeline_obj in pipeline.get_pipelines(source_name=name):
         try:
-            pipeline.PipelineManager(pipeline_obj).update()
+            manager.PipelineManager(pipeline_obj).update()
         except pipeline.PipelineException as e:
             print(str(e))
             continue

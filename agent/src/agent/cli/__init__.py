@@ -4,6 +4,7 @@ from agent import pipeline as agent_pipeline
 from agent.cli.destination import destination
 from agent.cli.pipeline import pipeline_group
 from agent.cli.source import source_group
+from agent.pipeline import manager
 from agent.version import __version__, __build_time__, __git_sha1__
 
 
@@ -37,7 +38,7 @@ def update():
     """
     for p in agent_pipeline.get_pipelines():
         try:
-            pipeline_manager = pipeline.PipelineManager(p)
+            pipeline_manager = manager.PipelineManager(p)
             pipeline_manager.update()
             click.secho(f'Pipeline {p.id} updated', fg='green')
         except agent_pipeline.PipelineException as e:

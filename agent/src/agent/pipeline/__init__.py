@@ -2,10 +2,9 @@ import json
 import os
 
 from .pipeline import Pipeline, PipelineException, PipelineNotExistsException
-from .pipeline_manager import PipelineManager
 from jsonschema import validate
 from .. import source
-from agent.destination.http import HttpDestination
+from agent.destination import HttpDestination
 from agent.repository import source_repository
 from typing import List
 

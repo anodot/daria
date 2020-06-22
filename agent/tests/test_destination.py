@@ -1,8 +1,7 @@
 import pytest
 
-from .fixtures import cli_runner
 from agent import cli as agent_cli
-from agent.destination.http import HttpDestination
+from agent.destination import HttpDestination
 from agent.streamsets_api_client import api_client
 
 
