@@ -155,6 +155,9 @@ services:
     volumes:
       - dummy-destination-data:/app/log
 
+  sage_mock:
+    build: sage_mock
+
 
 volumes:
   sdc-data:
