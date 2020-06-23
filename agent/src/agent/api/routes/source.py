@@ -15,7 +15,7 @@ def __transform(data: dict) -> dict:
     return {'name': data.pop('name'), 'type': data.pop('type'), 'config': data}
 
 
-def __validate_request():
+def __validate_base():
     errors = []
     if not HttpDestination.exists():
         errors.append('Destination is not configured. Please create agent destination first')
@@ -27,8 +27,23 @@ def __validate_request():
     name = request.get_json().get('name')
     if not name:
         errors.append('Please, specify the source name')
-    elif source_repository.exists(request.get_json()['name']):
+    return errors
+
+
+def __validate_create():
+    errors = __validate_base()
+    name = request.get_json()['name']
+    if source_repository.exists(name):
         errors.append(f'Source {name} already exists')
+    if errors:
+        raise RequestException(errors)
+
+
+def __validate_edit():
+    errors = __validate_base()
+    name = request.get_json()['name']
+    if not source_repository.exists(name):
+        errors.append(f'Source {name} does not exist')
     if errors:
         raise RequestException(errors)
 
@@ -41,33 +56,32 @@ def list_sources():
 @sources.route('/sources', methods=['POST'])
 def create():
     try:
-        __validate_request()
+        __validate_create()
     except RequestException as e:
         return str(e), 400
-    form = source_form.get_form(request.get_json().get('type'), source_form.FormType.CREATE)\
-        .from_json(request.get_json())
+    form = source_form.get_form(request.get_json()['type'], source_form.FormType.CREATE).from_json(request.get_json())
     if not form.validate():
         return form.errors, 400
     try:
         source_instance = source.create_from_json(__transform(request.get_json()))
     except Exception as e:
-        return str(e)
+        return str(e), 400
     return source_instance.to_dict()
 
 
 @sources.route('/sources', methods=['PUT'])
 def edit():
     try:
-        __validate_request()
+        __validate_edit()
     except RequestException as e:
         return str(e), 400
-    form = source_form.get_form(request.get_json()['type'], source_form.FormType.EDIT)
+    form = source_form.get_form(request.get_json()['type'], source_form.FormType.EDIT).from_json(request.get_json())
     if not form.validate():
         return form.errors, 400
     try:
         source_instance = source.edit_using_json(__transform(request.get_json()))
     except Exception as e:
-        return str(e)
+        return str(e), 400
     return source_instance.to_dict()
 
 
@@ -76,5 +90,5 @@ def delete(source_id):
     try:
         source_repository.delete_by_name(source_id)
     except Exception as e:
-        return str(e)
+        return str(e), 400
     return 'Delete source'
