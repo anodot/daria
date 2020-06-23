@@ -87,10 +87,7 @@ def edit_using_file(file):
     exceptions = {}
     for config in configs:
         try:
-            source_instance = source_repository.get(config['name'])
-            source_instance.set_config(config['config'])
-            source_instance.validate()
-            source_repository.update(source_instance)
+            source.edit_using_json(config)
             click.secho(f"Source {config['name']} updated")
             for pipeline_obj in pipeline.get_pipelines(source_name=config['name']):
                 try:

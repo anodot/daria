@@ -1,3 +1,6 @@
+from enum import Enum
+from typing import Type
+
 from agent import source
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, IntegerField, BooleanField
@@ -14,16 +17,22 @@ class SourceForm(FlaskForm):
 
 
 class Influx(SourceForm):
-    url = StringField('InfluxDB API url',
-                      [DataRequired(), URL(False, 'Wrong url format, please specify the protocol and domain name')])
-    username = StringField('Username', [DataRequired()])
-    password = StringField('Password', [DataRequired()])
-    database = StringField('Database', [DataRequired()])
+    host = StringField('InfluxDB API url',
+                       [DataRequired(), URL(False, 'Wrong url format, please specify the protocol and domain name')])
+    username = StringField('Username')
+    password = StringField('Password')
+    db = StringField('Database', [DataRequired()])
     write_url = StringField('Write InfluxDB API url', [Optional(), URL()])
     write_username = StringField('Write InfluxDB username')
     write_password = StringField('Write InfluxDB password')
     write_database = StringField('Write InfluxDB database', [validate_influx_write_db])
     initial_offset = IntegerField('Initial offset')
+
+
+class EditInflux(Influx):
+    host = StringField('InfluxDB API url',
+                       [Optional(), URL(False, 'Wrong url format, please specify the protocol and domain name')])
+    db = StringField('Database')
 
 
 class Kafka(SourceForm):
@@ -52,6 +61,10 @@ class Kafka(SourceForm):
     batch_wait_time = IntegerField('Batch wait time (ms)')
 
 
+class EditKafka(Kafka):
+    pass
+
+
 class Mongo(SourceForm):
     url = StringField('Connection string',
                       [DataRequired(), URL(False, 'Wrong url format, please specify the protocol and domain name')])
@@ -72,6 +85,10 @@ class Mongo(SourceForm):
     max_batch_wait_seconds = IntegerField('Max batch wait time (seconds)')
 
 
+class EditMongo(Mongo):
+    pass
+
+
 class MySQL(SourceForm):
     url = StringField('Connection string',
                       [DataRequired(), URL(False, 'Wrong url format, please specify the protocol and domain name')])
@@ -79,7 +96,15 @@ class MySQL(SourceForm):
     password = StringField('Password')
 
 
+class EditMySQL(MySQL):
+    pass
+
+
 class Postgres(MySQL):
+    pass
+
+
+class EditPostgres(Postgres):
     pass
 
 
@@ -92,7 +117,14 @@ class Elastic(SourceForm):
     query_interval = IntegerField('Query interval (seconds)')
 
 
+class EditElastic(Elastic):
+    pass
+
+
 class Splunk(SourceForm):
+    pass
+
+class EditSplunk(Splunk):
     pass
 
 
@@ -114,6 +146,10 @@ class Directory(SourceForm):
     override_filed_names = StringField('Change field names')
 
 
+class EditDirectory(Directory):
+    pass
+
+
 forms = {
     source.TYPE_INFLUX: Influx,
     source.TYPE_KAFKA: Kafka,
@@ -124,3 +160,25 @@ forms = {
     source.TYPE_SPLUNK: Splunk,
     source.TYPE_DIRECTORY: Directory,
 }
+
+edit_forms = {
+    source.TYPE_INFLUX: EditInflux,
+    source.TYPE_KAFKA: EditKafka,
+    source.TYPE_MONGO: EditMongo,
+    source.TYPE_MYSQL: EditMySQL,
+    source.TYPE_POSTGRES: EditPostgres,
+    source.TYPE_ELASTIC: EditElastic,
+    source.TYPE_SPLUNK: EditSplunk,
+    source.TYPE_DIRECTORY: EditDirectory,
+}
+
+
+class FormType(Enum):
+    CREATE = 1
+    EDIT = 2
+
+
+def get_form(source_type: str, form_type: FormType) -> Type[SourceForm]:
+    if form_type == FormType.CREATE:
+        return forms[source_type]
+    return edit_forms[source_type]

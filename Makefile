@@ -29,6 +29,9 @@ test-all-dev: run-unit-tests-dev test-dev-api test-dev-destination test-dev-cond
 
 rerun: clean-docker-volumes run-base-services
 
+rerun-agent:
+	docker-compose -f $(DOCKER_COMPOSE_DEV) restart agent
+
 ##-----------------------
 ## TEST SEPARATE SOURCES
 ##-----------------------

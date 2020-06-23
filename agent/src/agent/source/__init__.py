@@ -72,3 +72,11 @@ def create_from_json(config: dict) -> Source:
     source_instance.validate()
     source_repository.create(source_instance)
     return source_instance
+
+
+def edit_using_json(config: dict) -> Source:
+    source_instance = source_repository.get(config['name'])
+    source_instance.set_config(config['config'])
+    source_instance.validate()
+    source_repository.update(source_instance)
+    return source_instance
