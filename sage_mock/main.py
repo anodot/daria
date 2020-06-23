@@ -14,7 +14,8 @@ def search():
     token = request.headers.get('Authorization')
     if token != 'Bearer correct_token':
         return make_response(jsonify({'status': 'fail'}), 401)
-    return {'status': 'ok'}
+    return {'hits': [{'count': 3633, '@timestamp': "2020-06-23T11:52:00Z"},
+                     {'count': 1000, '@timestamp': "2020-06-23T11:53:00Z"}]}
 
 
 if __name__ == '__main__':
