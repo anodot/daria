@@ -8,7 +8,7 @@ from agent.pipeline import manager
 from agent.repository import source_repository
 from agent.streamsets_api_client import api_client
 from agent.tools import infinite_retry
-from jsonschema import validate, ValidationError, SchemaError
+from jsonschema import ValidationError, SchemaError
 
 
 def get_previous_source_config(label):
@@ -50,11 +50,7 @@ def extract_configs(file):
 
 def create_from_file(file):
     configs = extract_configs(file)
-    json_schema = {
-        'type': 'array',
-        'items': source.json_schema
-    }
-    validate(configs, json_schema)
+    source.validate_json_for_create(configs)
 
     exceptions = {}
     for config in configs:
@@ -71,18 +67,7 @@ def create_from_file(file):
 
 def edit_using_file(file):
     configs = extract_configs(file)
-    json_schema = {
-        'type': 'array',
-        'items': {
-            'type': 'object',
-            'properties': {
-                'name': {'type': 'string', 'minLength': 1, 'maxLength': 100, 'enum': source_repository.get_all()},
-                'config': {'type': 'object'}
-            },
-            'required': ['name', 'config']
-        }
-    }
-    validate(configs, json_schema)
+    source.validate_json_for_edit(configs)
 
     exceptions = {}
     for config in configs:

@@ -1,4 +1,5 @@
 import os
+import jsonschema
 
 from .abstract_source import Source, SourceNotExists, SourceException, SourceConfigDeprecated
 from .jdbc import JDBCSource
@@ -80,3 +81,26 @@ def edit_using_json(config: dict) -> Source:
     source_instance.validate()
     source_repository.update(source_instance)
     return source_instance
+
+
+def validate_json_for_create(json: dict):
+    schema = {
+        'type': 'array',
+        'items': json_schema
+    }
+    jsonschema.validate(json, schema)
+
+
+def validate_json_for_edit(json: dict):
+    schema = {
+        'type': 'array',
+        'items': {
+            'type': 'object',
+            'properties': {
+                'name': {'type': 'string', 'minLength': 1, 'maxLength': 100, 'enum': source_repository.get_all()},
+                'config': {'type': 'object'}
+            },
+            'required': ['name', 'config']
+        }
+    }
+    jsonschema.validate(json, schema)
