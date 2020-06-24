@@ -3,13 +3,62 @@ from typing import Type
 
 from agent import source
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, IntegerField, BooleanField
+from wtforms import StringField, SelectField, IntegerField, BooleanField, FieldList
 from wtforms.validators import DataRequired, URL, Optional, ValidationError
 
 
 def validate_influx_write_db(form, field):
     if form.write_url.data and not field.data:
-        raise ValidationError(f'Field must not be empty')
+        raise ValidationError('Field must not be empty')
+
+
+def __validate_choice(field, choices):
+    if field.data not in choices:
+        raise ValidationError(f'{field.data} value is invalid, available values are {", ".join(choices)}')
+
+
+def validate_kafka_version(_, field):
+    __validate_choice(field, ['0.10', '0.11', '2.0+'])
+
+
+def validate_kafka_offset(_, field):
+    __validate_choice(
+        field,
+        [
+            source.KafkaSource.OFFSET_EARLIEST,
+            source.KafkaSource.OFFSET_LATEST,
+            source.KafkaSource.CONFIG_OFFSET_TIMESTAMP
+        ]
+    )
+
+
+def validate_kafka_data_format(_, field):
+    __validate_choice(
+        field,
+        [
+            source.KafkaSource.DATA_FORMAT_JSON,
+            source.KafkaSource.DATA_FORMAT_CSV,
+            source.KafkaSource.DATA_FORMAT_AVRO,
+        ]
+    )
+
+
+def validate_kafka_delimited_format(form, field):
+    if form.data_format.data == source.KafkaSource.DATA_FORMAT_CSV:
+        __validate_choice(
+            field,
+            [
+                source.KafkaSource.CONFIG_CSV_TYPE_DEFAULT,
+                source.KafkaSource.CONFIG_CSV_TYPE_CUSTOM,
+            ]
+        )
+
+
+def validate_kafka_delimiter(form, field):
+    if form.data_format.data == source.KafkaSource.DATA_FORMAT_CSV \
+            and form.delimited_format_type.data == source.KafkaSource.CONFIG_CSV_TYPE_CUSTOM:
+        if not field.data:
+            raise ValidationError('Field must not be empty')
 
 
 class SourceForm(FlaskForm):
@@ -36,33 +85,25 @@ class EditInflux(Influx):
 
 
 class Kafka(SourceForm):
-    version = SelectField('Kafka version', choices=['0.10', '0.11', '2.0+'])
-    # это типо урла?
-    broker_connection_string = StringField('Kafka broker connection string', [DataRequired()])
+    version = StringField('Kafka version', [Optional(), validate_kafka_version])
+    broker_uri = StringField('Kafka broker connection string', [DataRequired()])
     #  не очень понятное название
     configuration = StringField('Kafka configuration')
-    topics = StringField('Topic list', [DataRequired()])
+    topics = FieldList(StringField('Topic list', [DataRequired()]), min_entries=1)
     num_of_threads = IntegerField('Number of threads')
-    initial_offset = SelectField('Initial offset',
-                                 choices=[
-                                    source.KafkaSource.OFFSET_EARLIEST,
-                                    source.KafkaSource.OFFSET_LATEST,
-                                    source.KafkaSource.CONFIG_OFFSET_TIMESTAMP
-                                 ])
-    data_format = SelectField('Data format',
-                              choices=[
-                                  source.KafkaSource.DATA_FORMAT_JSON,
-                                  source.KafkaSource.DATA_FORMAT_CSV,
-                                  source.KafkaSource.DATA_FORMAT_AVRO,
-                              ])
+    initial_offset = StringField('Initial offset', [Optional(), validate_kafka_offset])
+    data_format = StringField('Data format', [Optional(), validate_kafka_data_format])
     # todo change "Change fields names" to override in project?
+    delimited_format_type = StringField('Delimited format type', [validate_kafka_delimited_format])
+    custom_delimiter_character = StringField('Custom delimiter character', [validate_kafka_delimiter])
     override_field_names = StringField('Override field names')
     max_batch_size = IntegerField('Max batch size (records)')
     batch_wait_time = IntegerField('Batch wait time (ms)')
 
 
 class EditKafka(Kafka):
-    pass
+    broker_uri = StringField('Kafka broker connection string')
+    topics = FieldList(StringField('Topic list', [DataRequired()]))
 
 
 class Mongo(SourceForm):
@@ -123,6 +164,7 @@ class EditElastic(Elastic):
 
 class Splunk(SourceForm):
     pass
+
 
 class EditSplunk(Splunk):
     pass

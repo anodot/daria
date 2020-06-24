@@ -1,6 +1,7 @@
 from flask import jsonify, Blueprint, request
 from agent import source
 from agent.api.forms import source as source_form
+from agent.api import transformers
 from agent.destination import HttpDestination
 from agent.repository import source_repository
 
@@ -9,10 +10,6 @@ sources = Blueprint('test', __name__)
 
 class RequestException(Exception):
     pass
-
-
-def __transform(data: dict) -> dict:
-    return {'name': data.pop('name'), 'type': data.pop('type'), 'config': data}
 
 
 def __validate_base():
@@ -42,7 +39,7 @@ def __validate_create():
 def __validate_edit():
     errors = __validate_base()
     name = request.get_json()['name']
-    if not source_repository.exists(name):
+    if name and not source_repository.exists(name):
         errors.append(f'Source {name} does not exist')
     if errors:
         raise RequestException(errors)
@@ -59,11 +56,38 @@ def create():
         __validate_create()
     except RequestException as e:
         return str(e), 400
-    form = source_form.get_form(request.get_json()['type'], source_form.FormType.CREATE).from_json(request.get_json())
+    source_type = request.get_json()['type']
+    form = source_form.get_form(source_type, source_form.FormType.CREATE).from_json(request.get_json())
     if not form.validate():
         return form.errors, 400
     try:
-        source_instance = source.create_from_json(__transform(request.get_json()))
+        source_instance = source.create_from_json(transformers.get_transformer(source_type)(request.get_json()))
+    except Exception as e:
+        return str(e), 400
+    return source_instance.to_dict()
+
+
+@sources.route('/simple-sources', methods=['POST'])
+def simple_create():
+    try:
+        __validate_create()
+    except RequestException as e:
+        return str(e), 400
+    try:
+        source_instance = source.create_from_json(request.get_json())
+    except Exception as e:
+        return str(e), 400
+    return source_instance.to_dict()
+
+
+@sources.route('/simple-sources', methods=['PUT'])
+def simple_edit():
+    try:
+        __validate_edit()
+    except RequestException as e:
+        return str(e), 400
+    try:
+        source_instance = source.edit_using_json(request.get_json())
     except Exception as e:
         return str(e), 400
     return source_instance.to_dict()
@@ -75,11 +99,13 @@ def edit():
         __validate_edit()
     except RequestException as e:
         return str(e), 400
-    form = source_form.get_form(request.get_json()['type'], source_form.FormType.EDIT).from_json(request.get_json())
+    source_type = request.get_json()['type']
+    form = source_form.get_form(source_type, source_form.FormType.EDIT).from_json(request.get_json())
     if not form.validate():
         return form.errors, 400
     try:
-        source_instance = source.edit_using_json(__transform(request.get_json()))
+        # как должен работать edit файлом? редактируем все? а что если только одно поле указать?
+        source_instance = source.edit_using_json(transformers.get_transformer(source_type)(request.get_json()))
     except Exception as e:
         return str(e), 400
     return source_instance.to_dict()

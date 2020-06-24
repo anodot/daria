@@ -14,7 +14,7 @@ all: build-all test-all
 
 build-all: get-streamsets-stages build sleep setup-elastic setup-kafka
 
-test-all: run-unit-tests test-api test-destination test-input test-pipelines
+test-all: run-unit-tests test-destination test-api test-input test-pipelines
 
 ##-------------
 ## DEVELOPMENT
@@ -25,7 +25,7 @@ build-all-dev: build-dev sleep setup-elastic setup-kafka
 
 run-all-dev: clean-docker-volumes run-dev sleep setup-kafka setup-elastic
 
-test-all-dev: run-unit-tests-dev test-dev-api test-dev-destination test-dev-condition-parser test-dev-input test-dev-pipelines
+test-all-dev: run-unit-tests-dev test-dev-destination test-dev-api test-dev-condition-parser test-dev-input test-dev-pipelines
 
 rerun: clean-docker-volumes run-base-services
 

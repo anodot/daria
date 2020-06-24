@@ -1,17 +1,8 @@
-import pytest
-
-from agent.api import main
+from .. import client
 from ...test_pipelines.test_zpipeline_base import pytest_generate_tests
 
 
-@pytest.fixture
-def client():
-    main.app.config['TESTING'] = True
-    with main.app.test_client() as client:
-        yield client
-
-
-class TestSources:
+class TestInflux:
     params = {
         'test_create': [
             {
