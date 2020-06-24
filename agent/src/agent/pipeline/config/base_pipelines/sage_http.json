@@ -5,7 +5,7 @@
     "pipelineId" : "kafkahttpd097e4bc-a390-44ba-ae35-3b899695053a",
     "title" : "kafka_http",
     "description" : "",
-    "uuid" : "aec0a285-a583-49ba-9e01-538d8a89dd35",
+    "uuid" : "abbaa1a2-90f9-4998-a0b4-fb558b3d32db",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -372,52 +372,15 @@
         "value" : "TO_ERROR"
       } ],
       "uiInfo" : {
-        "yPos" : 47,
+        "yPos" : 50,
         "stageType" : "SOURCE",
         "icon" : "jython.png",
         "description" : "",
         "label" : "Jython Scripting 1",
-        "xPos" : 69
+        "xPos" : 60
       },
       "inputLanes" : [ ],
       "outputLanes" : [ "JythonScripting_01OutputLane15924840586690" ],
-      "eventLanes" : [ ],
-      "services" : [ ]
-    }, {
-      "instanceName" : "ExpressionEvaluator_03",
-      "library" : "streamsets-datacollector-basic-lib",
-      "stageName" : "com_streamsets_pipeline_stage_processor_expression_ExpressionDProcessor",
-      "stageVersion" : "2",
-      "configuration" : [ {
-        "name" : "expressionProcessorConfigs",
-        "value" : [ { } ]
-      }, {
-        "name" : "headerAttributeConfigs",
-        "value" : [ { } ]
-      }, {
-        "name" : "fieldAttributeConfigs",
-        "value" : [ {
-          "fieldToSet" : "/"
-        } ]
-      }, {
-        "name" : "stageOnRecordError",
-        "value" : "DISCARD"
-      }, {
-        "name" : "stageRequiredFields",
-        "value" : [ ]
-      }, {
-        "name" : "stageRecordPreconditions",
-        "value" : [ ]
-      } ],
-      "uiInfo" : {
-        "description" : "",
-        "label" : "Expression Evaluator 1",
-        "xPos" : 280,
-        "yPos" : 50,
-        "stageType" : "PROCESSOR"
-      },
-      "inputLanes" : [ "JythonScripting_01OutputLane15924840586690" ],
-      "outputLanes" : [ "ExpressionEvaluator_03OutputLane15750326759030" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -456,11 +419,11 @@
       "uiInfo" : {
         "description" : "",
         "label" : "transform",
-        "xPos" : 501,
-        "yPos" : 49,
+        "xPos" : 280,
+        "yPos" : 50,
         "stageType" : "PROCESSOR"
       },
-      "inputLanes" : [ "ExpressionEvaluator_03OutputLane15750326759030" ],
+      "inputLanes" : [ "JythonScripting_01OutputLane15924840586690" ],
       "outputLanes" : [ "JavaScriptEvaluator_01OutputLane15620549534460" ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -496,7 +459,7 @@
       "uiInfo" : {
         "description" : "",
         "label" : "Convert timestamp to long",
-        "xPos" : 720,
+        "xPos" : 500,
         "yPos" : 50,
         "stageType" : "PROCESSOR"
       },
@@ -561,7 +524,7 @@
       "uiInfo" : {
         "description" : "Convert value to float and timestamp to int",
         "label" : "Convert value and timestamp",
-        "xPos" : 940,
+        "xPos" : 720,
         "yPos" : 50,
         "stageType" : "PROCESSOR"
       },
@@ -860,7 +823,7 @@
       "uiInfo" : {
         "description" : "",
         "label" : "HTTP Client 1",
-        "xPos" : 1160,
+        "xPos" : 940,
         "yPos" : 50,
         "stageType" : "TARGET"
       },
@@ -904,11 +867,11 @@
       "title" : "kafka_http",
       "description" : "",
       "created" : 1592475408531,
-      "lastModified" : 1593013980763,
+      "lastModified" : 1593016558386,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "aec0a285-a583-49ba-9e01-538d8a89dd35",
+      "uuid" : "abbaa1a2-90f9-4998-a0b4-fb558b3d32db",
       "valid" : true,
       "metadata" : {
         "labels" : [ "mongo", "http" ]
