@@ -4,50 +4,61 @@ from ...test_pipelines.test_zpipeline_base import pytest_generate_tests
 
 class TestInflux:
     params = {
-        'test_create': {
-            'name': 'mongo',
-            'type': 'mongo',
-            'url': 'mongodb://mongo:27017',
-            'username': 'root',
-            'password': 'root',
-            'authentication_source': 'admin',
-            'database': 'test',
-            'collection': 'adtech',
-            'is_capped': False,
-            'initial_offset': 0,
-            'offset_type': 'OBJECTID',
-            'offset_field': '_id',
-            'batch_size': 1000,
-            'max_batch_wait_seconds': 5,
-        }
+        'test_create': [{
+            'data': [{
+                'name': 'mongo',
+                'type': 'mongo',
+                'config': {
+                    'configBean.mongoConfig.connectionString': 'mongodb://mongo:27017',
+                    'configBean.mongoConfig.username': 'root',
+                    'configBean.mongoConfig.password': 'root',
+                    'configBean.mongoConfig.authSource': 'admin',
+                    'configBean.mongoConfig.database': 'test',
+                    'configBean.mongoConfig.collection': 'adtech',
+                    'configBean.isCapped': False,
+                    'configBean.initialOffset': '0',
+                    'configBean.mongoConfig.offsetType': 'OBJECTID',
+                    'configBean.offsetField': '_id',
+                    'configBean.batchSize': 1000,
+                    'configBean.maxBatchWaitTime': '10',
+                }
+            }],
+            'er': b'[{"config":{"configBean.batchSize":1000,"configBean.initialOffset":"0","configBean.isCapped":false,"configBean.maxBatchWaitTime":"10","configBean.mongoConfig.authSource":"admin","configBean.mongoConfig.authenticationType":"USER_PASS","configBean.mongoConfig.collection":"adtech","configBean.mongoConfig.connectionString":"mongodb://mongo:27017","configBean.mongoConfig.database":"test","configBean.mongoConfig.offsetType":"OBJECTID","configBean.mongoConfig.password":"root","configBean.mongoConfig.username":"root","configBean.offsetField":"_id"},"name":"mongo","type":"mongo"}]\n'
+        }],
+        'test_edit': [{
+            'data': [{
+                'name': 'mongo',
+                'config': {
+                    'configBean.mongoConfig.connectionString': 'mongodb://mongo:27018',
+                    'configBean.mongoConfig.username': 'root1',
+                    'configBean.mongoConfig.password': 'root1',
+                    'configBean.mongoConfig.authSource': 'admin1',
+                    'configBean.mongoConfig.database': 'test1',
+                    'configBean.mongoConfig.collection': 'adtech1',
+                    'configBean.isCapped': True,
+                    'configBean.initialOffset': '1',
+                    'configBean.mongoConfig.offsetType': 'OBJECTID',
+                    'configBean.offsetField': '_id',
+                    'configBean.batchSize': 1001,
+                    'configBean.maxBatchWaitTime': '11',
+                }
+            }],
+            'er': b'[{"config":{"configBean.batchSize":1001,"configBean.initialOffset":"1","configBean.isCapped":true,"configBean.maxBatchWaitTime":"11","configBean.mongoConfig.authSource":"admin1","configBean.mongoConfig.authenticationType":"USER_PASS","configBean.mongoConfig.collection":"adtech1","configBean.mongoConfig.connectionString":"mongodb://mongo:27018","configBean.mongoConfig.database":"test1","configBean.mongoConfig.offsetType":"OBJECTID","configBean.mongoConfig.password":"root1","configBean.mongoConfig.username":"root1","configBean.offsetField":"_id"},"name":"mongo","type":"mongo"}]\n'
+        }]
     }
 
-    def test_create(self, client, source_type, name, host, username, password, db, er):
-        result = client.post('/sources', json=dict(
-            type=source_type,
-            name=name,
-            host=host,
-            username=username,
-            password=password,
-            db=db
-        ))
+    def test_create(self, client, data, er):
+        result = client.post('/sources', json=list(data))
         assert result.data == er
     
-    def test_edit(self, client, name, host, username, password, db, er):
-        result = client.put('/sources', json=dict(
-            type='influx',
-            name=name,
-            host=host,
-            username=username,
-            password=password,
-            db=db
-        ))
+    def test_edit(self, client, data, er):
+        result = client.put('/sources', json=list(data))
         assert result.data == er
 
     def test_get(self, client):
         result = client.get('/sources')
-        assert result.data == b'["influx"]\n'
+        assert result.data == b'["mongo"]\n'
 
     def test_delete(self, client):
-        client.delete('sources/influx')
+        client.delete('sources/mongo')
         assert client.get('/sources').data == b'[]\n'
