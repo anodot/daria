@@ -39,9 +39,9 @@ services:
       - dc
     volumes:
       - ./sdc-data:/sdc-data
-      - ./agent-data:/data
       - dummy-destination-data:/output
       - ./agent:/usr/src/app
+      - ./data:/usr/src/app/data
       - ./test-datasets:/home
       - ./agent/src/agent/api:/app
     ports:

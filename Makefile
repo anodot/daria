@@ -2,7 +2,7 @@ NAP = 15
 SLEEP = 60
 THREADS = 4
 DOCKER_COMPOSE_DEV = docker-compose-dev.yml
-DOCKER_TEST = docker exec -i anodot-agent pytest -x
+DOCKER_TEST = docker exec -i anodot-agent pytest -x  --disable-pytest-warnings
 DOCKER_TEST_PARALLEL = $(DOCKER_TEST) -n $(THREADS) --dist=loadfile
 DOCKER_TEST_DEV = $(DOCKER_TEST) -vv
 DOCKER_TEST_DEV_PARALLEL = $(DOCKER_TEST_PARALLEL) -vv
@@ -92,7 +92,8 @@ test-pipelines:
 	$(DOCKER_TEST_PARALLEL) tests/test_pipelines/
 
 test-api:
-	$(DOCKER_TEST_PARALLEL) tests/api/
+	$(DOCKER_TEST) tests/api/test_destination.py
+	$(DOCKER_TEST) tests/api/source
 
 run-unit-tests:
 	$(DOCKER_TEST_PARALLEL) tests/unit/
@@ -125,7 +126,8 @@ test-dev-pipelines:
 	$(DOCKER_TEST_DEV_PARALLEL) tests/test_pipelines/
 
 test-dev-api:
-	$(DOCKER_TEST_DEV_PARALLEL) tests/api/
+	$(DOCKER_TEST_DEV) tests/api/test_destination.py
+	$(DOCKER_TEST_DEV) tests/api/source
 
 prepare-source: clean-docker-volumes run-base-services
 

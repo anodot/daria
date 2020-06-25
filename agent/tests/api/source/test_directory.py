@@ -9,28 +9,28 @@ class TestDirectory:
                 'name': 'directory',
                 'type': 'directory',
                 'config': {
-                    'conf.spoolDir': '/test',
+                    'conf.spoolDir': '/home/test-directory-collector',
                     'conf.filePattern': '*.csv',
                     'conf.dataFormat': 'DELIMITED',
                     'conf.dataFormatConfig.csvFileFormat': 'CUSTOM',
                     'conf.dataFormatConfig.csvCustomDelimiter': '|',
                 }
             }],
-            'er': b'[{"config":{"conf.dataFormat":"DELIMITED","conf.dataFormatConfig.csvCustomDelimiter":"|","conf.dataFormatConfig.csvFileFormat":"CUSTOM","conf.filePattern":"*.csv","conf.spoolDir":"/test"},"name":"directory","type":"directory"}]\n'
+            'er': b'[{"config":{"conf.dataFormat":"DELIMITED","conf.dataFormatConfig.csvCustomDelimiter":"|","conf.dataFormatConfig.csvFileFormat":"CUSTOM","conf.filePattern":"*.csv","conf.spoolDir":"/home/test-directory-collector"},"name":"directory","type":"directory"}]\n'
         }],
         'test_edit': [{
             'data': [{
                 'name': 'directory',
                 'type': 'directory',
                 'config': {
-                    'conf.spoolDir': '/test1',
+                    'conf.spoolDir': '/home/test-directory-collector',
                     'conf.filePattern': '*1.csv',
                     'conf.dataFormat': 'DELIMITED',
                     'conf.dataFormatConfig.csvFileFormat': 'CUSTOM',
                     'conf.dataFormatConfig.csvCustomDelimiter': '~',
                 }
             }],
-            'er': b'[{"config":{"conf.dataFormat":"DELIMITED","conf.dataFormatConfig.csvCustomDelimiter":"~","conf.dataFormatConfig.csvFileFormat":"CUSTOM","conf.filePattern":"*1.csv","conf.spoolDir":"/test1"},"name":"directory","type":"directory"}]\n'
+            'er': b'[{"config":{"conf.dataFormat":"DELIMITED","conf.dataFormatConfig.csvCustomDelimiter":"~","conf.dataFormatConfig.csvFileFormat":"CUSTOM","conf.filePattern":"*1.csv","conf.spoolDir":"/home/test-directory-collector"},"name":"directory","type":"directory"}]\n'
         }]
     }
 

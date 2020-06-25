@@ -22,13 +22,13 @@ class TestJdbc:
                 'name': 'mysql',
                 'type': 'mysql',
                 'config': {
-                    'connection_string': 'mysql://root@mysql:3306/test-2',
-                    'hikariConfigBean.username': 'admin',
-                    'hikariConfigBean.password': 'admin',
+                    'connection_string': 'mysql://root@mysql:3306/test',
+                    'hikariConfigBean.username': '',
+                    'hikariConfigBean.password': '',
                     'conf.pagination.query_interval': 5,
                 }
             }],
-            'er': b'[{"config":{"conf.pagination.query_interval":5,"connection_string":"mysql://root@mysql:3306/test-2","hikariConfigBean.connectionString":"jdbc:mysql://root@mysql:3306/test-2","hikariConfigBean.password":"admin","hikariConfigBean.username":"admin"},"name":"mysql","type":"mysql"}]\n'
+            'er': b'[{"config":{"conf.pagination.query_interval":5,"connection_string":"mysql://root@mysql:3306/test","hikariConfigBean.connectionString":"jdbc:mysql://root@mysql:3306/test","hikariConfigBean.password":"","hikariConfigBean.username":""},"name":"mysql","type":"mysql"}]\n'
         }]
     }
 

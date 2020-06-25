@@ -29,12 +29,12 @@ class TestInflux:
             'data': [{
                 'name': 'mongo',
                 'config': {
-                    'configBean.mongoConfig.connectionString': 'mongodb://mongo:27018',
-                    'configBean.mongoConfig.username': 'root1',
-                    'configBean.mongoConfig.password': 'root1',
-                    'configBean.mongoConfig.authSource': 'admin1',
-                    'configBean.mongoConfig.database': 'test1',
-                    'configBean.mongoConfig.collection': 'adtech1',
+                    'configBean.mongoConfig.connectionString': 'mongodb://mongo:27017',
+                    'configBean.mongoConfig.username': 'root',
+                    'configBean.mongoConfig.password': 'root',
+                    'configBean.mongoConfig.authSource': 'admin',
+                    'configBean.mongoConfig.database': 'test',
+                    'configBean.mongoConfig.collection': 'adtech',
                     'configBean.isCapped': True,
                     'configBean.initialOffset': '1',
                     'configBean.mongoConfig.offsetType': 'OBJECTID',
@@ -43,7 +43,7 @@ class TestInflux:
                     'configBean.maxBatchWaitTime': '11',
                 }
             }],
-            'er': b'[{"config":{"configBean.batchSize":1001,"configBean.initialOffset":"1","configBean.isCapped":true,"configBean.maxBatchWaitTime":"11","configBean.mongoConfig.authSource":"admin1","configBean.mongoConfig.authenticationType":"USER_PASS","configBean.mongoConfig.collection":"adtech1","configBean.mongoConfig.connectionString":"mongodb://mongo:27018","configBean.mongoConfig.database":"test1","configBean.mongoConfig.offsetType":"OBJECTID","configBean.mongoConfig.password":"root1","configBean.mongoConfig.username":"root1","configBean.offsetField":"_id"},"name":"mongo","type":"mongo"}]\n'
+            'er': b'[{"config":{"configBean.batchSize":1001,"configBean.initialOffset":"1","configBean.isCapped":true,"configBean.maxBatchWaitTime":"11","configBean.mongoConfig.authSource":"admin","configBean.mongoConfig.authenticationType":"USER_PASS","configBean.mongoConfig.collection":"adtech","configBean.mongoConfig.connectionString":"mongodb://mongo:27017","configBean.mongoConfig.database":"test","configBean.mongoConfig.offsetType":"OBJECTID","configBean.mongoConfig.password":"root","configBean.mongoConfig.username":"root","configBean.offsetField":"_id"},"name":"mongo","type":"mongo"}]\n'
         }]
     }
 

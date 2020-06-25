@@ -84,8 +84,6 @@ class TestDestination:
             host_id='host_id',
             access_key='correct_key'
         ))
-        # cleanup
-        client.delete('/destination')
         print(result.data)
         assert result.data == er
         assert result.status_code == status_code

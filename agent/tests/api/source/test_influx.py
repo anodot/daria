@@ -10,20 +10,20 @@ class TestInflux:
                     'type': 'influx',
                     'name': 'influx',
                     'config': {
-                        'host': 'http://localhost:8086',
+                        'host': 'http://influx:8086',
                         'username': 'admin',
                         'password': 'admin',
                         'db': 'test',
                     }
                 }],
-                'er': b'[{"config":{"db":"test","host":"http://localhost:8086","password":"admin","username":"admin"},"name":"influx","type":"influx"}]\n'
+                'er': b'[{"config":{"db":"test","host":"http://influx:8086","password":"admin","username":"admin"},"name":"influx","type":"influx"}]\n'
             },
             {
                 'data': [{
                     'type': 'influx',
                     'name': 'influx',
                     'config': {
-                        'host': 'http://localhost:8086',
+                        'host': 'http://influx:8086',
                         'username': 'admin',
                         'password': 'admin',
                         'db': 'test',
@@ -38,20 +38,20 @@ class TestInflux:
                     'type': 'influx',
                     'name': 'influx',
                     'config': {
-                        'host': 'http://externalhost:8086',
-                        'username': 'new_shepard',
-                        'password': 'new_shepard',
-                        'db': 'space',
+                        'host': 'http://influx:8086',
+                        'username': 'admin',
+                        'password': 'admin',
+                        'db': 'test',
                     }
                 }],
-                'er': b'[{"config":{"db":"space","host":"http://externalhost:8086","password":"new_shepard","username":"new_shepard"},"name":"influx","type":"influx"}]\n'
+                'er': b'[{"config":{"db":"test","host":"http://influx:8086","password":"admin","username":"admin"},"name":"influx","type":"influx"}]\n'
             },
             {
                 'data': [{
                     'type': 'influx',
                     'name': 'not_existing',
                     'config': {
-                        'host': 'http://externalhost:8086',
+                        'host': 'http://influx:8086',
                         'username': 'new_shepard',
                         'password': 'new_shepard',
                         'db': 'space',
@@ -64,6 +64,7 @@ class TestInflux:
 
     def test_create(self, client, data, er):
         result = client.post('/sources', json=list(data))
+        print(result.data)
         assert result.data == er
 
     def test_edit(self, client, data, er):

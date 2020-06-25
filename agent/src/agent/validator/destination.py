@@ -14,7 +14,7 @@ def is_valid_destination_url(url: str) -> bool:
     try:
         response = requests.get(status_url, timeout=5)
         response.raise_for_status()
-    except (ConnectionError, requests.HTTPError):
+    except (ConnectionError, requests.HTTPError, requests.exceptions.ConnectionError):
         return False
     return True
 
