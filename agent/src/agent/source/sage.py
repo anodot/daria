@@ -6,7 +6,7 @@ from agent.tools import infinite_retry, is_url, print_dicts, if_validation_enabl
 
 class SageSource(Source):
     VALIDATION_SCHEMA_FILE_NAME = 'sage.json'
-    TEST_PIPELINE_FILENAME = 'sage'
+    TEST_PIPELINE_FILENAME = 'test_sage_jfhdkj.json.json'
 
     URL = 'url'
     TOKEN = 'token'

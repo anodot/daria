@@ -1,0 +1,8 @@
+{
+  "type": "object",
+  "properties": {
+    "url": {"type": "string"},
+    "token": {"type": "string"}
+  },
+  "required": ["url", "token"]
+}
