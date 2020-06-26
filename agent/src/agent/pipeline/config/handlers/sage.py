@@ -14,3 +14,11 @@ class SageConfigHandler(BaseConfigHandler):
         'ExpressionEvaluator_02': AddProperties,
         'destination': Destination
     }
+
+    def override_stages(self):
+        self.pipeline.config['timestamp'] = {
+            'name': '@timestamp',
+            'type': 'string',
+            'format': 'yyyy-MM-dd\'T\'HH:mm:ss'
+        }
+        super().override_stages()
