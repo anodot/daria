@@ -164,8 +164,8 @@ class Pipeline:
         return self.config.get('values_array_filter_metrics', [])
 
     @property
-    def query(self) -> str:
-        return self.config.get('query')
+    def query_file(self) -> str:
+        return self.config.get('query_file')
 
     @property
     def interval(self) -> str:
