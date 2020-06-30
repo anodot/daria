@@ -1,7 +1,8 @@
 from .base import BaseConfigHandler
 from agent.logger import get_logger
 from agent.pipeline.config import schema
-from agent.pipeline.config import stages
+from agent.pipeline.config.stages import JSConvertMetrics, AddProperties30, Filtering, Destination, Source, \
+    SendWatermark
 
 logger = get_logger(__name__)
 
@@ -10,13 +11,13 @@ class DirectoryConfigHandler(BaseConfigHandler):
     PIPELINE_BASE_CONFIG_NAME = 'directory_http.json'
 
     stages = {
-        'source': stages.source.Source,
-        'JavaScriptEvaluator_01': stages.js_convert_metrics_20.JSConvertMetrics,
-        'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties30,
-        'ExpressionEvaluator_03': stages.expression_evaluator.Filtering,
-        'process_finish_file_event': stages.expression_evaluator.SendWatermark,
-        'destination': stages.destination.Destination,
-        'destination_watermark': stages.destination.Destination,
+        'source': Source,
+        'JavaScriptEvaluator_01': JSConvertMetrics,
+        'ExpressionEvaluator_02': AddProperties30,
+        'ExpressionEvaluator_03': Filtering,
+        'process_finish_file_event': SendWatermark,
+        'destination': Destination,
+        'destination_watermark': Destination,
     }
 
     def get_pipeline_config(self) -> dict:

@@ -1,7 +1,7 @@
 import json
 import os
 
-from . import pipeline
+from .pipeline import Pipeline, PipelineException, PipelineNotExistsException
 from jsonschema import validate
 from .. import source
 from agent.destination import HttpDestination
@@ -10,14 +10,14 @@ from typing import List
 
 
 def create_dir():
-    if not os.path.exists(pipeline.Pipeline.DIR):
-        os.mkdir(pipeline.Pipeline.DIR)
+    if not os.path.exists(Pipeline.DIR):
+        os.mkdir(Pipeline.DIR)
 
 
-def load_object(pipeline_id: str) -> pipeline.Pipeline:
-    if not pipeline.Pipeline.exists(pipeline_id):
-        raise pipeline.PipelineNotExistsException(f"Pipeline {pipeline_id} doesn't exist")
-    with open(pipeline.Pipeline.get_file_path(pipeline_id), 'r') as f:
+def load_object(pipeline_id: str) -> Pipeline:
+    if not Pipeline.exists(pipeline_id):
+        raise PipelineNotExistsException(f"Pipeline {pipeline_id} doesn't exist")
+    with open(Pipeline.get_file_path(pipeline_id), 'r') as f:
         config = json.load(f)
 
     validate(config, {
@@ -31,21 +31,21 @@ def load_object(pipeline_id: str) -> pipeline.Pipeline:
 
     source_obj = source_repository.get(config['source']['name'])
     destination = HttpDestination.get()
-    return pipeline.Pipeline(pipeline_id, source_obj, config, destination)
+    return Pipeline(pipeline_id, source_obj, config, destination)
 
 
-def create_object(pipeline_id: str, source_name: str) -> pipeline.Pipeline:
+def create_object(pipeline_id: str, source_name: str) -> Pipeline:
     source_obj = source_repository.get(source_name)
     destination = HttpDestination.get()
-    return pipeline.Pipeline(pipeline_id, source_obj, {}, destination)
+    return Pipeline(pipeline_id, source_obj, {}, destination)
 
 
-def get_pipelines(source_name: str = None) -> List[pipeline.Pipeline]:
+def get_pipelines(source_name: str = None) -> List[Pipeline]:
     pipelines = []
-    if not os.path.exists(pipeline.Pipeline.DIR):
+    if not os.path.exists(Pipeline.DIR):
         return pipelines
 
-    for file in os.listdir(pipeline.Pipeline.DIR):
+    for file in os.listdir(Pipeline.DIR):
         try:
             obj = load_object(file.replace('.json', ''))
         except source.SourceConfigDeprecated as e:

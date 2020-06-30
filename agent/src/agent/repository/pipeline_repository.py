@@ -10,7 +10,7 @@ from agent.repository import source_repository
 from typing import TYPE_CHECKING, List
 
 if TYPE_CHECKING:
-    from agent.pipeline.pipeline import Pipeline
+    from agent.pipeline import Pipeline
 
 PIPELINE_DIRECTORY = os.path.join(DATA_DIR, 'pipelines')
 

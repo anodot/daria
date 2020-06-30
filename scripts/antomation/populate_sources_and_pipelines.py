@@ -35,7 +35,7 @@ def populate_pipeline_from_file(file):
     for config in extract_pipeline_configs(file):
         if 'pipeline_id' not in config:
             raise Exception('Pipeline config should contain a pipeline_id')
-        if pipeline.pipeline.Pipeline.exists(config['pipeline_id']):
+        if pipeline.Pipeline.exists(config['pipeline_id']):
             edit_pipeline_using_file(file)
         else:
             create_pipeline_from_file(file)

@@ -88,7 +88,7 @@ def create_from_file(file):
 
 
 def check_pipeline_id(pipeline_id: str):
-    if pipeline.pipeline.Pipeline.exists(pipeline_id):
+    if pipeline.Pipeline.exists(pipeline_id):
         raise click.ClickException(f"Pipeline {pipeline_id} already exists")
 
 
@@ -165,7 +165,7 @@ def edit_using_file(file):
             pipeline_manager = manager.PipelineManager(pipeline.load_object(config['pipeline_id']))
             pipeline_manager.load_config(config, edit=True)
             pipeline_manager.update()
-        except pipeline.pipeline.PipelineNotExistsException:
+        except pipeline.PipelineNotExistsException:
             raise click.UsageError(f'{config["pipeline_id"]} does not exist')
 
         click.secho('Updated pipeline {}'.format(config['pipeline_id']), fg='green')
@@ -195,7 +195,7 @@ def edit(pipeline_id, advanced, file):
         if click.confirm('Would you like to see the result data preview?', default=True):
             pipeline_manager.show_preview()
             print('To change the config use `agent pipeline edit`')
-    except pipeline.pipeline.PipelineNotExistsException:
+    except pipeline.PipelineNotExistsException:
         raise click.UsageError(f'{pipeline_id} does not exist')
 
 
@@ -247,7 +247,7 @@ def start(pipeline_id, file):
             pipeline_manager = manager.PipelineManager(pipeline.load_object(idx))
             click.echo(f'Pipeline {idx} is starting...')
             pipeline_manager.start()
-        except (StreamSetsApiClientException, pipeline.pipeline.PipelineException) as e:
+        except (StreamSetsApiClientException, pipeline.PipelineException) as e:
             click.secho(str(e), err=True, fg='red')
             continue
 
@@ -269,7 +269,7 @@ def stop(pipeline_id, file):
         try:
             manager.stop_pipeline(idx)
             click.secho(f'Pipeline {idx} is stopped', fg='green')
-        except (StreamSetsApiClientException, pipeline.pipeline.PipelineException) as e:
+        except (StreamSetsApiClientException, pipeline.PipelineException) as e:
             click.secho(str(e), err=True, fg='red')
             continue
 
@@ -284,7 +284,7 @@ def force_stop(pipeline_id):
         click.echo('Force pipeline stopping...')
         manager.force_stop_pipeline(pipeline_id)
         click.secho('Pipeline is stopped', fg='green')
-    except (StreamSetsApiClientException, pipeline.pipeline.PipelineException) as e:
+    except (StreamSetsApiClientException, pipeline.PipelineException) as e:
         click.secho(str(e), err=True, fg='red')
         return
 
@@ -306,10 +306,10 @@ def delete(pipeline_id, file):
             pipeline_manager = manager.PipelineManager(pipeline.load_object(idx))
             pipeline_manager.delete()
             click.echo(f'Pipeline {idx} deleted')
-        except pipeline.pipeline.PipelineNotExistsException:
+        except pipeline.PipelineNotExistsException:
             manager.delete_pipeline(idx)
             click.echo(f'Pipeline {idx} deleted')
-        except (StreamSetsApiClientException, pipeline.pipeline.PipelineException) as e:
+        except (StreamSetsApiClientException, pipeline.PipelineException) as e:
             click.secho(str(e), err=True, fg='red')
             continue
 

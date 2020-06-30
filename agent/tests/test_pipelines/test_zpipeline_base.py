@@ -3,7 +3,7 @@ import os
 import pytest
 
 from ..fixtures import cli_runner, get_output, get_input_file_path
-from agent.pipeline.pipeline import Pipeline
+from agent.pipeline import Pipeline
 from agent.cli import source as source_cli, pipeline as pipeline_cli
 from agent.source import Source
 from agent.streamsets_api_client import api_client
