@@ -1,5 +1,5 @@
 ### Please note
-_- To learn more about the Daria agent and its main concepts visit the agent's [Wiki page](https://github.com/anodot/daria/wiki)_
+_- To learn more about Daria agent and its main concepts visit the agent's [Wiki page](https://github.com/anodot/daria/wiki)_
 
 _- It is assumed that the port 80 is forwarded from the agent docker container to the port 8080 on your machine. To
 learn more about agent port forwarding visit the [Installation guide](https://github.com/anodot/daria/wiki#how-to-install)_

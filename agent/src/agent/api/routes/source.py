@@ -47,4 +47,4 @@ def delete(source_id):
         source_repository.delete_by_name(source_id)
     except Exception as e:
         return str(e), 400
-    return 'Delete source'
+    return ''
