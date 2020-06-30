@@ -1,5 +1,8 @@
+from __future__ import annotations
 from abc import ABC, abstractmethod
-from agent.pipeline import Pipeline
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from agent.pipeline.pipeline import Pipeline
 
 
 class Stage(ABC):

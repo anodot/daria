@@ -66,7 +66,7 @@ def __prompt_access_key(dest: HttpDestination):
 
 def __start_monitoring_pipeline():
     try:
-        if pipeline.Pipeline.exists('Monitoring'):
+        if pipeline.pipeline.Pipeline.exists('Monitoring'):
             pipeline_manager = manager.PipelineManager(pipeline.load_object('Monitoring'))
             click.secho('Updating Monitoring pipeline...')
             pipeline_manager.stop()
@@ -79,7 +79,7 @@ def __start_monitoring_pipeline():
             pipeline_manager.create()
 
         pipeline_manager.start()
-    except pipeline.PipelineException as e:
+    except pipeline.pipeline.PipelineException as e:
         raise click.ClickException(str(e))
 
 

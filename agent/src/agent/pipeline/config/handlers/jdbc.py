@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from sqlalchemy import create_engine
 from sqlalchemy.exc import SQLAlchemyError
 from urllib.parse import urlparse, urlunparse
-from agent.pipeline.config.stages import JSConvertMetrics, AddProperties, Destination, Source
+from agent.pipeline.config import stages
 from agent.pipeline.pipeline import TimestampType
 
 logger = get_logger(__name__)
@@ -17,10 +17,10 @@ class JDBCConfigHandler(BaseConfigHandler):
     QUERY = "SELECT * FROM {table} WHERE {offset_column} > ${{OFFSET}} {condition} ORDER BY {offset_column} LIMIT {limit}"
 
     stages = {
-        'source': Source,
-        'JavaScriptEvaluator_01': JSConvertMetrics,
-        'ExpressionEvaluator_02': AddProperties,
-        'destination': Destination
+        'source': stages.source.Source,
+        'JavaScriptEvaluator_01': stages.js_convert_metrics_20.JSConvertMetrics,
+        'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties,
+        'destination': stages.destination.Destination
     }
 
     def override_stages(self):
