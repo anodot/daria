@@ -9,6 +9,7 @@ class PromptConfigSage(PromptConfigSchemaless):
         self.set_query()
         self.set_delay()
         self.set_interval()
+        self.set_number_of_days_to_backfill()
         self.data_preview()
         self.set_values()
         self.set_measurement_names()
@@ -27,3 +28,7 @@ class PromptConfigSage(PromptConfigSchemaless):
     def set_interval(self):
         self.config['interval'] = click.prompt('Interval, minutes', type=click.INT,
                                                default=self.default_config.get('interval', 5))
+
+    def set_number_of_days_to_backfill(self):
+        self.config['days_to_backfill'] = click.prompt('Number of days to backfill', type=click.INT,
+                                                       default=self.default_config.get('days_to_backfill', 0))

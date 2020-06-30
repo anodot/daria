@@ -2,7 +2,7 @@ from .base import Stage
 from agent.source.sage import SageSource
 
 
-class Sage(Stage):
+class SageScript(Stage):
     def get_config(self) -> dict:
         with open(self.pipeline.query_file) as f:
             query = f.read()
@@ -12,4 +12,5 @@ class Sage(Stage):
             {'key': 'QUERY', 'value': query},
             {'key': 'INTERVAL', 'value': self.pipeline.interval},
             {'key': 'DELAY', 'value': self.pipeline.delay},
+            {'key': 'DAYS_TO_BACKFILL', 'value': self.pipeline.days_to_backfill},
         ]}

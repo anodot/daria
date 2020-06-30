@@ -32,3 +32,6 @@ class TestInflux(TestPipelineBase):
 
     def test_info(self, cli_runner, name=None):
         pytest.skip()
+
+    def test_force_stop(self, cli_runner, name=None):
+        pytest.skip()

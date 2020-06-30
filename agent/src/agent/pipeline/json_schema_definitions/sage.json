@@ -10,7 +10,10 @@
       "type": "object",
       "patternProperties":  {"[^ \\.]+": {"type": "array", "items": {"type": "string"}}}
     },
-    "query_file": {"type": "string"}
+    "query_file": {"type": "string"},
+    "interval": {"type":  "integer"},
+    "delay": {"type":  "integer"},
+    "days_to_backfill": {"type":  "integer"}
   },
-  "required": ["values", "dimensions", "query_file"]
+  "required": ["values", "dimensions", "query_file", "interval"]
 }

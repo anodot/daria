@@ -172,6 +172,10 @@ class Pipeline:
         return self.config.get('interval')
 
     @property
+    def days_to_backfill(self) -> str:
+        return self.config.get('days_to_backfill', 0)
+
+    @property
     def delay(self) -> str:
         return self.config.get('delay', 0)
 

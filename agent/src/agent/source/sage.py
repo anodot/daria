@@ -6,7 +6,7 @@ from agent.tools import infinite_retry, is_url, print_dicts, if_validation_enabl
 
 class SageSource(Source):
     VALIDATION_SCHEMA_FILE_NAME = 'sage.json'
-    TEST_PIPELINE_FILENAME = 'test_sage_jfhdkj.json.json'
+    TEST_PIPELINE_FILENAME = 'test_sage_jfhdkj'
 
     URL = 'url'
     TOKEN = 'token'
@@ -18,7 +18,7 @@ class SageSource(Source):
 
     @infinite_retry
     def prompt_url(self, default_config):
-        self.config[self.URL] = click.prompt('Sage API URL',
+        self.config[self.URL] = click.prompt('SageScript API URL',
                                              type=click.STRING,
                                              default=default_config.get(self.URL)).strip()
         self.validate_url()
@@ -29,7 +29,7 @@ class SageSource(Source):
 
     @infinite_retry
     def prompt_token(self, default_config):
-        self.config[self.TOKEN] = click.prompt('Sage API TOKEN',
+        self.config[self.TOKEN] = click.prompt('SageScript API token',
                                                type=click.STRING,
                                                default=default_config.get(self.TOKEN)).strip()
         self.validate_token()

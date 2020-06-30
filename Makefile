@@ -64,6 +64,10 @@ test-tcp: prepare-source test-destination-dev
 	$(DOCKER_TEST_DEV) tests/test_input/test_tcp_http.py
 	$(DOCKER_TEST_DEV) tests/test_pipelines/test_tcp_http.py
 
+test-sage: prepare-source build-sage test-destination-dev
+	$(DOCKER_TEST_DEV) tests/test_input/test_sage_http.py
+	$(DOCKER_TEST_DEV) tests/test_pipelines/test_sage_http.py
+
 test-destination-dev: prepare-source nap
 	$(DOCKER_TEST_DEV) tests/test_destination.py
 
@@ -161,6 +165,9 @@ build-mysql:
 
 build-postgres:
 	docker-compose up -d postgres
+
+build-sage:
+	docker-compose up -d --build sage
 
 ##--------------------------
 ## COMMON DEPENDENCY TARGETS

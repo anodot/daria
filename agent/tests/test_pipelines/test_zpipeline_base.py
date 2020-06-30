@@ -1,5 +1,6 @@
 import json
 import os
+import pytest
 
 from ..fixtures import cli_runner, get_output, get_input_file_path
 from agent.pipeline import cli as pipeline_cli, Pipeline
@@ -58,6 +59,10 @@ class TestPipelineBase(object):
         result = cli_runner.invoke(pipeline_cli.stop, [name])
         assert result.exit_code == 0
         assert api_client.get_pipeline_status(name)['status'] in ['STOPPED']
+
+    def test_force_stop(self, cli_runner, name):
+        result = cli_runner.invoke(pipeline_cli.force_stop, [name])
+        assert result.exit_code == 0
 
     def test_reset(self, cli_runner, name):
         result = cli_runner.invoke(pipeline_cli.reset, [name])
