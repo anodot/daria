@@ -1,4 +1,3 @@
-import click
 import json
 import os
 
@@ -234,7 +233,7 @@ class Pipeline:
         }
 
 
-class PipelineException(click.ClickException):
+class PipelineException(Exception):
     pass
 
 
