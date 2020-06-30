@@ -41,16 +41,16 @@ loaders = {
 }
 
 handlers = {
-    source.TYPE_MONITORING: config_handlers.MonitoringConfigHandler,
-    source.TYPE_INFLUX: config_handlers.InfluxConfigHandler,
-    source.TYPE_MONGO: config_handlers.MongoConfigHandler,
-    source.TYPE_KAFKA: config_handlers.KafkaConfigHandler,
-    source.TYPE_MYSQL: config_handlers.JDBCConfigHandler,
-    source.TYPE_POSTGRES: config_handlers.JDBCConfigHandler,
-    source.TYPE_ELASTIC: config_handlers.ElasticConfigHandler,
-    source.TYPE_SPLUNK: config_handlers.TCPConfigHandler,
-    source.TYPE_DIRECTORY: config_handlers.DirectoryConfigHandler,
-    source.TYPE_SAGE: config_handlers.SageConfigHandler
+    source.TYPE_MONITORING: config_handlers.monitoring.MonitoringConfigHandler,
+    source.TYPE_INFLUX: config_handlers.influx.InfluxConfigHandler,
+    source.TYPE_MONGO: config_handlers.mongo.MongoConfigHandler,
+    source.TYPE_KAFKA: config_handlers.kafka.KafkaConfigHandler,
+    source.TYPE_MYSQL: config_handlers.jdbc.JDBCConfigHandler,
+    source.TYPE_POSTGRES: config_handlers.jdbc.JDBCConfigHandler,
+    source.TYPE_ELASTIC: config_handlers.elastic.ElasticConfigHandler,
+    source.TYPE_SPLUNK: config_handlers.tcp.TCPConfigHandler,
+    source.TYPE_DIRECTORY: config_handlers.directory.DirectoryConfigHandler,
+    source.TYPE_SAGE: config_handlers.SageConfigHandler,
 }
 
 

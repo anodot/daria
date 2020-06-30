@@ -41,7 +41,7 @@ def update():
             pipeline_manager = manager.PipelineManager(p)
             pipeline_manager.update()
             click.secho(f'Pipeline {p.id} updated', fg='green')
-        except agent_pipeline.PipelineException as e:
+        except agent_pipeline.pipeline.PipelineException as e:
             print(str(e))
             continue
 

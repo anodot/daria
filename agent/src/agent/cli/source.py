@@ -77,7 +77,7 @@ def edit_using_file(file):
             for pipeline_obj in pipeline.get_pipelines(source_name=config['name']):
                 try:
                     manager.PipelineManager(pipeline_obj).update()
-                except pipeline.PipelineException as e:
+                except pipeline.pipeline.PipelineException as e:
                     print(str(e))
                     continue
                 print(f'Pipeline {pipeline_obj.id} updated')
@@ -142,7 +142,7 @@ def edit(name, advanced, file):
     for pipeline_obj in pipeline.get_pipelines(source_name=name):
         try:
             manager.PipelineManager(pipeline_obj).update()
-        except pipeline.PipelineException as e:
+        except pipeline.pipeline.PipelineException as e:
             print(str(e))
             continue
         print(f'Pipeline {pipeline_obj.id} updated')
