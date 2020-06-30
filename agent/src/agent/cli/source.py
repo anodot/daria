@@ -1,3 +1,4 @@
+import os
 import click
 import json
 
@@ -5,10 +6,18 @@ from agent import source, pipeline
 from agent.constants import ENV_PROD
 from agent.destination import HttpDestination
 from agent.pipeline import manager
-from agent.repository import source_repository
+from agent.repository import source_repository, pipeline_repository
 from agent.streamsets_api_client import api_client
 from agent.tools import infinite_retry
 from jsonschema import ValidationError, SchemaError
+
+
+def autocomplete(ctx, args, incomplete):
+    configs = []
+    for filename in os.listdir(source.source_repository.SOURCE_DIRECTORY):
+        if filename.endswith('.json') and incomplete in filename:
+            configs.append(filename.replace('.json', ''))
+    return configs
 
 
 def get_previous_source_config(label):
@@ -16,7 +25,7 @@ def get_previous_source_config(label):
         pipelines_with_source = api_client.get_pipelines(order_by='CREATED', order='DESC',
                                                          label=label)
         if len(pipelines_with_source) > 0:
-            pipeline_obj = pipeline.load_object(pipelines_with_source[-1]['pipelineId'])
+            pipeline_obj = pipeline_repository.get(pipelines_with_source[-1]['pipelineId'])
             return pipeline_obj.source.config
     except source.SourceConfigDeprecated:
         pass
@@ -74,7 +83,7 @@ def edit_using_file(file):
         try:
             source.edit_using_json(config)
             click.secho(f"Source {config['name']} updated")
-            for pipeline_obj in pipeline.get_pipelines(source_name=config['name']):
+            for pipeline_obj in pipeline_repository.get_by_source(config['name']):
                 try:
                     manager.PipelineManager(pipeline_obj).update()
                 except pipeline.pipeline.PipelineException as e:
@@ -118,7 +127,7 @@ def create(advanced, file):
 
 
 @click.command()
-@click.argument('name', autocompletion=source.autocomplete, required=False)
+@click.argument('name', autocompletion=autocomplete, required=False)
 @click.option('-a', '--advanced', is_flag=True)
 @click.option('-f', '--file', type=click.File())
 def edit(name, advanced, file):
@@ -139,7 +148,7 @@ def edit(name, advanced, file):
 
     click.secho('Source config updated', fg='green')
 
-    for pipeline_obj in pipeline.get_pipelines(source_name=name):
+    for pipeline_obj in pipeline_repository.get_by_source(name):
         try:
             manager.PipelineManager(pipeline_obj).update()
         except pipeline.pipeline.PipelineException as e:
@@ -158,7 +167,7 @@ def list_sources():
 
 
 @click.command()
-@click.argument('name', autocompletion=source.autocomplete)
+@click.argument('name', autocompletion=autocomplete)
 def delete(name):
     """
     Delete source

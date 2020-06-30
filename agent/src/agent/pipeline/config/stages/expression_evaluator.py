@@ -1,8 +1,13 @@
+from __future__ import annotations
+
 import csv
 
 from .base import Stage
-from agent.pipeline.pipeline import TimestampType
 from agent.pipeline.config.expression_parser import condition
+from agent.pipeline import pipeline
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from agent.pipeline import TimestampType
 
 
 def get_value(path, expr) -> dict:
@@ -10,12 +15,12 @@ def get_value(path, expr) -> dict:
 
 
 def get_convert_timestamp_to_unix_expression(timestamp_type: TimestampType, value, timestamp_format):
-    if timestamp_type == TimestampType.STRING:
+    if timestamp_type == pipeline.TimestampType.STRING:
         dt_format = timestamp_format
         return f"time:dateTimeToMilliseconds(time:extractDateFromString({value}, '{dt_format}'))/1000"
-    elif timestamp_type == TimestampType.DATETIME:
+    elif timestamp_type == pipeline.TimestampType.DATETIME:
         return f"time:dateTimeToMilliseconds({value})/1000"
-    elif timestamp_type == TimestampType.UNIX_MS:
+    elif timestamp_type == pipeline.TimestampType.UNIX_MS:
         return f"{value}/1000"
     return value
 

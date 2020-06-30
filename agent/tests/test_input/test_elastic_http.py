@@ -2,9 +2,9 @@ import os
 
 from ..fixtures import get_input_file_path, cli_runner
 from agent.cli import source as source_cli, pipeline as pipeline_cli
-from agent.source import Source
 from agent.streamsets_api_client import api_client
 from ..test_pipelines.test_zpipeline_base import pytest_generate_tests
+from agent.repository import source_repository
 
 
 class TestElastic:
@@ -22,7 +22,7 @@ class TestElastic:
         result = cli_runner.invoke(source_cli.create,
                                    input=f"elastic\ntest_es\nhttp://es:9200\ntest\ntimestamp_unix_ms\nnow-1000d\n\n")
         assert result.exit_code == 0
-        assert os.path.isfile(os.path.join(Source.DIR, 'test_es.json'))
+        assert os.path.isfile(os.path.join(source_repository.SOURCE_DIRECTORY, 'test_es.json'))
 
     def test_create(self, cli_runner, name, options, value, timestamp, advanced_options):
         query_file_path = get_input_file_path('elastic_query.json')

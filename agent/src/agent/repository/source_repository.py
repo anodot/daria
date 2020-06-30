@@ -2,7 +2,6 @@ import json
 import os
 import agent.source
 from agent.repository import pipeline_repository
-
 from agent.source import abstract_source
 from agent.constants import DATA_DIR, MONITORING_SOURCE_NAME
 from jsonschema import ValidationError, validate

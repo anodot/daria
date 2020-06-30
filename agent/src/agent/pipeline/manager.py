@@ -4,7 +4,7 @@ import shutil
 import time
 import agent.pipeline.config.handlers as config_handlers
 
-from .pipeline import Pipeline, PipelineException
+from . import pipeline
 from agent.pipeline.config.validators import get_config_validator
 from agent.pipeline import prompt, load_client_data
 from .. import source
@@ -13,6 +13,7 @@ from agent.constants import ERRORS_DIR, ENV_PROD
 from agent.streamsets_api_client import api_client, StreamSetsApiClientException
 from agent.tools import print_json, sdc_record_map_to_dict, if_validation_enabled
 from .. import proxy
+from ..repository import pipeline_repository
 
 prompters = {
     source.TYPE_MONITORING: prompt.PromptConfig,
@@ -85,33 +86,35 @@ def wait_for_sending_data(pipeline_id: str, tries: int = 5, initial_delay: int =
         if stats['out'] > 0 and stats['errors'] == 0:
             return True
         if stats['errors'] > 0:
-            raise PipelineException(f"Pipeline {pipeline_id} has {stats['errors']} errors")
+            raise pipeline.PipelineException(f"Pipeline {pipeline_id} has {stats['errors']} errors")
         delay = initial_delay ** i
         if i == tries:
-            raise PipelineException(
+            raise pipeline.PipelineException(
                 f"Pipeline {pipeline_id} did not send any data. Received number of records - {stats['in']}")
         print(f'Waiting for pipeline {pipeline_id} to send data. Check again after {delay} seconds...')
         time.sleep(delay)
 
 
 def force_stop_pipeline(pipeline_id: str):
+    if not check_status(pipeline_id, pipeline.Pipeline.STATUS_STOPPING):
+        raise pipeline.PipelineException("Can't force stop a pipeline not in the STOPPING state")
     try:
         api_client.stop_pipeline(pipeline_id)
     except StreamSetsApiClientException:
         pass
 
-    if not check_status(pipeline_id, Pipeline.STATUS_STOPPING):
-        raise PipelineException("Can't force stop a pipeline not in the STOPPING state")
+    if not check_status(pipeline_id, pipeline.Pipeline.STATUS_STOPPING):
+        raise pipeline.PipelineException("Can't force stop a pipeline not in the STOPPING state")
 
     api_client.force_stop_pipeline(pipeline_id)
-    wait_for_status(pipeline_id, Pipeline.STATUS_STOPPED)
+    wait_for_status(pipeline_id, pipeline.Pipeline.STATUS_STOPPED)
 
 
 def stop_pipeline(pipeline_id: str):
     print("Stopping the pipeline")
     api_client.stop_pipeline(pipeline_id)
     try:
-        wait_for_status(pipeline_id, Pipeline.STATUS_STOPPED)
+        wait_for_status(pipeline_id, pipeline.Pipeline.STATUS_STOPPED)
     except PipelineFreezeException:
         print("Force stopping the pipeline")
         force_stop_pipeline(pipeline_id)
@@ -119,25 +122,61 @@ def stop_pipeline(pipeline_id: str):
 
 def delete_pipeline(pipeline_id: str):
     try:
-        if check_status(pipeline_id, Pipeline.STATUS_RUNNING):
+        if check_status(pipeline_id, pipeline.Pipeline.STATUS_RUNNING):
             stop_pipeline(pipeline_id)
 
         api_client.delete_pipeline(pipeline_id)
-        if Pipeline.exists(pipeline_id):
-            os.remove(Pipeline.get_file_path(pipeline_id))
+        if pipeline_repository.exists(pipeline_id):
+            pipeline_repository.delete_by_id(pipeline_id)
         errors_dir = os.path.join(ERRORS_DIR, pipeline_id)
         if os.path.isdir(errors_dir):
             shutil.rmtree(errors_dir)
     except StreamSetsApiClientException as e:
-        raise PipelineException(str(e))
+        raise pipeline.PipelineException(str(e))
 
 
 class PipelineManager:
-    def __init__(self, pipeline: Pipeline):
-        self.pipeline = pipeline
-        self.prompter = prompters[pipeline.source.type](self.pipeline)
-        self.file_loader = loaders[pipeline.source.type]()
-        self.sdc_creator = handlers[pipeline.source.type](self.pipeline)
+    def __init__(self, pipeline_obj: Pipeline):
+        # todo moved it here in order to avoid circular imports, refactor
+        prompters = {
+            source.TYPE_MONITORING: prompt.PromptConfig,
+            source.TYPE_INFLUX: prompt.PromptConfigInflux,
+            source.TYPE_KAFKA: prompt.PromptConfigKafka,
+            source.TYPE_MONGO: prompt.PromptConfigMongo,
+            source.TYPE_MYSQL: prompt.PromptConfigJDBC,
+            source.TYPE_POSTGRES: prompt.PromptConfigJDBC,
+            source.TYPE_ELASTIC: prompt.PromptConfigElastic,
+            source.TYPE_SPLUNK: prompt.PromptConfigTCP,
+            source.TYPE_DIRECTORY: prompt.PromptConfigDirectory
+        }
+
+        loaders = {
+            source.TYPE_MONITORING: load_client_data.LoadClientData,
+            source.TYPE_INFLUX: load_client_data.InfluxLoadClientData,
+            source.TYPE_MONGO: load_client_data.MongoLoadClientData,
+            source.TYPE_KAFKA: load_client_data.KafkaLoadClientData,
+            source.TYPE_MYSQL: load_client_data.JDBCLoadClientData,
+            source.TYPE_POSTGRES: load_client_data.JDBCLoadClientData,
+            source.TYPE_ELASTIC: load_client_data.ElasticLoadClientData,
+            source.TYPE_SPLUNK: load_client_data.TcpLoadClientData,
+            source.TYPE_DIRECTORY: load_client_data.DirectoryLoadClientData
+        }
+
+        handlers = {
+            source.TYPE_MONITORING: config_handlers.monitoring.MonitoringConfigHandler,
+            source.TYPE_INFLUX: config_handlers.influx.InfluxConfigHandler,
+            source.TYPE_MONGO: config_handlers.mongo.MongoConfigHandler,
+            source.TYPE_KAFKA: config_handlers.kafka.KafkaConfigHandler,
+            source.TYPE_MYSQL: config_handlers.jdbc.JDBCConfigHandler,
+            source.TYPE_POSTGRES: config_handlers.jdbc.JDBCConfigHandler,
+            source.TYPE_ELASTIC: config_handlers.elastic.ElasticConfigHandler,
+            source.TYPE_SPLUNK: config_handlers.tcp.TCPConfigHandler,
+            source.TYPE_DIRECTORY: config_handlers.directory.DirectoryConfigHandler
+        }
+        self.pipeline = pipeline_obj
+        self.prompter = prompters[pipeline_obj.source.type](self.pipeline)
+        self.file_loader = loaders[pipeline_obj.source.type]()
+        self.sdc_creator = handlers[pipeline_obj.source.type](self.pipeline)
 
     def prompt(self, default_config, advanced=False):
         self.pipeline.set_config(self.prompter.prompt(default_config, advanced))
@@ -155,16 +194,16 @@ class PipelineManager:
                                                                new_title=self.pipeline.id)
 
             api_client.update_pipeline(self.pipeline.id, new_config)
-        except (config_handlers.ConfigHandlerException, StreamSetsApiClientException) as e:
+        except (config_handlers.base.ConfigHandlerException, StreamSetsApiClientException) as e:
             self.delete()
-            raise PipelineException(str(e))
+            raise pipeline.PipelineException(str(e))
 
-        self.pipeline.save()
+        pipeline_repository.save(self.pipeline)
 
     def update(self):
         start_pipeline = False
         try:
-            if get_pipeline_status(self.pipeline.id) in [Pipeline.STATUS_RUNNING, Pipeline.STATUS_RETRY]:
+            if get_pipeline_status(self.pipeline.id) in [pipeline.Pipeline.STATUS_RUNNING, pipeline.Pipeline.STATUS_RETRY]:
                 self.stop()
                 start_pipeline = True
 
@@ -173,10 +212,10 @@ class PipelineManager:
                                                                new_title=self.pipeline.id)
             api_client.update_pipeline(self.pipeline.id, new_config)
 
-        except (config_handlers.ConfigHandlerException, StreamSetsApiClientException) as e:
-            raise PipelineException(str(e))
+        except (config_handlers.base.ConfigHandlerException, StreamSetsApiClientException) as e:
+            raise pipeline.PipelineException(str(e))
 
-        self.pipeline.save()
+        pipeline_repository.save(self.pipeline)
         if start_pipeline:
             self.start()
 
@@ -184,8 +223,8 @@ class PipelineManager:
         try:
             api_client.reset_pipeline(self.pipeline.id)
             self.sdc_creator.set_initial_offset()
-        except (config_handlers.ConfigHandlerException, StreamSetsApiClientException) as e:
-            raise PipelineException(str(e))
+        except (config_handlers.base.ConfigHandlerException, StreamSetsApiClientException) as e:
+            raise pipeline.PipelineException(str(e))
 
     def delete(self):
         if 'schema' in self.pipeline.config:
@@ -204,7 +243,7 @@ class PipelineManager:
 
     def start(self):
         api_client.start_pipeline(self.pipeline.id)
-        wait_for_status(self.pipeline.id, Pipeline.STATUS_RUNNING)
+        wait_for_status(self.pipeline.id, pipeline.Pipeline.STATUS_RUNNING)
         click.secho(f'{self.pipeline.id} pipeline is running')
         if ENV_PROD:
             wait_for_sending_data(self.pipeline.id)
@@ -233,5 +272,5 @@ class PipelineManager:
                 break
 
 
-class PipelineFreezeException(PipelineException):
+class PipelineFreezeException(Exception):
     pass

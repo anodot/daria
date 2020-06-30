@@ -5,7 +5,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.exc import SQLAlchemyError
 from urllib.parse import urlparse, urlunparse
 from agent.pipeline.config import stages
-from agent.pipeline.pipeline import TimestampType
+from agent.pipeline import pipeline
 
 logger = get_logger(__name__)
 
@@ -53,9 +53,9 @@ class JDBCConfigHandler(BaseConfigHandler):
 
         timestamp = datetime.now() - timedelta(days=int(self.pipeline.config.get('initial_offset', 3)))
         start = str(int(timestamp.timestamp()))
-        if self.pipeline.timestamp_type == TimestampType.DATETIME:
+        if self.pipeline.timestamp_type == pipeline.TimestampType.DATETIME:
             start = timestamp.strftime('%Y-%m-%d %H:%M:%S')
-        elif self.pipeline.timestamp_type == TimestampType.DATETIME:
+        elif self.pipeline.timestamp_type == pipeline.TimestampType.DATETIME:
             start = str(int(timestamp.timestamp() * 1e3))
 
         if self.pipeline.config['offset_column'] == self.pipeline.timestamp_path:

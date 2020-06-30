@@ -2,11 +2,11 @@ import pytest
 import socket
 
 from ..fixtures import cli_runner
-from agent.pipeline import load_object as load_pipeline
 from agent.cli import pipeline as pipeline_cli
 from agent.source import TYPE_SPLUNK
 from agent.streamsets_api_client import api_client
 from .test_zpipeline_base import TestPipelineBase, pytest_generate_tests
+from agent.repository import pipeline_repository
 
 
 class TestTCPServer(TestPipelineBase):
@@ -44,7 +44,7 @@ class TestTCPServer(TestPipelineBase):
         assert api_client.get_pipeline_status(name)['status'] == 'RUNNING'
 
         # streams data
-        pipeline = load_pipeline(name)
+        pipeline = pipeline_repository.get(name)
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect(('dc', int(pipeline.source.config['conf.ports'][0])))
 

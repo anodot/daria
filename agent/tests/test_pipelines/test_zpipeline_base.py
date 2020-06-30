@@ -3,10 +3,9 @@ import os
 import pytest
 
 from ..fixtures import cli_runner, get_output, get_input_file_path
-from agent.pipeline.pipeline import Pipeline
 from agent.cli import source as source_cli, pipeline as pipeline_cli
-from agent.source import Source
 from agent.streamsets_api_client import api_client
+from agent.repository import pipeline_repository, source_repository
 
 
 def pytest_generate_tests(metafunc):
@@ -31,7 +30,7 @@ class TestPipelineBase(object):
         with open(input_file_path) as f:
             sources = json.load(f)
             for source in sources:
-                assert os.path.isfile(os.path.join(Source.DIR, f"{source['name']}.json"))
+                assert os.path.isfile(os.path.join(source_repository.SOURCE_DIRECTORY, f"{source['name']}.json"))
 
     def test_create_with_file(self, cli_runner, file_name):
         input_file_path = get_input_file_path(file_name + '.json')
@@ -80,10 +79,10 @@ class TestPipelineBase(object):
     def test_delete_pipeline(self, cli_runner, name):
         result = cli_runner.invoke(pipeline_cli.delete, [name])
         assert result.exit_code == 0
-        assert not Pipeline.exists(name)
+        assert not pipeline_repository.exists(name)
 
     def test_source_delete(self, cli_runner, name):
         result = cli_runner.invoke(source_cli.delete, [name])
         print(result.output)
         assert result.exit_code == 0
-        assert not os.path.isfile(os.path.join(Source.DIR, f'{name}.json'))
+        assert not os.path.isfile(os.path.join(source_repository.SOURCE_DIRECTORY, f'{name}.json'))

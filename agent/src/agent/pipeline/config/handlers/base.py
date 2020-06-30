@@ -8,7 +8,7 @@ from agent.constants import ERRORS_DIR
 from agent.constants import ROOT_DIR
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from agent.pipeline.pipeline import Pipeline
+    from agent.pipeline import Pipeline
 
 logger = get_logger(__name__)
 

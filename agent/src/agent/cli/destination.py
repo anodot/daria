@@ -5,6 +5,7 @@ from agent import source, pipeline
 from agent.destination import HttpDestination, build_urls, create
 from agent import validator
 from agent.constants import MONITORING_SOURCE_NAME
+from agent.repository import pipeline_repository
 from agent.tools import infinite_retry
 from agent.proxy import Proxy
 from agent.pipeline import manager
@@ -66,8 +67,8 @@ def __prompt_access_key(dest: HttpDestination):
 
 def __start_monitoring_pipeline():
     try:
-        if pipeline.pipeline.Pipeline.exists('Monitoring'):
-            pipeline_manager = manager.PipelineManager(pipeline.load_object('Monitoring'))
+        if pipeline_repository.exists('Monitoring'):
+            pipeline_manager = manager.PipelineManager(pipeline_repository.get('Monitoring'))
             click.secho('Updating Monitoring pipeline...')
             pipeline_manager.stop()
             pipeline_manager.update()

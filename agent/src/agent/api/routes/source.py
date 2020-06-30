@@ -6,8 +6,6 @@ from agent.destination import HttpDestination
 from agent.repository import source_repository
 from agent.source import SourceException, SourceNotExists
 
-DESTINATION_DOESNT_EXIST = 'Destination is not configured. Please create agent destination first'
-
 sources = Blueprint('test', __name__)
 
 
@@ -19,7 +17,7 @@ def list_sources():
 @sources.route('/sources', methods=['POST'])
 def create():
     if not HttpDestination.exists():
-        return jsonify(DESTINATION_DOESNT_EXIST), 400
+        return jsonify('Destination is not configured. Please create agent destination first'), 400
     try:
         source.validate_json_for_create(request.get_json())
         source_instances = []
@@ -32,8 +30,6 @@ def create():
 
 @sources.route('/sources', methods=['PUT'])
 def edit():
-    if not HttpDestination.exists():
-        return jsonify(DESTINATION_DOESNT_EXIST), 400
     try:
         source.validate_json_for_edit(request.get_json())
         source_instances = []

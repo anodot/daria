@@ -49,16 +49,8 @@ json_schema = {
 
 
 def create_dir():
-    if not os.path.exists(Source.DIR):
-        os.mkdir(Source.DIR)
-
-
-def autocomplete(ctx, args, incomplete):
-    configs = []
-    for filename in os.listdir(Source.DIR):
-        if filename.endswith('.json') and incomplete in filename:
-            configs.append(filename.replace('.json', ''))
-    return configs
+    if not os.path.exists(source_repository.SOURCE_DIRECTORY):
+        os.mkdir(source_repository.SOURCE_DIRECTORY)
 
 
 def create_object(name: str, source_type: str) -> Source:

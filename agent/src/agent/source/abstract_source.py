@@ -3,7 +3,6 @@ import json
 import os
 
 from abc import ABC, abstractmethod
-from agent.constants import DATA_DIR
 from agent.tools import if_validation_enabled, sdc_record_map_to_dict
 from jsonschema import validate
 from agent.streamsets_api_client import api_client
@@ -16,8 +15,6 @@ logger = get_logger(__name__)
 class Source(ABC):
     VALIDATION_SCHEMA_FILE_NAME = ''
     TEST_PIPELINE_FILENAME = ''
-    # todo remove DIR from here
-    DIR = os.path.join(DATA_DIR, 'sources')
     MAX_SAMPLE_RECORDS = 3
 
     def __init__(self, name: str, source_type: str, config: dict):

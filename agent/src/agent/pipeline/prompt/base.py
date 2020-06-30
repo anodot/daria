@@ -1,7 +1,11 @@
+from __future__ import annotations
+
 import click
 
 from agent.tools import infinite_retry, if_validation_enabled, dict_get_nested
-from agent.pipeline.pipeline import Pipeline
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from agent.pipeline import Pipeline
 
 
 class PromptConfig:

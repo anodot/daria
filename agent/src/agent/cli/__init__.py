@@ -5,6 +5,7 @@ from agent.cli.destination import destination
 from agent.cli.pipeline import pipeline_group
 from agent.cli.source import source_group
 from agent.pipeline import manager
+from agent.repository import pipeline_repository
 from agent.version import __version__, __build_time__, __git_sha1__
 
 
@@ -36,7 +37,7 @@ def update():
     """
     Update all pipelines configuration, recreate and restart them
     """
-    for p in agent_pipeline.get_pipelines():
+    for p in pipeline_repository.get_all():
         try:
             pipeline_manager = manager.PipelineManager(p)
             pipeline_manager.update()
