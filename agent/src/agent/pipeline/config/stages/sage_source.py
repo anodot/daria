@@ -10,7 +10,7 @@ class SageScript(Stage):
             {'key': 'SAGE_TOKEN', 'value': self.pipeline.source.config[SageSource.TOKEN]},
             {'key': 'SAGE_URL', 'value': self.pipeline.source.config[SageSource.URL]},
             {'key': 'QUERY', 'value': query},
-            {'key': 'INTERVAL', 'value': self.pipeline.interval},
-            {'key': 'DELAY', 'value': self.pipeline.delay},
-            {'key': 'DAYS_TO_BACKFILL', 'value': self.pipeline.days_to_backfill},
+            {'key': 'INTERVAL', 'value': str(self.pipeline.interval)},
+            {'key': 'DELAY', 'value': str(self.pipeline.delay)},
+            {'key': 'DAYS_TO_BACKFILL', 'value': str(self.pipeline.days_to_backfill)},
         ]}

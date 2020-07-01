@@ -32,3 +32,7 @@ class PromptConfigSage(PromptConfigSchemaless):
     def set_number_of_days_to_backfill(self):
         self.config['days_to_backfill'] = click.prompt('Number of days to backfill', type=click.INT,
                                                        default=self.default_config.get('days_to_backfill', 0))
+
+    def set_dimensions(self):
+        self.config['dimensions'] = self.prompt_dimensions('Dimensions',
+                                                           default_value=self.default_config.get('dimensions', []))

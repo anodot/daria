@@ -5,7 +5,7 @@ from .test_zpipeline_base import TestPipelineBase, pytest_generate_tests
 from agent.pipeline import cli as pipeline_cli
 
 
-class TestElastic(TestPipelineBase):
+class TestSage(TestPipelineBase):
     __test__ = True
     params = {
         'test_create_source_with_file': [{'file_name': 'sage_sources'}],
@@ -16,8 +16,6 @@ class TestElastic(TestPipelineBase):
         'test_output': [{'name': 'test_sage_value_const', 'output': 'json_value_const_adv.json',
                          'pipeline_type': 'sage'},
                         {'name': 'test_sage', 'output': 'json_value_property.json',
-                         'pipeline_type': 'sage'},
-                        {'name': 'test_sage_file', 'output': 'json_value_const_adv.json',
                          'pipeline_type': 'sage'}
                         ],
         'test_delete_pipeline': [{'name': 'test_sage_value_const'}, {'name': 'test_sage'}, {'name': 'test_sage_file'}],
