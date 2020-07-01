@@ -1,13 +1,9 @@
-from __future__ import annotations
-
 import click
 
 from agent import source
 from agent.pipeline.elastic import query_validator
 from agent.source import ElasticSource
-from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    from agent.pipeline import Pipeline
+from agent.pipeline import Pipeline
 
 
 class BaseValidator:

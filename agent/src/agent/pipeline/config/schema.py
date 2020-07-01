@@ -1,9 +1,6 @@
-from __future__ import annotations
 from agent.anodot_api_client import AnodotApiClient
 from agent import proxy
-from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    from agent.pipeline import Pipeline
+from agent.pipeline import Pipeline
 
 
 def build(pipeline: Pipeline):

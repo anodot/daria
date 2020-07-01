@@ -5,7 +5,7 @@ from agent import source, pipeline
 from agent.destination import HttpDestination, build_urls, create
 from agent import validator
 from agent.constants import MONITORING_SOURCE_NAME
-from agent.repository import pipeline_repository
+from agent.repository import pipeline_repository, source_repository
 from agent.tools import infinite_retry
 from agent.proxy import Proxy
 from agent.pipeline import manager
@@ -75,7 +75,7 @@ def __start_monitoring_pipeline():
         else:
             pipeline_manager = manager.PipelineManager(pipeline.create_object('Monitoring', MONITORING_SOURCE_NAME))
             click.secho('Starting Monitoring pipeline...')
-            source.create_dir()
+            source_repository.create_dir()
             pipeline.create_dir()
             pipeline_manager.create()
 

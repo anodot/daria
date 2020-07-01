@@ -1,14 +1,10 @@
-from __future__ import annotations
-
 import json
 import os
 
 from agent.logger import get_logger
 from agent.constants import ERRORS_DIR
 from agent.constants import ROOT_DIR
-from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    from agent.pipeline import Pipeline
+from agent.pipeline import Pipeline
 
 logger = get_logger(__name__)
 

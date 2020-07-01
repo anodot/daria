@@ -14,45 +14,7 @@ from agent.streamsets_api_client import api_client, StreamSetsApiClientException
 from agent.tools import print_json, sdc_record_map_to_dict, if_validation_enabled
 from .. import proxy
 from ..repository import pipeline_repository
-
-prompters = {
-    source.TYPE_MONITORING: prompt.PromptConfig,
-    source.TYPE_INFLUX: prompt.PromptConfigInflux,
-    source.TYPE_KAFKA: prompt.PromptConfigKafka,
-    source.TYPE_MONGO: prompt.PromptConfigMongo,
-    source.TYPE_MYSQL: prompt.PromptConfigJDBC,
-    source.TYPE_POSTGRES: prompt.PromptConfigJDBC,
-    source.TYPE_ELASTIC: prompt.PromptConfigElastic,
-    source.TYPE_SPLUNK: prompt.PromptConfigTCP,
-    source.TYPE_DIRECTORY: prompt.PromptConfigDirectory,
-    source.TYPE_SAGE: prompt.PromptConfigSage
-}
-
-loaders = {
-    source.TYPE_MONITORING: load_client_data.LoadClientData,
-    source.TYPE_INFLUX: load_client_data.InfluxLoadClientData,
-    source.TYPE_MONGO: load_client_data.MongoLoadClientData,
-    source.TYPE_KAFKA: load_client_data.KafkaLoadClientData,
-    source.TYPE_MYSQL: load_client_data.JDBCLoadClientData,
-    source.TYPE_POSTGRES: load_client_data.JDBCLoadClientData,
-    source.TYPE_ELASTIC: load_client_data.ElasticLoadClientData,
-    source.TYPE_SPLUNK: load_client_data.TcpLoadClientData,
-    source.TYPE_DIRECTORY: load_client_data.DirectoryLoadClientData,
-    source.TYPE_SAGE: load_client_data.SageLoadClientData
-}
-
-handlers = {
-    source.TYPE_MONITORING: config_handlers.monitoring.MonitoringConfigHandler,
-    source.TYPE_INFLUX: config_handlers.influx.InfluxConfigHandler,
-    source.TYPE_MONGO: config_handlers.mongo.MongoConfigHandler,
-    source.TYPE_KAFKA: config_handlers.kafka.KafkaConfigHandler,
-    source.TYPE_MYSQL: config_handlers.jdbc.JDBCConfigHandler,
-    source.TYPE_POSTGRES: config_handlers.jdbc.JDBCConfigHandler,
-    source.TYPE_ELASTIC: config_handlers.elastic.ElasticConfigHandler,
-    source.TYPE_SPLUNK: config_handlers.tcp.TCPConfigHandler,
-    source.TYPE_DIRECTORY: config_handlers.directory.DirectoryConfigHandler,
-    source.TYPE_SAGE: config_handlers.SageConfigHandler,
-}
+from .pipeline import Pipeline
 
 
 def get_pipeline_status(pipeline_id: str) -> str:

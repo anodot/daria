@@ -6,6 +6,7 @@ from agent import source, pipeline
 from agent.constants import ENV_PROD
 from agent.destination import HttpDestination
 from agent.pipeline import manager
+from agent.source import source_manager
 from agent.repository import source_repository, pipeline_repository
 from agent.streamsets_api_client import api_client
 from agent.tools import infinite_retry
@@ -14,7 +15,7 @@ from jsonschema import ValidationError, SchemaError
 
 def autocomplete(ctx, args, incomplete):
     configs = []
-    for filename in os.listdir(source.source_repository.SOURCE_DIRECTORY):
+    for filename in os.listdir(source_repository.SOURCE_DIRECTORY):
         if filename.endswith('.json') and incomplete in filename:
             configs.append(filename.replace('.json', ''))
     return configs
@@ -59,12 +60,12 @@ def extract_configs(file):
 
 def create_from_file(file):
     configs = extract_configs(file)
-    source.validate_json_for_create(configs)
+    source_manager.validate_json_for_create(configs)
 
     exceptions = {}
     for config in configs:
         try:
-            source.create_from_json(config)
+            source_manager.create_from_json(config)
             click.secho(f"Source {config['name']} created")
         except Exception as e:
             if not ENV_PROD:
@@ -76,12 +77,12 @@ def create_from_file(file):
 
 def edit_using_file(file):
     configs = extract_configs(file)
-    source.validate_json_for_edit(configs)
+    source_manager.validate_json_for_edit(configs)
 
     exceptions = {}
     for config in configs:
         try:
-            source.edit_using_json(config)
+            source_manager.edit_using_json(config)
             click.secho(f"Source {config['name']} updated")
             for pipeline_obj in pipeline_repository.get_by_source(config['name']):
                 try:
@@ -116,7 +117,7 @@ def create(advanced, file):
     source_type = click.prompt('Choose source', type=click.Choice(source.types)).strip()
     source_name = prompt_source_name()
 
-    source_instance = source.create_object(source_name, source_type)
+    source_instance = source_manager.create_object(source_name, source_type)
     recent_pipeline_config = get_previous_source_config(source_type)
 
     # todo refactor set_config

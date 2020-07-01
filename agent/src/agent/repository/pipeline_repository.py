@@ -1,18 +1,14 @@
-from __future__ import annotations
-
 import json
 import os
 
 from jsonschema import validate
-from agent.cli import source
+from agent import source
 from agent.constants import DATA_DIR
 from agent.destination import HttpDestination
 from agent.repository import source_repository
 from typing import List
 from agent.pipeline import pipeline
-from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    from agent.pipeline import Pipeline
+from agent.pipeline import Pipeline
 
 PIPELINE_DIRECTORY = os.path.join(DATA_DIR, 'pipelines')
 
@@ -60,7 +56,7 @@ def get_all() -> List[Pipeline]:
     for file in os.listdir(PIPELINE_DIRECTORY):
         try:
             obj = get(file.replace('.json', ''))
-        except source.source.SourceConfigDeprecated as e:
+        except source.SourceConfigDeprecated as e:
             print(f'Error getting pipeline {file}. {str(e)}')
             continue
         pipelines.append(obj)

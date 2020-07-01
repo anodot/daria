@@ -1,13 +1,9 @@
-from __future__ import annotations
-
 import csv
 
 from .base import Stage
 from agent.pipeline.config.expression_parser import condition
 from agent.pipeline import pipeline
-from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    from agent.pipeline import TimestampType
+from agent.pipeline import TimestampType
 
 
 def get_value(path, expr) -> dict:
