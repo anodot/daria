@@ -34,3 +34,6 @@ class TestMongo(TestPipelineBase):
 
     def test_edit_with_file(self, cli_runner, file_name=None):
         pytest.skip()
+
+    def test_force_stop(self, cli_runner, name=None):
+        pytest.skip()
