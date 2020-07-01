@@ -4,6 +4,9 @@ from agent.destination.http import create as create_destination, edit as edit_de
 
 destination = Blueprint('destination', __name__)
 
+# todo return json?
+# todo remove form?
+
 
 @destination.route('/destination', methods=['GET'])
 def get():

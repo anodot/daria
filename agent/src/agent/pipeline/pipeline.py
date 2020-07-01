@@ -39,6 +39,8 @@ class Pipeline:
     DIR = os.path.join(DATA_DIR, 'pipelines')
     STATUS_RUNNING = 'RUNNING'
     STATUS_STOPPED = 'STOPPED'
+    STATUS_EDITED = 'EDITED'
+    STATUS_RETRY = 'RETRY'
     STATUS_STOPPING = 'STOPPING'
     OVERRIDE_SOURCE = 'override_source'
     FLUSH_BUCKET_SIZE = 'flush_bucket_size'
@@ -202,6 +204,7 @@ class Pipeline:
         return os.path.isfile(cls.get_file_path(pipeline_id))
 
     def set_config(self, config: dict):
+        self.override_source = config.pop(self.OVERRIDE_SOURCE, {})
         self.config.update(config)
 
     def save(self):

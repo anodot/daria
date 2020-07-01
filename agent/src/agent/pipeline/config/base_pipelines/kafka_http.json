@@ -360,7 +360,7 @@
         "value" : "MULTIPLE_OBJECTS"
       }, {
         "name" : "conf.dataFormatConfig.jsonMaxObjectLen",
-        "value" : 4096
+        "value" : 40960
       }, {
         "name" : "conf.dataFormatConfig.csvFileFormat",
         "value" : "CSV"

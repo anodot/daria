@@ -6,6 +6,7 @@ from .pipeline_manager import PipelineManager
 from jsonschema import validate
 from .. import source
 from agent.destination.http import HttpDestination
+from agent.repository import source_repository
 from typing import List
 
 
@@ -29,13 +30,13 @@ def load_object(pipeline_id: str) -> Pipeline:
         'required': ['source', 'pipeline_id']
     })
 
-    source_obj = source.load_object(config['source']['name'])
+    source_obj = source_repository.get(config['source']['name'])
     destination = HttpDestination.get()
     return Pipeline(pipeline_id, source_obj, config, destination)
 
 
 def create_object(pipeline_id: str, source_name: str) -> Pipeline:
-    source_obj = source.load_object(source_name)
+    source_obj = source_repository.get(source_name)
     destination = HttpDestination.get()
     return Pipeline(pipeline_id, source_obj, {}, destination)
 

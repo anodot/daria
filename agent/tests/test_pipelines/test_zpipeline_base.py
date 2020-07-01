@@ -3,8 +3,9 @@ import os
 import pytest
 
 from ..fixtures import cli_runner, get_output, get_input_file_path
-from agent.pipeline import cli as pipeline_cli, Pipeline
-from agent.source import cli as source_cli, Source
+from agent.pipeline import Pipeline
+from agent.cli import source as source_cli, pipeline as pipeline_cli
+from agent.source import Source
 from agent.streamsets_api_client import api_client
 
 
@@ -27,7 +28,7 @@ class TestPipelineBase(object):
         input_file_path = get_input_file_path(file_name + '.json')
         result = cli_runner.invoke(source_cli.create, ['-f', input_file_path])
         assert result.exit_code == 0
-        with open(input_file_path, 'r') as f:
+        with open(input_file_path) as f:
             sources = json.load(f)
             for source in sources:
                 assert os.path.isfile(os.path.join(Source.DIR, f"{source['name']}.json"))
@@ -36,7 +37,7 @@ class TestPipelineBase(object):
         input_file_path = get_input_file_path(file_name + '.json')
         result = cli_runner.invoke(pipeline_cli.create, ['-f', input_file_path])
         assert result.exit_code == 0
-        with open(input_file_path, 'r') as f:
+        with open(input_file_path) as f:
             pipelines = json.load(f)
             for pipeline in pipelines:
                 assert api_client.get_pipeline(pipeline['pipeline_id'])

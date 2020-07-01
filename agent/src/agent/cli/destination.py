@@ -1,7 +1,7 @@
 import click
 
-from .http import HttpDestination, DataValidator, build_urls, create
-from .. import source, pipeline
+from agent import source, pipeline
+from agent.destination.http import HttpDestination, DataValidator, build_urls, create
 from agent.constants import MONITORING_SOURCE_NAME
 from agent.tools import infinite_retry
 from agent.proxy import Proxy
@@ -52,7 +52,7 @@ def __prompt_token(dest: HttpDestination):
 
 @infinite_retry
 def __prompt_access_key(dest: HttpDestination):
-    access_key = click.prompt('Anodot access key', type=click.STRING, default=dest.access_key) or None
+    access_key = click.prompt('Anodot access key', type=click.STRING, default=dest.access_key or '')
     if access_key and not DataValidator.is_valid_access_key(access_key, dest.url, dest.proxy):
         raise click.ClickException('Access key is invalid')
     dest.access_key = access_key

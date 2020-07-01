@@ -1,9 +1,10 @@
 import click
 import json
 
-from .. import source, pipeline
+from agent import source, pipeline
 from agent.constants import ENV_PROD
 from agent.destination.http import HttpDestination
+from agent.repository import source_repository
 from agent.streamsets_api_client import api_client
 from agent.tools import infinite_retry
 from jsonschema import validate, ValidationError, SchemaError
@@ -32,69 +33,68 @@ def source_group():
 @infinite_retry
 def prompt_source_name():
     source_name = click.prompt('Enter unique name for this source config', type=click.STRING).strip()
-    if source.Source.exists(source_name):
+    if source_repository.exists(source_name):
         raise click.UsageError(f"Source config {source_name} already exists")
     return source_name
 
 
-def parse_config(file):
+def extract_configs(file):
     try:
-        return json.load(file)
+        configs = json.load(file)
+        file.seek(0)
+        return configs
     except json.decoder.JSONDecodeError as e:
         raise click.ClickException(str(e))
 
 
-def create_with_file(file):
-    data = parse_config(file)
-
+def create_from_file(file):
+    configs = extract_configs(file)
     json_schema = {
         'type': 'array',
         'items': source.json_schema
     }
-
-    validate(data, json_schema)
+    validate(configs, json_schema)
 
     exceptions = {}
-    for item in data:
+    for config in configs:
         try:
-            source_instance = source.create_object(item['name'], item['type'])
-            source_instance.set_config(item['config'])
+            source_instance = source.create_object(config['name'], config['type'])
+            source_instance.set_config(config['config'])
             source_instance.validate()
-            source_instance.create()
-            click.secho(f"Source {item['name']} created")
+            source_repository.create(source_instance)
+            click.secho(f"Source {config['name']} created")
         except Exception as e:
             if not ENV_PROD:
                 raise e
-            exceptions[item['name']] = str(e)
+            exceptions[config['name']] = str(e)
     if exceptions:
         raise source.SourceException(json.dumps(exceptions))
 
 
-def edit_with_file(file):
-
-    data = parse_config(file)
+def edit_using_file(file):
+    configs = extract_configs(file)
     json_schema = {
         'type': 'array',
         'items': {
             'type': 'object',
             'properties': {
-                'name': {'type': 'string', 'minLength': 1, 'maxLength': 100, 'enum': source.get_list()},
+                'name': {'type': 'string', 'minLength': 1, 'maxLength': 100, 'enum': source_repository.get_all()},
                 'config': {'type': 'object'}
             },
             'required': ['name', 'config']
         }
     }
-    validate(data, json_schema)
+    validate(configs, json_schema)
 
     exceptions = {}
-    for item in data:
+    for config in configs:
         try:
-            source_instance = source.load_object(item['name'])
-            source_instance.set_config(item['config'])
+            source_instance = source_repository.get(config['name'])
+            source_instance.set_config(config['config'])
             source_instance.validate()
-            source_instance.save()
-            click.secho(f"Source {item['name']} edited")
-            for pipeline_obj in pipeline.get_pipelines(source_name=item['name']):
+            source_repository.update(source_instance)
+            click.secho(f"Source {config['name']} updated")
+            for pipeline_obj in pipeline.get_pipelines(source_name=config['name']):
                 try:
                     pipeline.PipelineManager(pipeline_obj).update()
                 except pipeline.PipelineException as e:
@@ -102,7 +102,7 @@ def edit_with_file(file):
                     continue
                 print(f'Pipeline {pipeline_obj.id} updated')
         except Exception as e:
-            exceptions[item['name']] = str(e)
+            exceptions[config['name']] = str(e)
     if exceptions:
         raise source.SourceException(json.dumps(exceptions))
 
@@ -119,7 +119,7 @@ def create(advanced, file):
 
     if file:
         try:
-            create_with_file(file)
+            create_from_file(file)
             return
         except (ValidationError, SchemaError) as e:
             raise click.ClickException(str(e))
@@ -129,9 +129,10 @@ def create(advanced, file):
 
     source_instance = source.create_object(source_name, source_type)
     recent_pipeline_config = get_previous_source_config(source_type)
-    source_instance.set_config(source_instance.prompt(recent_pipeline_config, advanced))
 
-    source_instance.create()
+    # todo refactor set_config
+    source_instance.set_config(source_instance.prompt(recent_pipeline_config, advanced))
+    source_repository.create(source_instance)
 
     click.secho('Source config created', fg='green')
 
@@ -149,15 +150,15 @@ def edit(name, advanced, file):
 
     if file:
         try:
-            edit_with_file(file)
+            edit_using_file(file)
             return
         except (ValidationError, SchemaError) as e:
             raise click.UsageError(str(e))
 
-    source_instance = source.load_object(name)
-
+    source_instance = source_repository.get(name)
+    # todo refactor set_config
     source_instance.set_config(source_instance.prompt(source_instance.config, advanced=advanced))
-    source_instance.save()
+    source_repository.update(source_instance)
 
     click.secho('Source config updated', fg='green')
 
@@ -171,11 +172,11 @@ def edit(name, advanced, file):
 
 
 @click.command(name='list')
-def list_configs():
+def list_sources():
     """
     List all sources
     """
-    for config in source.get_list():
+    for config in source_repository.get_all():
         click.echo(config)
 
 
@@ -185,10 +186,10 @@ def delete(name):
     """
     Delete source
     """
-    source.Source.delete_source(name)
+    source_repository.delete_by_name(name)
 
 
 source_group.add_command(create)
-source_group.add_command(list_configs)
+source_group.add_command(list_sources)
 source_group.add_command(delete)
 source_group.add_command(edit)

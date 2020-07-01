@@ -1,8 +1,9 @@
 import os
 
 from ..fixtures import cli_runner
-from agent.pipeline import cli as pipeline_cli, load_object as load_pipeline
-from agent.source import cli as source_cli, Source
+from agent.pipeline import load_object as load_pipeline
+from agent.cli import source as source_cli, pipeline as pipeline_cli
+from agent.source import Source
 from agent.streamsets_api_client import api_client
 from ..test_pipelines.test_zpipeline_base import pytest_generate_tests
 

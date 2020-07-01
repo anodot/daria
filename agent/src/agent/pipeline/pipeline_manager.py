@@ -54,9 +54,12 @@ handlers = {
 }
 
 
-def check_status(pipeline_id: str, status: str):
-    response = api_client.get_pipeline_status(pipeline_id)
-    return response['status'] == status
+def get_pipeline_status(pipeline_id: str) -> str:
+    return api_client.get_pipeline_status(pipeline_id)['status']
+
+
+def check_status(pipeline_id: str, status: str) -> bool:
+    return get_pipeline_status(pipeline_id) == status
 
 
 def wait_for_status(pipeline_id: str, status: str, tries: int = 5, initial_delay: int = 3):
@@ -161,7 +164,7 @@ class PipelineManager:
     def update(self):
         start_pipeline = False
         try:
-            if check_status(self.pipeline.id, Pipeline.STATUS_RUNNING):
+            if get_pipeline_status(self.pipeline.id) in [Pipeline.STATUS_RUNNING, Pipeline.STATUS_RETRY]:
                 self.stop()
                 start_pipeline = True
 
