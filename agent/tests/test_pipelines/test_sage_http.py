@@ -2,7 +2,6 @@ import pytest
 
 from ..fixtures import cli_runner
 from .test_zpipeline_base import TestPipelineBase, pytest_generate_tests
-from agent.pipeline import cli as pipeline_cli
 
 
 class TestSage(TestPipelineBase):
