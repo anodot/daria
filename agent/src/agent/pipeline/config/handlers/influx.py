@@ -33,9 +33,9 @@ state['TAGS'] = {tags}
 """
     PIPELINE_BASE_CONFIG_NAME = 'influx_http.json'
 
-    QUERY_GET_DATA = "SELECT+{dimensions}+FROM+%22{metric}%22+WHERE+%28%22time%22+%3E%3D+${{record:value('/last_timestamp')}}+AND+%22time%22+%3C+${{record:value('/last_timestamp')}}%2B{interval}+AND+%22time%22+%3C+now%28%29-{delay}%29+{where}"
+    QUERY_GET_DATA = "SELECT+{dimensions}+FROM+{metric}+WHERE+%28%22time%22+%3E%3D+${{record:value('/last_timestamp')}}+AND+%22time%22+%3C+${{record:value('/last_timestamp')}}%2B{interval}+AND+%22time%22+%3C+now%28%29-{delay}%29+{where}"
     QUERY_GET_TIMESTAMP = "SELECT+last_timestamp+FROM+agent_timestamps+WHERE+pipeline_id%3D%27${pipeline:id()}%27+ORDER+BY+time+DESC+LIMIT+1"
-    QUERY_CHECK_DATA = "SELECT+{dimensions}+FROM+%22{metric}%22+WHERE+%28%22time%22+%3E+${{record:value('/last_timestamp_value')}}+AND+%22time%22+%3C+now%28%29-{delay}%29+{where}+ORDER+BY+time+ASC+limit+1"
+    QUERY_CHECK_DATA = "SELECT+{dimensions}+FROM+{metric}+WHERE+%28%22time%22+%3E+${{record:value('/last_timestamp_value')}}+AND+%22time%22+%3C+now%28%29-{delay}%29+{where}+ORDER+BY+time+ASC+limit+1"
 
     def get_write_client(self):
         host, db, username, password = self.get_write_config()
@@ -147,11 +147,15 @@ state['TAGS'] = {tags}
         where = self.pipeline.config.get('filtering')
         where = f'AND+%28{quote_plus(where)}%29' if where else ''
 
+        measurement_name = self.pipeline.config['measurement_name']
+        if '.' not in measurement_name and ' ' not in measurement_name:
+            measurement_name = f'%22{measurement_name}%22'
+
         for stage in self.config['stages']:
             if stage['instanceName'] == 'get_interval_records':
                 query = f"/query?db={source_config['db']}&epoch=ms&q={self.QUERY_GET_DATA}".format(**{
                     'dimensions': columns,
-                    'metric': self.pipeline.config['measurement_name'],
+                    'metric': measurement_name,
                     'delay': delay,
                     'interval': str(interval) + 's',
                     'where': where
@@ -170,7 +174,7 @@ state['TAGS'] = {tags}
             if stage['instanceName'] == 'get_next_record_timestamp':
                 query = f"/query?db={source_config['db']}&epoch=ns&q={self.QUERY_CHECK_DATA}".format(**{
                     'dimensions': columns,
-                    'metric': self.pipeline.config['measurement_name'],
+                    'metric': measurement_name,
                     'delay': delay,
                     'where': where
                 })
