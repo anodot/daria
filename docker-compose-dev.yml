@@ -4,8 +4,8 @@ services:
   dc:
     build: streamsets
     ports:
-      - "18631:18630"
-      - "9998:9999"
+      - "18630:18630"
+      - "9999:9999"
     restart: on-failure
     volumes:
       - ./sdc-data:/data
