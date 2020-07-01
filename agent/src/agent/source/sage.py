@@ -18,7 +18,7 @@ class SageSource(Source):
 
     @infinite_retry
     def prompt_url(self, default_config):
-        self.config[self.URL] = click.prompt('SageScript API URL',
+        self.config[self.URL] = click.prompt('Sage API URL',
                                              type=click.STRING,
                                              default=default_config.get(self.URL)).strip()
         self.validate_url()
@@ -29,7 +29,7 @@ class SageSource(Source):
 
     @infinite_retry
     def prompt_token(self, default_config):
-        self.config[self.TOKEN] = click.prompt('SageScript API token',
+        self.config[self.TOKEN] = click.prompt('Sage API token',
                                                type=click.STRING,
                                                default=default_config.get(self.TOKEN)).strip()
         self.validate_token()
