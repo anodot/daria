@@ -33,9 +33,9 @@ state['TAGS'] = {tags}
 """
     PIPELINE_BASE_CONFIG_NAME = 'influx_http.json'
 
-    QUERY_GET_DATA = "SELECT+{dimensions}+FROM+{metric}+WHERE+%28%22time%22+%3E%3D+${{record:value('/last_timestamp')}}+AND+%22time%22+%3C+${{record:value('/last_timestamp')}}%2B{interval}+AND+%22time%22+%3C+now%28%29-{delay}%29+{where}"
+    QUERY_GET_DATA = "SELECT+{dimensions}+FROM+{metric}+WHERE+%28%22time%22+%3E%3D+${{record:value('/last_timestamp')}}+AND+%22time%22+%3C+${{record:value('/last_timestamp')}}%2B{interval}+AND+%22time%22+%3C+now%28%29+-+{delay}%29+{where}"
     QUERY_GET_TIMESTAMP = "SELECT+last_timestamp+FROM+agent_timestamps+WHERE+pipeline_id%3D%27${pipeline:id()}%27+ORDER+BY+time+DESC+LIMIT+1"
-    QUERY_CHECK_DATA = "SELECT+{dimensions}+FROM+{metric}+WHERE+%28%22time%22+%3E+${{record:value('/last_timestamp_value')}}+AND+%22time%22+%3C+now%28%29-{delay}%29+{where}+ORDER+BY+time+ASC+limit+1"
+    QUERY_CHECK_DATA = "SELECT+{dimensions}+FROM+{metric}+WHERE+%28%22time%22+%3E+${{record:value('/last_timestamp_value')}}+AND+%22time%22+%3C+now%28%29+-+{delay}%29+{where}+ORDER+BY+time+ASC+limit+1"
 
     def get_write_client(self):
         host, db, username, password = self.get_write_config()
