@@ -3,11 +3,9 @@ import json
 import os
 import urllib.parse
 import uuid
-
-from typing import Dict, Optional
-
 import requests
 
+from typing import Dict, Optional
 from agent import validator
 from agent.constants import ANODOT_API_URL, DATA_DIR
 from agent.proxy import Proxy

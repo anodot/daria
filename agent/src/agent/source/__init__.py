@@ -8,8 +8,6 @@ from .tcp import TCPSource
 from .directory import DirectorySource
 from .monitoring import MonitoringSource
 from .sage import SageSource
-from agent.constants import MONITORING_SOURCE_NAME
-from agent.repository import source_repository
 
 TYPE_INFLUX = 'influx'
 TYPE_KAFKA = 'kafka'
