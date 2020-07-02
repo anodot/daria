@@ -29,7 +29,7 @@ class TestInflux:
                         'db': 'test',
                     }
                 }],
-                'er': b'Source config influx already exists',
+                'er': b'"Source config influx already exists"\n',
             },
         ],
         'test_edit': [
@@ -57,7 +57,7 @@ class TestInflux:
                         'db': 'space',
                     }
                 }],
-                'er': b"'not_existing' is not one of ['influx']\n\nFailed validating 'enum' in schema['items']['properties']['name']:\n    {'enum': ['influx'], 'maxLength': 100, 'minLength': 1, 'type': 'string'}\n\nOn instance[0]['name']:\n    'not_existing'"
+                'er': b'"\'not_existing\' is not one of [\'influx\']\\n\\nFailed validating \'enum\' in schema[\'items\'][\'properties\'][\'name\']:\\n    {\'enum\': [\'influx\'], \'maxLength\': 100, \'minLength\': 1, \'type\': \'string\'}\\n\\nOn instance[0][\'name\']:\\n    \'not_existing\'"\n'
             }
         ]
     }
