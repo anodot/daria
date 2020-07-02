@@ -59,3 +59,6 @@ class TestTCPServer(TestPipelineBase):
 
     def test_reset(self, cli_runner, name=None):
         pytest.skip()
+
+    def test_force_stop(self, cli_runner, name=None):
+        pytest.skip()

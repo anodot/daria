@@ -111,3 +111,7 @@ class DirectoryLoadClientData(LoadClientData):
         super().load(client_config, edit)
         self.load_dimensions()
         return self.client_config
+
+
+class SageLoadClientData(LoadClientData):
+    VALIDATION_SCHEMA_FILE_NAME = 'sage'

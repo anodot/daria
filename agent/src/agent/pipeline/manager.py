@@ -23,7 +23,8 @@ prompters = {
     source.TYPE_POSTGRES: prompt.PromptConfigJDBC,
     source.TYPE_ELASTIC: prompt.PromptConfigElastic,
     source.TYPE_SPLUNK: prompt.PromptConfigTCP,
-    source.TYPE_DIRECTORY: prompt.PromptConfigDirectory
+    source.TYPE_DIRECTORY: prompt.PromptConfigDirectory,
+    source.TYPE_SAGE: prompt.PromptConfigSage
 }
 
 loaders = {
@@ -35,7 +36,8 @@ loaders = {
     source.TYPE_POSTGRES: load_client_data.JDBCLoadClientData,
     source.TYPE_ELASTIC: load_client_data.ElasticLoadClientData,
     source.TYPE_SPLUNK: load_client_data.TcpLoadClientData,
-    source.TYPE_DIRECTORY: load_client_data.DirectoryLoadClientData
+    source.TYPE_DIRECTORY: load_client_data.DirectoryLoadClientData,
+    source.TYPE_SAGE: load_client_data.SageLoadClientData
 }
 
 handlers = {
@@ -47,7 +49,8 @@ handlers = {
     source.TYPE_POSTGRES: config_handlers.JDBCConfigHandler,
     source.TYPE_ELASTIC: config_handlers.ElasticConfigHandler,
     source.TYPE_SPLUNK: config_handlers.TCPConfigHandler,
-    source.TYPE_DIRECTORY: config_handlers.DirectoryConfigHandler
+    source.TYPE_DIRECTORY: config_handlers.DirectoryConfigHandler,
+    source.TYPE_SAGE: config_handlers.SageConfigHandler
 }
 
 
@@ -92,6 +95,11 @@ def wait_for_sending_data(pipeline_id: str, tries: int = 5, initial_delay: int =
 
 
 def force_stop_pipeline(pipeline_id: str):
+    try:
+        api_client.stop_pipeline(pipeline_id)
+    except StreamSetsApiClientException:
+        pass
+
     if not check_status(pipeline_id, Pipeline.STATUS_STOPPING):
         raise PipelineException("Can't force stop a pipeline not in the STOPPING state")
 

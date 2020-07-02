@@ -1,0 +1,12 @@
+[
+  {
+    "source": "test_sage_1",
+    "pipeline_id": "test_sage_file",
+    "measurement_names": {"Clicks":  "clicks"},
+    "values": {"Clicks":  "gauge"},
+    "dimensions": ["ver", "Country"],
+    "query_file": "/usr/src/app/tests/test_pipelines/input_files/sage_query.txt",
+    "interval": 60,
+    "days_to_backfill": 933
+  }
+]

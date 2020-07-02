@@ -14,7 +14,7 @@ function configure_sql_drivers() {
 }
 
 function install_stage_libs() {
-  "${SDC_DIST}/bin/streamsets" stagelibs -install="streamsets-datacollector-mongodb_3-lib,streamsets-datacollector-apache-kafka_2_0-lib,streamsets-datacollector-jdbc-lib,streamsets-datacollector-elasticsearch_5-lib"
+  "${SDC_DIST}/bin/streamsets" stagelibs -install="streamsets-datacollector-mongodb_3-lib,streamsets-datacollector-apache-kafka_2_0-lib,streamsets-datacollector-jdbc-lib,streamsets-datacollector-elasticsearch_5-lib,streamsets-datacollector-jython_2_7-lib"
 }
 
 function make_sdc_copy() {

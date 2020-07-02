@@ -1,0 +1,10 @@
+[
+  {
+    "type": "sage",
+    "name": "test_sage_1",
+    "config": {
+      "url": "http://sage/api/search",
+      "token": "correct_token"
+    }
+  }
+]

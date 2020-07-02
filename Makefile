@@ -12,7 +12,7 @@ DOCKER_TEST_DEV_PARALLEL = $(DOCKER_TEST_PARALLEL) -vv
 ##---------
 all: build-all test-all
 
-build-all: get-streamsets-stages build sleep setup-elastic setup-kafka
+build-all: get-streamsets-libs build sleep setup-elastic setup-kafka
 
 test-all: run-unit-tests test-destination test-api test-input test-pipelines
 
@@ -67,6 +67,10 @@ test-tcp: prepare-source test-destination-dev
 	$(DOCKER_TEST_DEV) tests/test_input/test_tcp_http.py
 	$(DOCKER_TEST_DEV) tests/test_pipelines/test_tcp_http.py
 
+test-sage: prepare-source build-sage test-destination-dev
+	$(DOCKER_TEST_DEV) tests/test_input/test_sage_http.py
+	$(DOCKER_TEST_DEV) tests/test_pipelines/test_sage_http.py
+
 test-destination-dev: prepare-source nap
 	$(DOCKER_TEST_DEV) tests/test_destination.py
 
@@ -98,9 +102,10 @@ test-api:
 run-unit-tests:
 	$(DOCKER_TEST_PARALLEL) tests/unit/
 
-get-streamsets-stages:
+get-streamsets-libs:
 	rm -rf streamsets/lib/*
 	curl -L https://github.com/anodot/anodot-sdc-stage/releases/download/v1.0.1/anodot-1.0.1.tar.gz -o /tmp/sdc.tar.gz && tar xvfz /tmp/sdc.tar.gz -C streamsets/lib
+	pip install --upgrade pip && pip --isolated install --target streamsets/python-libs -r streamsets/python_requirements.txt
 
 ##-----------------------
 ## DEV DEPENDENCY TARGETS
@@ -166,6 +171,9 @@ build-mysql:
 
 build-postgres:
 	docker-compose -f $(DOCKER_COMPOSE_DEV) up -d postgres
+
+build-sage:
+	docker-compose up -d --build sage
 
 ##--------------------------
 ## COMMON DEPENDENCY TARGETS

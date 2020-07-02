@@ -12,6 +12,8 @@ RUN sudo chmod +x /tmp/configure_image.sh && /tmp/configure_image.sh
 # This build uses variable sasl.kerberos.domain.name
 COPY ./kafka-clients-2.0.2-SNAPSHOT.jar ${SDC_DIST}/streamsets-libs/streamsets-datacollector-apache-kafka_2_0-lib/lib/kafka-clients-2.0.1.jar
 
+COPY python-libs ${SDC_DIST}/python-libs
+
 VOLUME /data
 
 ENTRYPOINT ["/custom_entrypoint.sh"]

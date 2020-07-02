@@ -162,6 +162,9 @@ services:
     ports:
       - 8080:80
 
+  sage:
+    build: sage_mock
+
 
 volumes:
   sdc-data:

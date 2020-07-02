@@ -165,6 +165,22 @@ class Pipeline:
     def values_array_filter_metrics(self) -> list:
         return self.config.get('values_array_filter_metrics', [])
 
+    @property
+    def query_file(self) -> str:
+        return self.config.get('query_file')
+
+    @property
+    def interval(self) -> str:
+        return self.config.get('interval')
+
+    @property
+    def days_to_backfill(self) -> str:
+        return self.config.get('days_to_backfill', 0)
+
+    @property
+    def delay(self) -> str:
+        return self.config.get('delay', 0)
+
     def get_schema(self):
         return self.config.get('schema', {})
 

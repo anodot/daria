@@ -2,10 +2,10 @@
   "pipelineConfig" : {
     "schemaVersion" : 6,
     "version" : 17,
-    "pipelineId" : "kafkahttp29d65849-9355-4343-80d7-05661188c044",
+    "pipelineId" : "kafkahttpd097e4bc-a390-44ba-ae35-3b899695053a",
     "title" : "kafka_http",
     "description" : "",
-    "uuid" : "3bdf49c7-f467-49fc-b31f-cc90199c40c7",
+    "uuid" : "abbaa1a2-90f9-4998-a0b4-fb558b3d32db",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -29,7 +29,13 @@
       "value" : [ ]
     }, {
       "name" : "constants",
-      "value" : [ ]
+      "value" : [ {
+        "key" : "SAGE_TOKEN",
+        "value" : "correct_token"
+      }, {
+        "key" : "SAGE_URL",
+        "value" : "http://sage_mock"
+      } ]
     }, {
       "name" : "errorRecordPolicy",
       "value" : "ORIGINAL_RECORD"
@@ -328,350 +334,38 @@
     "fragments" : [ ],
     "stages" : [ {
       "instanceName" : "source",
-      "library" : "streamsets-datacollector-apache-kafka_2_0-lib",
-      "stageName" : "com_streamsets_pipeline_stage_origin_multikafka_MultiKafkaDSource",
-      "stageVersion" : "5",
+      "library" : "streamsets-datacollector-jython_2_7-lib",
+      "stageName" : "com_streamsets_pipeline_stage_origin_jython_JythonDSource",
+      "stageVersion" : "1",
       "configuration" : [ {
-        "name" : "conf.dataFormatConfig.compression",
-        "value" : "NONE"
+        "name" : "script",
+        "value" : "# Sample Jython code - Data Generator\n#\n# Available constants:\n#   sdc.lastOffsets: Dictionary representing the (string) offset previously reached\n#       for each (string) entityName. Offsets are committed by the pipeline.\n#   sdc.batchSize: Requested record batch size (from UI).\n#   sdc.nThreads: Number of threads to run (from UI).\n#   sdc.userParams: Dictionary of user-specified keys and values (from UI).\n#\n#   These can be used to assign a type to a field with a value null:\n#       sdc.NULL_BOOLEAN, sdc.NULL_CHAR, sdc.NULL_BYTE, sdc.NULL_SHORT, sdc.NULL_INTEGER,\n#       sdc.NULL_LONG, sdc.NULL_FLOAT, sdc.NULL_DOUBLE, sdc.NULL_DATE, sdc.NULL_DATETIME,\n#       sdc.NULL_TIME, sdc.NULL_DECIMAL, sdc.NULL_BYTE_ARRAY, sdc.NULL_STRING, sdc.NULL_LIST,\n#       sdc.NULL_MAP\n#\n# Available functions:\n#   sdc.createBatch(): Return a new batch.\n#   sdc.createRecord(String recordId): Return a new record. Pass a recordId to uniquely identify\n#       the record and include enough information to track down the record source.\n#   sdc.createEvent(String type, int version): Return a new empty event with standard headers.\n#   Batch.add(record): Append a record to the batch.\n#   Batch.add(record[]): Append a list of records to the batch.\n#   Batch.addError(record, msg): Add an error record to the batch with the associated error message.\n#   Batch.addEvent(event): Append an event to the batch.\n#       Only events created with sdc.createEvent() are supported.\n#   Batch.size(): Return the number of records in the batch.\n#   Batch.errorCount(): Return the number of error records in the batch.\n#   Batch.eventCount(): Return the number of events in the batch.\n#   Batch.process(entityName, entityOffSet): Process the batch through the rest of\n#       the pipeline and commit the offset in accordance with the pipeline's\n#       delivery guarantee.\n#   Batch.getSourceResponseRecords(): After a batch is processed, retrieve any\n#       response records returned by downstream stages.\n#   sdc.isStopped(): Return whether or not the pipeline has been stopped.\n#   sdc.isPreview(): Return whether or not the pipeline is in preview mode.\n#   sdc.importLock() and sdc.importUnlock(): Acquire or release a systemwide lock which can be\n#       used to circumvent a known bug with the thread-safety of Jython imports. (https://bugs.jython.org/issue2642)\n#   sdc.log.<loglevel>(msg, obj...): Use instead of print to send log messages to the log4j log instead of stdout.\n#       loglevel is any log4j level: e.g. info, error, warn, trace.\n#   sdc.getFieldNull(Record, 'field path'): Receive a constant defined above\n#       to check if the field is a typed field with value null.\n#   sdc.createMap(boolean listMap): Create a map for use as a field in a record.\n#       Pass true to this function to create a list map (ordered map).\n#\n# Available Record Header Variables:\n#   record.attributes: A map of record header attributes.\n#   record.<header name>: Get the value of 'header name'.\n#\n# Add additional module search paths:\n#   try:\n#       sdc.importLock()\n#       import sys\n#       sys.path.append('/some/other/dir/to/search')\n#       import something\n#   finally:\n#       sdc.importUnlock()\n#\n\ntry:\n    sdc.importLock()\n    import sys\n    import os\n    import time\n    import urlparse\n    import traceback\n    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))\n    import requests\n    \n    from datetime import datetime, timedelta\nfinally:\n    sdc.importUnlock()\n\n# single threaded - no entityName because we need only one offset\nentityName = ''\nDATEFORMAT = '%Y-%m-%dT%H:%M:%SZ'\n\ninterval = timedelta(minutes=int(sdc.userParams['INTERVAL']))\ndelay = timedelta(minutes=int(sdc.userParams['DELAY']))\ndays_to_backfill = timedelta(days=int(sdc.userParams['DAYS_TO_BACKFILL']))\n\n# Jython converts datetime objects to java.sql.Timestamp when assigning it to a variable\ndef date_from_str(date):\n  return datetime.strptime(date, DATEFORMAT)\n\ndef date_to_str(date):\n  return date.strftime(DATEFORMAT)\n\n# get previously committed offset or use 0\nif sdc.lastOffsets.containsKey(entityName):\n    offset = sdc.lastOffsets.get(entityName)\nelif days_to_backfill.total_seconds > 0:\n    offset = date_to_str(datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - days_to_backfill)\nelse:\n    offset = date_to_str(datetime.now().replace(second=0, microsecond=0) - interval)\n\n\nsdc.log.info('Start offset: ' + str(offset))\n\n# get record prefix from user parameters or default to empty string\nif sdc.userParams.containsKey('recordPrefix'):\n    prefix = sdc.userParams.get('recordPrefix')\nelse:\n    prefix = ''\n\ncur_batch = sdc.createBatch()\n\n\nN_REQUESTS_TRIES = 3\n\nwhile True:\n    start_time = time.time()\n    try:\n        end_time = date_to_str(date_from_str(offset) + interval)\n        latest_date = date_to_str(datetime.now().replace(second=0, microsecond=0) - delay)\n        sleep = (date_from_str(end_time) - date_from_str(latest_date)).total_seconds() - (time.time() - start_time)\n        if sleep > 0:\n            sdc.log.info('Sleep time: ' + str(sleep))\n            time.sleep(sleep)\n        \n        body = {\n          \"query\": sdc.userParams['QUERY'],\n          \"startTime\": offset,\n          \"endTime\": end_time\n        }\n        for i in range(1, N_REQUESTS_TRIES + 1):\n            try:\n                sdc.log.info(str(body))\n                res = requests.post(sdc.userParams['SAGE_URL'],\n                                    headers={'Authorization': 'Bearer ' + sdc.userParams['SAGE_TOKEN']},\n                                    json=body)\n                res.raise_for_status()\n                break\n            except requests.exceptions.HTTPError as e:\n                if i == N_REQUESTS_TRIES:\n                    raise\n                sdc.log.error(str(e))\n                time.sleep(i**2)\n                       \n        data = res.json()\n        for hit in data[\"hits\"]:\n        \trecord = sdc.createRecord('record created ' + str(datetime.now()))\n        \trecord.value = hit\n        \tcur_batch.add(record)\n\n        # send batch and save offset\n        offset = end_time\n        cur_batch.process(entityName, end_time)\n        cur_batch = sdc.createBatch()\n        # if the pipeline has been stopped, we should end the script\n        if sdc.isStopped():\n          break\n        \n        # sleep_time = int(sdc.userParams['INTERVAL']) * 60 - (time.time() - time_start)\n        # sdc.log.info('Sleep time: ' + str(sleep_time))\n        # time.sleep(sleep_time)\n    except Exception as e:\n       \tsdc.log.error(traceback.format_exc())\n        break\n\nif cur_batch.size() + cur_batch.errorCount() + cur_batch.eventCount() > 0:\n    cur_batch.process(entityName, str(offset))"
       }, {
-        "name" : "conf.dataFormatConfig.filePatternInArchive",
-        "value" : "*"
-      }, {
-        "name" : "conf.dataFormatConfig.charset",
-        "value" : "UTF-8"
-      }, {
-        "name" : "conf.dataFormatConfig.removeCtrlChars",
-        "value" : false
-      }, {
-        "name" : "conf.dataFormatConfig.textMaxLineLen",
-        "value" : 1024
-      }, {
-        "name" : "conf.dataFormatConfig.useCustomDelimiter",
-        "value" : false
-      }, {
-        "name" : "conf.dataFormatConfig.customDelimiter",
-        "value" : "\\r\\n"
-      }, {
-        "name" : "conf.dataFormatConfig.includeCustomDelimiterInTheText",
-        "value" : false
-      }, {
-        "name" : "conf.dataFormatConfig.jsonContent",
-        "value" : "MULTIPLE_OBJECTS"
-      }, {
-        "name" : "conf.dataFormatConfig.jsonMaxObjectLen",
-        "value" : 40960
-      }, {
-        "name" : "conf.dataFormatConfig.csvFileFormat",
-        "value" : "CSV"
-      }, {
-        "name" : "conf.dataFormatConfig.csvHeader",
-        "value" : "NO_HEADER"
-      }, {
-        "name" : "conf.dataFormatConfig.csvAllowExtraColumns",
-        "value" : false
-      }, {
-        "name" : "conf.dataFormatConfig.csvExtraColumnPrefix",
-        "value" : "_extra_"
-      }, {
-        "name" : "conf.dataFormatConfig.csvMaxObjectLen",
-        "value" : 1024
-      }, {
-        "name" : "conf.dataFormatConfig.csvCustomDelimiter",
-        "value" : "|"
-      }, {
-        "name" : "conf.dataFormatConfig.multiCharacterFieldDelimiter",
-        "value" : "||"
-      }, {
-        "name" : "conf.dataFormatConfig.multiCharacterLineDelimiter",
-        "value" : "${str:unescapeJava('\\\\n')}"
-      }, {
-        "name" : "conf.dataFormatConfig.csvCustomEscape",
-        "value" : "\\"
-      }, {
-        "name" : "conf.dataFormatConfig.csvCustomQuote",
-        "value" : "\""
-      }, {
-        "name" : "conf.dataFormatConfig.csvEnableComments",
-        "value" : false
-      }, {
-        "name" : "conf.dataFormatConfig.csvCommentMarker",
-        "value" : "#"
-      }, {
-        "name" : "conf.dataFormatConfig.csvIgnoreEmptyLines",
-        "value" : true
-      }, {
-        "name" : "conf.dataFormatConfig.csvRecordType",
-        "value" : "LIST_MAP"
-      }, {
-        "name" : "conf.dataFormatConfig.csvSkipStartLines",
-        "value" : 0
-      }, {
-        "name" : "conf.dataFormatConfig.parseNull",
-        "value" : false
-      }, {
-        "name" : "conf.dataFormatConfig.nullConstant",
-        "value" : "\\\\N"
-      }, {
-        "name" : "conf.dataFormatConfig.xmlRecordElement",
-        "value" : null
-      }, {
-        "name" : "conf.dataFormatConfig.includeFieldXpathAttributes",
-        "value" : false
-      }, {
-        "name" : "conf.dataFormatConfig.xPathNamespaceContext",
-        "value" : [ ]
-      }, {
-        "name" : "conf.dataFormatConfig.outputFieldAttributes",
-        "value" : false
-      }, {
-        "name" : "conf.dataFormatConfig.xmlMaxObjectLen",
-        "value" : 4096
-      }, {
-        "name" : "conf.dataFormatConfig.logMode",
-        "value" : "COMMON_LOG_FORMAT"
-      }, {
-        "name" : "conf.dataFormatConfig.logMaxObjectLen",
-        "value" : 1024
-      }, {
-        "name" : "conf.dataFormatConfig.retainOriginalLine",
-        "value" : false
-      }, {
-        "name" : "conf.dataFormatConfig.customLogFormat",
-        "value" : "%h %l %u %t \"%r\" %>s %b"
-      }, {
-        "name" : "conf.dataFormatConfig.regex",
-        "value" : "^(\\S+) (\\S+) (\\S+) \\[([\\w:/]+\\s[+\\-]\\d{4})\\] \"(\\S+) (\\S+) (\\S+)\" (\\d{3}) (\\d+)"
-      }, {
-        "name" : "conf.dataFormatConfig.fieldPathsToGroupName",
-        "value" : [ {
-          "fieldPath" : "/",
-          "group" : 1
-        } ]
-      }, {
-        "name" : "conf.dataFormatConfig.grokPatternDefinition",
-        "value" : null
-      }, {
-        "name" : "conf.dataFormatConfig.grokPattern",
-        "value" : "%{COMMONAPACHELOG}"
-      }, {
-        "name" : "conf.dataFormatConfig.onParseError",
-        "value" : "ERROR"
-      }, {
-        "name" : "conf.dataFormatConfig.maxStackTraceLines",
-        "value" : 50
-      }, {
-        "name" : "conf.dataFormatConfig.enableLog4jCustomLogFormat",
-        "value" : false
-      }, {
-        "name" : "conf.dataFormatConfig.log4jCustomLogFormat",
-        "value" : "%r [%t] %-5p %c %x - %m%n"
-      }, {
-        "name" : "conf.dataFormatConfig.avroSchemaSource",
-        "value" : null
-      }, {
-        "name" : "conf.dataFormatConfig.avroSchema",
-        "value" : null
-      }, {
-        "name" : "conf.dataFormatConfig.schemaRegistryUrls",
-        "value" : [ ]
-      }, {
-        "name" : "conf.dataFormatConfig.schemaLookupMode",
-        "value" : "SUBJECT"
-      }, {
-        "name" : "conf.dataFormatConfig.subject",
-        "value" : null
-      }, {
-        "name" : "conf.dataFormatConfig.schemaId",
-        "value" : null
-      }, {
-        "name" : "conf.dataFormatConfig.protoDescriptorFile",
-        "value" : null
-      }, {
-        "name" : "conf.dataFormatConfig.messageType",
-        "value" : null
-      }, {
-        "name" : "conf.dataFormatConfig.isDelimited",
-        "value" : true
-      }, {
-        "name" : "conf.dataFormatConfig.binaryMaxObjectLen",
-        "value" : 1024
-      }, {
-        "name" : "conf.dataFormatConfig.datagramMode",
-        "value" : "SYSLOG"
-      }, {
-        "name" : "conf.dataFormatConfig.typesDbPath",
-        "value" : null
-      }, {
-        "name" : "conf.dataFormatConfig.convertTime",
-        "value" : false
-      }, {
-        "name" : "conf.dataFormatConfig.excludeInterval",
-        "value" : true
-      }, {
-        "name" : "conf.dataFormatConfig.authFilePath",
-        "value" : null
-      }, {
-        "name" : "conf.dataFormatConfig.netflowOutputValuesMode",
-        "value" : "RAW_AND_INTERPRETED"
-      }, {
-        "name" : "conf.dataFormatConfig.maxTemplateCacheSize",
-        "value" : -1
-      }, {
-        "name" : "conf.dataFormatConfig.templateCacheTimeoutMs",
-        "value" : -1
-      }, {
-        "name" : "conf.dataFormatConfig.netflowOutputValuesModeDatagram",
-        "value" : "RAW_AND_INTERPRETED"
-      }, {
-        "name" : "conf.dataFormatConfig.maxTemplateCacheSizeDatagram",
-        "value" : -1
-      }, {
-        "name" : "conf.dataFormatConfig.templateCacheTimeoutMsDatagram",
-        "value" : -1
-      }, {
-        "name" : "conf.dataFormatConfig.wholeFileMaxObjectLen",
-        "value" : 8192
-      }, {
-        "name" : "conf.dataFormatConfig.rateLimit",
-        "value" : "-1"
-      }, {
-        "name" : "conf.dataFormatConfig.verifyChecksum",
-        "value" : false
-      }, {
-        "name" : "conf.dataFormatConfig.excelHeader",
-        "value" : null
-      }, {
-        "name" : "conf.dataFormat",
-        "value" : "JSON"
-      }, {
-        "name" : "conf.brokerURI",
-        "value" : "localhost:9092"
-      }, {
-        "name" : "conf.consumerGroup",
-        "value" : "streamsetsDataCollector"
-      }, {
-        "name" : "conf.topicList",
-        "value" : [ "myTopic" ]
-      }, {
-        "name" : "conf.produceSingleRecordPerMessage",
-        "value" : false
-      }, {
-        "name" : "conf.numberOfThreads",
+        "name" : "scriptConf.batchSize",
         "value" : 1
       }, {
-        "name" : "conf.maxBatchSize",
-        "value" : 1000
+        "name" : "scriptConf.numThreads",
+        "value" : 1
       }, {
-        "name" : "conf.batchWaitTime",
-        "value" : 2000
+        "name" : "scriptConf.scriptRecordType",
+        "value" : "NATIVE_OBJECTS"
       }, {
-        "name" : "conf.kafkaAutoOffsetReset",
-        "value" : "EARLIEST"
-      }, {
-        "name" : "conf.timestampToSearchOffsets",
-        "value" : 0
-      }, {
-        "name" : "conf.kafkaOptions",
-        "value" : [ ]
-      }, {
-        "name" : "conf.keyDeserializer",
-        "value" : "STRING"
-      }, {
-        "name" : "conf.valueDeserializer",
-        "value" : "DEFAULT"
+        "name" : "scriptConf.params",
+        "value" : []
       }, {
         "name" : "stageOnRecordError",
-        "value" : "DISCARD"
-      }, {
-        "name" : "conf.keyCaptureMode",
-        "value" : "NONE"
-      }, {
-        "name" : "conf.keyCaptureAttribute",
-        "value" : "kafkaMessageKey"
-      }, {
-        "name" : "conf.keyCaptureField",
-        "value" : "/kafkaMessageKey"
-      }, {
-        "name" : "conf.dataFormatConfig.basicAuth",
-        "value" : ""
-      }, {
-        "name" : "conf.dataFormatConfig.preserveRootElement",
-        "value" : false
-      }, {
-        "name" : "conf.dataFormatConfig.avroSkipUnionIndex",
-        "value" : false
-      }, {
-        "name" : "conf.dataFormatConfig.excelSkipCellsWithNoHeader",
-        "value" : false
-      }, {
-        "name" : "conf.dataFormatConfig.excelReadAllSheets",
-        "value" : true
-      }, {
-        "name" : "conf.dataFormatConfig.excelSheetNames",
-        "value" : [ ]
+        "value" : "TO_ERROR"
       } ],
       "uiInfo" : {
         "yPos" : 50,
         "stageType" : "SOURCE",
-        "rawSource" : {
-          "configuration" : [ {
-            "name" : "brokerHost",
-            "value" : "localhost"
-          }, {
-            "name" : "brokerPort",
-            "value" : 9092
-          }, {
-            "name" : "topic",
-            "value" : "myTopic"
-          }, {
-            "name" : "pollTimeout",
-            "value" : 1000
-          } ]
-        },
+        "icon" : "jython.png",
         "description" : "",
-        "label" : "Kafka Multitopic Consumer 1",
+        "label" : "Jython Scripting 1",
         "xPos" : 60
       },
       "inputLanes" : [ ],
-      "outputLanes" : [ "KafkaMultitopicConsumer_01OutputLane15768412486420" ],
-      "eventLanes" : [ ],
-      "services" : [ ]
-    }, {
-      "instanceName" : "ExpressionEvaluator_03",
-      "library" : "streamsets-datacollector-basic-lib",
-      "stageName" : "com_streamsets_pipeline_stage_processor_expression_ExpressionDProcessor",
-      "stageVersion" : "2",
-      "configuration" : [ {
-        "name" : "expressionProcessorConfigs",
-        "value" : [ { } ]
-      }, {
-        "name" : "headerAttributeConfigs",
-        "value" : [ { } ]
-      }, {
-        "name" : "fieldAttributeConfigs",
-        "value" : [ {
-          "fieldToSet" : "/"
-        } ]
-      }, {
-        "name" : "stageOnRecordError",
-        "value" : "DISCARD"
-      }, {
-        "name" : "stageRequiredFields",
-        "value" : [ ]
-      }, {
-        "name" : "stageRecordPreconditions",
-        "value" : [ ]
-      } ],
-      "uiInfo" : {
-        "description" : "",
-        "label" : "Expression Evaluator 1",
-        "xPos" : 280,
-        "yPos" : 50,
-        "stageType" : "PROCESSOR"
-      },
-      "inputLanes" : [ "KafkaMultitopicConsumer_01OutputLane15768412486420" ],
-      "outputLanes" : [ "ExpressionEvaluator_03OutputLane15750326759030" ],
+      "outputLanes" : [ "JythonScripting_01OutputLane15924840586690" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -710,11 +404,11 @@
       "uiInfo" : {
         "description" : "",
         "label" : "transform",
-        "xPos" : 500,
+        "xPos" : 280,
         "yPos" : 50,
         "stageType" : "PROCESSOR"
       },
-      "inputLanes" : [ "ExpressionEvaluator_03OutputLane15750326759030" ],
+      "inputLanes" : [ "JythonScripting_01OutputLane15924840586690" ],
       "outputLanes" : [ "JavaScriptEvaluator_01OutputLane15620549534460" ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -750,7 +444,7 @@
       "uiInfo" : {
         "description" : "",
         "label" : "Convert timestamp to long",
-        "xPos" : 720,
+        "xPos" : 500,
         "yPos" : 50,
         "stageType" : "PROCESSOR"
       },
@@ -815,7 +509,7 @@
       "uiInfo" : {
         "description" : "Convert value to float and timestamp to int",
         "label" : "Convert value and timestamp",
-        "xPos" : 940,
+        "xPos" : 720,
         "yPos" : 50,
         "stageType" : "PROCESSOR"
       },
@@ -1114,7 +808,7 @@
       "uiInfo" : {
         "description" : "",
         "label" : "HTTP Client 1",
-        "xPos" : 1160,
+        "xPos" : 940,
         "yPos" : 50,
         "stageType" : "TARGET"
       },
@@ -1154,22 +848,22 @@
       "services" : [ ]
     },
     "info" : {
-      "pipelineId" : "kafkahttp29d65849-9355-4343-80d7-05661188c044",
+      "pipelineId" : "kafkahttpd097e4bc-a390-44ba-ae35-3b899695053a",
       "title" : "kafka_http",
       "description" : "",
-      "created" : 1592308697316,
-      "lastModified" : 1592309630204,
+      "created" : 1592475408531,
+      "lastModified" : 1593016558386,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "3bdf49c7-f467-49fc-b31f-cc90199c40c7",
+      "uuid" : "abbaa1a2-90f9-4998-a0b4-fb558b3d32db",
       "valid" : true,
       "metadata" : {
         "labels" : [ "mongo", "http" ]
       },
-      "name" : "kafkahttp29d65849-9355-4343-80d7-05661188c044",
+      "name" : "kafkahttpd097e4bc-a390-44ba-ae35-3b899695053a",
       "sdcVersion" : "3.15.0",
-      "sdcId" : "8b8f48ea-afc6-11ea-bc8d-71ebd7fef96a"
+      "sdcId" : "dd607911-b0a9-11ea-90d5-e9ecc3266903"
     },
     "metadata" : {
       "labels" : [ "mongo", "http" ]
@@ -1232,7 +926,7 @@
       "stageVersion" : "3",
       "configuration" : [ {
         "name" : "rawData",
-        "value" : "{\n  \"time\": 11111,\n  \"id\": \"minrtt\",\n  \"value\": \"34\"\n}"
+        "value" : "{\n  \"f1\": \"abc\",\n  \"f2\": \"xyz\",\n  \"f3\": \"lmn\"\n}"
       }, {
         "name" : "stopAfterFirstBatch",
         "value" : false
@@ -1559,7 +1253,7 @@
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "a759c01c-3cad-4d46-b58b-ab43dfd22d27",
+    "uuid" : "5505ddaa-df5e-449a-88a7-b92eef15a4aa",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : [ ]
