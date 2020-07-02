@@ -1,4 +1,5 @@
 import click
+import requests
 
 from agent import source, pipeline
 from agent.destination import HttpDestination, build_urls, create
@@ -36,8 +37,11 @@ def __prompt_proxy_password() -> str:
 @infinite_retry
 def __prompt_url(dest: HttpDestination):
     url = click.prompt('Destination url', type=click.STRING, default=dest.url)
-    if not validator.destination.is_valid_destination_url(url):
-        raise click.ClickException('Wrong url format, please specify the protocol and domain name')
+    try:
+        if not validator.destination.is_valid_destination_url(url, dest.proxy):
+            raise click.ClickException('Wrong url format, please specify the protocol and domain name')
+    except requests.exceptions.ProxyError as e:
+        raise click.ClickException(str(e))
     dest.url = url
 
 

@@ -5,6 +5,9 @@ import urllib.parse
 import uuid
 
 from typing import Dict, Optional
+
+import requests
+
 from agent import validator
 from agent.constants import ANODOT_API_URL, DATA_DIR
 from agent.proxy import Proxy
@@ -193,8 +196,11 @@ def __build(
             return Err('Proxy data is invalid')
         destination.proxy = proxy
     if url:
-        if not validator.destination.is_valid_destination_url(url):
-            return Err('Destination URL is invalid')
+        try:
+            if not validator.destination.is_valid_destination_url(url, destination.proxy):
+                return Err('Destination URL is invalid')
+        except requests.exceptions.ProxyError as e:
+            return Err(str(e))
         destination.url = url
     if token:
         resource_url, monitoring_url = build_urls(destination.url, token)
