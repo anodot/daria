@@ -114,8 +114,11 @@ class HttpDestination:
         except FileNotFoundError:
             pass
 
-    def enable_logs(self, enable: bool = True):
-        self.config[self.CONFIG_ENABLE_REQUEST_LOGGING] = enable
+    def enable_logs(self):
+        self.config[self.CONFIG_ENABLE_REQUEST_LOGGING] = True
+
+    def disable_logs(self):
+        self.config[self.CONFIG_ENABLE_REQUEST_LOGGING] = False
 
     @property
     def proxy(self) -> Optional[Proxy]:

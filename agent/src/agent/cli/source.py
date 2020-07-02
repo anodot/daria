@@ -86,7 +86,7 @@ def edit_using_file(file):
             click.secho(f"Source {config['name']} updated")
             for pipeline_obj in pipeline_repository.get_by_source(config['name']):
                 try:
-                    manager.PipelineManager(pipeline_obj).update()
+                    manager.update(pipeline_obj)
                 except pipeline.pipeline.PipelineException as e:
                     print(str(e))
                     continue
@@ -151,7 +151,7 @@ def edit(name, advanced, file):
 
     for pipeline_obj in pipeline_repository.get_by_source(name):
         try:
-            manager.PipelineManager(pipeline_obj).update()
+            manager.update(pipeline_obj)
         except pipeline.pipeline.PipelineException as e:
             print(str(e))
             continue

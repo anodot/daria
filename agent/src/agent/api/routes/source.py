@@ -23,7 +23,7 @@ def create():
         for config in json:
             source_instances.append(source_manager.create_from_json(config).to_dict())
     except (ValidationError, ValueError, SourceException) as e:
-        return str(e), 400
+        return jsonify(str(e)), 400
     return jsonify(source_instances)
 
 

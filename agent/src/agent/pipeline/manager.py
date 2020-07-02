@@ -17,6 +17,53 @@ from ..repository import pipeline_repository, source_repository
 from .pipeline import Pipeline, PipelineException
 from jsonschema import validate
 
+LOGS_LEVEL = ['INFO', 'ERROR']
+
+
+def get_sdc_creator(pipeline_obj: Pipeline) -> config_handlers.base.BaseConfigHandler:
+    handlers = {
+        source.TYPE_MONITORING: config_handlers.monitoring.MonitoringConfigHandler,
+        source.TYPE_INFLUX: config_handlers.influx.InfluxConfigHandler,
+        source.TYPE_MONGO: config_handlers.mongo.MongoConfigHandler,
+        source.TYPE_KAFKA: config_handlers.kafka.KafkaConfigHandler,
+        source.TYPE_MYSQL: config_handlers.jdbc.JDBCConfigHandler,
+        source.TYPE_POSTGRES: config_handlers.jdbc.JDBCConfigHandler,
+        source.TYPE_ELASTIC: config_handlers.elastic.ElasticConfigHandler,
+        source.TYPE_SPLUNK: config_handlers.tcp.TCPConfigHandler,
+        source.TYPE_DIRECTORY: config_handlers.directory.DirectoryConfigHandler
+    }
+    return handlers[pipeline_obj.source.type](pipeline_obj)
+
+
+def get_file_loader(source_type: str):
+    loaders = {
+        source.TYPE_MONITORING: load_client_data.LoadClientData,
+        source.TYPE_INFLUX: load_client_data.InfluxLoadClientData,
+        source.TYPE_MONGO: load_client_data.MongoLoadClientData,
+        source.TYPE_KAFKA: load_client_data.KafkaLoadClientData,
+        source.TYPE_MYSQL: load_client_data.JDBCLoadClientData,
+        source.TYPE_POSTGRES: load_client_data.JDBCLoadClientData,
+        source.TYPE_ELASTIC: load_client_data.ElasticLoadClientData,
+        source.TYPE_SPLUNK: load_client_data.TcpLoadClientData,
+        source.TYPE_DIRECTORY: load_client_data.DirectoryLoadClientData
+    }
+    return loaders[source_type]
+
+
+def get_prompter(source_type: str):
+    prompters = {
+        source.TYPE_MONITORING: prompt.PromptConfig,
+        source.TYPE_INFLUX: prompt.PromptConfigInflux,
+        source.TYPE_KAFKA: prompt.PromptConfigKafka,
+        source.TYPE_MONGO: prompt.PromptConfigMongo,
+        source.TYPE_MYSQL: prompt.PromptConfigJDBC,
+        source.TYPE_POSTGRES: prompt.PromptConfigJDBC,
+        source.TYPE_ELASTIC: prompt.PromptConfigElastic,
+        source.TYPE_SPLUNK: prompt.PromptConfigTCP,
+        source.TYPE_DIRECTORY: prompt.PromptConfigDirectory
+    }
+    return prompters[source_type]
+
 
 def validate_json_for_create(json: dict):
     json_schema = {
@@ -58,7 +105,7 @@ def create_from_json(config: dict):
 def edit_using_json(config: dict):
     pipeline_manager = PipelineManager(pipeline_repository.get(config['pipeline_id']))
     pipeline_manager.load_config(config, edit=True)
-    pipeline_manager.update()
+    update(pipeline_manager.pipeline)
 
 
 def start(pipeline_obj: Pipeline):
@@ -68,6 +115,39 @@ def start(pipeline_obj: Pipeline):
     if ENV_PROD:
         wait_for_sending_data(pipeline_obj.id)
         click.secho(f'{pipeline_obj.id} pipeline is sending data')
+
+
+def update(pipeline_obj: Pipeline):
+    start_pipeline = False
+    try:
+        if get_pipeline_status(pipeline_obj.id) in [pipeline.Pipeline.STATUS_RUNNING, pipeline.Pipeline.STATUS_RETRY]:
+            stop(pipeline_obj)
+            start_pipeline = True
+
+        pipeline_obj = api_client.get_pipeline(pipeline_obj.id)
+        new_config = get_sdc_creator(pipeline_obj.source.type)\
+            .override_base_config(new_uuid=pipeline_obj['uuid'], new_title=pipeline_obj.id)
+        api_client.update_pipeline(pipeline_obj.id, new_config)
+
+    except (config_handlers.base.ConfigHandlerException, StreamSetsApiClientException) as e:
+        raise pipeline.PipelineException(str(e))
+
+    pipeline_repository.save(pipeline_obj)
+    if start_pipeline:
+        start(pipeline_obj)
+
+
+def create(pipeline_obj: Pipeline):
+    try:
+        pipeline_obj = api_client.create_pipeline(pipeline_obj.id)
+        new_config = get_sdc_creator(pipeline_obj).override_base_config(new_uuid=pipeline_obj['uuid'],
+                                                                        new_title=pipeline_obj.id)
+        api_client.update_pipeline(pipeline_obj.id, new_config)
+    except (config_handlers.base.ConfigHandlerException, StreamSetsApiClientException) as e:
+        delete(pipeline_obj)
+        raise pipeline.PipelineException(str(e))
+
+    pipeline_repository.save(pipeline_obj)
 
 
 def get_pipeline_status(pipeline_id: str) -> str:
@@ -125,7 +205,11 @@ def force_stop_pipeline(pipeline_id: str):
     wait_for_status(pipeline_id, pipeline.Pipeline.STATUS_STOPPED)
 
 
-def stop_pipeline(pipeline_id: str):
+def stop(pipeline_obj: Pipeline):
+    return stop_by_id(pipeline_obj.id)
+
+
+def stop_by_id(pipeline_id: str):
     print("Stopping the pipeline")
     api_client.stop_pipeline(pipeline_id)
     try:
@@ -135,63 +219,76 @@ def stop_pipeline(pipeline_id: str):
         force_stop_pipeline(pipeline_id)
 
 
-def delete_pipeline(pipeline_id: str):
+def reset(pipeline_obj: Pipeline):
     try:
-        if check_status(pipeline_id, pipeline.Pipeline.STATUS_RUNNING):
-            stop_pipeline(pipeline_id)
+        api_client.reset_pipeline(pipeline_obj.id)
+        get_sdc_creator(pipeline_obj).set_initial_offset()
+    except (config_handlers.base.ConfigHandlerException, StreamSetsApiClientException) as e:
+        raise pipeline.PipelineException(str(e))
 
-        api_client.delete_pipeline(pipeline_id)
-        if pipeline_repository.exists(pipeline_id):
-            pipeline_repository.delete_by_id(pipeline_id)
-        errors_dir = os.path.join(ERRORS_DIR, pipeline_id)
-        if os.path.isdir(errors_dir):
-            shutil.rmtree(errors_dir)
+
+def __delete_locally(pipeline_obj: Pipeline):
+    if pipeline_repository.exists(pipeline_obj.id):
+        pipeline_repository.delete_by_id(pipeline_obj.id)
+
+
+def __delete_schema(pipeline_obj: Pipeline):
+    if 'schema' in pipeline_obj.config:
+        anodot_api_client = AnodotApiClient(pipeline_obj.destination.access_key,
+                                            proxy.get_config(pipeline_obj.destination.proxy),
+                                            base_url=pipeline_obj.destination.url)
+        anodot_api_client.delete_schema(pipeline_obj.config['schema']['id'])
+
+
+def __delete_from_streamsets(pipeline_id: str):
+    if check_status(pipeline_id, pipeline.Pipeline.STATUS_RUNNING):
+        stop_by_id(pipeline_id)
+    api_client.delete_pipeline(pipeline_id)
+
+
+def __cleanup_errors_dir(pipeline_id: str):
+    errors_dir = os.path.join(ERRORS_DIR, pipeline_id)
+    if os.path.isdir(errors_dir):
+        shutil.rmtree(errors_dir)
+
+
+def delete(pipeline_obj: Pipeline):
+    __delete_schema(pipeline_obj)
+    try:
+        __delete_from_streamsets(pipeline_obj.id)
     except StreamSetsApiClientException as e:
         raise pipeline.PipelineException(str(e))
+    __cleanup_errors_dir(pipeline_obj.id)
+    __delete_locally(pipeline_repository.get(pipeline_obj.id))
+
+
+def delete_by_id(pipeline_id: str):
+    try:
+        __delete_from_streamsets(pipeline_id)
+    except StreamSetsApiClientException as e:
+        raise pipeline.PipelineException(str(e))
+    __cleanup_errors_dir(pipeline_id)
+    if pipeline_repository.exists(pipeline_id):
+        __delete_schema(pipeline_repository.get(pipeline_id))
+        __delete_locally(pipeline_repository.get(pipeline_id))
+
+
+def enable_destination_logs(pipeline_obj: Pipeline):
+    pipeline_obj.destination.enable_logs()
+    update(pipeline_obj)
+
+
+def disable_destination_logs(pipeline_obj: Pipeline):
+    pipeline_obj.destination.disable_logs()
+    update(pipeline_obj)
 
 
 class PipelineManager:
     def __init__(self, pipeline_obj: Pipeline):
-        # todo moved it here in order to avoid circular imports, refactor
-        prompters = {
-            source.TYPE_MONITORING: prompt.PromptConfig,
-            source.TYPE_INFLUX: prompt.PromptConfigInflux,
-            source.TYPE_KAFKA: prompt.PromptConfigKafka,
-            source.TYPE_MONGO: prompt.PromptConfigMongo,
-            source.TYPE_MYSQL: prompt.PromptConfigJDBC,
-            source.TYPE_POSTGRES: prompt.PromptConfigJDBC,
-            source.TYPE_ELASTIC: prompt.PromptConfigElastic,
-            source.TYPE_SPLUNK: prompt.PromptConfigTCP,
-            source.TYPE_DIRECTORY: prompt.PromptConfigDirectory
-        }
-
-        loaders = {
-            source.TYPE_MONITORING: load_client_data.LoadClientData,
-            source.TYPE_INFLUX: load_client_data.InfluxLoadClientData,
-            source.TYPE_MONGO: load_client_data.MongoLoadClientData,
-            source.TYPE_KAFKA: load_client_data.KafkaLoadClientData,
-            source.TYPE_MYSQL: load_client_data.JDBCLoadClientData,
-            source.TYPE_POSTGRES: load_client_data.JDBCLoadClientData,
-            source.TYPE_ELASTIC: load_client_data.ElasticLoadClientData,
-            source.TYPE_SPLUNK: load_client_data.TcpLoadClientData,
-            source.TYPE_DIRECTORY: load_client_data.DirectoryLoadClientData
-        }
-
-        handlers = {
-            source.TYPE_MONITORING: config_handlers.monitoring.MonitoringConfigHandler,
-            source.TYPE_INFLUX: config_handlers.influx.InfluxConfigHandler,
-            source.TYPE_MONGO: config_handlers.mongo.MongoConfigHandler,
-            source.TYPE_KAFKA: config_handlers.kafka.KafkaConfigHandler,
-            source.TYPE_MYSQL: config_handlers.jdbc.JDBCConfigHandler,
-            source.TYPE_POSTGRES: config_handlers.jdbc.JDBCConfigHandler,
-            source.TYPE_ELASTIC: config_handlers.elastic.ElasticConfigHandler,
-            source.TYPE_SPLUNK: config_handlers.tcp.TCPConfigHandler,
-            source.TYPE_DIRECTORY: config_handlers.directory.DirectoryConfigHandler
-        }
         self.pipeline = pipeline_obj
-        self.prompter = prompters[pipeline_obj.source.type](self.pipeline)
-        self.file_loader = loaders[pipeline_obj.source.type]()
-        self.sdc_creator = handlers[pipeline_obj.source.type](self.pipeline)
+        self.prompter = get_prompter(pipeline_obj.source.type)(self.pipeline)
+        self.file_loader = get_file_loader(pipeline_obj.source.type)()
+        self.sdc_creator = get_sdc_creator(pipeline_obj)
 
     def prompt(self, default_config, advanced=False):
         self.pipeline.set_config(self.prompter.prompt(default_config, advanced))
@@ -210,59 +307,10 @@ class PipelineManager:
 
             api_client.update_pipeline(self.pipeline.id, new_config)
         except (config_handlers.base.ConfigHandlerException, StreamSetsApiClientException) as e:
-            self.delete()
+            delete(self.pipeline)
             raise pipeline.PipelineException(str(e))
 
         pipeline_repository.save(self.pipeline)
-
-    def update(self):
-        start_pipeline = False
-        try:
-            if get_pipeline_status(self.pipeline.id) in [pipeline.Pipeline.STATUS_RUNNING, pipeline.Pipeline.STATUS_RETRY]:
-                self.stop()
-                start_pipeline = True
-
-            pipeline_obj = api_client.get_pipeline(self.pipeline.id)
-            new_config = self.sdc_creator.override_base_config(new_uuid=pipeline_obj['uuid'],
-                                                               new_title=self.pipeline.id)
-            api_client.update_pipeline(self.pipeline.id, new_config)
-
-        except (config_handlers.base.ConfigHandlerException, StreamSetsApiClientException) as e:
-            raise pipeline.PipelineException(str(e))
-
-        pipeline_repository.save(self.pipeline)
-        if start_pipeline:
-            self.start()
-
-    def reset(self):
-        try:
-            api_client.reset_pipeline(self.pipeline.id)
-            self.sdc_creator.set_initial_offset()
-        except (config_handlers.base.ConfigHandlerException, StreamSetsApiClientException) as e:
-            raise pipeline.PipelineException(str(e))
-
-    def delete(self):
-        if 'schema' in self.pipeline.config:
-            anodot_api_client = AnodotApiClient(self.pipeline.destination.access_key,
-                                                proxy.get_config(self.pipeline.destination.proxy),
-                                                base_url=self.pipeline.destination.url)
-            anodot_api_client.delete_schema(self.pipeline.config['schema']['id'])
-        delete_pipeline(self.pipeline.id)
-
-    def enable_destination_logs(self, enable):
-        self.pipeline.destination.enable_logs(enable)
-        self.update()
-
-    def stop(self):
-        stop_pipeline(self.pipeline.id)
-
-    def start(self):
-        api_client.start_pipeline(self.pipeline.id)
-        wait_for_status(self.pipeline.id, pipeline.Pipeline.STATUS_RUNNING)
-        click.secho(f'{self.pipeline.id} pipeline is running')
-        if ENV_PROD:
-            wait_for_sending_data(self.pipeline.id)
-            click.secho(f'{self.pipeline.id} pipeline is sending data')
 
     @if_validation_enabled
     def show_preview(self):

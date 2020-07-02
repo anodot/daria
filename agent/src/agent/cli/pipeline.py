@@ -81,7 +81,7 @@ def create(advanced, file):
     source_config_name = click.prompt('Choose source config', type=click.Choice(sources),
                                       default=get_default_source(sources))
     pipeline_id = prompt_pipeline_id()
-    pipeline_manager = manager.PipelineManager(pipeline.manager.create_object(pipeline_id, source_config_name))
+    pipeline_manager = manager.PipelineManager(manager.create_object(pipeline_id, source_config_name))
     previous_config = get_previous_pipeline_config(pipeline_manager.pipeline.source.type)
     # the rest of the data is prompted in the .prompt() call
     pipeline_manager.prompt(previous_config, advanced)
@@ -97,7 +97,7 @@ def create(advanced, file):
 @infinite_retry
 def prompt_pipeline_id():
     pipeline_id = click.prompt('Pipeline ID (must be unique)', type=click.STRING).strip()
-    check_pipeline_id(pipeline_id)
+    manager.check_pipeline_id(pipeline_id)
     return pipeline_id
 
 
@@ -161,7 +161,7 @@ def edit(pipeline_id, advanced, file):
     try:
         pipeline_manager = manager.PipelineManager(pipeline_repository.get(pipeline_id))
         pipeline_manager.prompt(pipeline_manager.pipeline.to_dict(), advanced=advanced)
-        pipeline_manager.update()
+        manager.update(pipeline_manager.pipeline)
 
         click.secho('Updated pipeline {}'.format(pipeline_id), fg='green')
         if click.confirm('Would you like to see the result data preview?', default=True):
@@ -178,10 +178,8 @@ def destination_logs(pipeline_id, enable):
     """
     Enable destination response logs for a pipeline (for debugging purposes only)
     """
-
-    pipeline_manager = manager.PipelineManager(pipeline_repository.get(pipeline_id))
-    pipeline_manager.enable_destination_logs(enable)
-
+    pipeline_object = pipeline_repository.get(pipeline_id)
+    manager.enable_destination_logs(pipeline_object) if enable else manager.disable_destination_logs(pipeline_object)
     click.secho('Updated pipeline {}'.format(pipeline_id), fg='green')
 
 
@@ -237,10 +235,10 @@ def stop(pipeline_id, file):
 
     pipeline_ids = [item['pipeline_id'] for item in extract_configs(file)] if file else [pipeline_id]
 
-    for idx in pipeline_ids:
+    for pipeline_id in pipeline_ids:
         try:
-            manager.stop_pipeline(idx)
-            click.secho(f'Pipeline {idx} is stopped', fg='green')
+            manager.stop_by_id(pipeline_id)
+            click.secho(f'Pipeline {pipeline_id} is stopped', fg='green')
         except (StreamSetsApiClientException, pipeline.pipeline.PipelineException) as e:
             click.secho(str(e), err=True, fg='red')
             continue
@@ -273,14 +271,13 @@ def delete(pipeline_id, file):
 
     pipeline_ids = [item['pipeline_id'] for item in extract_configs(file)] if file else [pipeline_id]
 
-    for idx in pipeline_ids:
+    for pipeline_id in pipeline_ids:
         try:
-            pipeline_manager = manager.PipelineManager(pipeline_repository.get(idx))
-            pipeline_manager.delete()
-            click.echo(f'Pipeline {idx} deleted')
+            manager.delete(pipeline_repository.get(pipeline_id))
+            click.echo(f'Pipeline {pipeline_id} deleted')
         except pipeline.pipeline.PipelineNotExistsException:
-            manager.delete_pipeline(idx)
-            click.echo(f'Pipeline {idx} deleted')
+            manager.delete_by_id(pipeline_id)
+            click.echo(f'Pipeline {pipeline_id} deleted')
         except (StreamSetsApiClientException, pipeline.pipeline.PipelineException) as e:
             click.secho(str(e), err=True, fg='red')
             continue
@@ -289,13 +286,13 @@ def delete(pipeline_id, file):
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
 @click.option('-l', '--lines', type=click.INT, default=10)
-@click.option('-s', '--severity', type=click.Choice(['INFO', 'ERROR']), default=None)
+@click.option('-s', '--severity', type=click.Choice(manager.LOGS_LEVEL), default=None)
 def logs(pipeline_id, lines, severity):
     """
     Show pipeline logs
     """
     try:
-        res = api_client.get_pipeline_logs(pipeline_id, severity=severity)
+        res = api_client.get_pipeline_logs(pipeline_id, level=severity)
     except StreamSetsApiClientException as e:
         click.secho(str(e), err=True, fg='red')
         return
@@ -303,9 +300,9 @@ def logs(pipeline_id, lines, severity):
     def get_row(item):
         if 'message' not in item:
             return False
-        return [item['timestamp'], item['severity'], item['category'], item['message']]
+        return [item['timestamp'], item['level'], item['category'], item['message']]
 
-    table = build_table(['Timestamp', 'Severity', 'Category', 'Message'], res[-lines:], get_row)
+    table = build_table(['Timestamp', 'Logs Level', 'Category', 'Message'], res[-lines:], get_row)
     click.echo(table.draw())
 
 
@@ -328,7 +325,6 @@ def info(pipeline_id, lines):
     def get_timestamp(utc_time):
         return datetime.utcfromtimestamp(utc_time / 1000).strftime('%Y-%m-%d %H:%M:%S')
 
-    # metrics
     metrics = json.loads(status['metrics']) if status['metrics'] else api_client.get_pipeline_metrics(pipeline_id)
 
     def get_metrics_string(metrics_obj):
@@ -385,9 +381,7 @@ def reset(pipeline_id):
     Reset pipeline's offset
     """
     try:
-        pipeline_manager = manager.PipelineManager(pipeline_repository.get(pipeline_id))
-        pipeline_manager.reset()
-
+        manager.reset(pipeline_repository.get(pipeline_id))
     except StreamSetsApiClientException as e:
         click.secho(str(e), err=True, fg='red')
         return
