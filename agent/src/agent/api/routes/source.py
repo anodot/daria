@@ -1,4 +1,5 @@
 from flask import jsonify, Blueprint, request
+from agent.api import routes
 from jsonschema import ValidationError
 from agent import source
 from agent.destination import HttpDestination
@@ -15,17 +16,9 @@ def list_sources():
 
 
 @sources.route('/sources', methods=['POST'])
+@routes.needs_destination
 def create():
-    if not HttpDestination.exists():
-        return jsonify('Destination is not configured. Please create agent destination first'), 400
-    try:
-        source_manager.validate_json_for_create(request.get_json())
-        source_instances = []
-        for config in request.get_json():
-            source_instances.append(source_manager.create_from_json(config).to_dict())
-    except (ValidationError, ValueError, SourceException) as e:
-        return jsonify(str(e)), 400
-    return jsonify(source_instances)
+    return routes.create(source_manager.validate_json_for_create, source_manager.create_from_json, request.get_json())
 
 
 @sources.route('/sources', methods=['PUT'])

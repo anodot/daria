@@ -4,6 +4,7 @@ import re
 
 from agent.pipeline import manager
 from agent import pipeline, source
+from agent.pipeline.pipeline import PipelineException
 from agent.streamsets_api_client import api_client, StreamSetsApiClientException
 from agent.destination import HttpDestination
 from agent.repository import source_repository, pipeline_repository
@@ -54,42 +55,15 @@ def get_pipelines_ids_complete(ctx, args, incomplete):
     return [p['pipelineId'] for p in api_client.get_pipelines() if incomplete in p['pipelineId']]
 
 
-def get_pipelines_ids():
-    return [p['pipelineId'] for p in api_client.get_pipelines()]
-
-
 def create_from_file(file):
     try:
         configs = json.load(file)
-    
-        json_schema = {
-            'type': 'array',
-            'items': {
-                'type': 'object',
-                'properties': {
-                    'source': {'type': 'string', 'enum': source_repository.get_all()},
-                    'pipeline_id': {'type': 'string', 'minLength': 1, 'maxLength': 100}
-                },
-                'required': ['source', 'pipeline_id']
-            }
-        }
-        validate_json(configs, json_schema)
-    
+        manager.validate_json_for_create(configs)
         for config in configs:
-            check_pipeline_id(config['pipeline_id'])
-            pipeline_manager = manager.PipelineManager(pipeline.create_object(config['pipeline_id'], config['source']))
-            pipeline_manager.load_config(config)
-            pipeline_manager.validate_config()
-            pipeline_manager.create()
-    
-            click.secho('Created pipeline {}'.format(config['pipeline_id']), fg='green')
-    except (StreamSetsApiClientException, ValidationError) as e:
+            manager.create_from_json(config)
+            click.secho(f'Created pipeline {config["pipeline_id"]}', fg='green')
+    except (StreamSetsApiClientException, ValidationError, PipelineException) as e:
         raise click.ClickException(str(e))
-
-
-def check_pipeline_id(pipeline_id: str):
-    if pipeline_repository.exists(pipeline_id):
-        raise click.ClickException(f"Pipeline {pipeline_id} already exists")
 
 
 @click.command()
@@ -107,7 +81,7 @@ def create(advanced, file):
     source_config_name = click.prompt('Choose source config', type=click.Choice(sources),
                                       default=get_default_source(sources))
     pipeline_id = prompt_pipeline_id()
-    pipeline_manager = manager.PipelineManager(pipeline.create_object(pipeline_id, source_config_name))
+    pipeline_manager = manager.PipelineManager(pipeline.manager.create_object(pipeline_id, source_config_name))
     previous_config = get_previous_pipeline_config(pipeline_manager.pipeline.source.type)
     # the rest of the data is prompted in the .prompt() call
     pipeline_manager.prompt(previous_config, advanced)
@@ -162,9 +136,7 @@ def extract_configs(file):
 def edit_using_file(file):
     for config in extract_configs(file):
         try:
-            pipeline_manager = manager.PipelineManager(pipeline_repository.get(config['pipeline_id']))
-            pipeline_manager.load_config(config, edit=True)
-            pipeline_manager.update()
+            manager.edit_using_json(config)
         except pipeline.pipeline.PipelineNotExistsException:
             raise click.UsageError(f'{config["pipeline_id"]} does not exist')
 
@@ -242,11 +214,11 @@ def start(pipeline_id, file):
 
     pipeline_ids = [item['pipeline_id'] for item in extract_configs(file)] if file else [pipeline_id]
 
-    for idx in pipeline_ids:
+    for pipeline_id in pipeline_ids:
         try:
-            pipeline_manager = manager.PipelineManager(pipeline_repository.get(idx))
-            click.echo(f'Pipeline {idx} is starting...')
-            pipeline_manager.start()
+            p = pipeline_repository.get(pipeline_id)
+            click.echo(f'Pipeline {pipeline_id} is starting...')
+            manager.start(p)
         except (StreamSetsApiClientException, pipeline.pipeline.PipelineException) as e:
             click.secho(str(e), err=True, fg='red')
             continue

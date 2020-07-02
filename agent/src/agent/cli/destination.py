@@ -1,7 +1,7 @@
 import click
 import requests
 
-from agent import source, pipeline
+from agent import pipeline
 from agent.destination import HttpDestination, build_urls, create
 from agent import validator
 from agent.constants import MONITORING_SOURCE_NAME
@@ -73,10 +73,10 @@ def __start_monitoring_pipeline():
             pipeline_manager.stop()
             pipeline_manager.update()
         else:
-            pipeline_manager = manager.PipelineManager(pipeline.create_object('Monitoring', MONITORING_SOURCE_NAME))
+            pipeline_manager = manager.PipelineManager(pipeline.manager.create_object('Monitoring', MONITORING_SOURCE_NAME))
             click.secho('Starting Monitoring pipeline...')
             source_repository.create_dir()
-            pipeline.create_dir()
+            pipeline_repository.create_dir()
             pipeline_manager.create()
 
         pipeline_manager.start()

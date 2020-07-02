@@ -1,6 +1,11 @@
-from flask import jsonify, Blueprint, request
+from typing import Tuple
+
+from agent.pipeline import manager
+from flask import jsonify, Blueprint, request, Response
+from agent.api import routes
+from agent.pipeline.manager import PipelineFreezeException
+from agent.pipeline.pipeline import PipelineException
 from agent.repository import pipeline_repository
-from agent import destination
 from agent.streamsets_api_client import api_client
 
 pipelines = Blueprint('pipelines', __name__)
@@ -8,44 +13,50 @@ pipelines = Blueprint('pipelines', __name__)
 
 @pipelines.route('/pipelines', methods=['GET'])
 def list_pipelines():
-    # look at https://github.com/anodot/daria/blob/d5f4f883fef3b3d5cd5cb94447b5a0c0d605e4fe/agent/src/agent/cli/pipeline.py#L221
-    # откуда нужно брать пайплайны из файлов или стримсетс?
-    pipeliness = api_client.get_pipelines()
-    pipelines_status = api_client.get_pipelines_status()
-    # print pipelines and statuses?
-    # return jsonify(pipeline_repository.get_all())
+    configs = []
+    for p in pipeline_repository.get_all():
+        configs.append(p.to_dict())
+    return jsonify(configs)
+
+
+@pipelines.route('/pipelines/<pipeline_id>/info')
+def info(pipeline_id):
+    pipeline = api_client.get_pipeline(pipeline_id)
+    pipelines_status = api_client.get_pipeline_status(pipeline_id)
+    return 'something'
 
 
 @pipelines.route('/pipelines', methods=['POST'])
-def create():
-    if not destination.HttpDestination.exists():
-        return 'Destination is not configured. Please create agent destination first', 400
-    try:
-        # source.manager.validate_json_for_create(request.get_json())
-        pipeline_instances = []
-        # for config in request.get_json():
-        #     source_instances.append(source.manager.create_from_json(config).to_dict())
-    except Exception as e:
-        return str(e), 400
-    return jsonify(pipeline_instances)
+@routes.needs_destination
+def create() -> (Response, int):
+    return routes.create(manager.validate_json_for_create, manager.create_from_json, request.get_json())
 
 
 @pipelines.route('/pipelines', methods=['PUT'])
-def edit():
+def edit() -> (Response, int):
     try:
-        # source.manager.validate_json_for_edit(request.get_json())
         pipeline_instances = []
-        # for config in request.get_json():
-        #     source_instances.append(source.manager.edit_using_json(config).to_dict())
+        for config in request.get_json():
+            pipeline_instances.append(manager.edit_using_json(config).to_dict())
     except Exception as e:
-        return str(e), 400
+        return jsonify(str(e)), 400
     return jsonify(pipeline_instances)
 
 
 @pipelines.route('/pipelines/<pipeline_id>', methods=['DELETE'])
-def delete(pipeline_id):
-    try:
-        pipeline_repository.delete_by_id(pipeline_id)
-    except Exception as e:
-        return str(e), 400
+def delete(pipeline_id) -> (Response, int):
+    if not pipeline_repository.exists(pipeline_id):
+        return jsonify(f'Pipeline {pipeline_id} does not exist'), 400
+    pipeline_repository.delete_by_id(pipeline_id)
     return ''
+
+
+@pipelines.route('/pipelines/<pipeline_id>/start', methods=['DELETE'])
+def start(pipeline_id) -> Tuple[Response, int]:
+    if not pipeline_repository.exists(pipeline_id):
+        return jsonify(f'Pipeline {pipeline_id} does not exist'), 400
+    try:
+        manager.start(pipeline_repository.get(pipeline_id))
+    except (PipelineFreezeException, PipelineException) as e:
+        return jsonify(str(e)), 400
+    return jsonify(f'Pipeline {pipeline_id} is running')

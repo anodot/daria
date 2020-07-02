@@ -7,14 +7,67 @@ import agent.pipeline.config.handlers as config_handlers
 from . import pipeline
 from agent.pipeline.config.validators import get_config_validator
 from agent.pipeline import prompt, load_client_data
-from .. import source
+from .. import source, destination
 from agent.anodot_api_client import AnodotApiClient
 from agent.constants import ERRORS_DIR, ENV_PROD
 from agent.streamsets_api_client import api_client, StreamSetsApiClientException
 from agent.tools import print_json, sdc_record_map_to_dict, if_validation_enabled
 from .. import proxy
-from ..repository import pipeline_repository
-from .pipeline import Pipeline
+from ..repository import pipeline_repository, source_repository
+from .pipeline import Pipeline, PipelineException
+from jsonschema import validate
+
+
+def validate_json_for_create(json: dict):
+    json_schema = {
+        'type': 'array',
+        'items': {
+            'type': 'object',
+            'properties': {
+                'source': {'type': 'string', 'enum': source_repository.get_all()},
+                'pipeline_id': {'type': 'string', 'minLength': 1, 'maxLength': 100}
+            },
+            'required': ['source', 'pipeline_id']
+        }
+    }
+    validate(json, json_schema)
+
+
+def create_object(pipeline_id: str, source_name: str) -> Pipeline:
+    return pipeline.Pipeline(
+        pipeline_id,
+        source_repository.get(source_name),
+        {},
+        destination.HttpDestination.get()
+    )
+
+
+def check_pipeline_id(pipeline_id: str):
+    if pipeline_repository.exists(pipeline_id):
+        raise PipelineException(f"Pipeline {pipeline_id} already exists")
+
+
+def create_from_json(config: dict):
+    check_pipeline_id(config['pipeline_id'])
+    pipeline_manager = PipelineManager(create_object(config['pipeline_id'], config['source']))
+    pipeline_manager.load_config(config)
+    pipeline_manager.validate_config()
+    pipeline_manager.create()
+
+
+def edit_using_json(config: dict):
+    pipeline_manager = PipelineManager(pipeline_repository.get(config['pipeline_id']))
+    pipeline_manager.load_config(config, edit=True)
+    pipeline_manager.update()
+
+
+def start(pipeline_obj: Pipeline):
+    api_client.start_pipeline(pipeline_obj.id)
+    wait_for_status(pipeline_obj.id, pipeline.Pipeline.STATUS_RUNNING)
+    click.secho(f'{pipeline_obj.id} pipeline is running')
+    if ENV_PROD:
+        wait_for_sending_data(pipeline_obj.id)
+        click.secho(f'{pipeline_obj.id} pipeline is sending data')
 
 
 def get_pipeline_status(pipeline_id: str) -> str:

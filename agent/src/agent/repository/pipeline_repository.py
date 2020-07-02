@@ -76,3 +76,8 @@ def delete_by_id(pipeline_id: str):
     if not exists(pipeline_id):
         raise PipelineNotExistsException(f"Pipeline {pipeline_id} doesn't exist")
     os.remove(__get_file_path(pipeline_id))
+
+
+def create_dir():
+    if not os.path.exists(PIPELINE_DIRECTORY):
+        os.mkdir(PIPELINE_DIRECTORY)

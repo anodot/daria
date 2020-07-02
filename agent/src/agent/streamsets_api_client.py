@@ -140,19 +140,29 @@ class StreamSetsApiClient:
         return self.session.post(self.build_url('pipeline', pipeline_id, 'forceStop'))
 
     @endpoint
-    def get_pipelines(self, order_by='NAME', order='ASC', label=None, text=None):
+    def get_pipelines(self, order_by='NAME', order='ASC', label=None):
         logger.info('Get pipelines')
         params = {'orderBy': order_by, 'order': order}
         if label:
             params['label'] = label
-        if text:
-            params['filterText'] = text
+        return self.session.get(self.build_url('pipelines'), params=params)\
+
+
+    @endpoint
+    def get_pipeline(self, pipeline_id: str):
+        logger.info('Get pipelines')
+        params = {'pipelineId': pipeline_id}
         return self.session.get(self.build_url('pipelines'), params=params)
 
     @endpoint
     def get_pipelines_status(self):
         logger.info('Get pipelines status')
         return self.session.get(self.build_url('pipelines', 'status'))
+
+    @endpoint
+    def get_pipeline_status(self, pipeline_id: str):
+        logger.info(f'Get pipeline {pipeline_id} status')
+        return self.session.get(self.build_url('pipelines', 'status', {'pipelineId': pipeline_id}))
 
     @endpoint
     def delete_pipeline(self, pipeline_id):
