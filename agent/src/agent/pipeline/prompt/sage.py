@@ -10,7 +10,7 @@ class PromptConfigSage(PromptConfigSchemaless):
         self.set_delay()
         self.set_interval()
         self.set_number_of_days_to_backfill()
-        self.data_preview()
+        # self.data_preview()
         self.set_values()
         self.set_measurement_names()
         self.set_dimensions()
