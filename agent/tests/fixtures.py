@@ -1,13 +1,8 @@
 import json
 import os
 import pytest
-import time
 
-from agent.streamsets_api_client import api_client
 from click.testing import CliRunner
-from agent.constants import SDC_DATA_PATH, SDC_RESULTS_PATH
-from agent.destination.http import HttpDestination
-from agent.pipeline import load_object, PipelineManager
 
 
 @pytest.fixture(scope="session")

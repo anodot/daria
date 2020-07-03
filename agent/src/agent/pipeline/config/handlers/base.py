@@ -5,7 +5,7 @@ from agent.logger import get_logger
 from agent.constants import ERRORS_DIR
 from agent.pipeline.pipeline import Pipeline
 from copy import deepcopy
-from agent.definitions import ROOT_DIR
+from agent.constants import ROOT_DIR
 
 logger = get_logger(__name__)
 

@@ -2,7 +2,7 @@ NAP = 15
 SLEEP = 60
 THREADS = 4
 DOCKER_COMPOSE_DEV = docker-compose-dev.yml
-DOCKER_TEST = docker exec -i anodot-agent pytest -x
+DOCKER_TEST = docker exec -i anodot-agent pytest -x  --disable-pytest-warnings
 DOCKER_TEST_PARALLEL = $(DOCKER_TEST) -n $(THREADS) --dist=loadfile
 DOCKER_TEST_DEV = $(DOCKER_TEST) -vv
 DOCKER_TEST_DEV_PARALLEL = $(DOCKER_TEST_PARALLEL) -vv
@@ -14,7 +14,7 @@ all: build-all test-all
 
 build-all: get-streamsets-libs build sleep setup-elastic setup-kafka
 
-test-all: run-unit-tests test-api test-destination test-input test-pipelines
+test-all: run-unit-tests test-destination test-api test-input test-pipelines
 
 ##-------------
 ## DEVELOPMENT
@@ -25,9 +25,12 @@ build-all-dev: build-dev sleep setup-elastic setup-kafka
 
 run-all-dev: clean-docker-volumes run-dev sleep setup-kafka setup-elastic
 
-test-all-dev: run-unit-tests-dev test-dev-api test-dev-destination test-dev-condition-parser test-dev-input test-dev-pipelines
+test-all-dev: run-unit-tests-dev test-dev-destination test-dev-api test-dev-condition-parser test-dev-input test-dev-pipelines
 
 rerun: clean-docker-volumes run-base-services
+
+rerun-agent:
+	docker-compose -f $(DOCKER_COMPOSE_DEV) restart agent
 
 ##-----------------------
 ## TEST SEPARATE SOURCES
@@ -93,7 +96,8 @@ test-pipelines:
 	$(DOCKER_TEST_PARALLEL) tests/test_pipelines/
 
 test-api:
-	$(DOCKER_TEST_PARALLEL) tests/api/
+	$(DOCKER_TEST) tests/api/test_destination.py
+	$(DOCKER_TEST) tests/api/source
 
 run-unit-tests:
 	$(DOCKER_TEST_PARALLEL) tests/unit/
@@ -127,7 +131,8 @@ test-dev-pipelines:
 	$(DOCKER_TEST_DEV_PARALLEL) tests/test_pipelines/
 
 test-dev-api:
-	$(DOCKER_TEST_DEV_PARALLEL) tests/api/
+	$(DOCKER_TEST_DEV) tests/api/test_destination.py
+	$(DOCKER_TEST_DEV) tests/api/source
 
 prepare-source: clean-docker-volumes run-base-services
 

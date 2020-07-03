@@ -39,8 +39,9 @@ class Source(ABC):
         pass
 
     def validate_json(self):
-        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                               'json_schema_definitions', self.VALIDATION_SCHEMA_FILE_NAME)) as f:
+        with open(os.path.join(
+                os.path.dirname(os.path.realpath(__file__)), 'json_schema_definitions', self.VALIDATION_SCHEMA_FILE_NAME
+        )) as f:
             json_schema = json.load(f)
 
         validate(self.config, json_schema)

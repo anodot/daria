@@ -2,9 +2,8 @@ import pytest
 
 from .fixtures import cli_runner
 from agent import cli as agent_cli
-from agent.destination.http import HttpDestination
+from agent.destination import HttpDestination
 from agent.streamsets_api_client import api_client
-
 
 WAITING_TIME = 3
 
@@ -13,6 +12,7 @@ WAITING_TIME = 3
 def host_id(monkeypatch):
     def constant_host_id(length=10):
         return 'ABCDEF'
+
     monkeypatch.setattr(HttpDestination, 'generate_host_id', constant_host_id)
 
 

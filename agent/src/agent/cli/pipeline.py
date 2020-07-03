@@ -2,10 +2,10 @@ import click
 import json
 import re
 
-from agent.pipeline.pipeline_manager import PipelineManager, delete_pipeline, stop_pipeline, force_stop_pipeline
+from agent.pipeline import manager
 from agent import pipeline, source
 from agent.streamsets_api_client import api_client, StreamSetsApiClientException
-from agent.destination.http import HttpDestination
+from agent.destination import HttpDestination
 from agent.repository import source_repository
 from agent.tools import infinite_retry
 from jsonschema import validate as validate_json, ValidationError
@@ -77,7 +77,7 @@ def create_from_file(file):
     
         for config in configs:
             check_pipeline_id(config['pipeline_id'])
-            pipeline_manager = PipelineManager(pipeline.create_object(config['pipeline_id'], config['source']))
+            pipeline_manager = manager.PipelineManager(pipeline.create_object(config['pipeline_id'], config['source']))
             pipeline_manager.load_config(config)
             pipeline_manager.validate_config()
             pipeline_manager.create()
@@ -107,7 +107,7 @@ def create(advanced, file):
     source_config_name = click.prompt('Choose source config', type=click.Choice(sources),
                                       default=get_default_source(sources))
     pipeline_id = prompt_pipeline_id()
-    pipeline_manager = PipelineManager(pipeline.create_object(pipeline_id, source_config_name))
+    pipeline_manager = manager.PipelineManager(pipeline.create_object(pipeline_id, source_config_name))
     previous_config = get_previous_pipeline_config(pipeline_manager.pipeline.source.type)
     # the rest of the data is prompted in the .prompt() call
     pipeline_manager.prompt(previous_config, advanced)
@@ -162,7 +162,7 @@ def extract_configs(file):
 def edit_using_file(file):
     for config in extract_configs(file):
         try:
-            pipeline_manager = PipelineManager(pipeline.load_object(config['pipeline_id']))
+            pipeline_manager = manager.PipelineManager(pipeline.load_object(config['pipeline_id']))
             pipeline_manager.load_config(config, edit=True)
             pipeline_manager.update()
         except pipeline.PipelineNotExistsException:
@@ -187,7 +187,7 @@ def edit(pipeline_id, advanced, file):
         return
 
     try:
-        pipeline_manager = PipelineManager(pipeline.load_object(pipeline_id))
+        pipeline_manager = manager.PipelineManager(pipeline.load_object(pipeline_id))
         pipeline_manager.prompt(pipeline_manager.pipeline.to_dict(), advanced=advanced)
         pipeline_manager.update()
 
@@ -207,7 +207,7 @@ def destination_logs(pipeline_id, enable):
     Enable destination response logs for a pipeline (for debugging purposes only)
     """
 
-    pipeline_manager = PipelineManager(pipeline.load_object(pipeline_id))
+    pipeline_manager = manager.PipelineManager(pipeline.load_object(pipeline_id))
     pipeline_manager.enable_destination_logs(enable)
 
     click.secho('Updated pipeline {}'.format(pipeline_id), fg='green')
@@ -244,7 +244,7 @@ def start(pipeline_id, file):
 
     for idx in pipeline_ids:
         try:
-            pipeline_manager = PipelineManager(pipeline.load_object(idx))
+            pipeline_manager = manager.PipelineManager(pipeline.load_object(idx))
             click.echo(f'Pipeline {idx} is starting...')
             pipeline_manager.start()
         except (StreamSetsApiClientException, pipeline.PipelineException) as e:
@@ -267,7 +267,7 @@ def stop(pipeline_id, file):
 
     for idx in pipeline_ids:
         try:
-            stop_pipeline(idx)
+            manager.stop_pipeline(idx)
             click.secho(f'Pipeline {idx} is stopped', fg='green')
         except (StreamSetsApiClientException, pipeline.PipelineException) as e:
             click.secho(str(e), err=True, fg='red')
@@ -282,7 +282,7 @@ def force_stop(pipeline_id):
     """
     try:
         click.echo('Force pipeline stopping...')
-        force_stop_pipeline(pipeline_id)
+        manager.force_stop_pipeline(pipeline_id)
         click.secho('Pipeline is stopped', fg='green')
     except (StreamSetsApiClientException, pipeline.PipelineException) as e:
         click.secho(str(e), err=True, fg='red')
@@ -303,11 +303,11 @@ def delete(pipeline_id, file):
 
     for idx in pipeline_ids:
         try:
-            pipeline_manager = PipelineManager(pipeline.load_object(idx))
+            pipeline_manager = manager.PipelineManager(pipeline.load_object(idx))
             pipeline_manager.delete()
             click.echo(f'Pipeline {idx} deleted')
         except pipeline.PipelineNotExistsException:
-            delete_pipeline(idx)
+            manager.delete_pipeline(idx)
             click.echo(f'Pipeline {idx} deleted')
         except (StreamSetsApiClientException, pipeline.PipelineException) as e:
             click.secho(str(e), err=True, fg='red')
@@ -413,7 +413,7 @@ def reset(pipeline_id):
     Reset pipeline's offset
     """
     try:
-        pipeline_manager = PipelineManager(pipeline.load_object(pipeline_id))
+        pipeline_manager = manager.PipelineManager(pipeline.load_object(pipeline_id))
         pipeline_manager.reset()
 
     except StreamSetsApiClientException as e:
