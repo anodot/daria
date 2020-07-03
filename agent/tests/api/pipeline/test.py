@@ -6,4 +6,6 @@ class TestDirectory:
     params = {}
 
     def test_delete(self, client):
-        client.get('/pipelines/Monitoring/info')
+        result = client.get('/pipelines/test_basic/info/10')
+        test = 1
+        # client.post('/pipelines/test_basic/start')

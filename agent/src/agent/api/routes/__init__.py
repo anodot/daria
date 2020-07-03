@@ -16,19 +16,19 @@ def needs_destination(func):
 
 def needs_pipeline(func):
     @wraps(func)
-    def wrapper(**kwargs):
+    def wrapper(*args, **kwargs):
         pipeline_id = kwargs['pipeline_id']
         if not pipeline_repository.exists(pipeline_id):
             return jsonify(f'Pipeline {pipeline_id} does not exist'), 400
-        return func
+        return func(*args, **kwargs)
     return wrapper
 
 
 def send_unwrap_exception(func):
     @wraps(func)
-    def decorator(*args, **kwargs):
+    def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
         except UnwrapFailedError as e:
-            return jsonify(str(e)), 400
-    return decorator
+            return jsonify(str(e)), 500
+    return wrapper

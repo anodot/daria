@@ -7,6 +7,23 @@ from returns.result import Result, Success, Failure
 from agent.streamsets_api_client import api_client, StreamSetsApiClientException
 
 
+def get_logs(pipeline_id: str, number_of_records: int, level: str) -> Result[list, str]:
+    try:
+        logs = api_client.get_pipeline_logs(pipeline_id, level=level)
+    except StreamSetsApiClientException as e:
+        return Failure(str(e))
+    return Success(_transform_logs(logs[:number_of_records]))
+
+
+def _transform_logs(logs: dict) -> list:
+    transformed = []
+    for item in logs:
+        if 'message' not in item:
+            continue
+        transformed.append([item['timestamp'], item['level'], item['category'], item['message']])
+    return transformed
+
+
 def get(pipeline_id: str, number_of_history_records: int) -> Result[dict, str]:
     try:
         status = api_client.get_pipeline_status(pipeline_id)

@@ -6,7 +6,7 @@ from agent.api import routes
 from agent.pipeline.pipeline import PipelineException
 from agent.repository import pipeline_repository
 from agent import source
-from agent.streamsets_api_client import api_client, StreamSetsApiClientException
+from agent.streamsets_api_client import StreamSetsApiClientException
 
 pipelines = Blueprint('pipelines', __name__)
 
@@ -83,18 +83,14 @@ def force_stop(pipeline_id):
 @send_unwrap_exception
 @needs_pipeline
 def info(pipeline_id, number_of_history_records):
-    return jsonify(pipeline.info.get(pipeline_id, number_of_history_records).unwrap())
+    return jsonify(pipeline.info.get(pipeline_id, int(number_of_history_records)).unwrap())
 
 
-@pipelines.route('/pipelines/<pipeline_id>/logs/<level>', methods=['GET'])
+@pipelines.route('/pipelines/<pipeline_id>/logs/<level>/<number_of_records>', methods=['GET'])
+@send_unwrap_exception
 @needs_pipeline
-def logs(pipeline_id, level):
-    try:
-        res = api_client.get_pipeline_logs(pipeline_id, level=level)
-    except StreamSetsApiClientException as e:
-        return jsonify(str(e)), 500
-    # todo jsonify? что если там не json?
-    return res.get_json()
+def logs(pipeline_id, level, number_of_records):
+    return jsonify(pipeline.info.get_logs(pipeline_id, level, number_of_records))
 
 
 @pipelines.route('/pipelines/<pipeline_id>/enable-destination-logs', methods=['POST'])
@@ -116,6 +112,8 @@ def disable_destination_logs(pipeline_id):
 def reset(pipeline_id):
     try:
         pipeline.manager.reset(pipeline_repository.get(pipeline_id))
+    # todo it doesn't raise StreamSetsApiClientException
+    #  on StreamSetsApiClientException we want 500 and on others we want 400
     except StreamSetsApiClientException as e:
         return jsonify(str(e)), 500
     return jsonify('logs')

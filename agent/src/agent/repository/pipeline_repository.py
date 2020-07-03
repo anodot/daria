@@ -8,7 +8,6 @@ from agent.destination import HttpDestination
 from agent.repository import source_repository
 from typing import List
 from agent.pipeline import pipeline
-from agent.pipeline import Pipeline
 
 PIPELINE_DIRECTORY = os.path.join(DATA_DIR, 'pipelines')
 
@@ -25,7 +24,7 @@ def exists(pipeline_id: str) -> bool:
     return os.path.isfile(__get_file_path(pipeline_id))
 
 
-def get(pipeline_id: str) -> Pipeline:
+def get(pipeline_id: str) -> pipeline.Pipeline:
     if not exists(pipeline_id):
         raise PipelineNotExistsException(f"Pipeline {pipeline_id} doesn't exist")
     with open(__get_file_path(pipeline_id)) as f:
@@ -45,11 +44,11 @@ def get(pipeline_id: str) -> Pipeline:
     return pipeline.Pipeline(pipeline_id, source_obj, config, destination)
 
 
-def get_by_source(source_name: str) -> List[Pipeline]:
+def get_by_source(source_name: str) -> List[pipeline.Pipeline]:
     return list(filter(lambda x: x.source.name == source_name, get_all()))
 
 
-def get_all() -> List[Pipeline]:
+def get_all() -> List[pipeline.Pipeline]:
     pipelines = []
     if not os.path.exists(PIPELINE_DIRECTORY):
         return pipelines
@@ -63,12 +62,12 @@ def get_all() -> List[Pipeline]:
     return pipelines
 
 
-def save(pipeline_obj: Pipeline):
+def save(pipeline_obj: pipeline.Pipeline):
     with open(__get_file_path(pipeline_obj.id), 'w') as f:
         json.dump(pipeline_obj.to_dict(), f)
 
 
-def delete(pipeline_obj: Pipeline):
+def delete(pipeline_obj: pipeline.Pipeline):
     delete_by_id(pipeline_obj.id)
 
 

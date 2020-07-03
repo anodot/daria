@@ -1,7 +1,7 @@
 import click
 import json
 
-from agent.cli import print_unwrap_exception
+from agent.cli.decorator import print_unwrap_exception
 from agent.pipeline import manager
 from agent import pipeline, source
 from agent.pipeline.pipeline import PipelineException
@@ -286,22 +286,13 @@ def delete(pipeline_id, file):
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
 @click.option('-l', '--lines', type=click.INT, default=10)
 @click.option('-s', '--severity', type=click.Choice(manager.LOGS_LEVEL), default=None)
+@print_unwrap_exception
 def logs(pipeline_id, lines, severity):
     """
     Show pipeline logs
     """
-    try:
-        res = api_client.get_pipeline_logs(pipeline_id, level=severity)
-    except StreamSetsApiClientException as e:
-        click.secho(str(e), err=True, fg='red')
-        return
-
-    def get_row(item):
-        if 'message' not in item:
-            return False
-        return [item['timestamp'], item['level'], item['category'], item['message']]
-
-    table = build_table(['Timestamp', 'Logs Level', 'Category', 'Message'], res[-lines:], get_row)
+    logs_ = pipeline.info.get_logs(pipeline_id, lines, severity).unwrap()
+    table = build_table(['Timestamp', 'Logs Level', 'Category', 'Message'], logs_, lambda x: x)
     click.echo(table.draw())
 
 
