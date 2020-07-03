@@ -68,19 +68,19 @@ def __prompt_access_key(dest: HttpDestination):
 def __start_monitoring_pipeline():
     try:
         if pipeline_repository.exists('Monitoring'):
-            p = pipeline_repository.get('Monitoring')
+            pipeline_ = pipeline_repository.get('Monitoring')
             click.secho('Updating Monitoring pipeline...')
-            manager.stop(p)
-            manager.update(p)
+            manager.stop(pipeline_)
+            manager.update(pipeline_)
         else:
-            p = manager.create_object('Monitoring', MONITORING_SOURCE_NAME)
-            pipeline_manager = manager.PipelineManager(p)
+            pipeline_ = manager.create_object('Monitoring', MONITORING_SOURCE_NAME)
+            pipeline_manager = manager.PipelineManager(pipeline_)
             click.secho('Starting Monitoring pipeline...')
             source_repository.create_dir()
             pipeline_repository.create_dir()
             pipeline_manager.create()
 
-        start(p)
+        manager.start(pipeline_)
     except pipeline.pipeline.PipelineException as e:
         raise click.ClickException(str(e))
 

@@ -124,9 +124,9 @@ def update(pipeline_obj: Pipeline):
             stop(pipeline_obj)
             start_pipeline = True
 
-        pipeline_obj = api_client.get_pipeline(pipeline_obj.id)
-        new_config = get_sdc_creator(pipeline_obj.source.type)\
-            .override_base_config(new_uuid=pipeline_obj['uuid'], new_title=pipeline_obj.id)
+        api_pipeline = api_client.get_pipeline(pipeline_obj.id)
+        new_config = get_sdc_creator(pipeline_obj)\
+            .override_base_config(new_uuid=api_pipeline['uuid'], new_title=pipeline_obj.id)
         api_client.update_pipeline(pipeline_obj.id, new_config)
 
     except (config_handlers.base.ConfigHandlerException, StreamSetsApiClientException) as e:

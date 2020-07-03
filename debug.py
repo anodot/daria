@@ -5,5 +5,5 @@ from agent import cli
 
 # cli.destination()
 # source_cli.create()
-# pipeline_cli.create()
+cli.pipeline.logs(['test_basic'])
 # cli.update()

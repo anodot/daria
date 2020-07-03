@@ -1,12 +1,24 @@
 import click
 
-from agent import pipeline as agent_pipeline
+from functools import wraps
+from returns.primitives.exceptions import UnwrapFailedError
+from agent import pipeline
 from agent.cli.destination import destination
 from agent.cli.pipeline import pipeline_group
 from agent.cli.source import source_group
 from agent.pipeline import manager
 from agent.repository import pipeline_repository
 from agent.version import __version__, __build_time__, __git_sha1__
+
+
+def print_unwrap_exception(func):
+    @wraps(func)
+    def decorator(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except UnwrapFailedError as e:
+            raise click.ClickException(str(e))
+    return decorator
 
 
 class DefaultHelp(click.Group):
@@ -41,7 +53,7 @@ def update():
         try:
             manager.update(p)
             click.secho(f'Pipeline {p.id} updated', fg='green')
-        except agent_pipeline.pipeline.PipelineException as e:
+        except pipeline.pipeline.PipelineException as e:
             print(str(e))
             continue
 

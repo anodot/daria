@@ -53,3 +53,4 @@ Flask-WTF==0.14
 werkzeug==0.16.1
 result==0.5.0
 wtforms-json==0.3.3
+returns==0.14.0

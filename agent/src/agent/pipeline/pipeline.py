@@ -4,6 +4,14 @@ from agent.destination import HttpDestination
 from enum import Enum
 
 
+class PipelineException(Exception):
+    pass
+
+
+class PipelineNotExistsException(PipelineException):
+    pass
+
+
 class TimestampType(Enum):
     STRING = 'string'
     DATETIME = 'datetime'
@@ -211,11 +219,3 @@ class Pipeline:
             'pipeline_type': [self.source.type],
             **self.tags
         }
-
-
-class PipelineException(Exception):
-    pass
-
-
-class PipelineNotExistsException(PipelineException):
-    pass

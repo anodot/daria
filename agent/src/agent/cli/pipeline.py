@@ -1,7 +1,7 @@
 import click
 import json
-import re
 
+from agent.cli import print_unwrap_exception
 from agent.pipeline import manager
 from agent import pipeline, source
 from agent.pipeline.pipeline import PipelineException
@@ -10,7 +10,6 @@ from agent.destination import HttpDestination
 from agent.repository import source_repository, pipeline_repository
 from agent.tools import infinite_retry
 from jsonschema import validate as validate_json, ValidationError
-from datetime import datetime
 from texttable import Texttable
 
 
@@ -309,66 +308,40 @@ def logs(pipeline_id, lines, severity):
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
 @click.option('-l', '--lines', type=click.INT, default=10)
+@print_unwrap_exception
 def info(pipeline_id, lines):
     """
     Show pipeline status, errors if any, statistics about amount of records sent
     """
-    # status
-    try:
-        status = api_client.get_pipeline_status(pipeline_id)
-    except StreamSetsApiClientException as e:
-        click.secho(str(e), err=True, fg='red')
-        return
+    info_ = pipeline.info.get(pipeline_id, lines).unwrap()
     click.secho('=== STATUS ===', fg='green')
-    click.echo('{status} {message}'.format(**status))
+    click.echo(info_['status'])
 
-    def get_timestamp(utc_time):
-        return datetime.utcfromtimestamp(utc_time / 1000).strftime('%Y-%m-%d %H:%M:%S')
+    if info_['metrics']:
+        click.echo('')
+        click.echo(info_['metrics'])
 
-    metrics = json.loads(status['metrics']) if status['metrics'] else api_client.get_pipeline_metrics(pipeline_id)
-
-    def get_metrics_string(metrics_obj):
-        stats = {
-            'in': metrics_obj['counters']['pipeline.batchInputRecords.counter']['count'],
-            'out': metrics_obj['counters']['pipeline.batchOutputRecords.counter']['count'],
-            'errors': metrics_obj['counters']['pipeline.batchErrorRecords.counter']['count'],
-        }
-        stats['errors_perc'] = stats['errors'] * 100 / stats['in'] if stats['in'] != 0 else 0
-        return 'In: {in} - Out: {out} - Errors {errors} ({errors_perc:.1f}%)'.format(**stats)
-
-    if metrics:
-        click.echo(get_metrics_string(metrics))
-
-    for name, counter in metrics['counters'].items():
-        stage_name = re.search('stage\.(.+)\.errorRecords\.counter', name)
-        if counter['count'] == 0 or not stage_name:
-            continue
-
+    if info_['metric_errors']:
         click.echo('')
         click.secho('=== ERRORS ===', fg='red')
-        for error in api_client.get_pipeline_errors(pipeline_id, stage_name.group(1)):
-            click.echo(f'{get_timestamp(error["header"]["errorTimestamp"])} - {error["header"]["errorMessage"]}')
+        for error in info_['metric_errors']:
+            click.echo(error)
 
-    # issues
-    pipeline_info = api_client.get_pipeline(pipeline_id)
-    if pipeline_info['issues']['issueCount'] > 0:
+    if info_['pipeline_issues']:
         click.echo('')
         click.secho('=== ISSUES ===', bold=True, fg='red')
-        for i in pipeline_info['issues']['pipelineIssues']:
-            click.echo('{level} - {configGroup} - {configName} - {message}'.format(**i))
-        for stage, issues in pipeline_info['issues']['stageIssues'].items():
-            click.secho(stage, bold=True)
-            for i in issues:
-                click.echo('{level} - {configGroup} - {configName} - {message}'.format(**i))
+        for issue in info_['pipeline_issues']:
+            click.echo(issue)
 
-    # history
-    def get_row(item):
-        metrics_str = get_metrics_string(json.loads(item['metrics'])) if item['metrics'] else ' '
-        message = item['message'] if item['message'] else ' '
-        return [get_timestamp(item['timeStamp']), item['status'], message, metrics_str]
+    if info_['stage_issues']:
+        click.echo('')
+        click.secho('=== STAGE ISSUES ===', bold=True, fg='red')
+        for stage, issues in info_['stage_issues'].items():
+            click.secho('Stage name: ' + stage, bold=True)
+            for issue in issues:
+                click.echo(issue)
 
-    history = api_client.get_pipeline_history(pipeline_id)
-    table = build_table(['Timestamp', 'Status', 'Message', 'Records count'], history[:lines], get_row)
+    table = build_table(['Timestamp', 'Status', 'Message', 'Records count'], info_['history'], lambda x: x)
     click.echo('')
     click.secho('=== HISTORY ===', fg='green')
     click.echo(table.draw())

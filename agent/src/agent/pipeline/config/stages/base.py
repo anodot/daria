@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from agent.pipeline import Pipeline
+from agent import pipeline
 
 
 class Stage(ABC):
