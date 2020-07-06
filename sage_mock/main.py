@@ -19,7 +19,7 @@ def search():
 
     data = [
         {"ver": 1, "Country": "USA", "AdType": "Display",
-         "Exchange": "DoubleClick", "Clicks": 6784.6904, "@timestamp": "2017-12-10T01:00.000:00Z"},
+         "Exchange": "DoubleClick", "Clicks": 6784.6904, "@timestamp": "2017-12-10T01:00:00.000Z"},
         {"ver": 1, "Country": "USA", "AdType": "Display",
          "Exchange": "DoubleClick", "Clicks": 6839, "@timestamp": "2017-12-10T02:00:00.000Z"},
         {"ver": 1, "Country": "USA", "AdType": "Search",
