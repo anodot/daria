@@ -36,8 +36,8 @@ def search():
          "Exchange": "DoubleClick", "Clicks": 7427.7744, "@timestamp": "2017-12-10T07:00:00.000Z"}
     ]
     response = []
-    time_start = parse_date_string(request.json.get('startTime'))
-    time_end = parse_date_string(request.json.get('endTime'))
+    time_start = datetime.strptime(request.json.get('startTime'), '%Y-%m-%dT%H:%M:%SZ')
+    time_end = datetime.strptime(request.json.get('endTime'), '%Y-%m-%dT%H:%M:%SZ')
     for item in data:
         date = parse_date_string(item['@timestamp'])
         if date < time_start or date > time_end:
