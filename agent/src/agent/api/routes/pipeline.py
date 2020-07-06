@@ -134,3 +134,4 @@ def reset(pipeline_id):
         pipeline.manager.reset(pipeline_repository.get(pipeline_id))
     except StreamSetsApiClientException as e:
         return jsonify(str(e)), 500
+    return jsonify('')

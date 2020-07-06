@@ -10,14 +10,12 @@ class TestInflux:
                 'name': 'influx',
                 'config': {
                     'host': 'http://influx:8086',
-                    # 'host': 'http://localhost:8086',
                     'username': 'admin',
                     'password': 'admin',
                     'db': 'test',
                 }
             }],
             'er': b'[{"config":{"db":"test","host":"http://influx:8086","password":"admin","username":"admin"},"name":"influx","type":"influx"}]\n'
-            # 'er': b'[{"config":{"db":"test","host":"http://localhost:8086","password":"admin","username":"admin"},"name":"influx","type":"influx"}]\n'
         }],
         'test_create': [{
             'data': [{
@@ -92,6 +90,10 @@ class TestInflux:
 
     def test_stop(self, client):
         result = client.post('/pipelines/test_influx/stop')
+        assert result.status_code == 200
+
+    def test_reset(self, client):
+        result = client.post('/pipelines/test_influx/reset')
         assert result.status_code == 200
 
     def test_list(self, client, er):

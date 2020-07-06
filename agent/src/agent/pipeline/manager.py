@@ -32,7 +32,8 @@ def get_sdc_creator(pipeline_obj: Pipeline) -> config_handlers.base.BaseConfigHa
         source.TYPE_POSTGRES: config_handlers.jdbc.JDBCConfigHandler,
         source.TYPE_ELASTIC: config_handlers.elastic.ElasticConfigHandler,
         source.TYPE_SPLUNK: config_handlers.tcp.TCPConfigHandler,
-        source.TYPE_DIRECTORY: config_handlers.directory.DirectoryConfigHandler
+        source.TYPE_DIRECTORY: config_handlers.directory.DirectoryConfigHandler,
+        source.TYPE_SAGE: config_handlers.sage.SageConfigHandler,
     }
     return handlers[pipeline_obj.source.type](pipeline_obj)
 
@@ -47,7 +48,8 @@ def get_file_loader(source_type: str):
         source.TYPE_POSTGRES: load_client_data.JDBCLoadClientData,
         source.TYPE_ELASTIC: load_client_data.ElasticLoadClientData,
         source.TYPE_SPLUNK: load_client_data.TcpLoadClientData,
-        source.TYPE_DIRECTORY: load_client_data.DirectoryLoadClientData
+        source.TYPE_DIRECTORY: load_client_data.DirectoryLoadClientData,
+        source.TYPE_SAGE: load_client_data.SageLoadClientData,
     }
     return loaders[source_type]
 
@@ -62,7 +64,8 @@ def get_prompter(source_type: str):
         source.TYPE_POSTGRES: prompt.PromptConfigJDBC,
         source.TYPE_ELASTIC: prompt.PromptConfigElastic,
         source.TYPE_SPLUNK: prompt.PromptConfigTCP,
-        source.TYPE_DIRECTORY: prompt.PromptConfigDirectory
+        source.TYPE_DIRECTORY: prompt.PromptConfigDirectory,
+        source.TYPE_SAGE: prompt.PromptConfigSage,
     }
     return prompters[source_type]
 

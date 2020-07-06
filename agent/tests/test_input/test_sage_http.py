@@ -32,9 +32,11 @@ class TestSage:
         interval = 60*24
         result = cli_runner.invoke(pipeline_cli.create, options,
                                    input=f"test_sage\n{name}\n{query_file_path}\n\n{interval}\n{days_to_backfill}\n{value}\nver Country Exchange\n{advanced_options}\n")
+        print(result.output)
         assert result.exit_code == 0
         assert api_client.get_pipeline(name)
 
     def test_edit(self, cli_runner, options, value):
         result = cli_runner.invoke(pipeline_cli.edit, options, input=f"\n\n\n\n{value}\n\n\n\n\n\n\n\n\n")
+        print(result.output)
         assert result.exit_code == 0
