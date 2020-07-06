@@ -160,11 +160,6 @@ class StreamSetsApiClient:
         return self.session.get(self.build_url('pipelines', 'status'))
 
     @endpoint
-    def get_pipeline_status(self, pipeline_id: str):
-        logger.info(f'Get pipeline {pipeline_id} status')
-        return self.session.get(self.build_url('pipelines', 'status', {'pipelineId': pipeline_id}))
-
-    @endpoint
     def delete_pipeline(self, pipeline_id):
         """
 
@@ -175,16 +170,16 @@ class StreamSetsApiClient:
         return self.session.delete(self.build_url('pipeline', pipeline_id))
 
     @endpoint
-    def get_pipeline_logs(self, pipeline_id, level=None):
+    def get_pipeline_logs(self, pipeline_id, severity=None):
         """
         :param pipeline_id: string
-        :param level: string [INFO, ERROR], default - None
+        :param severity: string [INFO, ERROR], default - None
         :return:
         """
-        logger.info(f'Get pipeline logs: {pipeline_id}, logging level:{level}')
+        logger.info(f'Get pipeline logs: {pipeline_id}, logging severity:{severity}')
         params = {'pipeline': pipeline_id, 'endingOffset': -1}
-        if level:
-            params['level'] = level
+        if severity:
+            params['severity'] = severity
         return self.session.get(self.build_url('system', 'logs'), params=params)
 
     @endpoint
@@ -198,12 +193,7 @@ class StreamSetsApiClient:
         return self.session.get(self.build_url('pipeline', pipeline_id))
 
     @endpoint
-    def get_pipeline_status(self, pipeline_id):
-        """
-
-        :param pipeline_id: string
-        :return:
-        """
+    def get_pipeline_status(self, pipeline_id: str):
         logger.info(f'Get pipeline status {pipeline_id}')
         return self.session.get(self.build_url('pipeline', pipeline_id, 'status'))
 

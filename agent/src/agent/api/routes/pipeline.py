@@ -1,3 +1,5 @@
+import logging
+
 from jsonschema import ValidationError
 from agent.api.routes import needs_pipeline
 from agent import pipeline
@@ -60,16 +62,21 @@ def start(pipeline_id):
         pipeline.manager.start(pipeline_repository.get(pipeline_id))
     except (pipeline.manager.PipelineFreezeException, PipelineException) as e:
         return jsonify(str(e)), 400
-    return jsonify(f'Pipeline {pipeline_id} is running')
+    return jsonify('')
 
 
 @pipelines.route('/pipelines/<pipeline_id>/stop', methods=['POST'])
 @needs_pipeline
 def stop(pipeline_id):
+    if not pipeline.manager.can_stop(pipeline_id):
+        return f'Cannot stop the pipeline `{pipeline_id}` that is in status {pipeline.manager.get_pipeline_status(pipeline_id)}', 400
     try:
         pipeline.manager.stop_by_id(pipeline_id)
+    except StreamSetsApiClientException as e:
+        return jsonify(str(e)), 400
     except pipeline.manager.PipelineFreezeException as e:
         return jsonify(str(e)), 400
+    return jsonify('')
 
 
 @pipelines.route('/pipelines/<pipeline_id>/force-stop', methods=['POST'])
@@ -81,20 +88,27 @@ def force_stop(pipeline_id):
         return jsonify(str(e)), 400
 
 
-@pipelines.route('/pipelines/<pipeline_id>/info/<number_of_history_records>', methods=['GET'])
+@pipelines.route('/pipelines/<pipeline_id>/info', methods=['GET'])
 @needs_pipeline
-def info(pipeline_id, number_of_history_records):
+def info(pipeline_id):
+    number_of_history_records = int(request.args.get('number_of_history_records', 10))
     try:
-        return jsonify(pipeline.info.get(pipeline_id, int(number_of_history_records)))
+        return jsonify(pipeline.info.get(pipeline_id, number_of_history_records))
     except StreamSetsApiClientException as e:
         return jsonify(str(e)), 500
 
 
-@pipelines.route('/pipelines/<pipeline_id>/logs/<level>/<number_of_records>', methods=['GET'])
+@pipelines.route('/pipelines/<pipeline_id>/logs', methods=['GET'])
 @needs_pipeline
-def logs(pipeline_id, level, number_of_records):
+def logs(pipeline_id):
+    if 'severity' in request.args:
+        if request.args['severity'] not in pipeline.manager.LOG_LEVELS:
+            return \
+                f'{request.args["severity"]} logging level is not one of {", ".join(pipeline.manager.LOG_LEVELS)}', 400
+    severity = request.args.get('severity', logging.getLevelName(logging.INFO))
+    number_of_records = int(request.args.get('number_of_records', 10))
     try:
-        return jsonify(pipeline.info.get_logs(pipeline_id, level, number_of_records))
+        return jsonify(pipeline.info.get_logs(pipeline_id, severity, number_of_records))
     except StreamSetsApiClientException as e:
         return jsonify(str(e)), 500
 
@@ -118,8 +132,5 @@ def disable_destination_logs(pipeline_id):
 def reset(pipeline_id):
     try:
         pipeline.manager.reset(pipeline_repository.get(pipeline_id))
-    # todo it doesn't raise StreamSetsApiClientException
-    #  on StreamSetsApiClientException we want 500 and on others we want 400
     except StreamSetsApiClientException as e:
         return jsonify(str(e)), 500
-    return jsonify('logs')

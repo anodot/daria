@@ -1,3 +1,5 @@
+import logging
+
 import click
 import os
 import shutil
@@ -17,7 +19,7 @@ from ..repository import pipeline_repository, source_repository
 from .pipeline import Pipeline, PipelineException
 from jsonschema import validate
 
-LOGS_LEVEL = ['INFO', 'ERROR']
+LOG_LEVELS = [logging.getLevelName(logging.INFO), logging.getLevelName(logging.ERROR)]
 
 
 def get_sdc_creator(pipeline_obj: Pipeline) -> config_handlers.base.BaseConfigHandler:
@@ -94,18 +96,20 @@ def check_pipeline_id(pipeline_id: str):
         raise PipelineException(f"Pipeline {pipeline_id} already exists")
 
 
-def create_from_json(config: dict):
+def create_from_json(config: dict) -> Pipeline:
     check_pipeline_id(config['pipeline_id'])
     pipeline_manager = PipelineManager(create_object(config['pipeline_id'], config['source']))
     pipeline_manager.load_config(config)
     pipeline_manager.validate_config()
     pipeline_manager.create()
+    return pipeline_manager.pipeline
 
 
-def edit_using_json(config: dict):
+def edit_using_json(config: dict) -> Pipeline:
     pipeline_manager = PipelineManager(pipeline_repository.get(config['pipeline_id']))
     pipeline_manager.load_config(config, edit=True)
     update(pipeline_manager.pipeline)
+    return pipeline_manager.pipeline
 
 
 def start(pipeline_obj: Pipeline):
@@ -207,6 +211,10 @@ def force_stop_pipeline(pipeline_id: str):
 
 def stop(pipeline_obj: Pipeline):
     return stop_by_id(pipeline_obj.id)
+
+
+def can_stop(pipeline_id: str) -> bool:
+    return get_pipeline_status(pipeline_id) == Pipeline.STATUS_RUNNING
 
 
 def stop_by_id(pipeline_id: str):

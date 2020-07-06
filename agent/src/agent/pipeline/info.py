@@ -6,8 +6,8 @@ from typing import Optional
 from agent.streamsets_api_client import api_client
 
 
-def get_logs(pipeline_id: str, number_of_records: int, level: str) -> list:
-    logs = api_client.get_pipeline_logs(pipeline_id, level=level)
+def get_logs(pipeline_id: str, severity: str, number_of_records: int) -> list:
+    logs = api_client.get_pipeline_logs(pipeline_id, severity=severity)
     return _transform_logs(logs[:number_of_records])
 
 
@@ -16,7 +16,7 @@ def _transform_logs(logs: dict) -> list:
     for item in logs:
         if 'message' not in item:
             continue
-        transformed.append([item['timestamp'], item['level'], item['category'], item['message']])
+        transformed.append([item['timestamp'], item['severity'], item['category'], item['message']])
     return transformed
 
 
@@ -68,7 +68,7 @@ def _extract_pipeline_issues(pipeline_info: dict) -> list:
     pipeline_issues = []
     if pipeline_info['issues']['issueCount'] > 0:
         for i in pipeline_info['issues']['pipelineIssues']:
-            pipeline_issues.append('{level} - {configGroup} - {configName} - {message}'.format(**i))
+            pipeline_issues.append('{severity} - {configGroup} - {configName} - {message}'.format(**i))
     return pipeline_issues
 
 
@@ -79,7 +79,7 @@ def _extract_stage_issues(pipeline_info: dict) -> dict:
             if stage not in stage_issues:
                 stage_issues[stage] = []
             for i in issues:
-                stage_issues[stage].append('{level} - {configGroup} - {configName} - {message}'.format(**i))
+                stage_issues[stage].append('{severity} - {configGroup} - {configName} - {message}'.format(**i))
     return stage_issues
 
 

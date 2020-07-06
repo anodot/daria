@@ -284,16 +284,16 @@ def delete(pipeline_id, file):
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
 @click.option('-l', '--lines', type=click.INT, default=10)
-@click.option('-s', '--severity', type=click.Choice(manager.LOGS_LEVEL), default=None)
+@click.option('-s', '--severity', type=click.Choice([manager.LOG_LEVELS]), default=None)
 def logs(pipeline_id, lines, severity):
     """
     Show pipeline logs
     """
     try:
-        logs_ = pipeline.info.get_logs(pipeline_id, lines, severity).unwrap()
+        logs_ = pipeline.info.get_logs(pipeline_id, severity, lines)
     except StreamSetsApiClientException as e:
         raise click.ClickException(str(e))
-    table = build_table(['Timestamp', 'Logs Level', 'Category', 'Message'], logs_, lambda x: x)
+    table = build_table(['Timestamp', 'Severity', 'Category', 'Message'], logs_, lambda x: x)
     click.echo(table.draw())
 
 
