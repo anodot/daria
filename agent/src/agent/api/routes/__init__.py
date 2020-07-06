@@ -1,7 +1,6 @@
 import agent.destination
 
 from functools import wraps
-from returns.primitives.exceptions import UnwrapFailedError
 from flask import jsonify
 from agent.repository import pipeline_repository
 
@@ -21,14 +20,4 @@ def needs_pipeline(func):
         if not pipeline_repository.exists(pipeline_id):
             return jsonify(f'Pipeline {pipeline_id} does not exist'), 400
         return func(*args, **kwargs)
-    return wrapper
-
-
-def send_unwrap_exception(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except UnwrapFailedError as e:
-            return jsonify(str(e)), 500
     return wrapper

@@ -3,16 +3,12 @@ import re
 
 from datetime import datetime
 from typing import Optional
-from returns.result import Result, Success, Failure
-from agent.streamsets_api_client import api_client, StreamSetsApiClientException
+from agent.streamsets_api_client import api_client
 
 
-def get_logs(pipeline_id: str, number_of_records: int, level: str) -> Result[list, str]:
-    try:
-        logs = api_client.get_pipeline_logs(pipeline_id, level=level)
-    except StreamSetsApiClientException as e:
-        return Failure(str(e))
-    return Success(_transform_logs(logs[:number_of_records]))
+def get_logs(pipeline_id: str, number_of_records: int, level: str) -> list:
+    logs = api_client.get_pipeline_logs(pipeline_id, level=level)
+    return _transform_logs(logs[:number_of_records])
 
 
 def _transform_logs(logs: dict) -> list:
@@ -24,23 +20,20 @@ def _transform_logs(logs: dict) -> list:
     return transformed
 
 
-def get(pipeline_id: str, number_of_history_records: int) -> Result[dict, str]:
-    try:
-        status = api_client.get_pipeline_status(pipeline_id)
-        metrics = json.loads(status['metrics']) if status['metrics'] else api_client.get_pipeline_metrics(pipeline_id)
-        pipeline_info = api_client.get_pipeline(pipeline_id)
-        history = api_client.get_pipeline_history(pipeline_id)
-        info = {
-            'status': '{status} {message}'.format(**status),
-            'metrics': _get_metrics_string(metrics),
-            'metric_errors': _get_metric_errors(pipeline_id, metrics),
-            'pipeline_issues': _extract_pipeline_issues(pipeline_info),
-            'stage_issues': _extract_stage_issues(pipeline_info),
-            'history': _get_history_info(history, number_of_history_records)
-        }
-    except StreamSetsApiClientException as e:
-        return Failure(str(e))
-    return Success(info)
+def get(pipeline_id: str, number_of_history_records: int) -> dict:
+    status = api_client.get_pipeline_status(pipeline_id)
+    metrics = json.loads(status['metrics']) if status['metrics'] else api_client.get_pipeline_metrics(pipeline_id)
+    pipeline_info = api_client.get_pipeline(pipeline_id)
+    history = api_client.get_pipeline_history(pipeline_id)
+    info = {
+        'status': '{status} {message}'.format(**status),
+        'metrics': _get_metrics_string(metrics),
+        'metric_errors': _get_metric_errors(pipeline_id, metrics),
+        'pipeline_issues': _extract_pipeline_issues(pipeline_info),
+        'stage_issues': _extract_stage_issues(pipeline_info),
+        'history': _get_history_info(history, number_of_history_records)
+    }
+    return info
 
 
 def _get_metrics_string(metrics_obj):

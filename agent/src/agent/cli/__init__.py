@@ -1,6 +1,6 @@
 import click
 
-from agent.cli import destination
+from agent.cli.destination import destination
 from agent.cli import pipeline
 from agent.cli import source
 from agent.repository import pipeline_repository
@@ -46,7 +46,7 @@ def update():
 
 agent.add_command(source.source_group)
 agent.add_command(pipeline.pipeline_group)
-agent.add_command(destination.destination)
+agent.add_command(destination)
 agent.add_command(update)
 
 if __name__ == '__main__':

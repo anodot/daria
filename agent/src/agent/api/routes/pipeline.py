@@ -1,5 +1,5 @@
 from jsonschema import ValidationError
-from agent.api.routes import needs_pipeline, send_unwrap_exception
+from agent.api.routes import needs_pipeline
 from agent import pipeline
 from flask import jsonify, Blueprint, request
 from agent.api import routes
@@ -28,8 +28,10 @@ def create():
         source_instances = []
         for config in configs:
             source_instances.append(pipeline.manager.create_from_json(config).to_dict())
-    except (ValidationError, PipelineException, source.SourceNotExists, source.SourceConfigDeprecated) as e:
+    except (ValidationError, source.SourceNotExists, source.SourceConfigDeprecated) as e:
         return jsonify(str(e)), 400
+    except PipelineException as e:
+        return jsonify(str(e)), 500
     return jsonify(source_instances)
 
 
@@ -80,17 +82,21 @@ def force_stop(pipeline_id):
 
 
 @pipelines.route('/pipelines/<pipeline_id>/info/<number_of_history_records>', methods=['GET'])
-@send_unwrap_exception
 @needs_pipeline
 def info(pipeline_id, number_of_history_records):
-    return jsonify(pipeline.info.get(pipeline_id, int(number_of_history_records)).unwrap())
+    try:
+        return jsonify(pipeline.info.get(pipeline_id, int(number_of_history_records)))
+    except StreamSetsApiClientException as e:
+        return jsonify(str(e)), 500
 
 
 @pipelines.route('/pipelines/<pipeline_id>/logs/<level>/<number_of_records>', methods=['GET'])
-@send_unwrap_exception
 @needs_pipeline
 def logs(pipeline_id, level, number_of_records):
-    return jsonify(pipeline.info.get_logs(pipeline_id, level, number_of_records))
+    try:
+        return jsonify(pipeline.info.get_logs(pipeline_id, level, number_of_records))
+    except StreamSetsApiClientException as e:
+        return jsonify(str(e)), 500
 
 
 @pipelines.route('/pipelines/<pipeline_id>/enable-destination-logs', methods=['POST'])

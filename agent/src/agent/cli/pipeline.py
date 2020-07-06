@@ -1,7 +1,6 @@
 import click
 import json
 
-from agent.cli.decorator import print_unwrap_exception
 from agent.pipeline import manager
 from agent import pipeline, source
 from agent.pipeline.pipeline import PipelineException
@@ -286,12 +285,14 @@ def delete(pipeline_id, file):
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
 @click.option('-l', '--lines', type=click.INT, default=10)
 @click.option('-s', '--severity', type=click.Choice(manager.LOGS_LEVEL), default=None)
-@print_unwrap_exception
 def logs(pipeline_id, lines, severity):
     """
     Show pipeline logs
     """
-    logs_ = pipeline.info.get_logs(pipeline_id, lines, severity).unwrap()
+    try:
+        logs_ = pipeline.info.get_logs(pipeline_id, lines, severity).unwrap()
+    except StreamSetsApiClientException as e:
+        raise click.ClickException(str(e))
     table = build_table(['Timestamp', 'Logs Level', 'Category', 'Message'], logs_, lambda x: x)
     click.echo(table.draw())
 
@@ -299,12 +300,14 @@ def logs(pipeline_id, lines, severity):
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
 @click.option('-l', '--lines', type=click.INT, default=10)
-@print_unwrap_exception
 def info(pipeline_id, lines):
     """
     Show pipeline status, errors if any, statistics about amount of records sent
     """
-    info_ = pipeline.info.get(pipeline_id, lines).unwrap()
+    try:
+        info_ = pipeline.info.get(pipeline_id, lines)
+    except StreamSetsApiClientException as e:
+        raise click.ClickException(str(e))
     click.secho('=== STATUS ===', fg='green')
     click.echo(info_['status'])
 
