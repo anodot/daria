@@ -164,8 +164,7 @@ def create(
     proxy_password: str = None,
     host_id: str = None,
 ) -> Result[HttpDestination, str]:
-    return __build(HttpDestination(), token, url, access_key,
-                   proxy_host, proxy_username, proxy_password, host_id)
+    return _build(HttpDestination(), token, url, access_key, proxy_host, proxy_username, proxy_password, host_id)
 
 
 def edit(
@@ -178,10 +177,10 @@ def edit(
     proxy_password: str = None,
     host_id: str = None,
 ) -> Result[HttpDestination, str]:
-    return __build(destination, token, url, access_key, proxy_host, proxy_username, proxy_password, host_id)
+    return _build(destination, token, url, access_key, proxy_host, proxy_username, proxy_password, host_id)
 
 
-def __build(
+def _build(
     destination: HttpDestination,
     token: str,
     url: str,

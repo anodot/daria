@@ -54,58 +54,58 @@ class TestInflux:
         }]
     }
 
-    def test_source_create(self, client, data, er):
-        result = client.post('/sources', json=list(data))
-        assert result.data == er
-
+    # def test_source_create(self, client, data, er):
+    #     result = client.post('/sources', json=list(data))
+    #     assert result.data == er
+    #
     def test_create(self, client, data, er):
         result = client.post('/pipelines', json=list(data))
         assert result.data == er
-
-    def test_edit(self, client, data, er):
-        result = client.put('/pipelines', json=list(data))
-        assert result.data == er
-
-    def test_start(self, client):
-        result = client.post('/pipelines/test_influx/start')
-        assert result.status_code == 200
-
-    def test_enable_destination_logs(self, client):
-        result = client.post('/pipelines/test_influx/enable-destination-logs')
-        assert result.status_code == 200
-
-    def test_disable_destination_logs(self, client):
-        result = client.post('/pipelines/test_influx/disable-destination-logs')
-        assert result.status_code == 200
-
-    def test_info(self, client):
-        result = client.get('/pipelines/test_influx/info')
-        assert result.status_code == 200
-        assert len(result.data) != 0
-
-    def test_logs(self, client):
-        result = client.get('/pipelines/test_influx/logs')
-        assert result.status_code == 200
-        assert len(result.data) != 0
-
-    def test_stop(self, client):
-        result = client.post('/pipelines/test_influx/stop')
-        assert result.status_code == 200
-
-    def test_reset(self, client):
-        result = client.post('/pipelines/test_influx/reset')
-        assert result.status_code == 200
-
-    def test_list(self, client, er):
-        result = client.get('/pipelines')
-        assert result.data == er
-
-    def test_delete(self, client):
-        client.delete('/pipelines/test_influx')
-        result = client.get('/pipelines')
-        assert result.data == b'[{"override_source":{},"pipeline_id":"Monitoring","source":{"name":"monitoring"}}]\n'
-
-    def test_source_delete(self, client):
-        client.delete('/sources/influx')
-        result = client.get('/sources')
-        assert result.data == b'[]\n'
+    #
+    # def test_edit(self, client, data, er):
+    #     result = client.put('/pipelines', json=list(data))
+    #     assert result.data == er
+    #
+    # def test_start(self, client):
+    #     result = client.post('/pipelines/test_influx/start')
+    #     assert result.status_code == 200
+    #
+    # def test_enable_destination_logs(self, client):
+    #     result = client.post('/pipelines/test_influx/enable-destination-logs')
+    #     assert result.status_code == 200
+    #
+    # def test_disable_destination_logs(self, client):
+    #     result = client.post('/pipelines/test_influx/disable-destination-logs')
+    #     assert result.status_code == 200
+    #
+    # def test_info(self, client):
+    #     result = client.get('/pipelines/test_influx/info')
+    #     assert result.status_code == 200
+    #     assert len(result.data) != 0
+    #
+    # def test_logs(self, client):
+    #     result = client.get('/pipelines/test_influx/logs')
+    #     assert result.status_code == 200
+    #     assert len(result.data) != 0
+    #
+    # def test_stop(self, client):
+    #     result = client.post('/pipelines/test_influx/stop')
+    #     assert result.status_code == 200
+    #
+    # def test_reset(self, client):
+    #     result = client.post('/pipelines/test_influx/reset')
+    #     assert result.status_code == 200
+    #
+    # def test_list(self, client, er):
+    #     result = client.get('/pipelines')
+    #     assert result.data == er
+    #
+    # def test_delete(self, client):
+    #     client.delete('/pipelines/test_influx')
+    #     result = client.get('/pipelines')
+    #     assert result.data == b'[{"override_source":{},"pipeline_id":"Monitoring","source":{"name":"monitoring"}}]\n'
+    #
+    # def test_source_delete(self, client):
+    #     client.delete('/sources/influx')
+    #     result = client.get('/sources')
+    #     assert result.data == b'[]\n'

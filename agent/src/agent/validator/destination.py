@@ -1,16 +1,13 @@
 import urllib
 import requests
+import urllib.parse
 
-from urllib.parse import urlparse
 from agent.anodot_api_client import AnodotApiClient
 from agent import destination
 from agent import proxy
 
 
 def is_valid_destination_url(url: str, proxy_obj: proxy.Proxy = None) -> bool:
-    result = urlparse(url)
-    if not result.netloc or not result.scheme:
-        return False
     status_url = urllib.parse.urljoin(url, destination.HttpDestination.STATUS_URL)
     try:
         response = requests.get(status_url, proxies=proxy.get_config(proxy_obj), timeout=5)

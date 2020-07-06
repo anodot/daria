@@ -239,12 +239,12 @@ def reset(pipeline_obj: Pipeline):
         raise pipeline.PipelineException(str(e))
 
 
-def __delete_locally(pipeline_obj: Pipeline):
+def _delete_locally(pipeline_obj: Pipeline):
     if pipeline_repository.exists(pipeline_obj.id):
         pipeline_repository.delete_by_id(pipeline_obj.id)
 
 
-def __delete_schema(pipeline_obj: Pipeline):
+def _delete_schema(pipeline_obj: Pipeline):
     if 'schema' in pipeline_obj.config:
         anodot_api_client = AnodotApiClient(pipeline_obj.destination.access_key,
                                             proxy.get_config(pipeline_obj.destination.proxy),
@@ -252,37 +252,37 @@ def __delete_schema(pipeline_obj: Pipeline):
         anodot_api_client.delete_schema(pipeline_obj.config['schema']['id'])
 
 
-def __delete_from_streamsets(pipeline_id: str):
+def _delete_from_streamsets(pipeline_id: str):
     if check_status(pipeline_id, pipeline.Pipeline.STATUS_RUNNING):
         stop_by_id(pipeline_id)
     api_client.delete_pipeline(pipeline_id)
 
 
-def __cleanup_errors_dir(pipeline_id: str):
+def _cleanup_errors_dir(pipeline_id: str):
     errors_dir = os.path.join(ERRORS_DIR, pipeline_id)
     if os.path.isdir(errors_dir):
         shutil.rmtree(errors_dir)
 
 
 def delete(pipeline_obj: Pipeline):
-    __delete_schema(pipeline_obj)
+    _delete_schema(pipeline_obj)
     try:
-        __delete_from_streamsets(pipeline_obj.id)
+        _delete_from_streamsets(pipeline_obj.id)
     except StreamSetsApiClientException as e:
         raise pipeline.PipelineException(str(e))
-    __cleanup_errors_dir(pipeline_obj.id)
-    __delete_locally(pipeline_repository.get(pipeline_obj.id))
+    _cleanup_errors_dir(pipeline_obj.id)
+    _delete_locally(pipeline_repository.get(pipeline_obj.id))
 
 
 def delete_by_id(pipeline_id: str):
     try:
-        __delete_from_streamsets(pipeline_id)
+        _delete_from_streamsets(pipeline_id)
     except StreamSetsApiClientException as e:
         raise pipeline.PipelineException(str(e))
-    __cleanup_errors_dir(pipeline_id)
+    _cleanup_errors_dir(pipeline_id)
     if pipeline_repository.exists(pipeline_id):
-        __delete_schema(pipeline_repository.get(pipeline_id))
-        __delete_locally(pipeline_repository.get(pipeline_id))
+        _delete_schema(pipeline_repository.get(pipeline_id))
+        _delete_locally(pipeline_repository.get(pipeline_id))
 
 
 def enable_destination_logs(pipeline_obj: Pipeline):

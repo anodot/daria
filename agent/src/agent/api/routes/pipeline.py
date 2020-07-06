@@ -1,5 +1,6 @@
 import logging
 
+import requests
 from jsonschema import ValidationError
 from agent.api.routes import needs_pipeline
 from agent import pipeline
@@ -30,7 +31,9 @@ def create():
         source_instances = []
         for config in configs:
             source_instances.append(pipeline.manager.create_from_json(config).to_dict())
-    except (ValidationError, source.SourceNotExists, source.SourceConfigDeprecated) as e:
+    except (
+            ValidationError, source.SourceNotExists, source.SourceConfigDeprecated, requests.exceptions.ConnectionError
+    ) as e:
         return jsonify(str(e)), 400
     except PipelineException as e:
         return jsonify(str(e)), 500
@@ -43,7 +46,9 @@ def edit():
         pipeline_instances = []
         for config in request.get_json():
             pipeline_instances.append(pipeline.manager.edit_using_json(config).to_dict())
-    except (ValidationError, source.SourceNotExists, source.SourceConfigDeprecated) as e:
+    except (
+        ValidationError, source.SourceNotExists, source.SourceConfigDeprecated, requests.exceptions.ConnectionError
+    ) as e:
         return jsonify(str(e)), 400
     return jsonify(pipeline_instances)
 

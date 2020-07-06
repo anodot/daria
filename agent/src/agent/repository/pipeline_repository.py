@@ -16,18 +16,18 @@ class PipelineNotExistsException(Exception):
     pass
 
 
-def __get_file_path(pipeline_id: str) -> str:
+def _get_file_path(pipeline_id: str) -> str:
     return os.path.join(PIPELINE_DIRECTORY, pipeline_id + '.json')
 
 
 def exists(pipeline_id: str) -> bool:
-    return os.path.isfile(__get_file_path(pipeline_id))
+    return os.path.isfile(_get_file_path(pipeline_id))
 
 
 def get(pipeline_id: str) -> pipeline.Pipeline:
     if not exists(pipeline_id):
         raise PipelineNotExistsException(f"Pipeline {pipeline_id} doesn't exist")
-    with open(__get_file_path(pipeline_id)) as f:
+    with open(_get_file_path(pipeline_id)) as f:
         config = json.load(f)
 
     validate(config, {
@@ -63,7 +63,7 @@ def get_all() -> List[pipeline.Pipeline]:
 
 
 def save(pipeline_obj: pipeline.Pipeline):
-    with open(__get_file_path(pipeline_obj.id), 'w') as f:
+    with open(_get_file_path(pipeline_obj.id), 'w') as f:
         json.dump(pipeline_obj.to_dict(), f)
 
 
@@ -74,7 +74,7 @@ def delete(pipeline_obj: pipeline.Pipeline):
 def delete_by_id(pipeline_id: str):
     if not exists(pipeline_id):
         raise PipelineNotExistsException(f"Pipeline {pipeline_id} doesn't exist")
-    os.remove(__get_file_path(pipeline_id))
+    os.remove(_get_file_path(pipeline_id))
 
 
 def create_dir():
