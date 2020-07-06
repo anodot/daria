@@ -198,12 +198,13 @@ def wait_for_sending_data(pipeline_id: str, tries: int = 5, initial_delay: int =
 
 
 def force_stop_pipeline(pipeline_id: str):
-    if not check_status(pipeline_id, pipeline.Pipeline.STATUS_STOPPING):
-        raise pipeline.PipelineException("Can't force stop a pipeline not in the STOPPING state")
     try:
         api_client.stop_pipeline(pipeline_id)
     except StreamSetsApiClientException:
         pass
+
+    if not check_status(pipeline_id, pipeline.Pipeline.STATUS_STOPPING):
+        raise pipeline.PipelineException("Can't force stop a pipeline not in the STOPPING state")
 
     if not check_status(pipeline_id, pipeline.Pipeline.STATUS_STOPPING):
         raise pipeline.PipelineException("Can't force stop a pipeline not in the STOPPING state")
