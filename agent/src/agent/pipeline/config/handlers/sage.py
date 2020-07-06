@@ -19,6 +19,6 @@ class SageConfigHandler(BaseConfigHandler):
     def override_stages(self):
         self.pipeline.config['timestamp'] = {
             'name': '@timestamp',
-            'type': TimestampType.UTC_STRING
+            'type': TimestampType.UTC_STRING.value
         }
         super().override_stages()
