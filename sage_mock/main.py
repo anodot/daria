@@ -4,7 +4,7 @@ from flask import Flask, request, make_response, jsonify
 app = Flask(__name__)
 app.secret_key = b"\xf9\x19\x8d\xd2\xb7N\x84\xae\x16\x0f'`U\x88x&\nF\xa2\xe9\xa1\xd7\x8b\t"
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
 
 def parse_date_string(date_string):
