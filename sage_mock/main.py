@@ -19,21 +19,21 @@ def search():
 
     data = [
         {"ver": 1, "Country": "USA", "AdType": "Display",
-         "Exchange": "DoubleClick", "Clicks": 6784.6904, "@timestamp": "2017-12-10T01:00:00Z"},
+         "Exchange": "DoubleClick", "Clicks": 6784.6904, "@timestamp": "2017-12-10T01:00.000:00Z"},
         {"ver": 1, "Country": "USA", "AdType": "Display",
-         "Exchange": "DoubleClick", "Clicks": 6839, "@timestamp": "2017-12-10T02:00:00Z"},
+         "Exchange": "DoubleClick", "Clicks": 6839, "@timestamp": "2017-12-10T02:00:00.000Z"},
         {"ver": 1, "Country": "USA", "AdType": "Search",
          "Exchange": "DoubleClick", "Clicks": 6909993404034934004,
-         "@timestamp": "2017-12-10T03:00:00Z"},
+         "@timestamp": "2017-12-10T03:00:00.000Z"},
         {"ver": 1, "Country": "USA", "AdType": "Display",
          "Exchange": "DoubleClick", "Clicks": 7158.972598273843,
-         "@timestamp": "2017-12-10T04:00:00Z"},
+         "@timestamp": "2017-12-10T04:00:00.000Z"},
         {"ver": 1, "Country": "USA", "AdType": "Search",
-         "Exchange": "DoubleClick", "Clicks": 7235.7574, "@timestamp": "2017-12-10T05:00:00Z"},
+         "Exchange": "DoubleClick", "Clicks": 7235.7574, "@timestamp": "2017-12-10T05:00:00.000Z"},
         {"ver": 1, "Country": "USA", "AdType": "Display",
-         "Exchange": "DoubleClick", "Clicks": "", "@timestamp": "2017-12-10T06:00:00Z"},
+         "Exchange": "DoubleClick", "Clicks": "", "@timestamp": "2017-12-10T06:00:00.000Z"},
         {"ver": 1, "Country": "", "AdType": "Display",
-         "Exchange": "DoubleClick", "Clicks": 7427.7744, "@timestamp": "2017-12-10T07:00:00Z"}
+         "Exchange": "DoubleClick", "Clicks": 7427.7744, "@timestamp": "2017-12-10T07:00:00.000Z"}
     ]
     response = []
     time_start = parse_date_string(request.json.get('startTime'))
