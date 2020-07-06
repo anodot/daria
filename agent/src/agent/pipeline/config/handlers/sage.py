@@ -1,6 +1,7 @@
 from .base import BaseConfigHandler
 from agent.logger import get_logger
 from agent.pipeline.config.stages import JSConvertMetrics, AddProperties, Destination, SageScript
+from agent.pipeline.pipeline import TimestampType
 
 logger = get_logger(__name__)
 
@@ -18,7 +19,6 @@ class SageConfigHandler(BaseConfigHandler):
     def override_stages(self):
         self.pipeline.config['timestamp'] = {
             'name': '@timestamp',
-            'type': 'string',
-            'format': "yyyy-MM-dd\\'T\\'HH:mm:ss\\'Z\\'"
+            'type': TimestampType.UTC_STRING.value
         }
         super().override_stages()
