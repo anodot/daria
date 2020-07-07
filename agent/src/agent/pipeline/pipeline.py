@@ -14,6 +14,7 @@ class PipelineNotExistsException(PipelineException):
 
 class TimestampType(Enum):
     STRING = 'string'
+    UTC_STRING = 'utc_string'
     DATETIME = 'datetime'
     UNIX = 'unix'
     UNIX_MS = 'unix_ms'
