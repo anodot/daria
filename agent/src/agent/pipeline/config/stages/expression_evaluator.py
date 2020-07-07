@@ -9,7 +9,7 @@ def get_value(path, expr) -> dict:
     return {'fieldToSet': path, 'expression': '${' + expr + '}'}
 
 
-def get_convert_timestamp_to_unix_expression(timestamp_type: TimestampType, value, timestamp_format):
+def get_convert_timestamp_to_unix_expression(timestamp_type: pipeline.TimestampType, value, timestamp_format):
     if timestamp_type == pipeline.TimestampType.STRING:
         return f"time:dateTimeToMilliseconds(time:extractDateFromString({value}, '{timestamp_format}'))/1000"
     elif timestamp_type == pipeline.TimestampType.UTC_STRING:
