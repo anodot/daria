@@ -206,9 +206,6 @@ def force_stop_pipeline(pipeline_id: str):
     if not check_status(pipeline_id, pipeline.Pipeline.STATUS_STOPPING):
         raise pipeline.PipelineException("Can't force stop a pipeline not in the STOPPING state")
 
-    if not check_status(pipeline_id, pipeline.Pipeline.STATUS_STOPPING):
-        raise pipeline.PipelineException("Can't force stop a pipeline not in the STOPPING state")
-
     api_client.force_stop_pipeline(pipeline_id)
     wait_for_status(pipeline_id, pipeline.Pipeline.STATUS_STOPPED)
 

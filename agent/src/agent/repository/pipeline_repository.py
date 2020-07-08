@@ -1,7 +1,8 @@
 import json
 import os
+from json.decoder import JSONDecodeError
 
-from jsonschema import validate
+from jsonschema import validate, ValidationError
 from agent import source
 from agent.constants import DATA_DIR
 from agent.destination import HttpDestination
@@ -55,7 +56,7 @@ def get_all() -> List[pipeline.Pipeline]:
     for file in os.listdir(PIPELINE_DIRECTORY):
         try:
             obj = get(file.replace('.json', ''))
-        except source.SourceConfigDeprecated as e:
+        except (source.SourceConfigDeprecated, ValidationError, JSONDecodeError) as e:
             print(f'Error getting pipeline {file}. {str(e)}')
             continue
         pipelines.append(obj)

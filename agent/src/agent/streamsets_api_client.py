@@ -145,8 +145,7 @@ class StreamSetsApiClient:
         params = {'orderBy': order_by, 'order': order}
         if label:
             params['label'] = label
-        return self.session.get(self.build_url('pipelines'), params=params)\
-
+        return self.session.get(self.build_url('pipelines'), params=params)
 
     @endpoint
     def get_pipeline(self, pipeline_id: str):

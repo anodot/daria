@@ -47,7 +47,8 @@ def edit():
         for config in request.get_json():
             pipeline_instances.append(pipeline.manager.edit_using_json(config).to_dict())
     except (
-        ValidationError, source.SourceNotExists, source.SourceConfigDeprecated, requests.exceptions.ConnectionError
+        ValidationError, source.SourceNotExists, source.SourceConfigDeprecated,
+        requests.exceptions.ConnectionError, pipeline_repository.PipelineNotExistsException
     ) as e:
         return jsonify(str(e)), 400
     return jsonify(pipeline_instances)
@@ -106,10 +107,8 @@ def info(pipeline_id):
 @pipelines.route('/pipelines/<pipeline_id>/logs', methods=['GET'])
 @needs_pipeline
 def logs(pipeline_id):
-    if 'severity' in request.args:
-        if request.args['severity'] not in pipeline.manager.LOG_LEVELS:
-            return \
-                f'{request.args["severity"]} logging level is not one of {", ".join(pipeline.manager.LOG_LEVELS)}', 400
+    if 'severity' in request.args and request.args['severity'] not in pipeline.manager.LOG_LEVELS:
+        return f'{request.args["severity"]} logging level is not one of {", ".join(pipeline.manager.LOG_LEVELS)}', 400
     severity = request.args.get('severity', logging.getLevelName(logging.INFO))
     number_of_records = int(request.args.get('number_of_records', 10))
     try:

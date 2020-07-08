@@ -197,10 +197,9 @@ def _build(
         destination.proxy = proxy
     if url:
         try:
-            if not validator.destination.is_valid_destination_url(url, destination.proxy):
-                return Err('Destination URL is invalid')
-        except requests.exceptions.ProxyError as e:
-            return Err(str(e))
+            validator.destination.is_valid_destination_url(url, destination.proxy)
+        except validator.destination.ValidationException as e:
+            return Err('Destination URL is invalid' + str(e))
         destination.url = url
     if token:
         resource_url, monitoring_url = build_urls(destination.url, token)
