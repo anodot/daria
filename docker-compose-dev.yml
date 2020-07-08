@@ -165,8 +165,57 @@ services:
   sage:
     build: sage_mock
 
+  # TODO cleanup
+  vmagent:
+    container_name: vmagent
+    image: victoriametrics/vmagent
+    depends_on:
+      - "victoriametrics"
+    ports:
+      - 8429:8429
+    volumes:
+      - vmagentdata:/vmagentdata
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--promscrape.config=/etc/prometheus/prometheus.yml'
+      - '--remoteWrite.url=http://victoriametrics:8428/api/v1/write'
+    restart: always
+
+  victoriametrics:
+    container_name: victoriametrics
+    image: victoriametrics/victoria-metrics
+    ports:
+      - 8428:8428
+      - 2003:2003
+      - 4242:4242
+    volumes:
+      - vmdata:/storage
+    command:
+      - '--storageDataPath=/storage'
+      - '--graphiteListenAddr=:2003'
+      - '--opentsdbListenAddr=:4242'
+      - '--httpListenAddr=:8428'
+    restart: always
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:7.0.3
+    depends_on:
+      - "victoriametrics"
+    ports:
+      - 3000:3000
+    volumes:
+      - grafanadata:/var/lib/grafana
+      - ./provisioning/:/etc/grafana/provisioning/
+      - ./../../dashboards/victoriametrics.json:/var/lib/grafana/dashboards/vm.json
+    restart: always
+
 
 volumes:
   sdc-data:
   agent-data:
   dummy-destination-data:
+#    todo cleanup
+  vmagentdata: {}
+  vmdata: {}
+  grafanadata: {}
