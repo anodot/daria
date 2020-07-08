@@ -12,9 +12,9 @@ def get_value(path, expr) -> dict:
 def get_convert_timestamp_to_unix_expression(timestamp_type: pipeline.TimestampType, value, timestamp_format):
     if timestamp_type == pipeline.TimestampType.STRING:
         return f"time:dateTimeToMilliseconds(time:extractDateFromString({value}, '{timestamp_format}'))/1000"
-    elif timestamp_type == pipeline.TimestampType.UTC_STRING:
-        return f"time:dateTimeToMilliseconds(time:createDateFromStringTZ({value}, 'Etc/UTC', 'yyyy-MM-dd\\'T\\'HH:mm:ss.SSS\\'Z\\''))/1000"
-    elif timestamp_type == pipeline.TimestampType.DATETIME:
+    elif timestamp_type == TimestampType.UTC_STRING:
+        return f"time:dateTimeToMilliseconds(time:createDateFromStringTZ({value}, 'Etc/UTC', 'yyyy-MM-dd\\'T\\'HH:mm:ss\\'Z\\''))/1000"
+    elif timestamp_type == TimestampType.DATETIME:
         return f"time:dateTimeToMilliseconds({value})/1000"
     elif timestamp_type == pipeline.TimestampType.UNIX_MS:
         return f"{value}/1000"

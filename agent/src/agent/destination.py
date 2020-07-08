@@ -98,7 +98,7 @@ class HttpDestination:
 
     @property
     def monitoring_url(self) -> Optional[str]:
-        return self.config.get(self.CONFIG_RESOURCE_URL, None)
+        return self.config.get(self.CONFIG_MONITORING_URL, None)
 
     @monitoring_url.setter
     def monitoring_url(self, monitoring_url: str):
