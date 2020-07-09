@@ -22,6 +22,7 @@ class JDBCSource(Source):
 
         return urlunparse((scheme, netloc, conn_info.path, '', '', ''))
 
+    @if_validation_enabled
     def validate_connection_string(self):
         if not is_url(self.config['connection_string']):
             raise click.UsageError('Wrong url format. Correct format is `scheme://host:port`')

@@ -41,6 +41,7 @@ class ElasticSource(Source):
 
         return self.config
 
+    @if_validation_enabled
     def validate_connection(self):
         self.config[self.CONFIG_IS_INCREMENTAL] = False
         super().validate_connection()

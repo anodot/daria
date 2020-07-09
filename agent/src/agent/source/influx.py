@@ -118,6 +118,7 @@ class InfluxSource(Source):
 
         click.secho('Access authorized')
 
+    @if_validation_enabled
     def validate_offset(self):
         if not self.config.get('offset'):
             return
