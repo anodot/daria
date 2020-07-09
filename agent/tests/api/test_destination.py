@@ -71,7 +71,7 @@ class TestDestination:
         # cleanup
         client.delete('/destination')
         print(result.data)
-        assert result.data == er
+        assert result.data.startswith(er)
         assert result.status_code == status_code
 
     def test_create_with_proxy(self, client, proxy_uri, er, status_code):
