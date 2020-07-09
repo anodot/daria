@@ -11,6 +11,7 @@ class SageSource(Source):
     URL = 'url'
     TOKEN = 'token'
 
+    @if_validation_enabled
     def validate_url(self):
         if not is_url(self.config[self.URL]):
             raise click.UsageError('Wrong url format. Correct format is `scheme://host:port`')

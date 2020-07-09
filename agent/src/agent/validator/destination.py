@@ -5,8 +5,10 @@ from urllib.parse import urlparse
 from agent.anodot_api_client import AnodotApiClient
 from agent import destination
 from agent import proxy
+from agent.tools import if_validation_enabled
 
 
+@if_validation_enabled
 def is_valid_destination_url(url: str, proxy_obj: proxy.Proxy = None) -> bool:
     result = urlparse(url)
     if not result.netloc or not result.scheme:
@@ -20,6 +22,7 @@ def is_valid_destination_url(url: str, proxy_obj: proxy.Proxy = None) -> bool:
     return True
 
 
+@if_validation_enabled
 def is_valid_resource_url(resource_url: str) -> bool:
     response = requests.post(resource_url, timeout=5)
     if response.status_code != 401:
@@ -27,6 +30,7 @@ def is_valid_resource_url(resource_url: str) -> bool:
     return response.status_code != 401
 
 
+@if_validation_enabled
 def is_valid_access_key(access_key: str, url: str) -> bool:
     try:
         # todo refactor validation?
