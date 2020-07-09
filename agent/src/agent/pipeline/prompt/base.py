@@ -5,6 +5,8 @@ from agent.pipeline import pipeline as p
 
 
 class PromptConfig:
+    timestamp_types = ['string', 'datetime', 'unix', 'unix_ms']
+
     def __init__(self, pipeline: p.Pipeline):
         self.advanced = False
         self.default_config = {}
@@ -27,8 +29,7 @@ class PromptConfig:
         self.config['timestamp']['name'] = self.prompt_property('Timestamp property name',
                                                                 self.config['timestamp'].get('name'))
         self.config['timestamp']['type'] = click.prompt('Timestamp property type',
-                                                        type=click.Choice(
-                                                            ['string', 'datetime', 'unix', 'unix_ms']),
+                                                        type=click.Choice(self.timestamp_types),
                                                         default=self.config['timestamp'].get('type', 'unix'))
 
         if self.config['timestamp']['type'] == 'string':

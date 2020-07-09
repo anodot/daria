@@ -82,18 +82,6 @@ class PromptConfigSchemaless(PromptConfig):
             values_array = self.__get_values_array(self.pipeline.source.sample_data)
             self.validate_properties_names(self.config['measurement_names'].values(), values_array)
 
-    def set_timestamp(self):
-        self.config['timestamp'] = self.default_config.get('timestamp', {})
-        self.config['timestamp']['name'] = self.prompt_property('Timestamp property name',
-                                                                self.config['timestamp'].get('name'))
-        self.config['timestamp']['type'] = click.prompt('Timestamp property type',
-                                                        type=click.Choice(self.timestamp_types),
-                                                        default=self.config['timestamp'].get('type', 'unix'))
-
-        if self.config['timestamp']['type'] == 'string':
-            self.config['timestamp']['format'] = click.prompt('Timestamp format string', type=click.STRING,
-                                                              default=self.config['timestamp'].get('format'))
-
     @infinite_retry
     def prompt_files(self):
         file = click.prompt('Transformations files paths', type=click.Path(),
