@@ -5,12 +5,14 @@ import urllib.parse
 from agent.anodot_api_client import AnodotApiClient
 from agent import destination
 from agent import proxy
+from agent.tools import if_validation_enabled
 
 
 class ValidationException(Exception):
     pass
 
 
+@if_validation_enabled
 def is_valid_destination_url(url: str, proxy_obj: proxy.Proxy = None) -> bool:
     status_url = urllib.parse.urljoin(url, destination.HttpDestination.STATUS_URL)
     try:
@@ -23,6 +25,7 @@ def is_valid_destination_url(url: str, proxy_obj: proxy.Proxy = None) -> bool:
     return True
 
 
+@if_validation_enabled
 def is_valid_resource_url(resource_url: str) -> bool:
     response = requests.post(resource_url, timeout=5)
     if response.status_code != 401:
@@ -30,6 +33,7 @@ def is_valid_resource_url(resource_url: str) -> bool:
     return response.status_code != 401
 
 
+@if_validation_enabled
 def is_valid_access_key(access_key: str, url: str) -> bool:
     try:
         # todo refactor validation?
