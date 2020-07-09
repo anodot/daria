@@ -19,7 +19,7 @@ class TestDestination:
                 'data_collection_token': 'test',
                 'host_id': 'ABCDEF',
                 'access_key': '',
-                'er': b'Destination URL is invalid',
+                'er': b'Destination url validation failed',
                 'status_code': 400,
             },
             {
