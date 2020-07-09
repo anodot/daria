@@ -140,13 +140,17 @@ class StreamSetsApiClient:
         return self.session.post(self.build_url('pipeline', pipeline_id, 'forceStop'))
 
     @endpoint
-    def get_pipelines(self, order_by='NAME', order='ASC', label=None, text=None):
+    def get_pipelines(self, order_by='NAME', order='ASC', label=None):
         logger.info('Get pipelines')
         params = {'orderBy': order_by, 'order': order}
         if label:
             params['label'] = label
-        if text:
-            params['filterText'] = text
+        return self.session.get(self.build_url('pipelines'), params=params)
+
+    @endpoint
+    def get_pipeline(self, pipeline_id: str):
+        logger.info('Get pipelines')
+        params = {'pipelineId': pipeline_id}
         return self.session.get(self.build_url('pipelines'), params=params)
 
     @endpoint
@@ -167,12 +171,11 @@ class StreamSetsApiClient:
     @endpoint
     def get_pipeline_logs(self, pipeline_id, severity=None):
         """
-
         :param pipeline_id: string
         :param severity: string [INFO, ERROR], default - None
         :return:
         """
-        logger.info(f'Get pipeline logs: {pipeline_id}, severity:{severity}')
+        logger.info(f'Get pipeline logs: {pipeline_id}, logging severity:{severity}')
         params = {'pipeline': pipeline_id, 'endingOffset': -1}
         if severity:
             params['severity'] = severity
@@ -189,12 +192,7 @@ class StreamSetsApiClient:
         return self.session.get(self.build_url('pipeline', pipeline_id))
 
     @endpoint
-    def get_pipeline_status(self, pipeline_id):
-        """
-
-        :param pipeline_id: string
-        :return:
-        """
+    def get_pipeline_status(self, pipeline_id: str):
         logger.info(f'Get pipeline status {pipeline_id}')
         return self.session.get(self.build_url('pipeline', pipeline_id, 'status'))
 

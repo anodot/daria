@@ -1,9 +1,9 @@
 from agent.anodot_api_client import AnodotApiClient
-from agent.pipeline import Pipeline
 from agent import proxy
+from agent.pipeline import pipeline as p
 
 
-def build(pipeline: Pipeline):
+def build(pipeline: p.Pipeline):
     measurements = {}
     for idx, value in enumerate(pipeline.values):
         measurements[pipeline.measurement_names[idx]] = {
@@ -32,7 +32,7 @@ def equal(old_schema, new_schema) -> bool:
     return {key: val for key, val in old_schema.items() if key != 'id'} == new_schema
 
 
-def update(pipeline: Pipeline) -> dict:
+def update(pipeline: p.Pipeline) -> dict:
     new_schema = build(pipeline)
     api_client = AnodotApiClient(pipeline.destination.access_key, proxy.get_config(pipeline.destination.proxy),
                                  base_url=pipeline.destination.url)

@@ -3,11 +3,9 @@ import json
 import os
 import urllib.parse
 import uuid
-
-from typing import Dict, Optional
-
 import requests
 
+from typing import Dict, Optional
 from agent import validator
 from agent.constants import ANODOT_API_URL, DATA_DIR
 from agent.proxy import Proxy
@@ -116,8 +114,11 @@ class HttpDestination:
         except FileNotFoundError:
             pass
 
-    def enable_logs(self, enable: bool = True):
-        self.config[self.CONFIG_ENABLE_REQUEST_LOGGING] = enable
+    def enable_logs(self):
+        self.config[self.CONFIG_ENABLE_REQUEST_LOGGING] = True
+
+    def disable_logs(self):
+        self.config[self.CONFIG_ENABLE_REQUEST_LOGGING] = False
 
     @property
     def proxy(self) -> Optional[Proxy]:
@@ -163,8 +164,7 @@ def create(
     proxy_password: str = None,
     host_id: str = None,
 ) -> Result[HttpDestination, str]:
-    return __build(HttpDestination(), token, url, access_key,
-                   proxy_host, proxy_username, proxy_password, host_id)
+    return _build(HttpDestination(), token, url, access_key, proxy_host, proxy_username, proxy_password, host_id)
 
 
 def edit(
@@ -177,10 +177,10 @@ def edit(
     proxy_password: str = None,
     host_id: str = None,
 ) -> Result[HttpDestination, str]:
-    return __build(destination, token, url, access_key, proxy_host, proxy_username, proxy_password, host_id)
+    return _build(destination, token, url, access_key, proxy_host, proxy_username, proxy_password, host_id)
 
 
-def __build(
+def _build(
     destination: HttpDestination,
     token: str,
     url: str,
@@ -197,10 +197,9 @@ def __build(
         destination.proxy = proxy
     if url:
         try:
-            if not validator.destination.is_valid_destination_url(url, destination.proxy):
-                return Err('Destination URL is invalid')
-        except requests.exceptions.ProxyError as e:
-            return Err(str(e))
+            validator.destination.is_valid_destination_url(url, destination.proxy)
+        except validator.destination.ValidationException as e:
+            return Err('Destination url validation failed: ' + str(e))
         destination.url = url
     if token:
         resource_url, monitoring_url = build_urls(destination.url, token)

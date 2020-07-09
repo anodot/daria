@@ -28,7 +28,7 @@ curl -X GET http://localhost:8080/sources
 
 Create source
 -------------
-To create one or multiple sources submit a POST request containing their configuration in JSON format to the `/sources` endpoint.
+To create one or multiple sources submit a POST request containing source configurations in JSON format to the `/sources` endpoint.
 All types of source configurations are described in the [Wiki](https://github.com/anodot/daria/wiki)
 
 Response codes: `200, 400`

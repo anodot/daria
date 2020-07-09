@@ -1,9 +1,8 @@
 import json
 import os
 import agent.source
-
+from agent.repository import pipeline_repository
 from agent.source import abstract_source
-from agent import pipeline
 from agent.constants import DATA_DIR, MONITORING_SOURCE_NAME
 from jsonschema import ValidationError, validate
 
@@ -33,18 +32,14 @@ def create(source: abstract_source.Source):
     __save(source)
 
 
-def delete(source: abstract_source.Source):
-    delete_by_name(source.name)
-
-
 def delete_by_name(source_name: str):
     if not exists(source_name):
         raise agent.source.SourceNotExists(f"Source config {source_name} doesn't exist")
-
-    pipelines = pipeline.get_pipelines(source_name=source_name)
+    pipelines = pipeline_repository.get_by_source(source_name)
     if pipelines:
-        raise agent.source.SourceException(f"Can't delete. Source is used by {', '.join([p.id for p in pipelines])} pipelines")
-
+        raise Exception(
+            f"Can't delete. Source is used by {', '.join([p.id for p in pipelines])} pipelines"
+        )
     os.remove(__get_file_path(source_name))
 
 
@@ -80,3 +75,8 @@ def get(name: str) -> abstract_source.Source:
         )
 
     return obj
+
+
+def create_dir():
+    if not os.path.exists(SOURCE_DIRECTORY):
+        os.mkdir(SOURCE_DIRECTORY)

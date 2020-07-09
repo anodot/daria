@@ -1,52 +1,57 @@
 import click
 import requests
 
-from agent import source, pipeline
+from agent import pipeline
 from agent.destination import HttpDestination, build_urls, create
 from agent import validator
 from agent.constants import MONITORING_SOURCE_NAME
+from agent.repository import pipeline_repository, source_repository
 from agent.tools import infinite_retry
 from agent.proxy import Proxy
 from agent.pipeline import manager
 
 
 @infinite_retry
-def __prompt_proxy(dest: HttpDestination):
+def _prompt_proxy(dest: HttpDestination):
     if click.confirm('Use proxy for connecting to Anodot?'):
-        uri = __prompt_proxy_uri(dest.get_proxy_url())
-        username = __prompt_proxy_username(dest.get_proxy_username())
-        password = __prompt_proxy_password()
+        uri = _prompt_proxy_uri(dest.get_proxy_url())
+        username = _prompt_proxy_username(dest.get_proxy_username())
+        password = _prompt_proxy_password()
         proxy = Proxy(uri, username, password)
         if not validator.proxy.is_valid(proxy):
             raise click.ClickException('Proxy is invalid')
         dest.proxy = proxy
 
 
-def __prompt_proxy_uri(default: str) -> str:
+def _prompt_proxy_uri(default: str) -> str:
     return click.prompt('Proxy uri', type=click.STRING, default=default)
 
 
-def __prompt_proxy_username(default: str) -> str:
+def _prompt_proxy_username(default: str) -> str:
     return click.prompt('Proxy username', type=click.STRING, default=default)
 
 
-def __prompt_proxy_password() -> str:
+def _prompt_proxy_password() -> str:
     return click.prompt('Proxy password', type=click.STRING, default='')
 
 
 @infinite_retry
-def __prompt_url(dest: HttpDestination):
+def _prompt_url(dest: HttpDestination):
     url = click.prompt('Destination url', type=click.STRING, default=dest.url)
     try:
-        if not validator.destination.is_valid_destination_url(url, dest.proxy):
+        if not validator.is_valid_url(url):
             raise click.ClickException('Wrong url format, please specify the protocol and domain name')
+        try:
+            validator.destination.is_valid_destination_url(url, dest.proxy)
+        except validator.destination.ValidationException as e:
+            raise click.ClickException('Destination url validation failed: ' + str(e))
     except requests.exceptions.ProxyError as e:
         raise click.ClickException(str(e))
     dest.url = url
 
 
 @infinite_retry
-def __prompt_token(dest: HttpDestination):
+def _prompt_token(dest: HttpDestination):
     token = click.prompt('Anodot api data collection token', type=click.STRING, default=dest.token)
     resource_url, monitoring_url = build_urls(dest.url, token)
     if not validator.destination.is_valid_resource_url(resource_url):
@@ -57,29 +62,30 @@ def __prompt_token(dest: HttpDestination):
 
 
 @infinite_retry
-def __prompt_access_key(dest: HttpDestination):
+def _prompt_access_key(dest: HttpDestination):
     access_key = click.prompt('Anodot access key', type=click.STRING, default=dest.access_key or '')
     if access_key and not validator.destination.is_valid_access_key(access_key, dest.url):
         raise click.ClickException('Access key is invalid')
     dest.access_key = access_key
 
 
-def __start_monitoring_pipeline():
+def _start_monitoring_pipeline():
     try:
-        if pipeline.Pipeline.exists('Monitoring'):
-            pipeline_manager = manager.PipelineManager(pipeline.load_object('Monitoring'))
+        if pipeline_repository.exists('Monitoring'):
+            pipeline_ = pipeline_repository.get('Monitoring')
             click.secho('Updating Monitoring pipeline...')
-            pipeline_manager.stop()
-            pipeline_manager.update()
+            manager.stop(pipeline_)
+            manager.update(pipeline_)
         else:
-            pipeline_manager = manager.PipelineManager(pipeline.create_object('Monitoring', MONITORING_SOURCE_NAME))
+            pipeline_ = manager.create_object('Monitoring', MONITORING_SOURCE_NAME)
+            pipeline_manager = manager.PipelineManager(pipeline_)
             click.secho('Starting Monitoring pipeline...')
-            source.create_dir()
-            pipeline.create_dir()
+            source_repository.create_dir()
+            pipeline_repository.create_dir()
             pipeline_manager.create()
 
-        pipeline_manager.start()
-    except pipeline.PipelineException as e:
+        manager.start(pipeline_)
+    except pipeline.pipeline.PipelineException as e:
         raise click.ClickException(str(e))
 
 
@@ -105,12 +111,12 @@ def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, a
             raise click.ClickException(result.value)
     else:
         dest = HttpDestination.get_or_default()
-        __prompt_proxy(dest)
-        __prompt_url(dest)
-        __prompt_token(dest)
-        __prompt_access_key(dest)
+        _prompt_proxy(dest)
+        _prompt_url(dest)
+        _prompt_token(dest)
+        _prompt_access_key(dest)
         dest.save()
 
     click.secho('Connection to Anodot established')
-    __start_monitoring_pipeline()
+    _start_monitoring_pipeline()
     click.secho('Destination configured', fg='green')

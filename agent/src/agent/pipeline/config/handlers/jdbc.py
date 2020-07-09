@@ -4,8 +4,8 @@ from datetime import datetime, timedelta
 from sqlalchemy import create_engine
 from sqlalchemy.exc import SQLAlchemyError
 from urllib.parse import urlparse, urlunparse
-from agent.pipeline.config.stages import JSConvertMetrics, AddProperties, Destination, Source
-from agent.pipeline.pipeline import TimestampType
+from agent.pipeline.config import stages
+from agent.pipeline import pipeline
 
 logger = get_logger(__name__)
 
@@ -17,10 +17,10 @@ class JDBCConfigHandler(BaseConfigHandler):
     QUERY = "SELECT * FROM {table} WHERE {offset_column} > ${{OFFSET}} {condition} ORDER BY {offset_column} LIMIT {limit}"
 
     stages = {
-        'source': Source,
-        'JavaScriptEvaluator_01': JSConvertMetrics,
-        'ExpressionEvaluator_02': AddProperties,
-        'destination': Destination
+        'source': stages.source.Source,
+        'JavaScriptEvaluator_01': stages.js_convert_metrics_20.JSConvertMetrics,
+        'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties,
+        'destination': stages.destination.Destination
     }
 
     def override_stages(self):
@@ -53,9 +53,9 @@ class JDBCConfigHandler(BaseConfigHandler):
 
         timestamp = datetime.now() - timedelta(days=int(self.pipeline.config.get('initial_offset', 3)))
         start = str(int(timestamp.timestamp()))
-        if self.pipeline.timestamp_type == TimestampType.DATETIME:
+        if self.pipeline.timestamp_type == pipeline.TimestampType.DATETIME:
             start = timestamp.strftime('%Y-%m-%d %H:%M:%S')
-        elif self.pipeline.timestamp_type == TimestampType.DATETIME:
+        elif self.pipeline.timestamp_type == pipeline.TimestampType.DATETIME:
             start = str(int(timestamp.timestamp() * 1e3))
 
         if self.pipeline.config['offset_column'] == self.pipeline.timestamp_path:

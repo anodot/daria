@@ -19,7 +19,7 @@ class TestDestination:
                 'data_collection_token': 'test',
                 'host_id': 'ABCDEF',
                 'access_key': '',
-                'er': b'Destination URL is invalid',
+                'er': b'Destination url validation failed',
                 'status_code': 400,
             },
             {
@@ -71,7 +71,7 @@ class TestDestination:
         # cleanup
         client.delete('/destination')
         print(result.data)
-        assert result.data == er
+        assert result.data.startswith(er)
         assert result.status_code == status_code
 
     def test_create_with_proxy(self, client, proxy_uri, er, status_code):

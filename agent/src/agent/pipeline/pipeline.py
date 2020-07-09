@@ -1,11 +1,15 @@
-import click
-import json
-import os
-
 from .. import source
-from agent.constants import DATA_DIR, HOSTNAME
+from agent.constants import HOSTNAME
 from agent.destination import HttpDestination
 from enum import Enum
+
+
+class PipelineException(Exception):
+    pass
+
+
+class PipelineNotExistsException(PipelineException):
+    pass
 
 
 class TimestampType(Enum):
@@ -37,7 +41,6 @@ class FlushBucketSize(Enum):
 
 
 class Pipeline:
-    DIR = os.path.join(DATA_DIR, 'pipelines')
     STATUS_RUNNING = 'RUNNING'
     STATUS_STOPPED = 'STOPPED'
     STATUS_EDITED = 'EDITED'
@@ -58,10 +61,6 @@ class Pipeline:
         self.destination = destination
         self.old_config = None
         self.override_source = config.pop(self.OVERRIDE_SOURCE, {})
-
-    @property
-    def file_path(self) -> str:
-        return self.get_file_path(self.id)
 
     @property
     def constant_dimensions(self) -> dict:
@@ -196,21 +195,9 @@ class Pipeline:
             'source': {'name': self.source.name},
         }
 
-    @classmethod
-    def get_file_path(cls, pipeline_id: str) -> str:
-        return os.path.join(cls.DIR, pipeline_id + '.json')
-
-    @classmethod
-    def exists(cls, pipeline_id: str) -> bool:
-        return os.path.isfile(cls.get_file_path(pipeline_id))
-
     def set_config(self, config: dict):
         self.override_source = config.pop(self.OVERRIDE_SOURCE, {})
         self.config.update(config)
-
-    def save(self):
-        with open(self.file_path, 'w') as f:
-            json.dump(self.to_dict(), f)
 
     def get_property_path(self, property_value: str) -> str:
         mapping = self.source.config.get('csv_mapping', {})
@@ -233,11 +220,3 @@ class Pipeline:
             'pipeline_type': [self.source.type],
             **self.tags
         }
-
-
-class PipelineException(click.ClickException):
-    pass
-
-
-class PipelineNotExistsException(PipelineException):
-    pass

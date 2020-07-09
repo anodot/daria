@@ -2,9 +2,9 @@ import os
 
 from ..fixtures import get_input_file_path, cli_runner
 from agent.cli import source as source_cli, pipeline as pipeline_cli
-from agent.source import Source
 from agent.streamsets_api_client import api_client
 from datetime import datetime
+from agent.repository import source_repository
 from ..test_pipelines.test_zpipeline_base import pytest_generate_tests
 
 
@@ -23,7 +23,7 @@ class TestSage:
         result = cli_runner.invoke(source_cli.create,
                                    input=f"sage\ntest_sage\nhttp://sage/api/search\ncorrect_token\n")
         assert result.exit_code == 0
-        assert os.path.isfile(os.path.join(Source.DIR, 'test_sage.json'))
+        assert os.path.isfile(os.path.join(source_repository.SOURCE_DIRECTORY, 'test_sage.json'))
 
     def test_create(self, cli_runner, name, options, value, advanced_options):
         query_file_path = get_input_file_path('sage_query.txt')
@@ -32,9 +32,11 @@ class TestSage:
         interval = 60*24
         result = cli_runner.invoke(pipeline_cli.create, options,
                                    input=f"test_sage\n{name}\n{query_file_path}\n\n{interval}\n{days_to_backfill}\n{value}\nver Country Exchange\n{advanced_options}\n")
+        print(result.output)
         assert result.exit_code == 0
         assert api_client.get_pipeline(name)
 
     def test_edit(self, cli_runner, options, value):
         result = cli_runner.invoke(pipeline_cli.edit, options, input=f"\n\n\n\n{value}\n\n\n\n\n\n\n\n\n")
+        print(result.output)
         assert result.exit_code == 0

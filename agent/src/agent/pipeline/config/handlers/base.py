@@ -3,9 +3,8 @@ import os
 
 from agent.logger import get_logger
 from agent.constants import ERRORS_DIR
-from agent.pipeline.pipeline import Pipeline
-from copy import deepcopy
 from agent.constants import ROOT_DIR
+from agent.pipeline import pipeline as p
 
 logger = get_logger(__name__)
 
@@ -19,7 +18,7 @@ class BaseConfigHandler:
 
     stages = {}
 
-    def __init__(self, pipeline: Pipeline):
+    def __init__(self, pipeline: p.Pipeline):
         self.config = {}
         self.pipeline = pipeline
 

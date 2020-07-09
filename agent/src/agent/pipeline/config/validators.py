@@ -1,9 +1,9 @@
 import click
 
 from agent import source
-from agent.pipeline import Pipeline
 from agent.pipeline.elastic import query_validator
 from agent.source import ElasticSource
+from agent.pipeline import pipeline as p
 
 
 class BaseValidator:
@@ -22,7 +22,7 @@ class ElasticValidator(BaseValidator):
             raise click.ClickException(errors)
 
 
-def get_config_validator(p: Pipeline) -> BaseValidator:
-    if p.source.type == source.TYPE_ELASTIC:
+def get_config_validator(pipeline: p.Pipeline) -> BaseValidator:
+    if pipeline.source.type == source.TYPE_ELASTIC:
         return ElasticValidator()
     return BaseValidator()

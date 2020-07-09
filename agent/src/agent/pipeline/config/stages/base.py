@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
-from agent.pipeline import Pipeline
+from agent.pipeline import pipeline as p
 
 
 class Stage(ABC):
-    def __init__(self, pipeline: Pipeline, sdc_stage: dict):
+    def __init__(self, pipeline: p.Pipeline, sdc_stage: dict):
         self.pipeline = pipeline
         self.sdc_stage = sdc_stage
         self.config = self.get_config()

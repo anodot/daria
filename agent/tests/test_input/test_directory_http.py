@@ -1,11 +1,10 @@
 import os
 
 from ..fixtures import cli_runner
-from agent.pipeline import load_object as load_pipeline
 from agent.cli import source as source_cli, pipeline as pipeline_cli
-from agent.source import Source
 from agent.streamsets_api_client import api_client
 from ..test_pipelines.test_zpipeline_base import pytest_generate_tests
+from agent.repository import source_repository, pipeline_repository
 
 
 class TestDirectory:
@@ -16,7 +15,7 @@ class TestDirectory:
         result = cli_runner.invoke(source_cli.create,
                                    input="directory\ntest_dir_csv\n/home/test-directory-collector\n*.csv\nDELIMITED\n\ny\n\n\n")
         assert result.exit_code == 0
-        assert os.path.isfile(os.path.join(Source.DIR, 'test_dir_csv.json'))
+        assert os.path.isfile(os.path.join(source_repository.SOURCE_DIRECTORY, 'test_dir_csv.json'))
 
     def test_create(self, cli_runner):
         pipeline_id = 'test_dir_csv'
@@ -24,7 +23,7 @@ class TestDirectory:
                                    input=f"{pipeline_id}\ntest_dir_csv\n\ny\ncount_records\ny\n\nClicks:gauge\nClicks:clicks\ntimestamp_datetime\nstring\nMMddyyyy\nver Country\nExchange optional_dim\nversion:1\n\n\n\n1h\n\n\n")
         assert result.exit_code == 0
         assert api_client.get_pipeline(pipeline_id)
-        pipeline = load_pipeline(pipeline_id)
+        pipeline = pipeline_repository.get(pipeline_id)
         assert pipeline.config['schema'] == {
             'id': '111111-22222-3333-4444',
             'version': '1',

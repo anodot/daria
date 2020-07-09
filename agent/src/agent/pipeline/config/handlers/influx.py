@@ -1,6 +1,6 @@
 import json
 
-from .base import BaseConfigHandler
+from . import base
 from agent.logger import get_logger
 from agent.constants import HOSTNAME
 from datetime import datetime, timedelta
@@ -10,7 +10,7 @@ from urllib.parse import urljoin, urlparse, quote_plus
 logger = get_logger(__name__)
 
 
-class InfluxConfigHandler(BaseConfigHandler):
+class InfluxConfigHandler(base.BaseConfigHandler):
     DECLARE_VARS_JS = """/*
 state['MEASUREMENT_NAME'] = 'clicks';
 state['REQUIRED_DIMENSIONS'] = ['AdType', 'Exchange'];

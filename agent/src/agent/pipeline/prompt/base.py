@@ -1,11 +1,11 @@
 import click
 
 from agent.tools import infinite_retry, if_validation_enabled, dict_get_nested
-from agent.pipeline.pipeline import Pipeline
+from agent.pipeline import pipeline as p
 
 
 class PromptConfig:
-    def __init__(self, pipeline: Pipeline):
+    def __init__(self, pipeline: p.Pipeline):
         self.advanced = False
         self.default_config = {}
         self.config = {}

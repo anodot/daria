@@ -1,7 +1,8 @@
 NAP = 15
 SLEEP = 60
 THREADS = 4
-DOCKER_COMPOSE_DEV = docker-compose-dev.yml
+DOCKER_COMPOSE_DEV_FILE = docker-compose-dev.yml
+DOCKER_COMPOSE_DEV = docker-compose -f $(DOCKER_COMPOSE_DEV_FILE)
 DOCKER_TEST = docker exec -i anodot-agent pytest -x  --disable-pytest-warnings
 DOCKER_TEST_PARALLEL = $(DOCKER_TEST) -n $(THREADS) --dist=loadfile
 DOCKER_TEST_DEV = $(DOCKER_TEST) -vv
@@ -30,7 +31,9 @@ test-all-dev: run-unit-tests-dev test-dev-destination test-dev-api test-dev-cond
 rerun: clean-docker-volumes run-base-services
 
 rerun-agent:
-	docker-compose -f $(DOCKER_COMPOSE_DEV) restart agent
+	$(DOCKER_COMPOSE_DEV) restart agent
+
+stop: clean-docker-volumes
 
 ##-----------------------
 ## TEST SEPARATE SOURCES
@@ -111,11 +114,11 @@ get-streamsets-libs:
 ## DEV DEPENDENCY TARGETS
 ##-----------------------
 build-dev:
-	docker-compose -f $(DOCKER_COMPOSE_DEV) up -d --build
+	$(DOCKER_COMPOSE_DEV) up -d --build
 	docker exec -i anodot-agent python setup.py develop
 
 run-dev:
-	docker-compose -f $(DOCKER_COMPOSE_DEV) up -d
+	$(DOCKER_COMPOSE_DEV) up -d
 	docker exec -i anodot-agent python setup.py develop
 
 test-dev-destination:
@@ -139,38 +142,38 @@ prepare-source: clean-docker-volumes run-base-services
 clean-docker-volumes:
 	rm -rf sdc-data
 	rm -rf data
-	docker-compose -f $(DOCKER_COMPOSE_DEV) down -v
+	$(DOCKER_COMPOSE_DEV) down -v
 
 run-base-services:
-	docker-compose -f $(DOCKER_COMPOSE_DEV) up -d agent dc squid dummy_destination
+	$(DOCKER_COMPOSE_DEV) up -d agent dc squid dummy_destination
 	docker exec -i anodot-agent python setup.py develop
 
 build-base-services: clean-docker-volumes
-	docker-compose -f $(DOCKER_COMPOSE_DEV) up -d --build agent dc squid dummy_destination
+	$(DOCKER_COMPOSE_DEV) up -d --build agent dc squid dummy_destination
 	docker exec -i anodot-agent python setup.py develop
 
 build-elastic:
-	docker-compose -f $(DOCKER_COMPOSE_DEV) up -d es
+	$(DOCKER_COMPOSE_DEV) up -d es
 	sleep $(SLEEP)
 
 build-influx:
-	docker-compose -f $(DOCKER_COMPOSE_DEV) up -d influx
+	$(DOCKER_COMPOSE_DEV) up -d influx
 
 build-kafka: build-zookeeper
-	docker-compose -f $(DOCKER_COMPOSE_DEV) up -d kafka
+	$(DOCKER_COMPOSE_DEV) up -d kafka
 	sleep $(SLEEP)
 
 build-zookeeper:
-	docker-compose -f $(DOCKER_COMPOSE_DEV) up -d zookeeper
+	$(DOCKER_COMPOSE_DEV) up -d zookeeper
 
 build-mongo:
-	docker-compose -f $(DOCKER_COMPOSE_DEV) up -d mongo
+	$(DOCKER_COMPOSE_DEV) up -d mongo
 
 build-mysql:
-	docker-compose -f $(DOCKER_COMPOSE_DEV) up -d mysql
+	$(DOCKER_COMPOSE_DEV) up -d mysql
 
 build-postgres:
-	docker-compose -f $(DOCKER_COMPOSE_DEV) up -d postgres
+	$(DOCKER_COMPOSE_DEV) up -d postgres
 
 build-sage:
 	docker-compose up -d --build sage

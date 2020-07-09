@@ -2,9 +2,9 @@ import os
 
 from ..fixtures import cli_runner
 from agent.cli import source as source_cli, pipeline as pipeline_cli
-from agent.source import Source
 from agent.streamsets_api_client import api_client
 from ..test_pipelines.test_zpipeline_base import pytest_generate_tests
+from agent.repository import source_repository
 
 
 class TestKafka:
@@ -78,7 +78,7 @@ class TestKafka:
         result = cli_runner.invoke(source_cli.create,
                                    input=f"kafka\n{name}\nkafka:29092\n{name}\n\n\n")
         assert result.exit_code == 0
-        assert os.path.isfile(os.path.join(Source.DIR, f'{name}.json'))
+        assert os.path.isfile(os.path.join(source_repository.SOURCE_DIRECTORY, f'{name}.json'))
 
     def test_create(self, cli_runner, source_name, name, options, value, timestamp, advanced_options):
         result = cli_runner.invoke(
