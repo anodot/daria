@@ -44,7 +44,7 @@ def _prompt_url(dest: HttpDestination):
         try:
             validator.destination.is_valid_destination_url(url, dest.proxy)
         except validator.destination.ValidationException as e:
-            raise click.ClickException('Destination url is invalid: ' + str(e))
+            raise click.ClickException('Destination url validation failed: ' + str(e))
     except requests.exceptions.ProxyError as e:
         raise click.ClickException(str(e))
     dest.url = url

@@ -199,7 +199,7 @@ def _build(
         try:
             validator.destination.is_valid_destination_url(url, destination.proxy)
         except validator.destination.ValidationException as e:
-            return Err('Destination URL is invalid: ' + str(e))
+            return Err('Destination url validation failed: ' + str(e))
         destination.url = url
     if token:
         resource_url, monitoring_url = build_urls(destination.url, token)
