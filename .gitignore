@@ -9,3 +9,4 @@ agent/data/*
 version.py
 sdc-data/
 data/
+streamsets/python-libs/
