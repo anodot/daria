@@ -5,6 +5,8 @@ from .base import PromptConfig
 
 
 class PromptConfigJDBC(PromptConfig):
+    timestamp_types = ['datetime', 'unix', 'unix_ms']
+
     def set_config(self):
         self.set_table()
         self.set_pagination()
@@ -50,14 +52,6 @@ class PromptConfigJDBC(PromptConfig):
         )
         self.pipeline.override_source['queryInterval'] =\
             '${' + str(self.pipeline.config['queryInterval']) + ' * SECONDS}'
-
-    def set_timestamp(self):
-        self.config['timestamp'] = self.default_config.get('timestamp', {})
-        self.config['timestamp']['name'] = self.prompt_property('Timestamp column name',
-                                                                self.config['timestamp'].get('name'))
-        self.config['timestamp']['type'] = click.prompt('Timestamp column type',
-                                                        type=click.Choice(['datetime', 'unix', 'unix_ms']),
-                                                        default=self.config['timestamp'].get('type', 'unix'))
 
     def set_dimensions(self):
         self.config['dimensions'] = self.prompt_dimensions('Dimensions', self.default_config.get('dimensions', []))
