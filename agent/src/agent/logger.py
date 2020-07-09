@@ -12,4 +12,5 @@ def get_logger(name, level=logging.DEBUG):
     file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
     logger.addHandler(file_handler)
     test = 1
+    test = 2
     return logger
