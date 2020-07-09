@@ -9,13 +9,13 @@ def get_value(path, expr) -> dict:
     return {'fieldToSet': path, 'expression': '${' + expr + '}'}
 
 
-def __escape_quotes(s: str) -> str:
+def _escape_quotes(s: str) -> str:
     return s.replace("'", "\\'")
 
 
 def get_convert_timestamp_to_unix_expression(timestamp_type: pipeline.TimestampType, value, timestamp_format):
     if timestamp_type == pipeline.TimestampType.STRING:
-        return f"time:dateTimeToMilliseconds(time:extractDateFromString({value}, '{__escape_quotes(timestamp_format)}'))/1000"
+        return f"time:dateTimeToMilliseconds(time:extractDateFromString({value}, '{_escape_quotes(timestamp_format)}'))/1000"
     elif timestamp_type == pipeline.TimestampType.UTC_STRING:
         return f"time:dateTimeToMilliseconds(time:createDateFromStringTZ({value}, 'Etc/UTC', 'yyyy-MM-dd\\'T\\'HH:mm:ss\\'Z\\''))/1000"
     elif timestamp_type == pipeline.TimestampType.DATETIME:
