@@ -1,8 +1,8 @@
 import click
 
-from agent import source
+from agent.cli import source
 from agent.pipeline.elastic import query_validator
-from agent.source import ElasticSource
+from agent.cli.source import ElasticSource
 from agent.pipeline import pipeline as p
 
 

@@ -1,11 +1,9 @@
 import json
 import os
 
-from ..fixtures import cli_runner
 from agent.cli import source as source_cli, pipeline as pipeline_cli
 from agent.streamsets_api_client import api_client
-from ..test_pipelines.test_zpipeline_base import pytest_generate_tests
-from agent.repository import source_repository
+from ...source import source_repository
 
 
 class TestMongo:

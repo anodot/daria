@@ -1,5 +1,5 @@
 from .base import Stage
-from agent.source.sage import SageSource
+from agent.cli.source import SageSource
 
 
 class SageScript(Stage):

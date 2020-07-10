@@ -5,10 +5,10 @@ from agent import pipeline
 from agent.destination import HttpDestination, build_urls, create
 from agent import validator
 from agent.constants import MONITORING_SOURCE_NAME
-from agent.repository import pipeline_repository, source_repository
+from agent.source import source_repository
 from agent.tools import infinite_retry
 from agent.proxy import Proxy
-from agent.pipeline import manager
+from agent.pipeline import manager, pipeline_repository
 
 
 @infinite_retry

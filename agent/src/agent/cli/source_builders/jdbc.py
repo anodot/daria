@@ -1,0 +1,80 @@
+import click
+
+from .abstract_source import Source
+from agent.tools import infinite_retry, is_url, print_dicts, if_validation_enabled
+from sqlalchemy import create_engine
+from urllib.parse import urlparse, urlunparse
+
+
+class JDBCSource(Source):
+    VALIDATION_SCHEMA_FILE_NAME = 'jdbc.json'
+    TEST_PIPELINE_FILENAME = 'test_jdbc_pdsf4587'
+
+    def prompt(self, default_config, advanced=False):
+        self.prompt_connection(default_config)
+
+        return self.source.config
+
+    def validate(self):
+        self.validate_json()
+        self.validate_connection_string()
+        self.validate_connection()
+
+    def get_connection_url(self):
+        conn_info = urlparse(self.source.config['connection_string'])
+        if self.source.config.get('hikariConfigBean.useCredentials'):
+            userpass = self.source.config['hikariConfigBean.username'] + ':' + self.source.config[
+                'hikariConfigBean.password']
+            netloc = userpass + '@' + conn_info.netloc
+        else:
+            netloc = conn_info.netloc
+
+        scheme = conn_info.scheme + '+mysqlconnector' if self.source.type == 'mysql' else conn_info.scheme
+
+        return urlunparse((scheme, netloc, conn_info.path, '', '', ''))
+
+    def validate_connection_string(self):
+        if not is_url(self.source.config['connection_string']):
+            raise click.UsageError('Wrong url format. Correct format is `scheme://host:port`')
+
+        result = urlparse(self.source.config['connection_string'])
+        if self.source.type == 'mysql' and result.scheme != 'mysql':
+            raise click.UsageError('Wrong url scheme. Use `mysql`')
+        if self.source.type == 'postgres' and result.scheme != 'postgresql':
+            raise click.UsageError('Wrong url scheme. Use `postgresql`')
+
+    @infinite_retry
+    def prompt_connection_string(self, default_config):
+        self.source.config['connection_string'] = click.prompt('Connection string',
+                                                               type=click.STRING,
+                                                               default=default_config.get('connection_string')).strip()
+        self.validate_connection_string()
+
+    @if_validation_enabled
+    def validate_connection(self):
+        eng = create_engine(self.get_connection_url())
+        eng.connect()
+        click.secho('Connection successful')
+
+    @infinite_retry
+    def prompt_connection(self, default_config):
+        self.prompt_connection_string(default_config)
+        self.source.config['hikariConfigBean.username'] = \
+            click.prompt('Username', type=click.STRING,
+                         default=default_config.get('hikariConfigBean.username', '')).strip()
+        self.source.config['hikariConfigBean.password'] = \
+            click.prompt('Password', type=click.STRING, default=default_config.get('hikariConfigBean.password', ''))
+        if self.source.config['hikariConfigBean.password'] != '':
+            self.source.config['hikariConfigBean.useCredentials'] = True
+        self.validate_connection()
+
+    def set_config(self, config):
+        super().set_config(config)
+        self.source.config['hikariConfigBean.connectionString'] = 'jdbc:' + self.source.config['connection_string']
+
+    @if_validation_enabled
+    def print_sample_data(self):
+        records = self.get_sample_records()
+        if not records:
+            return
+        print_dicts(records)

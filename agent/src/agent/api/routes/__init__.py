@@ -2,7 +2,7 @@ import agent.destination
 
 from functools import wraps
 from flask import jsonify
-from agent.repository import pipeline_repository
+from agent.pipeline import pipeline_repository
 
 
 def needs_destination(func):

@@ -1,8 +1,7 @@
 import json
 import os
 import agent.source
-from agent.repository import pipeline_repository
-from agent.source import abstract_source
+from agent import pipeline
 from agent.constants import DATA_DIR, MONITORING_SOURCE_NAME
 from jsonschema import ValidationError, validate
 
@@ -17,25 +16,25 @@ def exists(name: str) -> bool:
     return os.path.isfile(__get_file_path(name))
 
 
-def __save(source: abstract_source.Source):
+def _save(source: agent.source.Source):
     with open(__get_file_path(source.name), 'w') as f:
         json.dump(source.to_dict(), f)
 
 
-def update(source: abstract_source.Source):
-    __save(source)
+def update(source: agent.source.Source):
+    _save(source)
 
 
-def create(source: abstract_source.Source):
+def create(source: agent.source.Source):
     if exists(source.name):
-        raise agent.source.SourceException(f"Source config {source.name} already exists")
-    __save(source)
+        raise agent.source.source.SourceException(f"Source config {source.name} already exists")
+    _save(source)
 
 
 def delete_by_name(source_name: str):
     if not exists(source_name):
-        raise agent.source.SourceNotExists(f"Source config {source_name} doesn't exist")
-    pipelines = pipeline_repository.get_by_source(source_name)
+        raise SourceNotExists(f"Source config {source_name} doesn't exist")
+    pipelines = pipeline.repository.get_by_source(source_name)
     if pipelines:
         raise Exception(
             f"Can't delete. Source is used by {', '.join([p.id for p in pipelines])} pipelines"
@@ -54,12 +53,12 @@ def get_all() -> list:
     return configs
 
 
-def get(name: str) -> abstract_source.Source:
+def get(name: str) -> agent.source.Source:
     if name == MONITORING_SOURCE_NAME:
         return agent.source.MonitoringSource(MONITORING_SOURCE_NAME, agent.source.TYPE_MONITORING, {})
 
     if not exists(name):
-        raise agent.source.SourceNotExists(f"Source config {name} doesn't exist")
+        raise SourceNotExists(f"Source config {name} doesn't exist")
 
     with open(__get_file_path(name)) as f:
         config = json.load(f)
@@ -70,7 +69,7 @@ def get(name: str) -> abstract_source.Source:
     try:
         obj.validate_json()
     except ValidationError:
-        raise agent.source.SourceConfigDeprecated(
+        raise SourceConfigDeprecated(
             f'Config for source {name} is not supported. Please recreate the source'
         )
 
@@ -80,3 +79,11 @@ def get(name: str) -> abstract_source.Source:
 def create_dir():
     if not os.path.exists(SOURCE_DIRECTORY):
         os.mkdir(SOURCE_DIRECTORY)
+
+
+class SourceNotExists(Exception):
+    pass
+
+
+class SourceConfigDeprecated(Exception):
+    pass

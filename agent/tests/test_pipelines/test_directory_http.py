@@ -1,8 +1,8 @@
 import pytest
 
-from ..fixtures import cli_runner, get_output
-from agent.source import TYPE_DIRECTORY
-from .test_zpipeline_base import TestPipelineBase, pytest_generate_tests
+from ..fixtures import get_output
+from agent.cli.source import TYPE_DIRECTORY
+from .test_zpipeline_base import TestPipelineBase
 
 
 class TestDirectory(TestPipelineBase):

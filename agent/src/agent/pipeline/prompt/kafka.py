@@ -1,6 +1,6 @@
 import click
 from .schemaless import PromptConfigSchemaless
-from agent.source import KafkaSource
+from agent.cli.source import KafkaSource
 
 
 class PromptConfigKafka(PromptConfigSchemaless):

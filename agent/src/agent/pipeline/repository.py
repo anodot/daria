@@ -5,7 +5,6 @@ from jsonschema import validate
 from agent import source
 from agent.constants import DATA_DIR
 from agent.destination import HttpDestination
-from agent.repository import source_repository
 from typing import List
 from agent.pipeline import pipeline
 
@@ -39,7 +38,7 @@ def get(pipeline_id: str) -> pipeline.Pipeline:
         'required': ['source', 'pipeline_id']
     })
 
-    source_obj = source_repository.get(config['source']['name'])
+    source_obj = source.repository.get(config['source']['name'])
     destination = HttpDestination.get()
     return pipeline.Pipeline(pipeline_id, source_obj, config, destination)
 

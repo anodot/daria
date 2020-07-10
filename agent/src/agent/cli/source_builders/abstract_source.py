@@ -3,6 +3,7 @@ import json
 import os
 
 from abc import ABC, abstractmethod
+from agent.source import source
 from agent.tools import if_validation_enabled, sdc_record_map_to_dict
 from jsonschema import validate
 from agent.streamsets_api_client import api_client
@@ -17,15 +18,10 @@ class Source(ABC):
     TEST_PIPELINE_FILENAME = ''
     MAX_SAMPLE_RECORDS = 3
 
-    def __init__(self, name: str, source_type: str, config: dict):
-        self.config = config
-        self.type = source_type
-        self.name = name
+    def __init__(self, source_obj: source.Source):
+        self.source = source_obj
         self.sample_data = None
-        self.test_pipeline_name = self.TEST_PIPELINE_FILENAME + self.name
-
-    def to_dict(self) -> dict:
-        return {'name': self.name, 'type': self.type, 'config': self.config}
+        self.test_pipeline_name = self.TEST_PIPELINE_FILENAME + self.source.name
 
     @abstractmethod
     def prompt(self, default_config, advanced=False) -> dict:
@@ -41,15 +37,16 @@ class Source(ABC):
         )) as f:
             json_schema = json.load(f)
 
-        validate(self.config, json_schema)
+        validate(self.source.config, json_schema)
 
+    # todo refactor children
     def set_config(self, config):
-        self.config = config
+        self.source.config = config
 
     def update_test_source_config(self, stage):
         for conf in stage['configuration']:
-            if conf['name'] in self.config:
-                conf['value'] = self.config[conf['name']]
+            if conf['name'] in self.source.config:
+                conf['value'] = self.source.config[conf['name']]
 
     # todo move pipeline creation out of source package
     def create_test_pipeline(self):

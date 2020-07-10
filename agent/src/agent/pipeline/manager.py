@@ -6,16 +6,17 @@ import shutil
 import time
 import agent.pipeline.config.handlers as config_handlers
 
-from . import pipeline
+from . import pipeline, pipeline_repository
 from agent.pipeline.config.validators import get_config_validator
 from agent.pipeline import prompt, load_client_data
-from .. import source, destination
+from .. import destination
+from ..cli import source
 from agent.anodot_api_client import AnodotApiClient
 from agent.constants import ERRORS_DIR, ENV_PROD
 from agent.streamsets_api_client import api_client, StreamSetsApiClientException
 from agent.tools import print_json, sdc_record_map_to_dict, if_validation_enabled
 from .. import proxy
-from ..repository import pipeline_repository, source_repository
+from ..source import source_repository
 from .pipeline import Pipeline, PipelineException
 from jsonschema import validate
 
