@@ -284,11 +284,13 @@ def delete_by_id(pipeline_id: str):
 
 def enable_destination_logs(pipeline_obj: Pipeline):
     pipeline_obj.destination.enable_logs()
+    pipeline_obj.destination.save()
     update(pipeline_obj)
 
 
 def disable_destination_logs(pipeline_obj: Pipeline):
     pipeline_obj.destination.disable_logs()
+    pipeline_obj.destination.save()
     update(pipeline_obj)
 
 
