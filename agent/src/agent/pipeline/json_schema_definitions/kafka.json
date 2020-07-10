@@ -23,5 +23,5 @@
       "patternProperties":  {"[^ \\.]+": {"type": "array", "items": {"type": "string"}}}
     }
   },
-  "required": ["values", "measurement_names", "dimensions", "timestamp"]
+  "required": ["values", "dimensions", "timestamp"]
 }

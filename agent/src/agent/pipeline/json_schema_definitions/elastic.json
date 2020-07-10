@@ -23,5 +23,5 @@
     },
     "query_file": {"type": "string"}
   },
-  "required": ["values", "measurement_names", "dimensions", "timestamp", "query_file"]
+  "required": ["values", "dimensions", "timestamp", "query_file"]
 }
