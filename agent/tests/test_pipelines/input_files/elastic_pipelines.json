@@ -17,7 +17,6 @@
     "count_records_measurement_name": "clicks",
     "count_records": true,
     "values": {},
-    "measurement_names": {},
     "dimensions": {
       "required": ["_source/ver", "_source/Country"],
       "optional": ["_source/Exchange", "optional_dim"]
