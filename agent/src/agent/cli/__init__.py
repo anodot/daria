@@ -1,8 +1,7 @@
 import click
 
-from agent.cli.destination import destination
-from agent.cli import pipeline, source
-from agent.pipeline import pipeline_repository
+from agent.cli import destination as destination_cli, pipeline as pipeline_cli, source as source_cli
+from agent import pipeline
 from agent.version import __version__, __build_time__, __git_sha1__
 
 
@@ -34,18 +33,18 @@ def update():
     """
     Update all pipelines configuration, recreate and restart them
     """
-    for p in pipeline_repository.get_all():
+    for p in pipeline.repository.get_all():
         try:
             pipeline.manager.update(p)
             click.secho(f'Pipeline {p.id} updated', fg='green')
-        except pipeline.PipelineException as e:
+        except pipeline.pipeline.PipelineException as e:
             print(str(e))
             continue
 
 
-agent.add_command(source.source_group)
-agent.add_command(pipeline.pipeline_group)
-agent.add_command(destination)
+agent.add_command(source_cli.source_group)
+agent.add_command(pipeline_cli.pipeline_group)
+agent.add_command(destination_cli.destination)
 agent.add_command(update)
 
 if __name__ == '__main__':

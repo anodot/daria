@@ -1,8 +1,8 @@
 
-from .abstract_source import Source
+from .abstract_builder import Builder
 
 
-class MonitoringSource(Source):
+class MonitoringSource(Builder):
     def prompt(self, default_config, advanced=False):
         pass
 

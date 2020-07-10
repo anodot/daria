@@ -3,7 +3,7 @@ import os
 from ..fixtures import get_input_file_path
 from agent.cli import source as source_cli, pipeline as pipeline_cli
 from agent.streamsets_api_client import api_client
-from ...source import source_repository
+from agent import source
 
 
 class TestTCPServer:
@@ -15,7 +15,7 @@ class TestTCPServer:
         result = cli_runner.invoke(source_cli.create,
                                    input="splunk\ntest_tcp_log\n9999\nLOG\n" + grok_file_path + "\n%{NONNEGINT:timestamp_unix_ms} %{TIMESTAMP:timestamp_string} %{NONNEGINT:ver} %{WORD} %{WORD:Country} %{WORD:AdType} %{WORD:Exchange} %{NUMBER:Clicks}\n")
         assert result.exit_code == 0
-        assert os.path.isfile(os.path.join(source_repository.SOURCE_DIRECTORY, 'test_tcp_log.json'))
+        assert os.path.isfile(os.path.join(source.repository.SOURCE_DIRECTORY, 'test_tcp_log.json'))
 
     def test_create(self, cli_runner):
         result = cli_runner.invoke(pipeline_cli.create,

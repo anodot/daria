@@ -1,22 +1,21 @@
 import click
 
-from .abstract_source import Source
+from .abstract_builder import Builder
 from agent.tools import infinite_retry, is_url, print_dicts, if_validation_enabled
 from sqlalchemy import create_engine
 from urllib.parse import urlparse, urlunparse
+from agent import source
 
 
-class JDBCSource(Source):
-    VALIDATION_SCHEMA_FILE_NAME = 'jdbc.json'
-    TEST_PIPELINE_FILENAME = 'test_jdbc_pdsf4587'
-
+class JDBCSource(Builder):
     def prompt(self, default_config, advanced=False):
         self.prompt_connection(default_config)
 
-        return self.source.config
+        self.source.set_config(self.source.config)
+        return self.source
 
     def validate(self):
-        self.validate_json()
+        source.validator.validate_json(self.source)
         self.validate_connection_string()
         self.validate_connection()
 

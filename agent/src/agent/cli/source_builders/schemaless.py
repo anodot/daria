@@ -2,12 +2,12 @@ import click
 import json
 import os
 
-from .abstract_source import Source, SourceException
+from .abstract_builder import Builder, SourceException
 from abc import ABCMeta
 from agent.tools import infinite_retry, print_dicts, print_json, map_keys, if_validation_enabled
 
 
-class SchemalessSource(Source, metaclass=ABCMeta):
+class SchemalessSource(Builder, metaclass=ABCMeta):
     CONFIG_DATA_FORMAT = 'conf.dataFormat'
     CONFIG_CSV_MAPPING = 'csv_mapping'
 
@@ -143,7 +143,8 @@ class SchemalessSource(Source, metaclass=ABCMeta):
         elif self.source.config[self.CONFIG_DATA_FORMAT] == self.DATA_FORMAT_LOG:
             self.prompt_log(default_config)
 
-        return self.source.config
+        self.source.set_config(self.source.config)
+        return self.source
 
     def prompt_batch_size(self, default_config):
         self.source.config[self.CONFIG_BATCH_SIZE] = \

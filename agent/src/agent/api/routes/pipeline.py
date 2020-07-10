@@ -3,12 +3,9 @@ import logging
 import requests
 from jsonschema import ValidationError
 from agent.api.routes import needs_pipeline
-from agent import pipeline
 from flask import jsonify, Blueprint, request
 from agent.api import routes
-from agent.pipeline.pipeline import PipelineException
-from agent.pipeline import pipeline_repository
-from agent.cli import source
+from agent import pipeline, source
 from agent.streamsets_api_client import StreamSetsApiClientException
 
 pipelines = Blueprint('pipelines', __name__)
@@ -17,7 +14,7 @@ pipelines = Blueprint('pipelines', __name__)
 @pipelines.route('/pipelines', methods=['GET'])
 def list_pipelines():
     configs = []
-    for p in pipeline_repository.get_all():
+    for p in pipeline.repository.get_all():
         configs.append(p.to_dict())
     return jsonify(configs)
 
@@ -35,7 +32,7 @@ def create():
             ValidationError, source.SourceNotExists, source.SourceConfigDeprecated, requests.exceptions.ConnectionError
     ) as e:
         return jsonify(str(e)), 400
-    except PipelineException as e:
+    except pipeline.PipelineException as e:
         return jsonify(str(e)), 500
     return jsonify(source_instances)
 
@@ -64,8 +61,8 @@ def delete(pipeline_id):
 @needs_pipeline
 def start(pipeline_id):
     try:
-        pipeline.manager.start(pipeline_repository.get(pipeline_id))
-    except (pipeline.manager.PipelineFreezeException, PipelineException) as e:
+        pipeline.manager.start(pipeline.repository.get(pipeline_id))
+    except (pipeline.manager.PipelineFreezeException, pipeline.PipelineException) as e:
         return jsonify(str(e)), 400
     return jsonify('')
 
@@ -121,14 +118,14 @@ def logs(pipeline_id):
 @pipelines.route('/pipelines/<pipeline_id>/enable-destination-logs', methods=['POST'])
 @needs_pipeline
 def enable_destination_logs(pipeline_id):
-    pipeline.manager.enable_destination_logs(pipeline_repository.get(pipeline_id))
+    pipeline.manager.enable_destination_logs(pipeline.repository.get(pipeline_id))
     return jsonify('')
 
 
 @pipelines.route('/pipelines/<pipeline_id>/disable-destination-logs', methods=['POST'])
 @needs_pipeline
 def disable_destination_logs(pipeline_id):
-    pipeline.manager.disable_destination_logs(pipeline_repository.get(pipeline_id))
+    pipeline.manager.disable_destination_logs(pipeline.repository.get(pipeline_id))
     return jsonify('')
 
 
@@ -136,7 +133,7 @@ def disable_destination_logs(pipeline_id):
 @needs_pipeline
 def reset(pipeline_id):
     try:
-        pipeline.manager.reset(pipeline_repository.get(pipeline_id))
+        pipeline.manager.reset(pipeline.repository.get(pipeline_id))
     except StreamSetsApiClientException as e:
         return jsonify(str(e)), 500
     return jsonify('')

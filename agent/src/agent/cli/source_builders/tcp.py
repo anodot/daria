@@ -3,13 +3,11 @@ import socket
 
 from agent.tools import infinite_retry
 from .schemaless import SchemalessSource
+from agent import source
 
 
 class TCPSource(SchemalessSource):
     CONFIG_PORTS = 'conf.ports'
-    TEST_PIPELINE_FILENAME = 'test_tcp_server_jksrj322'
-
-    VALIDATION_SCHEMA_FILE_NAME = 'tcp_server.json'
 
     @infinite_retry
     def prompt_ports(self, default_config):
@@ -25,8 +23,9 @@ class TCPSource(SchemalessSource):
         self.prompt_data_format(default_config)
         if advanced:
             self.prompt_batch_size(default_config)
-        return self.source.config
+        self.source.set_config(self.source.config)
+        return self.source
 
     def validate(self):
-        self.validate_json()
+        source.validator.validate_json(self.source)
         self.validate_connection()

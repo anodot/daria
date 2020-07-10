@@ -1,8 +1,7 @@
 import click
 
-from agent.cli import source
 from agent.pipeline.elastic import query_validator
-from agent.cli.source import ElasticSource
+from agent import source
 from agent.pipeline import pipeline as p
 
 
@@ -17,7 +16,9 @@ class ElasticValidator(BaseValidator):
     def validate(pipeline):
         with open(pipeline.config['query_file']) as f:
             query = f.read()
-        errors = query_validator.get_errors(query, pipeline.source.config[ElasticSource.CONFIG_OFFSET_FIELD])
+        # todo
+        # errors = query_validator.get_errors(query, pipeline.source.config[source.ElasticSource.CONFIG_OFFSET_FIELD])
+        errors = query_validator.get_errors(query, pipeline.source.config['conf.offsetField'])
         if errors:
             raise click.ClickException(errors)
 

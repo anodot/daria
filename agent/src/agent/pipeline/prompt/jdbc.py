@@ -2,13 +2,14 @@ import click
 
 from agent.tools import infinite_retry
 from .base import PromptConfig
+from agent import source
 
 
 class PromptConfigJDBC(PromptConfig):
     def set_config(self):
         self.set_table()
         self.set_pagination()
-        query = f'SELECT * FROM {self.config["table"]}  WHERE {self.config["offset_column"]} > ${{OFFSET}} ORDER BY {self.config["offset_column"]} LIMIT {self.pipeline.source.MAX_SAMPLE_RECORDS}'
+        query = f'SELECT * FROM {self.config["table"]}  WHERE {self.config["offset_column"]} > ${{OFFSET}} ORDER BY {self.config["offset_column"]} LIMIT {source.manager.MAX_SAMPLE_RECORDS}'
         self.pipeline.source.config['query'] = query
         self.pipeline.source.config['offsetColumn'] = self.config['offset_column']
         self.data_preview()

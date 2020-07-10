@@ -3,18 +3,11 @@ import json
 import jsonschema
 
 from agent import pipeline
-from agent.constants import MONITORING_SOURCE_NAME, ENV_PROD
+from agent.constants import ENV_PROD
 from agent import source
 from agent.streamsets_api_client import api_client
 
-
-def create_object(name: str, source_type: str) -> source.Source:
-    if name == MONITORING_SOURCE_NAME:
-        return source.MonitoringSource(MONITORING_SOURCE_NAME, source.TYPE_MONITORING, {})
-
-    if source_type not in source.types:
-        raise ValueError(f'{source_type} isn\'t supported')
-    return source.types[source_type](name, source_type, {})
+MAX_SAMPLE_RECORDS = 3
 
 
 def create_from_file(file):
@@ -61,7 +54,7 @@ def edit_using_file(file):
 
 
 def create_from_json(config: dict) -> source.Source:
-    source_instance = create_object(config['name'], config['type'])
+    source_instance = source.Source(config['name'], config['type'], {})
     source_instance.set_config(config['config'])
     source_instance.validate()
     source.repository.create(source_instance)

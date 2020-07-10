@@ -1,6 +1,7 @@
 import click
 from .schemaless import SchemalessSource
 from agent.tools import infinite_retry
+from agent import source
 
 
 class KafkaSource(SchemalessSource):
@@ -18,10 +19,6 @@ class KafkaSource(SchemalessSource):
     OFFSET_EARLIEST = 'EARLIEST'
     OFFSET_LATEST = 'LATEST'
     OFFSET_TIMESTAMP = 'TIMESTAMP'
-
-    TEST_PIPELINE_FILENAME = 'test_kafka_kjeu4334'
-
-    VALIDATION_SCHEMA_FILE_NAME = 'kafka.json'
 
     DEFAULT_KAFKA_VERSION = '2.0+'
 
@@ -54,10 +51,11 @@ class KafkaSource(SchemalessSource):
             self.prompt_data_format(default_config)
             self.prompt_batch_size(default_config)
 
-        return self.source.config
+        self.source.set_config(self.source.config)
+        return self.source
 
     def validate(self):
-        self.validate_json()
+        source.validator.validate_json(self.source)
         self.validate_connection()
 
     @infinite_retry
@@ -84,12 +82,6 @@ class KafkaSource(SchemalessSource):
                 raise click.UsageError('Wrong format')
 
             self.source.config[self.CONFIG_CONSUMER_PARAMS].append({'key': pair[0], 'value': pair[1]})
-
-    def update_test_source_config(self, stage):
-        if self.CONFIG_VERSION in self.source.config:
-            self.source.config['library'] = self.version_libraries[self.source.config[self.CONFIG_VERSION]]
-
-        super().update_test_source_config(stage)
 
     def set_config(self, config):
         super().set_config(config)

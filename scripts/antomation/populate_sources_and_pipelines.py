@@ -4,12 +4,7 @@ import csv
 import shutil
 
 from tempfile import NamedTemporaryFile
-from agent.cli.source import extract_configs as extract_source_configs, edit_using_file as edit_source_using_file, \
-    create_from_file as create_source_from_file
-from agent.cli.pipeline import extract_configs as extract_pipeline_configs, \
-    edit_using_file as edit_pipeline_using_file, create_from_file as create_pipeline_from_file, start as start_pipeline
-from agent.pipeline import pipeline_repository
-from agent.source import source_repository
+from agent import pipeline, source
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 FAIL = '\033[91m'
@@ -22,10 +17,10 @@ PIPELINES_CHECKSUMS = os.path.join(ROOT_DIR, 'checksums', 'pipelines.csv')
 
 
 def populate_source_from_file(file):
-    for config in extract_source_configs(file):
+    for config in source.manager.extract_source_configs(file):
         if 'name' not in config:
             raise Exception('Source config should contain a source name')
-        if source_repository.exists(config['name']):
+        if source.repository.exists(config['name']):
             edit_source_using_file(file)
         else:
             create_source_from_file(file)
@@ -35,7 +30,7 @@ def populate_pipeline_from_file(file):
     for config in extract_pipeline_configs(file):
         if 'pipeline_id' not in config:
             raise Exception('Pipeline config should contain a pipeline_id')
-        if pipeline_repository.exists(config['pipeline_id']):
+        if pipeline.repository.exists(config['pipeline_id']):
             edit_pipeline_using_file(file)
         else:
             create_pipeline_from_file(file)

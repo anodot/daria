@@ -20,7 +20,9 @@ class PromptConfigInflux(PromptConfig):
 
     def get_test_url(self):
         source_config = self.pipeline.source.config
-        query = f"select+%2A+from+{self.config['measurement_name']}+limit+{self.pipeline.source.MAX_SAMPLE_RECORDS}"
+        # todo
+        # query = f"select+%2A+from+{self.config['measurement_name']}+limit+{self.pipeline.source.MAX_SAMPLE_RECORDS}"
+        query = f"select+%2A+from+{self.config['measurement_name']}+limit+{3}"
         return urljoin(source_config['host'], f"/query?db={source_config['db']}&epoch=ns&q={query}")
 
     def set_delay(self):
