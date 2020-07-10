@@ -1,7 +1,7 @@
 import click
 
 from .schemaless import PromptConfigSchemaless
-from agent.source import ElasticSource
+from agent.cli.source import ElasticSource
 from agent.tools import infinite_retry
 from agent.pipeline.elastic import query_validator
 

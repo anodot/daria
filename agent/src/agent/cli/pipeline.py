@@ -1,12 +1,13 @@
 import click
 import json
 
-from agent.pipeline import manager
-from agent import pipeline, source
+from agent.pipeline import manager, pipeline_repository
+from agent import pipeline
+from agent.cli import source
 from agent.pipeline.pipeline import PipelineException
 from agent.streamsets_api_client import api_client, StreamSetsApiClientException
 from agent.destination import HttpDestination
-from agent.repository import source_repository, pipeline_repository
+from agent.source import source_repository
 from agent.tools import infinite_retry
 from jsonschema import validate as validate_json, ValidationError
 from texttable import Texttable

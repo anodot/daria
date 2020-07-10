@@ -1,11 +1,11 @@
 import json
 import os
-import pytest
 
-from ..fixtures import cli_runner, get_output, get_input_file_path
+from ..fixtures import get_output, get_input_file_path
 from agent.cli import source as source_cli, pipeline as pipeline_cli
 from agent.streamsets_api_client import api_client
-from agent.repository import pipeline_repository, source_repository
+from ...pipeline import pipeline_repository
+from ...source import source_repository
 
 
 def pytest_generate_tests(metafunc):

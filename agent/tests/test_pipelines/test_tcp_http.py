@@ -1,12 +1,11 @@
 import pytest
 import socket
 
-from ..fixtures import cli_runner
 from agent.cli import pipeline as pipeline_cli
-from agent.source import TYPE_SPLUNK
+from agent.cli.source import TYPE_SPLUNK
 from agent.streamsets_api_client import api_client
-from .test_zpipeline_base import TestPipelineBase, pytest_generate_tests
-from agent.repository import pipeline_repository
+from .test_zpipeline_base import TestPipelineBase
+from ...pipeline import pipeline_repository
 
 
 class TestTCPServer(TestPipelineBase):

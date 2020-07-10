@@ -1,13 +1,6 @@
-from .abstract_source import Source, SourceNotExists, SourceException, SourceConfigDeprecated
-from .jdbc import JDBCSource
-from .influx import InfluxSource
-from .kafka import KafkaSource
-from .mongo import MongoSource
-from .elastic import ElasticSource
-from .tcp import TCPSource
-from .directory import DirectorySource
-from .monitoring import MonitoringSource
-from .sage import SageSource
+from .source import *
+from . import repository
+from . import manager
 
 TYPE_INFLUX = 'influx'
 TYPE_KAFKA = 'kafka'

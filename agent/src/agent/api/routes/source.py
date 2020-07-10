@@ -1,9 +1,8 @@
 from flask import jsonify, Blueprint, request
 from agent.api import routes
 from jsonschema import ValidationError
-from agent.repository import source_repository
-from agent.source import SourceException, SourceNotExists
-from agent.source import source_manager
+from agent.source import source_repository
+from agent.cli.source import SourceException, SourceNotExists, source_manager
 
 sources = Blueprint('test', __name__)
 

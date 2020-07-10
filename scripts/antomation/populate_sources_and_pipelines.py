@@ -9,7 +9,8 @@ from agent.cli.source import extract_configs as extract_source_configs, edit_usi
     create_from_file as create_source_from_file
 from agent.cli.pipeline import extract_configs as extract_pipeline_configs, \
     edit_using_file as edit_pipeline_using_file, create_from_file as create_pipeline_from_file, start as start_pipeline
-from agent.repository import source_repository, pipeline_repository
+from agent.pipeline import pipeline_repository
+from agent.source import source_repository
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 FAIL = '\033[91m'

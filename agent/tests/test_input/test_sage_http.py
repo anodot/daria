@@ -1,11 +1,10 @@
 import os
 
-from ..fixtures import get_input_file_path, cli_runner
+from ..fixtures import get_input_file_path
 from agent.cli import source as source_cli, pipeline as pipeline_cli
 from agent.streamsets_api_client import api_client
 from datetime import datetime
-from agent.repository import source_repository
-from ..test_pipelines.test_zpipeline_base import pytest_generate_tests
+from ...source import source_repository
 
 
 class TestSage:

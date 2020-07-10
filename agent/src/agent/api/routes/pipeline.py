@@ -7,8 +7,8 @@ from agent import pipeline
 from flask import jsonify, Blueprint, request
 from agent.api import routes
 from agent.pipeline.pipeline import PipelineException
-from agent.repository import pipeline_repository
-from agent import source
+from agent.pipeline import pipeline_repository
+from agent.cli import source
 from agent.streamsets_api_client import StreamSetsApiClientException
 
 pipelines = Blueprint('pipelines', __name__)

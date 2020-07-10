@@ -1,9 +1,8 @@
 import click
 
 from agent.cli.destination import destination
-from agent.cli import pipeline
-from agent.cli import source
-from agent.repository import pipeline_repository
+from agent.cli import pipeline, source
+from agent.pipeline import pipeline_repository
 from agent.version import __version__, __build_time__, __git_sha1__
 
 
