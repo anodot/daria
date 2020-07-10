@@ -16,8 +16,8 @@ FAIL = '\033[91m'
 ENDC = '\033[0m'
 SOURCES = os.path.join(ROOT_DIR, 'sources')
 PIPELINES = os.path.join(ROOT_DIR, 'pipelines')
-SOURCES_CHECKSUMS = os.path.join('/usr/src/app/data', 'checksums', 'sources.csv')
-PIPELINES_CHECKSUMS = os.path.join('/usr/src/app/data', 'checksums', 'pipelines.csv')
+SOURCES_CHECKSUMS = os.path.join(ROOT_DIR, 'checksums', 'sources.csv')
+PIPELINES_CHECKSUMS = os.path.join(ROOT_DIR, 'checksums', 'pipelines.csv')
 
 
 def populate_source_from_file(file):
@@ -83,6 +83,7 @@ def process(directory, checksum_file, create):
         for filename in filenames:
             if not filename.endswith('.json'):
                 print(f'Skipping {filename}')
+                continue
             file_path = os.path.join(root, filename)
             if not should_update(checksum_file, filename, root):
                 print(f"Don't need to update {filename}")
