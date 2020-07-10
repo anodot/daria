@@ -98,8 +98,9 @@ def process(directory, checksum_file, create):
                 failed = True
                 continue
             update_checksum(checksum_file, filename, root)
-            if failed:
-                exit(1)
+
+    if failed:
+        exit(1)
 
 
 process(SOURCES, SOURCES_CHECKSUMS, populate_source_from_file)
