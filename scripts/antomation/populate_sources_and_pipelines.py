@@ -2,9 +2,9 @@ import hashlib
 import os
 import csv
 import shutil
+import traceback
 
 from tempfile import NamedTemporaryFile
-from agent import pipeline
 from agent.cli.source import extract_configs as extract_source_configs, edit_using_file as edit_source_using_file, \
     create_from_file as create_source_from_file
 from agent.cli.pipeline import extract_configs as extract_pipeline_configs, \
@@ -14,7 +14,6 @@ from agent.repository import source_repository, pipeline_repository
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 FAIL = '\033[91m'
 ENDC = '\033[0m'
-
 SOURCES = os.path.join(ROOT_DIR, 'sources')
 PIPELINES = os.path.join(ROOT_DIR, 'pipelines')
 SOURCES_CHECKSUMS = os.path.join(ROOT_DIR, 'checksums', 'sources.csv')
@@ -79,19 +78,29 @@ def update_checksum(checksum_file, filename, root):
 
 
 def process(directory, checksum_file, create):
+    failed = False
     for root, _, filenames in os.walk(directory):
         for filename in filenames:
+            if not filename.endswith('.json'):
+                print(f'Skipping {filename}')
+                continue
             file_path = os.path.join(root, filename)
             if not should_update(checksum_file, filename, root):
                 print(f"Don't need to update {filename}")
                 continue
             try:
+                print(f'Processing {file_path}')
                 with open(file_path) as file:
                     create(file)
-            except Exception as e:
-                print(f'{FAIL}{e}{ENDC}')
+            except Exception:
+                print(f'{FAIL}EXCEPTION:\n{ENDC}')
+                traceback.print_exc()
+                failed = True
                 continue
             update_checksum(checksum_file, filename, root)
+
+    if failed:
+        exit(1)
 
 
 process(SOURCES, SOURCES_CHECKSUMS, populate_source_from_file)
