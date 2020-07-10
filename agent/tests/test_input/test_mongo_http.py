@@ -3,7 +3,7 @@ import os
 
 from agent.cli import source as source_cli, pipeline as pipeline_cli
 from agent.streamsets_api_client import api_client
-from ...source import source_repository
+from agent import source
 
 
 class TestMongo:
@@ -25,11 +25,11 @@ class TestMongo:
         result = cli_runner.invoke(source_cli.create,
                                    input="""mongo\ntest_mongo\nmongodb://mongo:27017\nroot\nroot\nadmin\ntest\nadtech\n\n2015-01-02 00:00:00\n\n\n\n""")
         assert result.exit_code == 0
-        assert os.path.isfile(os.path.join(source_repository.SOURCE_DIRECTORY, 'test_mongo.json'))
+        assert os.path.isfile(os.path.join(source.repository.SOURCE_DIRECTORY, 'test_mongo.json'))
 
     def test_source_edit(self, cli_runner):
         result = cli_runner.invoke(source_cli.edit, ['test_mongo'], input="""\n\n\n\n\n\n\n2015-01-01 00:00:00\n\n\n\n""")
-        with open(os.path.join(source_repository.SOURCE_DIRECTORY, 'test_mongo.json')) as f:
+        with open(os.path.join(source.repository.SOURCE_DIRECTORY, 'test_mongo.json')) as f:
             source_dict = json.load(f)
             assert source_dict['config']['configBean.initialOffset'] == '2015-01-01 00:00:00'
         assert result.exit_code == 0

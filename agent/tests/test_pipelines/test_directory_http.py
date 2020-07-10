@@ -1,7 +1,7 @@
 import pytest
 
 from ..fixtures import get_output
-from agent.cli.source import TYPE_DIRECTORY
+from agent import source
 from .test_zpipeline_base import TestPipelineBase
 
 
@@ -15,9 +15,9 @@ class TestDirectory(TestPipelineBase):
         'test_stop': [{'name': 'test_dir_log'}, {'name': 'test_dir_json'}, {'name': 'test_dir_csv'}],
         'test_reset': [{'name': 'test_dir_log'}],
         'test_output': [
-            {'name': 'test_dir_csv', 'output': 'directory_csv.json', 'pipeline_type': TYPE_DIRECTORY},
-            {'name': 'test_dir_json', 'output': 'json_value_property_30.json', 'pipeline_type': TYPE_DIRECTORY},
-            {'name': 'test_dir_log', 'output': 'log_30.json', 'pipeline_type': TYPE_DIRECTORY}
+            {'name': 'test_dir_csv', 'output': 'directory_csv.json', 'pipeline_type': source.TYPE_DIRECTORY},
+            {'name': 'test_dir_json', 'output': 'json_value_property_30.json', 'pipeline_type': source.TYPE_DIRECTORY},
+            {'name': 'test_dir_log', 'output': 'log_30.json', 'pipeline_type': source.TYPE_DIRECTORY}
         ],
         'test_delete_pipeline': [{'name': 'test_dir_log'}, {'name': 'test_dir_json'}, {'name': 'test_dir_csv'}],
         'test_source_delete': [{'name': 'test_dir_log'}, {'name': 'test_dir_json'}, {'name': 'test_dir_csv'}],

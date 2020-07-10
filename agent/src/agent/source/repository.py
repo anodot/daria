@@ -1,6 +1,6 @@
 import json
 import os
-import agent.source
+from agent import source
 from agent import pipeline
 from agent.constants import DATA_DIR, MONITORING_SOURCE_NAME
 from jsonschema import ValidationError, validate
@@ -8,27 +8,27 @@ from jsonschema import ValidationError, validate
 SOURCE_DIRECTORY = os.path.join(DATA_DIR, 'sources')
 
 
-def __get_file_path(name: str) -> str:
+def _get_file_path(name: str) -> str:
     return os.path.join(SOURCE_DIRECTORY, name + '.json')
 
 
 def exists(name: str) -> bool:
-    return os.path.isfile(__get_file_path(name))
+    return os.path.isfile(_get_file_path(name))
 
 
-def _save(source: agent.source.Source):
-    with open(__get_file_path(source.name), 'w') as f:
-        json.dump(source.to_dict(), f)
+def _save(source_obj: source.Source):
+    with open(_get_file_path(source_obj.name), 'w') as f:
+        json.dump(source_obj.to_dict(), f)
 
 
-def update(source: agent.source.Source):
-    _save(source)
+def update(source_obj: source.Source):
+    _save(source_obj)
 
 
-def create(source: agent.source.Source):
-    if exists(source.name):
-        raise agent.source.source.SourceException(f"Source config {source.name} already exists")
-    _save(source)
+def create(source_obj: source.Source):
+    if exists(source_obj.name):
+        raise source.SourceException(f"Source config {source_obj.name} already exists")
+    _save(source_obj)
 
 
 def delete_by_name(source_name: str):
@@ -39,7 +39,7 @@ def delete_by_name(source_name: str):
         raise Exception(
             f"Can't delete. Source is used by {', '.join([p.id for p in pipelines])} pipelines"
         )
-    os.remove(__get_file_path(source_name))
+    os.remove(_get_file_path(source_name))
 
 
 def get_all() -> list:
@@ -53,27 +53,20 @@ def get_all() -> list:
     return configs
 
 
-def get(name: str) -> agent.source.Source:
+def get(name: str) -> source.Source:
     if name == MONITORING_SOURCE_NAME:
-        return agent.source.MonitoringSource(MONITORING_SOURCE_NAME, agent.source.TYPE_MONITORING, {})
-
+        return source.MonitoringSource(MONITORING_SOURCE_NAME, source.TYPE_MONITORING, {})
     if not exists(name):
         raise SourceNotExists(f"Source config {name} doesn't exist")
-
-    with open(__get_file_path(name)) as f:
+    with open(_get_file_path(name)) as f:
         config = json.load(f)
-
-    validate(config, agent.source.json_schema)
-
-    obj = agent.source.types[config['type']](name, config['type'], config['config'])
+    validate(config, source.json_schema)
+    source_obj = source.Source(name, config['type'], config['config'])
     try:
-        obj.validate_json()
+        source.validator.validate_json(source_obj)
     except ValidationError:
-        raise SourceConfigDeprecated(
-            f'Config for source {name} is not supported. Please recreate the source'
-        )
-
-    return obj
+        raise SourceConfigDeprecated(f'Config for source {name} is not supported. Please recreate the source')
+    return source_obj
 
 
 def create_dir():

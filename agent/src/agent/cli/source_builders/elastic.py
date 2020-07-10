@@ -1,10 +1,11 @@
 import click
 
-from .abstract_source import Source
+from .abstract_builder import Builder
 from agent.tools import infinite_retry, print_json, if_validation_enabled
+from agent import source
 
 
-class ElasticSource(Source):
+class ElasticSource(Builder):
     CONFIG_INDEX = 'conf.index'
     CONFIG_MAPPING = 'conf.mapping'
     CONFIG_IS_INCREMENTAL = 'conf.isIncrementalMode'
@@ -16,10 +17,6 @@ class ElasticSource(Source):
     CONFIG_BATCH_SIZE = 'conf.maxBatchSize'
     CONFIG_HTTP_URIS = 'conf.httpUris'
 
-    TEST_PIPELINE_FILENAME = 'test_elastic_asdfs3245'
-
-    VALIDATION_SCHEMA_FILE_NAME = 'elastic.json'
-
     def prompt(self, default_config, advanced=False):
         self.prompt_connection(default_config)
         self.prompt_index(default_config)
@@ -27,10 +24,11 @@ class ElasticSource(Source):
         self.prompt_initial_offset(default_config)
         self.prompt_interval(default_config)
         self.set_config(self.source.config)
-        return self.source.config
+        self.source.set_config(self.source.config)
+        return self.source
 
     def validate(self):
-        self.validate_json()
+        source.validator.validate_json(self.source)
         self.validate_connection()
 
     @infinite_retry

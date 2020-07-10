@@ -1,7 +1,7 @@
 import click
 
 from .schemaless import PromptConfigSchemaless
-from agent.cli.source import ElasticSource
+from agent import source
 from agent.tools import infinite_retry
 from agent.pipeline.elastic import query_validator
 
@@ -25,8 +25,10 @@ class PromptConfigElastic(PromptConfigSchemaless):
                                                  default=self.default_config.get('query_file'))
         with open(self.config['query_file']) as f:
             query = f.read()
-            offset_field = self.pipeline.source.config[ElasticSource.CONFIG_OFFSET_FIELD]
+            # offset_field = self.pipeline.source.config[source.ElasticSource.CONFIG_OFFSET_FIELD]
+            offset_field = self.pipeline.source.config['conf.offsetField']
             errors = query_validator.get_errors(query, offset_field)
             if errors:
                 raise click.ClickException(errors)
-            self.pipeline.source.config[ElasticSource.CONFIG_QUERY] = query
+            # self.pipeline.source.config[source.ElasticSource.CONFIG_QUERY] = query
+            self.pipeline.source.config['conf.queryInterval'] = query

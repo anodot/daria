@@ -1,12 +1,13 @@
 import click
 import re
 
-from .abstract_source import Source, SourceException
+from .abstract_builder import Builder, SourceException
 from agent.tools import infinite_retry, print_json, if_validation_enabled
 from pymongo import MongoClient
+from agent import source
 
 
-class MongoSource(Source):
+class MongoSource(Builder):
     CONFIG_CONNECTION_STRING = 'configBean.mongoConfig.connectionString'
     CONFIG_USERNAME = 'configBean.mongoConfig.username'
     CONFIG_PASSWORD = 'configBean.mongoConfig.password'
@@ -28,9 +29,6 @@ class MongoSource(Source):
     AUTH_TYPE_NONE = 'NONE'
     AUTH_TYPE_USER_PASS = 'USER_PASS'
 
-    VALIDATION_SCHEMA_FILE_NAME = 'mongo.json'
-    TEST_PIPELINE_FILENAME = 'test_mongo_rand847'
-
     offset_types = [OFFSET_TYPE_OBJECT_ID, OFFSET_TYPE_STRING, OFFSET_TYPE_DATE]
 
     def prompt(self, default_config, advanced=False):
@@ -42,10 +40,11 @@ class MongoSource(Source):
         self.source.config[self.CONFIG_BATCH_SIZE] = \
             click.prompt('Batch size', type=click.IntRange(1), default=default_config.get(self.CONFIG_BATCH_SIZE, 1000))
         self.prompt_batch_wait_time(default_config)
-        return self.source.config
+        self.source.set_config(self.source.config)
+        return self.source
 
     def validate(self):
-        self.validate_json()
+        source.validator.validate_json(self.source)
         self.validate_connection()
         self.validate_db()
         self.validate_collection()

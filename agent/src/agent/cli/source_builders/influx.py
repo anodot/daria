@@ -1,12 +1,13 @@
 import click
 import time
 
-from .abstract_source import Source
+from .abstract_builder import Builder
 from agent.tools import infinite_retry, is_url, print_dicts, map_keys, if_validation_enabled
 from datetime import datetime
 from urllib.parse import urlparse
 from influxdb import InfluxDBClient
 from influxdb.exceptions import InfluxDBClientError
+from agent import source
 
 
 def get_influx_client(host, username=None, password=None, db=None):
@@ -40,10 +41,7 @@ def has_write_access(client):
     return True
 
 
-class InfluxSource(Source):
-    VALIDATION_SCHEMA_FILE_NAME = 'influx.json'
-    TEST_PIPELINE_FILENAME = 'test_influx_qwe093'
-
+class InfluxSource(Builder):
     def prompt(self, default_config, advanced=False):
         self.prompt_connection(default_config)
         self.prompt_db(default_config)
@@ -55,10 +53,12 @@ class InfluxSource(Source):
             self.prompt_write_host(default_config)
             self.prompt_write_db(default_config)
         self.prompt_offset(default_config)
-        return self.source.config
+        # todo refactor
+        self.source.set_config(self.source.config)
+        return self.source
 
     def validate(self):
-        self.validate_json()
+        source.validator.validate_json(self.source)
         self.validate_connection()
         self.validate_db()
         if 'write_host' in self.source.config:

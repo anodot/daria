@@ -2,7 +2,7 @@ import os
 
 from agent.cli import source as source_cli, pipeline as pipeline_cli
 from agent.streamsets_api_client import api_client
-from ...source import source_repository
+from agent import source
 
 
 class TestPostgreSQL:
@@ -21,7 +21,7 @@ class TestPostgreSQL:
     def test_source_create(self, cli_runner, name, type, conn):
         result = cli_runner.invoke(source_cli.create, input=f"{type}\n{name}\n{conn}\npostgres\npassword\n\n")
         assert result.exit_code == 0
-        assert os.path.isfile(os.path.join(source_repository.SOURCE_DIRECTORY, f'{name}.json'))
+        assert os.path.isfile(os.path.join(source.repository.SOURCE_DIRECTORY, f'{name}.json'))
 
     def test_create(self, cli_runner, name, source, timestamp_type, timestamp_name):
         result = cli_runner.invoke(pipeline_cli.create,

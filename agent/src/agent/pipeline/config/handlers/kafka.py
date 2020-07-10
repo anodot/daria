@@ -1,6 +1,6 @@
 from .base import BaseConfigHandler
 from agent.logger import get_logger
-from agent.cli.source import KafkaSource
+from agent.source import KafkaSource
 from agent.pipeline.config import stages
 
 logger = get_logger(__name__)
