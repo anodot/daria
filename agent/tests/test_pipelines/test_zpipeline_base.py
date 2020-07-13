@@ -13,8 +13,7 @@ def pytest_generate_tests(metafunc):
         return
     funcarglist = metafunc.cls.params[metafunc.function.__name__]
     argnames = sorted(funcarglist[0])
-    metafunc.parametrize(argnames, [[funcargs[name] for name in argnames]
-            for funcargs in funcarglist])
+    metafunc.parametrize(argnames, [[funcargs[name] for name in argnames] for funcargs in funcarglist])
 
 
 class TestPipelineBase(object):
@@ -28,8 +27,8 @@ class TestPipelineBase(object):
         assert result.exit_code == 0
         with open(input_file_path) as f:
             sources = json.load(f)
-            for source in sources:
-                assert os.path.isfile(os.path.join(source.repository.SOURCE_DIRECTORY, f"{source['name']}.json"))
+            for source_ in sources:
+                assert os.path.isfile(os.path.join(source.repository.SOURCE_DIRECTORY, f"{source_['name']}.json"))
 
     def test_create_with_file(self, cli_runner, file_name):
         input_file_path = get_input_file_path(file_name + '.json')
@@ -37,8 +36,8 @@ class TestPipelineBase(object):
         assert result.exit_code == 0
         with open(input_file_path) as f:
             pipelines = json.load(f)
-            for pipeline in pipelines:
-                assert api_client.get_pipeline(pipeline['pipeline_id'])
+            for pipeline_ in pipelines:
+                assert api_client.get_pipeline(pipeline_['pipeline_id'])
 
     def test_edit_with_file(self, cli_runner, file_name):
         input_file_path = get_input_file_path(file_name + '.json')

@@ -13,7 +13,6 @@ logger = get_logger(__name__)
 class Builder(ABC):
     def __init__(self, source_: source.Source):
         self.source = source_
-        self.sample_data = None
         self.validator = source.validator.get_validator(self.source)
 
     @abstractmethod

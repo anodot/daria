@@ -82,7 +82,7 @@ class TestKafka:
 
     def test_create(self, cli_runner, source_name, name, options, value, timestamp, advanced_options):
         result = cli_runner.invoke(
-            pipeline_cli.create,
+            cli.pipeline.create,
             options,
             input=f"{source_name}\n{name}\n\n{value}\n{timestamp}\nver Country\nExchange optional_dim ad_type ADTYPE GEN\n\n{advanced_options}\n"
         )

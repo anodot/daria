@@ -145,11 +145,11 @@ class SchemalessSourceBuilder(Builder, metaclass=ABCMeta):
                 source.SchemalessSource.CONFIG_DATA_FORMAT) == source.SchemalessSource.DATA_FORMAT_CSV:
             if self.source.config.get(
                     source.SchemalessSource.CONFIG_CSV_HEADER_LINE) == source.SchemalessSource.CONFIG_CSV_HEADER_LINE_NO_HEADER:
-                self.sample_data = map_keys(records,
-                                            self.source.config.get(source.SchemalessSource.CONFIG_CSV_MAPPING, {}))
+                self.source.sample_data =\
+                    map_keys(records, self.source.config.get(source.SchemalessSource.CONFIG_CSV_MAPPING, {}))
             else:
-                self.sample_data = records
-            print_dicts(self.sample_data)
+                self.source.sample_data = records
+            print_dicts(self.source.sample_data)
         else:
-            self.sample_data = records
+            self.source.sample_data = records
             print_json(records)
