@@ -5,6 +5,7 @@ from abc import ABC
 from influxdb import InfluxDBClient
 from influxdb.exceptions import InfluxDBClientError
 from pymongo import MongoClient
+from agent import source
 
 
 def get_influx_client(host, username=None, password=None, db=None) -> InfluxDBClient:
@@ -47,6 +48,7 @@ class Source(ABC):
     def to_dict(self) -> dict:
         return {'name': self.name, 'type': self.type, 'config': self.config}
 
+    # todo refactor children
     def set_config(self, config):
         self.config = config
 
@@ -72,13 +74,22 @@ class ElasticSource(Source):
     CONFIG_BATCH_SIZE = 'conf.maxBatchSize'
     CONFIG_HTTP_URIS = 'conf.httpUris'
 
+    def set_config(self, config):
+        super().set_config(config)
+        if 'query_interval_sec' in self.config:
+            self.config[source.ElasticSource.CONFIG_QUERY_INTERVAL] = '${' + str(
+                self.config['query_interval_sec']) + ' * SECONDS}'
+        self.config[source.ElasticSource.CONFIG_IS_INCREMENTAL] = True
+
 
 class InfluxSource(Source):
     pass
 
 
 class JDBCSource(Source):
-    pass
+    def set_config(self, config):
+        super().set_config(config)
+        self.config['hikariConfigBean.connectionString'] = 'jdbc:' + self.config['connection_string']
 
 
 class MongoSource(Source):
@@ -95,6 +106,23 @@ class MongoSource(Source):
     CONFIG_OFFSET_FIELD = 'configBean.offsetField'
     CONFIG_BATCH_SIZE = 'configBean.batchSize'
     CONFIG_MAX_BATCH_WAIT_TIME = 'configBean.maxBatchWaitTime'
+
+    OFFSET_TYPE_OBJECT_ID = 'OBJECTID'
+    OFFSET_TYPE_STRING = 'STRING'
+    OFFSET_TYPE_DATE = 'DATE'
+
+    AUTH_TYPE_NONE = 'NONE'
+    AUTH_TYPE_USER_PASS = 'USER_PASS'
+
+    offset_types = [OFFSET_TYPE_OBJECT_ID, OFFSET_TYPE_STRING, OFFSET_TYPE_DATE]
+
+    def set_config(self, config):
+        super().set_config(config)
+        if self.config[source.MongoSource.CONFIG_USERNAME] != '':
+            self.config[source.MongoSource.CONFIG_AUTH_TYPE] = self.AUTH_TYPE_USER_PASS
+        else:
+            self.config[source.MongoSource.CONFIG_AUTH_TYPE] = self.AUTH_TYPE_NONE
+            del self.config[source.MongoSource.CONFIG_USERNAME]
 
 
 class SchemalessSource(Source):
@@ -170,6 +198,12 @@ class KafkaSource(SchemalessSource):
     version_libraries = {'0.10': 'streamsets-datacollector-apache-kafka_2_0-lib',
                          '0.11': 'streamsets-datacollector-apache-kafka_2_0-lib',
                          '2.0+': 'streamsets-datacollector-apache-kafka_2_0-lib'}
+
+    def set_config(self, config):
+        super().set_config(config)
+        self.config[source.KafkaSource.CONFIG_LIBRARY] = \
+            source.KafkaSource.version_libraries[
+                self.config.get(source.KafkaSource.CONFIG_VERSION, source.KafkaSource.DEFAULT_KAFKA_VERSION)]
 
 
 class DirectorySource(SchemalessSource):

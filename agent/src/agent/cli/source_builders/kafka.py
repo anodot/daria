@@ -61,9 +61,3 @@ class KafkaSourceBuilder(SchemalessSourceBuilder):
                 raise click.UsageError('Wrong format')
 
             self.source.config[source.KafkaSource.CONFIG_CONSUMER_PARAMS].append({'key': pair[0], 'value': pair[1]})
-
-    def set_config(self, config):
-        super().set_config(config)
-        self.source.config[source.KafkaSource.CONFIG_LIBRARY] = \
-            source.KafkaSource.version_libraries[
-                self.source.config.get(source.KafkaSource.CONFIG_VERSION, source.KafkaSource.DEFAULT_KAFKA_VERSION)]

@@ -12,7 +12,6 @@ class ElasticSourceBuilder(Builder):
         self.prompt_offset_field(default_config)
         self.prompt_initial_offset(default_config)
         self.prompt_interval(default_config)
-        self.set_config(self.source.config)
         self.source.set_config(self.source.config)
         return self.source
 
@@ -53,10 +52,3 @@ class ElasticSourceBuilder(Builder):
     def prompt_interval(self, default_config):
         self.source.config['query_interval_sec'] = click.prompt('Query interval (seconds)', type=click.IntRange(1),
                                                                 default=default_config.get('query_interval_sec', 1))
-
-    def set_config(self, config):
-        super().set_config(config)
-        if 'query_interval_sec' in self.source.config:
-            self.source.config[source.ElasticSource.CONFIG_QUERY_INTERVAL] = '${' + str(
-                self.source.config['query_interval_sec']) + ' * SECONDS}'
-        self.source.config[source.ElasticSource.CONFIG_IS_INCREMENTAL] = True

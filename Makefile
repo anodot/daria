@@ -38,39 +38,39 @@ stop: clean-docker-volumes
 ##-----------------------
 ## TEST SEPARATE SOURCES
 ##-----------------------
-test-directory: prepare-source test-destination-dev
+test-directory: prepare-source
 	$(DOCKER_TEST_DEV) tests/test_input/test_directory_http.py
 	$(DOCKER_TEST_DEV) tests/test_pipelines/test_directory_http.py
 
-test-elastic: prepare-source build-elastic setup-elastic test-destination-dev
+test-elastic: prepare-source build-elastic setup-elastic
 	$(DOCKER_TEST_DEV) tests/test_input/test_elastic_http.py
 	$(DOCKER_TEST_DEV) tests/test_pipelines/test_elastic_http.py
 
-test-influx: prepare-source build-influx test-destination-dev
+test-influx: prepare-source build-influx
 	$(DOCKER_TEST_DEV) tests/test_input/test_influx_http.py
 	$(DOCKER_TEST_DEV) tests/test_pipelines/test_influx_http.py
 
-test-kafka: prepare-source build-kafka setup-kafka test-destination-dev
+test-kafka: prepare-source build-kafka setup-kafka
 	$(DOCKER_TEST_DEV) tests/test_input/test_kafka_http.py
 	$(DOCKER_TEST_DEV) tests/test_pipelines/test_kafka_http.py
 
-test-mongo: prepare-source build-mongo test-destination-dev
+test-mongo: prepare-source build-mongo
 	$(DOCKER_TEST_DEV) tests/test_input/test_mongo_http.py
 	$(DOCKER_TEST_DEV) tests/test_pipelines/test_mongo_http.py
 
-test-mysql: prepare-source build-mysql test-destination-dev
+test-mysql: prepare-source build-mysql
 	$(DOCKER_TEST_DEV) tests/test_input/test_mysql_http.py
 	$(DOCKER_TEST_DEV) tests/test_pipelines/test_mysql_http.py
 
-test-postgres: prepare-source build-postgres test-destination-dev
+test-postgres: prepare-source build-postgres
 	$(DOCKER_TEST_DEV) tests/test_input/test_postgres_http.py
 	$(DOCKER_TEST_DEV) tests/test_pipelines/test_postgres_http.py
 
-test-tcp: prepare-source test-destination-dev
+test-tcp: prepare-source
 	$(DOCKER_TEST_DEV) tests/test_input/test_tcp_http.py
 	$(DOCKER_TEST_DEV) tests/test_pipelines/test_tcp_http.py
 
-test-sage: prepare-source build-sage test-destination-dev
+test-sage: prepare-source build-sage
 	$(DOCKER_TEST_DEV) tests/test_input/test_sage_http.py
 	$(DOCKER_TEST_DEV) tests/test_pipelines/test_sage_http.py
 

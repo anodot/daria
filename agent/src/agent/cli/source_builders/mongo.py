@@ -7,15 +7,6 @@ from agent import source
 
 
 class MongoSourceBuilder(Builder):
-    OFFSET_TYPE_OBJECT_ID = 'OBJECTID'
-    OFFSET_TYPE_STRING = 'STRING'
-    OFFSET_TYPE_DATE = 'DATE'
-
-    AUTH_TYPE_NONE = 'NONE'
-    AUTH_TYPE_USER_PASS = 'USER_PASS'
-
-    offset_types = [OFFSET_TYPE_OBJECT_ID, OFFSET_TYPE_STRING, OFFSET_TYPE_DATE]
-
     def prompt(self, default_config, advanced=False):
         self.prompt_connection(default_config)
         self.prompt_auth(default_config)
@@ -65,10 +56,10 @@ class MongoSourceBuilder(Builder):
 
     def prompt_offset(self, default_config: dict):
         self.source.config[source.MongoSource.CONFIG_OFFSET_TYPE] = \
-            click.prompt('Offset type', type=click.Choice(self.offset_types),
-                         default=default_config.get(source.MongoSource.CONFIG_OFFSET_TYPE, self.OFFSET_TYPE_OBJECT_ID))
+            click.prompt('Offset type', type=click.Choice(source.MongoSource.offset_types),
+                         default=default_config.get(source.MongoSource.CONFIG_OFFSET_TYPE, source.MongoSource.OFFSET_TYPE_OBJECT_ID))
         default_offset = None if self.source.config[
-                                     source.MongoSource.CONFIG_OFFSET_TYPE] == self.OFFSET_TYPE_STRING else '3'
+                                     source.MongoSource.CONFIG_OFFSET_TYPE] == source.MongoSource.OFFSET_TYPE_STRING else '3'
         self.source.config[source.MongoSource.CONFIG_INITIAL_OFFSET] = click.prompt(
             'Initial offset (amount of days ago or specific date)', type=click.STRING,
             default=default_config.get(source.MongoSource.CONFIG_INITIAL_OFFSET, default_offset))
@@ -101,18 +92,3 @@ class MongoSourceBuilder(Builder):
             click.prompt('Collection', type=click.STRING,
                          default=default_config.get(source.MongoSource.CONFIG_COLLECTION)).strip()
         self.source.config[source.MongoSource.CONFIG_IS_CAPPED] = 'capped' in self.get_collection().options()
-
-    def set_config(self, config):
-        super().set_config(config)
-        if self.source.config[source.MongoSource.CONFIG_USERNAME] != '':
-            self.source.config[source.MongoSource.CONFIG_AUTH_TYPE] = self.AUTH_TYPE_USER_PASS
-        else:
-            self.source.config[source.MongoSource.CONFIG_AUTH_TYPE] = self.AUTH_TYPE_NONE
-            del self.source.config[source.MongoSource.CONFIG_USERNAME]
-
-    @if_validation_enabled
-    def print_sample_data(self):
-        records = self.get_sample_records()
-        if not records:
-            return
-        print_json(records)

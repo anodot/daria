@@ -1,9 +1,10 @@
 import pytest
 import socket
 
+from ..fixtures import cli_runner
 from agent.cli import pipeline_cli
 from agent.streamsets_api_client import api_client
-from .test_zpipeline_base import TestPipelineBase
+from .test_zpipeline_base import TestPipelineBase, pytest_generate_tests
 from agent import pipeline, source
 
 

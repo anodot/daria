@@ -20,16 +20,6 @@ class Builder(ABC):
     def prompt(self, default_config, advanced=False) -> source.Source:
         pass
 
-    # todo refactor children
-    def set_config(self, config):
-        self.source.config = config
-
-    # todo
-    def update_test_source_config(self, stage):
-        for conf in stage['configuration']:
-            if conf['name'] in self.source.config:
-                conf['value'] = self.source.config[conf['name']]
-
     def get_preview_data(self):
         test_pipeline_name = pipeline.manager.create_test_pipeline(self.source)
         try:

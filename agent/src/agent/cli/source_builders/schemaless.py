@@ -153,9 +153,3 @@ class SchemalessSourceBuilder(Builder, metaclass=ABCMeta):
         else:
             self.sample_data = records
             print_json(records)
-
-    def set_config(self, config):
-        super().set_config(config)
-        if self.source.config.get('grok_definition_file'):
-            with open(self.source.config['grok_definition_file'], 'r') as f:
-                self.source.config[source.SchemalessSource.CONFIG_GROK_PATTERN_DEFINITION] = f.read()

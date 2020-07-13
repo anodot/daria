@@ -2,7 +2,6 @@ import click
 import json
 
 from agent import pipeline, source
-from agent.cli import source
 from agent.pipeline import PipelineException
 from agent.streamsets_api_client import api_client, StreamSetsApiClientException
 from agent.destination import HttpDestination
@@ -283,7 +282,7 @@ def delete(pipeline_id, file):
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
 @click.option('-l', '--lines', type=click.INT, default=10)
-@click.option('-s', '--severity', type=click.Choice([pipeline.manager.LOG_LEVELS]), default=None)
+@click.option('-s', '--severity', type=click.Choice(['INFO', 'ERROR']), default=None)
 def logs(pipeline_id, lines, severity):
     """
     Show pipeline logs
@@ -360,6 +359,20 @@ def pipeline_group():
     Pipelines management
     """
     pass
+
+
+@click.command()
+def update():
+    """
+    Update all pipelines configuration, recreate and restart them
+    """
+    for p in pipeline.repository.get_all():
+        try:
+            pipeline.manager.update(p)
+            click.secho(f'Pipeline {p.id} updated', fg='green')
+        except pipeline.pipeline.PipelineException as e:
+            print(str(e))
+            continue
 
 
 pipeline_group.add_command(create)

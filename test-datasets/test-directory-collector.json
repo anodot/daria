@@ -1,0 +1,1 @@
+{"name": "/home/test-directory-collector", "type": "directory", "config": {"conf.spoolDir": "*.csv", "conf.filePattern": "DELIMITED", "conf.dataFormat": "JSON", "conf.maxBatchSize": 1000, "conf.batchWaitTime": 1000}}

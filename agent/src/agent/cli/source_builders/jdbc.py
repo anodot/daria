@@ -34,7 +34,3 @@ class JDBCSourceBuilder(Builder):
             self.source.config['hikariConfigBean.useCredentials'] = True
         self.validator.validate_connection()
         print('Successfully connected to the source')
-
-    def set_config(self, config):
-        super().set_config(config)
-        self.source.config['hikariConfigBean.connectionString'] = 'jdbc:' + self.source.config['connection_string']

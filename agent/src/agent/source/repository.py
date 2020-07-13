@@ -61,7 +61,8 @@ def get(name: str) -> source.Source:
     with open(_get_file_path(name)) as f:
         config = json.load(f)
     validate(config, source.json_schema)
-    source_obj = source.manager.create_source_obj(name, config['type'], config['config'])
+    source_obj = source.manager.create_source_obj(name, config['type'])
+    source_obj.config = config['config']
     try:
         source.validator.get_validator(source_obj).validate_json()
     except ValidationError:
