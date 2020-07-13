@@ -1,3 +1,4 @@
+from agent import source
 from .base import Stage
 
 
@@ -6,10 +7,8 @@ class SageScript(Stage):
         with open(self.pipeline.query_file) as f:
             query = f.read()
         return {'scriptConf.params': [
-            # {'key': 'SAGE_TOKEN', 'value': self.pipeline.source.config[source.SageSource.TOKEN]},
-            {'key': 'SAGE_TOKEN', 'value': self.pipeline.source.config['token']},
-            # {'key': 'SAGE_URL', 'value': self.pipeline.source.config[source.SageSource.URL]},
-            {'key': 'SAGE_URL', 'value': self.pipeline.source.config['url']},
+            {'key': 'SAGE_TOKEN', 'value': self.pipeline.source.config[source.SageSource.TOKEN]},
+            {'key': 'SAGE_URL', 'value': self.pipeline.source.config[source.SageSource.URL]},
             {'key': 'QUERY', 'value': query},
             {'key': 'INTERVAL', 'value': str(self.pipeline.interval)},
             {'key': 'DELAY', 'value': str(self.pipeline.delay)},
