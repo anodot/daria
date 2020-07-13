@@ -5,18 +5,7 @@ from agent.tools import infinite_retry, print_json, if_validation_enabled
 from agent import source
 
 
-class ElasticSource(Builder):
-    CONFIG_INDEX = 'conf.index'
-    CONFIG_MAPPING = 'conf.mapping'
-    CONFIG_IS_INCREMENTAL = 'conf.isIncrementalMode'
-    CONFIG_QUERY_INTERVAL = 'conf.queryInterval'
-    CONFIG_OFFSET_FIELD = 'conf.offsetField'
-    CONFIG_INITIAL_OFFSET = 'conf.initialOffset'
-    CONFIG_QUERY = 'conf.query'
-    CONFIG_CURSOR_TIMEOUT = 'conf.cursorTimeout'
-    CONFIG_BATCH_SIZE = 'conf.maxBatchSize'
-    CONFIG_HTTP_URIS = 'conf.httpUris'
-
+class ElasticSourceBuilder(Builder):
     def prompt(self, default_config, advanced=False):
         self.prompt_connection(default_config)
         self.prompt_index(default_config)
@@ -27,47 +16,39 @@ class ElasticSource(Builder):
         self.source.set_config(self.source.config)
         return self.source
 
-    def validate(self):
-        source.validator.validate_json(self.source)
-        self.validate_connection()
-
     @infinite_retry
     def prompt_connection(self, default_config):
-        default_uris = default_config.get(self.CONFIG_HTTP_URIS)
+        default_uris = default_config.get(source.ElasticSource.CONFIG_HTTP_URIS)
         if default_uris:
             default_uris = ','.join(default_uris)
-        self.source.config[self.CONFIG_HTTP_URIS] = click.prompt('Cluster HTTP URIs', type=click.STRING,
-                                                                 default=default_uris).strip().split(',')
-        self.validate_connection()
-
-    @if_validation_enabled
-    def validate_connection(self):
-        self.source.config[self.CONFIG_IS_INCREMENTAL] = False
-        super().validate_connection()
+        self.source.config[source.ElasticSource.CONFIG_HTTP_URIS] = click.prompt('Cluster HTTP URIs', type=click.STRING,
+                                                                                 default=default_uris).strip().split(
+            ',')
+        self.validator.validate_connection()
+        print('Successfully connected to the source')
 
     @if_validation_enabled
     def print_sample_data(self):
         records = self.get_sample_records()
         if not records:
             return
-
         print_json(records)
 
     def prompt_index(self, default_config):
-        self.source.config[self.CONFIG_INDEX] = click.prompt('Index', type=click.STRING,
-                                                             default=default_config.get(self.CONFIG_INDEX, ''))
+        self.source.config[source.ElasticSource.CONFIG_INDEX] = \
+            click.prompt('Index', type=click.STRING, default=default_config.get(source.ElasticSource.CONFIG_INDEX, ''))
 
     def prompt_offset_field(self, default_config):
-        self.source.config[self.CONFIG_OFFSET_FIELD] = click.prompt('Offset field (Elasticsearch Date field)',
-                                                                    type=click.STRING,
-                                                                    default=default_config.get(self.CONFIG_OFFSET_FIELD,
-                                                                                               'timestamp'))
+        self.source.config[source.ElasticSource.CONFIG_OFFSET_FIELD] = click.prompt(
+            'Offset field (Elasticsearch Date field)',
+            type=click.STRING,
+            default=default_config.get(source.ElasticSource.CONFIG_OFFSET_FIELD,
+                                       'timestamp'))
 
     def prompt_initial_offset(self, default_config):
-        self.source.config[self.CONFIG_INITIAL_OFFSET] = click.prompt('Initial offset', type=click.STRING,
-                                                                      default=default_config.get(
-                                                                          self.CONFIG_INITIAL_OFFSET,
-                                                                          'now'))
+        self.source.config[source.ElasticSource.CONFIG_INITIAL_OFFSET] = \
+            click.prompt('Initial offset', type=click.STRING,
+                         default=default_config.get(source.ElasticSource.CONFIG_INITIAL_OFFSET, 'now'))
 
     def prompt_interval(self, default_config):
         self.source.config['query_interval_sec'] = click.prompt('Query interval (seconds)', type=click.IntRange(1),
@@ -76,6 +57,6 @@ class ElasticSource(Builder):
     def set_config(self, config):
         super().set_config(config)
         if 'query_interval_sec' in self.source.config:
-            self.source.config[self.CONFIG_QUERY_INTERVAL] = '${' + str(
+            self.source.config[source.ElasticSource.CONFIG_QUERY_INTERVAL] = '${' + str(
                 self.source.config['query_interval_sec']) + ' * SECONDS}'
-        self.source.config[self.CONFIG_IS_INCREMENTAL] = True
+        self.source.config[source.ElasticSource.CONFIG_IS_INCREMENTAL] = True

@@ -61,9 +61,9 @@ def get(name: str) -> source.Source:
     with open(_get_file_path(name)) as f:
         config = json.load(f)
     validate(config, source.json_schema)
-    source_obj = source.Source(name, config['type'], config['config'])
+    source_obj = source.manager.create_source_obj(name, config['type'], config['config'])
     try:
-        source.validator.validate_json(source_obj)
+        source.validator.get_validator(source_obj).validate_json()
     except ValidationError:
         raise SourceConfigDeprecated(f'Config for source {name} is not supported. Please recreate the source')
     return source_obj

@@ -1,5 +1,4 @@
 import json
-
 import jsonschema
 
 from agent import pipeline
@@ -8,6 +7,10 @@ from agent import source
 from agent.streamsets_api_client import api_client
 
 MAX_SAMPLE_RECORDS = 3
+
+
+def create_source_obj(source_name: str, source_type: str) -> source.Source:
+    return source.types[source_type](source_name, source_type, {})
 
 
 def create_from_file(file):
@@ -21,7 +24,7 @@ def create_from_file(file):
             sources.append(
                 source.manager.create_from_json(config)
             )
-            click.secho(f"Source {config['name']} created")
+            # click.secho(f"Source {config['name']} created")
         except Exception as e:
             if not ENV_PROD:
                 raise e
@@ -39,7 +42,7 @@ def edit_using_file(file):
     for config in configs:
         try:
             source.manager.edit_using_json(config)
-            click.secho(f"Source {config['name']} updated")
+            # click.secho(f"Source {config['name']} updated")
             for pipeline_obj in pipeline.repository.get_by_source(config['name']):
                 try:
                     pipeline.manager.update(pipeline_obj)
@@ -54,9 +57,9 @@ def edit_using_file(file):
 
 
 def create_from_json(config: dict) -> source.Source:
-    source_instance = source.Source(config['name'], config['type'], {})
+    source_instance = source.manager.create_source_obj(config['name'], config['type'])
     source_instance.set_config(config['config'])
-    source_instance.validate()
+    source.validator.validate(source_instance)
     source.repository.create(source_instance)
     return source_instance
 
@@ -64,20 +67,20 @@ def create_from_json(config: dict) -> source.Source:
 def edit_using_json(config: dict) -> source.Source:
     source_instance = source.repository.get(config['name'])
     source_instance.set_config(config['config'])
-    source_instance.validate()
+    source.validator.validate(source_instance)
     source.repository.update(source_instance)
     return source_instance
 
 
-def validate_json_for_create(json: dict):
+def validate_json_for_create(json_data: dict):
     schema = {
         'type': 'array',
         'items': source.json_schema
     }
-    jsonschema.validate(json, schema)
+    jsonschema.validate(json_data, schema)
 
 
-def validate_json_for_edit(json: dict):
+def validate_json_for_edit(json_data: dict):
     schema = {
         'type': 'array',
         'items': {
@@ -89,7 +92,7 @@ def validate_json_for_edit(json: dict):
             'required': ['name', 'config']
         }
     }
-    jsonschema.validate(json, schema)
+    jsonschema.validate(json_data, schema)
 
 
 def extract_configs(file):
@@ -98,7 +101,8 @@ def extract_configs(file):
         file.seek(0)
         return configs
     except json.decoder.JSONDecodeError as e:
-        raise click.ClickException(str(e))
+        raise Exception(str(e))
+        # raise click.ClickException(str(e))
 
 
 def get_previous_source_config(source_type):

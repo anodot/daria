@@ -45,7 +45,7 @@ def edit():
             pipeline_instances.append(pipeline.manager.edit_using_json(config).to_dict())
     except (
         ValidationError, source.SourceNotExists, source.SourceConfigDeprecated,
-        requests.exceptions.ConnectionError, pipeline_repository.PipelineNotExistsException
+        requests.exceptions.ConnectionError, pipeline.repository.PipelineNotExistsException
     ) as e:
         return jsonify(str(e)), 400
     return jsonify(pipeline_instances)

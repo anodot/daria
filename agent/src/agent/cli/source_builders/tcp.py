@@ -2,11 +2,10 @@ import click
 import socket
 
 from agent.tools import infinite_retry
-from .schemaless import SchemalessSource
-from agent import source
+from .schemaless import SchemalessSourceBuilder
 
 
-class TCPSource(SchemalessSource):
+class TCPSourceBuilder(SchemalessSourceBuilder):
     CONFIG_PORTS = 'conf.ports'
 
     @infinite_retry
@@ -25,7 +24,3 @@ class TCPSource(SchemalessSource):
             self.prompt_batch_size(default_config)
         self.source.set_config(self.source.config)
         return self.source
-
-    def validate(self):
-        source.validator.validate_json(self.source)
-        self.validate_connection()

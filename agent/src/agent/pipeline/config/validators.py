@@ -16,9 +16,7 @@ class ElasticValidator(BaseValidator):
     def validate(pipeline):
         with open(pipeline.config['query_file']) as f:
             query = f.read()
-        # todo
-        # errors = query_validator.get_errors(query, pipeline.source.config[source.ElasticSource.CONFIG_OFFSET_FIELD])
-        errors = query_validator.get_errors(query, pipeline.source.config['conf.offsetField'])
+        errors = query_validator.get_errors(query, pipeline.source.config[source.ElasticSource.CONFIG_OFFSET_FIELD])
         if errors:
             raise click.ClickException(errors)
 

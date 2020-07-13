@@ -313,7 +313,6 @@ def create_test_pipeline(source_: source.Source) -> str:
 
 
 def _get_test_pipeline_file_path(source_: source.Source) -> str:
-    # todo correct path
     return os.path.join(
         os.path.dirname(os.path.realpath(__file__)), 'test_pipelines', _get_test_pipeline_file_name(source_) + '.json'
     )
@@ -336,6 +335,16 @@ def _get_test_pipeline_file_name(source_: source.Source) -> str:
 
 def _get_test_pipeline_name(source_: source.Source) -> str:
     return _get_test_pipeline_file_name(source_) + source_.name
+
+
+def update_source_pipelines(source_name: str):
+    for pipeline_obj in pipeline.repository.get_by_source(source_name):
+        try:
+            pipeline.manager.update(pipeline_obj)
+        except pipeline.pipeline.PipelineException as e:
+            print(str(e))
+            continue
+        print(f'Pipeline {pipeline_obj.id} updated')
 
 
 class PipelineManager:
@@ -382,7 +391,7 @@ class PipelineManager:
 
         for output in preview_data['batchesOutput'][0]:
             if 'destination_OutputLane' in output['output']:
-                data = output['output']['destination_OutputLane'][:source.Source.MAX_SAMPLE_RECORDS]
+                data = output['output']['destination_OutputLane'][:source.manager.MAX_SAMPLE_RECORDS]
                 if data:
                     print_json([sdc_record_map_to_dict(record['value']) for record in data])
                 else:

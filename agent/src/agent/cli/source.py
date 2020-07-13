@@ -9,17 +9,17 @@ from jsonschema import ValidationError, SchemaError
 from . import source_builders
 
 
-@click.group(name='source')
-def source_group():
-    pass
-
-
 def autocomplete(ctx, args, incomplete):
     configs = []
     for filename in os.listdir(source.repository.SOURCE_DIRECTORY):
         if filename.endswith('.json') and incomplete in filename:
             configs.append(filename.replace('.json', ''))
     return configs
+
+
+@click.group(name='source')
+def source_group():
+    pass
 
 
 @click.command(name='list')
@@ -45,7 +45,7 @@ def edit(name, advanced, file):
     if not file and not name:
         raise click.UsageError('Specify source name or file path')
     _edit_using_file(file) if file else _prompt_edit(name, advanced)
-    _update_source_pipelines(name)
+    pipeline.manager.update_source_pipelines(name)
 
 
 @click.command()
@@ -73,7 +73,7 @@ def _create_from_file(file):
 def _prompt(advanced: bool):
     source_type = _prompt_source_type()
     source_name = _prompt_source_name()
-    builder = source_builders.get_builder(source.Source(source_name, source_type, {}))
+    builder = source_builders.get_builder(source_name, source_type)
     source.repository.create(
         builder.prompt(source.manager.get_previous_source_config(source_type), advanced)
     )
@@ -89,23 +89,12 @@ def _edit_using_file(file):
 
 
 def _prompt_edit(name: str, advanced: bool):
-    source_instance = source.repository.get(name)
-    builder = source_builders.get_builder(source_instance)
+    source_ = source.repository.get(name)
+    builder = source_builders.get_builder(source_.name, source_.type)
     source.repository.update(
-        builder.prompt(source_instance.config, advanced=advanced)
+        builder.prompt(source_.config, advanced=advanced)
     )
     click.secho('Source config updated', fg='green')
-
-
-# todo pipeline manager
-def _update_source_pipelines(source_name: str):
-    for pipeline_obj in pipeline.repository.get_by_source(source_name):
-        try:
-            pipeline.manager.update(pipeline_obj)
-        except pipeline.pipeline.PipelineException as e:
-            print(str(e))
-            continue
-        print(f'Pipeline {pipeline_obj.id} updated')
 
 
 def _prompt_source_type():
