@@ -2,7 +2,7 @@ import click
 
 from .abstract_builder import Builder
 from agent.tools import infinite_retry, print_dicts, map_keys, if_validation_enabled
-from agent import source
+from agent import source, tools
 
 
 class InfluxSourceBuilder(Builder):
@@ -10,10 +10,10 @@ class InfluxSourceBuilder(Builder):
         self.prompt_connection(default_config)
         self.prompt_db(default_config)
 
-        client = source.get_influx_client(self.source.config['host'], self.source.config['username'],
+        client = tools.get_influx_client(self.source.config['host'], self.source.config['username'],
                                           self.source.config['password'],
                                           self.source.config['db'])
-        if self.source.config['username'] != '' and not source.has_write_access(client):
+        if self.source.config['username'] != '' and not tools.has_write_access(client):
             self.prompt_write_host(default_config)
             self.prompt_write_db(default_config)
         self.prompt_offset(default_config)

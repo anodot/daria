@@ -3,7 +3,7 @@ import re
 
 from .abstract_builder import Builder
 from agent.tools import infinite_retry
-from agent import source
+from agent import source, tools
 
 
 class MongoSourceBuilder(Builder):
@@ -82,7 +82,12 @@ class MongoSourceBuilder(Builder):
             self.validator.validate_collection()
         except source.validator.ValidationException as e:
             raise click.UsageError(e)
-        client = source.get_mongo_client(self.source)
+        client = tools.get_mongo_client(
+            self.source.config[source.MongoSource.CONFIG_CONNECTION_STRING],
+            self.source.config.get(source.MongoSource.CONFIG_USERNAME),
+            self.source.config.get(source.MongoSource.CONFIG_PASSWORD),
+            self.source.config.get(source.MongoSource.CONFIG_AUTH_SOURCE)
+        )
         return client[self.source.config[source.MongoSource.CONFIG_DATABASE]][self.source.config[source.MongoSource.CONFIG_COLLECTION]]
 
     @infinite_retry

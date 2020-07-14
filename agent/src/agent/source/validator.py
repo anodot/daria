@@ -5,7 +5,7 @@ import sqlalchemy
 
 from datetime import datetime
 from urllib.parse import urlparse, urlunparse
-from agent import source, pipeline
+from agent import source, pipeline, tools
 from agent.streamsets_api_client import api_client
 from agent.tools import if_validation_enabled
 from agent.validator import is_valid_url
@@ -95,13 +95,13 @@ class InfluxValidator(Validator):
             raise ValidationException(
                 f"{self.source.config['host']} - wrong url format. Correct format is `scheme://host:port`"
             )
-        client = source.get_influx_client(self.source.config['host'])
+        client = tools.get_influx_client(self.source.config['host'])
         client.ping()
 
     @if_validation_enabled
     def validate_db(self):
-        client = source.get_influx_client(self.source.config['host'], self.source.config.get('username'),
-                                          self.source.config.get('password'))
+        client = tools.get_influx_client(self.source.config['host'], self.source.config.get('username'),
+                                         self.source.config.get('password'))
         if not any([db['name'] == self.source.config['db'] for db in client.get_list_database()]):
             raise ValidationException(
                 f"Database {self.source.config['db']} not found. Please check your credentials again"
@@ -113,23 +113,23 @@ class InfluxValidator(Validator):
             raise ValidationException(
                 f"{self.source.config['write_host']} - wrong url format. Correct format is `scheme://host:port`"
             )
-        client = source.get_influx_client(self.source.config['write_host'])
+        client = tools.get_influx_client(self.source.config['write_host'])
         client.ping()
 
     @if_validation_enabled
     def validate_write_db(self):
-        client = source.get_influx_client(self.source.config['write_host'], self.source.config.get('write_username'),
-                                          self.source.config.get('write_password'))
+        client = tools.get_influx_client(self.source.config['write_host'], self.source.config.get('write_username'),
+                                         self.source.config.get('write_password'))
         if not any([db['name'] == self.source.config['write_db'] for db in client.get_list_database()]):
             raise ValidationException(
                 f"Database {self.source.config['write_db']} not found. Please check your credentials again")
 
     @if_validation_enabled
     def validate_write_access(self):
-        client = source.get_influx_client(self.source.config['write_host'], self.source.config.get('write_username'),
-                                          self.source.config.get('write_password'),
-                                          self.source.config['write_db'])
-        if not source.has_write_access(client):
+        client = tools.get_influx_client(self.source.config['write_host'], self.source.config.get('write_username'),
+                                         self.source.config.get('write_password'),
+                                         self.source.config['write_db'])
+        if not tools.has_write_access(client):
             raise ValidationException(
                 f"""User {self.source.config.get('write_username')} does not have write permissions for db
                  {self.source.config['write_db']} at {self.source.config['write_host']}"""
@@ -201,21 +201,38 @@ class MongoValidator(Validator):
 
     @if_validation_enabled
     def validate_connection(self):
-        client = source.get_mongo_client(self.source)
+        client = tools.get_mongo_client(
+            self.source.config[source.MongoSource.CONFIG_CONNECTION_STRING],
+            self.source.config.get(source.MongoSource.CONFIG_USERNAME),
+            self.source.config.get(source.MongoSource.CONFIG_PASSWORD),
+            self.source.config.get(source.MongoSource.CONFIG_AUTH_SOURCE)
+        )
         client.server_info()
 
     @if_validation_enabled
     def validate_db(self):
-        client = source.get_mongo_client(self.source)
+        client = tools.get_mongo_client(
+            self.source.config[source.MongoSource.CONFIG_CONNECTION_STRING],
+            self.source.config.get(source.MongoSource.CONFIG_USERNAME),
+            self.source.config.get(source.MongoSource.CONFIG_PASSWORD),
+            self.source.config.get(source.MongoSource.CONFIG_AUTH_SOURCE)
+        )
         if self.source.config[source.MongoSource.CONFIG_DATABASE] not in client.list_database_names():
-            raise ValidationException(f'Database {self.source.config[source.MongoSource.CONFIG_DATABASE]} doesn\'t exist')
+            raise ValidationException(
+                f'Database {self.source.config[source.MongoSource.CONFIG_DATABASE]} doesn\'t exist')
 
     @if_validation_enabled
     def validate_collection(self):
-        client = source.get_mongo_client(self.source)
+        client = tools.get_mongo_client(
+            self.source.config[source.MongoSource.CONFIG_CONNECTION_STRING],
+            self.source.config.get(source.MongoSource.CONFIG_USERNAME),
+            self.source.config.get(source.MongoSource.CONFIG_PASSWORD),
+            self.source.config.get(source.MongoSource.CONFIG_AUTH_SOURCE)
+        )
         if self.source.config[source.MongoSource.CONFIG_COLLECTION] \
                 not in client[self.source.config[source.MongoSource.CONFIG_DATABASE]].list_collection_names():
-            raise ValidationException(f'Collection {self.source.config[source.MongoSource.CONFIG_DATABASE]} doesn\'t exist')
+            raise ValidationException(
+                f'Collection {self.source.config[source.MongoSource.CONFIG_DATABASE]} doesn\'t exist')
 
 
 class SageValidator(Validator):

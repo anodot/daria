@@ -1,41 +1,5 @@
-import time
-
-from urllib.parse import urlparse
 from abc import ABC
-from influxdb import InfluxDBClient
-from influxdb.exceptions import InfluxDBClientError
-from pymongo import MongoClient
 from agent import source
-
-
-def get_influx_client(host, username=None, password=None, db=None) -> InfluxDBClient:
-    influx_url_parsed = urlparse(host)
-    influx_url = influx_url_parsed.netloc.split(':')
-    args = {'host': influx_url[0], 'port': influx_url[1]}
-    if username and username != '':
-        args['username'] = username
-        args['password'] = password
-    if influx_url_parsed.scheme == 'https':
-        args['ssl'] = True
-    if db:
-        args['database'] = db
-    return InfluxDBClient(**args)
-
-
-def has_write_access(client: InfluxDBClient):
-    try:
-        client.write_points([{
-            "measurement": "agent_test",
-            "time": time.time_ns(),
-            "fields": {
-                "val": 1.0
-            }
-        }])
-    except InfluxDBClientError as e:
-        if e.code == 403:
-            return False
-    client.drop_measurement('agent_test')
-    return True
 
 
 class Source(ABC):
@@ -51,15 +15,6 @@ class Source(ABC):
     # todo refactor children
     def set_config(self, config):
         self.config = config
-
-
-def get_mongo_client(source_: Source) -> MongoClient:
-    args = {}
-    if source_.config.get(MongoSource.CONFIG_USERNAME):
-        args['authSource'] = source_.config.get(MongoSource.CONFIG_AUTH_SOURCE)
-        args['username'] = source_.config.get(MongoSource.CONFIG_USERNAME)
-        args['password'] = source_.config.get(MongoSource.CONFIG_PASSWORD)
-    return MongoClient(source_.config[MongoSource.CONFIG_CONNECTION_STRING], **args)
 
 
 class ElasticSource(Source):
@@ -80,10 +35,6 @@ class ElasticSource(Source):
             self.config[source.ElasticSource.CONFIG_QUERY_INTERVAL] = '${' + str(
                 self.config['query_interval_sec']) + ' * SECONDS}'
         self.config[source.ElasticSource.CONFIG_IS_INCREMENTAL] = True
-
-
-class InfluxSource(Source):
-    pass
 
 
 class JDBCSource(Source):
@@ -212,13 +163,13 @@ class KafkaSource(SchemalessSource):
                 self.config.get(source.KafkaSource.CONFIG_VERSION, source.KafkaSource.DEFAULT_KAFKA_VERSION)]
 
 
-class DirectorySource(SchemalessSource):
-    pass
-
-
 class SageSource(Source):
     URL = 'url'
     TOKEN = 'token'
+
+
+class DirectorySource(SchemalessSource):
+    pass
 
 
 class TCPSource(SchemalessSource):
@@ -226,6 +177,10 @@ class TCPSource(SchemalessSource):
 
 
 class MonitoringSource(Source):
+    pass
+
+
+class InfluxSource(Source):
     pass
 
 
