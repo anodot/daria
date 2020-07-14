@@ -2,7 +2,7 @@ import pytest
 import socket
 
 from ..fixtures import cli_runner
-from agent.cli import pipeline_cli
+from agent import cli
 from agent.streamsets_api_client import api_client
 from .test_zpipeline_base import TestPipelineBase, pytest_generate_tests
 from agent import pipeline, source
@@ -38,7 +38,7 @@ class TestTCPServer(TestPipelineBase):
         pytest.skip()
 
     def test_start(self, cli_runner, name):
-        result = cli_runner.invoke(pipeline_cli.start, [name])
+        result = cli_runner.invoke(cli.pipeline.start, [name])
         assert result.exit_code == 0
         assert api_client.get_pipeline_status(name)['status'] == 'RUNNING'
 
