@@ -1,25 +1,81 @@
+import json
 import logging
-
 import click
 import os
 import shutil
 import time
 import agent.pipeline.config.handlers as config_handlers
 
-from . import pipeline
+from agent import pipeline, tools
 from agent.pipeline.config.validators import get_config_validator
 from agent.pipeline import prompt, load_client_data
-from .. import source, destination
+from .. import destination
+from agent import source
 from agent.anodot_api_client import AnodotApiClient
 from agent.constants import ERRORS_DIR, ENV_PROD
 from agent.streamsets_api_client import api_client, StreamSetsApiClientException
 from agent.tools import print_json, sdc_record_map_to_dict, if_validation_enabled
 from .. import proxy
-from ..repository import pipeline_repository, source_repository
 from .pipeline import Pipeline, PipelineException
 from jsonschema import validate
+from agent.logger import get_logger
+
+
+logger = get_logger(__name__)
 
 LOG_LEVELS = [logging.getLevelName(logging.INFO), logging.getLevelName(logging.ERROR)]
+
+
+class PipelineManager:
+    def __init__(self, pipeline_obj: Pipeline):
+        self.pipeline = pipeline_obj
+        self.prompter = get_prompter(pipeline_obj.source.type)(self.pipeline)
+        self.file_loader = get_file_loader(pipeline_obj.source.type)()
+        self.sdc_creator = get_sdc_creator(pipeline_obj)
+
+    def prompt(self, default_config, advanced=False):
+        self.pipeline.set_config(self.prompter.prompt(default_config, advanced))
+
+    def load_config(self, config, edit=False):
+        self.pipeline.set_config(self.file_loader.load(config, edit))
+
+    def validate_config(self):
+        get_config_validator(self.pipeline).validate(self.pipeline)
+
+    def create(self):
+        try:
+            pipeline_obj = api_client.create_pipeline(self.pipeline.id)
+            new_config = self.sdc_creator.override_base_config(new_uuid=pipeline_obj['uuid'],
+                                                               new_title=self.pipeline.id)
+
+            api_client.update_pipeline(self.pipeline.id, new_config)
+        except (config_handlers.base.ConfigHandlerException, StreamSetsApiClientException) as e:
+            delete(self.pipeline)
+            raise pipeline.PipelineException(str(e))
+
+        pipeline.repository.save(self.pipeline)
+
+    @if_validation_enabled
+    def show_preview(self):
+        try:
+            preview = api_client.create_preview(self.pipeline.id)
+            preview_data = api_client.wait_for_preview(self.pipeline.id, preview['previewerId'])
+        except StreamSetsApiClientException as e:
+            print(str(e))
+            return
+
+        if not preview_data['batchesOutput']:
+            print('Could not fetch any data matching the provided config')
+            return
+
+        for output in preview_data['batchesOutput'][0]:
+            if 'destination_OutputLane' in output['output']:
+                data = output['output']['destination_OutputLane'][:source.manager.MAX_SAMPLE_RECORDS]
+                if data:
+                    print_json([sdc_record_map_to_dict(record['value']) for record in data])
+                else:
+                    print('Could not fetch any data matching the provided config')
+                break
 
 
 def get_sdc_creator(pipeline_obj: Pipeline) -> config_handlers.base.BaseConfigHandler:
@@ -76,7 +132,7 @@ def validate_json_for_create(json: dict):
         'items': {
             'type': 'object',
             'properties': {
-                'source': {'type': 'string', 'enum': source_repository.get_all()},
+                'source': {'type': 'string', 'enum': source.repository.get_all()},
                 'pipeline_id': {'type': 'string', 'minLength': 1, 'maxLength': 100}
             },
             'required': ['source', 'pipeline_id']
@@ -88,14 +144,14 @@ def validate_json_for_create(json: dict):
 def create_object(pipeline_id: str, source_name: str) -> Pipeline:
     return pipeline.Pipeline(
         pipeline_id,
-        source_repository.get(source_name),
+        source.repository.get(source_name),
         {},
         destination.HttpDestination.get()
     )
 
 
 def check_pipeline_id(pipeline_id: str):
-    if pipeline_repository.exists(pipeline_id):
+    if pipeline.repository.exists(pipeline_id):
         raise PipelineException(f"Pipeline {pipeline_id} already exists")
 
 
@@ -109,7 +165,7 @@ def create_from_json(config: dict) -> Pipeline:
 
 
 def edit_using_json(config: dict) -> Pipeline:
-    pipeline_manager = PipelineManager(pipeline_repository.get(config['pipeline_id']))
+    pipeline_manager = PipelineManager(pipeline.repository.get(config['pipeline_id']))
     pipeline_manager.load_config(config, edit=True)
     update(pipeline_manager.pipeline)
     return pipeline_manager.pipeline
@@ -139,7 +195,7 @@ def update(pipeline_obj: Pipeline):
     except (config_handlers.base.ConfigHandlerException, StreamSetsApiClientException) as e:
         raise pipeline.PipelineException(str(e))
 
-    pipeline_repository.save(pipeline_obj)
+    pipeline.repository.save(pipeline_obj)
     if start_pipeline:
         start(pipeline_obj)
 
@@ -154,7 +210,7 @@ def create(pipeline_obj: Pipeline):
         delete(pipeline_obj)
         raise pipeline.PipelineException(str(e))
 
-    pipeline_repository.save(pipeline_obj)
+    pipeline.repository.save(pipeline_obj)
 
 
 def get_pipeline_status(pipeline_id: str) -> str:
@@ -237,8 +293,8 @@ def reset(pipeline_obj: Pipeline):
 
 
 def _delete_locally(pipeline_obj: Pipeline):
-    if pipeline_repository.exists(pipeline_obj.id):
-        pipeline_repository.delete_by_id(pipeline_obj.id)
+    if pipeline.repository.exists(pipeline_obj.id):
+        pipeline.repository.delete_by_id(pipeline_obj.id)
 
 
 def _delete_schema(pipeline_obj: Pipeline):
@@ -268,7 +324,7 @@ def delete(pipeline_obj: Pipeline):
     except StreamSetsApiClientException as e:
         raise pipeline.PipelineException(str(e))
     _cleanup_errors_dir(pipeline_obj.id)
-    _delete_locally(pipeline_repository.get(pipeline_obj.id))
+    _delete_locally(pipeline.repository.get(pipeline_obj.id))
 
 
 def delete_by_id(pipeline_id: str):
@@ -277,9 +333,9 @@ def delete_by_id(pipeline_id: str):
     except StreamSetsApiClientException as e:
         raise pipeline.PipelineException(str(e))
     _cleanup_errors_dir(pipeline_id)
-    if pipeline_repository.exists(pipeline_id):
-        _delete_schema(pipeline_repository.get(pipeline_id))
-        _delete_locally(pipeline_repository.get(pipeline_id))
+    if pipeline.repository.exists(pipeline_id):
+        _delete_schema(pipeline.repository.get(pipeline_id))
+        _delete_locally(pipeline.repository.get(pipeline_id))
 
 
 def enable_destination_logs(pipeline_obj: Pipeline):
@@ -294,56 +350,57 @@ def disable_destination_logs(pipeline_obj: Pipeline):
     update(pipeline_obj)
 
 
-class PipelineManager:
-    def __init__(self, pipeline_obj: Pipeline):
-        self.pipeline = pipeline_obj
-        self.prompter = get_prompter(pipeline_obj.source.type)(self.pipeline)
-        self.file_loader = get_file_loader(pipeline_obj.source.type)()
-        self.sdc_creator = get_sdc_creator(pipeline_obj)
+def _update_stage_config(source_: source.Source, stage):
+    for conf in stage['configuration']:
+        if conf['name'] in source_.config:
+            conf['value'] = source_.config[conf['name']]
 
-    def prompt(self, default_config, advanced=False):
-        self.pipeline.set_config(self.prompter.prompt(default_config, advanced))
 
-    def load_config(self, config, edit=False):
-        self.pipeline.set_config(self.file_loader.load(config, edit))
+def create_test_pipeline(source_: source.Source) -> str:
+    with open(_get_test_pipeline_file_path(source_)) as f:
+        pipeline_config = json.load(f)['pipelineConfig']
+    _update_stage_config(source_, pipeline_config['stages'][0])
+    test_pipeline_name = _get_test_pipeline_name(source_)
 
-    def validate_config(self):
-        get_config_validator(self.pipeline).validate(self.pipeline)
+    new_pipeline = api_client.create_pipeline(test_pipeline_name)
+    pipeline_config['uuid'] = new_pipeline['uuid']
+    api_client.update_pipeline(test_pipeline_name, pipeline_config)
+    return test_pipeline_name
 
-    def create(self):
+
+def _get_test_pipeline_file_path(source_: source.Source) -> str:
+    return os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), 'test_pipelines', _get_test_pipeline_file_name(source_) + '.json'
+    )
+
+
+def _get_test_pipeline_file_name(source_: source.Source) -> str:
+    files = {
+        source.TYPE_INFLUX: 'test_influx_qwe093',
+        source.TYPE_MONGO: 'test_mongo_rand847',
+        source.TYPE_KAFKA: 'test_kafka_kjeu4334',
+        source.TYPE_MYSQL: 'test_jdbc_pdsf4587',
+        source.TYPE_POSTGRES: 'test_jdbc_pdsf4587',
+        source.TYPE_ELASTIC: 'test_elastic_asdfs3245',
+        source.TYPE_SPLUNK: 'test_tcp_server_jksrj322',
+        source.TYPE_DIRECTORY: 'test_directory_ksdjfjk21',
+        source.TYPE_SAGE: 'test_sage_jfhdkj',
+    }
+    return files[source_.type]
+
+
+def _get_test_pipeline_name(source_: source.Source) -> str:
+    return _get_test_pipeline_file_name(source_) + source_.name
+
+
+def update_source_pipelines(source_name: str):
+    for pipeline_obj in pipeline.repository.get_by_source(source_name):
         try:
-            pipeline_obj = api_client.create_pipeline(self.pipeline.id)
-            new_config = self.sdc_creator.override_base_config(new_uuid=pipeline_obj['uuid'],
-                                                               new_title=self.pipeline.id)
-
-            api_client.update_pipeline(self.pipeline.id, new_config)
-        except (config_handlers.base.ConfigHandlerException, StreamSetsApiClientException) as e:
-            delete(self.pipeline)
-            raise pipeline.PipelineException(str(e))
-
-        pipeline_repository.save(self.pipeline)
-
-    @if_validation_enabled
-    def show_preview(self):
-        try:
-            preview = api_client.create_preview(self.pipeline.id)
-            preview_data = api_client.wait_for_preview(self.pipeline.id, preview['previewerId'])
-        except StreamSetsApiClientException as e:
+            pipeline.manager.update(pipeline_obj)
+        except pipeline.pipeline.PipelineException as e:
             print(str(e))
-            return
-
-        if not preview_data['batchesOutput']:
-            print('Could not fetch any data matching the provided config')
-            return
-
-        for output in preview_data['batchesOutput'][0]:
-            if 'destination_OutputLane' in output['output']:
-                data = output['output']['destination_OutputLane'][:source.Source.MAX_SAMPLE_RECORDS]
-                if data:
-                    print_json([sdc_record_map_to_dict(record['value']) for record in data])
-                else:
-                    print('Could not fetch any data matching the provided config')
-                break
+            continue
+        print(f'Pipeline {pipeline_obj.id} updated')
 
 
 class PipelineFreezeException(Exception):

@@ -3,8 +3,8 @@ import os
 from ..fixtures import cli_runner
 from agent.cli import source as source_cli, pipeline as pipeline_cli
 from agent.streamsets_api_client import api_client
+from agent import source
 from ..test_pipelines.test_zpipeline_base import pytest_generate_tests
-from agent.repository import source_repository
 
 
 class TestInflux:
@@ -12,18 +12,18 @@ class TestInflux:
     params = {
         'test_source_create': [{'name': 'test_influx', 'offset': '10/03/2019 12:53'},
                                {'name': 'test_influx_offset', 'offset': '19/03/2019 12:53'}],
-        'test_create': [{'name': 'test_basic', 'source': 'test_influx'},
-                        {'name': 'test_basic_offset', 'source': 'test_influx_offset'}],
+        'test_create': [{'name': 'test_basic', 'source_': 'test_influx'},
+                        {'name': 'test_basic_offset', 'source_': 'test_influx_offset'}],
     }
 
     def test_source_create(self, cli_runner, name, offset):
         result = cli_runner.invoke(source_cli.create, input=f"influx\n{name}\nhttp://influx:8086\nadmin\nadmin\ntest\n{offset}\n\n")
         assert result.exit_code == 0
-        assert os.path.isfile(os.path.join(source_repository.SOURCE_DIRECTORY, f'{name}.json'))
+        assert os.path.isfile(os.path.join(source.repository.SOURCE_DIRECTORY, f'{name}.json'))
 
-    def test_create(self, cli_runner, name, source):
+    def test_create(self, cli_runner, name, source_):
         result = cli_runner.invoke(pipeline_cli.create,
-                                   input=f'{source}\n{name}\ncpu_test\n\nusage_active usage_idle\n\ncp<u zone host\n\n7000000\n\n\n')
+                                   input=f'{source_}\n{name}\ncpu_test\n\nusage_active usage_idle\n\ncp<u zone host\n\n7000000\n\n\n')
         assert result.exit_code == 0
         assert api_client.get_pipeline(name)
 

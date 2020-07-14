@@ -8,4 +8,4 @@ from ..tools import if_validation_enabled
 @if_validation_enabled
 def is_valid_url(url: str) -> bool:
     result = urlparse(url)
-    return bool(result.netloc) and bool(result.scheme)
+    return all([result.scheme, result.netloc])

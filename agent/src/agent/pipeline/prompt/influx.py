@@ -3,6 +3,7 @@ import click
 from agent.tools import infinite_retry
 from urllib.parse import urljoin
 from .base import PromptConfig
+from agent import source
 
 
 class PromptConfigInflux(PromptConfig):
@@ -20,7 +21,7 @@ class PromptConfigInflux(PromptConfig):
 
     def get_test_url(self):
         source_config = self.pipeline.source.config
-        query = f"select+%2A+from+{self.config['measurement_name']}+limit+{self.pipeline.source.MAX_SAMPLE_RECORDS}"
+        query = f"select+%2A+from+{self.config['measurement_name']}+limit+{source.manager.MAX_SAMPLE_RECORDS}"
         return urljoin(source_config['host'], f"/query?db={source_config['db']}&epoch=ns&q={query}")
 
     def set_delay(self):

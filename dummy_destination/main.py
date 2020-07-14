@@ -18,7 +18,7 @@ def to_file():
             json.dump(request.json, f)
             f.write('\n')
     if request.args.get('token'):
-        if request.args.get('token') != 'correct_token':
+        if request.args.get('token') == 'incorrect_token':
             return json.dumps({'errors': ['Data collection token is invalid']}), 401
     return json.dumps({'errors': []})
 
@@ -38,7 +38,7 @@ def watermark_mock():
 
 @app.route('/api/v2/access-token', methods=['POST'])
 def access_token_mock():
-    if request.json['refreshToken'] != 'correct_key':
+    if request.json['refreshToken'] == 'incorrect_key':
         return 'Incorrect key', 401
     return 'ok', 200
 

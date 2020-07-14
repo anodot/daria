@@ -3,8 +3,8 @@ import os
 from ..fixtures import cli_runner
 from agent.cli import source as source_cli, pipeline as pipeline_cli
 from agent.streamsets_api_client import api_client
+from agent import source
 from ..test_pipelines.test_zpipeline_base import pytest_generate_tests
-from agent.repository import source_repository
 
 
 class TestMySQL:
@@ -20,7 +20,7 @@ class TestMySQL:
     def test_source_create(self, cli_runner, name, type, conn):
         result = cli_runner.invoke(source_cli.create, input=f"{type}\n{name}\n{conn}\n\n\n")
         assert result.exit_code == 0
-        assert os.path.isfile(os.path.join(source_repository.SOURCE_DIRECTORY, f'{name}.json'))
+        assert os.path.isfile(os.path.join(source.repository.SOURCE_DIRECTORY, f'{name}.json'))
 
     def test_create(self, cli_runner, name, source, timestamp_type, timestamp_name):
         result = cli_runner.invoke(pipeline_cli.create,

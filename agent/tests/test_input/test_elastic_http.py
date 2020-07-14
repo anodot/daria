@@ -1,14 +1,13 @@
 import os
 
 from ..fixtures import get_input_file_path, cli_runner
-from agent.cli import source as source_cli, pipeline as pipeline_cli
+from agent import cli
 from agent.streamsets_api_client import api_client
+from agent import source
 from ..test_pipelines.test_zpipeline_base import pytest_generate_tests
-from agent.repository import source_repository
 
 
 class TestElastic:
-
     params = {
         'test_create': [
             {'name': 'test_es_value_const', 'options': ['-a'], 'value': 'y\nclicksS\ny\n\n \n ',
@@ -19,18 +18,18 @@ class TestElastic:
     }
 
     def test_source_create(self, cli_runner):
-        result = cli_runner.invoke(source_cli.create,
+        result = cli_runner.invoke(cli.source.create,
                                    input=f"elastic\ntest_es\nhttp://es:9200\ntest\ntimestamp_unix_ms\nnow-1000d\n\n")
         assert result.exit_code == 0
-        assert os.path.isfile(os.path.join(source_repository.SOURCE_DIRECTORY, 'test_es.json'))
+        assert os.path.isfile(os.path.join(source.repository.SOURCE_DIRECTORY, 'test_es.json'))
 
     def test_create(self, cli_runner, name, options, value, timestamp, advanced_options):
         query_file_path = get_input_file_path('elastic_query.json')
-        result = cli_runner.invoke(pipeline_cli.create, options,
+        result = cli_runner.invoke(cli.pipeline.create, options,
                                    input=f"test_es\n{name}\n{query_file_path}\n\n{value}\n{timestamp}\n_source/ver _source/Country\n_source/Exchange optional_dim ad_type ADTYPE GEN\n{advanced_options}\n")
         assert result.exit_code == 0
         assert api_client.get_pipeline(name)
 
     def test_edit(self, cli_runner, options, value):
-        result = cli_runner.invoke(pipeline_cli.edit, options, input=f"\n\n{value}\n\n\n\n\n\n\n\n\n")
+        result = cli_runner.invoke(cli.pipeline.edit, options, input=f"\n\n{value}\n\n\n\n\n\n\n\n\n")
         assert result.exit_code == 0

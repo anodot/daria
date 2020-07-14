@@ -1,4 +1,4 @@
-from . import pipeline
+from .pipeline import *
 from . import info
 from . import manager
-from . import pipeline
+from . import repository

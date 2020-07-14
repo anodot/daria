@@ -1,10 +1,9 @@
-from datetime import datetime
-
 import click
 import json
 
+from datetime import datetime
+
 from agent.constants import ENV_PROD, VALIDATION_ENABLED
-from urllib.parse import urlparse
 from tabulate import tabulate
 
 
@@ -21,14 +20,6 @@ def infinite_retry(func):
             except Exception as e:
                 click.secho(str(e), err=True, color='red')
     return new_func
-
-
-def is_url(url):
-    try:
-        result = urlparse(url)
-        return all([result.scheme, result.netloc])
-    except ValueError as e:
-        return False
 
 
 def print_dicts(dicts: list):

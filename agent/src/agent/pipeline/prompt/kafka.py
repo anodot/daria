@@ -1,6 +1,6 @@
 import click
 from .schemaless import PromptConfigSchemaless
-from agent.source import KafkaSource
+from agent import source
 
 
 class PromptConfigKafka(PromptConfigSchemaless):
@@ -20,10 +20,10 @@ class PromptConfigKafka(PromptConfigSchemaless):
         self.transform()
 
     def set_consumer_group(self):
-        self.pipeline.override_source[KafkaSource.CONFIG_CONSUMER_GROUP] =\
+        self.pipeline.override_source[source.KafkaSource.CONFIG_CONSUMER_GROUP] =\
             click.prompt('Consumer group name', self._get_default_consumer_group())
 
     def _get_default_consumer_group(self) -> str:
-        if KafkaSource.CONFIG_CONSUMER_GROUP in self.pipeline.override_source:
-            return self.pipeline.override_source[KafkaSource.CONFIG_CONSUMER_GROUP]
+        if source.KafkaSource.CONFIG_CONSUMER_GROUP in self.pipeline.override_source:
+            return self.pipeline.override_source[source.KafkaSource.CONFIG_CONSUMER_GROUP]
         return "agent_" + self.pipeline.id

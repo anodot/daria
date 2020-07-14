@@ -1,14 +1,12 @@
 import click
 import requests
 
-from agent import pipeline
+from agent import pipeline, source
 from agent.destination import HttpDestination, build_urls, create
 from agent import validator
 from agent.constants import MONITORING_SOURCE_NAME
-from agent.repository import pipeline_repository, source_repository
 from agent.tools import infinite_retry
 from agent.proxy import Proxy
-from agent.pipeline import manager
 
 
 @infinite_retry
@@ -71,20 +69,20 @@ def _prompt_access_key(dest: HttpDestination):
 
 def _start_monitoring_pipeline():
     try:
-        if pipeline_repository.exists('Monitoring'):
-            pipeline_ = pipeline_repository.get('Monitoring')
+        if pipeline.repository.exists('Monitoring'):
+            pipeline_ = pipeline.repository.get('Monitoring')
             click.secho('Updating Monitoring pipeline...')
-            manager.stop(pipeline_)
-            manager.update(pipeline_)
+            pipeline.manager.stop(pipeline_)
+            pipeline.manager.update(pipeline_)
         else:
-            pipeline_ = manager.create_object('Monitoring', MONITORING_SOURCE_NAME)
-            pipeline_manager = manager.PipelineManager(pipeline_)
+            pipeline_ = pipeline.manager.create_object('Monitoring', MONITORING_SOURCE_NAME)
+            pipeline_manager = pipeline.manager.PipelineManager(pipeline_)
             click.secho('Starting Monitoring pipeline...')
-            source_repository.create_dir()
-            pipeline_repository.create_dir()
+            source.repository.create_dir()
+            pipeline.repository.create_dir()
             pipeline_manager.create()
 
-        manager.start(pipeline_)
+        pipeline.manager.start(pipeline_)
     except pipeline.pipeline.PipelineException as e:
         raise click.ClickException(str(e))
 

@@ -21,7 +21,7 @@ class TestSources:
                         'conf.batchWaitTime': 10,
                     }
                 }],
-                'er': b'[{"config":{"conf.batchWaitTime":10,"conf.brokerURI":"kafka:29092","conf.dataFormat":"JSON","conf.kafkaAutoOffsetReset":"EARLIEST","conf.kafkaOptions":["key:value"],"conf.maxBatchSize":1000,"conf.numberOfThreads":1,"conf.topicList":["test"],"library":"streamsets-datacollector-apache-kafka_2_0-lib","version":"2.0+"},"name":"kafka_source","type":"kafka"}]\n'
+                'er': b'[{"config":{"conf.batchWaitTime":10,"conf.brokerURI":"kafka:29092","conf.dataFormat":"JSON","conf.kafkaAutoOffsetReset":"EARLIEST","conf.kafkaOptions":["key:value"],"conf.maxBatchSize":1000,"conf.numberOfThreads":1,"conf.topicList":["test"],"version":"2.0+"},"name":"kafka_source","type":"kafka"}]\n'
             },
         ],
         'test_edit': [
@@ -40,7 +40,7 @@ class TestSources:
                         'conf.batchWaitTime': 5,
                     }
                 }],
-                'er': b'[{"config":{"conf.batchWaitTime":5,"conf.brokerURI":"http://kafka:29092","conf.dataFormat":"JSON","conf.kafkaAutoOffsetReset":"EARLIEST","conf.kafkaOptions":["key1:value1"],"conf.maxBatchSize":500,"conf.numberOfThreads":2,"conf.topicList":["test1"],"library":"streamsets-datacollector-apache-kafka_2_0-lib","version":"2.0+"},"name":"kafka_source","type":"kafka"}]\n'
+                'er': b'[{"config":{"conf.batchWaitTime":5,"conf.brokerURI":"http://kafka:29092","conf.dataFormat":"JSON","conf.kafkaAutoOffsetReset":"EARLIEST","conf.kafkaOptions":["key1:value1"],"conf.maxBatchSize":500,"conf.numberOfThreads":2,"conf.topicList":["test1"],"version":"2.0+"},"name":"kafka_source","type":"kafka"}]\n'
             },
         ]
     }
