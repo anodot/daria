@@ -52,13 +52,13 @@ def validate(source_: source.Source):
 def get_validator(source_: source.Source) -> Validator:
     types = {
         source.TYPE_INFLUX: InfluxValidator,
-        source.TYPE_KAFKA: SchemalessValidator,
+        source.TYPE_KAFKA: KafkaValidator,
         source.TYPE_MONGO: MongoValidator,
         source.TYPE_MYSQL: JDBCValidator,
         source.TYPE_POSTGRES: JDBCValidator,
         source.TYPE_ELASTIC: ElasticValidator,
-        source.TYPE_SPLUNK: SchemalessValidator,
-        source.TYPE_DIRECTORY: SchemalessValidator,
+        source.TYPE_SPLUNK: SplunkValidator,
+        source.TYPE_DIRECTORY: DirectoryValidator,
         source.TYPE_SAGE: SageValidator,
     }
     return types[source_.type](source_)
