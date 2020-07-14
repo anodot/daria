@@ -3,6 +3,7 @@ from .source import Source
 from . import repository
 from . import manager
 from . import validator
+from . import db
 
 TYPE_INFLUX = 'influx'
 TYPE_KAFKA = 'kafka'

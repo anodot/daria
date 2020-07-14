@@ -7,11 +7,6 @@ from agent import source
 
 class KafkaSourceBuilder(SchemalessSourceBuilder):
     def prompt(self, default_config, advanced=False):
-        if advanced:
-            self.source.config[source.KafkaSource.CONFIG_VERSION] = \
-                click.prompt('Kafka version', type=click.Choice(source.KafkaSource.version_libraries.keys()),
-                             default=default_config.get(source.KafkaSource.CONFIG_VERSION,
-                                                        source.KafkaSource.DEFAULT_KAFKA_VERSION))
         self.prompt_connection(default_config, advanced)
         self.source.config[source.KafkaSource.CONFIG_TOPIC_LIST] = \
             click.prompt('Topic list', type=click.STRING, value_proc=lambda x: x.split(','),

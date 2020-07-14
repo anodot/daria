@@ -361,20 +361,6 @@ def pipeline_group():
     pass
 
 
-@click.command()
-def update():
-    """
-    Update all pipelines configuration, recreate and restart them
-    """
-    for p in pipeline.repository.get_all():
-        try:
-            pipeline.manager.update(p)
-            click.secho(f'Pipeline {p.id} updated', fg='green')
-        except pipeline.pipeline.PipelineException as e:
-            print(str(e))
-            continue
-
-
 pipeline_group.add_command(create)
 pipeline_group.add_command(list_pipelines)
 pipeline_group.add_command(start)

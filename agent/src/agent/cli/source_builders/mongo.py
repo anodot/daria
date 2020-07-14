@@ -82,7 +82,7 @@ class MongoSourceBuilder(Builder):
             self.validator.validate_collection()
         except source.validator.ValidationException as e:
             raise click.UsageError(e)
-        client = tools.get_mongo_client(
+        client = source.db.get_mongo_client(
             self.source.config[source.MongoSource.CONFIG_CONNECTION_STRING],
             self.source.config.get(source.MongoSource.CONFIG_USERNAME),
             self.source.config.get(source.MongoSource.CONFIG_PASSWORD),

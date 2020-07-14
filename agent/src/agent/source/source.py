@@ -150,18 +150,6 @@ class KafkaSource(SchemalessSource):
     OFFSET_LATEST = 'LATEST'
     OFFSET_TIMESTAMP = 'TIMESTAMP'
 
-    DEFAULT_KAFKA_VERSION = '2.0+'
-
-    version_libraries = {'0.10': 'streamsets-datacollector-apache-kafka_2_0-lib',
-                         '0.11': 'streamsets-datacollector-apache-kafka_2_0-lib',
-                         '2.0+': 'streamsets-datacollector-apache-kafka_2_0-lib'}
-
-    def set_config(self, config):
-        super().set_config(config)
-        self.config[source.KafkaSource.CONFIG_LIBRARY] = \
-            source.KafkaSource.version_libraries[
-                self.config.get(source.KafkaSource.CONFIG_VERSION, source.KafkaSource.DEFAULT_KAFKA_VERSION)]
-
 
 class SageSource(Source):
     URL = 'url'

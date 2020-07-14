@@ -16,6 +16,8 @@ class ValidationException(Exception):
 
 
 class Validator:
+    VALIDATION_SCHEMA_FILE = ''
+
     def __init__(self, source_: source.Source):
         self.source = source_
 
@@ -25,27 +27,11 @@ class Validator:
 
     def validate_json(self):
         file_path = os.path.join(
-            os.path.dirname(os.path.realpath(__file__)), 'json_schema_definitions',
-            self._get_validation_schema_file()
+            os.path.dirname(os.path.realpath(__file__)), 'json_schema_definitions', self.VALIDATION_SCHEMA_FILE
         )
         with open(file_path) as f:
             json_schema = json.load(f)
         jsonschema.validate(self.source.config, json_schema)
-
-    def _get_validation_schema_file(self) -> str:
-        validation_schema_files = {
-            source.TYPE_INFLUX: 'influx.json',
-            source.TYPE_KAFKA: 'kafka.json',
-            source.TYPE_MONGO: 'mongo.json',
-            source.TYPE_MYSQL: 'jdbc.json',
-            source.TYPE_POSTGRES: 'jdbc.json',
-            source.TYPE_ELASTIC: 'elastic.json',
-            source.TYPE_SPLUNK: 'tcp_server.json',
-            source.TYPE_DIRECTORY: 'directory.json',
-            source.TYPE_SAGE: 'sage.json',
-            source.TYPE_MONITORING: 'Monitoring'
-        }
-        return validation_schema_files[self.source.type]
 
     @if_validation_enabled
     def validate_connection(self):
@@ -79,6 +65,8 @@ def get_validator(source_: source.Source) -> Validator:
 
 
 class InfluxValidator(Validator):
+    VALIDATION_SCHEMA_FILE = 'influx.json'
+
     def validate(self):
         self.validate_json()
         self.validate_connection()
@@ -95,13 +83,13 @@ class InfluxValidator(Validator):
             raise ValidationException(
                 f"{self.source.config['host']} - wrong url format. Correct format is `scheme://host:port`"
             )
-        client = tools.get_influx_client(self.source.config['host'])
+        client = source.db.get_influx_client(self.source.config['host'])
         client.ping()
 
     @if_validation_enabled
     def validate_db(self):
-        client = tools.get_influx_client(self.source.config['host'], self.source.config.get('username'),
-                                         self.source.config.get('password'))
+        client = source.db.get_influx_client(self.source.config['host'], self.source.config.get('username'),
+                                             self.source.config.get('password'))
         if not any([db['name'] == self.source.config['db'] for db in client.get_list_database()]):
             raise ValidationException(
                 f"Database {self.source.config['db']} not found. Please check your credentials again"
@@ -113,23 +101,23 @@ class InfluxValidator(Validator):
             raise ValidationException(
                 f"{self.source.config['write_host']} - wrong url format. Correct format is `scheme://host:port`"
             )
-        client = tools.get_influx_client(self.source.config['write_host'])
+        client = source.db.get_influx_client(self.source.config['write_host'])
         client.ping()
 
     @if_validation_enabled
     def validate_write_db(self):
-        client = tools.get_influx_client(self.source.config['write_host'], self.source.config.get('write_username'),
-                                         self.source.config.get('write_password'))
+        client = source.db.get_influx_client(self.source.config['write_host'], self.source.config.get('write_username'),
+                                             self.source.config.get('write_password'))
         if not any([db['name'] == self.source.config['write_db'] for db in client.get_list_database()]):
             raise ValidationException(
                 f"Database {self.source.config['write_db']} not found. Please check your credentials again")
 
     @if_validation_enabled
     def validate_write_access(self):
-        client = tools.get_influx_client(self.source.config['write_host'], self.source.config.get('write_username'),
-                                         self.source.config.get('write_password'),
-                                         self.source.config['write_db'])
-        if not tools.has_write_access(client):
+        client = source.db.get_influx_client(self.source.config['write_host'], self.source.config.get('write_username'),
+                                             self.source.config.get('write_password'),
+                                             self.source.config['write_db'])
+        if not source.db.has_write_access(client):
             raise ValidationException(
                 f"""User {self.source.config.get('write_username')} does not have write permissions for db
                  {self.source.config['write_db']} at {self.source.config['write_host']}"""
@@ -152,6 +140,8 @@ class InfluxValidator(Validator):
 
 
 class ElasticValidator(Validator):
+    VALIDATION_SCHEMA_FILE = 'elastic.json'
+
     @if_validation_enabled
     def validate_connection(self):
         # todo
@@ -160,6 +150,8 @@ class ElasticValidator(Validator):
 
 
 class JDBCValidator(Validator):
+    VALIDATION_SCHEMA_FILE = 'jdbc.json'
+
     def validate(self):
         self.validate_json()
         self.validate_connection_string()
@@ -193,6 +185,8 @@ class JDBCValidator(Validator):
 
 
 class MongoValidator(Validator):
+    VALIDATION_SCHEMA_FILE = 'mongo.json'
+
     def validate(self):
         self.validate_json()
         self.validate_connection()
@@ -201,7 +195,7 @@ class MongoValidator(Validator):
 
     @if_validation_enabled
     def validate_connection(self):
-        client = tools.get_mongo_client(
+        client = source.db.get_mongo_client(
             self.source.config[source.MongoSource.CONFIG_CONNECTION_STRING],
             self.source.config.get(source.MongoSource.CONFIG_USERNAME),
             self.source.config.get(source.MongoSource.CONFIG_PASSWORD),
@@ -211,7 +205,7 @@ class MongoValidator(Validator):
 
     @if_validation_enabled
     def validate_db(self):
-        client = tools.get_mongo_client(
+        client = source.db.get_mongo_client(
             self.source.config[source.MongoSource.CONFIG_CONNECTION_STRING],
             self.source.config.get(source.MongoSource.CONFIG_USERNAME),
             self.source.config.get(source.MongoSource.CONFIG_PASSWORD),
@@ -223,7 +217,7 @@ class MongoValidator(Validator):
 
     @if_validation_enabled
     def validate_collection(self):
-        client = tools.get_mongo_client(
+        client = source.db.get_mongo_client(
             self.source.config[source.MongoSource.CONFIG_CONNECTION_STRING],
             self.source.config.get(source.MongoSource.CONFIG_USERNAME),
             self.source.config.get(source.MongoSource.CONFIG_PASSWORD),
@@ -236,6 +230,8 @@ class MongoValidator(Validator):
 
 
 class SageValidator(Validator):
+    VALIDATION_SCHEMA_FILE = 'sage.json'
+
     def validate(self):
         self.validate_json()
         self.validate_url()
@@ -262,3 +258,15 @@ class SchemalessValidator(Validator):
         if self.source.config.get(source.SchemalessSource.CONFIG_GROK_PATTERN_FILE) and not os.path.isfile(
                 self.source.config[source.SchemalessSource.CONFIG_GROK_PATTERN_FILE]):
             raise ValidationException('File does not exist')
+
+
+class KafkaValidator(SchemalessValidator):
+    VALIDATION_SCHEMA_FILE = 'kafka.json'
+
+
+class SplunkValidator(SchemalessValidator):
+    VALIDATION_SCHEMA_FILE = 'tcp_server.json'
+
+
+class DirectoryValidator(SchemalessValidator):
+    VALIDATION_SCHEMA_FILE = 'directory.json'

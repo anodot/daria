@@ -351,9 +351,6 @@ def disable_destination_logs(pipeline_obj: Pipeline):
 
 
 def _update_stage_config(source_: source.Source, stage):
-    # todo
-    if source_.type == source.TYPE_KAFKA and source.KafkaSource.CONFIG_VERSION in source_.config:
-        source_.config['library'] = source.KafkaSource.version_libraries[source_.config[source.KafkaSource.CONFIG_VERSION]]
     for conf in stage['configuration']:
         if conf['name'] in source_.config:
             conf['value'] = source_.config[conf['name']]
