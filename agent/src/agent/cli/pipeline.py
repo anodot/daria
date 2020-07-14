@@ -353,6 +353,20 @@ def reset(pipeline_id):
     click.echo('Pipeline offset reset')
 
 
+@click.command()
+def update():
+    """
+    Update all pipelines configuration, recreate and restart them
+    """
+    for p in pipeline.repository.get_all():
+        try:
+            pipeline.manager.update(p)
+            click.secho(f'Pipeline {p.id} updated', fg='green')
+        except pipeline.pipeline.PipelineException as e:
+            print(str(e))
+            continue
+
+
 @click.group(name='pipeline')
 def pipeline_group():
     """
@@ -372,3 +386,4 @@ pipeline_group.add_command(info)
 pipeline_group.add_command(reset)
 pipeline_group.add_command(edit)
 pipeline_group.add_command(destination_logs)
+pipeline_group.add_command(update)
