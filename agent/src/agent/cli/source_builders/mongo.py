@@ -2,7 +2,7 @@ import click
 import re
 
 from .abstract_builder import Builder
-from agent.tools import infinite_retry, print_json, if_validation_enabled
+from agent.tools import infinite_retry
 from agent import source
 
 
@@ -77,18 +77,17 @@ class MongoSourceBuilder(Builder):
         except source.validator.ValidationException as e:
             raise click.UsageError(e)
 
-    def get_collection(self):
-        client = source.get_mongo_client(self.source)
+    def _get_collection(self):
         try:
             self.validator.validate_collection()
         except source.validator.ValidationException as e:
             raise click.UsageError(e)
-        return client[self.source.config[source.MongoSource.CONFIG_DATABASE]][
-            self.source.config[source.MongoSource.CONFIG_COLLECTION]]
+        client = source.get_mongo_client(self.source)
+        return client[self.source.config[source.MongoSource.CONFIG_DATABASE]][self.source.config[source.MongoSource.CONFIG_COLLECTION]]
 
     @infinite_retry
     def prompt_collection(self, default_config):
         self.source.config[source.MongoSource.CONFIG_COLLECTION] = \
             click.prompt('Collection', type=click.STRING,
                          default=default_config.get(source.MongoSource.CONFIG_COLLECTION)).strip()
-        self.source.config[source.MongoSource.CONFIG_IS_CAPPED] = 'capped' in self.get_collection().options()
+        self.source.config[source.MongoSource.CONFIG_IS_CAPPED] = 'capped' in self._get_collection().options()

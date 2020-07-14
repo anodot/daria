@@ -176,6 +176,12 @@ class SchemalessSource(Source):
 
     data_formats = [DATA_FORMAT_JSON, DATA_FORMAT_CSV, DATA_FORMAT_AVRO, DATA_FORMAT_LOG]
 
+    def set_config(self, config):
+        super().set_config(config)
+        if self.config.get('grok_definition_file'):
+            with open(self.config['grok_definition_file']) as f:
+                self.config[self.CONFIG_GROK_PATTERN_DEFINITION] = f.read()
+
 
 class KafkaSource(SchemalessSource):
     CONFIG_BROKER_LIST = 'conf.brokerURI'

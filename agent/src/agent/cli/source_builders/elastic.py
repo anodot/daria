@@ -20,9 +20,8 @@ class ElasticSourceBuilder(Builder):
         default_uris = default_config.get(source.ElasticSource.CONFIG_HTTP_URIS)
         if default_uris:
             default_uris = ','.join(default_uris)
-        self.source.config[source.ElasticSource.CONFIG_HTTP_URIS] = click.prompt('Cluster HTTP URIs', type=click.STRING,
-                                                                                 default=default_uris).strip().split(
-            ',')
+        self.source.config[source.ElasticSource.CONFIG_HTTP_URIS] = \
+            click.prompt('Cluster HTTP URIs', type=click.STRING, default=default_uris).strip().split(',')
         self.validator.validate_connection()
         print('Successfully connected to the source')
 
@@ -38,11 +37,9 @@ class ElasticSourceBuilder(Builder):
             click.prompt('Index', type=click.STRING, default=default_config.get(source.ElasticSource.CONFIG_INDEX, ''))
 
     def prompt_offset_field(self, default_config):
-        self.source.config[source.ElasticSource.CONFIG_OFFSET_FIELD] = click.prompt(
-            'Offset field (Elasticsearch Date field)',
-            type=click.STRING,
-            default=default_config.get(source.ElasticSource.CONFIG_OFFSET_FIELD,
-                                       'timestamp'))
+        self.source.config[source.ElasticSource.CONFIG_OFFSET_FIELD] = \
+            click.prompt('Offset field (Elasticsearch Date field)', type=click.STRING,
+                         default=default_config.get(source.ElasticSource.CONFIG_OFFSET_FIELD, 'timestamp'))
 
     def prompt_initial_offset(self, default_config):
         self.source.config[source.ElasticSource.CONFIG_INITIAL_OFFSET] = \
