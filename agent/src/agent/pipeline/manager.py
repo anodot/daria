@@ -6,7 +6,7 @@ import shutil
 import time
 import agent.pipeline.config.handlers as config_handlers
 
-from agent import pipeline, tools
+from agent import pipeline
 from agent.pipeline.config.validators import get_config_validator
 from agent.pipeline import prompt, load_client_data
 from .. import destination
@@ -106,6 +106,7 @@ def get_file_loader(source_type: str):
         source.TYPE_SPLUNK: load_client_data.TcpLoadClientData,
         source.TYPE_DIRECTORY: load_client_data.DirectoryLoadClientData,
         source.TYPE_SAGE: load_client_data.SageLoadClientData,
+        source.TYPE_VICTORIA: load_client_data.VictoriaLoadClientData,
     }
     return loaders[source_type]
 
@@ -122,11 +123,12 @@ def get_prompter(source_type: str):
         source.TYPE_SPLUNK: prompt.PromptConfigTCP,
         source.TYPE_DIRECTORY: prompt.PromptConfigDirectory,
         source.TYPE_SAGE: prompt.PromptConfigSage,
+        source.TYPE_VICTORIA: prompt.PromptConfigVictoria,
     }
     return prompters[source_type]
 
 
-def validate_json_for_create(json: dict):
+def validate_json_for_create(json_data: dict):
     json_schema = {
         'type': 'array',
         'items': {
@@ -138,7 +140,7 @@ def validate_json_for_create(json: dict):
             'required': ['source', 'pipeline_id']
         }
     }
-    validate(json, json_schema)
+    validate(json_data, json_schema)
 
 
 def create_object(pipeline_id: str, source_name: str) -> Pipeline:

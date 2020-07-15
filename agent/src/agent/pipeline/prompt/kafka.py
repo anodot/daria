@@ -7,7 +7,7 @@ class PromptConfigKafka(PromptConfigSchemaless):
     target_types = ['counter', 'gauge', 'running_counter']
     pass
 
-    def set_config(self):
+    def prompt_config(self):
         self.data_preview()
         self.set_values()
         self.set_measurement_names()

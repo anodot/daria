@@ -4,10 +4,10 @@ from agent.pipeline import pipeline
 
 
 class PromptConfigDirectory(PromptConfigSchemaless):
-    def set_config(self):
+    def prompt_config(self):
         if not self.pipeline.destination.access_key:
             raise click.UsageError('No api key configured. Please configure api key using `agent destination` command')
-        super().set_config()
+        super().prompt_config()
         self.prompt_flush_bucket_size()
 
     def prompt_flush_bucket_size(self):

@@ -3,7 +3,7 @@ from agent import cli
 
 # help('modules')
 
-cli.pipeline.create(["-a"])
+cli.pipeline.create()
 # cli.destination()
 # source_cli.create()
 # cli.pipeline.logs(['test_influx'])

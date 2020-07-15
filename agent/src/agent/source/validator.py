@@ -60,6 +60,7 @@ def get_validator(source_: source.Source) -> Validator:
         source.TYPE_SPLUNK: SplunkValidator,
         source.TYPE_DIRECTORY: DirectoryValidator,
         source.TYPE_SAGE: SageValidator,
+        source.TYPE_VICTORIA: VictoriaMetricsValidator,
     }
     return types[source_.type](source_)
 
@@ -247,6 +248,15 @@ class SageValidator(Validator):
     def validate_token(self):
         # TODO: check token
         pass
+
+
+class VictoriaMetricsValidator(Validator):
+    VALIDATION_SCHEMA_FILE = 'victoria.json'
+
+    @if_validation_enabled
+    def validate_url(self):
+        if not is_valid_url(self.source.config[source.VictoriaMetricsSource.URL]):
+            raise ValidationException('VictoriaMetrics url has invalid format, please specify the protocol and domain name`')
 
 
 class SchemalessValidator(Validator):

@@ -115,3 +115,7 @@ class DirectoryLoadClientData(LoadClientData):
 
 class SageLoadClientData(LoadClientData):
     VALIDATION_SCHEMA_FILE_NAME = 'sage'
+
+
+class VictoriaLoadClientData(LoadClientData):
+    VALIDATION_SCHEMA_FILE_NAME = 'victoria'
