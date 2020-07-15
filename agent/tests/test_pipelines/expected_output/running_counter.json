@@ -36,42 +36,6 @@
     "timestamp": 1512874800
   },
   {
-    "value": 2.0,
-    "properties": {
-      "what": "clicks",
-      "target_type": "gauge",
-      "ver": "1",
-      "Country": "USA",
-      "key1": "val1"
-    },
-    "tags": {
-      "source": ["anodot-agent"],
-      "source_host_id": ["ABCDEF"],
-      "source_host_name": ["agent"],
-      "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"]
-    },
-    "timestamp": 1512878400
-  },
-  {
-    "value": 1.0,
-    "properties": {
-      "what": "clicks",
-      "target_type": "gauge",
-      "ver": "1",
-      "Country": "USA",
-      "key1": "val1"
-    },
-    "tags": {
-      "source": ["anodot-agent"],
-      "source_host_id": ["ABCDEF"],
-      "source_host_name": ["agent"],
-      "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"]
-    },
-    "timestamp": 1512882000
-  },
-  {
     "value": 7.0,
     "properties": {
       "what": "clicks",
