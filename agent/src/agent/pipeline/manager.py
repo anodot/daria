@@ -90,6 +90,7 @@ def get_sdc_creator(pipeline_obj: Pipeline) -> config_handlers.base.BaseConfigHa
         source.TYPE_SPLUNK: config_handlers.tcp.TCPConfigHandler,
         source.TYPE_DIRECTORY: config_handlers.directory.DirectoryConfigHandler,
         source.TYPE_SAGE: config_handlers.sage.SageConfigHandler,
+        source.VictoriaMetricsSource: config_handlers.victoria.VictoriaConfigHandler,
     }
     return handlers[pipeline_obj.source.type](pipeline_obj)
 
