@@ -31,11 +31,13 @@ def get_interval():
     return int(sdc.userParams['INTERVAL'])
 
 
-def make_request(url_):
+def make_request(url_, user, password):
+    session = requests.Session()
+    session.auth = (user, password)
     for i in range(1, N_REQUESTS_TRIES + 1):
         try:
             sdc.log.debug(url_)
-            res = requests.get(url_, stream=True)
+            res = session.get(url_, stream=True)
             res.raise_for_status()
         except Exception as e:
             if i == N_REQUESTS_TRIES:
@@ -46,7 +48,7 @@ def make_request(url_):
     return res
 
 
-url = 'http://victoriametrics:8428/api/v1/export?' + sdc.userParams['QUERY']
+url = sdc.userParams['URL'] + '/api/v1/export?' + sdc.userParams['QUERY']
 interval = get_interval()
 start = get_backfill_offset()
 end = start + interval
@@ -61,7 +63,7 @@ try:
 
         curr_url = url + '&start=' + str(start) + '&end=' + str(end)
 
-        for row in make_request(curr_url).iter_lines():
+        for row in make_request(curr_url, sdc.userParams['USERNAME'], sdc.userParams['PASSWORD']).iter_lines():
             cur_batch = sdc.createBatch()
             record = json.loads(row.decode("utf-8"))
             sdc.log.debug(row)
