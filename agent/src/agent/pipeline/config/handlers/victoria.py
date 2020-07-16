@@ -10,7 +10,6 @@ class VictoriaConfigHandler(BaseConfigHandler):
 
     stages = {
         'source': stages.victoria_source.VictoriaScript,
-        'JavaScriptEvaluator_01': stages.js_convert_metrics_20.JSConvertMetrics,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties,
         'destination': stages.destination.Destination
     }

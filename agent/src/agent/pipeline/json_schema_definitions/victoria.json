@@ -6,7 +6,9 @@
       "type": "object",
       "patternProperties":  {"[^ \\.]+": {"type": "array", "items": {"type": "string"}}}
     },
-    "query": {"type": "string"}
+    "query": {"type": "string"},
+    "start_timestamp": {"type": "integer"},
+    "end_timestamp": {"type": "integer"}
   },
   "required": ["query", "dimensions"]
 }
