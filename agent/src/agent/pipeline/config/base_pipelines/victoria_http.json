@@ -3,9 +3,9 @@
     "schemaVersion" : 6,
     "version" : 17,
     "pipelineId" : "kafkahttpd097e4bc-a390-44ba-ae35-3b899695053a",
-    "title" : "test_sage_value_const",
+    "title" : "vi",
     "description" : "",
-    "uuid" : "b86daad9-c52c-4348-8ab8-4452a9dd07da",
+    "uuid" : "0d80c046-ff61-41b1-91ed-110c8cc60c60",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -342,7 +342,7 @@
       "stageVersion" : "1",
       "configuration" : [ {
         "name" : "script",
-        "value" : "try:\n    sdc.importLock()\n    import sys\n    import os\n    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))\n    import requests\n    import traceback\n    import json\n    import time\nfinally:\n    sdc.importUnlock()\n\nentityName = ''\nN_REQUESTS_TRIES = 3\n\ndef get_now():\n    return int(time.time())\n\n\ndef get_backfill_offset():\n    # if sdc.lastOffsets.containsKey(entityName):\n    #     raise Exception(sdc.lastOffsets.get(entityName))\n    #     return int(float(sdc.lastOffsets.get(entityName)))\n    days_ago = int(sdc.userParams['DAYS_TO_BACKFILL'])\n    if bool(days_ago):\n        return get_now() - days_ago * 24 * 60 * 60\n    return get_now() - get_interval()\n\n\ndef get_interval():\n    return int(sdc.userParams['INTERVAL'])\n\n\ndef make_request(url_):\n    for i in range(1, N_REQUESTS_TRIES + 1):\n        try:\n            sdc.log.debug(url_)\n            res = requests.get(url_, stream=True)\n            res.raise_for_status()\n        except Exception as e:\n            if i == N_REQUESTS_TRIES:\n                raise\n            sdc.log.debug(str(e))\n            time.sleep(i ** 2)\n        break\n    return res\n\n\nurl = 'http://victoriametrics:8428/api/v1/export?' + sdc.userParams['QUERY']\ninterval = get_interval()\nstart = get_backfill_offset()\nend = start + interval\n\n\ntry:\n    while True:\n        if end > get_now():\n            time.sleep(end - get_now())\n        if sdc.isStopped():\n            break\n\n        curr_url = url + '&start=' + str(start) + '&end=' + str(end)\n\n        for row in make_request(curr_url).iter_lines():\n            cur_batch = sdc.createBatch()\n            record = json.loads(row.decode(\"utf-8\"))\n            sdc.log.debug(row)\n            base_metric = {\n                \"properties\": {\n                    \"what\": record['metric'].pop('__name__'),\n                    'target_type': \"gauge\",\n                },\n                \"tags\": {\n\n                },\n            }\n            for dimension, value in record['metric'].items():\n                base_metric['properties'][dimension] = value\n            for j in range(len(record['timestamps'])):\n                metric = base_metric\n                # raise Exception(record['timestamps'][j])\n                metric['timestamp'] = record['timestamps'][j]\n                metric['value'] = record['values'][j]\n                new_record = sdc.createRecord('record created ' + str(get_now()))\n                new_record.value = metric\n                cur_batch.add(new_record)\n            cur_batch.process(entityName, str(end))\n            raise Exception(record['timestamps'])\n        start = end\n        end += interval\nexcept Exception as e:\n    sdc.log.error(traceback.format_exc())\n    raise"
+        "value" : "try:\n    sdc.importLock()\n    import sys\n    import os\n    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))\n    import requests\n    import traceback\n    import json\n    import time\nfinally:\n    sdc.importUnlock()\n\nentityName = ''\nN_REQUESTS_TRIES = 3\n\ndef get_now():\n    return int(time.time())\n\n\ndef get_backfill_offset():\n    if sdc.lastOffsets.containsKey(entityName):\n        return int(float(sdc.lastOffsets.get(entityName)))\n    days_ago = int(sdc.userParams['DAYS_TO_BACKFILL'])\n    if bool(days_ago):\n        return get_now() - days_ago * 24 * 60 * 60\n    return get_now() - get_interval()\n\n\ndef get_interval():\n    return int(sdc.userParams['INTERVAL'])\n\n\ndef make_request(url_):\n    for i in range(1, N_REQUESTS_TRIES + 1):\n        try:\n            sdc.log.debug(url_)\n            res = requests.get(url_, stream=True)\n            res.raise_for_status()\n        except Exception as e:\n            if i == N_REQUESTS_TRIES:\n                raise\n            sdc.log.debug(str(e))\n            time.sleep(i ** 2)\n        break\n    return res\n\n\nurl = 'http://victoriametrics:8428/api/v1/export?' + sdc.userParams['QUERY']\ninterval = get_interval()\nstart = get_backfill_offset()\nend = start + interval\n\n\ntry:\n    while True:\n        if end > get_now():\n            time.sleep(end - get_now())\n        if sdc.isStopped():\n            break\n\n        curr_url = url + '&start=' + str(start) + '&end=' + str(end)\n\n        for row in make_request(curr_url).iter_lines():\n            cur_batch = sdc.createBatch()\n            record = json.loads(row.decode(\"utf-8\"))\n            sdc.log.debug(row)\n            base_metric = {\n                \"properties\": {\n                    \"what\": record['metric'].pop('__name__'),\n                    'target_type': \"gauge\",\n                },\n                \"tags\": {\n\n                },\n            }\n            for dimension, value in record['metric'].items():\n                base_metric['properties'][dimension] = value\n            for j in range(len(record['timestamps'])):\n                metric = base_metric\n                metric['timestamp'] = record['timestamps'][j]\n                metric['value'] = record['values'][j]\n                new_record = sdc.createRecord('record created ' + str(get_now()))\n                new_record.value = metric\n                cur_batch.add(new_record)\n            cur_batch.process(entityName, str(end))\n        start = end\n        end += interval\nexcept Exception as e:\n    sdc.log.error(traceback.format_exc())\n    raise"
       }, {
         "name" : "scriptConf.batchSize",
         "value" : 1
@@ -354,18 +354,30 @@
         "value" : "NATIVE_OBJECTS"
       }, {
         "name" : "scriptConf.params",
-        "value" : [ ]
+        "value" : [ {
+          "key" : "VICTORIA_URL",
+          "value" : "http://localhost"
+        }, {
+          "key" : "QUERY",
+          "value" : "match[]={__name__!=\"\"}"
+        }, {
+          "key" : "DAYS_TO_BACKFILL",
+          "value" : "1"
+        }, {
+          "key" : "INTERVAL",
+          "value" : "10"
+        } ]
       }, {
         "name" : "stageOnRecordError",
         "value" : "TO_ERROR"
       } ],
       "uiInfo" : {
-        "yPos" : 51,
+        "yPos" : 49,
         "stageType" : "SOURCE",
         "icon" : "jython.png",
         "description" : "",
         "label" : "Jython Scripting 1",
-        "xPos" : 61
+        "xPos" : 238
       },
       "inputLanes" : [ ],
       "outputLanes" : [ "JythonScripting_01OutputLane15924840586690" ],
@@ -378,7 +390,43 @@
       "stageVersion" : "2",
       "configuration" : [ {
         "name" : "expressionProcessorConfigs",
-        "value" : [ ]
+        "value" : [ {
+          "fieldToSet" : "/tags",
+          "expression" : "${emptyMap()}"
+        }, {
+          "fieldToSet" : "/tags/source",
+          "expression" : "${emptyList()}"
+        }, {
+          "fieldToSet" : "/tags/source[0]",
+          "expression" : "${\"anodot-agent\"}"
+        }, {
+          "fieldToSet" : "/tags/source_host_id",
+          "expression" : "${emptyList()}"
+        }, {
+          "fieldToSet" : "/tags/source_host_id[0]",
+          "expression" : "${\"ABCDEF\"}"
+        }, {
+          "fieldToSet" : "/tags/source_host_name",
+          "expression" : "${emptyList()}"
+        }, {
+          "fieldToSet" : "/tags/source_host_name[0]",
+          "expression" : "${\"agent\"}"
+        }, {
+          "fieldToSet" : "/tags/pipeline_id",
+          "expression" : "${emptyList()}"
+        }, {
+          "fieldToSet" : "/tags/pipeline_id[0]",
+          "expression" : "${\"vi\"}"
+        }, {
+          "fieldToSet" : "/tags/pipeline_type",
+          "expression" : "${emptyList()}"
+        }, {
+          "fieldToSet" : "/tags/pipeline_type[0]",
+          "expression" : "${\"victoria\"}"
+        }, {
+          "fieldToSet" : "/timestamp",
+          "expression" : "${record:value('/timestamp')}"
+        } ]
       }, {
         "name" : "headerAttributeConfigs",
         "value" : [ { } ]
@@ -804,25 +852,25 @@
       "services" : [ ]
     },
     "info" : {
-      "pipelineId" : "test_sage_value_const",
-      "title" : "test_sage_value_const",
+      "pipelineId" : "vi",
+      "title" : "vi",
       "description" : "",
-      "created" : 1594737830452,
-      "lastModified" : 1594911657500,
+      "created" : 1594914013933,
+      "lastModified" : 1594914162245,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "b86daad9-c52c-4348-8ab8-4452a9dd07da",
+      "uuid" : "0d80c046-ff61-41b1-91ed-110c8cc60c60",
       "valid" : true,
       "metadata" : {
-        "labels" : [ "sage", "http" ]
+        "labels" : [ "victoria", "http" ]
       },
-      "name" : "test_sage_value_const",
+      "name" : "vi",
       "sdcVersion" : "3.15.0",
       "sdcId" : "528a8fd9-c5e0-11ea-acf2-5182ef23b2e9"
     },
     "metadata" : {
-      "labels" : [ "sage", "http" ]
+      "labels" : [ "victoria", "http" ]
     },
     "statsAggregatorStage" : {
       "instanceName" : "statsAggregatorStageInstance",
@@ -1160,7 +1208,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1594737830494,
+      "timestamp" : 1594914013978,
       "valid" : true
     }, {
       "id" : "stageErrorAlertID",
@@ -1171,7 +1219,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1594737830494,
+      "timestamp" : 1594914013978,
       "valid" : true
     }, {
       "id" : "idleGaugeID",
@@ -1182,7 +1230,7 @@
       "condition" : "${time:now() - value() > 120000}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1594737830494,
+      "timestamp" : 1594914013978,
       "valid" : true
     }, {
       "id" : "batchTimeAlertID",
@@ -1193,12 +1241,12 @@
       "condition" : "${value() > 200}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1594737830494,
+      "timestamp" : 1594914013978,
       "valid" : true
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "de52bd2a-68c6-48f5-a4c8-dd25d8123b4b",
+    "uuid" : "efcdecaa-eb8a-430b-a2ee-1248fa46b017",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : [ ]
