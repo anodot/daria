@@ -253,11 +253,6 @@ class SageValidator(Validator):
 class VictoriaMetricsValidator(Validator):
     VALIDATION_SCHEMA_FILE = 'victoria.json'
 
-    @if_validation_enabled
-    def validate_url(self):
-        if not is_valid_url(self.source.config[source.VictoriaMetricsSource.URL]):
-            raise ValidationException('VictoriaMetrics url has invalid format, please specify the protocol and domain name`')
-
 
 class SchemalessValidator(Validator):
     def validate(self):

@@ -18,9 +18,8 @@ def get_now():
 
 
 def get_backfill_offset():
-    # if sdc.lastOffsets.containsKey(entityName):
-    #     raise Exception(sdc.lastOffsets.get(entityName))
-    #     return int(float(sdc.lastOffsets.get(entityName)))
+    if sdc.lastOffsets.containsKey(entityName):
+        return int(float(sdc.lastOffsets.get(entityName)))
     days_ago = int(sdc.userParams['DAYS_TO_BACKFILL'])
     if bool(days_ago):
         return get_now() - days_ago * 24 * 60 * 60
@@ -80,14 +79,12 @@ try:
                 base_metric['properties'][dimension] = value
             for j in range(len(record['timestamps'])):
                 metric = base_metric
-                # raise Exception(record['timestamps'][j])
                 metric['timestamp'] = record['timestamps'][j]
                 metric['value'] = record['values'][j]
                 new_record = sdc.createRecord('record created ' + str(get_now()))
                 new_record.value = metric
                 cur_batch.add(new_record)
             cur_batch.process(entityName, str(end))
-            raise Exception(record['timestamps'])
         start = end
         end += interval
 except Exception as e:
