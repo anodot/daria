@@ -22,20 +22,34 @@ def populate_source_from_file(file):
         if 'name' not in config:
             raise Exception('Source config should contain a source name')
         if source.repository.exists(config['name']):
-            source.manager.edit_using_file(file)
+            # todo code duplicate, refactor
+            source.manager.validate_config_for_edit(config)
+            source.manager.edit_using_json(config)
+            for pipeline_obj in pipeline.repository.get_by_source(config['name']):
+                try:
+                    pipeline.manager.update(pipeline_obj)
+                except pipeline.pipeline.PipelineException as e:
+                    print(str(e))
+                    continue
+                print(f'Pipeline {pipeline_obj.id} updated')
         else:
-            source.manager.create_from_file(file)
+            source.manager.validate_config_for_create(config)
+            source.manager.create_from_json(config)
 
 
 def populate_pipeline_from_file(file):
-    for config in cli.pipeline.extract_configs(file):
+    configs = cli.pipeline.extract_configs(file)
+    for config in configs:
         if 'pipeline_id' not in config:
             raise Exception('Pipeline config should contain a pipeline_id')
         if pipeline.repository.exists(config['pipeline_id']):
-            cli.pipeline.edit_using_file(file)
+            pipeline.manager.edit_using_json(config)
         else:
-            cli.pipeline.create_from_file(file)
-            cli.pipeline.start(['-f', file.name])
+            # todo code duplicate, refactor
+            pipeline.manager.validate_config_for_create(config)
+            pipeline.manager.start_by_id(
+                pipeline.manager.create_from_json(config).id
+            )
 
 
 def get_checksum(file_path):
