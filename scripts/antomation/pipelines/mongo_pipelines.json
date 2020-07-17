@@ -1,7 +1,7 @@
 [
   {
-    "source": "test_mongo_1",
-    "pipeline_id": "test_mongo_file_short",
+    "source": "test_mongo_antomation",
+    "pipeline_id": "test_mongo_pipeline_antomation_1",
     "measurement_names": {"Clicks":  "clicks"},
     "values": {"Clicks":  "gauge"},
     "dimensions": ["ver", "Country"],
@@ -11,8 +11,8 @@
     }
   },
   {
-    "source": "test_mongo_1",
-    "pipeline_id": "test_mongo_file_full",
+    "source": "test_mongo_antomation",
+    "pipeline_id": "test_mongo_pipeline_antomation_2",
     "measurement_names": {"Clicks":  "clicks"},
     "values": {"Clicks":  "gauge"},
     "dimensions": {

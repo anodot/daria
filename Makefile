@@ -15,7 +15,7 @@ all: build-all test-all
 
 build-all: get-streamsets-libs build sleep setup-elastic setup-kafka
 
-test-all: run-unit-tests test-destination test-api test-input test-pipelines
+test-all: test-antomation run-unit-tests test-destination test-api test-input test-pipelines
 
 ##-------------
 ## DEVELOPMENT
@@ -88,6 +88,9 @@ run-unit-tests-dev:
 build:
 	docker-compose build --build-arg GIT_SHA1="$(shell git describe --dirty --always)"
 	docker-compose up -d
+
+test-antomation:
+	$(DOCKER_TEST) tests/test_antomation.py
 
 test-destination:
 	$(DOCKER_TEST) tests/test_destination.py
