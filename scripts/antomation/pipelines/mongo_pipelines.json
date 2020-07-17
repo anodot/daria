@@ -1,18 +1,7 @@
 [
   {
     "source": "test_mongo_antomation",
-    "pipeline_id": "test_mongo_pipeline_antomation_1",
-    "measurement_names": {"Clicks":  "clicks"},
-    "values": {"Clicks":  "gauge"},
-    "dimensions": ["ver", "Country"],
-    "timestamp": {
-      "type": "unix_ms",
-      "name": "timestamp_unix_ms"
-    }
-  },
-  {
-    "source": "test_mongo_antomation",
-    "pipeline_id": "test_mongo_pipeline_antomation_2",
+    "pipeline_id": "test_mongo_pipeline_antomation",
     "measurement_names": {"Clicks":  "clicks"},
     "values": {"Clicks":  "gauge"},
     "dimensions": {
