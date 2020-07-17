@@ -15,7 +15,7 @@ all: build-all test-all
 
 build-all: get-streamsets-libs build sleep setup-elastic setup-kafka
 
-test-all: test-antomation run-unit-tests test-destination test-api test-input test-pipelines
+test-all: run-unit-tests test-destination test-antomation test-api test-input test-pipelines
 
 ##-------------
 ## DEVELOPMENT

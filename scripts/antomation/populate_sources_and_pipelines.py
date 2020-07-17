@@ -5,8 +5,8 @@ import shutil
 import traceback
 
 from tempfile import NamedTemporaryFile
-from agent import pipeline, source
 from agent import cli
+from agent import pipeline, source
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 FAIL = '\033[91m'
@@ -83,19 +83,20 @@ def process(directory, checksum_file, create):
                 continue
             file_path = os.path.join(root, filename)
             if not should_update(checksum_file, filename, root):
-                print(f"Don't need to update {filename}")
+                print(f"Don't need to update {file_path}")
                 continue
             try:
                 print(f'Processing {file_path}')
                 with open(file_path) as file:
                     create(file)
+                print('Success')
             except Exception:
                 print(f'{FAIL}EXCEPTION:\n{ENDC}')
                 traceback.print_exc()
                 failed = True
                 continue
             update_checksum(checksum_file, filename, root)
-
+            print(f'Updated checksum for {file_path}')
     if failed:
         exit(1)
 

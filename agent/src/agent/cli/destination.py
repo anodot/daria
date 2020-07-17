@@ -78,6 +78,7 @@ def _start_monitoring_pipeline():
             pipeline_ = pipeline.manager.create_object('Monitoring', MONITORING_SOURCE_NAME)
             pipeline_manager = pipeline.manager.PipelineManager(pipeline_)
             click.secho('Starting Monitoring pipeline...')
+            # todo
             source.repository.create_dir()
             pipeline.repository.create_dir()
             pipeline_manager.create()
