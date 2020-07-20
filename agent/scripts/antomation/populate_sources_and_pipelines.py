@@ -1,4 +1,5 @@
 import hashlib
+import json
 import os
 import csv
 import shutil
@@ -16,22 +17,35 @@ PIPELINES_CHECKSUMS = os.environ.get('CHECKSUMS_DIR', os.path.join(ROOT_DIR, 'ch
 
 
 def populate_source_from_file(file):
+    exceptions = []
     for config in source.manager.extract_configs(file):
-        if 'name' not in config:
-            raise Exception('Source config should contain a source name')
-        if source.repository.exists(config['name']):
-            source.manager.edit_source_using_json(config)
-        else:
-            source.manager.create_source_from_json(config)
+        try:
+            if 'name' not in config:
+                raise Exception('Source config should contain a source name')
+            if source.repository.exists(config['name']):
+                source.manager.edit_source_using_json(config)
+            else:
+                source.manager.create_source_from_json(config)
+        except Exception as e:
+            exceptions.append(str(e))
+    if exceptions:
+        raise Exception(json.dumps(exceptions))
 
 
 def populate_pipeline_from_file(file):
-    configs = pipeline.manager.extract_configs(file)
-    for config in configs:
-        if pipeline.repository.exists(config['pipeline_id']):
-            pipeline.manager.edit_pipeline_using_json(config)
-        else:
-            pipeline.manager.create_pipeline_from_json(config)
+    exceptions = []
+    for config in pipeline.manager.extract_configs(file):
+        try:
+            if 'pipeline_id' not in config:
+                raise Exception('Pipeline config should contain a pipeline_id')
+            if pipeline.repository.exists(config['pipeline_id']):
+                pipeline.manager.edit_pipeline_using_json(config)
+            else:
+                pipeline.manager.create_pipeline_from_json(config)
+        except Exception as e:
+            exceptions.append(str(e))
+    if exceptions:
+        raise Exception(json.dumps(exceptions))
 
 
 def get_checksum(file_path):
