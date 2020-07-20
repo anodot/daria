@@ -16,7 +16,7 @@ def list_sources():
 def create():
     json = request.get_json()
     try:
-        source.manager.validate_json_for_create(json)
+        source.manager.validate_configs_for_create(json)
         source_instances = []
         for config in json:
             source_instances.append(source.manager.create_from_json(config).to_dict())
@@ -28,7 +28,7 @@ def create():
 @sources.route('/sources', methods=['PUT'])
 def edit():
     try:
-        source.manager.validate_json_for_edit(request.get_json())
+        source.manager.validate_configs_for_edit(request.get_json())
         source_instances = []
         for config in request.get_json():
             source_instances.append(source.manager.edit_using_json(config).to_dict())

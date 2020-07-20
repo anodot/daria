@@ -54,7 +54,7 @@ def get_pipelines_ids_complete(ctx, args, incomplete):
 def create_from_file(file):
     try:
         configs = json.load(file)
-        pipeline.manager.validate_json_for_create(configs)
+        pipeline.manager.validate_configs_for_create(configs)
         for config in configs:
             pipeline.manager.create_from_json(config)
             click.secho(f'Created pipeline {config["pipeline_id"]}', fg='green')

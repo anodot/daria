@@ -15,7 +15,7 @@ def create_source_obj(source_name: str, source_type: str) -> source.Source:
 
 def create_from_file(file):
     configs = extract_configs(file)
-    source.manager.validate_json_for_create(configs)
+    source.manager.validate_configs_for_create(configs)
 
     exceptions = {}
     sources = []
@@ -36,7 +36,7 @@ def create_from_file(file):
 
 def edit_using_file(file):
     configs = extract_configs(file)
-    source.manager.validate_json_for_edit(configs)
+    source.manager.validate_configs_for_edit(configs)
 
     exceptions = {}
     for config in configs:
@@ -72,7 +72,7 @@ def edit_using_json(config: dict) -> source.Source:
     return source_instance
 
 
-def validate_json_for_create(json_data: dict):
+def validate_configs_for_create(json_data: dict):
     schema = {
         'type': 'array',
         'items': source.json_schema
@@ -80,7 +80,11 @@ def validate_json_for_create(json_data: dict):
     jsonschema.validate(json_data, schema)
 
 
-def validate_json_for_edit(json_data: dict):
+def validate_config_for_create(json_data: dict):
+    jsonschema.validate(json_data, source.json_schema)
+
+
+def validate_configs_for_edit(json_data: dict):
     schema = {
         'type': 'array',
         'items': {
@@ -91,6 +95,18 @@ def validate_json_for_edit(json_data: dict):
             },
             'required': ['name', 'config']
         }
+    }
+    jsonschema.validate(json_data, schema)
+
+
+def validate_config_for_edit(json_data: dict):
+    schema = {
+        'type': 'object',
+        'properties': {
+            'name': {'type': 'string', 'minLength': 1, 'maxLength': 100, 'enum': source.repository.get_all()},
+            'config': {'type': 'object'}
+        },
+        'required': ['name', 'config']
     }
     jsonschema.validate(json_data, schema)
 

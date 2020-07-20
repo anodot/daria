@@ -24,7 +24,7 @@ def list_pipelines():
 def create():
     configs = request.get_json()
     try:
-        pipeline.manager.validate_json_for_create(configs)
+        pipeline.manager.validate_configs_for_create(configs)
         source_instances = []
         for config in configs:
             source_instances.append(pipeline.manager.create_from_json(config).to_dict())
