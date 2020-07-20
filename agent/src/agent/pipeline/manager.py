@@ -124,7 +124,7 @@ def get_prompter(source_type: str):
     return prompters[source_type]
 
 
-def validate_json_for_create(json: dict):
+def validate_configs_for_create(configs: dict):
     json_schema = {
         'type': 'array',
         'items': {
@@ -136,7 +136,19 @@ def validate_json_for_create(json: dict):
             'required': ['source', 'pipeline_id']
         }
     }
-    validate(json, json_schema)
+    validate(configs, json_schema)
+
+
+def validate_config_for_create(config: dict):
+    json_schema = {
+        'type': 'object',
+        'properties': {
+            'source': {'type': 'string', 'enum': source.repository.get_all()},
+            'pipeline_id': {'type': 'string', 'minLength': 1, 'maxLength': 100}
+        },
+        'required': ['source', 'pipeline_id']
+    }
+    validate(config, json_schema)
 
 
 def create_object(pipeline_id: str, source_name: str) -> Pipeline:
@@ -176,6 +188,10 @@ def start(pipeline_obj: Pipeline):
     if ENV_PROD:
         wait_for_sending_data(pipeline_obj.id)
         click.secho(f'{pipeline_obj.id} pipeline is sending data')
+
+
+def start_by_id(pipeline_id: str):
+    start(pipeline.repository.get(pipeline_id))
 
 
 def update(pipeline_obj: Pipeline):

@@ -5,6 +5,7 @@ import shutil
 import traceback
 
 from tempfile import NamedTemporaryFile
+from agent import cli
 from agent import pipeline, source
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -12,29 +13,43 @@ FAIL = '\033[91m'
 ENDC = '\033[0m'
 SOURCES = os.path.join(ROOT_DIR, 'sources')
 PIPELINES = os.path.join(ROOT_DIR, 'pipelines')
-SOURCES_CHECKSUMS = os.path.join(ROOT_DIR, 'checksums', 'sources.csv')
-PIPELINES_CHECKSUMS = os.path.join(ROOT_DIR, 'checksums', 'pipelines.csv')
+SOURCES_CHECKSUMS = os.environ.get('CHECKSUMS_DIR', os.path.join(ROOT_DIR, 'checksums', 'sources.csv'))
+PIPELINES_CHECKSUMS = os.environ.get('CHECKSUMS_DIR', os.path.join(ROOT_DIR, 'checksums', 'pipelines.csv'))
 
 
 def populate_source_from_file(file):
-    for config in source.manager.extract_source_configs(file):
+    for config in source.manager.extract_configs(file):
         if 'name' not in config:
             raise Exception('Source config should contain a source name')
         if source.repository.exists(config['name']):
-            edit_source_using_file(file)
+            # todo code duplicate, refactor
+            source.manager.validate_config_for_edit(config)
+            source.manager.edit_using_json(config)
+            for pipeline_obj in pipeline.repository.get_by_source(config['name']):
+                try:
+                    pipeline.manager.update(pipeline_obj)
+                except pipeline.pipeline.PipelineException as e:
+                    print(str(e))
+                    continue
+                print(f'Pipeline {pipeline_obj.id} updated')
         else:
-            create_source_from_file(file)
+            source.manager.validate_config_for_create(config)
+            source.manager.create_from_json(config)
 
 
 def populate_pipeline_from_file(file):
-    for config in extract_pipeline_configs(file):
+    configs = cli.pipeline.extract_configs(file)
+    for config in configs:
         if 'pipeline_id' not in config:
             raise Exception('Pipeline config should contain a pipeline_id')
         if pipeline.repository.exists(config['pipeline_id']):
-            edit_pipeline_using_file(file)
+            pipeline.manager.edit_using_json(config)
         else:
-            create_pipeline_from_file(file)
-            start_pipeline(['-f', file.name])
+            # todo code duplicate, refactor
+            pipeline.manager.validate_config_for_create(config)
+            pipeline.manager.start_by_id(
+                pipeline.manager.create_from_json(config).id
+            )
 
 
 def get_checksum(file_path):
@@ -82,19 +97,20 @@ def process(directory, checksum_file, create):
                 continue
             file_path = os.path.join(root, filename)
             if not should_update(checksum_file, filename, root):
-                print(f"Don't need to update {filename}")
+                print(f"Don't need to update {file_path}")
                 continue
             try:
                 print(f'Processing {file_path}')
                 with open(file_path) as file:
                     create(file)
+                print('Success')
             except Exception:
                 print(f'{FAIL}EXCEPTION:\n{ENDC}')
                 traceback.print_exc()
                 failed = True
                 continue
             update_checksum(checksum_file, filename, root)
-
+            print(f'Updated checksum for {file_path}')
     if failed:
         exit(1)
 
