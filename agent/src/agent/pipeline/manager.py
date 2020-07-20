@@ -216,7 +216,6 @@ def create_pipeline_from_json(config: dict) -> Pipeline:
     pipeline_manager.validate_config()
     pipeline_manager.create()
     print(f'Pipeline {pipeline_manager.pipeline.id} created')
-    pipeline.manager.start(pipeline_manager.pipeline)
     return pipeline_manager.pipeline
 
 

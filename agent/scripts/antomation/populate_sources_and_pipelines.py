@@ -41,7 +41,8 @@ def populate_pipeline_from_file(file):
             if pipeline.repository.exists(config['pipeline_id']):
                 pipeline.manager.edit_pipeline_using_json(config)
             else:
-                pipeline.manager.create_pipeline_from_json(config)
+                pipeline_ = pipeline.manager.create_pipeline_from_json(config)
+                pipeline.manager.start(pipeline_)
         except Exception as e:
             exceptions.append(str(e))
     if exceptions:
