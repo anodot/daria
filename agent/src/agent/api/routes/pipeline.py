@@ -22,33 +22,29 @@ def list_pipelines():
 @pipelines.route('/pipelines', methods=['POST'])
 @routes.needs_destination
 def create():
-    configs = request.get_json()
     try:
-        pipeline.manager.validate_configs_for_create(configs)
-        source_instances = []
-        for config in configs:
-            source_instances.append(pipeline.manager.create_from_json(config).to_dict())
+        pipelines_ = pipeline.manager.create_from_json(request.get_json())
     except (
-            ValidationError, source.SourceNotExists, source.SourceConfigDeprecated, requests.exceptions.ConnectionError
+        ValidationError, source.SourceNotExists, source.SourceConfigDeprecated, requests.exceptions.ConnectionError
     ) as e:
         return jsonify(str(e)), 400
     except pipeline.PipelineException as e:
         return jsonify(str(e)), 500
-    return jsonify(source_instances)
+    return jsonify(list(map(lambda x: x.to_dict(), pipelines_)))
 
 
 @pipelines.route('/pipelines', methods=['PUT'])
 def edit():
     try:
-        pipeline_instances = []
-        for config in request.get_json():
-            pipeline_instances.append(pipeline.manager.edit_using_json(config).to_dict())
+        pipelines_ = pipeline.manager.edit_using_json(request.get_json())
     except (
         ValidationError, source.SourceNotExists, source.SourceConfigDeprecated,
         requests.exceptions.ConnectionError, pipeline.repository.PipelineNotExistsException
     ) as e:
         return jsonify(str(e)), 400
-    return jsonify(pipeline_instances)
+    except pipeline.PipelineException as e:
+        return jsonify(str(e)), 500
+    return jsonify(list(map(lambda x: x.to_dict(), pipelines_)))
 
 
 @pipelines.route('/pipelines/<pipeline_id>', methods=['DELETE'])

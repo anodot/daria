@@ -1,8 +1,8 @@
 import json
 import jsonschema
 
+from typing import List
 from agent import pipeline
-from agent.constants import ENV_PROD
 from agent import source
 from agent.streamsets_api_client import api_client
 
@@ -14,62 +14,63 @@ def create_source_obj(source_name: str, source_type: str) -> source.Source:
 
 
 def create_from_file(file):
-    configs = extract_configs(file)
-    source.manager.validate_configs_for_create(configs)
+    create_from_json(extract_configs(file))
 
+
+def edit_using_file(file):
+    edit_using_json(extract_configs(file))
+
+
+def create_from_json(configs: dict) -> List[source.Source]:
+    validate_configs_for_create(configs)
     exceptions = {}
     sources = []
     for config in configs:
         try:
             sources.append(
-                source.manager.create_from_json(config)
+                create_source_from_json(config)
             )
-            # click.secho(f"Source {config['name']} created")
+            print(f"Source {config['name']} created")
         except Exception as e:
-            if not ENV_PROD:
-                raise e
             exceptions[config['name']] = str(e)
     if exceptions:
         raise source.SourceException(json.dumps(exceptions))
     return sources
 
 
-def edit_using_file(file):
-    configs = extract_configs(file)
-    source.manager.validate_configs_for_edit(configs)
+def create_source_from_json(config: dict) -> source.Source:
+    source.manager.validate_config_for_create(config)
+    source_ = source.manager.create_source_obj(config['name'], config['type'])
+    source_.set_config(config['config'])
+    source.validator.validate(source_)
+    source.repository.create(source_)
+    return source_
 
+
+def edit_using_json(configs: dict) -> List[source.Source]:
+    validate_configs_for_edit(configs)
     exceptions = {}
+    sources = []
     for config in configs:
         try:
-            source.manager.edit_using_json(config)
-            # click.secho(f"Source {config['name']} updated")
-            for pipeline_obj in pipeline.repository.get_by_source(config['name']):
-                try:
-                    pipeline.manager.update(pipeline_obj)
-                except pipeline.pipeline.PipelineException as e:
-                    print(str(e))
-                    continue
-                print(f'Pipeline {pipeline_obj.id} updated')
+            source_ = edit_source_using_json(config)
+            print(f"Source {config['name']} updated")
+            sources.append(source_)
+            pipeline.manager.update_source_pipelines(source_)
         except Exception as e:
             exceptions[config['name']] = str(e)
     if exceptions:
         raise source.SourceException(json.dumps(exceptions))
+    return sources
 
 
-def create_from_json(config: dict) -> source.Source:
-    source_instance = source.manager.create_source_obj(config['name'], config['type'])
-    source_instance.set_config(config['config'])
-    source.validator.validate(source_instance)
-    source.repository.create(source_instance)
-    return source_instance
-
-
-def edit_using_json(config: dict) -> source.Source:
-    source_instance = source.repository.get(config['name'])
-    source_instance.set_config(config['config'])
-    source.validator.validate(source_instance)
-    source.repository.update(source_instance)
-    return source_instance
+def edit_source_using_json(config: dict) -> source.Source:
+    source.manager.validate_config_for_edit(config)
+    source_ = source.repository.get(config['name'])
+    source_.set_config(config['config'])
+    source.validator.validate(source_)
+    source.repository.update(source_)
+    return source_
 
 
 def validate_configs_for_create(json_data: dict):
