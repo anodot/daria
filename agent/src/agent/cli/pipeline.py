@@ -1,5 +1,3 @@
-from typing import List
-
 import click
 import json
 
@@ -53,19 +51,14 @@ def get_pipelines_ids_complete(ctx, args, incomplete):
     return [p['pipelineId'] for p in api_client.get_pipelines() if incomplete in p['pipelineId']]
 
 
-def create_from_file(file) -> List[pipeline.Pipeline]:
+def create_from_file(file):
     try:
         configs = json.load(file)
         pipeline.manager.validate_configs_for_create(configs)
-        pipelines = []
         for config in configs:
-            pipelines.append(
-                pipeline.manager.create_from_json(config)
-            )
             click.secho(f'Created pipeline {config["pipeline_id"]}', fg='green')
     except (StreamSetsApiClientException, ValidationError, PipelineException) as e:
         raise click.ClickException(str(e))
-    return pipelines
 
 
 @click.command()
