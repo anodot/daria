@@ -29,7 +29,7 @@ class TestInflux:
                         'db': 'test',
                     }
                 }],
-                'er': b'"Source config influx already exists"\n',
+                'er': b'"{\\"influx\\": \\"Source config influx already exists\\"}"\n',
             },
         ],
         'test_edit': [

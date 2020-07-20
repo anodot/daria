@@ -2,7 +2,7 @@ import pytest
 
 from .fixtures import cli_runner
 from agent import cli
-from agent import destination
+from agent import destination, pipeline
 from agent.streamsets_api_client import api_client
 
 WAITING_TIME = 3
@@ -12,7 +12,6 @@ WAITING_TIME = 3
 def host_id(monkeypatch):
     def constant_host_id(length=10):
         return 'ABCDEF'
-
     monkeypatch.setattr(destination.HttpDestination, 'generate_host_id', constant_host_id)
 
 
@@ -22,7 +21,7 @@ def test_destination(cli_runner):
     print(result.output)
     assert result.exit_code == 0
     assert destination.HttpDestination.exists()
-    assert api_client.get_pipeline_status('Monitoring')['status'] == 'RUNNING'
+    assert api_client.get_pipeline_status(pipeline.MONITORING)['status'] == 'RUNNING'
 
 
 def test_edit_destination(cli_runner):
@@ -32,7 +31,7 @@ def test_edit_destination(cli_runner):
     curr_dest = destination.HttpDestination.get()
     assert result.exit_code == 0
     assert curr_dest.host_id == prev_dest.host_id
-    assert api_client.get_pipeline_status('Monitoring')['status'] == 'RUNNING'
+    assert api_client.get_pipeline_status(pipeline.MONITORING)['status'] == 'RUNNING'
 
 
 def test_update(cli_runner):

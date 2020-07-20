@@ -1,12 +1,11 @@
 import click
-import json
 
 from agent import pipeline, source
 from agent.pipeline import PipelineException
 from agent.streamsets_api_client import api_client, StreamSetsApiClientException
 from agent.destination import HttpDestination
 from agent.tools import infinite_retry
-from jsonschema import validate as validate_json, ValidationError
+from jsonschema import ValidationError
 from texttable import Texttable
 
 
@@ -54,14 +53,14 @@ def start(pipeline_id, file):
     if not file and not pipeline_id:
         raise click.UsageError('Specify pipeline id or file')
 
-    pipeline_ids = [item['pipeline_id'] for item in _extract_configs(file)] if file else [pipeline_id]
+    pipeline_ids = [item['pipeline_id'] for item in pipeline.manager.extract_configs(file)] if file else [pipeline_id]
 
     for pipeline_id in pipeline_ids:
         try:
             p = pipeline.repository.get(pipeline_id)
             click.echo(f'Pipeline {pipeline_id} is starting...')
             pipeline.manager.start(p)
-        except (StreamSetsApiClientException, pipeline.pipeline.PipelineException) as e:
+        except (StreamSetsApiClientException, pipeline.PipelineException) as e:
             click.secho(str(e), err=True, fg='red')
             continue
 
@@ -73,13 +72,13 @@ def stop(pipeline_id, file):
     if not file and not pipeline_id:
         raise click.UsageError('Specify pipeline id or file')
 
-    pipeline_ids = [item['pipeline_id'] for item in _extract_configs(file)] if file else [pipeline_id]
+    pipeline_ids = [item['pipeline_id'] for item in pipeline.manager.extract_configs(file)] if file else [pipeline_id]
 
     for pipeline_id in pipeline_ids:
         try:
             pipeline.manager.stop_by_id(pipeline_id)
             click.secho(f'Pipeline {pipeline_id} is stopped', fg='green')
-        except (StreamSetsApiClientException, pipeline.pipeline.PipelineException) as e:
+        except (StreamSetsApiClientException, pipeline.PipelineException) as e:
             click.secho(str(e), err=True, fg='red')
             continue
 
@@ -91,7 +90,7 @@ def force_stop(pipeline_id):
         click.echo('Force pipeline stopping...')
         pipeline.manager.force_stop_pipeline(pipeline_id)
         click.secho('Pipeline is stopped', fg='green')
-    except (StreamSetsApiClientException, pipeline.pipeline.PipelineException) as e:
+    except (StreamSetsApiClientException, pipeline.PipelineException) as e:
         click.secho(str(e), err=True, fg='red')
         return
 
@@ -103,16 +102,16 @@ def delete(pipeline_id, file):
     if not file and not pipeline_id:
         raise click.UsageError('Specify pipeline id or file')
 
-    pipeline_ids = [item['pipeline_id'] for item in _extract_configs(file)] if file else [pipeline_id]
+    pipeline_ids = [item['pipeline_id'] for item in pipeline.manager.extract_configs(file)] if file else [pipeline_id]
 
     for pipeline_id in pipeline_ids:
         try:
             pipeline.manager.delete(pipeline.repository.get(pipeline_id))
             click.echo(f'Pipeline {pipeline_id} deleted')
-        except pipeline.pipeline.PipelineNotExistsException:
+        except pipeline.PipelineNotExistsException:
             pipeline.manager.delete_by_id(pipeline_id)
             click.echo(f'Pipeline {pipeline_id} deleted')
-        except (StreamSetsApiClientException, pipeline.pipeline.PipelineException) as e:
+        except (StreamSetsApiClientException, pipeline.PipelineException) as e:
             click.secho(str(e), err=True, fg='red')
             continue
 
@@ -212,7 +211,7 @@ def update():
         try:
             pipeline.manager.update(p)
             click.secho(f'Pipeline {p.id} updated', fg='green')
-        except pipeline.pipeline.PipelineException as e:
+        except pipeline.PipelineException as e:
             print(str(e))
             continue
 
@@ -224,11 +223,7 @@ def pipeline_group():
 
 def _create_from_file(file):
     try:
-        configs = json.load(file)
-        pipeline.manager.validate_json_for_create(configs)
-        for config in configs:
-            pipeline.manager.create_from_json(config)
-            click.secho(f'Created pipeline {config["pipeline_id"]}', fg='green')
+        pipeline.manager.create_from_file(file)
     except (StreamSetsApiClientException, ValidationError, PipelineException) as e:
         raise click.ClickException(str(e))
 
@@ -250,13 +245,10 @@ def _prompt(advanced: bool, sources: list):
 
 
 def _edit_using_file(file):
-    for config in _extract_configs(file):
-        try:
-            pipeline.manager.edit_using_json(config)
-        except pipeline.pipeline.PipelineNotExistsException:
-            raise click.UsageError(f'{config["pipeline_id"]} does not exist')
-
-        click.secho('Updated pipeline {}'.format(config['pipeline_id']), fg='green')
+    try:
+        pipeline.manager.edit_using_file(file)
+    except PipelineException as e:
+        raise click.UsageError(str(e))
 
 
 def _prompt_edit(advanced, pipeline_id):
@@ -303,24 +295,6 @@ def _check_destination():
 
 def _get_default_source(sources):
     return sources[0] if len(sources) == 1 else None
-
-
-def _extract_configs(file):
-    data = json.load(file)
-    file.seek(0)
-
-    json_schema = {
-        'type': 'array',
-        'items': {
-            'type': 'object',
-            'properties': {
-                'pipeline_id': {'type': 'string', 'minLength': 1, 'maxLength': 100}
-            },
-            'required': ['pipeline_id']
-        }
-    }
-    validate_json(data, json_schema)
-    return data
 
 
 def _build_table(header, data, get_row, *args):

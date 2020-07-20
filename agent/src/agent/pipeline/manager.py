@@ -5,6 +5,7 @@ import os
 import shutil
 import time
 import agent.pipeline.config.handlers as config_handlers
+import jsonschema
 
 from agent import pipeline
 from agent.pipeline.config.validators import get_config_validator
@@ -12,13 +13,13 @@ from agent.pipeline import prompt, load_client_data
 from .. import destination
 from agent import source
 from agent.anodot_api_client import AnodotApiClient
-from agent.constants import ERRORS_DIR, ENV_PROD
+from agent.constants import ERRORS_DIR, ENV_PROD, MONITORING_SOURCE_NAME
 from agent.streamsets_api_client import api_client, StreamSetsApiClientException
 from agent.tools import print_json, sdc_record_map_to_dict, if_validation_enabled
 from .. import proxy
 from .pipeline import Pipeline, PipelineException
-from jsonschema import validate
 from agent.logger import get_logger
+from typing import List
 
 
 logger = get_logger(__name__)
@@ -47,12 +48,10 @@ class PipelineManager:
             pipeline_obj = api_client.create_pipeline(self.pipeline.id)
             new_config = self.sdc_creator.override_base_config(new_uuid=pipeline_obj['uuid'],
                                                                new_title=self.pipeline.id)
-
             api_client.update_pipeline(self.pipeline.id, new_config)
         except (config_handlers.base.ConfigHandlerException, StreamSetsApiClientException) as e:
             delete(self.pipeline)
             raise pipeline.PipelineException(str(e))
-
         pipeline.repository.save(self.pipeline)
 
     @if_validation_enabled
@@ -129,7 +128,25 @@ def get_prompter(source_type: str):
     return prompters[source_type]
 
 
-def validate_json_for_create(json_data: dict):
+def extract_configs(file):
+    data = json.load(file)
+    file.seek(0)
+
+    json_schema = {
+        'type': 'array',
+        'items': {
+            'type': 'object',
+            'properties': {
+                'pipeline_id': {'type': 'string', 'minLength': 1, 'maxLength': 100}
+            },
+            'required': ['pipeline_id']
+        }
+    }
+    jsonschema.validate(data, json_schema)
+    return data
+
+
+def validate_configs_for_create(configs: dict):
     json_schema = {
         'type': 'array',
         'items': {
@@ -141,7 +158,19 @@ def validate_json_for_create(json_data: dict):
             'required': ['source', 'pipeline_id']
         }
     }
-    validate(json_data, json_schema)
+    jsonschema.validate(configs, json_schema)
+
+
+def validate_config_for_create(config: dict):
+    json_schema = {
+        'type': 'object',
+        'properties': {
+            'source': {'type': 'string', 'enum': source.repository.get_all()},
+            'pipeline_id': {'type': 'string', 'minLength': 1, 'maxLength': 100}
+        },
+        'required': ['source', 'pipeline_id']
+    }
+    jsonschema.validate(config, json_schema)
 
 
 def create_object(pipeline_id: str, source_name: str) -> Pipeline:
@@ -158,16 +187,56 @@ def check_pipeline_id(pipeline_id: str):
         raise PipelineException(f"Pipeline {pipeline_id} already exists")
 
 
-def create_from_json(config: dict) -> Pipeline:
-    check_pipeline_id(config['pipeline_id'])
+def create_from_file(file):
+    create_from_json(json.load(file))
+
+
+def edit_using_file(file):
+    edit_using_json(extract_configs(file))
+
+
+def create_from_json(configs: dict) -> List[Pipeline]:
+    validate_configs_for_create(configs)
+    exceptions = {}
+    pipelines = []
+    for config in configs:
+        try:
+            check_pipeline_id(config['pipeline_id'])
+            pipeline_ = create_pipeline_from_json(config)
+            pipelines.append(pipeline_)
+        except Exception as e:
+            exceptions[config['name']] = str(e)
+        if exceptions:
+            raise pipeline.PipelineException(json.dumps(exceptions))
+    return pipelines
+
+
+def create_pipeline_from_json(config: dict) -> Pipeline:
+    validate_config_for_create(config)
     pipeline_manager = PipelineManager(create_object(config['pipeline_id'], config['source']))
     pipeline_manager.load_config(config)
     pipeline_manager.validate_config()
     pipeline_manager.create()
+    print(f'Pipeline {pipeline_manager.pipeline.id} created')
     return pipeline_manager.pipeline
 
 
-def edit_using_json(config: dict) -> Pipeline:
+def edit_using_json(configs: dict) -> List[Pipeline]:
+    exceptions = {}
+    pipelines = []
+    for config in configs:
+        try:
+            pipelines.append(
+                edit_pipeline_using_json(config)
+            )
+        except Exception as e:
+            exceptions[config['name']] = str(e)
+        if exceptions:
+            raise pipeline.PipelineException(json.dumps(exceptions))
+    return pipelines
+
+
+def edit_pipeline_using_json(config: dict) -> Pipeline:
     pipeline_manager = PipelineManager(pipeline.repository.get(config['pipeline_id']))
     pipeline_manager.load_config(config, edit=True)
     update(pipeline_manager.pipeline)
@@ -201,6 +270,16 @@ def update(pipeline_obj: Pipeline):
     pipeline.repository.save(pipeline_obj)
     if start_pipeline:
         start(pipeline_obj)
+
+
+def update_source_pipelines(source_: source.Source):
+    for pipeline_ in pipeline.repository.get_by_source(source_.name):
+        try:
+            pipeline.manager.update(pipeline_)
+        except pipeline.PipelineException as e:
+            print(str(e))
+            continue
+        print(f'Pipeline {pipeline_.id} updated')
 
 
 def create(pipeline_obj: Pipeline):
@@ -396,14 +475,19 @@ def _get_test_pipeline_name(source_: source.Source) -> str:
     return _get_test_pipeline_file_name(source_) + source_.name
 
 
-def update_source_pipelines(source_name: str):
-    for pipeline_obj in pipeline.repository.get_by_source(source_name):
-        try:
-            pipeline.manager.update(pipeline_obj)
-        except pipeline.pipeline.PipelineException as e:
-            print(str(e))
-            continue
-        print(f'Pipeline {pipeline_obj.id} updated')
+def start_monitoring_pipeline():
+    pipeline_ = pipeline.manager.create_object(pipeline.MONITORING, MONITORING_SOURCE_NAME)
+    pipeline_manager = pipeline.manager.PipelineManager(pipeline_)
+    # todo
+    source.repository.create_dir()
+    pipeline.repository.create_dir()
+    pipeline_manager.create()
+    pipeline.manager.start(pipeline_)
+
+
+def update_monitoring_pipeline():
+    pipeline_ = pipeline.repository.get(pipeline.MONITORING)
+    pipeline.manager.update(pipeline_)
 
 
 class PipelineFreezeException(Exception):

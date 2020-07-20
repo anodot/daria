@@ -18,4 +18,5 @@ MONITORING_SOURCE_NAME = 'monitoring'
 
 VALIDATION_ENABLED = True if os.environ.get('VALIDATION_ENABLED') == 'true' else False
 
+# todo this constant is wrong
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
