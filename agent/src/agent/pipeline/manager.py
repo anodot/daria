@@ -473,16 +473,6 @@ def _get_test_pipeline_name(source_: source.Source) -> str:
     return _get_test_pipeline_file_name(source_) + source_.name
 
 
-def update_source_pipelines(source_name: str):
-    for pipeline_obj in pipeline.repository.get_by_source(source_name):
-        try:
-            pipeline.manager.update(pipeline_obj)
-        except pipeline.PipelineException as e:
-            print(str(e))
-            continue
-        print(f'Pipeline {pipeline_obj.id} updated')
-
-
 def start_monitoring_pipeline():
     pipeline_ = pipeline.manager.create_object(pipeline.MONITORING, MONITORING_SOURCE_NAME)
     pipeline_manager = pipeline.manager.PipelineManager(pipeline_)

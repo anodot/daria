@@ -44,8 +44,11 @@ def create(advanced, file):
 def edit(name, advanced, file):
     if not file and not name:
         raise click.UsageError('Specify source name or file path')
-    _edit_using_file(file) if file else _prompt_edit(name, advanced)
-    pipeline.manager.update_source_pipelines(name)
+    if file:
+        _edit_using_file(file)
+    else:
+        source_ = _prompt_edit(name, advanced)
+        pipeline.manager.update_source_pipelines(source_)
 
 
 @click.command()
@@ -86,13 +89,13 @@ def _edit_using_file(file):
         raise click.UsageError(str(e))
 
 
-def _prompt_edit(name: str, advanced: bool):
+def _prompt_edit(name: str, advanced: bool) -> source.Source:
     source_ = source.repository.get(name)
     builder = source_builders.get_builder(source_.name, source_.type)
-    source.repository.update(
-        builder.prompt(source_.config, advanced=advanced)
-    )
+    source_ = builder.prompt(source_.config, advanced=advanced)
+    source.repository.update(source_)
     click.secho('Source config updated', fg='green')
+    return source_
 
 
 def _prompt_source_type():
