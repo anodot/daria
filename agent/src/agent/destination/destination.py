@@ -3,13 +3,10 @@ import json
 import os
 import urllib.parse
 import uuid
-import requests
 
 from typing import Dict, Optional
-from agent import validator
 from agent.constants import ANODOT_API_URL, DATA_DIR
 from agent.proxy import Proxy
-from result import Result, Ok, Err
 
 
 class HttpDestination:
@@ -90,7 +87,7 @@ class HttpDestination:
 
     @property
     def resource_url(self) -> Optional[str]:
-        return self.config.get(self.CONFIG_RESOURCE_URL, None)
+        return self.config.get(self.CONFIG_RESOURCE_URL)
 
     @resource_url.setter
     def resource_url(self, resource_url: str):
@@ -98,7 +95,7 @@ class HttpDestination:
 
     @property
     def monitoring_url(self) -> Optional[str]:
-        return self.config.get(self.CONFIG_MONITORING_URL, None)
+        return self.config.get(self.CONFIG_MONITORING_URL)
 
     @monitoring_url.setter
     def monitoring_url(self, monitoring_url: str):
@@ -153,66 +150,3 @@ def build_urls(destination_url: str, data_collection_token: str) -> (str, str):
         destination_url, f'api/v1/metrics?token={data_collection_token}&protocol={HttpDestination.PROTOCOL_20}')
     monitoring_url = urllib.parse.urljoin(destination_url, f'api/v1/agents?token={data_collection_token}')
     return resource_url, monitoring_url
-
-
-def create(
-    token: str,
-    url: str,
-    access_key: str = None,
-    proxy_host: str = None,
-    proxy_username: str = None,
-    proxy_password: str = None,
-    host_id: str = None,
-) -> Result[HttpDestination, str]:
-    return _build(HttpDestination(), token, url, access_key, proxy_host, proxy_username, proxy_password, host_id)
-
-
-def edit(
-    destination: HttpDestination,
-    token: str,
-    url: str,
-    access_key: str = None,
-    proxy_host: str = None,
-    proxy_username: str = None,
-    proxy_password: str = None,
-    host_id: str = None,
-) -> Result[HttpDestination, str]:
-    return _build(destination, token, url, access_key, proxy_host, proxy_username, proxy_password, host_id)
-
-
-def _build(
-    destination: HttpDestination,
-    token: str,
-    url: str,
-    access_key: str = None,
-    proxy_host: str = None,
-    proxy_username: str = None,
-    proxy_password: str = None,
-    host_id: str = None,
-) -> Result[HttpDestination, str]:
-    proxy = Proxy(proxy_host, proxy_username, proxy_password) if proxy_host else None
-    if proxy:
-        if not validator.proxy.is_valid(proxy):
-            return Err('Proxy data is invalid')
-        destination.proxy = proxy
-    if url:
-        try:
-            validator.destination.is_valid_destination_url(url, destination.proxy)
-        except validator.destination.ValidationException as e:
-            return Err('Destination url validation failed: ' + str(e))
-        destination.url = url
-    if token:
-        resource_url, monitoring_url = build_urls(destination.url, token)
-        if not validator.destination.is_valid_resource_url(resource_url):
-            return Err('Data collection token is invalid')
-        destination.token = token
-        destination.resource_url = resource_url
-        destination.monitoring_url = monitoring_url
-    if access_key:
-        if not validator.destination.is_valid_access_key(access_key, destination.url):
-            return Err('Access key is invalid')
-        destination.access_key = access_key
-    if host_id:
-        destination.host_id = host_id
-    destination.save()
-    return Ok(destination)

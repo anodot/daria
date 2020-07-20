@@ -3,6 +3,8 @@ from agent.constants import HOSTNAME
 from agent.destination import HttpDestination
 from enum import Enum
 
+MONITORING = 'Monitoring'
+
 
 class PipelineException(Exception):
     pass

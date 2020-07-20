@@ -18,7 +18,7 @@ def create():
     form = DestinationForm.from_json(request.get_json())
     if not form.validate():
         return form.errors, 400
-    result = agent.destination.create(
+    result = agent.destination.manager.create(
         form.data_collection_token.data,
         form.destination_url.data,
         form.access_key.data,
@@ -39,7 +39,7 @@ def edit():
     form = EditDestinationForm.from_json(request.get_json())
     if not form.validate():
         return form.errors, 400
-    result = agent.destination.edit(
+    result = agent.destination.manager.edit(
         agent.destination.HttpDestination.get(),
         form.data_collection_token.data,
         form.destination_url.data,
@@ -57,5 +57,5 @@ def edit():
 @destination.route('/destination', methods=['DELETE'])
 def delete():
     if agent.destination.HttpDestination.exists():
-        agent.destination.HttpDestination.get().delete()
-    return 'success', 200
+        agent.destination.manager.delete()
+    return '', 200
