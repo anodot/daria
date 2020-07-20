@@ -73,6 +73,6 @@ def _build(
 
 
 def delete():
-    pipeline.manager.stop_by_id('Monitoring')
-    pipeline.manager.delete_by_id('Monitoring')
+    pipeline.manager.stop_by_id(pipeline.MONITORING)
+    pipeline.manager.delete_by_id(pipeline.MONITORING)
     destination.HttpDestination.get().delete()

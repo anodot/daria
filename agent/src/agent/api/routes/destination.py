@@ -1,23 +1,24 @@
-from agent import destination
+import agent.destination
+
 from flask import Blueprint, request
 from agent.api.forms.destination import DestinationForm, EditDestinationForm
 
-destination_ = Blueprint('destination', __name__)
+destination = Blueprint('destination', __name__)
 
 
-@destination_.route('/destination', methods=['GET'])
+@destination.route('/destination', methods=['GET'])
 def get():
-    if not destination.destination.HttpDestination.exists():
+    if not agent.destination.HttpDestination.exists():
         return 'Destination doesn\'t exist', 404
-    return destination.destination.HttpDestination.get().to_dict(), 200
+    return agent.destination.HttpDestination.get().to_dict(), 200
 
 
-@destination_.route('/destination', methods=['POST'])
+@destination.route('/destination', methods=['POST'])
 def create():
     form = DestinationForm.from_json(request.get_json())
     if not form.validate():
         return form.errors, 400
-    result = destination.manager.create(
+    result = agent.destination.manager.create(
         form.data_collection_token.data,
         form.destination_url.data,
         form.access_key.data,
@@ -31,15 +32,15 @@ def create():
     return result.value.to_dict(), 200
 
 
-@destination_.route('/destination', methods=['PUT'])
+@destination.route('/destination', methods=['PUT'])
 def edit():
-    if not destination.destination.HttpDestination.exists():
+    if not agent.destination.HttpDestination.exists():
         return 'Destination doesn\'t exist', 400
     form = EditDestinationForm.from_json(request.get_json())
     if not form.validate():
         return form.errors, 400
-    result = destination.manager.edit(
-        destination.destination.HttpDestination.get(),
+    result = agent.destination.manager.edit(
+        agent.destination.HttpDestination.get(),
         form.data_collection_token.data,
         form.destination_url.data,
         form.access_key.data,
@@ -53,8 +54,8 @@ def edit():
     return result.value.to_dict(), 200
 
 
-@destination_.route('/destination', methods=['DELETE'])
+@destination.route('/destination', methods=['DELETE'])
 def delete():
-    if destination.HttpDestination.exists():
-        destination.manager.delete()
+    if agent.destination.HttpDestination.exists():
+        agent.destination.manager.delete()
     return '', 200

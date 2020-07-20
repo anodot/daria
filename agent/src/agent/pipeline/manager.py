@@ -402,7 +402,7 @@ def update_source_pipelines(source_name: str):
 
 
 def start_monitoring_pipeline():
-    pipeline_ = pipeline.manager.create_object('Monitoring', MONITORING_SOURCE_NAME)
+    pipeline_ = pipeline.manager.create_object(pipeline.MONITORING, MONITORING_SOURCE_NAME)
     pipeline_manager = pipeline.manager.PipelineManager(pipeline_)
     # todo
     source.repository.create_dir()
@@ -412,7 +412,7 @@ def start_monitoring_pipeline():
 
 
 def update_monitoring_pipeline():
-    pipeline_ = pipeline.repository.get('Monitoring')
+    pipeline_ = pipeline.repository.get(pipeline.MONITORING)
     pipeline.manager.update(pipeline_)
 
 

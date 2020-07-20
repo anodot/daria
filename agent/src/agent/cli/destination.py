@@ -96,7 +96,7 @@ def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, a
 
     click.secho('Connection to Anodot established')
     try:
-        if pipeline.repository.exists('Monitoring'):
+        if pipeline.repository.exists(pipeline.MONITORING):
             click.secho('Updating Monitoring pipeline...')
             pipeline.manager.update_monitoring_pipeline()
         else:
