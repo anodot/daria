@@ -53,11 +53,7 @@ def get_pipelines_ids_complete(ctx, args, incomplete):
 
 def create_from_file(file):
     try:
-        configs = json.load(file)
-        pipeline.manager.validate_configs_for_create(configs)
-        for config in configs:
-            pipeline.manager.create_from_json(config)
-            click.secho(f'Created pipeline {config["pipeline_id"]}', fg='green')
+        pipeline.manager.create_from_file(file)
     except (StreamSetsApiClientException, ValidationError, PipelineException) as e:
         raise click.ClickException(str(e))
 
@@ -112,13 +108,10 @@ def get_default_source(sources):
 
 
 def edit_using_file(file):
-    for config in pipeline.manager.extract_configs(file):
-        try:
-            pipeline.manager.edit_using_json(config)
-        except pipeline.PipelineNotExistsException:
-            raise click.UsageError(f'{config["pipeline_id"]} does not exist')
-
-        click.secho('Updated pipeline {}'.format(config['pipeline_id']), fg='green')
+    try:
+        pipeline.manager.edit_using_file(file)
+    except PipelineException as e:
+        raise click.UsageError(str(e))
 
 
 @click.command()

@@ -64,8 +64,7 @@ def _prompt_source_name():
 
 def _create_from_file(file):
     try:
-        sources = source.manager.create_from_file(file)
-        click.secho(f"Created sources: {', '.join(map(lambda x: x.name, sources))}")
+        source.manager.create_from_file(file)
     except (ValidationError, SchemaError) as e:
         raise click.ClickException(str(e))
 
@@ -83,7 +82,6 @@ def _prompt(advanced: bool):
 def _edit_using_file(file):
     try:
         source.manager.edit_using_file(file)
-        return
     except (ValidationError, SchemaError) as e:
         raise click.UsageError(str(e))
 

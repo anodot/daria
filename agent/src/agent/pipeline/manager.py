@@ -1,5 +1,7 @@
 import json
 import logging
+from typing import List
+
 import click
 import os
 import shutil
@@ -183,16 +185,57 @@ def check_pipeline_id(pipeline_id: str):
         raise PipelineException(f"Pipeline {pipeline_id} already exists")
 
 
-def create_from_json(config: dict) -> Pipeline:
-    check_pipeline_id(config['pipeline_id'])
+def create_from_file(file):
+    create_from_json(json.load(file))
+
+
+def edit_using_file(file):
+    edit_using_json(extract_configs(file))
+
+
+def create_from_json(configs: dict) -> List[Pipeline]:
+    validate_configs_for_create(configs)
+    exceptions = {}
+    pipelines = []
+    for config in configs:
+        try:
+            check_pipeline_id(config['pipeline_id'])
+            pipeline_ = create_pipeline_from_json(config)
+            pipelines.append(pipeline_)
+        except Exception as e:
+            exceptions[config['name']] = str(e)
+        if exceptions:
+            raise pipeline.PipelineException(json.dumps(exceptions))
+    return pipelines
+
+
+def create_pipeline_from_json(config: dict) -> Pipeline:
+    validate_config_for_create(config)
     pipeline_manager = PipelineManager(create_object(config['pipeline_id'], config['source']))
     pipeline_manager.load_config(config)
     pipeline_manager.validate_config()
     pipeline_manager.create()
+    print(f'Pipeline {pipeline_manager.pipeline.id} created')
+    pipeline.manager.start(pipeline_manager.pipeline)
     return pipeline_manager.pipeline
 
 
-def edit_using_json(config: dict) -> Pipeline:
+def edit_using_json(configs: dict) -> List[Pipeline]:
+    exceptions = {}
+    pipelines = []
+    for config in configs:
+        try:
+            pipelines.append(
+                edit_pipeline_using_json(config)
+            )
+        except Exception as e:
+            exceptions[config['name']] = str(e)
+        if exceptions:
+            raise pipeline.PipelineException(json.dumps(exceptions))
+    return pipelines
+
+
+def edit_pipeline_using_json(config: dict) -> Pipeline:
     pipeline_manager = PipelineManager(pipeline.repository.get(config['pipeline_id']))
     pipeline_manager.load_config(config, edit=True)
     update(pipeline_manager.pipeline)
@@ -206,10 +249,6 @@ def start(pipeline_obj: Pipeline):
     if ENV_PROD:
         wait_for_sending_data(pipeline_obj.id)
         click.secho(f'{pipeline_obj.id} pipeline is sending data')
-
-
-def start_by_id(pipeline_id: str):
-    start(pipeline.repository.get(pipeline_id))
 
 
 def update(pipeline_obj: Pipeline):
@@ -230,6 +269,16 @@ def update(pipeline_obj: Pipeline):
     pipeline.repository.save(pipeline_obj)
     if start_pipeline:
         start(pipeline_obj)
+
+
+def update_source_pipelines(source_: source.Source):
+    for pipeline_ in pipeline.repository.get_by_source(source_.name):
+        try:
+            pipeline.manager.update(pipeline_)
+        except pipeline.PipelineException as e:
+            print(str(e))
+            continue
+        print(f'Pipeline {pipeline_.id} updated')
 
 
 def create(pipeline_obj: Pipeline):
