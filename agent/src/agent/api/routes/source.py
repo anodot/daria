@@ -18,7 +18,7 @@ def create():
         sources_ = source.manager.create_from_json(request.get_json())
     except (ValidationError, ValueError, source.SourceException) as e:
         return jsonify(str(e)), 400
-    return jsonify(sources_)
+    return jsonify(list(map(lambda x: x.to_dict(), sources_)))
 
 
 @sources.route('/sources', methods=['PUT'])
@@ -27,7 +27,7 @@ def edit():
         sources_ = source.manager.edit_using_json(request.get_json())
     except (ValidationError, ValueError) as e:
         return jsonify(str(e)), 400
-    return jsonify(sources_)
+    return jsonify(list(map(lambda x: x.to_dict(), sources_)))
 
 
 @sources.route('/sources/<source_id>', methods=['DELETE'])

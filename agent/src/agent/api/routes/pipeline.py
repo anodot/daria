@@ -30,7 +30,7 @@ def create():
         return jsonify(str(e)), 400
     except pipeline.PipelineException as e:
         return jsonify(str(e)), 500
-    return jsonify(pipelines_)
+    return jsonify(list(map(lambda x: x.to_dict, pipelines_)))
 
 
 @pipelines.route('/pipelines', methods=['PUT'])
@@ -44,7 +44,7 @@ def edit():
         return jsonify(str(e)), 400
     except pipeline.PipelineException as e:
         return jsonify(str(e)), 500
-    return jsonify(pipelines_)
+    return jsonify(list(map(lambda x: x.to_dict, pipelines_)))
 
 
 @pipelines.route('/pipelines/<pipeline_id>', methods=['DELETE'])
