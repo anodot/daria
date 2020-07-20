@@ -5,8 +5,9 @@ import os
 import shutil
 import time
 import agent.pipeline.config.handlers as config_handlers
+import jsonschema
 
-from agent import pipeline, tools
+from agent import pipeline
 from agent.pipeline.config.validators import get_config_validator
 from agent.pipeline import prompt, load_client_data
 from .. import destination
@@ -17,7 +18,6 @@ from agent.streamsets_api_client import api_client, StreamSetsApiClientException
 from agent.tools import print_json, sdc_record_map_to_dict, if_validation_enabled
 from .. import proxy
 from .pipeline import Pipeline, PipelineException
-from jsonschema import validate
 from agent.logger import get_logger
 
 
@@ -126,6 +126,24 @@ def get_prompter(source_type: str):
     return prompters[source_type]
 
 
+def extract_configs(file):
+    data = json.load(file)
+    file.seek(0)
+
+    json_schema = {
+        'type': 'array',
+        'items': {
+            'type': 'object',
+            'properties': {
+                'pipeline_id': {'type': 'string', 'minLength': 1, 'maxLength': 100}
+            },
+            'required': ['pipeline_id']
+        }
+    }
+    jsonschema.validate(data, json_schema)
+    return data
+
+
 def validate_configs_for_create(configs: dict):
     json_schema = {
         'type': 'array',
@@ -138,7 +156,7 @@ def validate_configs_for_create(configs: dict):
             'required': ['source', 'pipeline_id']
         }
     }
-    validate(configs, json_schema)
+    jsonschema.validate(configs, json_schema)
 
 
 def validate_config_for_create(config: dict):
@@ -150,7 +168,7 @@ def validate_config_for_create(config: dict):
         },
         'required': ['source', 'pipeline_id']
     }
-    validate(config, json_schema)
+    jsonschema.validate(config, json_schema)
 
 
 def create_object(pipeline_id: str, source_name: str) -> Pipeline:
@@ -413,7 +431,7 @@ def update_source_pipelines(source_name: str):
     for pipeline_obj in pipeline.repository.get_by_source(source_name):
         try:
             pipeline.manager.update(pipeline_obj)
-        except pipeline.pipeline.PipelineException as e:
+        except pipeline.PipelineException as e:
             print(str(e))
             continue
         print(f'Pipeline {pipeline_obj.id} updated')

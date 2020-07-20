@@ -46,7 +46,7 @@ def edit_using_file(file):
             for pipeline_obj in pipeline.repository.get_by_source(config['name']):
                 try:
                     pipeline.manager.update(pipeline_obj)
-                except pipeline.pipeline.PipelineException as e:
+                except pipeline.PipelineException as e:
                     print(str(e))
                     continue
                 print(f'Pipeline {pipeline_obj.id} updated')

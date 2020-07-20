@@ -2,10 +2,8 @@ import hashlib
 import os
 import csv
 import shutil
-import traceback
 
 from tempfile import NamedTemporaryFile
-from agent import cli
 from agent import pipeline, source
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -28,7 +26,7 @@ def populate_source_from_file(file):
             for pipeline_obj in pipeline.repository.get_by_source(config['name']):
                 try:
                     pipeline.manager.update(pipeline_obj)
-                except pipeline.pipeline.PipelineException as e:
+                except pipeline.PipelineException as e:
                     print(str(e))
                     continue
                 print(f'Pipeline {pipeline_obj.id} updated')
@@ -38,7 +36,7 @@ def populate_source_from_file(file):
 
 
 def populate_pipeline_from_file(file):
-    configs = cli.pipeline.extract_configs(file)
+    configs = pipeline.manager.extract_configs(file)
     for config in configs:
         if 'pipeline_id' not in config:
             raise Exception('Pipeline config should contain a pipeline_id')
@@ -104,9 +102,8 @@ def process(directory, checksum_file, create):
                 with open(file_path) as file:
                     create(file)
                 print('Success')
-            except Exception:
-                print(f'{FAIL}EXCEPTION:\n{ENDC}')
-                traceback.print_exc()
+            except Exception as e:
+                print(f'{FAIL}EXCEPTION: {type(e).__name__}: {str(e)}\n{ENDC}')
                 failed = True
                 continue
             update_checksum(checksum_file, filename, root)

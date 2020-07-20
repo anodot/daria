@@ -84,7 +84,7 @@ def _start_monitoring_pipeline():
             pipeline_manager.create()
 
         pipeline.manager.start(pipeline_)
-    except pipeline.pipeline.PipelineException as e:
+    except pipeline.PipelineException as e:
         raise click.ClickException(str(e))
 
 
