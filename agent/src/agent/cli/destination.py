@@ -1,16 +1,15 @@
 import click
 import requests
+import agent.destination
 
-from agent import pipeline, source
-from agent.destination import HttpDestination, build_urls, create
-from agent import validator
-from agent.constants import MONITORING_SOURCE_NAME
+from agent.destination import destination
+from agent import validator, pipeline
 from agent.tools import infinite_retry
 from agent.proxy import Proxy
 
 
 @infinite_retry
-def _prompt_proxy(dest: HttpDestination):
+def _prompt_proxy(dest: destination.HttpDestination):
     if click.confirm('Use proxy for connecting to Anodot?'):
         uri = _prompt_proxy_uri(dest.get_proxy_url())
         username = _prompt_proxy_username(dest.get_proxy_username())
@@ -34,7 +33,7 @@ def _prompt_proxy_password() -> str:
 
 
 @infinite_retry
-def _prompt_url(dest: HttpDestination):
+def _prompt_url(dest: destination.HttpDestination):
     url = click.prompt('Destination url', type=click.STRING, default=dest.url)
     try:
         if not validator.is_valid_url(url):
@@ -49,9 +48,9 @@ def _prompt_url(dest: HttpDestination):
 
 
 @infinite_retry
-def _prompt_token(dest: HttpDestination):
+def _prompt_token(dest: destination.HttpDestination):
     token = click.prompt('Anodot api data collection token', type=click.STRING, default=dest.token)
-    resource_url, monitoring_url = build_urls(dest.url, token)
+    resource_url, monitoring_url = agent.destination.build_urls(dest.url, token)
     if not validator.destination.is_valid_resource_url(resource_url):
         raise click.ClickException('Data collection token is invalid')
     dest.token = token
@@ -60,32 +59,11 @@ def _prompt_token(dest: HttpDestination):
 
 
 @infinite_retry
-def _prompt_access_key(dest: HttpDestination):
+def _prompt_access_key(dest: destination.HttpDestination):
     access_key = click.prompt('Anodot access key', type=click.STRING, default=dest.access_key or '')
     if access_key and not validator.destination.is_valid_access_key(access_key, dest.url):
         raise click.ClickException('Access key is invalid')
     dest.access_key = access_key
-
-
-def _start_monitoring_pipeline():
-    try:
-        if pipeline.repository.exists('Monitoring'):
-            pipeline_ = pipeline.repository.get('Monitoring')
-            click.secho('Updating Monitoring pipeline...')
-            pipeline.manager.stop(pipeline_)
-            pipeline.manager.update(pipeline_)
-        else:
-            pipeline_ = pipeline.manager.create_object('Monitoring', MONITORING_SOURCE_NAME)
-            pipeline_manager = pipeline.manager.PipelineManager(pipeline_)
-            click.secho('Starting Monitoring pipeline...')
-            # todo
-            source.repository.create_dir()
-            pipeline.repository.create_dir()
-            pipeline_manager.create()
-
-        pipeline.manager.start(pipeline_)
-    except pipeline.PipelineException as e:
-        raise click.ClickException(str(e))
 
 
 @click.command()
@@ -105,11 +83,11 @@ def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, a
     """
     # take all data from the command arguments if token is provided, otherwise ask for input
     if token:
-        result = create(token, url, access_key, proxy_host, proxy_user, proxy_password, host_id)
+        result = agent.destination.manager.create(token, url, access_key, proxy_host, proxy_user, proxy_password, host_id)
         if result.is_err():
             raise click.ClickException(result.value)
     else:
-        dest = HttpDestination.get_or_default()
+        dest = agent.destination.HttpDestination.get_or_default()
         _prompt_proxy(dest)
         _prompt_url(dest)
         _prompt_token(dest)
@@ -117,5 +95,13 @@ def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, a
         dest.save()
 
     click.secho('Connection to Anodot established')
-    _start_monitoring_pipeline()
+    try:
+        if pipeline.repository.exists(pipeline.MONITORING):
+            click.secho('Updating Monitoring pipeline...')
+            pipeline.manager.update_monitoring_pipeline()
+        else:
+            click.secho('Starting Monitoring pipeline...')
+            pipeline.manager.start_monitoring_pipeline()
+    except pipeline.pipeline.PipelineException as e:
+        raise click.ClickException(str(e))
     click.secho('Destination configured', fg='green')
