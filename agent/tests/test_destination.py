@@ -12,7 +12,6 @@ WAITING_TIME = 3
 def host_id(monkeypatch):
     def constant_host_id(length=10):
         return 'ABCDEF'
-
     monkeypatch.setattr(destination.HttpDestination, 'generate_host_id', constant_host_id)
 
 

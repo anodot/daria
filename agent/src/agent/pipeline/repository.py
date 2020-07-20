@@ -5,7 +5,7 @@ from json.decoder import JSONDecodeError
 from jsonschema import validate, ValidationError
 from agent import source
 from agent.constants import DATA_DIR
-from agent.destination import HttpDestination
+from agent.destination.destination import HttpDestination
 from typing import List
 from agent.pipeline import pipeline
 

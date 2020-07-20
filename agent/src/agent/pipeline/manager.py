@@ -6,13 +6,13 @@ import shutil
 import time
 import agent.pipeline.config.handlers as config_handlers
 
-from agent import pipeline, tools
+from agent import pipeline
 from agent.pipeline.config.validators import get_config_validator
 from agent.pipeline import prompt, load_client_data
 from .. import destination
 from agent import source
 from agent.anodot_api_client import AnodotApiClient
-from agent.constants import ERRORS_DIR, ENV_PROD
+from agent.constants import ERRORS_DIR, ENV_PROD, MONITORING_SOURCE_NAME
 from agent.streamsets_api_client import api_client, StreamSetsApiClientException
 from agent.tools import print_json, sdc_record_map_to_dict, if_validation_enabled
 from .. import proxy
@@ -47,12 +47,10 @@ class PipelineManager:
             pipeline_obj = api_client.create_pipeline(self.pipeline.id)
             new_config = self.sdc_creator.override_base_config(new_uuid=pipeline_obj['uuid'],
                                                                new_title=self.pipeline.id)
-
             api_client.update_pipeline(self.pipeline.id, new_config)
         except (config_handlers.base.ConfigHandlerException, StreamSetsApiClientException) as e:
             delete(self.pipeline)
             raise pipeline.PipelineException(str(e))
-
         pipeline.repository.save(self.pipeline)
 
     @if_validation_enabled
@@ -401,6 +399,21 @@ def update_source_pipelines(source_name: str):
             print(str(e))
             continue
         print(f'Pipeline {pipeline_obj.id} updated')
+
+
+def start_monitoring_pipeline():
+    pipeline_ = pipeline.manager.create_object('Monitoring', MONITORING_SOURCE_NAME)
+    pipeline_manager = pipeline.manager.PipelineManager(pipeline_)
+    # todo
+    source.repository.create_dir()
+    pipeline.repository.create_dir()
+    pipeline_manager.create()
+    pipeline.manager.start(pipeline_)
+
+
+def update_monitoring_pipeline():
+    pipeline_ = pipeline.repository.get('Monitoring')
+    pipeline.manager.update(pipeline_)
 
 
 class PipelineFreezeException(Exception):

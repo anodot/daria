@@ -6,7 +6,7 @@ from flask import jsonify
 
 
 def needs_destination(func):
-    if not agent.destination.HttpDestination.exists():
+    if not agent.destination.destination.HttpDestination.exists():
         def foo():
             return jsonify('Destination is not configured. Please create agent destination first'), 400
         return foo
