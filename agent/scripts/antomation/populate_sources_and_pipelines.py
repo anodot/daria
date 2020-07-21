@@ -7,13 +7,19 @@ import shutil
 from tempfile import NamedTemporaryFile
 from agent import pipeline, source
 
-ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 FAIL = '\033[91m'
 ENDC = '\033[0m'
+ROOT_DIR = os.environ.get('ROOT_DIR', os.path.dirname(os.path.abspath(__file__)))
 SOURCES = os.path.join(ROOT_DIR, 'sources')
 PIPELINES = os.path.join(ROOT_DIR, 'pipelines')
-SOURCES_CHECKSUMS = os.environ.get('CHECKSUMS_DIR', os.path.join(ROOT_DIR, 'checksums', 'sources.csv'))
-PIPELINES_CHECKSUMS = os.environ.get('CHECKSUMS_DIR', os.path.join(ROOT_DIR, 'checksums', 'pipelines.csv'))
+SOURCES_CHECKSUMS = os.path.join(
+    os.environ.get('CHECKSUMS_DIR', os.path.join(ROOT_DIR, 'checksums')),
+    'sources.csv'
+)
+PIPELINES_CHECKSUMS = os.path.join(
+    os.environ.get('CHECKSUMS_DIR', os.path.join(ROOT_DIR, 'checksums')),
+    'pipelines.csv'
+)
 
 
 def populate_source_from_file(file):
