@@ -205,7 +205,7 @@ def create_from_json(configs: dict) -> List[Pipeline]:
             pipeline_ = create_pipeline_from_json(config)
             pipelines.append(pipeline_)
         except Exception as e:
-            exceptions[config['name']] = str(e)
+            exceptions[config['pipeline_id']] = str(e)
         if exceptions:
             raise pipeline.PipelineException(json.dumps(exceptions))
     return pipelines
@@ -467,6 +467,7 @@ def _get_test_pipeline_file_name(source_: source.Source) -> str:
         source.TYPE_SPLUNK: 'test_tcp_server_jksrj322',
         source.TYPE_DIRECTORY: 'test_directory_ksdjfjk21',
         source.TYPE_SAGE: 'test_sage_jfhdkj',
+        source.TYPE_VICTORIA: 'test_victoria_http_idfsds4',
     }
     return files[source_.type]
 

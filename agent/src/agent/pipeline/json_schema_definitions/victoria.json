@@ -7,8 +7,10 @@
       "patternProperties":  {"[^ \\.]+": {"type": "array", "items": {"type": "string"}}}
     },
     "query": {"type": "string"},
-    "start_timestamp": {"type": "integer"},
-    "end_timestamp": {"type": "integer"}
+    "days_to_backfill": {"type": "integer"},
+    "interval": {"type": "integer"},
+    "pipeline_id": {"type": "string"},
+    "source": {"type": "string"}
   },
-  "required": ["query", "dimensions"]
+  "required": ["query", "interval"]
 }

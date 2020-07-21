@@ -19,7 +19,7 @@ class PromptConfigVictoria(PromptConfig):
 
     def prompt_days_to_backfill(self):
         self.config['days_to_backfill'] = \
-            click.prompt('Collect since (days ago, collect all if empty)', type=click.STRING,
+            click.prompt('Collect since (days ago)', type=click.STRING,
                          default=self.default_config.get('days_to_backfill', '')) or 0
 
     def prompt_interval(self):

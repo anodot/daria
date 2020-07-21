@@ -43,7 +43,7 @@ class Validator:
             api_client.delete_pipeline(test_pipeline_name)
         return True
 
-
+# todo why /data/errors/victoria_http_idfsds4test_victoria_2 not exist?
 def validate(source_: source.Source):
     validator = get_validator(source_)
     validator.validate()

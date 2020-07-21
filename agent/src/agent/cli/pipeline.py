@@ -108,7 +108,7 @@ def delete(pipeline_id, file):
         try:
             pipeline.manager.delete(pipeline.repository.get(pipeline_id))
             click.echo(f'Pipeline {pipeline_id} deleted')
-        except pipeline.PipelineNotExistsException:
+        except pipeline.repository.PipelineNotExistsException:
             pipeline.manager.delete_by_id(pipeline_id)
             click.echo(f'Pipeline {pipeline_id} deleted')
         except (StreamSetsApiClientException, pipeline.PipelineException) as e:
@@ -261,7 +261,7 @@ def _prompt_edit(advanced, pipeline_id):
         if click.confirm('Would you like to see the result data preview?', default=True):
             pipeline_manager.show_preview()
             print('To change the config use `agent pipeline edit`')
-    except pipeline.pipeline.PipelineNotExistsException:
+    except pipeline.repository.PipelineNotExistsException:
         raise click.UsageError(f'{pipeline_id} does not exist')
 
 

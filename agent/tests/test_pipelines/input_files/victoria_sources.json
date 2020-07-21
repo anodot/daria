@@ -1,0 +1,11 @@
+[
+  {
+    "name": "test_victoria_2",
+    "type": "victoria",
+    "config": {
+      "url": "http://victoriametrics:8428",
+      "username": "",
+      "password": ""
+    }
+  }
+]

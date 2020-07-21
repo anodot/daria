@@ -13,7 +13,7 @@ DOCKER_TEST_DEV_PARALLEL = $(DOCKER_TEST_PARALLEL) -vv
 ##---------
 all: build-all test-all
 
-build-all: get-streamsets-libs build sleep setup-elastic setup-kafka
+build-all: get-streamsets-libs build sleep setup-elastic setup-kafka setup-victoria
 
 test-all: run-unit-tests test-destination test-antomation test-api test-input test-pipelines
 
@@ -22,7 +22,7 @@ test-all: run-unit-tests test-destination test-antomation test-api test-input te
 ##-------------
 all-dev: clean-docker-volumes build-all-dev sleep test-all-dev
 
-build-all-dev: build-dev sleep setup-elastic setup-kafka
+build-all-dev: build-dev sleep setup-elastic setup-kafka setup-victoria
 
 run-all-dev: clean-docker-volumes run-dev sleep setup-kafka setup-elastic
 
@@ -49,6 +49,10 @@ test-elastic: prepare-source build-elastic setup-elastic test-destination-dev
 test-influx: prepare-source build-influx test-destination-dev
 	$(DOCKER_TEST_DEV) tests/test_input/test_influx_http.py
 	$(DOCKER_TEST_DEV) tests/test_pipelines/test_influx_http.py
+
+test-victoria: prepare-source build-victoria setup-victoria test-destination-dev
+	$(DOCKER_TEST_DEV) tests/test_input/test_victoria_http.py
+	$(DOCKER_TEST_DEV) tests/test_pipelines/test_victoria_http.py
 
 test-kafka: prepare-source build-kafka setup-kafka test-destination-dev
 	$(DOCKER_TEST_DEV) tests/test_input/test_kafka_http.py
@@ -162,6 +166,9 @@ build-elastic:
 build-influx:
 	$(DOCKER_COMPOSE_DEV) up -d influx
 
+build-victoria:
+	$(DOCKER_COMPOSE_DEV) up -d victoriametrics
+
 build-kafka: build-zookeeper
 	$(DOCKER_COMPOSE_DEV) up -d kafka
 	sleep $(SLEEP)
@@ -185,10 +192,13 @@ build-sage:
 ## COMMON DEPENDENCY TARGETS
 ##--------------------------
 setup-kafka:
-	./upload-test-data-to-kafka.sh
+	./scripts/upload-test-data-to-kafka.sh
 
 setup-elastic:
-	./upload-test-data-to-elastic.sh
+	./scripts/upload-test-data-to-elastic.sh
+
+setup-victoria:
+	./scripts/upload-test-data-to-victoria.sh
 
 sleep:
 	sleep $(SLEEP)
