@@ -171,14 +171,10 @@ services:
     image: victoriametrics/victoria-metrics
     ports:
       - 8428:8428
-      - 2003:2003
-      - 4242:4242
     volumes:
       - /storage
     command:
       - '--storageDataPath=/storage'
-      - '--graphiteListenAddr=:2003'
-      - '--opentsdbListenAddr=:4242'
       - '--httpListenAddr=:8428'
     restart: always
 
