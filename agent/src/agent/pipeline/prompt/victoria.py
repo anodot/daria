@@ -15,13 +15,13 @@ class PromptConfigVictoria(PromptConfig):
 
     def prompt_query(self):
         self.config['query'] = click.prompt('Query to export data from VictoriaMetrics', type=click.STRING,
-                                            default=self.default_config.get('metrics'))
+                                            default=self.default_config.get('query'))
 
     def prompt_days_to_backfill(self):
         self.config['days_to_backfill'] = \
-            int(click.prompt('Collect since (days ago, collect all if empty)', type=click.STRING,
-                             default=self.default_config.get('days_to_backfill')))
+            click.prompt('Collect since (days ago, collect all if empty)', type=click.STRING,
+                         default=self.default_config.get('days_to_backfill', '')) or 0
 
     def prompt_interval(self):
         self.config['interval'] = click.prompt('Query interval (in seconds)', type=click.INT,
-                                               default=self.default_config.get('initial_offset'))
+                                               default=self.default_config.get('interval'))

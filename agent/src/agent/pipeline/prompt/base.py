@@ -1,12 +1,11 @@
 import click
 
-from abc import ABC, abstractmethod
 from agent.cli.source_builders import get_builder
 from agent.tools import infinite_retry, if_validation_enabled, dict_get_nested
 from agent.pipeline import pipeline as p
 
 
-class PromptConfig(ABC):
+class PromptConfig:
     timestamp_types = ['string', 'datetime', 'unix', 'unix_ms']
 
     def __init__(self, pipeline: p.Pipeline):
@@ -22,7 +21,6 @@ class PromptConfig(ABC):
         self.prompt_config()
         return self.config
 
-    @abstractmethod
     def prompt_config(self):
         pass
 
