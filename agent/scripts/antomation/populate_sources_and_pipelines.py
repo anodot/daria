@@ -9,17 +9,12 @@ from agent import pipeline, source
 
 FAIL = '\033[91m'
 ENDC = '\033[0m'
-ROOT_DIR = os.environ.get('ROOT_DIR', os.path.dirname(os.path.abspath(__file__)))
-SOURCES = os.path.join(ROOT_DIR, 'sources')
-PIPELINES = os.path.join(ROOT_DIR, 'pipelines')
-SOURCES_CHECKSUMS = os.path.join(
-    os.environ.get('CHECKSUMS_DIR', os.path.join(ROOT_DIR, 'checksums')),
-    'sources.csv'
-)
-PIPELINES_CHECKSUMS = os.path.join(
-    os.environ.get('CHECKSUMS_DIR', os.path.join(ROOT_DIR, 'checksums')),
-    'pipelines.csv'
-)
+ANTOMATION_WORKDIR = os.environ.get('ANTOMATION_WORKDIR', os.path.dirname(os.path.abspath(__file__)))
+SOURCES_DIR = os.path.join(ANTOMATION_WORKDIR, 'sources')
+PIPELINES_DIR = os.path.join(ANTOMATION_WORKDIR, 'pipelines')
+CHECKSUMS_DIR = os.environ.get('CHECKSUMS_DIR', os.path.join(ANTOMATION_WORKDIR, 'checksums'))
+SOURCES_CHECKSUMS = os.path.join(CHECKSUMS_DIR, 'sources.csv')
+PIPELINES_CHECKSUMS = os.path.join(CHECKSUMS_DIR, 'pipelines.csv')
 
 
 def populate_source_from_file(file):
@@ -117,5 +112,5 @@ def process(directory, checksum_file, create):
         exit(1)
 
 
-process(SOURCES, SOURCES_CHECKSUMS, populate_source_from_file)
-process(PIPELINES, PIPELINES_CHECKSUMS, populate_pipeline_from_file)
+process(SOURCES_DIR, SOURCES_CHECKSUMS, populate_source_from_file)
+process(PIPELINES_DIR, PIPELINES_CHECKSUMS, populate_pipeline_from_file)
