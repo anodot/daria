@@ -1,3 +1,5 @@
+import time
+
 import pytest
 
 from ..fixtures import cli_runner
@@ -29,3 +31,7 @@ class TestVictoria(TestPipelineBase):
 
     def test_stop(self, cli_runner, name=None):
         pytest.skip()
+
+    def test_force_stop(self, cli_runner, name):
+        time.sleep(5)
+        super().test_force_stop(cli_runner, name)
