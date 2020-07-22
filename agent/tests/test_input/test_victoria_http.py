@@ -20,7 +20,7 @@ class TestVictoria:
         days_to_backfill = (datetime.now() - datetime(year=2020, month=7, day=7)).days + 1
         result = cli_runner.invoke(
             cli.pipeline.create,
-            input=f'test_victoria\n{name}\n{query}\n{days_to_backfill}\n10000\ny\n'
+            input=f'test_victoria\n{name}\n{query}\n{days_to_backfill}\n100000\ny\n'
         )
         assert result.exit_code == 0
         assert api_client.get_pipeline(name)
