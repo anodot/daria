@@ -4,6 +4,7 @@ from agent import source
 
 
 class PromptConfigKafka(PromptConfigSchemaless):
+    timestamp_types = ['datetime', 'string', 'unix', 'unix_ms']
     target_types = ['counter', 'gauge', 'running_counter']
     pass
 

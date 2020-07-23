@@ -26,10 +26,11 @@ class LoadClientData:
         self.client_config = client_config
         self.edit = edit
 
-        with open(os.path.join(definitions_dir, self.VALIDATION_SCHEMA_FILE_NAME + '.json'), 'r') as f:
+        with open(os.path.join(definitions_dir, self.VALIDATION_SCHEMA_FILE_NAME + '.json')) as f:
             schema = json.load(f)
         if self.edit:
             schema['required'] = []
+        # todo don't validate here
         validate(self.client_config, schema)
         client_config.pop('source', None)
         return self.client_config
