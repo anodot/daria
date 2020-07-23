@@ -58,10 +58,11 @@ def test_first_operand_enclosed_in_quotes(literal, expected_result):
     ('te"st"', False),
     ('"test"))', True),
     ('(("test"', False),
-    ('!("test"', False)
+    ('!("test"', False),
+    ('null', True)
 ])
-def test_last_operand_enclosed_in_quotes(literal, expected_result):
-    assert expression_parser.condition.last_operand_enclosed_in_quotes(literal) == expected_result
+def test_last_operand_enclosed_in_quotes_or_null(literal, expected_result):
+    assert expression_parser.condition.last_operand_enclosed_in_quotes_or_null(literal) == expected_result
 
 
 @pytest.mark.parametrize("condition, expected_result", [
@@ -89,6 +90,7 @@ def test_split_to_expressions(condition, expected_result):
     ('"prop/prop1" == "val"', ['"prop/prop1"', '==', '"val"']),
     ('"prop" smth "val"', ['"prop" smth "val"']),
     ('!("prop"  ==   "val"))', ['!("prop"', '==', '"val"))']),
+    ('!("prop"  ==   null))', ['!("prop"', '==', 'null))']),
 ])
 def test_split_to_literals(expression, expected_result):
     assert expression_parser.condition.split_to_literals(expression) == expected_result
@@ -101,6 +103,7 @@ def test_split_to_literals(expression, expected_result):
     ('"prop" != "val"', 'record:value(\'/prop\') != "val"'),
     ('"prop" startsWith "val"', 'str:startsWith(record:value(\'/prop\'), "val")'),
     ('"prop" endsWith "val"', 'str:endsWith(record:value(\'/prop\'), "val")'),
+    ('"prop" != null', 'record:value(\'/prop\') != null'),
 ])
 def test_get_filtering_expression(condition, expected_result):
     assert expression_parser.condition.get_expression(condition) == expected_result
