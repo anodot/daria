@@ -8,7 +8,7 @@ to the [agent destination](https://github.com/anodot/daria/wiki/CLI-reference#de
 agent destination
 ```
 
-#### Usage:
+#### Usage example:
 ```
 docker exec -it anodot-agent python /usr/src/app/scripts/kafka_topology/run.py --brokers kafka:29092 --topic test_csv --type ring
 ```
