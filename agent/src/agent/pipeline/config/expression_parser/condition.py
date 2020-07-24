@@ -22,8 +22,8 @@ def first_operand_enclosed_in_quotes(literal: str) -> bool:
     return bool(re.search(r'^(\![\(]+|[\(]+)?(\".*\"|\'.*\')$', literal))
 
 
-def last_operand_enclosed_in_quotes(literal: str) -> bool:
-    return bool(re.search(r'^(\".*\"|\'.*\')[\)]*$', literal))
+def last_operand_enclosed_in_quotes_or_null(literal: str) -> bool:
+    return literal == 'null' or bool(re.search(r'^(\".*\"|\'.*\')[\)]*$', literal))
 
 
 def validate_comparison_literal(literal: str) -> bool:
@@ -62,7 +62,7 @@ def validate(condition: str) -> bool:
                 f'Unsupported literal {literals[1]}. Please use "==", "!=", "contains", "startsWith", "endsWith", "matches"')
 
         parentheses_count_total -= count_closed_parenthesis(literals[2])
-        if not last_operand_enclosed_in_quotes(literals[2]):
+        if not last_operand_enclosed_in_quotes_or_null(literals[2]):
             raise ConditionException(f'Unsupported literal {literals[2]}. Operand must be enclosed in quotes')
 
     if parentheses_count_total != 0:
