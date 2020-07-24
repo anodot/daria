@@ -1,9 +1,10 @@
+import anodot
 import argparse
 import gzip
 import logging
 import sys
 
-from agent import destination, anodot_api_client, proxy, logger
+from agent import destination, proxy, logger
 from kafka import KafkaConsumer
 
 logger_ = logger.get_logger('scripts.kafka_topology.run')
@@ -42,22 +43,16 @@ def read_data(topic, file_type) -> int:
     return count_messages
 
 
-def send_file(file_type):
-    with open(get_file_path(file_type), 'rb') as f_in:
-        res = api_client.send_topology_data(args.type, gzip.compress(f_in.read()))
-
-    return res
-
-
 try:
     destination_ = destination.HttpDestination.get()
-    api_client = anodot_api_client.AnodotApiClient(destination_.access_key,
-                                                   proxies=proxy.get_config(destination_.proxy),
-                                                   base_url=destination_.url)
+    api_client = anodot.ApiClient(destination_.access_key,
+                                  proxies=proxy.get_config(destination_.proxy),
+                                  base_url=destination_.url)
     messages_received = read_data(args.topic, args.type)
     logger_.info(str(messages_received) + ' messages was read')
 
-    result = send_file(args.type)
-    logger_.info('File sent: ' + str(result))
+    with open(get_file_path(args.type), 'rb') as f_in:
+        result = api_client.send_topology_data(args.type, gzip.compress(f_in.read()))
+        logger_.info('File sent: ' + str(result))
 except Exception:
     logger_.exception('Uncaught exception')
