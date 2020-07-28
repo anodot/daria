@@ -16,7 +16,7 @@ class TestKafka:
                 'name': 'test_kfk_value_const',
                 'options': ['-a'],
                 'value': 'y\nclicks\ny\n\n \n ',
-                'timestamp': 'timestamp_unix\nunix',
+                'timestamp': 'timestamp_unix\nunix\n',
                 'advanced_options': 'key1:val1\n\n\n'
             },
             {
@@ -24,7 +24,7 @@ class TestKafka:
                 'name': 'test_kfk_timestamp_ms',
                 'options': [],
                 'value': 'n\nClicks:gauge\nClicks:clicks',
-                'timestamp': 'timestamp_unix_ms\nunix_ms',
+                'timestamp': 'timestamp_unix_ms\nunix_ms\n',
                 'advanced_options': '\n\n'
             },
             {
@@ -32,7 +32,7 @@ class TestKafka:
                 'name': 'test_kfk_timestamp_string',
                 'options': ['-a'],
                 'value': 'y\nclicks\ny\n\n \n ',
-                'timestamp': 'timestamp_string\nstring\nM/d/yyyy H:mm:ss',
+                'timestamp': 'timestamp_string\nstring\nM/d/yyyy H:mm:ss\n',
                 'advanced_options': 'key1:val1\ntag1:tagval tag2:tagval\n"Country" == "USA"\n/home/kafka_transform.csv'
             },
             {
@@ -40,7 +40,7 @@ class TestKafka:
                 'name': 'test_kfk_running_counter',
                 'options': ['-a'],
                 'value': 'n\ny\n\nClicks:running_counter\nClicks:clicks',
-                'timestamp': 'timestamp_unix\nunix',
+                'timestamp': 'timestamp_unix\nunix\n',
                 'advanced_options': 'key1:val1\n \n \n '
             },
             {
@@ -48,7 +48,7 @@ class TestKafka:
                 'name': 'test_kfk_running_counter_static_tt',
                 'options': ['-a'],
                 'value': 'n\nn\n \nClicks:running_counter\nClicks:metric',
-                'timestamp': 'timestamp_unix\nunix',
+                'timestamp': 'timestamp_unix\nunix\n',
                 'advanced_options': 'key1:val1\n \n \n '
             },
             {
@@ -56,7 +56,7 @@ class TestKafka:
                 'name': 'test_kfk_running_counter_dynamic_what',
                 'options': ['-a'],
                 'value': 'n\nn\n\nClicks:agg_type\nClicks:metric',
-                'timestamp': 'timestamp_unix\nunix',
+                'timestamp': 'timestamp_unix\nunix\n',
                 'advanced_options': 'key1:val1\n \n \n '
             },
             {
@@ -64,7 +64,7 @@ class TestKafka:
                 'name': 'test_json_arrays',
                 'options': ['-a'],
                 'value': 'n\nn\nkpis\nclicks.display,clicks.search\nClicks:gauge\nClicks:metric',
-                'timestamp': 'timestamp_unix\nunix',
+                'timestamp': 'timestamp_unix\nunix\n',
                 'advanced_options': ' \n \n \n '
             }
         ],
@@ -86,6 +86,8 @@ class TestKafka:
             options,
             input=f"{source_name}\n{name}\n\n{value}\n{timestamp}\nver Country\nExchange optional_dim ad_type ADTYPE GEN\n\n{advanced_options}\n"
         )
+        print(result.output)
+        raise Exception('Failed')
         assert result.exit_code == 0
         assert api_client.get_pipeline(name)
 

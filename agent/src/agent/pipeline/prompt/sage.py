@@ -21,6 +21,9 @@ class PromptConfigSage(PromptConfigSchemaless):
         self.config['query_file'] = click.prompt('Query file path', type=click.Path(exists=True, dir_okay=False),
                                                  default=self.default_config.get('query_file'))
 
+    def set_timezone(self):
+        pass
+
     def set_delay(self):
         self.config['delay'] = click.prompt('Delay, minutes', type=click.INT,
                                             default=self.default_config.get('delay', 0))

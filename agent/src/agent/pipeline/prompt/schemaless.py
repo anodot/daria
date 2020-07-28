@@ -14,6 +14,7 @@ class PromptConfigSchemaless(PromptConfig):
         self.set_values()
         self.set_measurement_names()
         self.set_timestamp()
+        self.set_timezone()
         self.set_dimensions()
         self.set_static_properties()
         self.set_tags()

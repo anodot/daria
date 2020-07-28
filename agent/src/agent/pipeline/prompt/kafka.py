@@ -13,6 +13,7 @@ class PromptConfigKafka(PromptConfigSchemaless):
         self.set_values()
         self.set_measurement_names()
         self.set_timestamp()
+        self.set_timezone()
         self.set_dimensions()
         self.set_consumer_group()
         self.set_static_properties()

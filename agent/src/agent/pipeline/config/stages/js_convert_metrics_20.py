@@ -5,6 +5,7 @@ class JSConvertMetrics(base.Stage):
     def get_js_vars(self):
         return f"""
 state['TIMESTAMP_COLUMN'] = '{self.pipeline.timestamp_path}';
+state['TIMEZONE'] = '{self.pipeline.timezone or ''}';
 state['DIMENSIONS'] = {self.pipeline.dimensions_paths};
 state['DIMENSIONS_NAMES'] = {self.pipeline.dimensions_names};
 state['VALUES_COLUMNS'] = {self.pipeline.values_paths};

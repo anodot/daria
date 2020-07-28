@@ -1,4 +1,6 @@
 import click
+import re
+import pytz
 
 from agent.cli.source_builders import get_builder
 from agent.tools import infinite_retry, if_validation_enabled, dict_get_nested
@@ -74,6 +76,15 @@ class PromptConfig:
                 raise click.UsageError('Wrong format, correct example - key:val key2:val2')
 
             self.config['tags'][pair[0]] = pair[1].split(',')
+
+    @infinite_retry
+    def set_timezone(self):
+        if not self.advanced:
+            return
+        timezone = click.prompt('Timezone (e.g. Europe/London)', type=click.STRING, default=self.default_config.get('timezone', 'UTC'))
+        if timezone not in pytz.all_timezones:
+            raise click.UsageError('Wrong timezone provided')
+        self.config['timezone'] = timezone
 
     @infinite_retry
     def prompt_object(self, property_name, prompt_text):

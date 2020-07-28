@@ -1,3 +1,5 @@
+from typing import Optional
+
 from agent import source
 from agent.constants import HOSTNAME
 from agent.destination import HttpDestination
@@ -102,6 +104,10 @@ class Pipeline:
     @property
     def timestamp_path(self) -> str:
         return self.get_property_path(self.config['timestamp']['name'])
+
+    @property
+    def timezone(self) -> Optional[str]:
+        return self.config.get('timezone')
 
     @property
     def timestamp_type(self) -> TimestampType:

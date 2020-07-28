@@ -3,9 +3,9 @@
     "schemaVersion" : 6,
     "version" : 17,
     "pipelineId" : "kafkahttp29d65849-9355-4343-80d7-05661188c044",
-    "title" : "kafka_http",
+    "title" : "test_kfk_running_counter_dynamic_what",
     "description" : "",
-    "uuid" : "3bdf49c7-f467-49fc-b31f-cc90199c40c7",
+    "uuid" : "46fa769f-613f-455f-a58e-a8842b11ea73",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -29,7 +29,16 @@
       "value" : [ ]
     }, {
       "name" : "constants",
-      "value" : [ ]
+      "value" : [ {
+        "key" : "TOKEN",
+        "value" : "correct_token"
+      }, {
+        "key" : "PROTOCOL",
+        "value" : "anodot20"
+      }, {
+        "key" : "ANODOT_BASE_URL",
+        "value" : "http://dummy_destination"
+      } ]
     }, {
       "name" : "errorRecordPolicy",
       "value" : "ORIGINAL_RECORD"
@@ -546,13 +555,13 @@
         "value" : "JSON"
       }, {
         "name" : "conf.brokerURI",
-        "value" : "localhost:9092"
+        "value" : "kafka:29092"
       }, {
         "name" : "conf.consumerGroup",
-        "value" : "streamsetsDataCollector"
+        "value" : "anodot_agent_test_kfk_running_counter_dynamic_what"
       }, {
         "name" : "conf.topicList",
-        "value" : [ "myTopic" ]
+        "value" : [ "test_running_counters" ]
       }, {
         "name" : "conf.produceSingleRecordPerMessage",
         "value" : false
@@ -644,7 +653,7 @@
       "stageVersion" : "2",
       "configuration" : [ {
         "name" : "expressionProcessorConfigs",
-        "value" : [ { } ]
+        "value" : [ ]
       }, {
         "name" : "headerAttributeConfigs",
         "value" : [ { } ]
@@ -658,7 +667,7 @@
         "value" : "DISCARD"
       }, {
         "name" : "stageRequiredFields",
-        "value" : [ ]
+        "value" : [ "/timestamp_unix", "/Clicks", "/metric", "/agg_type" ]
       }, {
         "name" : "stageRecordPreconditions",
         "value" : [ ]
@@ -684,7 +693,7 @@
         "value" : "BATCH"
       }, {
         "name" : "initScript",
-        "value" : "state['TOPIC_NAME'] = 'test';\nstate['TIMESTAMP_COLUMN'] = 'timestamp_unix';\nstate['TIMEZONE'] = 'UTC';\nstate['DIMENSIONS'] = ['ver', 'AdSize', 'Country', 'AdType', 'Exchange'];\nstate['VALUES_COLUMN'] = ['Clicks', 'Impressions'];\nstate['TARGET_TYPES'] = ['gauge', 'counter'];\nstate['MEASUREMENT_NAMES'] = ['clicks', 'impressions'];\nstate['COUNT_RECORDS'] = 1\nstate['COUNT_RECORDS_MEASUREMENT_NAME'] = 'dsf'\nstate['STATIC_WHAT'] = 1"
+        "value" : "state['TIMESTAMP_COLUMN'] = 'timestamp_unix';\nstate['TIMEZONE'] = 'UTC';\nstate['DIMENSIONS'] = [];\nstate['DIMENSIONS_NAMES'] = [];\nstate['VALUES_COLUMNS'] = ['Clicks'];\nstate['MEASUREMENT_NAMES'] = ['metric'];\nstate['TARGET_TYPES'] = ['agg_type'];\nstate['COUNT_RECORDS'] = 0;\nstate['COUNT_RECORDS_MEASUREMENT_NAME'] = 'count';\nstate['STATIC_WHAT'] = 0;\nstate['VALUES_ARRAY_PATH'] = '';\nstate['VALUES_ARRAY_FILTER'] = [];\nstate['metrics'] = {}"
       }, {
         "name" : "script",
         "value" : "TARGET_TYPES = ['counter', 'gauge', 'running_counter']\n\nfunction get_value(path, value) {\n  path_parts = path.split('/')\n  for (var k = 0; k < path_parts.length; k++) {\n    value = value[path_parts[k]]\n  }\n  return value\n}\n\nfunction metric_to_string(dimensions) {\n  var str = '';\n    for (var p in dimensions) {\n        if (dimensions.hasOwnProperty(p)) {\n            str += p + ':' + dimensions[p] + ',';\n        }\n    }\n    return str;\n}\n\nfunction get_running_counter_value(metric_properties, curr_value, time) {\n  metric = metric_to_string(metric_properties)\n  if (state['metrics'][metric] == null) {\n    state['metrics'][metric] = {'val': curr_value, 'time': time}\n    return null;\n  }\n  counter_val = curr_value - state['metrics'][metric]['val']\n  if (counter_val < 0) {\n    state['metrics'][metric] = null\n    return null;\n  }\n  state['metrics'][metric]['val'] = curr_value\n  prev_time = state['metrics'][metric]['time']\n  state['metrics'][metric]['time'] = time\n  return counter_val / (time - prev_time)\n}\n\nfunction get_target_type_value(target_type_property, record) {\n\n  if (TARGET_TYPES.indexOf(target_type_property) < 0) {\n    if (TARGET_TYPES.indexOf(record[target_type_property]) < 0) {\n      throw 'Target type property ' + target_type_property + ' should be counter, gauge or running_counter'\n    }\n    return get_value(target_type_property, record)\n  } \n  return target_type_property\n}\n\nfunction convert_timezone(timestamp, timezone) {\n  return new Date(new Date(timestamp * 1000).toLocaleString(\"en-US\", {timeZone: timezone})).getTime() / 1000\n}\n\nfor(var i = 0; i < records.length; i++) {\n  try {\n\tvar timestamp = get_value(state['TIMESTAMP_COLUMN'], records[i].value)\n    if (state['TIMEZONE']) {\n      timestamp = convert_timezone(timestamp, state['TIMEZONE'])\n    }\n    \n    var properties = {}\n    for (var j = 0; j < state['DIMENSIONS'].length; j++) {\n      var dim_val = get_value(state['DIMENSIONS'][j], records[i].value)\n      if (dim_val !== null && dim_val !== '') {\n        properties[state['DIMENSIONS_NAMES'][j].replace(/[\\. \\/]+/g, '_')] = String(dim_val).replace(/[\\. ]+/g, '_')\n      }\n    }\n    \n    for (var j = 0; j < state['VALUES_COLUMNS'].length; j++) {\n      \n      var values_array = [records[i].value]\n      if (state['VALUES_ARRAY_PATH'].length > 0) {\n        values_array = get_value(state['VALUES_ARRAY_PATH'], records[i].value)\n      }\n      for (var l = 0; l < values_array.length; l++) {\n        if (state['STATIC_WHAT']) {\n          properties['what'] = state['MEASUREMENT_NAMES'][j].replace(/[\\. ]+/g, '_');\n          properties['target_type'] = state['TARGET_TYPES'][j];\n        } else {\n          meas_name = get_value(state['MEASUREMENT_NAMES'][j], values_array[l])\n          if (state['VALUES_ARRAY_FILTER'].length > 0 && state['VALUES_ARRAY_FILTER'].indexOf(meas_name) < 0) {\n            continue;\n          }\n          properties['what'] = String(meas_name).replace(/[\\. ]+/g, '_');\n          properties['target_type'] = get_target_type_value(state['TARGET_TYPES'][j], values_array[l]);\n        }\n\n        var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + i);\n        var value = get_value(state['VALUES_COLUMNS'][j], values_array[l])\n        if (properties['target_type'] == 'running_counter') {\n          properties['target_type'] = 'gauge';\n          value = get_running_counter_value(properties, value, timestamp);\n        }\n\t\t\n        if (value === null || value === '') {\n            continue;\n        } \n        newRecord.value = {'timestamp' : timestamp,\n                           'properties' : properties,\n                           'value': value};\n        output.write(newRecord);\n      }\n    }\n    if (state['COUNT_RECORDS']) {\n      var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + i);\n      properties['what'] = state['COUNT_RECORDS_MEASUREMENT_NAME'];\n      properties['target_type'] = 'counter';\n      newRecord.value = {'timestamp' : timestamp,\n                         'properties' : properties,\n                         'value': 1};\n      output.write(newRecord);\n    }\n\n    // output.write(records[i]);\n  } catch (e) {\n    // Send record to error\n    error.write(records[i], e);\n  }\n}"
@@ -726,6 +735,39 @@
       "configuration" : [ {
         "name" : "expressionProcessorConfigs",
         "value" : [ {
+          "fieldToSet" : "/tags",
+          "expression" : "${emptyMap()}"
+        }, {
+          "fieldToSet" : "/tags/source",
+          "expression" : "${emptyList()}"
+        }, {
+          "fieldToSet" : "/tags/source[0]",
+          "expression" : "${\"anodot-agent\"}"
+        }, {
+          "fieldToSet" : "/tags/source_host_id",
+          "expression" : "${emptyList()}"
+        }, {
+          "fieldToSet" : "/tags/source_host_id[0]",
+          "expression" : "${\"ABCDEF\"}"
+        }, {
+          "fieldToSet" : "/tags/source_host_name",
+          "expression" : "${emptyList()}"
+        }, {
+          "fieldToSet" : "/tags/source_host_name[0]",
+          "expression" : "${\"agent\"}"
+        }, {
+          "fieldToSet" : "/tags/pipeline_id",
+          "expression" : "${emptyList()}"
+        }, {
+          "fieldToSet" : "/tags/pipeline_id[0]",
+          "expression" : "${\"test_kfk_running_counter_dynamic_what\"}"
+        }, {
+          "fieldToSet" : "/tags/pipeline_type",
+          "expression" : "${emptyList()}"
+        }, {
+          "fieldToSet" : "/tags/pipeline_type[0]",
+          "expression" : "${\"kafka\"}"
+        }, {
           "fieldToSet" : "/timestamp",
           "expression" : "${record:value('/timestamp')}"
         } ]
@@ -1025,10 +1067,10 @@
         "value" : ""
       }, {
         "name" : "conf.client.useProxy",
-        "value" : false
+        "value" : true
       }, {
         "name" : "conf.client.proxy.uri",
-        "value" : null
+        "value" : "http://squid:3128"
       }, {
         "name" : "conf.client.proxy.username",
         "value" : ""
@@ -1154,25 +1196,25 @@
       "services" : [ ]
     },
     "info" : {
-      "pipelineId" : "kafkahttp29d65849-9355-4343-80d7-05661188c044",
-      "title" : "kafka_http",
+      "pipelineId" : "test_kfk_running_counter_dynamic_what",
+      "title" : "test_kfk_running_counter_dynamic_what",
       "description" : "",
-      "created" : 1592308697316,
-      "lastModified" : 1592309630204,
+      "created" : 1596024716700,
+      "lastModified" : 1596025205860,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "3bdf49c7-f467-49fc-b31f-cc90199c40c7",
+      "uuid" : "46fa769f-613f-455f-a58e-a8842b11ea73",
       "valid" : true,
       "metadata" : {
-        "labels" : [ "mongo", "http" ]
+        "labels" : [ "kafka", "http" ]
       },
-      "name" : "kafkahttp29d65849-9355-4343-80d7-05661188c044",
+      "name" : "test_kfk_running_counter_dynamic_what",
       "sdcVersion" : "3.15.0",
-      "sdcId" : "8b8f48ea-afc6-11ea-bc8d-71ebd7fef96a"
+      "sdcId" : "3e9b9573-d194-11ea-bc46-e16a652ff237"
     },
     "metadata" : {
-      "labels" : [ "mongo", "http" ]
+      "labels" : [ "kafka", "http" ]
     },
     "statsAggregatorStage" : {
       "instanceName" : "statsAggregatorStageInstance",
@@ -1510,7 +1552,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1547131665566,
+      "timestamp" : 1596024716729,
       "valid" : true
     }, {
       "id" : "stageErrorAlertID",
@@ -1521,7 +1563,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1547131665566,
+      "timestamp" : 1596024716729,
       "valid" : true
     }, {
       "id" : "idleGaugeID",
@@ -1532,7 +1574,7 @@
       "condition" : "${time:now() - value() > 120000}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1547131665566,
+      "timestamp" : 1596024716729,
       "valid" : true
     }, {
       "id" : "batchTimeAlertID",
@@ -1543,23 +1585,12 @@
       "condition" : "${value() > 200}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1547131665566,
-      "valid" : true
-    }, {
-      "id" : "memoryLimitAlertID",
-      "alertText" : "Memory limit for pipeline exceeded",
-      "metricId" : "pipeline.memoryConsumed.counter",
-      "metricType" : "COUNTER",
-      "metricElement" : "COUNTER_COUNT",
-      "condition" : "${value() > (jvm:maxMemoryMB() * 0.65)}",
-      "sendEmail" : false,
-      "enabled" : false,
-      "timestamp" : 1547131665566,
+      "timestamp" : 1596024716729,
       "valid" : true
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "a759c01c-3cad-4d46-b58b-ab43dfd22d27",
+    "uuid" : "9a0faad6-13db-46a1-8632-0e4476fc50bf",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : [ ]

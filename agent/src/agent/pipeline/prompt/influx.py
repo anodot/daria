@@ -19,6 +19,9 @@ class PromptConfigInflux(PromptConfig):
         self.set_delay()
         self.set_filtering()
 
+    def set_timezone(self):
+        pass
+
     def get_test_url(self):
         source_config = self.pipeline.source.config
         query = f"select+%2A+from+{self.config['measurement_name']}+limit+{source.manager.MAX_SAMPLE_RECORDS}"
