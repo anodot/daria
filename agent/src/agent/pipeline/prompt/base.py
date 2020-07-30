@@ -1,5 +1,4 @@
 import click
-import re
 import pytz
 
 from agent.cli.source_builders import get_builder
