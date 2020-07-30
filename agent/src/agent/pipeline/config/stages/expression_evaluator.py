@@ -25,6 +25,10 @@ def get_convert_timestamp_to_unix_expression(timestamp_type: pipeline.TimestampT
     return value
 
 
+def get_convert_timestamp_timezone(timestamp: str, timezone: str):
+    return f"time:dateTimeToMilliseconds(time:createDateFromStringTZ(time:extractStringFromDate(time:millisecondsToDateTime({timestamp} * 1000), 'yyyy-MM-dd HH-mm-ss z'), '{timezone}', 'yyyy-MM-dd HH-mm-ss z'))"
+
+
 class AddProperties(Stage):
 
     @classmethod
@@ -47,6 +51,8 @@ class AddProperties(Stage):
                                                                      "record:value('/timestamp')",
                                                                      self.pipeline.timestamp_format)
         expressions.append(get_value('/timestamp', timestamp_to_unix))
+        shift_timestamp_timezone = get_convert_timestamp_timezone("record:value('/timestamp')", self.pipeline.timezone)
+        expressions.append(get_value('/timestamp', shift_timestamp_timezone))
         return {
             'expressionProcessorConfigs': self.get_tags() + expressions
         }

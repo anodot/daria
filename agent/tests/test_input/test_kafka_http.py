@@ -24,7 +24,7 @@ class TestKafka:
                 'name': 'test_kfk_timestamp_ms',
                 'options': [],
                 'value': 'n\nClicks:gauge\nClicks:clicks',
-                'timestamp': 'timestamp_unix_ms\nunix_ms\n',
+                'timestamp': 'timestamp_unix_ms\nunix_ms',
                 'advanced_options': '\n\n'
             },
             {
@@ -86,8 +86,6 @@ class TestKafka:
             options,
             input=f"{source_name}\n{name}\n\n{value}\n{timestamp}\nver Country\nExchange optional_dim ad_type ADTYPE GEN\n\n{advanced_options}\n"
         )
-        print(result.output)
-        raise Exception('Failed')
         assert result.exit_code == 0
         assert api_client.get_pipeline(name)
 
