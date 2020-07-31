@@ -16,7 +16,7 @@ class TestKafka:
                 'name': 'test_kfk_value_const',
                 'options': ['-a'],
                 'value': 'y\nclicks\ny\n\n \n ',
-                'timestamp': 'timestamp_unix\nunix\n',
+                'timestamp': 'timestamp_unix\nunix',
                 'advanced_options': 'key1:val1\n\n\n'
             },
             {
@@ -40,7 +40,7 @@ class TestKafka:
                 'name': 'test_kfk_running_counter',
                 'options': ['-a'],
                 'value': 'n\ny\n\nClicks:running_counter\nClicks:clicks',
-                'timestamp': 'timestamp_unix\nunix\n',
+                'timestamp': 'timestamp_unix\nunix',
                 'advanced_options': 'key1:val1\n \n \n '
             },
             {
@@ -48,7 +48,7 @@ class TestKafka:
                 'name': 'test_kfk_running_counter_static_tt',
                 'options': ['-a'],
                 'value': 'n\nn\n \nClicks:running_counter\nClicks:metric',
-                'timestamp': 'timestamp_unix\nunix\n',
+                'timestamp': 'timestamp_unix\nunix',
                 'advanced_options': 'key1:val1\n \n \n '
             },
             {
@@ -56,7 +56,7 @@ class TestKafka:
                 'name': 'test_kfk_running_counter_dynamic_what',
                 'options': ['-a'],
                 'value': 'n\nn\n\nClicks:agg_type\nClicks:metric',
-                'timestamp': 'timestamp_unix\nunix\n',
+                'timestamp': 'timestamp_unix\nunix',
                 'advanced_options': 'key1:val1\n \n \n '
             },
             {
@@ -64,7 +64,7 @@ class TestKafka:
                 'name': 'test_json_arrays',
                 'options': ['-a'],
                 'value': 'n\nn\nkpis\nclicks.display,clicks.search\nClicks:gauge\nClicks:metric',
-                'timestamp': 'timestamp_unix\nunix\n',
+                'timestamp': 'timestamp_unix\nunix',
                 'advanced_options': ' \n \n \n '
             },
             {
