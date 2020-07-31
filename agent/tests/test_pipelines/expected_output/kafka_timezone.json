@@ -1,0 +1,119 @@
+[
+  {
+    "value": 6784.6904,
+    "properties": {
+      "what": "clicks_display",
+      "target_type": "gauge",
+      "ver": "1",
+      "Country": "USA",
+      "Exchange": "DoubleClick",
+      "key1": "val1",
+      "ad_type": "d",
+      "GEN": "G"
+    },
+    "tags": {
+      "source": ["anodot-agent"],
+      "source_host_id": ["ABCDEF"],
+      "source_host_name": ["agent"],
+      "pipeline_id": ["pipeline_id"],
+      "pipeline_type": ["type"],
+      "tag1": ["tagval"],
+      "tag2": ["tagval"]
+    },
+    "timestamp": 1512860400
+  },
+  {
+    "value": 6839.0,
+    "properties": {
+      "what": "clicks_display",
+      "target_type": "gauge",
+      "ver": "1",
+      "Country": "USA",
+      "Exchange": "DoubleClick",
+      "key1": "val1",
+      "ad_type": "d",
+      "GEN": "G"
+    },
+    "tags": {
+      "source": ["anodot-agent"],
+      "source_host_id": ["ABCDEF"],
+      "source_host_name": ["agent"],
+      "pipeline_id": ["pipeline_id"],
+      "pipeline_type": ["type"],
+      "tag1": ["tagval"],
+      "tag2": ["tagval"]
+    },
+    "timestamp": 1512864000
+  },
+  {
+    "value": 6.9099935E18,
+    "properties": {
+      "what": "clicks_search",
+      "target_type": "counter",
+      "ver": "1",
+      "Country": "USA",
+      "Exchange": "DoubleClick",
+      "key1": "val1",
+      "ad_type": "s",
+      "ADTYPE": "S",
+      "GEN": "G"
+    },
+    "tags": {
+      "source": ["anodot-agent"],
+      "source_host_id": ["ABCDEF"],
+      "source_host_name": ["agent"],
+      "pipeline_id": ["pipeline_id"],
+      "pipeline_type": ["type"],
+      "tag1": ["tagval"],
+      "tag2": ["tagval"]
+    },
+    "timestamp": 1512867600
+  },
+  {
+    "value": 7158.9727,
+    "properties": {
+      "what": "clicks_display",
+      "target_type": "gauge",
+      "ver": "1",
+      "Country": "USA",
+      "Exchange": "DoubleClick",
+      "key1": "val1",
+      "ad_type": "d",
+      "GEN": "G"
+    },
+    "tags": {
+      "source": ["anodot-agent"],
+      "source_host_id": ["ABCDEF"],
+      "source_host_name": ["agent"],
+      "pipeline_id": ["pipeline_id"],
+      "pipeline_type": ["type"],
+      "tag1": ["tagval"],
+      "tag2": ["tagval"]
+    },
+    "timestamp": 1512871200
+  },
+  {
+    "value": 7235.7573,
+    "properties": {
+      "what": "clicks_search",
+      "target_type": "counter",
+      "ver": "1",
+      "Country": "USA",
+      "Exchange": "DoubleClick",
+      "key1": "val1",
+      "ad_type": "s",
+      "ADTYPE": "S",
+      "GEN": "G"
+    },
+    "tags": {
+      "source": ["anodot-agent"],
+      "source_host_id": ["ABCDEF"],
+      "source_host_name": ["agent"],
+      "pipeline_id": ["pipeline_id"],
+      "pipeline_type": ["type"],
+      "tag1": ["tagval"],
+      "tag2": ["tagval"]
+    },
+    "timestamp": 1512874800
+  }
+]

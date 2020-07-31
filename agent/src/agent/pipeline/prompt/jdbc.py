@@ -17,7 +17,6 @@ class PromptConfigJDBC(PromptConfig):
         self.data_preview()
         self.set_values()
         self.set_timestamp()
-        self.set_timezone()
         self.set_dimensions()
         self.set_query_interval()
         self.set_static_properties()

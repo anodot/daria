@@ -14,14 +14,16 @@ class TestKafka(TestPipelineBase):
                        {'name': 'test_kfk_kafka_file_short'}, {'name': 'test_kfk_kafka_file_full'},
                        {'name': 'test_csv'}, {'name': 'test_kfk_running_counter'},
                        {'name': 'test_kfk_running_counter_dynamic_what'},
-                       {'name': 'test_kfk_running_counter_static_tt'}],
+                       {'name': 'test_kfk_running_counter_static_tt'},
+                       {'name': 'test_timezone'}],
         'test_info': [{'name': 'test_kfk_value_const'}, {'name': 'test_kfk_running_counter'}],
         'test_stop': [{'name': 'test_kfk_value_const'}, {'name': 'test_kfk_timestamp_ms'},
                       {'name': 'test_kfk_timestamp_string'},
                       {'name': 'test_kfk_kafka_file_short'}, {'name': 'test_kfk_kafka_file_full'},
                       {'name': 'test_csv'}, {'name': 'test_kfk_running_counter'},
                       {'name': 'test_kfk_running_counter_dynamic_what'},
-                      {'name': 'test_kfk_running_counter_static_tt'}],
+                      {'name': 'test_kfk_running_counter_static_tt'},
+                      {'name': 'test_timezone'}],
         'test_output': [
             {'name': 'test_kfk_value_const', 'output': 'json_value_const_adv.json', 'pipeline_type': 'kafka'},
             {'name': 'test_kfk_timestamp_ms', 'output': 'json_value_property.json', 'pipeline_type': 'kafka'},
@@ -32,6 +34,8 @@ class TestKafka(TestPipelineBase):
             {'name': 'test_kfk_running_counter_dynamic_what', 'output': 'running_counter_dynamic_what.json',
              'pipeline_type': 'kafka'},
             {'name': 'test_kfk_running_counter_static_tt', 'output': 'running_counter_static_tt.json',
+             'pipeline_type': 'kafka'},
+            {'name': 'test_timezone', 'output': 'kafka_timezone.json',
              'pipeline_type': 'kafka'}
         ],
         'test_delete_pipeline': [{'name': 'test_kfk_value_const'}, {'name': 'test_kfk_timestamp_ms'},
@@ -39,7 +43,8 @@ class TestKafka(TestPipelineBase):
                                  {'name': 'test_kfk_kafka_file_short'}, {'name': 'test_kfk_kafka_file_full'},
                                  {'name': 'test_csv'}, {'name': 'test_kfk_running_counter'},
                                  {'name': 'test_kfk_running_counter_dynamic_what'},
-                       {'name': 'test_kfk_running_counter_static_tt'}],
+                                 {'name': 'test_kfk_running_counter_static_tt'},
+                                 {'name': 'test_timezone'}],
         'test_source_delete': [{'name': 'test_kfk'}],
     }
 

@@ -37,6 +37,7 @@ class PromptConfig:
         if self.config['timestamp']['type'] == 'string':
             self.config['timestamp']['format'] = click.prompt('Timestamp format string', type=click.STRING,
                                                               default=self.config['timestamp'].get('format'))
+            self.set_timezone()
 
     @infinite_retry
     def prompt_property(self, text: str, default_value) -> str:

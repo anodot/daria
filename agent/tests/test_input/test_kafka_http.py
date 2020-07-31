@@ -21,15 +21,64 @@ class TestKafka:
             },
             {
                 'source_name': 'test_kfk',
-                'name': 'test_timezone',
+                'name': 'test_kfk_timestamp_ms',
+                'options': [],
+                'value': 'n\nClicks:gauge\nClicks:clicks',
+                'timestamp': 'timestamp_unix_ms\nunix_ms',
+                'advanced_options': '\n\n'
+            },
+            {
+                'source_name': 'test_kfk',
+                'name': 'test_kfk_timestamp_string',
                 'options': ['-a'],
                 'value': 'y\nclicks\ny\n\n \n ',
-                'timestamp': 'timestamp_string\nstring\nM/d/yyyy H:mm:ss\nAustralia/Brisbane',
-                'advanced_options': 'key1:val1\n\n\n'
+                'timestamp': 'timestamp_string\nstring\nM/d/yyyy H:mm:ss\n',
+                'advanced_options': 'key1:val1\ntag1:tagval tag2:tagval\n"Country" == "USA"\n/home/kafka_transform.csv'
+            },
+            {
+                'source_name': 'test_running_counters',
+                'name': 'test_kfk_running_counter',
+                'options': ['-a'],
+                'value': 'n\ny\n\nClicks:running_counter\nClicks:clicks',
+                'timestamp': 'timestamp_unix\nunix\n',
+                'advanced_options': 'key1:val1\n \n \n '
+            },
+            {
+                'source_name': 'test_running_counters',
+                'name': 'test_kfk_running_counter_static_tt',
+                'options': ['-a'],
+                'value': 'n\nn\n \nClicks:running_counter\nClicks:metric',
+                'timestamp': 'timestamp_unix\nunix\n',
+                'advanced_options': 'key1:val1\n \n \n '
+            },
+            {
+                'source_name': 'test_running_counters',
+                'name': 'test_kfk_running_counter_dynamic_what',
+                'options': ['-a'],
+                'value': 'n\nn\n\nClicks:agg_type\nClicks:metric',
+                'timestamp': 'timestamp_unix\nunix\n',
+                'advanced_options': 'key1:val1\n \n \n '
+            },
+            {
+                'source_name': 'test_json_arrays',
+                'name': 'test_json_arrays',
+                'options': ['-a'],
+                'value': 'n\nn\nkpis\nclicks.display,clicks.search\nClicks:gauge\nClicks:metric',
+                'timestamp': 'timestamp_unix\nunix\n',
+                'advanced_options': ' \n \n \n '
+            },
+            {
+                'source_name': 'test_kfk',
+                'name': 'test_timezone',
+                'options': ['-a'],
+                'value': 'n\ny\n \n\n ',
+                'timestamp': 'timestamp_string\nstring\nM/d/yyyy H:mm:ss\nEurope/Berlin',
+                'advanced_options': '\n\n\n\nn'
             },
         ],
         'test_edit': [
             {'options': ['test_kfk_value_const'], 'value': 'y\nclicks\n\n'},
+            {'options': ['test_kfk_timestamp_string', '-a'], 'value': 'n\nn\n\nClicks:agg_type\nClicks:metric'}
         ],
     }
 
