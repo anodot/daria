@@ -32,7 +32,7 @@ class TestKafka:
                 'name': 'test_kfk_timestamp_string',
                 'options': ['-a'],
                 'value': 'y\nclicks\ny\n\n \n ',
-                'timestamp': 'timestamp_string\nstring\nM/d/yyyy H:mm:ss\n',
+                'timestamp': 'timestamp_string\nstring\nM/d/yyyy H:mm:ss\n\n',
                 'advanced_options': 'key1:val1\ntag1:tagval tag2:tagval\n"Country" == "USA"\n/home/kafka_transform.csv'
             },
             {
@@ -72,8 +72,8 @@ class TestKafka:
                 'name': 'test_timezone',
                 'options': ['-a'],
                 'value': 'n\ny\n \n\n ',
-                'timestamp': 'timestamp_string\nstring\nM/d/yyyy H:mm:ss\nEurope/Berlin',
-                'advanced_options': '\n\n\n\nn'
+                'timestamp': 'timestamp_string\nstring\nM/d/yyyy H:mm:ss\nEurope/Berlin\n',
+                'advanced_options': '\n\n\nn'
             },
         ],
         'test_edit': [
