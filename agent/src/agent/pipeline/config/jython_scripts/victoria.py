@@ -15,7 +15,7 @@ N_REQUESTS_TRIES = 3
 
 
 def get_now_with_delay():
-    return int(time.time()) - sdc.userParams['DELAY_IN_MINUTES'] * 60
+    return int(time.time()) - int(sdc.userParams['DELAY_IN_MINUTES']) * 60
 
 
 def get_backfill_offset():
