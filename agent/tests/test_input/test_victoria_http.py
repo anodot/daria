@@ -16,16 +16,16 @@ class TestVictoria:
 
     def test_create(self, cli_runner):
         name = 'test_victoria'
-        query = 'match={__name__!=""}'
+        query = '{__name__!=""}'
         days_to_backfill = (datetime.now() - datetime(year=2020, month=7, day=7)).days + 3
         result = cli_runner.invoke(
             cli.pipeline.create,
-            input=f'test_victoria\n{name}\n{query}\n{days_to_backfill}\n1209600\ny\n'
+            input=f'test_victoria\n{name}\n{query}\n{days_to_backfill}\n1209600\n'
         )
         assert result.exit_code == 0
         assert api_client.get_pipeline(name)
 
     def test_edit(self, cli_runner):
-        result = cli_runner.invoke(cli.pipeline.edit, ['test_victoria'], input=f"\n\n\nn\n")
+        result = cli_runner.invoke(cli.pipeline.edit, ['test_victoria'], input=f"\n\n\n")
         print(result.output)
         assert result.exit_code == 0

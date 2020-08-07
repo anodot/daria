@@ -43,7 +43,7 @@ class PipelineManager:
     def validate_config(self):
         get_config_validator(self.pipeline).validate(self.pipeline)
 
-    def create(self):
+    def create(self) -> Pipeline:
         try:
             pipeline_obj = api_client.create_pipeline(self.pipeline.id)
             new_config = self.sdc_creator.override_base_config(new_uuid=pipeline_obj['uuid'],
@@ -53,6 +53,7 @@ class PipelineManager:
             delete(self.pipeline)
             raise pipeline.PipelineException(str(e))
         pipeline.repository.save(self.pipeline)
+        return self.pipeline
 
     @if_validation_enabled
     def show_preview(self):
@@ -467,7 +468,6 @@ def _get_test_pipeline_file_name(source_: source.Source) -> str:
         source.TYPE_SPLUNK: 'test_tcp_server_jksrj322',
         source.TYPE_DIRECTORY: 'test_directory_ksdjfjk21',
         source.TYPE_SAGE: 'test_sage_jfhdkj',
-        source.TYPE_VICTORIA: 'test_victoria_http_idfsds4',
     }
     return files[source_.type]
 

@@ -235,13 +235,17 @@ def _prompt(advanced: bool, sources: list):
     pipeline_manager = pipeline.manager.PipelineManager(pipeline.manager.create_object(pipeline_id, source_name))
     previous_config = _get_previous_pipeline_config(pipeline_manager.pipeline.source.type)
     pipeline_manager.prompt(previous_config, advanced)
-    pipeline_manager.create()
+    pipeline_ = pipeline_manager.create()
 
     click.secho('Created pipeline {}'.format(pipeline_id), fg='green')
+    if _should_prompt_preview(pipeline_):
+        if click.confirm('Would you like to see the result data preview?', default=True):
+            pipeline_manager.show_preview()
+            print('To change the config use `agent pipeline edit`')
 
-    if click.confirm('Would you like to see the result data preview?', default=True):
-        pipeline_manager.show_preview()
-        print('To change the config use `agent pipeline edit`')
+
+def _should_prompt_preview(pipeline_: pipeline.Pipeline) -> bool:
+    return pipeline_.source.type not in [source.TYPE_VICTORIA]
 
 
 def _edit_using_file(file):
@@ -258,9 +262,10 @@ def _prompt_edit(advanced, pipeline_id):
         pipeline.manager.update(pipeline_manager.pipeline)
 
         click.secho('Updated pipeline {}'.format(pipeline_id), fg='green')
-        if click.confirm('Would you like to see the result data preview?', default=True):
-            pipeline_manager.show_preview()
-            print('To change the config use `agent pipeline edit`')
+        if _should_prompt_preview(pipeline_manager.pipeline):
+            if click.confirm('Would you like to see the result data preview?', default=True):
+                pipeline_manager.show_preview()
+                print('To change the config use `agent pipeline edit`')
     except pipeline.repository.PipelineNotExistsException:
         raise click.UsageError(f'{pipeline_id} does not exist')
 

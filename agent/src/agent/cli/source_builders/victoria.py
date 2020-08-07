@@ -7,11 +7,16 @@ from agent import source
 
 class VictoriaSourceBuilder(Builder):
     def prompt(self, default_config, advanced=False):
+        self.prompt_connection(default_config)
+        self.source.set_config(self.source.config)
+        return self.source
+
+    @infinite_retry
+    def prompt_connection(self, default_config):
         self.prompt_url(default_config)
         self.prompt_username(default_config)
         self.prompt_password(default_config)
-        self.source.set_config(self.source.config)
-        return self.source
+        self.validator.validate_connection()
 
     @infinite_retry
     def prompt_url(self, default_config):

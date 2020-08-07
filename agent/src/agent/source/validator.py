@@ -1,11 +1,12 @@
 import json
 import os
 import jsonschema
+import requests
 import sqlalchemy
 
 from datetime import datetime
 from urllib.parse import urlparse, urlunparse
-from agent import source, pipeline, tools
+from agent import source, pipeline
 from agent.streamsets_api_client import api_client
 from agent.tools import if_validation_enabled
 from agent.validator import is_valid_url
@@ -43,7 +44,7 @@ class Validator:
             api_client.delete_pipeline(test_pipeline_name)
         return True
 
-# todo why /data/errors/victoria_http_idfsds4test_victoria_2 not exist?
+
 def validate(source_: source.Source):
     validator = get_validator(source_)
     validator.validate()
@@ -252,6 +253,22 @@ class SageValidator(Validator):
 
 class VictoriaMetricsValidator(Validator):
     VALIDATION_SCHEMA_FILE = 'victoria.json'
+
+    def validate_connection(self):
+        url = self.source.config['url'] + '/api/v1/export?match[]={__name__="not_existing_dsger43"}'
+        session = requests.Session()
+        if self.source.config[source.VictoriaMetricsSource.USERNAME]:
+            session.auth = (
+                self.source.config[source.VictoriaMetricsSource.USERNAME],
+                self.source.config[source.VictoriaMetricsSource.PASSWORD]
+            )
+        try:
+            res = session.get(url)
+            res.raise_for_status()
+        except requests.exceptions.RequestException:
+            raise ValidationException(
+                'Failed connecting to VictoriaMetrics. Make sure you provided correct url, username and password'
+            )
 
 
 class SchemalessValidator(Validator):
