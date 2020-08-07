@@ -32,7 +32,7 @@ class TestKafka:
                 'name': 'test_kfk_timestamp_string',
                 'options': ['-a'],
                 'value': 'y\nclicks\ny\n\n \n ',
-                'timestamp': 'timestamp_string\nstring\nM/d/yyyy H:mm:ss\n\n',
+                'timestamp': 'timestamp_string\nstring\nM/d/yyyy H:mm:ss\n',
                 'advanced_options': 'key1:val1\ntag1:tagval tag2:tagval\n"Country" == "USA"\n/home/kafka_transform.csv'
             },
             {
@@ -72,7 +72,7 @@ class TestKafka:
                 'name': 'test_timezone',
                 'options': ['-a'],
                 'value': 'n\ny\n \n\n ',
-                'timestamp': 'timestamp_string\nstring\nM/d/yyyy H:mm:ss\nEurope/Berlin\n',
+                'timestamp': 'timestamp_string\nstring\nM/d/yyyy H:mm:ss\nEurope/Berlin',
                 'advanced_options': '\n\n\nn'
             },
         ],
@@ -94,6 +94,7 @@ class TestKafka:
             options,
             input=f"{source_name}\n{name}\n\n{value}\n{timestamp}\nver Country\nExchange optional_dim ad_type ADTYPE GEN\n\n{advanced_options}\n"
         )
+        print(result.output)
         assert result.exit_code == 0
         assert api_client.get_pipeline(name)
 

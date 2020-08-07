@@ -13,7 +13,7 @@ DOCKER_TEST_DEV_PARALLEL = $(DOCKER_TEST_PARALLEL) -vv
 ##---------
 all: build-all test-all
 
-build-all: get-streamsets-libs build sleep setup-elastic setup-kafka
+build-all: get-streamsets-libs build-docker sleep setup-elastic setup-kafka
 
 test-all: run-unit-tests test-destination test-antomation test-api test-input test-pipelines
 
@@ -85,7 +85,7 @@ run-unit-tests-dev:
 ##---------------------------
 ## RELEASE DEPENDENCY TARGETS
 ##---------------------------
-build:
+build-docker:
 	docker-compose build --build-arg GIT_SHA1="$(shell git describe --dirty --always)"
 	docker-compose up -d
 
