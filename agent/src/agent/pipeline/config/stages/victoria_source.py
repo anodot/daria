@@ -11,4 +11,5 @@ class VictoriaScript(Stage):
             {'key': 'QUERY', 'value': self.pipeline.config['query']},
             {'key': 'DAYS_TO_BACKFILL', 'value': str(self.pipeline.days_to_backfill)},
             {'key': 'INTERVAL', 'value': str(self.pipeline.interval)},
+            {'key': 'DELAY_IN_MINUTES', 'value': str(self.pipeline.delay)},
         ]}

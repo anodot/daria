@@ -14,8 +14,8 @@ entityName = ''
 N_REQUESTS_TRIES = 3
 
 
-def get_now():
-    return int(time.time())
+def get_now_with_delay():
+    return int(time.time()) - sdc.userParams['DELAY_IN_MINUTES'] * 60
 
 
 def get_backfill_offset():
@@ -23,8 +23,8 @@ def get_backfill_offset():
         return int(float(sdc.lastOffsets.get(entityName)))
     days_ago = int(sdc.userParams['DAYS_TO_BACKFILL'])
     if bool(days_ago):
-        return get_now() - days_ago * 24 * 60 * 60
-    return get_now() - get_interval()
+        return get_now_with_delay() - days_ago * 24 * 60 * 60
+    return get_now_with_delay() - get_interval()
 
 
 def get_interval():
@@ -58,8 +58,8 @@ end = start + interval
 
 try:
     while True:
-        if end > get_now():
-            time.sleep(end - get_now())
+        if end > get_now_with_delay():
+            time.sleep(end - get_now_with_delay())
         if sdc.isStopped():
             break
 
@@ -83,7 +83,7 @@ try:
                 metric = base_metric
                 metric['timestamp'] = record['timestamps'][j]
                 metric['value'] = record['values'][j]
-                new_record = sdc.createRecord('record created ' + str(get_now()))
+                new_record = sdc.createRecord('record created ' + str(get_now_with_delay()))
                 new_record.value = metric
                 cur_batch.add(new_record)
             cur_batch.process(entityName, str(end))

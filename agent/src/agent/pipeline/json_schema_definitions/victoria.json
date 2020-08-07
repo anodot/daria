@@ -9,6 +9,7 @@
     "query": {"type": "string"},
     "days_to_backfill": {"type": "integer"},
     "interval": {"type": "integer"},
+    "delay": {"type": "integer"},
     "pipeline_id": {"type": "string"},
     "source": {"type": "string"}
   },

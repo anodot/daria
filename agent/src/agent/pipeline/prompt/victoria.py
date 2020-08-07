@@ -8,6 +8,7 @@ class PromptConfigVictoria(PromptConfig):
         self.prompt_query()
         self.prompt_days_to_backfill()
         self.prompt_interval()
+        self.prompt_delay()
         self.config['timestamp'] = {}
         self.config['timestamp']['type'] = 'unix'
         self.set_static_properties()
@@ -25,3 +26,7 @@ class PromptConfigVictoria(PromptConfig):
     def prompt_interval(self):
         self.config['interval'] = click.prompt('Query interval (in seconds)', type=click.INT,
                                                default=self.default_config.get('interval'))
+
+    def prompt_delay(self):
+        self.config['delay'] = click.prompt('Delay (in minutes)', type=click.INT,
+                                            default=self.default_config.get('delay', 0))
