@@ -1,5 +1,4 @@
 import time
-
 import pytest
 
 from ..fixtures import cli_runner
@@ -31,6 +30,15 @@ class TestVictoria(TestPipelineBase):
 
     def test_stop(self, cli_runner, name=None):
         pytest.skip()
+
+    def test_create_source_with_file(self, cli_runner, file_name):
+        super().test_create_source_with_file(cli_runner, file_name)
+
+    def test_create_with_file(self, cli_runner, file_name):
+        super().test_create_with_file(cli_runner, file_name)
+
+    def test_start(self, cli_runner, name):
+        super().test_start(cli_runner, name)
 
     def test_force_stop(self, cli_runner, name):
         time.sleep(10)
