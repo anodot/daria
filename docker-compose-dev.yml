@@ -42,7 +42,7 @@ services:
       - dummy-destination-data:/output
       - ./agent:/usr/src/app
       - ./data:/usr/src/app/data
-      - ./scripts:/usr/src/app/scripts
+#      - ./scripts:/usr/src/app/scripts
       - ./test-datasets:/home
       - ./agent/src/agent/api:/app
     ports:
