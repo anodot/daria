@@ -17,7 +17,7 @@ class TestVictoria:
     def test_create(self, cli_runner):
         name = 'test_victoria'
         query = '{__name__!=""}'
-        days_to_backfill = (datetime.now() - datetime(year=2020, month=7, day=7)).days + 3
+        days_to_backfill = (datetime.now() - datetime(year=2020, month=7, day=7)).days + 1
         result = cli_runner.invoke(
             cli.pipeline.create,
             input=f'test_victoria\n{name}\n{query}\n{days_to_backfill}\n1209600\n\n'

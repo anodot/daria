@@ -33,5 +33,5 @@ class TestVictoria(TestPipelineBase):
         pytest.skip()
 
     def test_force_stop(self, cli_runner, name):
-        time.sleep(5)
+        time.sleep(10)
         super().test_force_stop(cli_runner, name)
