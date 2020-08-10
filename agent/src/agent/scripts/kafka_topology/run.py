@@ -17,7 +17,7 @@ def get_file_path(name):
     return f'/tmp/{name}'
 
 
-def read_data(topic, file_type, brokers) -> int:
+def read_data(topic, file_type, brokers: list) -> int:
     consumer = KafkaConsumer(topic,
                              group_id='anodot_topology',
                              bootstrap_servers=brokers,
@@ -36,7 +36,7 @@ def read_data(topic, file_type, brokers) -> int:
     return count_messages
 
 
-def run(topic, file_type, brokers):
+def run(topic, file_type, brokers: list):
     try:
         destination_ = destination.HttpDestination.get()
         api_client = anodot.ApiClient(destination_.access_key,
