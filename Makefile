@@ -3,10 +3,8 @@ SLEEP = 60
 THREADS = 4
 DOCKER_COMPOSE_DEV_FILE = docker-compose-dev.yml
 DOCKER_COMPOSE_DEV = docker-compose -f $(DOCKER_COMPOSE_DEV_FILE)
-DOCKER_TEST = docker exec -i anodot-agent pytest -x  --disable-pytest-warnings
+DOCKER_TEST = docker exec -i anodot-agent pytest -x -vv --disable-pytest-warnings
 DOCKER_TEST_PARALLEL = $(DOCKER_TEST) -n $(THREADS) --dist=loadfile
-DOCKER_TEST_DEV = $(DOCKER_TEST) -vv
-DOCKER_TEST_DEV_PARALLEL = $(DOCKER_TEST_PARALLEL) -vv
 
 ##---------
 ## RELEASE
@@ -15,18 +13,16 @@ all: build-all test-all
 
 build-all: get-streamsets-libs build-docker sleep setup-elastic setup-kafka setup-victoria
 
-test-all: run-unit-tests test-destination test-antomation test-api test-input test-pipelines
+test-all: run-unit-tests test-flask-app test-destination test-antomation test-api test-input test-pipelines
 
 ##-------------
 ## DEVELOPMENT
 ##-------------
-all-dev: clean-docker-volumes build-all-dev sleep test-all-dev
+all-dev: clean-docker-volumes build-all-dev sleep test-all
 
 build-all-dev: build-dev sleep setup-elastic setup-kafka setup-victoria
 
 run-all-dev: clean-docker-volumes run-dev sleep setup-kafka setup-elastic
-
-test-all-dev: run-unit-tests-dev test-dev-destination test-dev-api test-dev-condition-parser test-dev-input test-dev-pipelines
 
 rerun: clean-docker-volumes run-base-services
 
@@ -38,51 +34,45 @@ stop: clean-docker-volumes
 ##-----------------------
 ## TEST SEPARATE SOURCES
 ##-----------------------
-test-directory: prepare-source test-destination-dev
-	$(DOCKER_TEST_DEV) tests/test_input/test_directory_http.py
-	$(DOCKER_TEST_DEV) tests/test_pipelines/test_directory_http.py
+test-directory: prepare-source test-destination
+	$(DOCKER_TEST) tests/test_input/test_directory_http.py
+	$(DOCKER_TEST) tests/test_pipelines/test_directory_http.py
 
-test-elastic: prepare-source build-elastic setup-elastic test-destination-dev
-	$(DOCKER_TEST_DEV) tests/test_input/test_elastic_http.py
-	$(DOCKER_TEST_DEV) tests/test_pipelines/test_elastic_http.py
+test-elastic: prepare-source run-elastic setup-elastic test-destination
+	$(DOCKER_TEST) tests/test_input/test_elastic_http.py
+	$(DOCKER_TEST) tests/test_pipelines/test_elastic_http.py
 
-test-influx: prepare-source build-influx test-destination-dev
-	$(DOCKER_TEST_DEV) tests/test_input/test_influx_http.py
-	$(DOCKER_TEST_DEV) tests/test_pipelines/test_influx_http.py
-
-test-victoria: prepare-source build-victoria setup-victoria test-destination-dev
+test-victoria: prepare-source build-victoria setup-victoria test-destination
 	$(DOCKER_TEST_DEV) tests/test_input/test_victoria_http.py
 	$(DOCKER_TEST_DEV) tests/test_pipelines/test_victoria_http.py
 
-test-kafka: prepare-source build-kafka setup-kafka test-destination-dev
-	$(DOCKER_TEST_DEV) tests/test_input/test_kafka_http.py
-	$(DOCKER_TEST_DEV) tests/test_pipelines/test_kafka_http.py
+test-influx: prepare-source run-influx test-destination
+	$(DOCKER_TEST) tests/test_input/test_influx_http.py
+	$(DOCKER_TEST) tests/test_pipelines/test_influx_http.py
 
-test-mongo: prepare-source build-mongo test-destination-dev
-	$(DOCKER_TEST_DEV) tests/test_input/test_mongo_http.py
-	$(DOCKER_TEST_DEV) tests/test_pipelines/test_mongo_http.py
+test-kafka: prepare-source run-kafka setup-kafka test-destination
+	$(DOCKER_TEST) tests/test_input/test_kafka_http.py
+	$(DOCKER_TEST) tests/test_pipelines/test_kafka_http.py
 
-test-mysql: prepare-source build-mysql test-destination-dev
-	$(DOCKER_TEST_DEV) tests/test_input/test_mysql_http.py
-	$(DOCKER_TEST_DEV) tests/test_pipelines/test_mysql_http.py
+test-mongo: prepare-source run-mongo test-destination
+	$(DOCKER_TEST) tests/test_input/test_mongo_http.py
+	$(DOCKER_TEST) tests/test_pipelines/test_mongo_http.py
 
-test-postgres: prepare-source build-postgres test-destination-dev
-	$(DOCKER_TEST_DEV) tests/test_input/test_postgres_http.py
-	$(DOCKER_TEST_DEV) tests/test_pipelines/test_postgres_http.py
+test-mysql: prepare-source run-mysql test-destination
+	$(DOCKER_TEST) tests/test_input/test_mysql_http.py
+	$(DOCKER_TEST) tests/test_pipelines/test_mysql_http.py
 
-test-tcp: prepare-source test-destination-dev
-	$(DOCKER_TEST_DEV) tests/test_input/test_tcp_http.py
-	$(DOCKER_TEST_DEV) tests/test_pipelines/test_tcp_http.py
+test-postgres: prepare-source run-postgres test-destination
+	$(DOCKER_TEST) tests/test_input/test_postgres_http.py
+	$(DOCKER_TEST) tests/test_pipelines/test_postgres_http.py
 
-test-sage: prepare-source build-sage test-destination-dev
-	$(DOCKER_TEST_DEV) tests/test_input/test_sage_http.py
-	$(DOCKER_TEST_DEV) tests/test_pipelines/test_sage_http.py
+test-tcp: prepare-source test-destination
+	$(DOCKER_TEST) tests/test_input/test_tcp_http.py
+	$(DOCKER_TEST) tests/test_pipelines/test_tcp_http.py
 
-test-destination-dev: prepare-source nap
-	$(DOCKER_TEST_DEV) tests/test_destination.py
-
-run-unit-tests-dev:
-	$(DOCKER_TEST_DEV_PARALLEL) tests/unit/
+test-sage: prepare-source run-sage test-destination
+	$(DOCKER_TEST) tests/test_input/test_sage_http.py
+	$(DOCKER_TEST) tests/test_pipelines/test_sage_http.py
 
 
 
@@ -109,6 +99,9 @@ test-api:
 	$(DOCKER_TEST) tests/api/test_destination.py
 	$(DOCKER_TEST) tests/api/source
 
+test-flask-app:
+	$(DOCKER_TEST) tests/api/test_flask_app.py
+
 run-unit-tests:
 	$(DOCKER_TEST_PARALLEL) tests/unit/
 
@@ -128,22 +121,6 @@ run-dev:
 	$(DOCKER_COMPOSE_DEV) up -d
 	docker exec -i anodot-agent python setup.py develop
 
-test-dev-destination:
-	$(DOCKER_TEST_DEV) tests/test_destination.py
-
-test-dev-condition-parser:
-	$(DOCKER_TEST_DEV) tests/unit/test_condition_parser.py
-
-test-dev-input:
-	$(DOCKER_TEST_DEV_PARALLEL) tests/test_input/
-
-test-dev-pipelines:
-	$(DOCKER_TEST_DEV_PARALLEL) tests/test_pipelines/
-
-test-dev-api:
-	$(DOCKER_TEST_DEV) tests/api/test_destination.py
-	$(DOCKER_TEST_DEV) tests/api/source
-
 prepare-source: clean-docker-volumes run-base-services
 
 clean-docker-volumes:
@@ -159,33 +136,33 @@ build-base-services: clean-docker-volumes
 	$(DOCKER_COMPOSE_DEV) up -d --build agent dc squid dummy_destination
 	docker exec -i anodot-agent python setup.py develop
 
-build-elastic:
+run-elastic:
 	$(DOCKER_COMPOSE_DEV) up -d es
 	sleep $(SLEEP)
 
-build-influx:
+run-influx:
 	$(DOCKER_COMPOSE_DEV) up -d influx
 
 build-victoria:
 	$(DOCKER_COMPOSE_DEV) up -d victoriametrics
 
-build-kafka: build-zookeeper
+run-kafka: run-zookeeper
 	$(DOCKER_COMPOSE_DEV) up -d kafka
 	sleep $(SLEEP)
 
-build-zookeeper:
+run-zookeeper:
 	$(DOCKER_COMPOSE_DEV) up -d zookeeper
 
-build-mongo:
+run-mongo:
 	$(DOCKER_COMPOSE_DEV) up -d mongo
 
-build-mysql:
+run-mysql:
 	$(DOCKER_COMPOSE_DEV) up -d mysql
 
-build-postgres:
+run-postgres:
 	$(DOCKER_COMPOSE_DEV) up -d postgres
 
-build-sage:
+run-sage:
 	docker-compose up -d --build sage
 
 ##--------------------------

@@ -30,6 +30,7 @@ class LoadClientData:
             schema = json.load(f)
         if self.edit:
             schema['required'] = []
+        # todo don't validate here
         validate(self.client_config, schema)
         client_config.pop('source', None)
         return self.client_config

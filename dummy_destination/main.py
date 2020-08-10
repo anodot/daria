@@ -63,7 +63,17 @@ def delete_schema_mock(schema_id):
 
 @app.route('/api/v1/status', methods=['GET'])
 def status():
-    return 'ok'
+    return json.dumps({'result': 'ok'})
+
+
+@app.route('/api/v2/topology/data', methods=['POST'])
+def topology_data():
+    if 'type' not in request.args:
+        return 'Specify "type"', 400
+
+    with open(os.path.join(OUTPUT_DIR, f'topology_{request.args["type"]}.gz'), 'wb') as f:
+        f.write(request.get_data())
+    return json.dumps({'result': 'ok'})
 
 
 if __name__ == '__main__':
