@@ -12,4 +12,9 @@ ENV DATA_DIR="data" STREAMSETS_USERNAME="admin" STREAMSETS_PASSWORD="admin" STRE
     LOG_FILE_PATH="/var/log/agent.log" ANODOT_API_URL="http://api.anodot.com" SDC_DATA_PATH="/sdc-data" ENV_PROD='true' \
     GIT_SHA1=local-build VALIDATION_ENABLED="true"
 
+# flask application path
+ENV UWSGI_INI="/usr/src/app/src/agent/api/uwsgi.ini"
+
 RUN pip install --upgrade pip && pip install -r requirements.txt && python setup.py develop
+
+WORKDIR /usr/src/app/src/agent/api/
