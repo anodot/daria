@@ -7,6 +7,7 @@ ARG GIT_SHA1=local-build
 WORKDIR /usr/src/app
 
 COPY . .
+COPY ./src/agent/api /app
 COPY .bashrc /root/.bashrc
 
 VOLUME /usr/src/app/data
