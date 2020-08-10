@@ -7,6 +7,7 @@ ARG GIT_SHA1=local-build
 WORKDIR /usr/src/app
 
 COPY . .
+COPY ./src/agent/api /app
 COPY .bashrc /root/.bashrc
 
 VOLUME /usr/src/app/data
@@ -16,10 +17,5 @@ ENV SDC_CONF_PARSER_LIMIT="20048576" DATA_DIR="/usr/src/app/data" STREAMSETS_USE
 
 ENV LOG_FILE_PATH="/var/log/agent.log" ANODOT_API_URL="http://api.anodot.com" ENV_PROD='true' VALIDATION_ENABLED="true"
 
-# flask application path
-ENV UWSGI_INI="/usr/src/app/src/agent/api/uwsgi.ini"
-
 RUN pip install --upgrade pip && pip install -r requirements.txt && python setup.py install && echo ". /usr/src/app/agent-complete.sh" >> /root/.bashrc
 RUN apt update && apt install -y vim netcat curl nano
-
-WORKDIR /usr/src/app/src/agent/api/

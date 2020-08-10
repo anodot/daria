@@ -44,6 +44,7 @@ services:
       - ./data:/usr/src/app/data
       - ./scripts:/usr/src/app/scripts
       - ./test-datasets:/home
+      - ./agent/src/agent/api:/app
     ports:
       - 80:80
 

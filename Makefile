@@ -3,7 +3,7 @@ SLEEP = 60
 THREADS = 4
 DOCKER_COMPOSE_DEV_FILE = docker-compose-dev.yml
 DOCKER_COMPOSE_DEV = docker-compose -f $(DOCKER_COMPOSE_DEV_FILE)
-DOCKER_TEST = docker exec -w /usr/src/app/ -i anodot-agent pytest -x  --disable-pytest-warnings
+DOCKER_TEST = docker exec -i anodot-agent pytest -x  --disable-pytest-warnings
 DOCKER_TEST_PARALLEL = $(DOCKER_TEST) -n $(THREADS) --dist=loadfile
 DOCKER_TEST_DEV = $(DOCKER_TEST) -vv
 DOCKER_TEST_DEV_PARALLEL = $(DOCKER_TEST_PARALLEL) -vv
