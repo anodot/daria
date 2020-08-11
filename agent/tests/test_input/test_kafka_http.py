@@ -17,7 +17,7 @@ class TestKafka:
                 'options': ['-a'],
                 'value': 'y\nclicks\ny\n\n \n ',
                 'timestamp': 'timestamp_unix\nunix',
-                'advanced_options': 'key1:val1\n\n\n'
+                'advanced_options': 'key1:val1\n\n\n\n'
             },
             {
                 'source_name': 'test_kfk',
@@ -25,7 +25,7 @@ class TestKafka:
                 'options': [],
                 'value': 'n\nClicks:gauge\nClicks:clicks',
                 'timestamp': 'timestamp_unix_ms\nunix_ms',
-                'advanced_options': '\n\n'
+                'advanced_options': ''
             },
             {
                 'source_name': 'test_kfk',
@@ -41,7 +41,7 @@ class TestKafka:
                 'options': ['-a'],
                 'value': 'n\ny\n\nClicks:running_counter\nClicks:clicks',
                 'timestamp': 'timestamp_unix\nunix',
-                'advanced_options': 'key1:val1\n \n \n '
+                'advanced_options': 'key1:val1\n \n \n \nn'
             },
             {
                 'source_name': 'test_running_counters',
@@ -49,7 +49,7 @@ class TestKafka:
                 'options': ['-a'],
                 'value': 'n\nn\n \nClicks:running_counter\nClicks:metric',
                 'timestamp': 'timestamp_unix\nunix',
-                'advanced_options': 'key1:val1\n \n \n '
+                'advanced_options': 'key1:val1\n \n \n \nn'
             },
             {
                 'source_name': 'test_running_counters',
@@ -57,7 +57,7 @@ class TestKafka:
                 'options': ['-a'],
                 'value': 'n\nn\n\nClicks:agg_type\nClicks:metric',
                 'timestamp': 'timestamp_unix\nunix',
-                'advanced_options': 'key1:val1\n \n \n '
+                'advanced_options': 'key1:val1\n \n \n \nn'
             },
             {
                 'source_name': 'test_json_arrays',
@@ -65,7 +65,7 @@ class TestKafka:
                 'options': ['-a'],
                 'value': 'n\nn\nkpis\nclicks.display,clicks.search\nClicks:gauge\nClicks:metric',
                 'timestamp': 'timestamp_unix\nunix',
-                'advanced_options': ' \n \n \n '
+                'advanced_options': ' \n \n \n \nn'
             },
             {
                 'source_name': 'test_kfk',
@@ -73,7 +73,7 @@ class TestKafka:
                 'options': ['-a'],
                 'value': 'n\ny\n \n\n ',
                 'timestamp': 'timestamp_string\nstring\nM/d/yyyy H:mm:ss\nEurope/Berlin',
-                'advanced_options': '\n\n\nn'
+                'advanced_options': '\n\n\n\nn'
             },
         ],
         'test_edit': [
