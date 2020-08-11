@@ -169,6 +169,7 @@ services:
     command:
       - '--storageDataPath=/storage'
       - '--httpListenAddr=:8428'
+      - '--retentionPeriod=600'
     restart: always
 
 

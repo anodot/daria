@@ -41,5 +41,5 @@ class TestVictoria(TestPipelineBase):
         super().test_start(cli_runner, name)
 
     def test_force_stop(self, cli_runner, name):
-        time.sleep(10)
+        time.sleep(5)
         super().test_force_stop(cli_runner, name)
