@@ -69,7 +69,7 @@ class TestKafka:
             },
             {
                 'source_name': 'test_kfk',
-                'name': 'test_timezone',
+                'name': 'test_kafka_timezone',
                 'options': ['-a'],
                 'value': 'n\ny\n \n\n ',
                 'timestamp': 'timestamp_string\nstring\nM/d/yyyy H:mm:ss\nEurope/Berlin',
