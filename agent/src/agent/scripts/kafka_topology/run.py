@@ -37,19 +37,16 @@ def read_data(topic, file_type, brokers: list) -> int:
 
 
 def run(topic, file_type, brokers: list):
-    try:
-        destination_ = destination.HttpDestination.get()
-        api_client = anodot.ApiClient(destination_.access_key,
-                                      proxies=proxy.get_config(destination_.proxy),
-                                      base_url=destination_.url)
-        messages_received = read_data(topic, file_type, brokers)
-        logger_.info(str(messages_received) + ' messages was read')
+    destination_ = destination.HttpDestination.get()
+    api_client = anodot.ApiClient(destination_.access_key,
+                                  proxies=proxy.get_config(destination_.proxy),
+                                  base_url=destination_.url)
+    messages_received = read_data(topic, file_type, brokers)
+    logger_.info(str(messages_received) + ' messages was read')
 
-        with open(get_file_path(args.type), 'rb') as f_in:
-            result = api_client.send_topology_data(args.type, gzip.compress(f_in.read()))
-            logger_.info('File sent: ' + str(result))
-    except Exception:
-        logger_.exception('Uncaught exception')
+    with open(get_file_path(file_type), 'rb') as f_in:
+        result = api_client.send_topology_data(file_type, gzip.compress(f_in.read()))
+        logger_.info('File sent: ' + str(result))
 
 
 if __name__ == '__main__':
@@ -59,4 +56,7 @@ if __name__ == '__main__':
     parser.add_argument('--type', required=True, help='Can be one of those: ring, zipcode, ncr')
 
     args = parser.parse_args()
-    run(args.topic, args.type, args.brokers.split(','))
+    try:
+        run(args.topic, args.type, args.brokers.split(','))
+    except Exception:
+        logger_.exception('Uncaught exception')

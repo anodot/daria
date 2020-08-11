@@ -33,8 +33,6 @@ services:
       SDC_DATA_PATH: '/sdc-data'
 #      ENV_PROD: 'false'
       GIT_SHA1: 'local'
-    stdin_open: true
-    tty: true
     depends_on:
       - dc
     volumes:
