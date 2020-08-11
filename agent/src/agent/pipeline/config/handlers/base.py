@@ -14,7 +14,6 @@ class BaseConfigHandler:
     Overrides base config file
     """
     PIPELINE_BASE_CONFIG_NAME = ''
-    JYTHON_SCRIPTS_PATH = os.path.join('pipeline', 'config', 'jython_scripts')
     BASE_PIPELINE_CONFIGS_PATH = os.path.join('pipeline', 'config', 'base_pipelines')
 
     stages = {}

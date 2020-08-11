@@ -63,9 +63,10 @@ try:
         if sdc.isStopped():
             break
 
+        i = 0
         curr_url = url + '&start=' + str(start) + '&end=' + str(end)
+        cur_batch = sdc.createBatch()
         for row in make_request(curr_url).iter_lines():
-            cur_batch = sdc.createBatch()
             record = json.loads(row.decode("utf-8"))
             sdc.log.debug(row)
             base_metric = {
@@ -86,7 +87,14 @@ try:
                 new_record = sdc.createRecord('record created ' + str(get_now_with_delay()))
                 new_record.value = metric
                 cur_batch.add(new_record)
-            cur_batch.process(entityName, str(end))
+                i += 1
+                # process batches of the size 1000
+                if i % 1000 == 0:
+                    cur_batch.process(entityName, str(end))
+                    cur_batch = sdc.createBatch()
+            # if we didn't process the batch for the last time
+            if i % 1000 != 0:
+                cur_batch.process(entityName, str(end))
         start = end
         end += interval
 except Exception as e:
