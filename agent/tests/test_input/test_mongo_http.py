@@ -18,7 +18,7 @@ class TestMongo:
                         {'name': 'test_timestamp_datetime', 'options': [], 'value': 'n\nClicks:gauge\nClicks:clicks',
                          'timestamp': 'timestamp_datetime\ndatetime', 'advanced_options': '\n\n'},
                         {'name': 'test_timestamp_string', 'options': ['-a'], 'value': 'n\n\n\nClicks:gauge\nClicks:clicks',
-                         'timestamp': 'timestamp_string\nstring\nM/d/yyyy H:mm:ss\n',
+                         'timestamp': 'timestamp_string\nstring\nM/d/yyyy H:mm:ss',
                          'advanced_options': 'key1:val1\n\n\n'}],
         'test_edit': [{'options': ['test_value_const'], 'value': 'y\nclicks\n\n'}],
     }

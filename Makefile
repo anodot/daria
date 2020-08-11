@@ -34,7 +34,7 @@ stop: clean-docker-volumes
 ##-----------------------
 ## TEST SEPARATE SOURCES
 ##-----------------------
-test-directory: prepare-source test-destination
+test-directory: prepare-source nap test-destination
 	$(DOCKER_TEST) tests/test_input/test_directory_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_directory_http.py
 
@@ -42,7 +42,7 @@ test-elastic: prepare-source run-elastic setup-elastic test-destination
 	$(DOCKER_TEST) tests/test_input/test_elastic_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_elastic_http.py
 
-test-influx: prepare-source run-influx test-destination
+test-influx: prepare-source run-influx nap test-destination
 	$(DOCKER_TEST) tests/test_input/test_influx_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_influx_http.py
 
@@ -50,23 +50,23 @@ test-kafka: prepare-source run-kafka setup-kafka test-destination
 	$(DOCKER_TEST) tests/test_input/test_kafka_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_kafka_http.py
 
-test-mongo: prepare-source run-mongo test-destination
+test-mongo: prepare-source run-mongo nap test-destination
 	$(DOCKER_TEST) tests/test_input/test_mongo_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_mongo_http.py
 
-test-mysql: prepare-source run-mysql test-destination
+test-mysql: prepare-source run-mysql nap test-destination
 	$(DOCKER_TEST) tests/test_input/test_mysql_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_mysql_http.py
 
-test-postgres: prepare-source run-postgres test-destination
+test-postgres: prepare-source run-postgres nap test-destination
 	$(DOCKER_TEST) tests/test_input/test_postgres_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_postgres_http.py
 
-test-tcp: prepare-source test-destination
+test-tcp: prepare-source nap test-destination
 	$(DOCKER_TEST) tests/test_input/test_tcp_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_tcp_http.py
 
-test-sage: prepare-source run-sage test-destination
+test-sage: prepare-source run-sage nap test-destination
 	$(DOCKER_TEST) tests/test_input/test_sage_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_sage_http.py
 
