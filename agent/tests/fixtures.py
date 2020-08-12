@@ -5,16 +5,19 @@ import pytest
 from click.testing import CliRunner
 
 
+DUMMY_DESTINATION_OUTPUT_PATH = '/output'
+TEST_DATASETS_PATH = '/home'
+
+
 @pytest.fixture(scope="session")
 def cli_runner():
     yield CliRunner()
 
 
 def get_output(file_name):
-    dummy_destination_output_path = '/output'
-    for filename in os.listdir(dummy_destination_output_path):
+    for filename in os.listdir(DUMMY_DESTINATION_OUTPUT_PATH):
         if filename == file_name:
-            with open(os.path.join(dummy_destination_output_path, filename)) as f:
+            with open(os.path.join(DUMMY_DESTINATION_OUTPUT_PATH, filename)) as f:
                 return json.load(f)
 
 
