@@ -1,4 +1,3 @@
-import os
 import click
 
 from agent import pipeline
@@ -9,12 +8,11 @@ from jsonschema import ValidationError, SchemaError
 from . import source_builders
 
 
-def autocomplete(ctx, args, incomplete):
-    configs = []
-    for filename in os.listdir(source.repository.SOURCE_DIRECTORY):
-        if filename.endswith('.json') and incomplete in filename:
-            configs.append(filename.replace('.json', ''))
-    return configs
+def autocomplete(ctx, args, incomplete) -> list:
+    return list(map(
+        lambda s: s.name,
+        source.repository.find_by_name_beginning(incomplete)
+    ))
 
 
 @click.group(name='source')
@@ -90,7 +88,7 @@ def _edit_using_file(file):
 
 
 def _prompt_edit(name: str, advanced: bool) -> source.Source:
-    source_ = source.repository.get(name)
+    source_ = source.repository.get_by_name(name)
     builder = source_builders.get_builder(source_.name, source_.type)
     source_ = builder.prompt(source_.config, advanced=advanced)
     source.repository.update(source_)

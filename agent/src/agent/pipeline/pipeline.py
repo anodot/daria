@@ -1,5 +1,6 @@
 from agent import source
 from agent.constants import HOSTNAME
+from agent.db import entity
 from agent.destination import HttpDestination
 from enum import Enum
 
@@ -54,15 +55,19 @@ class Pipeline:
     TARGET_TYPES = ['counter', 'gauge', 'running_counter']
 
     def __init__(self, pipeline_id: str,
-                 source_obj: source.Source,
+                 source_: source.Source,
                  config: dict,
                  destination: HttpDestination):
         self.id = pipeline_id
         self.config = config
-        self.source = source_obj
+        self.source = source_
         self.destination = destination
         self.old_config = None
         self.override_source = config.pop(self.OVERRIDE_SOURCE, {})
+
+    @property
+    def name(self):
+        return self.id
 
     @property
     def constant_dimensions(self) -> dict:
@@ -196,6 +201,9 @@ class Pipeline:
             'pipeline_id': self.id,
             'source': {'name': self.source.name},
         }
+
+    def to_entity(self):
+        return entity.Pipeline(name=self.id, source_id=self.source.id)
 
     def set_config(self, config: dict):
         self.override_source = config.pop(self.OVERRIDE_SOURCE, {})

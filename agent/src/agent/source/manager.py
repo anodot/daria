@@ -66,7 +66,7 @@ def edit_using_json(configs: dict) -> List[source.Source]:
 
 def edit_source_using_json(config: dict) -> source.Source:
     source.manager.validate_config_for_edit(config)
-    source_ = source.repository.get(config['name'])
+    source_ = source.repository.get_by_name(config['name'])
     source_.set_config(config['config'])
     source.validator.validate(source_)
     source.repository.update(source_)
@@ -126,7 +126,7 @@ def get_previous_source_config(source_type):
     try:
         pipelines_with_source = api_client.get_pipelines(order_by='CREATED', order='DESC', label=source_type)
         if len(pipelines_with_source) > 0:
-            pipeline_obj = pipeline.repository.get(pipelines_with_source[-1]['pipelineId'])
+            pipeline_obj = pipeline.repository.get_by_name(pipelines_with_source[-1]['pipelineId'])
             return pipeline_obj.source.config
     except source.SourceConfigDeprecated:
         pass

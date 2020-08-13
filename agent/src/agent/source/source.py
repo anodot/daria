@@ -1,9 +1,11 @@
 from abc import ABC
 from agent import source
+from agent.db import entity
 
 
 class Source(ABC):
     def __init__(self, name: str, source_type: str, config: dict):
+        self.id = None
         self.config = config
         self.type = source_type
         self.name = name
@@ -11,6 +13,9 @@ class Source(ABC):
 
     def to_dict(self) -> dict:
         return {'name': self.name, 'type': self.type, 'config': self.config}
+
+    def to_entity(self) -> entity.Source:
+        return entity.Source(name=self.name, type=self.type, config=self.config)
 
     # todo refactor children
     def set_config(self, config):

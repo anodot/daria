@@ -1,5 +1,6 @@
 import os
 
+# todo here and in docker env
 DATA_DIR = os.environ.get('DATA_DIR', 'data')
 
 SDC_DATA_PATH = os.environ.get('SDC_DATA_PATH', '/sdc-data')
@@ -18,5 +19,4 @@ MONITORING_SOURCE_NAME = 'monitoring'
 
 VALIDATION_ENABLED = True if os.environ.get('VALIDATION_ENABLED') == 'true' else False
 
-# todo this constant is wrong
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))

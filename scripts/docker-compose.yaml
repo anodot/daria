@@ -27,6 +27,17 @@ services:
       - sdc-data:/sdc-data
       - agent-data:/usr/src/app/data
 
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: agent
+      POSTGRES_PASSWORD: agent
+      POSTGRES_DB: agent
+    volumes:
+      - /var/lib/postgresql/data
+      - ./init.db:/docker-entrypoint-initdb.d
+
 volumes:
   sdc-data:
   agent-data:

@@ -1,78 +1,92 @@
-import json
 import os
-from agent import source
-from agent import pipeline
-from agent.constants import DATA_DIR, MONITORING_SOURCE_NAME
-from jsonschema import ValidationError, validate
+from typing import List
 
+from agent.db import Session, entity
+from agent import source
+from agent.constants import DATA_DIR, MONITORING_SOURCE_NAME
+from jsonschema import ValidationError
+
+session = Session()
+
+# todo delete
 SOURCE_DIRECTORY = os.path.join(DATA_DIR, 'sources')
 
 
-def _get_file_path(name: str) -> str:
-    return os.path.join(SOURCE_DIRECTORY, name + '.json')
+def exists(source_name: str) -> bool:
+    return session.query(
+        session.query(entity.Source).filter(entity.Source.name == source_name).exists()
+    ).scalar()
 
 
-def exists(name: str) -> bool:
-    return os.path.isfile(_get_file_path(name))
+def update(source_: source.Source):
+    source_entity = _get_entity(source_.name)
+    source_entity.name = source_.name
+    source_entity.type = source_.type
+    source_entity.config = source_.config
+    session.commit()
 
 
-def _save(source_obj: source.Source):
-    with open(_get_file_path(source_obj.name), 'w') as f:
-        json.dump(source_obj.to_dict(), f)
-
-
-def update(source_obj: source.Source):
-    _save(source_obj)
-
-
-def create(source_obj: source.Source):
-    if exists(source_obj.name):
-        raise source.SourceException(f"Source config {source_obj.name} already exists")
-    _save(source_obj)
+def create(source_: source.Source):
+    if exists(source_.name):
+        raise source.SourceException(f"Source {source_.name} already exists")
+    session.add(source_.to_entity())
+    session.commit()
 
 
 def delete_by_name(source_name: str):
     if not exists(source_name):
         raise SourceNotExists(f"Source config {source_name} doesn't exist")
-    pipelines = pipeline.repository.get_by_source(source_name)
-    if pipelines:
+    source_entity = session.query(entity.Source).filter(entity.Source.name == source_name).first()
+    if source_entity.pipelines:
         raise Exception(
-            f"Can't delete. Source is used by {', '.join([p.id for p in pipelines])} pipelines"
-        )
-    os.remove(_get_file_path(source_name))
+                f"Can't delete. Source is used by {', '.join([p.name for p in source_entity.pipelines])} pipelines"
+            )
+    session.delete(source_entity)
+    session.commit()
 
 
-def get_all() -> list:
-    configs = []
-    if not os.path.exists(SOURCE_DIRECTORY):
-        return configs
-
-    for filename in os.listdir(SOURCE_DIRECTORY):
-        if filename.endswith('.json'):
-            configs.append(filename.replace('.json', ''))
-    return configs
+def get_all() -> List[source.Source]:
+    # todo fix places where it's used
+    sources = []
+    for source_entity in session.query(entity.Source).all():
+        sources.append(_construct_source(source_entity))
+    return sources
 
 
-def get(name: str) -> source.Source:
-    if name == MONITORING_SOURCE_NAME:
+def find_by_name_beginning(name_part: str) -> List:
+    return session.query(entity.Source).filter(entity.Source.name.like(f'{name_part}%')).all()
+
+
+def get(source_id: int) -> source.Source:
+    source_entity = session.query(entity.Source).get(source_id)
+    if not source_entity:
+        raise SourceNotExists(f"Source ID = {source_id} doesn't exist")
+    return _construct_source(source_entity)
+
+
+def get_by_name(source_name: str) -> source.Source:
+    if source_name == MONITORING_SOURCE_NAME:
         return source.MonitoringSource(MONITORING_SOURCE_NAME, source.TYPE_MONITORING, {})
-    if not exists(name):
-        raise SourceNotExists(f"Source config {name} doesn't exist")
-    with open(_get_file_path(name)) as f:
-        config = json.load(f)
-    validate(config, source.json_schema)
-    source_obj = source.manager.create_source_obj(name, config['type'])
-    source_obj.config = config['config']
+    return _construct_source(_get_entity(source_name))
+
+
+def _construct_source(source_entity: entity.Source) -> source.Source:
+    source_ = source.manager.create_source_obj(source_entity.name, source_entity.type)
+    source_.config = source_entity.config
+    source_.id = source_entity.id
+    # todo do we need this validation?
     try:
-        source.validator.get_validator(source_obj).validate_json()
+        source.validator.get_validator(source_).validate_json()
     except ValidationError:
-        raise SourceConfigDeprecated(f'Config for source {name} is not supported. Please recreate the source')
-    return source_obj
+        raise SourceConfigDeprecated(f'Config for source {source_entity.name} is not supported. Please recreate the source')
+    return source_
 
 
-def create_dir():
-    if not os.path.exists(SOURCE_DIRECTORY):
-        os.mkdir(SOURCE_DIRECTORY)
+def _get_entity(source_name: str) -> entity.Source:
+    source_entity = session.query(entity.Source).filter(entity.Source.name == source_name).first()
+    if not source_entity:
+        raise SourceNotExists(f"Source config {source_name} doesn't exist")
+    return source_entity
 
 
 class SourceNotExists(Exception):

@@ -53,7 +53,7 @@ class PipelineManager:
         except (config_handlers.base.ConfigHandlerException, StreamSetsApiClientException) as e:
             delete(self.pipeline)
             raise pipeline.PipelineException(str(e))
-        pipeline.repository.save(self.pipeline)
+        pipeline.repository.create(self.pipeline)
 
     @if_validation_enabled
     def show_preview(self):
@@ -174,7 +174,7 @@ def validate_config_for_create(config: dict):
 def create_object(pipeline_id: str, source_name: str) -> Pipeline:
     return pipeline.Pipeline(
         pipeline_id,
-        source.repository.get(source_name),
+        source.repository.get_by_name(source_name),
         {},
         destination.HttpDestination.get()
     )
@@ -235,7 +235,7 @@ def edit_using_json(configs: dict) -> List[Pipeline]:
 
 
 def edit_pipeline_using_json(config: dict) -> Pipeline:
-    pipeline_manager = PipelineManager(pipeline.repository.get(config['pipeline_id']))
+    pipeline_manager = PipelineManager(pipeline.repository.get_by_name(config['pipeline_id']))
     pipeline_manager.load_config(config, edit=True)
     update(pipeline_manager.pipeline)
     return pipeline_manager.pipeline
@@ -265,7 +265,7 @@ def update(pipeline_obj: Pipeline):
     except (config_handlers.base.ConfigHandlerException, StreamSetsApiClientException) as e:
         raise pipeline.PipelineException(str(e))
 
-    pipeline.repository.save(pipeline_obj)
+    pipeline.repository.update(pipeline_obj)
     if start_pipeline:
         start(pipeline_obj)
 
@@ -278,19 +278,6 @@ def update_source_pipelines(source_: source.Source):
             print(str(e))
             continue
         print(f'Pipeline {pipeline_.id} updated')
-
-
-def create(pipeline_obj: Pipeline):
-    try:
-        pipeline_obj = api_client.create_pipeline(pipeline_obj.id)
-        new_config = get_sdc_creator(pipeline_obj).override_base_config(new_uuid=pipeline_obj['uuid'],
-                                                                        new_title=pipeline_obj.id)
-        api_client.update_pipeline(pipeline_obj.id, new_config)
-    except (config_handlers.base.ConfigHandlerException, StreamSetsApiClientException) as e:
-        delete(pipeline_obj)
-        raise pipeline.PipelineException(str(e))
-
-    pipeline.repository.save(pipeline_obj)
 
 
 def get_pipeline_status(pipeline_id: str) -> str:
@@ -374,7 +361,7 @@ def reset(pipeline_obj: Pipeline):
 
 def _delete_locally(pipeline_obj: Pipeline):
     if pipeline.repository.exists(pipeline_obj.id):
-        pipeline.repository.delete_by_id(pipeline_obj.id)
+        pipeline.repository.delete_by_name(pipeline_obj.id)
 
 
 def _delete_schema(pipeline_obj: Pipeline):
@@ -404,7 +391,7 @@ def delete(pipeline_obj: Pipeline):
     except StreamSetsApiClientException as e:
         raise pipeline.PipelineException(str(e))
     _cleanup_errors_dir(pipeline_obj.id)
-    _delete_locally(pipeline.repository.get(pipeline_obj.id))
+    _delete_locally(pipeline.repository.get_by_name(pipeline_obj.id))
 
 
 def delete_by_id(pipeline_id: str):
@@ -414,8 +401,8 @@ def delete_by_id(pipeline_id: str):
         raise pipeline.PipelineException(str(e))
     _cleanup_errors_dir(pipeline_id)
     if pipeline.repository.exists(pipeline_id):
-        _delete_schema(pipeline.repository.get(pipeline_id))
-        _delete_locally(pipeline.repository.get(pipeline_id))
+        _delete_schema(pipeline.repository.get_by_name(pipeline_id))
+        _delete_locally(pipeline.repository.get_by_name(pipeline_id))
 
 
 def enable_destination_logs(pipeline_obj: Pipeline):
@@ -476,15 +463,12 @@ def _get_test_pipeline_name(source_: source.Source) -> str:
 def start_monitoring_pipeline():
     pipeline_ = pipeline.manager.create_object(pipeline.MONITORING, MONITORING_SOURCE_NAME)
     pipeline_manager = pipeline.manager.PipelineManager(pipeline_)
-    # todo
-    source.repository.create_dir()
-    pipeline.repository.create_dir()
     pipeline_manager.create()
     pipeline.manager.start(pipeline_)
 
 
 def update_monitoring_pipeline():
-    pipeline_ = pipeline.repository.get(pipeline.MONITORING)
+    pipeline_ = pipeline.repository.get_by_name(pipeline.MONITORING)
     pipeline.manager.update(pipeline_)
 
 

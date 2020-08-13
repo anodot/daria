@@ -14,7 +14,7 @@ def get_previous_pipeline_config(label):
     try:
         pipelines_with_source = api_client.get_pipelines(order_by='CREATED', order='DESC', label=label)
         if len(pipelines_with_source) > 0:
-            pipeline_obj = pipeline.repository.get(pipelines_with_source[-1]['pipelineId'])
+            pipeline_obj = pipeline.repository.get_by_name(pipelines_with_source[-1]['pipelineId'])
             return pipeline_obj.to_dict()
     except source.SourceConfigDeprecated:
         pass
@@ -130,7 +130,7 @@ def edit(pipeline_id, advanced, file):
         return
 
     try:
-        pipeline_manager = pipeline.manager.PipelineManager(pipeline.repository.get(pipeline_id))
+        pipeline_manager = pipeline.manager.PipelineManager(pipeline.repository.get_by_name(pipeline_id))
         pipeline_manager.prompt(pipeline_manager.pipeline.to_dict(), advanced=advanced)
         pipeline.manager.update(pipeline_manager.pipeline)
 
@@ -149,7 +149,7 @@ def destination_logs(pipeline_id, enable):
     """
     Enable destination response logs for a pipeline (for debugging purposes only)
     """
-    pipeline_object = pipeline.repository.get(pipeline_id)
+    pipeline_object = pipeline.repository.get_by_name(pipeline_id)
     pipeline.manager.enable_destination_logs(pipeline_object) if enable else pipeline.manager.disable_destination_logs(pipeline_object)
     click.secho('Updated pipeline {}'.format(pipeline_id), fg='green')
 
@@ -185,7 +185,7 @@ def start(pipeline_id, file):
 
     for pipeline_id in pipeline_ids:
         try:
-            p = pipeline.repository.get(pipeline_id)
+            p = pipeline.repository.get_by_name(pipeline_id)
             click.echo(f'Pipeline {pipeline_id} is starting...')
             pipeline.manager.start(p)
         except (StreamSetsApiClientException, pipeline.PipelineException) as e:
@@ -244,7 +244,7 @@ def delete(pipeline_id, file):
 
     for pipeline_id in pipeline_ids:
         try:
-            pipeline.manager.delete(pipeline.repository.get(pipeline_id))
+            pipeline.manager.delete(pipeline.repository.get_by_name(pipeline_id))
             click.echo(f'Pipeline {pipeline_id} deleted')
         except pipeline.PipelineNotExistsException:
             pipeline.manager.delete_by_id(pipeline_id)
@@ -321,7 +321,7 @@ def reset(pipeline_id):
     Reset pipeline's offset
     """
     try:
-        pipeline.manager.reset(pipeline.repository.get(pipeline_id))
+        pipeline.manager.reset(pipeline.repository.get_by_name(pipeline_id))
     except StreamSetsApiClientException as e:
         click.secho(str(e), err=True, fg='red')
         return

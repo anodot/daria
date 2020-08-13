@@ -1,47 +1,24 @@
-import json
-import os
-from json.decoder import JSONDecodeError
-
-from jsonschema import validate, ValidationError
+from agent.db import Session, entity
 from agent import source
-from agent.constants import DATA_DIR
 from agent.destination import HttpDestination
 from typing import List
 from agent.pipeline import pipeline
 
-PIPELINE_DIRECTORY = os.path.join(DATA_DIR, 'pipelines')
+session = Session()
 
 
 class PipelineNotExistsException(Exception):
     pass
 
 
-def _get_file_path(pipeline_id: str) -> str:
-    return os.path.join(PIPELINE_DIRECTORY, pipeline_id + '.json')
+def exists(pipeline_name: str) -> bool:
+    return session.query(
+        session.query(entity.Source).filter(entity.Source.name == pipeline_name).exists()
+    ).scalar()
 
 
-def exists(pipeline_id: str) -> bool:
-    return os.path.isfile(_get_file_path(pipeline_id))
-
-
-def get(pipeline_id: str) -> pipeline.Pipeline:
-    if not exists(pipeline_id):
-        raise PipelineNotExistsException(f"Pipeline {pipeline_id} doesn't exist")
-    with open(_get_file_path(pipeline_id)) as f:
-        config = json.load(f)
-
-    validate(config, {
-        'type': 'object',
-        'properties': {
-            'source': {'type': 'object'},
-            'pipeline_id': {'type': 'string', 'minLength': 1, 'maxLength': 100}
-        },
-        'required': ['source', 'pipeline_id']
-    })
-
-    source_obj = source.repository.get(config['source']['name'])
-    destination = HttpDestination.get()
-    return pipeline.Pipeline(pipeline_id, source_obj, config, destination)
+def get_by_name(pipeline_name: str) -> pipeline.Pipeline:
+    return _construct_pipeline(_get_entity(pipeline_name))
 
 
 def get_by_source(source_name: str) -> List[pipeline.Pipeline]:
@@ -50,33 +27,44 @@ def get_by_source(source_name: str) -> List[pipeline.Pipeline]:
 
 def get_all() -> List[pipeline.Pipeline]:
     pipelines = []
-    if not os.path.exists(PIPELINE_DIRECTORY):
-        return pipelines
-    for file in os.listdir(PIPELINE_DIRECTORY):
-        try:
-            obj = get(file.replace('.json', ''))
-        except (source.SourceConfigDeprecated, ValidationError, JSONDecodeError) as e:
-            print(f'Error getting pipeline {file}. {str(e)}')
-            continue
-        pipelines.append(obj)
+    for pipeline_entity in session.query(entity.Pipeline).all():
+        pipelines.append(_construct_pipeline(pipeline_entity))
     return pipelines
 
 
-def save(pipeline_obj: pipeline.Pipeline):
-    with open(_get_file_path(pipeline_obj.id), 'w') as f:
-        json.dump(pipeline_obj.to_dict(), f)
+def create(pipeline_: pipeline.Pipeline):
+    session.add(pipeline_.to_entity())
+    session.commit()
 
 
-def delete(pipeline_obj: pipeline.Pipeline):
-    delete_by_id(pipeline_obj.id)
+def update(pipeline_: pipeline.Pipeline):
+    pipeline_entity = _get_entity(pipeline_.id)
+    pipeline_entity.name = pipeline_.id
+    pipeline_entity.source_id = pipeline_.source.id
+    pipeline_entity.config = pipeline_.config
+    session.commit()
 
 
-def delete_by_id(pipeline_id: str):
-    if not exists(pipeline_id):
-        raise PipelineNotExistsException(f"Pipeline {pipeline_id} doesn't exist")
-    os.remove(_get_file_path(pipeline_id))
+def delete(pipeline_: pipeline.Pipeline):
+    delete_by_name(pipeline_.name)
 
 
-def create_dir():
-    if not os.path.exists(PIPELINE_DIRECTORY):
-        os.mkdir(PIPELINE_DIRECTORY)
+def delete_by_name(pipeline_name: str):
+    pipeline_entity = session.query(entity.Pipeline).filter(entity.Pipeline.name == pipeline_name).first()
+    if not pipeline_entity:
+        raise PipelineNotExistsException(f"Pipeline {pipeline_name} doesn't exist")
+    session.delete(pipeline_entity)
+    session.commit()
+
+
+def _construct_pipeline(pipeline_entity: entity.Pipeline) -> pipeline.Pipeline:
+    source_ = source.repository.get(pipeline_entity.id)
+    destination = HttpDestination.get()
+    return pipeline.Pipeline(pipeline_entity.name, source_, pipeline_entity.config, destination)
+
+
+def _get_entity(pipeline_name: str) -> entity.Pipeline:
+    pipeline_entity = session.query(entity.Pipeline).filter(entity.Pipeline.name == pipeline_name).first()
+    if not pipeline_entity:
+        raise PipelineNotExistsException(f"Pipeline {pipeline_name} doesn't exist")
+    return pipeline_entity
