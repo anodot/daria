@@ -87,12 +87,17 @@ def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, a
         if result.is_err():
             raise click.ClickException(result.value)
     else:
-        dest = agent.destination.HttpDestination.get_or_default()
+        is_new = False
+        if not agent.destination.repository.exists():
+            is_new = True
+            dest = agent.destination.HttpDestination()
+        else:
+            dest = agent.destination.repository.get()
         _prompt_proxy(dest)
         _prompt_url(dest)
         _prompt_token(dest)
         _prompt_access_key(dest)
-        dest.save()
+        agent.destination.repository.create(dest) if is_new else agent.destination.repository.update(dest)
 
     click.secho('Connection to Anodot established')
     try:

@@ -16,7 +16,7 @@ class TestTCPServer:
         result = cli_runner.invoke(source_cli.create,
                                    input="splunk\ntest_tcp_log\n9999\nLOG\n" + grok_file_path + "\n%{NONNEGINT:timestamp_unix_ms} %{TIMESTAMP:timestamp_string} %{NONNEGINT:ver} %{WORD} %{WORD:Country} %{WORD:AdType} %{WORD:Exchange} %{NUMBER:Clicks}\n")
         assert result.exit_code == 0
-        assert os.path.isfile(os.path.join(source.repository.SOURCE_DIRECTORY, 'test_tcp_log.json'))
+        assert source.repository.exists('test_tcp_log')
 
     def test_create(self, cli_runner):
         result = cli_runner.invoke(pipeline_cli.create,

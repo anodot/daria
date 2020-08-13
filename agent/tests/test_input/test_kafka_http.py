@@ -78,7 +78,7 @@ class TestKafka:
         result = cli_runner.invoke(cli.source.create,
                                    input=f"kafka\n{name}\nkafka:29092\n{name}\n\n\n")
         assert result.exit_code == 0
-        assert os.path.isfile(os.path.join(source.repository.SOURCE_DIRECTORY, f'{name}.json'))
+        assert source.repository.exists(name)
 
     def test_create(self, cli_runner, source_name, name, options, value, timestamp, advanced_options):
         result = cli_runner.invoke(

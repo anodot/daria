@@ -1,10 +1,9 @@
 import click
-import json
 
 from agent import pipeline, source
 from agent.pipeline import PipelineException
 from agent.streamsets_api_client import api_client, StreamSetsApiClientException
-from agent.destination import HttpDestination
+from agent import destination
 from agent.tools import infinite_retry
 from jsonschema import ValidationError
 from texttable import Texttable
@@ -99,7 +98,7 @@ def check_sources(sources):
 
 
 def check_destination():
-    if not HttpDestination.exists():
+    if not destination.repository.exists():
         raise click.ClickException('Destination is not configured. Use "agent destination"')
 
 

@@ -20,15 +20,15 @@ def test_destination(cli_runner):
                                input='y\nhttp://squid:3128\n\n\nhttp://dummy_destination\ncorrect_token\ncorrect_key\n')
     print(result.output)
     assert result.exit_code == 0
-    assert destination.HttpDestination.exists()
+    assert destination.repository.exists()
     assert api_client.get_pipeline_status(pipeline.MONITORING)['status'] == 'RUNNING'
 
 
 def test_edit_destination(cli_runner):
-    prev_dest = destination.HttpDestination.get()
+    prev_dest = destination.repository.get()
     result = cli_runner.invoke(cli.destination, input='y\nhttp://squid:3128\n\n\n\ncorrect_token\n')
     print(result.output)
-    curr_dest = destination.HttpDestination.get()
+    curr_dest = destination.repository.get()
     assert result.exit_code == 0
     assert curr_dest.host_id == prev_dest.host_id
     assert api_client.get_pipeline_status(pipeline.MONITORING)['status'] == 'RUNNING'

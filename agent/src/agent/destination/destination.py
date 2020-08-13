@@ -1,16 +1,13 @@
-import click
-import json
-import os
 import urllib.parse
 import uuid
 
 from typing import Dict, Optional
-from agent.constants import ANODOT_API_URL, DATA_DIR
+from agent.constants import ANODOT_API_URL
 from agent.proxy import Proxy
+from agent.db import entity
 
 
 class HttpDestination:
-    FILE = os.path.join(DATA_DIR, 'destination.json')
     TYPE = 'http'
     STATUS_URL = 'api/v1/status'
 
@@ -31,21 +28,6 @@ class HttpDestination:
         self.host_id = self.generate_host_id()
         self.access_key = ''
 
-    @staticmethod
-    def get() -> 'HttpDestination':
-        if not HttpDestination.exists():
-            raise DestinationException('Destination does not exist')
-        dest = HttpDestination()
-        dest.__load()
-        return dest
-
-    @staticmethod
-    def get_or_default() -> 'HttpDestination':
-        dest = HttpDestination()
-        if HttpDestination.exists():
-            dest.__load()
-        return dest
-
     def to_dict(self) -> dict:
         return {
             'config': self.config,
@@ -54,13 +36,20 @@ class HttpDestination:
             'access_key': self.access_key
         }
 
+    def to_entity(self):
+        return entity.Destination(host_id=self.host_id, access_key=self.access_key, config=self.config)
+
+    @staticmethod
+    def from_entity(destination_entity: entity.Destination) -> 'HttpDestination':
+        dest = HttpDestination()
+        dest.host_id = destination_entity.host_id
+        dest.access_key = destination_entity.access_key
+        dest.config = destination_entity.config
+        return dest
+
     @classmethod
     def generate_host_id(cls, length: int = 10) -> str:
         return str(uuid.uuid4()).replace('-', '')[:length].upper()
-
-    @classmethod
-    def exists(cls) -> bool:
-        return os.path.isfile(cls.FILE)
 
     @property
     def url(self):
@@ -78,13 +67,6 @@ class HttpDestination:
     def token(self, value: str):
         self.config['token'] = value
 
-    def __load(self):
-        with open(self.FILE) as f:
-            config = json.load(f)
-            self.config = config['config']
-            self.host_id = config['host_id']
-            self.access_key = config.get('access_key')
-
     @property
     def resource_url(self) -> Optional[str]:
         return self.config.get(self.CONFIG_RESOURCE_URL)
@@ -100,16 +82,6 @@ class HttpDestination:
     @monitoring_url.setter
     def monitoring_url(self, monitoring_url: str):
         self.config[self.CONFIG_MONITORING_URL] = monitoring_url
-
-    def save(self):
-        with open(self.FILE, 'w') as f:
-            json.dump(self.to_dict(), f)
-
-    def delete(self):
-        try:
-            os.remove(self.FILE)
-        except FileNotFoundError:
-            pass
 
     def enable_logs(self):
         self.config[self.CONFIG_ENABLE_REQUEST_LOGGING] = True
@@ -139,10 +111,6 @@ class HttpDestination:
 
     def get_proxy_username(self) -> str:
         return self.config.get(self.CONFIG_PROXY_USERNAME, '')
-
-
-class DestinationException(click.ClickException):
-    pass
 
 
 def build_urls(destination_url: str, data_collection_token: str) -> (str, str):

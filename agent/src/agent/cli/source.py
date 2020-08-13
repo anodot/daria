@@ -2,7 +2,7 @@ import click
 
 from agent import pipeline
 from agent import source
-from agent.destination import HttpDestination
+from agent import destination
 from agent.tools import infinite_retry
 from jsonschema import ValidationError, SchemaError
 from . import source_builders
@@ -30,7 +30,7 @@ def list_sources():
 @click.option('-a', '--advanced', is_flag=True)
 @click.option('-f', '--file', type=click.File())
 def create(advanced, file):
-    if not HttpDestination.exists():
+    if not destination.repository.exists():
         raise click.ClickException('Destination is not configured. Please use `agent destination` command')
     _create_from_file(file) if file else _prompt(advanced)
 

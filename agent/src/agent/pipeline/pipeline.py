@@ -203,7 +203,7 @@ class Pipeline:
         }
 
     def to_entity(self):
-        return entity.Pipeline(name=self.id, source_id=self.source.id)
+        return entity.Pipeline(name=self.name, source_id=self.source.id, config=self.config)
 
     def set_config(self, config: dict):
         self.override_source = config.pop(self.OVERRIDE_SOURCE, {})

@@ -1,4 +1,9 @@
--- todo source types are enum
+CREATE TABLE destinations (
+    id SERIAL NOT NULL PRIMARY KEY,
+    host_id VARCHAR(50) NOT NULL UNIQUE,
+    access_key VARCHAR(100),
+    config JSON NOT NULL
+);
 
 CREATE TABLE sources (
     id SERIAL NOT NULL PRIMARY KEY,
@@ -16,3 +21,5 @@ CREATE TABLE pipelines (
       FOREIGN KEY(source_id)
 	  REFERENCES sources(id)
 );
+
+INSERT INTO sources VALUES (0, 'monitoring_mock_source', 'Monitoring', '{}');

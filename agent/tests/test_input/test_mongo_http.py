@@ -27,13 +27,12 @@ class TestMongo:
         result = cli_runner.invoke(source_cli.create,
                                    input="""mongo\ntest_mongo\nmongodb://mongo:27017\nroot\nroot\nadmin\ntest\nadtech\n\n2015-01-02 00:00:00\n\n\n\n""")
         assert result.exit_code == 0
-        assert os.path.isfile(os.path.join(source.repository.SOURCE_DIRECTORY, 'test_mongo.json'))
+        assert source.repository.exists('test_mongo')
 
     def test_source_edit(self, cli_runner):
         result = cli_runner.invoke(source_cli.edit, ['test_mongo'], input="""\n\n\n\n\n\n\n2015-01-01 00:00:00\n\n\n\n""")
-        with open(os.path.join(source.repository.SOURCE_DIRECTORY, 'test_mongo.json')) as f:
-            source_dict = json.load(f)
-            assert source_dict['config']['configBean.initialOffset'] == '2015-01-01 00:00:00'
+        source_ = source.repository.get_by_name('test_mongo')
+        assert source_.config['configBean.initialOffset'] == '2015-01-01 00:00:00'
         assert result.exit_code == 0
 
     def test_create(self, cli_runner, name, options, value, timestamp, advanced_options):

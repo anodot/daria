@@ -9,10 +9,9 @@ import time
 import agent.pipeline.config.handlers as config_handlers
 import jsonschema
 
-from agent import pipeline
+from agent import pipeline, destination
 from agent.pipeline.config.validators import get_config_validator
 from agent.pipeline import prompt, load_client_data
-from .. import destination
 from agent import source
 from agent.anodot_api_client import AnodotApiClient
 from agent.constants import ERRORS_DIR, ENV_PROD, MONITORING_SOURCE_NAME
@@ -172,12 +171,15 @@ def validate_config_for_create(config: dict):
 
 
 def create_object(pipeline_id: str, source_name: str) -> Pipeline:
-    return pipeline.Pipeline(
+    pipeline_ = pipeline.Pipeline(
         pipeline_id,
         source.repository.get_by_name(source_name),
         {},
-        destination.HttpDestination.get()
+        destination.repository.get()
     )
+    # workaround to avoid NOT NULL
+    pipeline_.source.id = 0
+    return pipeline_
 
 
 def check_pipeline_id(pipeline_id: str):
@@ -407,13 +409,13 @@ def delete_by_id(pipeline_id: str):
 
 def enable_destination_logs(pipeline_obj: Pipeline):
     pipeline_obj.destination.enable_logs()
-    pipeline_obj.destination.save()
+    destination.repository.update(pipeline_obj.destination)
     update(pipeline_obj)
 
 
 def disable_destination_logs(pipeline_obj: Pipeline):
     pipeline_obj.destination.disable_logs()
-    pipeline_obj.destination.save()
+    destination.repository.update(pipeline_obj.destination)
     update(pipeline_obj)
 
 

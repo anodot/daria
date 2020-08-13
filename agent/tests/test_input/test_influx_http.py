@@ -19,7 +19,7 @@ class TestInflux:
     def test_source_create(self, cli_runner, name, offset):
         result = cli_runner.invoke(source_cli.create, input=f"influx\n{name}\nhttp://influx:8086\nadmin\nadmin\ntest\n{offset}\n\n")
         assert result.exit_code == 0
-        assert os.path.isfile(os.path.join(source.repository.SOURCE_DIRECTORY, f'{name}.json'))
+        assert source.repository.exists(name)
 
     def test_create(self, cli_runner, name, source_):
         result = cli_runner.invoke(pipeline_cli.create,

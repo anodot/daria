@@ -1,5 +1,3 @@
-import os
-
 from ..fixtures import get_input_file_path, cli_runner
 from agent import cli
 from agent.streamsets_api_client import api_client
@@ -21,7 +19,7 @@ class TestElastic:
         result = cli_runner.invoke(cli.source.create,
                                    input=f"elastic\ntest_es\nhttp://es:9200\ntest\ntimestamp_unix_ms\nnow-1000d\n\n")
         assert result.exit_code == 0
-        assert os.path.isfile(os.path.join(source.repository.SOURCE_DIRECTORY, 'test_es.json'))
+        assert source.repository.exists('test_es')
 
     def test_create(self, cli_runner, name, options, value, timestamp, advanced_options):
         query_file_path = get_input_file_path('elastic_query.json')

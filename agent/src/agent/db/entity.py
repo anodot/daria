@@ -5,6 +5,15 @@ from sqlalchemy import Column, Integer, String, JSON, ForeignKey
 Base = declarative_base()
 
 
+class Destination(Base):
+    __tablename__ = 'destinations'
+
+    id = Column(Integer, primary_key=True)
+    host_id = Column(String)
+    access_key = Column(String)
+    config = Column(JSON)
+
+
 class Source(Base):
     __tablename__ = 'sources'
 

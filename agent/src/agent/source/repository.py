@@ -1,15 +1,11 @@
-import os
 from typing import List
 
 from agent.db import Session, entity
 from agent import source
-from agent.constants import DATA_DIR, MONITORING_SOURCE_NAME
+from agent.constants import MONITORING_SOURCE_NAME
 from jsonschema import ValidationError
 
 session = Session()
-
-# todo delete
-SOURCE_DIRECTORY = os.path.join(DATA_DIR, 'sources')
 
 
 def exists(source_name: str) -> bool:

@@ -1,6 +1,6 @@
 from agent.db import Session, entity
 from agent import source
-from agent.destination import HttpDestination
+from agent import destination
 from typing import List
 from agent.pipeline import pipeline
 
@@ -13,7 +13,7 @@ class PipelineNotExistsException(Exception):
 
 def exists(pipeline_name: str) -> bool:
     return session.query(
-        session.query(entity.Source).filter(entity.Source.name == pipeline_name).exists()
+        session.query(entity.Pipeline).filter(entity.Pipeline.name == pipeline_name).exists()
     ).scalar()
 
 
@@ -58,9 +58,8 @@ def delete_by_name(pipeline_name: str):
 
 
 def _construct_pipeline(pipeline_entity: entity.Pipeline) -> pipeline.Pipeline:
-    source_ = source.repository.get(pipeline_entity.id)
-    destination = HttpDestination.get()
-    return pipeline.Pipeline(pipeline_entity.name, source_, pipeline_entity.config, destination)
+    source_ = source.repository.get(pipeline_entity.source_id)
+    return pipeline.Pipeline(pipeline_entity.name, source_, pipeline_entity.config, destination.repository.get())
 
 
 def _get_entity(pipeline_name: str) -> entity.Pipeline:

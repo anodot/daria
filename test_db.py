@@ -9,6 +9,15 @@ session = Session()
 # session.delete(source)
 # session.commit()
 
-res = session.query(entity.Source).filter(entity.Source.name.like('source1%')).all()
+# res = session.query(entity.Source).filter(entity.Source.name.like('source1%')).all()
+
+# session.add(entity.Destination(host_id='source2', access_key='', config={"key1": "val1"}))
+# session.commit()
+#
+# session.query(entity.Destination).delete()
+# session.commit()
+# rea = session.query(
+#         session.query(entity.Destination).exists()
+#     ).scalar()
 
 t = 1

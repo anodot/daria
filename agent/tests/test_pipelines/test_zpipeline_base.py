@@ -28,7 +28,7 @@ class TestPipelineBase(object):
         with open(input_file_path) as f:
             sources = json.load(f)
             for source_ in sources:
-                assert os.path.isfile(os.path.join(source.repository.SOURCE_DIRECTORY, f"{source_['name']}.json"))
+                assert source.repository.exists(f"{source_['name']}")
 
     def test_create_with_file(self, cli_runner, file_name):
         input_file_path = get_input_file_path(file_name + '.json')
@@ -83,4 +83,4 @@ class TestPipelineBase(object):
         result = cli_runner.invoke(source_cli.delete, [name])
         print(result.output)
         assert result.exit_code == 0
-        assert not os.path.isfile(os.path.join(source.repository.SOURCE_DIRECTORY, f'{name}.json'))
+        assert not source.repository.exists(name)

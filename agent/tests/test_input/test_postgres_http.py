@@ -23,7 +23,7 @@ class TestPostgreSQL:
     def test_source_create(self, cli_runner, name, type, conn):
         result = cli_runner.invoke(source_cli.create, input=f"{type}\n{name}\n{conn}\npostgres\npassword\n\n")
         assert result.exit_code == 0
-        assert os.path.isfile(os.path.join(source.repository.SOURCE_DIRECTORY, f'{name}.json'))
+        assert source.repository.exists(name)
 
     def test_create(self, cli_runner, name, source, timestamp_type, timestamp_name):
         result = cli_runner.invoke(pipeline_cli.create,
