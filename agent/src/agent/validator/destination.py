@@ -17,8 +17,7 @@ def is_valid_destination_url(url: str, proxy_obj: proxy.Proxy = None) -> bool:
     status_url = urllib.parse.urljoin(url, destination.HttpDestination.STATUS_URL)
     try:
         response = requests.get(status_url, proxies=proxy.get_config(proxy_obj), timeout=5)
-        # todo uncomment
-        # response.raise_for_status()
+        response.raise_for_status()
     except (ConnectionError, requests.HTTPError, requests.exceptions.ConnectionError,
             requests.exceptions.ProxyError) as e:
         # todo this is a temporary solution, validation should be unified across the whole project
