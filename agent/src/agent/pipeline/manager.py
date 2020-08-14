@@ -177,8 +177,6 @@ def create_object(pipeline_id: str, source_name: str) -> Pipeline:
         {},
         destination.repository.get()
     )
-    # # workaround to avoid NOT NULL
-    # pipeline_.source.id = 0
     return pipeline_
 
 

@@ -60,8 +60,6 @@ def get(source_id: int) -> source.Source:
 
 
 def get_by_name(source_name: str) -> source.Source:
-    # if source_name == MONITORING_SOURCE_NAME:
-    #     return source.MonitoringSource(MONITORING_SOURCE_NAME, source.TYPE_MONITORING, {})
     return _construct_source(_get_entity(source_name))
 
 
