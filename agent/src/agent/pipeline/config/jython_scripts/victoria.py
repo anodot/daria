@@ -97,6 +97,7 @@ try:
             # if we didn't process the batch for the last time
             if i % 1000 != 0:
                 cur_batch.process(entityName, str(end))
+                cur_batch = sdc.createBatch()
         start = end
         end += interval
 except Exception as e:
