@@ -91,7 +91,7 @@ def validate_configs_for_edit(json_data: dict):
         'items': {
             'type': 'object',
             'properties': {
-                'name': {'type': 'string', 'minLength': 1, 'maxLength': 100, 'enum': source.repository.get_all()},
+                'name': {'type': 'string', 'minLength': 1, 'maxLength': 100, 'enum': source.repository.get_all_names()},
                 'config': {'type': 'object'}
             },
             'required': ['name', 'config']
@@ -104,7 +104,7 @@ def validate_config_for_edit(json_data: dict):
     schema = {
         'type': 'object',
         'properties': {
-            'name': {'type': 'string', 'minLength': 1, 'maxLength': 100, 'enum': source.repository.get_all()},
+            'name': {'type': 'string', 'minLength': 1, 'maxLength': 100, 'enum': source.repository.get_all_names()},
             'config': {'type': 'object'}
         },
         'required': ['name', 'config']

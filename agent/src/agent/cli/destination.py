@@ -38,10 +38,10 @@ def _prompt_url(dest: destination.HttpDestination):
     try:
         if not validator.is_valid_url(url):
             raise click.ClickException('Wrong url format, please specify the protocol and domain name')
-        try:
-            validator.destination.is_valid_destination_url(url, dest.proxy)
-        except validator.destination.ValidationException as e:
-            raise click.ClickException('Destination url validation failed: ' + str(e))
+        # try:
+            # validator.destination.is_valid_destination_url(url, dest.proxy)
+        # except validator.destination.ValidationException as e:
+        #     raise click.ClickException('Destination url validation failed: ' + str(e))
     except requests.exceptions.ProxyError as e:
         raise click.ClickException(str(e))
     dest.url = url
@@ -87,17 +87,14 @@ def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, a
         if result.is_err():
             raise click.ClickException(result.value)
     else:
-        is_new = False
-        if not agent.destination.repository.exists():
-            is_new = True
-            dest = agent.destination.HttpDestination()
-        else:
-            dest = agent.destination.repository.get()
-        _prompt_proxy(dest)
-        _prompt_url(dest)
-        _prompt_token(dest)
-        _prompt_access_key(dest)
-        agent.destination.repository.create(dest) if is_new else agent.destination.repository.update(dest)
+        destination_ = agent.destination.repository.get()\
+            if agent.destination.repository.exists()\
+            else agent.destination.HttpDestination()
+        _prompt_proxy(destination_)
+        _prompt_url(destination_)
+        _prompt_token(destination_)
+        _prompt_access_key(destination_)
+        agent.destination.repository.upsert(destination_)
 
     click.secho('Connection to Anodot established')
     try:

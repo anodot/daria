@@ -149,7 +149,7 @@ def validate_configs_for_create(configs: dict):
         'items': {
             'type': 'object',
             'properties': {
-                'source': {'type': 'string', 'enum': source.repository.get_all()},
+                'source': {'type': 'string', 'enum': source.repository.get_all_names()},
                 'pipeline_id': {'type': 'string', 'minLength': 1, 'maxLength': 100}
             },
             'required': ['source', 'pipeline_id']
@@ -162,7 +162,7 @@ def validate_config_for_create(config: dict):
     json_schema = {
         'type': 'object',
         'properties': {
-            'source': {'type': 'string', 'enum': source.repository.get_all()},
+            'source': {'type': 'string', 'enum': source.repository.get_all_names()},
             'pipeline_id': {'type': 'string', 'minLength': 1, 'maxLength': 100}
         },
         'required': ['source', 'pipeline_id']
@@ -177,8 +177,8 @@ def create_object(pipeline_id: str, source_name: str) -> Pipeline:
         {},
         destination.repository.get()
     )
-    # workaround to avoid NOT NULL
-    pipeline_.source.id = 0
+    # # workaround to avoid NOT NULL
+    # pipeline_.source.id = 0
     return pipeline_
 
 
@@ -205,7 +205,7 @@ def create_from_json(configs: dict) -> List[Pipeline]:
             pipeline_ = create_pipeline_from_json(config)
             pipelines.append(pipeline_)
         except Exception as e:
-            exceptions[config['name']] = str(e)
+            exceptions[config['pipeline_id']] = str(e)
         if exceptions:
             raise pipeline.PipelineException(json.dumps(exceptions))
     return pipelines
@@ -230,7 +230,7 @@ def edit_using_json(configs: dict) -> List[Pipeline]:
                 edit_pipeline_using_json(config)
             )
         except Exception as e:
-            exceptions[config['name']] = str(e)
+            exceptions[config['pipeline_id']] = str(e)
         if exceptions:
             raise pipeline.PipelineException(json.dumps(exceptions))
     return pipelines

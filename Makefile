@@ -13,7 +13,8 @@ all: build-all test-all
 
 build-all: get-streamsets-libs build sleep setup-elastic setup-kafka
 
-test-all: run-unit-tests test-flask-app test-destination test-antomation test-api test-api-scripts test-input test-pipelines
+#test-all: run-unit-tests test-flask-app test-destination test-antomation test-api test-api-scripts test-input test-pipelines
+test-all: run-unit-tests test-flask-app test-destination test-antomation test-api test-input test-pipelines
 
 ##-------------
 ## DEVELOPMENT

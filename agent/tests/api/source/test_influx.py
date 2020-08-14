@@ -29,7 +29,7 @@ class TestInflux:
                         'db': 'test',
                     }
                 }],
-                'er': b'"{\\"influx\\": \\"Source config influx already exists\\"}"\n',
+                'er': b'"{\\"influx\\": \\"Source influx already exists\\"}"\n',
             },
         ],
         'test_edit': [
@@ -44,6 +44,7 @@ class TestInflux:
                         'db': 'test',
                     }
                 }],
+                'status_code': 200,
                 'er': b'[{"config":{"db":"test","host":"http://influx:8086","password":"admin","username":"admin"},"name":"influx","type":"influx"}]\n'
             },
             {
@@ -57,7 +58,9 @@ class TestInflux:
                         'db': 'space',
                     }
                 }],
-                'er': b'"\'not_existing\' is not one of [\'influx\']\\n\\nFailed validating \'enum\' in schema[\'items\'][\'properties\'][\'name\']:\\n    {\'enum\': [\'influx\'], \'maxLength\': 100, \'minLength\': 1, \'type\': \'string\'}\\n\\nOn instance[0][\'name\']:\\n    \'not_existing\'"\n'
+                # todo error codes for tests
+                'status_code': 400,
+                'er': ""
             }
         ]
     }
@@ -67,14 +70,17 @@ class TestInflux:
         print(result.data)
         assert result.data == er
 
-    def test_edit(self, client, data, er):
+    def test_edit(self, client, data, status_code, er):
         result = client.put('/sources', json=list(data))
-        assert result.data == er
+        assert result.status_code == status_code
+        # todo fix after implementing error codes
+        if status_code != 400:
+            assert result.data == er
 
     def test_get(self, client):
         result = client.get('/sources')
-        assert result.data == b'["influx"]\n'
+        assert result.data == b'["monitoring","influx"]\n'
 
     def test_delete(self, client):
         client.delete('sources/influx')
-        assert client.get('/sources').data == b'[]\n'
+        assert client.get('/sources').data ==b'["monitoring"]\n'

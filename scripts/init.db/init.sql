@@ -22,4 +22,4 @@ CREATE TABLE pipelines (
 	  REFERENCES sources(id)
 );
 
-INSERT INTO sources VALUES (0, 'monitoring_mock_source', 'Monitoring', '{}');
+INSERT INTO sources VALUES (0, 'monitoring', 'Monitoring', '{}');

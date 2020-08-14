@@ -41,12 +41,11 @@ def delete_by_name(source_name: str):
     session.commit()
 
 
-def get_all() -> List[source.Source]:
-    # todo fix places where it's used
-    sources = []
-    for source_entity in session.query(entity.Source).all():
-        sources.append(_construct_source(source_entity))
-    return sources
+def get_all_names() -> List[str]:
+    return list(map(
+        lambda row: row[0],
+        session.query(entity.Source.name).all()
+    ))
 
 
 def find_by_name_beginning(name_part: str) -> List:
@@ -61,8 +60,8 @@ def get(source_id: int) -> source.Source:
 
 
 def get_by_name(source_name: str) -> source.Source:
-    if source_name == MONITORING_SOURCE_NAME:
-        return source.MonitoringSource(MONITORING_SOURCE_NAME, source.TYPE_MONITORING, {})
+    # if source_name == MONITORING_SOURCE_NAME:
+    #     return source.MonitoringSource(MONITORING_SOURCE_NAME, source.TYPE_MONITORING, {})
     return _construct_source(_get_entity(source_name))
 
 

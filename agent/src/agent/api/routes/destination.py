@@ -14,6 +14,8 @@ def get():
 
 @destination_.route('/destination', methods=['POST'])
 def create():
+    if destination.repository.exists():
+        return 'Destination already exists', 404
     form = DestinationForm.from_json(request.get_json())
     if not form.validate():
         return form.errors, 400

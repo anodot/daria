@@ -42,8 +42,8 @@ class TestJdbc:
 
     def test_get(self, client):
         result = client.get('/sources')
-        assert result.data == b'["mysql"]\n'
+        assert result.data == b'["monitoring","mysql"]\n'
 
     def test_delete(self, client):
         client.delete('sources/mysql')
-        assert client.get('/sources').data == b'[]\n'
+        assert client.get('/sources').data ==b'["monitoring"]\n'

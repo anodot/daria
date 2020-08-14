@@ -62,7 +62,7 @@ def create_from_file(file):
 @click.option('-f', '--file', type=click.File())
 def create(advanced, file):
     check_destination()
-    sources = source.repository.get_all()
+    sources = source.repository.get_all_names()
     check_sources(sources)
 
     if file:

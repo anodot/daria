@@ -57,8 +57,8 @@ class TestInflux:
 
     def test_get(self, client):
         result = client.get('/sources')
-        assert result.data == b'["mongo"]\n'
+        assert result.data == b'["monitoring","mongo"]\n'
 
     def test_delete(self, client):
         client.delete('sources/mongo')
-        assert client.get('/sources').data == b'[]\n'
+        assert client.get('/sources').data ==b'["monitoring"]\n'

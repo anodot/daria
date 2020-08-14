@@ -14,6 +14,10 @@ def get() -> HttpDestination:
     return HttpDestination.from_entity(_get_entity())
 
 
+def upsert(destination_: HttpDestination):
+    update(destination_) if exists() else create(destination_)
+
+
 def create(destination_: HttpDestination):
     session.add(destination_.to_entity())
     session.commit()
