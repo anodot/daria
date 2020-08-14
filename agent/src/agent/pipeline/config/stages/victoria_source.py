@@ -21,6 +21,7 @@ class VictoriaScript(Stage):
                     {'key': 'DAYS_TO_BACKFILL', 'value': str(self.pipeline.days_to_backfill)},
                     {'key': 'INTERVAL', 'value': str(self.pipeline.interval)},
                     {'key': 'DELAY_IN_MINUTES', 'value': str(self.pipeline.delay)},
+                    {'key': 'VERIFY_SSL', 'value': str(self.pipeline.source.config.get('verify_ssl', True))},
                 ],
                 'script': f.read(),
             }

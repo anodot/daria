@@ -257,17 +257,18 @@ class VictoriaMetricsValidator(Validator):
     def validate_connection(self):
         url = self.source.config['url'] + '/api/v1/export?match[]={__name__="not_existing_dsger43"}'
         session = requests.Session()
-        if self.source.config[source.VictoriaMetricsSource.USERNAME]:
+        if self.source.config.get(source.VictoriaMetricsSource.USERNAME):
             session.auth = (
                 self.source.config[source.VictoriaMetricsSource.USERNAME],
                 self.source.config[source.VictoriaMetricsSource.PASSWORD]
             )
         try:
-            res = session.get(url)
+            res = session.get(url, verify=False)
             res.raise_for_status()
-        except requests.exceptions.RequestException:
+        except requests.exceptions.RequestException as e:
             raise ValidationException(
-                'Failed connecting to VictoriaMetrics. Make sure you provided correct url, username and password'
+                'Failed connecting to VictoriaMetrics. Make sure you provided correct url, username and password\n'
+                + str(e)
             )
 
 

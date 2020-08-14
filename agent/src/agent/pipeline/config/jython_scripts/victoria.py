@@ -7,6 +7,7 @@ try:
     import traceback
     import json
     import time
+    import urllib
 finally:
     sdc.importUnlock()
 
@@ -23,7 +24,7 @@ def get_backfill_offset():
         return int(float(sdc.lastOffsets.get(entityName)))
     days_ago = int(sdc.userParams['DAYS_TO_BACKFILL'])
     if bool(days_ago):
-        return get_now_with_delay() - days_ago * 24 * 60 * 60
+        return int(time.time()) - days_ago * 24 * 60 * 60
     return get_now_with_delay() - get_interval()
 
 
@@ -38,7 +39,8 @@ def make_request(url_):
     for i in range(1, N_REQUESTS_TRIES + 1):
         try:
             sdc.log.debug(url_)
-            res = session.get(url_, stream=True, headers={"Accept-Encoding":"deflate"})
+            res = session.get(url_, stream=True, headers={"Accept-Encoding": "deflate"},
+                              verify=sdc.userParams['VERIFY_SSL'])
             res.raise_for_status()
         except Exception as e:
             if i == N_REQUESTS_TRIES:
@@ -50,7 +52,7 @@ def make_request(url_):
     return res
 
 
-url = sdc.userParams['URL'] + '/api/v1/export?match=' + sdc.userParams['QUERY']
+url = sdc.userParams['URL'] + '/api/v1/export?' + urllib.urlencode({'match': sdc.userParams['QUERY']})
 interval = get_interval()
 start = get_backfill_offset()
 end = start + interval

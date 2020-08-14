@@ -8,7 +8,7 @@ from agent import source
 class VictoriaSourceBuilder(Builder):
     def prompt(self, default_config, advanced=False):
         self.prompt_connection(default_config)
-        self.source.set_config(self.source.config)
+        self.prompt_verify_certificate(default_config, advanced)
         return self.source
 
     @infinite_retry
@@ -33,3 +33,7 @@ class VictoriaSourceBuilder(Builder):
     def prompt_password(self, default_config):
         self.source.config['password'] = click.prompt('VictoriaMetrics password', type=click.STRING,
                                                       default=default_config.get('password', '')).strip()
+
+    def prompt_verify_certificate(self, default_config, advanced):
+        verify = click.confirm('Verify ssl certificate?', default_config.get('verify_ssl', True)) if advanced else True
+        self.source.config['verify_ssl'] = verify
