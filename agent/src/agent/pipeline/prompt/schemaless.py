@@ -9,7 +9,7 @@ class PromptConfigSchemaless(PromptConfig):
     timestamp_types = ['string', 'unix', 'unix_ms']
     target_types = ['counter', 'gauge']
 
-    def set_config(self):
+    def prompt_config(self):
         self.data_preview()
         self.set_values()
         self.set_measurement_names()

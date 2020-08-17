@@ -18,11 +18,10 @@ class PromptConfig:
         self.advanced = advanced
         self.default_config = default_config
         self.config = dict()
-
-        self.set_config()
+        self.prompt_config()
         return self.config
 
-    def set_config(self):
+    def prompt_config(self):
         pass
 
     def set_timestamp(self):

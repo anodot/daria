@@ -8,7 +8,7 @@ from agent import source
 class PromptConfigJDBC(PromptConfig):
     timestamp_types = ['datetime', 'unix', 'unix_ms']
 
-    def set_config(self):
+    def prompt_config(self):
         self.set_table()
         self.set_pagination()
         query = f'SELECT * FROM {self.config["table"]}  WHERE {self.config["offset_column"]} > ${{OFFSET}} ORDER BY {self.config["offset_column"]} LIMIT {source.manager.MAX_SAMPLE_RECORDS}'

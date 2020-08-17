@@ -7,4 +7,5 @@ from . import mongo
 from . import elastic
 from . import tcp
 from . import directory
+from . import victoria
 from .sage import SageConfigHandler

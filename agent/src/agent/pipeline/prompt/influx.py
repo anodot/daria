@@ -7,7 +7,7 @@ from agent import source
 
 
 class PromptConfigInflux(PromptConfig):
-    def set_config(self):
+    def prompt_config(self):
         self.set_measurement_name()
         self.pipeline.source.config['conf.resourceUrl'] = self.get_test_url()
         self.data_preview()
