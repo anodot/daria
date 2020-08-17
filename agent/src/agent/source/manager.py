@@ -32,6 +32,7 @@ def create_from_json(configs: dict) -> List[source.Source]:
             )
             print(f"Source {config['name']} created")
         except Exception as e:
+            # todo traceback?
             exceptions[config['name']] = str(e)
     if exceptions:
         raise source.SourceException(json.dumps(exceptions))

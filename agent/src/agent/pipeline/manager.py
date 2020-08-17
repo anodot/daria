@@ -1,7 +1,5 @@
 import json
 import logging
-from typing import List
-
 import click
 import os
 import shutil
@@ -20,6 +18,7 @@ from agent.tools import print_json, sdc_record_map_to_dict, if_validation_enable
 from .. import proxy
 from .pipeline import Pipeline, PipelineException
 from agent.logger import get_logger
+from typing import List
 
 
 logger = get_logger(__name__)
@@ -43,7 +42,7 @@ class PipelineManager:
     def validate_config(self):
         get_config_validator(self.pipeline).validate(self.pipeline)
 
-    def create(self):
+    def create(self) -> Pipeline:
         try:
             pipeline_obj = api_client.create_pipeline(self.pipeline.id)
             new_config = self.sdc_creator.override_base_config(new_uuid=pipeline_obj['uuid'],
@@ -53,6 +52,7 @@ class PipelineManager:
             delete(self.pipeline)
             raise pipeline.PipelineException(str(e))
         pipeline.repository.create(self.pipeline)
+        return self.pipeline
 
     @if_validation_enabled
     def show_preview(self):
@@ -89,6 +89,7 @@ def get_sdc_creator(pipeline_obj: Pipeline) -> config_handlers.base.BaseConfigHa
         source.TYPE_SPLUNK: config_handlers.tcp.TCPConfigHandler,
         source.TYPE_DIRECTORY: config_handlers.directory.DirectoryConfigHandler,
         source.TYPE_SAGE: config_handlers.sage.SageConfigHandler,
+        source.TYPE_VICTORIA: config_handlers.victoria.VictoriaConfigHandler,
     }
     return handlers[pipeline_obj.source.type](pipeline_obj)
 
@@ -105,6 +106,7 @@ def get_file_loader(source_type: str):
         source.TYPE_SPLUNK: load_client_data.TcpLoadClientData,
         source.TYPE_DIRECTORY: load_client_data.DirectoryLoadClientData,
         source.TYPE_SAGE: load_client_data.SageLoadClientData,
+        source.TYPE_VICTORIA: load_client_data.VictoriaLoadClientData,
     }
     return loaders[source_type]
 
@@ -121,6 +123,7 @@ def get_prompter(source_type: str):
         source.TYPE_SPLUNK: prompt.PromptConfigTCP,
         source.TYPE_DIRECTORY: prompt.PromptConfigDirectory,
         source.TYPE_SAGE: prompt.PromptConfigSage,
+        source.TYPE_VICTORIA: prompt.PromptConfigVictoria,
     }
     return prompters[source_type]
 

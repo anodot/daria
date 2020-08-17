@@ -5,7 +5,7 @@ from .schemaless import PromptConfigSchemaless
 
 class PromptConfigSage(PromptConfigSchemaless):
 
-    def set_config(self):
+    def prompt_config(self):
         self.set_query()
         self.set_delay()
         self.set_interval()

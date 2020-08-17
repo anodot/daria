@@ -1,11 +1,12 @@
 import json
 import os
 import jsonschema
+import requests
 import sqlalchemy
 
 from datetime import datetime
 from urllib.parse import urlparse, urlunparse
-from agent import source, pipeline, tools
+from agent import source, pipeline
 from agent.streamsets_api_client import api_client
 from agent.tools import if_validation_enabled
 from agent.validator import is_valid_url
@@ -61,6 +62,7 @@ def get_validator(source_: source.Source) -> Validator:
         source.TYPE_DIRECTORY: DirectoryValidator,
         source.TYPE_SAGE: SageValidator,
         source.TYPE_MONITORING: MonitoringValidator,
+        source.TYPE_VICTORIA: VictoriaMetricsValidator,
     }
     return types[source_.type](source_)
 
@@ -248,6 +250,27 @@ class SageValidator(Validator):
     def validate_token(self):
         # TODO: check token
         pass
+
+
+class VictoriaMetricsValidator(Validator):
+    VALIDATION_SCHEMA_FILE = 'victoria.json'
+
+    def validate_connection(self):
+        url = self.source.config['url'] + '/api/v1/export?match[]={__name__="not_existing_dsger43"}'
+        session = requests.Session()
+        if self.source.config.get(source.VictoriaMetricsSource.USERNAME):
+            session.auth = (
+                self.source.config[source.VictoriaMetricsSource.USERNAME],
+                self.source.config[source.VictoriaMetricsSource.PASSWORD]
+            )
+        try:
+            res = session.get(url, verify=False)
+            res.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            raise ValidationException(
+                'Failed connecting to VictoriaMetrics. Make sure you provided correct url, username and password\n'
+                + str(e)
+            )
 
 
 class SchemalessValidator(Validator):

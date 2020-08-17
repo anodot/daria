@@ -8,6 +8,7 @@ from .kafka import KafkaSourceBuilder
 from .mongo import MongoSourceBuilder
 from .sage import SageSourceBuilder
 from .tcp import TCPSourceBuilder
+from .victoria import VictoriaSourceBuilder
 
 
 def get_builder(source_name: str, source_type: str) -> Builder:
@@ -21,6 +22,7 @@ def get_builder(source_name: str, source_type: str) -> Builder:
         source.TYPE_SPLUNK: TCPSourceBuilder,
         source.TYPE_DIRECTORY: DirectorySourceBuilder,
         source.TYPE_SAGE: SageSourceBuilder,
+        source.TYPE_VICTORIA: VictoriaSourceBuilder,
     }
     if source_type not in source.types:
         raise ValueError(f'{source_type} isn\'t supported')
