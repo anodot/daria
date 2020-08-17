@@ -48,6 +48,7 @@ services:
       - ./test-datasets:/home
 
   db:
+    container_name: db
     image: postgres
     restart: always
     environment:
