@@ -1,5 +1,5 @@
 mkdir data
-export DATA_DIR="data" STREAMSETS_USERNAME="admin" STREAMSETS_PASSWORD="admin" STREAMSETS_URL="http://localhost:18630" \
+export STREAMSETS_USERNAME="admin" STREAMSETS_PASSWORD="admin" STREAMSETS_URL="http://localhost:18630" \
     LOG_FILE_PATH="agent.log" ANODOT_API_URL="http://localhost:8080" SDC_DATA_PATH="sdc-data" ENV_PROD='false' \
     GIT_SHA1=local-build VALIDATION_ENABLED="true"
 
