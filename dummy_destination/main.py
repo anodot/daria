@@ -13,7 +13,10 @@ app.secret_key = b"\xf9\x19\x8d\xd2\xb7N\x84\xae\x16\x0f'`U\x88x&\nF\xa2\xe9\xa1
 def to_file():
     data = request.json
     if data and len(data) > 0:
-        file_name = data[0]['tags']['pipeline_id'][0] + '_' + data[0]['tags']['pipeline_type'][0]
+        try:
+            file_name = data[0]['tags']['pipeline_id'][0] + '_' + data[0]['tags']['pipeline_type'][0]
+        except KeyError:
+            file_name = data[0]['properties']['what']
         with open(os.path.join(OUTPUT_DIR, file_name + '.json'), 'a+') as f:
             json.dump(request.json, f)
             f.write('\n')

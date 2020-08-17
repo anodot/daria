@@ -156,6 +156,12 @@ class SageSource(Source):
     TOKEN = 'token'
 
 
+class VictoriaMetricsSource(Source):
+    URL = 'url'
+    USERNAME = 'username'
+    PASSWORD = 'password'
+
+
 class DirectorySource(SchemalessSource):
     pass
 

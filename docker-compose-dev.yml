@@ -33,8 +33,6 @@ services:
       SDC_DATA_PATH: '/sdc-data'
 #      ENV_PROD: 'false'
       GIT_SHA1: 'local'
-    stdin_open: true
-    tty: true
     depends_on:
       - dc
     volumes:
@@ -42,7 +40,7 @@ services:
       - dummy-destination-data:/output
       - ./agent:/usr/src/app
       - ./data:/usr/src/app/data
-      - ./scripts:/usr/src/app/scripts
+#      - ./scripts:/usr/src/app/scripts
       - ./test-datasets:/home
     ports:
       - 80:80
@@ -165,6 +163,18 @@ services:
   sage:
     build: sage_mock
 
+  victoriametrics:
+    container_name: victoriametrics
+    image: victoriametrics/victoria-metrics
+    ports:
+      - 8428:8428
+    volumes:
+      - /storage
+    command:
+      - '--storageDataPath=/storage'
+      - '--httpListenAddr=:8428'
+      - '--retentionPeriod=600'
+    restart: always
 
 volumes:
   sdc-data:

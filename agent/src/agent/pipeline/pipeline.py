@@ -10,10 +10,6 @@ class PipelineException(Exception):
     pass
 
 
-class PipelineNotExistsException(PipelineException):
-    pass
-
-
 class TimestampType(Enum):
     STRING = 'string'
     UTC_STRING = 'utc_string'
