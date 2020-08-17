@@ -59,7 +59,6 @@ services:
       - 5432:5432
     volumes:
       - /var/lib/postgresql/data
-      - ./scripts/init.db:/docker-entrypoint-initdb.d
 
   mongo:
     image: mongo

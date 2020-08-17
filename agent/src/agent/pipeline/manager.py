@@ -464,6 +464,8 @@ def _get_test_pipeline_name(source_: source.Source) -> str:
 
 
 def start_monitoring_pipeline():
+    if not source.repository.exists(MONITORING_SOURCE_NAME):
+        source.repository.create(source.Source(MONITORING_SOURCE_NAME, source.TYPE_MONITORING, {}))
     pipeline_ = pipeline.manager.create_object(pipeline.MONITORING, MONITORING_SOURCE_NAME)
     pipeline_manager = pipeline.manager.PipelineManager(pipeline_)
     pipeline_manager.create()
