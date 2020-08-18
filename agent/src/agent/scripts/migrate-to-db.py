@@ -42,6 +42,8 @@ def migrate_sources(data_dir):
         print('Monitoring source already exists')
     for root, _, filenames in os.walk(os.path.join(data_dir, 'sources')):
         for filename in filenames:
+            if not filename.endswith('.json'):
+                print(f'Skipping {filename}')
             with open(os.path.join(root, filename)) as f:
                 data = json.load(f)
                 if source.repository.exists(data['name']):
@@ -55,6 +57,8 @@ def migrate_sources(data_dir):
 def migrate_pipelines(data_dir):
     for root, _, filenames in os.walk(os.path.join(data_dir, 'pipelines')):
         for filename in filenames:
+            if not filename.endswith('.json'):
+                print(f'Skipping {filename}')
             with open(os.path.join(root, filename)) as f:
                 data = json.load(f)
                 pipeline_id = data.pop('pipeline_id')
