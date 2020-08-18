@@ -1,0 +1,169 @@
+[
+  {
+    "timestamp": 1512864000,
+    "properties": {
+      "ver": "1",
+      "Country": "USA",
+      "Exchange": "DoubleClick",
+      "what": "Clicks",
+      "target_type": "gauge"
+    },
+    "value": 6784.6904,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_timezone"
+      ],
+      "pipeline_type": [
+        "kafka"
+      ]
+    }
+  },
+  {
+    "timestamp": 1512867600,
+    "properties": {
+      "ver": "1",
+      "Country": "USA",
+      "Exchange": "DoubleClick",
+      "what": "Clicks",
+      "target_type": "gauge"
+    },
+    "value": 6839.0,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_timezone"
+      ],
+      "pipeline_type": [
+        "kafka"
+      ]
+    }
+  },
+  {
+    "timestamp": 1512871200,
+    "properties": {
+      "ver": "1",
+      "Country": "USA",
+      "Exchange": "DoubleClick",
+      "what": "Clicks",
+      "target_type": "gauge"
+    },
+    "value": 6.9099935e+18,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_timezone"
+      ],
+      "pipeline_type": [
+        "kafka"
+      ]
+    }
+  },
+  {
+    "timestamp": 1512874800,
+    "properties": {
+      "ver": "1",
+      "Country": "USA",
+      "Exchange": "DoubleClick",
+      "what": "Clicks",
+      "target_type": "gauge"
+    },
+    "value": 7158.9727,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_timezone"
+      ],
+      "pipeline_type": [
+        "kafka"
+      ]
+    }
+  },
+  {
+    "timestamp": 1512878400,
+    "properties": {
+      "ver": "1",
+      "Country": "USA",
+      "Exchange": "DoubleClick",
+      "what": "Clicks",
+      "target_type": "gauge"
+    },
+    "value": 7235.7573,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_timezone"
+      ],
+      "pipeline_type": [
+        "kafka"
+      ]
+    }
+  },
+  {
+    "timestamp": 1512885600,
+    "properties": {
+      "ver": "1",
+      "Exchange": "DoubleClick",
+      "what": "Clicks",
+      "target_type": "gauge"
+    },
+    "value": 7427.7744,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_timezone"
+      ],
+      "pipeline_type": [
+        "kafka"
+      ]
+    }
+  }
+]

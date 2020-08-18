@@ -50,7 +50,7 @@ def validate(condition: str) -> bool:
     for expression in expressions:
         literals = split_to_literals(expression)
         if len(literals) != 3:
-            raise ConditionException('Wrong format. Example: "property" == "value" && "property2" contains "value"')
+            raise ConditionException('Wrong format. Example: "property" == "value" && "property2" contains "value": ' + condition)
 
         operand = replace_conjunction_operator(literals[0])
         parentheses_count_total += count_opened_parenthesis(operand)

@@ -34,7 +34,7 @@ stop: clean-docker-volumes
 ##-----------------------
 ## TEST SEPARATE SOURCES
 ##-----------------------
-test-directory: bootstrap test-destination
+test-directory: bootstrap nap test-destination
 	$(DOCKER_TEST) tests/test_input/test_directory_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_directory_http.py
 
@@ -46,7 +46,7 @@ test-victoria: bootstrap run-victoria nap setup-victoria test-destination
 	$(DOCKER_TEST) tests/test_input/test_victoria_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_victoria_http.py
 
-test-influx: bootstrap run-influx test-destination
+test-influx: bootstrap run-influx nap test-destination
 	$(DOCKER_TEST) tests/test_input/test_influx_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_influx_http.py
 
@@ -58,19 +58,19 @@ test-mongo: bootstrap run-mongo nap test-destination
 	$(DOCKER_TEST) tests/test_input/test_mongo_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_mongo_http.py
 
-test-mysql: bootstrap run-mysql test-destination
+test-mysql: bootstrap run-mysql nap test-destination
 	$(DOCKER_TEST) tests/test_input/test_mysql_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_mysql_http.py
 
-test-postgres: bootstrap run-postgres test-destination
+test-postgres: bootstrap run-postgres nap test-destination
 	$(DOCKER_TEST) tests/test_input/test_postgres_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_postgres_http.py
 
-test-tcp: bootstrap test-destination
+test-tcp: bootstrap nap test-destination
 	$(DOCKER_TEST) tests/test_input/test_tcp_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_tcp_http.py
 
-test-sage: bootstrap run-sage test-destination
+test-sage: bootstrap run-sage nap test-destination
 	$(DOCKER_TEST) tests/test_input/test_sage_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_sage_http.py
 

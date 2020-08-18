@@ -13,9 +13,9 @@ def _escape_quotes(s: str) -> str:
     return s.replace("'", "\\'")
 
 
-def get_convert_timestamp_to_unix_expression(timestamp_type: pipeline.TimestampType, value, timestamp_format):
+def get_convert_timestamp_to_unix_expression(timestamp_type: pipeline.TimestampType, value, timestamp_format, timezone):
     if timestamp_type == pipeline.TimestampType.STRING:
-        return f"time:dateTimeToMilliseconds(time:extractDateFromString({value}, '{_escape_quotes(timestamp_format)}'))/1000"
+        return f"time:dateTimeToMilliseconds(time:createDateFromStringTZ({value}, '{timezone}', '{_escape_quotes(timestamp_format)}'))/1000"
     elif timestamp_type == pipeline.TimestampType.UTC_STRING:
         return f"time:dateTimeToMilliseconds(time:createDateFromStringTZ({value}, 'Etc/UTC', 'yyyy-MM-dd\\'T\\'HH:mm:ss\\'Z\\''))/1000"
     elif timestamp_type == pipeline.TimestampType.DATETIME:
@@ -26,7 +26,6 @@ def get_convert_timestamp_to_unix_expression(timestamp_type: pipeline.TimestampT
 
 
 class AddProperties(Stage):
-
     @classmethod
     def _get_dimension_field_path(cls, key):
         return '/properties/' + key
@@ -45,7 +44,8 @@ class AddProperties(Stage):
             expressions.append(get_value(self._get_dimension_field_path(key), f'"{val}"'))
         timestamp_to_unix = get_convert_timestamp_to_unix_expression(self.pipeline.timestamp_type,
                                                                      "record:value('/timestamp')",
-                                                                     self.pipeline.timestamp_format)
+                                                                     self.pipeline.timestamp_format,
+                                                                     self.pipeline.timezone)
         expressions.append(get_value('/timestamp', timestamp_to_unix))
         return {
             'expressionProcessorConfigs': self.get_tags() + expressions
@@ -110,7 +110,8 @@ class SendWatermark(Stage):
         extract_timestamp = "str:regExCapture(record:value('/filepath'), '.*/(.+)_.*', 1)"
         timestamp_to_unix = get_convert_timestamp_to_unix_expression(self.pipeline.timestamp_type,
                                                                      extract_timestamp,
-                                                                     self.pipeline.timestamp_format)
+                                                                     self.pipeline.timestamp_format,
+                                                                     self.pipeline.timezone)
         bucket_size = self.pipeline.flush_bucket_size.total_seconds()
         watermark = f'math:floor(({timestamp_to_unix} + {bucket_size})/{bucket_size}) * {bucket_size}'
         return {
