@@ -1,9 +1,6 @@
 from typing import List
-
 from agent.db import Session, entity
 from agent import source
-from agent.constants import MONITORING_SOURCE_NAME
-from jsonschema import ValidationError
 
 session = Session()
 
@@ -67,11 +64,6 @@ def _construct_source(source_entity: entity.Source) -> source.Source:
     source_ = source.manager.create_source_obj(source_entity.name, source_entity.type)
     source_.config = source_entity.config
     source_.id = source_entity.id
-    # todo do we need this validation?
-    try:
-        source.validator.get_validator(source_).validate_json()
-    except ValidationError:
-        raise SourceConfigDeprecated(f'Config for source {source_entity.name} is not supported. Please recreate the source')
     return source_
 
 

@@ -21,63 +21,65 @@ def run(data_dir):
 
 
 def migrate_destination(data_dir):
-    with open(os.path.join(data_dir, 'destination.json')) as f:
+    dest_path = os.path.join(data_dir, 'destination.json')
+    if not os.path.isfile(dest_path):
+        raise Exception('Destination does not exist, cannot migrate')
+    with open(dest_path) as f:
         if destination.repository.exists():
-            print('Destination already exists, skipping')
+            logger_.info('Destination already exists, skipping')
             return
         data = json.load(f)
         dest = destination.HttpDestination()
         dest.config = data['config']
         dest.host_id = data['host_id']
-        dest.access_key = data['access_key']
+        dest.access_key = data.get('access_key', '')
         destination.repository.create(dest)
-        print('Destination successfully migrated')
+        logger_.info('Destination successfully migrated')
 
 
 def migrate_sources(data_dir):
     if not source.repository.exists(MONITORING_SOURCE_NAME):
         source.repository.create(source.Source(MONITORING_SOURCE_NAME, source.TYPE_MONITORING, {}))
-        print('Created monitoring source')
+        logger_.info('Created monitoring source')
     else:
-        print('Monitoring source already exists')
-    for root, _, filenames in os.walk(os.path.join(data_dir, 'sources')):
-        for filename in filenames:
+        logger_.info('Monitoring source already exists')
+    try:
+        for filename in os.listdir(os.path.join(data_dir, 'sources')):
             if not filename.endswith('.json'):
-                print(f'Skipping {filename}')
-            with open(os.path.join(root, filename)) as f:
+                logger_.info(f'Skipping {filename}')
+            with open(os.path.join(data_dir, filename)) as f:
                 data = json.load(f)
                 if source.repository.exists(data['name']):
-                    print(f'Source {data["name"]} already exists, skipping')
+                    logger_.info(f'Source {data["name"]} already exists, skipping')
                     continue
                 source_ = source.Source(data['name'], data['type'], data['config'])
                 source.repository.create(source_)
-                print(f'Source {data["name"]} successfully migrated')
+                logger_.info(f'Source {data["name"]} successfully migrated')
+    except Exception:
+        logger_.exception('Uncaught exception')
 
 
 def migrate_pipelines(data_dir):
-    for root, _, filenames in os.walk(os.path.join(data_dir, 'pipelines')):
-        for filename in filenames:
+    try:
+        for filename in os.listdir(os.path.join(data_dir, 'pipelines')):
             if not filename.endswith('.json'):
-                print(f'Skipping {filename}')
-            with open(os.path.join(root, filename)) as f:
+                logger_.info(f'Skipping {filename}')
+            with open(os.path.join(data_dir, filename)) as f:
                 data = json.load(f)
                 pipeline_id = data.pop('pipeline_id')
                 if pipeline.repository.exists(pipeline_id):
-                    print(f'Pipeline {pipeline_id} already exists, skipping')
+                    logger_.info(f'Pipeline {pipeline_id} already exists, skipping')
                     continue
                 pipeline_ = pipeline.manager.create_object(pipeline_id, data['source']['name'])
                 data.pop('source')
                 pipeline_.config = data
                 pipeline.repository.create(pipeline_)
-                print(f'Pipeline {pipeline_id} successfully migrated')
+                logger_.info(f'Pipeline {pipeline_id} successfully migrated')
+    except Exception:
+        logger_.exception('Uncaught exception')
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Migrate destination, sources and pipelines from files to postgres')
     parser.add_argument('--data_dir', default='/usr/src/app/data', help='Directory where destination, sources and pipelines stored')
-
-    args = parser.parse_args()
-    try:
-        run(args.data_dir)
-    except Exception:
-        logger_.exception('Uncaught exception')
+    run(parser.parse_args().data_dir)

@@ -1,12 +1,5 @@
-import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from agent.constants import AGENT_DB_HOST, AGENT_DB_USER, AGENT_DB_PASSWORD
 
-
-def _get_db_host():
-    if os.environ.get('IS_DOCKER_ENV'):
-        return 'db'
-    return 'localhost:5432'
-
-
-Session = sessionmaker(bind=create_engine(f'postgresql://agent:agent@{_get_db_host()}/agent'))
+Session = sessionmaker(bind=create_engine(f'postgresql://{AGENT_DB_USER}:{AGENT_DB_PASSWORD}@{AGENT_DB_HOST}/agent'))

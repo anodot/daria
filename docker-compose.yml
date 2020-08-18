@@ -33,7 +33,9 @@ services:
       LOG_FILE_PATH: '/var/log/agent.log'
       SDC_DATA_PATH: '/sdc-data'
       ENV_PROD: 'false'
-      IS_DOCKER_ENV: 'true'
+      AGENT_DB_HOST: 'db'
+      AGENT_DB_USER: 'agent'
+      AGENT_DB_PASSWORD: 'agent'
 #      VALIDATION_ENABLED: 'false'
     stdin_open: true
     tty: true

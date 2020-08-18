@@ -31,7 +31,9 @@ services:
       STREAMSETS_URL: 'http://dc:18630'
       LOG_FILE_PATH: '/var/log/agent.log'
       SDC_DATA_PATH: '/sdc-data'
-      IS_DOCKER_ENV: 'true'
+      AGENT_DB_HOST: 'db'
+      AGENT_DB_USER: 'agent'
+      AGENT_DB_PASSWORD: 'agent'
 #      ENV_PROD: 'false'
       GIT_SHA1: 'local'
     depends_on:

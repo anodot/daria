@@ -17,3 +17,7 @@ MONITORING_SOURCE_NAME = 'monitoring'
 VALIDATION_ENABLED = True if os.environ.get('VALIDATION_ENABLED') == 'true' else False
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+AGENT_DB_HOST = os.environ.get('AGENT_DB_HOST', 'localhost')
+AGENT_DB_USER = os.environ.get('AGENT_DB_USER', 'agent')
+AGENT_DB_PASSWORD = os.environ.get('AGENT_DB_USER', 'agent')

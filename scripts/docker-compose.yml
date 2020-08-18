@@ -20,6 +20,10 @@ services:
     tty: true
     depends_on:
       - dc
+    environment:
+      AGENT_DB_HOST: 'db'
+      AGENT_DB_USER: 'agent'
+      AGENT_DB_PASSWORD: 'agent'
 #    ports:
 #    - 8080:80
 
