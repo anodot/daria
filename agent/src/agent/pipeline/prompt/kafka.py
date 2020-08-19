@@ -27,4 +27,4 @@ class PromptConfigKafka(PromptConfigSchemaless):
     def _get_default_consumer_group(self) -> str:
         if source.KafkaSource.CONFIG_CONSUMER_GROUP in self.pipeline.override_source:
             return self.pipeline.override_source[source.KafkaSource.CONFIG_CONSUMER_GROUP]
-        return "agent_" + self.pipeline.id
+        return "agent_" + self.pipeline.name

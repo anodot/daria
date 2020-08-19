@@ -1,9 +1,19 @@
-from abc import ABC
 from agent import source
-from agent.db import entity
+from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, JSON
+from agent.db.entity import Base
 
 
-class Source(ABC):
+class Source(Base):
+    __tablename__ = 'sources'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    type = Column(String)
+    config = Column(JSON)
+
+    pipelines = relationship("Pipeline")
+
     def __init__(self, name: str, source_type: str, config: dict):
         self.id = None
         self.config = config
@@ -14,8 +24,8 @@ class Source(ABC):
     def to_dict(self) -> dict:
         return {'name': self.name, 'type': self.type, 'config': self.config}
 
-    def to_entity(self) -> entity.Source:
-        return entity.Source(name=self.name, type=self.type, config=self.config)
+    # def to_entity(self) -> entity.Source:
+    #     return entity.Source(name=self.name, type=self.type, config=self.config)
 
     # todo refactor children
     def set_config(self, config):

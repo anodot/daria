@@ -36,7 +36,7 @@ class BaseConfigHandler:
         self.config = self.load_base_config()
 
         # create errors dir
-        errors_dir = os.path.join(ERRORS_DIR, self.pipeline.id)
+        errors_dir = os.path.join(ERRORS_DIR, self.pipeline.name)
         if not os.path.isdir(errors_dir):
             os.makedirs(errors_dir)
             os.chmod(errors_dir, 0o777)

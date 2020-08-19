@@ -44,10 +44,10 @@ class PipelineManager:
 
     def create(self) -> Pipeline:
         try:
-            pipeline_obj = api_client.create_pipeline(self.pipeline.id)
+            pipeline_obj = api_client.create_pipeline(self.pipeline.name)
             new_config = self.sdc_creator.override_base_config(new_uuid=pipeline_obj['uuid'],
-                                                               new_title=self.pipeline.id)
-            api_client.update_pipeline(self.pipeline.id, new_config)
+                                                               new_title=self.pipeline.name)
+            api_client.update_pipeline(self.pipeline.name, new_config)
         except (config_handlers.base.ConfigHandlerException, StreamSetsApiClientException) as e:
             delete(self.pipeline)
             raise pipeline.PipelineException(str(e))
@@ -57,8 +57,8 @@ class PipelineManager:
     @if_validation_enabled
     def show_preview(self):
         try:
-            preview = api_client.create_preview(self.pipeline.id)
-            preview_data = api_client.wait_for_preview(self.pipeline.id, preview['previewerId'])
+            preview = api_client.create_preview(self.pipeline.name)
+            preview_data = api_client.wait_for_preview(self.pipeline.name, preview['previewerId'])
         except StreamSetsApiClientException as e:
             print(str(e))
             return
@@ -218,7 +218,7 @@ def create_pipeline_from_json(config: dict) -> Pipeline:
     pipeline_manager.load_config(config)
     pipeline_manager.validate_config()
     pipeline_manager.create()
-    print(f'Pipeline {pipeline_manager.pipeline.id} created')
+    print(f'Pipeline {pipeline_manager.pipeline.name} created')
     return pipeline_manager.pipeline
 
 
@@ -245,25 +245,25 @@ def edit_pipeline_using_json(config: dict) -> Pipeline:
 
 
 def start(pipeline_obj: Pipeline):
-    api_client.start_pipeline(pipeline_obj.id)
-    wait_for_status(pipeline_obj.id, pipeline.Pipeline.STATUS_RUNNING)
-    click.secho(f'{pipeline_obj.id} pipeline is running')
+    api_client.start_pipeline(pipeline_obj.name)
+    wait_for_status(pipeline_obj.name, pipeline.Pipeline.STATUS_RUNNING)
+    click.secho(f'{pipeline_obj.name} pipeline is running')
     if ENV_PROD:
-        wait_for_sending_data(pipeline_obj.id)
-        click.secho(f'{pipeline_obj.id} pipeline is sending data')
+        wait_for_sending_data(pipeline_obj.name)
+        click.secho(f'{pipeline_obj.name} pipeline is sending data')
 
 
 def update(pipeline_obj: Pipeline):
     start_pipeline = False
     try:
-        if get_pipeline_status(pipeline_obj.id) in [pipeline.Pipeline.STATUS_RUNNING, pipeline.Pipeline.STATUS_RETRY]:
+        if get_pipeline_status(pipeline_obj.name) in [pipeline.Pipeline.STATUS_RUNNING, pipeline.Pipeline.STATUS_RETRY]:
             stop(pipeline_obj)
             start_pipeline = True
 
-        api_pipeline = api_client.get_pipeline(pipeline_obj.id)
+        api_pipeline = api_client.get_pipeline(pipeline_obj.name)
         new_config = get_sdc_creator(pipeline_obj)\
-            .override_base_config(new_uuid=api_pipeline['uuid'], new_title=pipeline_obj.id)
-        api_client.update_pipeline(pipeline_obj.id, new_config)
+            .override_base_config(new_uuid=api_pipeline['uuid'], new_title=pipeline_obj.name)
+        api_client.update_pipeline(pipeline_obj.name, new_config)
 
     except (config_handlers.base.ConfigHandlerException, StreamSetsApiClientException) as e:
         raise pipeline.PipelineException(str(e))
@@ -280,7 +280,7 @@ def update_source_pipelines(source_: source.Source):
         except pipeline.PipelineException as e:
             print(str(e))
             continue
-        print(f'Pipeline {pipeline_.id} updated')
+        print(f'Pipeline {pipeline_.name} updated')
 
 
 def get_pipeline_status(pipeline_id: str) -> str:
@@ -337,7 +337,7 @@ def force_stop_pipeline(pipeline_id: str):
 
 
 def stop(pipeline_obj: Pipeline):
-    return stop_by_id(pipeline_obj.id)
+    return stop_by_id(pipeline_obj.name)
 
 
 def can_stop(pipeline_id: str) -> bool:
@@ -356,15 +356,15 @@ def stop_by_id(pipeline_id: str):
 
 def reset(pipeline_obj: Pipeline):
     try:
-        api_client.reset_pipeline(pipeline_obj.id)
+        api_client.reset_pipeline(pipeline_obj.name)
         get_sdc_creator(pipeline_obj).set_initial_offset()
     except (config_handlers.base.ConfigHandlerException, StreamSetsApiClientException) as e:
         raise pipeline.PipelineException(str(e))
 
 
 def _delete_locally(pipeline_obj: Pipeline):
-    if pipeline.repository.exists(pipeline_obj.id):
-        pipeline.repository.delete_by_name(pipeline_obj.id)
+    if pipeline.repository.exists(pipeline_obj.name):
+        pipeline.repository.delete_by_name(pipeline_obj.name)
 
 
 def _delete_schema(pipeline_obj: Pipeline):
@@ -390,11 +390,11 @@ def _cleanup_errors_dir(pipeline_id: str):
 def delete(pipeline_obj: Pipeline):
     _delete_schema(pipeline_obj)
     try:
-        _delete_from_streamsets(pipeline_obj.id)
+        _delete_from_streamsets(pipeline_obj.name)
     except StreamSetsApiClientException as e:
         raise pipeline.PipelineException(str(e))
-    _cleanup_errors_dir(pipeline_obj.id)
-    _delete_locally(pipeline.repository.get_by_name(pipeline_obj.id))
+    _cleanup_errors_dir(pipeline_obj.name)
+    _delete_locally(pipeline.repository.get_by_name(pipeline_obj.name))
 
 
 def delete_by_id(pipeline_id: str):

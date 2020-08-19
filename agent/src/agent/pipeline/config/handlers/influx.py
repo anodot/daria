@@ -86,7 +86,7 @@ state['TAGS'] = {tags}
 
         self.get_write_client().write_points([{
             'measurement': 'agent_timestamps',
-            'tags': {'pipeline_id': self.pipeline.id},
+            'tags': {'pipeline_id': self.pipeline.name},
             'fields': {'last_timestamp': source_config['offset']}
         }])
 
@@ -114,7 +114,7 @@ state['TAGS'] = {tags}
                             constant_properties=str(self.pipeline.constant_dimensions),
                             host_id=self.pipeline.destination.host_id,
                             host_name=HOSTNAME,
-                            pipeline_id=self.pipeline.id,
+                            pipeline_id=self.pipeline.name,
                             tags=json.dumps(self.pipeline.get_tags())
                         )
             if stage['instanceName'] == 'destination':

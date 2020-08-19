@@ -210,7 +210,7 @@ def update():
     for p in pipeline.repository.get_all():
         try:
             pipeline.manager.update(p)
-            click.secho(f'Pipeline {p.id} updated', fg='green')
+            click.secho(f'Pipeline {p.name} updated', fg='green')
         except pipeline.PipelineException as e:
             print(str(e))
             continue

@@ -1,29 +1,29 @@
-from agent.db import Session, entity
-from agent.destination import HttpDestination
+from agent.db import Session
+from agent import destination, source, pipeline
 
 session = Session()
 
 
 def exists() -> bool:
     return session.query(
-        session.query(entity.Destination).exists()
+        session.query(destination.HttpDestination).exists()
     ).scalar()
 
 
-def get() -> HttpDestination:
-    return HttpDestination.from_entity(_get_entity())
+def get() -> destination.HttpDestination:
+    return _get_entity()
 
 
-def upsert(destination_: HttpDestination):
+def upsert(destination_: destination.HttpDestination):
     update(destination_) if exists() else create(destination_)
 
 
-def create(destination_: HttpDestination):
-    session.add(destination_.to_entity())
+def create(destination_: destination.HttpDestination):
+    session.add(destination_)
     session.commit()
 
 
-def update(destination_: HttpDestination):
+def update(destination_: destination.HttpDestination):
     destination_entity = _get_entity()
     destination_entity.host_id = destination_.host_id
     destination_entity.access_key = destination_.access_key
@@ -38,8 +38,8 @@ def delete():
     session.commit()
 
 
-def _get_entity() -> entity.Destination:
-    destination_entity = session.query(entity.Destination).first()
+def _get_entity() -> destination.HttpDestination:
+    destination_entity = session.query(destination.HttpDestination).first()
     if not destination_entity:
         raise DestinationNotExists(f"Destination does not exist")
     return destination_entity

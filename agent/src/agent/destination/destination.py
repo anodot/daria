@@ -4,10 +4,18 @@ import uuid
 from typing import Dict, Optional
 from agent.constants import ANODOT_API_URL
 from agent.proxy import Proxy
-from agent.db import entity
+from sqlalchemy import Column, Integer, String, JSON
+from agent.db.entity import Base
 
 
-class HttpDestination:
+class HttpDestination(Base):
+    __tablename__ = 'destinations'
+
+    id = Column(Integer, primary_key=True)
+    host_id = Column(String)
+    access_key = Column(String)
+    config = Column(JSON)
+
     TYPE = 'http'
     STATUS_URL = 'api/v1/status'
 
@@ -36,16 +44,16 @@ class HttpDestination:
             'access_key': self.access_key
         }
 
-    def to_entity(self):
-        return entity.Destination(host_id=self.host_id, access_key=self.access_key, config=self.config)
-
-    @staticmethod
-    def from_entity(destination_entity: entity.Destination) -> 'HttpDestination':
-        dest = HttpDestination()
-        dest.host_id = destination_entity.host_id
-        dest.access_key = destination_entity.access_key
-        dest.config = destination_entity.config
-        return dest
+    # def to_entity(self):
+    #     return entity.Destination(host_id=self.host_id, access_key=self.access_key, config=self.config)
+    #
+    # @staticmethod
+    # def from_entity(destination_entity: entity.Destination) -> 'HttpDestination':
+    #     dest = HttpDestination()
+    #     dest.host_id = destination_entity.host_id
+    #     dest.access_key = destination_entity.access_key
+    #     dest.config = destination_entity.config
+    #     return dest
 
     @classmethod
     def generate_host_id(cls, length: int = 10) -> str:

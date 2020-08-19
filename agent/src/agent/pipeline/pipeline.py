@@ -1,8 +1,9 @@
 from agent import source
 from agent.constants import HOSTNAME
-from agent.db import entity
 from agent.destination import HttpDestination
 from enum import Enum
+from sqlalchemy import Column, Integer, String, JSON, ForeignKey
+from agent.db.entity import Base
 
 MONITORING = 'Monitoring'
 
@@ -39,7 +40,14 @@ class FlushBucketSize(Enum):
             return 60 * 60 * 24 * 7
 
 
-class Pipeline:
+class Pipeline(Base):
+    __tablename__ = 'pipelines'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    source_id = Column(Integer, ForeignKey('sources.id'))
+    config = Column(JSON)
+
     STATUS_RUNNING = 'RUNNING'
     STATUS_STOPPED = 'STOPPED'
     STATUS_EDITED = 'EDITED'
@@ -50,20 +58,17 @@ class Pipeline:
 
     TARGET_TYPES = ['counter', 'gauge', 'running_counter']
 
-    def __init__(self, pipeline_id: str,
+    def __init__(self, pipeline_name: str,
                  source_: source.Source,
                  config: dict,
                  destination: HttpDestination):
-        self.id = pipeline_id
+        self.name = pipeline_name
         self.config = config
         self.source = source_
         self.destination = destination
         self.old_config = None
         self.override_source = config.pop(self.OVERRIDE_SOURCE, {})
-
-    @property
-    def name(self):
-        return self.id
+        self.id = None
 
     @property
     def constant_dimensions(self) -> dict:
@@ -198,12 +203,12 @@ class Pipeline:
         return {
             **self.config,
             self.OVERRIDE_SOURCE: self.override_source,
-            'pipeline_id': self.id,
+            'pipeline_id': self.name,
             'source': {'name': self.source.name},
         }
 
-    def to_entity(self):
-        return entity.Pipeline(name=self.name, source_id=self.source.id, config=self.config)
+    # def to_entity(self):
+    #     return entity.Pipeline(name=self.name, source_id=self.source.id, config=self.config)
 
     def set_config(self, config: dict):
         self.override_source = config.pop(self.OVERRIDE_SOURCE, {})
@@ -226,7 +231,7 @@ class Pipeline:
             'source': ['anodot-agent'],
             'source_host_id': [self.destination.host_id],
             'source_host_name': [HOSTNAME],
-            'pipeline_id': [self.id],
+            'pipeline_id': [self.name],
             'pipeline_type': [self.source.type],
             **self.tags
         }

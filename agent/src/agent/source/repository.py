@@ -1,13 +1,13 @@
 from typing import List
-from agent.db import Session, entity
-from agent import source
+from agent.db import Session
+from agent import destination, source, pipeline
 
 session = Session()
 
 
 def exists(source_name: str) -> bool:
     return session.query(
-        session.query(entity.Source).filter(entity.Source.name == source_name).exists()
+        session.query(source.Source).filter(source.Source.name == source_name).exists()
     ).scalar()
 
 
@@ -22,14 +22,14 @@ def update(source_: source.Source):
 def create(source_: source.Source):
     if exists(source_.name):
         raise source.SourceException(f"Source {source_.name} already exists")
-    session.add(source_.to_entity())
+    session.add(source_)
     session.commit()
 
 
 def delete_by_name(source_name: str):
     if not exists(source_name):
         raise SourceNotExists(f"Source config {source_name} doesn't exist")
-    source_entity = session.query(entity.Source).filter(entity.Source.name == source_name).first()
+    source_entity = session.query(source.Source).filter(source.Source.name == source_name).first()
     if source_entity.pipelines:
         raise Exception(
                 f"Can't delete. Source is used by {', '.join([p.name for p in source_entity.pipelines])} pipelines"
@@ -41,16 +41,16 @@ def delete_by_name(source_name: str):
 def get_all_names() -> List[str]:
     return list(map(
         lambda row: row[0],
-        session.query(entity.Source.name).all()
+        session.query(source.Source.name).all()
     ))
 
 
 def find_by_name_beginning(name_part: str) -> List:
-    return session.query(entity.Source).filter(entity.Source.name.like(f'{name_part}%')).all()
+    return session.query(source.Source).filter(source.Source.name.like(f'{name_part}%')).all()
 
 
 def get(source_id: int) -> source.Source:
-    source_entity = session.query(entity.Source).get(source_id)
+    source_entity = session.query(source.Source).get(source_id)
     if not source_entity:
         raise SourceNotExists(f"Source ID = {source_id} doesn't exist")
     return _construct_source(source_entity)
@@ -60,15 +60,15 @@ def get_by_name(source_name: str) -> source.Source:
     return _construct_source(_get_entity(source_name))
 
 
-def _construct_source(source_entity: entity.Source) -> source.Source:
+def _construct_source(source_entity: source.Source) -> source.Source:
     source_ = source.manager.create_source_obj(source_entity.name, source_entity.type)
     source_.config = source_entity.config
     source_.id = source_entity.id
     return source_
 
 
-def _get_entity(source_name: str) -> entity.Source:
-    source_entity = session.query(entity.Source).filter(entity.Source.name == source_name).first()
+def _get_entity(source_name: str) -> source.Source:
+    source_entity = session.query(source.Source).filter(source.Source.name == source_name).first()
     if not source_entity:
         raise SourceNotExists(f"Source config {source_name} doesn't exist")
     return source_entity
