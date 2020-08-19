@@ -51,7 +51,7 @@ class PipelineManager:
         except (config_handlers.base.ConfigHandlerException, StreamSetsApiClientException) as e:
             delete(self.pipeline)
             raise pipeline.PipelineException(str(e))
-        pipeline.repository.create(self.pipeline)
+        pipeline.repository.save(self.pipeline)
         return self.pipeline
 
     @if_validation_enabled
@@ -268,7 +268,7 @@ def update(pipeline_obj: Pipeline):
     except (config_handlers.base.ConfigHandlerException, StreamSetsApiClientException) as e:
         raise pipeline.PipelineException(str(e))
 
-    pipeline.repository.update(pipeline_obj)
+    pipeline.repository.save(pipeline_obj)
     if start_pipeline:
         start(pipeline_obj)
 
@@ -410,13 +410,13 @@ def delete_by_id(pipeline_id: str):
 
 def enable_destination_logs(pipeline_obj: Pipeline):
     pipeline_obj.destination.enable_logs()
-    destination.repository.update(pipeline_obj.destination)
+    destination.repository.save(pipeline_obj.destination)
     update(pipeline_obj)
 
 
 def disable_destination_logs(pipeline_obj: Pipeline):
     pipeline_obj.destination.disable_logs()
-    destination.repository.update(pipeline_obj.destination)
+    destination.repository.save(pipeline_obj.destination)
     update(pipeline_obj)
 
 
@@ -465,7 +465,7 @@ def _get_test_pipeline_name(source_: source.Source) -> str:
 
 def start_monitoring_pipeline():
     if not source.repository.exists(MONITORING_SOURCE_NAME):
-        source.repository.create(source.Source(MONITORING_SOURCE_NAME, source.TYPE_MONITORING, {}))
+        source.repository.save(source.Source(MONITORING_SOURCE_NAME, source.TYPE_MONITORING, {}))
     pipeline_ = pipeline.manager.create_object(pipeline.MONITORING, MONITORING_SOURCE_NAME)
     pipeline_manager = pipeline.manager.PipelineManager(pipeline_)
     pipeline_manager.create()

@@ -33,13 +33,13 @@ def migrate_destination(data_dir):
         dest.config = data['config']
         dest.host_id = data['host_id']
         dest.access_key = data.get('access_key', '')
-        destination.repository.create(dest)
+        destination.repository.save(dest)
         logger_.info('Destination successfully migrated')
 
 
 def migrate_sources(data_dir):
     if not source.repository.exists(MONITORING_SOURCE_NAME):
-        source.repository.create(source.Source(MONITORING_SOURCE_NAME, source.TYPE_MONITORING, {}))
+        source.repository.save(source.Source(MONITORING_SOURCE_NAME, source.TYPE_MONITORING, {}))
         logger_.info('Created monitoring source')
     else:
         logger_.info('Monitoring source already exists')
@@ -53,7 +53,7 @@ def migrate_sources(data_dir):
                     logger_.info(f'Source {data["name"]} already exists, skipping')
                     continue
                 source_ = source.Source(data['name'], data['type'], data['config'])
-                source.repository.create(source_)
+                source.repository.save(source_)
                 logger_.info(f'Source {data["name"]} successfully migrated')
     except Exception:
         logger_.exception('Uncaught exception')
@@ -73,7 +73,7 @@ def migrate_pipelines(data_dir):
                 pipeline_ = pipeline.manager.create_object(pipeline_id, data['source']['name'])
                 data.pop('source')
                 pipeline_.config = data
-                pipeline.repository.create(pipeline_)
+                pipeline.repository.save(pipeline_)
                 logger_.info(f'Pipeline {pipeline_id} successfully migrated')
     except Exception:
         logger_.exception('Uncaught exception')
