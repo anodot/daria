@@ -67,8 +67,6 @@ while True:
         if sleep > 0:
             sdc.log.debug('Sleep time: ' + str(sleep))
             time.sleep(sleep)
-        else:
-            time.sleep(1)
 
         last = None
         while True:
@@ -76,7 +74,7 @@ while True:
                 "query": sdc.userParams['QUERY'],
                 "startTime": offset,
                 "endTime": end_time,
-                "size": 500,
+                "size": 1000,
                 "after": last
             }
             for i in range(1, N_REQUESTS_TRIES + 1):
