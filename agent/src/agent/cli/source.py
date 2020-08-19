@@ -89,7 +89,7 @@ def _edit_using_file(file):
 
 def _prompt_edit(name: str, advanced: bool) -> source.Source:
     source_ = source.repository.get_by_name(name)
-    builder = source_builders.get_builder(source_.name, source_.type)
+    builder = source_builders.get(source_)
     source_ = builder.prompt(source_.config, advanced=advanced)
     source.repository.update(source_)
     click.secho('Source config updated', fg='green')

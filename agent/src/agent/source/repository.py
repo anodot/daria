@@ -1,8 +1,6 @@
 from typing import List
-from agent.db import Session
-from agent import destination, source, pipeline
-
-session = Session()
+from agent import source
+from agent.db import session
 
 
 def exists(source_name: str) -> bool:
@@ -12,10 +10,7 @@ def exists(source_name: str) -> bool:
 
 
 def update(source_: source.Source):
-    source_entity = _get_entity(source_.name)
-    source_entity.name = source_.name
-    source_entity.type = source_.type
-    source_entity.config = source_.config
+    session.add(source_)
     session.commit()
 
 
@@ -50,28 +45,17 @@ def find_by_name_beginning(name_part: str) -> List:
 
 
 def get(source_id: int) -> source.Source:
-    source_entity = session.query(source.Source).get(source_id)
-    if not source_entity:
+    source_ = session.query(source.Source).get(source_id)
+    if not source_:
         raise SourceNotExists(f"Source ID = {source_id} doesn't exist")
-    return _construct_source(source_entity)
-
-
-def get_by_name(source_name: str) -> source.Source:
-    return _construct_source(_get_entity(source_name))
-
-
-def _construct_source(source_entity: source.Source) -> source.Source:
-    source_ = source.manager.create_source_obj(source_entity.name, source_entity.type)
-    source_.config = source_entity.config
-    source_.id = source_entity.id
     return source_
 
 
-def _get_entity(source_name: str) -> source.Source:
-    source_entity = session.query(source.Source).filter(source.Source.name == source_name).first()
-    if not source_entity:
+def get_by_name(source_name: str) -> source.Source:
+    source_ = session.query(source.Source).filter(source.Source.name == source_name).first()
+    if not source_:
         raise SourceNotExists(f"Source config {source_name} doesn't exist")
-    return source_entity
+    return source_
 
 
 class SourceNotExists(Exception):

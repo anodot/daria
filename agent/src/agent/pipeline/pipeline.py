@@ -1,9 +1,10 @@
 from agent import source
 from agent.constants import HOSTNAME
+from agent.db import Entity
 from agent.destination import HttpDestination
 from enum import Enum
+from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy import Column, Integer, String, JSON, ForeignKey
-from agent.db.entity import Base
 
 MONITORING = 'Monitoring'
 
@@ -40,13 +41,13 @@ class FlushBucketSize(Enum):
             return 60 * 60 * 24 * 7
 
 
-class Pipeline(Base):
+class Pipeline(Entity):
     __tablename__ = 'pipelines'
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
     source_id = Column(Integer, ForeignKey('sources.id'))
-    config = Column(JSON)
+    config = Column(MutableDict.as_mutable(JSON))
 
     STATUS_RUNNING = 'RUNNING'
     STATUS_STOPPED = 'STOPPED'
@@ -65,10 +66,9 @@ class Pipeline(Base):
         self.name = pipeline_name
         self.config = config
         self.source = source_
+        self.source_id = source_.id
         self.destination = destination
-        self.old_config = None
         self.override_source = config.pop(self.OVERRIDE_SOURCE, {})
-        self.id = None
 
     @property
     def constant_dimensions(self) -> dict:
@@ -206,9 +206,6 @@ class Pipeline(Base):
             'pipeline_id': self.name,
             'source': {'name': self.source.name},
         }
-
-    # def to_entity(self):
-    #     return entity.Pipeline(name=self.name, source_id=self.source.id, config=self.config)
 
     def set_config(self, config: dict):
         self.override_source = config.pop(self.OVERRIDE_SOURCE, {})

@@ -1,31 +1,37 @@
 from agent import source
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy import Column, Integer, String, JSON
-from agent.db.entity import Base
+from agent.db import Entity
 
 
-class Source(Base):
+class Source(Entity):
     __tablename__ = 'sources'
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
     type = Column(String)
-    config = Column(JSON)
-
+    config = Column(MutableDict.as_mutable(JSON))
     pipelines = relationship("Pipeline")
 
     def __init__(self, name: str, source_type: str, config: dict):
-        self.id = None
         self.config = config
         self.type = source_type
         self.name = name
-        self.sample_data = None
+        self._sample_data = None
+
+    @property
+    def sample_data(self):
+        if hasattr(self, "_sample_data"):
+            return self._sample_data
+        return None
+
+    @sample_data.setter
+    def sample_data(self, value):
+        self._sample_data = value
 
     def to_dict(self) -> dict:
         return {'name': self.name, 'type': self.type, 'config': self.config}
-
-    # def to_entity(self) -> entity.Source:
-    #     return entity.Source(name=self.name, type=self.type, config=self.config)
 
     # todo refactor children
     def set_config(self, config):
@@ -203,4 +209,3 @@ class SourceNotExists(SourceException):
 
 class SourceConfigDeprecated(SourceException):
     pass
-

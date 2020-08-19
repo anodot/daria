@@ -1,8 +1,6 @@
-from agent.db import Session
 from typing import List
 from agent import destination, source, pipeline
-
-session = Session()
+from agent.db import session
 
 
 class PipelineNotExistsException(Exception):
@@ -16,7 +14,10 @@ def exists(pipeline_name: str) -> bool:
 
 
 def get_by_name(pipeline_name: str) -> pipeline.Pipeline:
-    return _construct_pipeline(_get_entity(pipeline_name))
+    pipeline_ = session.query(pipeline.Pipeline).filter(pipeline.Pipeline.name == pipeline_name).first()
+    if not pipeline_:
+        raise PipelineNotExistsException(f"Pipeline {pipeline_name} doesn't exist")
+    return _construct_pipeline(pipeline_)
 
 
 def get_by_source(source_name: str) -> List[pipeline.Pipeline]:
@@ -36,10 +37,7 @@ def create(pipeline_: pipeline.Pipeline):
 
 
 def update(pipeline_: pipeline.Pipeline):
-    pipeline_entity = _get_entity(pipeline_.name)
-    pipeline_entity.name = pipeline_.name
-    pipeline_entity.source_id = pipeline_.source.id
-    pipeline_entity.config = pipeline_.config
+    session.add(pipeline_)
     session.commit()
 
 
@@ -55,13 +53,8 @@ def delete_by_name(pipeline_name: str):
     session.commit()
 
 
-def _construct_pipeline(pipeline_entity: pipeline.Pipeline) -> pipeline.Pipeline:
-    source_ = source.repository.get(pipeline_entity.source_id)
-    return pipeline.Pipeline(pipeline_entity.name, source_, pipeline_entity.config, destination.repository.get())
-
-
-def _get_entity(pipeline_name: str) -> pipeline.Pipeline:
-    pipeline_entity = session.query(pipeline.Pipeline).filter(pipeline.Pipeline.name == pipeline_name).first()
-    if not pipeline_entity:
-        raise PipelineNotExistsException(f"Pipeline {pipeline_name} doesn't exist")
-    return pipeline_entity
+def _construct_pipeline(pipeline_: pipeline.Pipeline) -> pipeline.Pipeline:
+    pipeline_.source = source.repository.get(pipeline_.source_id)
+    pipeline_.destination = destination.repository.get()
+    pipeline_.override_source = pipeline_.config.pop(pipeline_.OVERRIDE_SOURCE, {})
+    return pipeline_

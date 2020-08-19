@@ -2,7 +2,7 @@ from agent import cli
 
 # help('modules')
 
-cli.source.create(["-f", "/Users/antonzelenin/Workspace/daria/test_victoria.json"])
+# cli.source.edit(["test_mongo"])
 # cli.destination()
-# cli.pipeline.logs(['test_influx'])
+cli.pipeline.create()
 # cli.update()

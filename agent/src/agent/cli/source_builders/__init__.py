@@ -12,6 +12,14 @@ from .victoria import VictoriaSourceBuilder
 
 
 def get_builder(source_name: str, source_type: str) -> Builder:
+    return _get_source_builder_type(source_type)(source.manager.create_source_obj(source_name, source_type))
+
+
+def get(source_: source.Source) -> Builder:
+    return _get_source_builder_type(source_.type)(source_)
+
+
+def _get_source_builder_type(source_type: str) -> type:
     types = {
         source.TYPE_INFLUX: InfluxSourceBuilder,
         source.TYPE_KAFKA: KafkaSourceBuilder,
@@ -26,4 +34,4 @@ def get_builder(source_name: str, source_type: str) -> Builder:
     }
     if source_type not in source.types:
         raise ValueError(f'{source_type} isn\'t supported')
-    return types[source_type](source.manager.create_source_obj(source_name, source_type))
+    return types[source_type]
