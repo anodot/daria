@@ -18,17 +18,7 @@ class Source(Entity):
         self.config = config
         self.type = source_type
         self.name = name
-        self._sample_data = None
-
-    @property
-    def sample_data(self):
-        if hasattr(self, "_sample_data"):
-            return self._sample_data
-        return None
-
-    @sample_data.setter
-    def sample_data(self, value):
-        self._sample_data = value
+        self.sample_data = None
 
     def to_dict(self) -> dict:
         return {'name': self.name, 'type': self.type, 'config': self.config}

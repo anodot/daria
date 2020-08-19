@@ -48,13 +48,19 @@ def get(source_id: int) -> source.Source:
     source_ = session.query(source.Source).get(source_id)
     if not source_:
         raise SourceNotExists(f"Source ID = {source_id} doesn't exist")
-    return source_
+    return _construct_source(source_)
 
 
 def get_by_name(source_name: str) -> source.Source:
     source_ = session.query(source.Source).filter(source.Source.name == source_name).first()
     if not source_:
         raise SourceNotExists(f"Source config {source_name} doesn't exist")
+    return _construct_source(source_)
+
+
+def _construct_source(source_: source.Source) -> source.Source:
+    source_.__class__ = source.types[source_.type]
+    source_.sample_data = None
     return source_
 
 
