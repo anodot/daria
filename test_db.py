@@ -3,9 +3,11 @@ from agent import destination, source, pipeline
 
 session = Session()
 
-s = session.query(source.Source).filter(source.Source.name == 'test_mongo').first()
-s.config['configBean.initialOffset'] = 300
-session.commit()
+# s = session.query(source.Source).filter(source.Source.name == 'test_influx').first()
+s = source.repository.get_by_name('test_influx')
+t = 1
+# s.config['configBean.initialOffset'] = 300
+# session.commit()
 
 # session.add(source.Source('source6', 'kafka', {"key1": "val1"}))
 # session.add(entity.Pipeline(name='pipeline1', source_id=3, config={"key1": "val1"}))

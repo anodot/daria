@@ -1,6 +1,8 @@
 from typing import List
 from agent import source
-from agent.db import session
+from agent.db import Session
+
+session = Session()
 
 
 def exists(source_name: str) -> bool:
@@ -53,6 +55,12 @@ def get(source_id: int) -> source.Source:
 
 def get_by_name(source_name: str) -> source.Source:
     source_ = session.query(source.Source).filter(source.Source.name == source_name).first()
+    print(f"source id {source_.id}")
+    print(f"source type {source_.type}")
+    print(f"source name {source_.name}")
+    print("Config:")
+    for item in source_.config.items():
+        print(item)
     if not source_:
         raise SourceNotExists(f"Source config {source_name} doesn't exist")
     return _construct_source(source_)

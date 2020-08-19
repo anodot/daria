@@ -1,6 +1,8 @@
 from typing import List
 from agent import destination, source, pipeline
-from agent.db import session
+from agent.db import Session
+
+session = Session()
 
 
 class PipelineNotExistsException(Exception):

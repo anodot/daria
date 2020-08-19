@@ -1,6 +1,3 @@
-import json
-import os
-
 from ..fixtures import cli_runner
 from agent.cli import source as source_cli, pipeline as pipeline_cli
 from agent.streamsets_api_client import api_client
@@ -38,6 +35,7 @@ class TestMongo:
     def test_create(self, cli_runner, name, options, value, timestamp, advanced_options):
         result = cli_runner.invoke(pipeline_cli.create, options,
                                    input=f"test_mongo\n{name}\n\n{value}\n{timestamp}\nver Country\nExchange optional_dim ad_type ADTYPE GEN\n{advanced_options}\n")
+        print(result.output)
         assert result.exit_code == 0
         assert api_client.get_pipeline(name)
 
