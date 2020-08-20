@@ -2,24 +2,22 @@ from typing import List
 from agent import destination, source, pipeline
 from agent.db import Session
 
+session = Session()
+
 
 class PipelineNotExistsException(Exception):
     pass
 
 
 def exists(pipeline_name: str) -> bool:
-    session = Session()
     res = session.query(
         session.query(pipeline.Pipeline).filter(pipeline.Pipeline.name == pipeline_name).exists()
     ).scalar()
-    session.close()
     return res
 
 
 def get_by_name(pipeline_name: str) -> pipeline.Pipeline:
-    session = Session()
     pipeline_ = session.query(pipeline.Pipeline).filter(pipeline.Pipeline.name == pipeline_name).first()
-    session.close()
     if not pipeline_:
         raise PipelineNotExistsException(f"Pipeline {pipeline_name} doesn't exist")
     res = _construct_pipeline(pipeline_)
@@ -31,19 +29,15 @@ def get_by_source(source_name: str) -> List[pipeline.Pipeline]:
 
 
 def get_all() -> List[pipeline.Pipeline]:
-    session = Session()
     pipelines = []
     for pipeline_entity in session.query(pipeline.Pipeline).all():
         pipelines.append(_construct_pipeline(pipeline_entity))
-    session.close()
     return pipelines
 
 
 def save(pipeline_: pipeline.Pipeline):
-    session = Session()
     session.add(pipeline_)
     session.commit()
-    session.close()
 
 
 def delete(pipeline_: pipeline.Pipeline):
@@ -51,13 +45,11 @@ def delete(pipeline_: pipeline.Pipeline):
 
 
 def delete_by_name(pipeline_name: str):
-    session = Session()
     pipeline_entity = session.query(pipeline.Pipeline).filter(pipeline.Pipeline.name == pipeline_name).first()
     if not pipeline_entity:
         raise PipelineNotExistsException(f"Pipeline {pipeline_name} doesn't exist")
     session.delete(pipeline_entity)
     session.commit()
-    session.close()
 
 
 def _construct_pipeline(pipeline_: pipeline.Pipeline) -> pipeline.Pipeline:

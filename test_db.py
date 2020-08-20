@@ -4,8 +4,16 @@ from agent import destination, source, pipeline
 session = Session()
 
 # s = session.query(source.Source).filter(source.Source.name == 'test_influx').first()
-s = source.repository.get_by_name('test_influx')
-t = 1
+# s = source.Source('source6', 'kafka', {"key1": "val1"})
+
+
+s = source.repository.get_by_name('monitoring')
+session.add(s)
+session.commit()
+session.close()
+print(s.name)
+
+
 # s.config['configBean.initialOffset'] = 300
 # session.commit()
 
