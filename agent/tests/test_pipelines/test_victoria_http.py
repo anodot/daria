@@ -1,4 +1,3 @@
-import time
 import pytest
 
 from ..fixtures import cli_runner
@@ -39,7 +38,3 @@ class TestVictoria(TestPipelineBase):
 
     def test_start(self, cli_runner, name):
         super().test_start(cli_runner, name)
-
-    def test_force_stop(self, cli_runner, name):
-        time.sleep(5)
-        super().test_force_stop(cli_runner, name)
