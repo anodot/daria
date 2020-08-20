@@ -40,7 +40,7 @@ def make_request(url_):
         try:
             sdc.log.debug(url_)
             res = session.get(url_, stream=True, headers={"Accept-Encoding": "deflate"},
-                              verify=sdc.userParams['VERIFY_SSL'])
+                              verify=bool(sdc.userParams['VERIFY_SSL']), timeout=sdc.userParams['QUERY_TIMEOUT'])
             res.raise_for_status()
         except Exception as e:
             if i == N_REQUESTS_TRIES:
@@ -58,8 +58,8 @@ start = get_backfill_offset()
 end = start + interval
 
 
-try:
-    while True:
+while True:
+    try:
         if end > get_now_with_delay():
             time.sleep(end - get_now_with_delay())
         if sdc.isStopped():
@@ -100,6 +100,6 @@ try:
                 cur_batch = sdc.createBatch()
         start = end
         end += interval
-except Exception as e:
-    sdc.log.error(traceback.format_exc())
-    raise
+    except Exception as e:
+        sdc.log.error(traceback.format_exc())
+        raise
