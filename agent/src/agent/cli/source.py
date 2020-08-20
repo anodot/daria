@@ -58,8 +58,7 @@ def delete(name):
 @infinite_retry
 def _prompt_source_name():
     source_name = click.prompt('Enter unique name for this source config', type=click.STRING).strip()
-    if source.repository.exists(source_name):
-        raise click.UsageError(f"Source config {source_name} already exists")
+    source.manager.check_source_name(source_name)
     return source_name
 
 

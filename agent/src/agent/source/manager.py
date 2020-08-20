@@ -4,6 +4,7 @@ import jsonschema
 from typing import List
 from agent import pipeline
 from agent import source
+from agent.source import SourceException
 from agent.streamsets_api_client import api_client
 
 MAX_SAMPLE_RECORDS = 3
@@ -27,6 +28,7 @@ def create_from_json(configs: dict) -> List[source.Source]:
     sources = []
     for config in configs:
         try:
+            check_source_name(config['name'])
             sources.append(
                 create_source_from_json(config)
             )
@@ -120,7 +122,6 @@ def extract_configs(file):
         return configs
     except json.decoder.JSONDecodeError as e:
         raise Exception(str(e))
-        # raise click.ClickException(str(e))
 
 
 def get_previous_source_config(source_type):
@@ -132,3 +133,8 @@ def get_previous_source_config(source_type):
     except source.SourceConfigDeprecated:
         pass
     return {}
+
+
+def check_source_name(source_name: str):
+    if source.repository.exists(source_name):
+        raise SourceException(f"Source {source_name} already exists")
