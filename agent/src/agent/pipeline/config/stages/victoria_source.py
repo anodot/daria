@@ -22,6 +22,7 @@ class VictoriaScript(Stage):
                     {'key': 'INTERVAL', 'value': str(self.pipeline.interval)},
                     {'key': 'DELAY_IN_MINUTES', 'value': str(self.pipeline.delay)},
                     {'key': 'VERIFY_SSL', 'value': str(self.pipeline.source.config.get('verify_ssl', True))},
+                    {'key': 'QUERY_TIMEOUT', 'value': self.pipeline.source.config.get('query_timeout', 15)}
                 ],
                 'script': f.read(),
             }
