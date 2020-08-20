@@ -1,17 +1,22 @@
-from agent.db import Session
+from agent.db import session
 from agent import destination, source, pipeline
 
-session = Session()
 
 # s = session.query(source.Source).filter(source.Source.name == 'test_influx').first()
 # s = source.Source('source6', 'kafka', {"key1": "val1"})
 
+p = pipeline.repository.get_by_name('test_es_value_const')
+# p.destination.host_id = 'anton'
+# pipeline.repository.save(p)
+# s = source.repository.get_by_name('test_es')
+t = 1
 
-s = source.repository.get_by_name('monitoring')
-session.add(s)
-session.commit()
-session.close()
-print(s.name)
+
+# s = source.repository.get_by_name('monitoring')
+# session.add(s)
+# session.commit()
+# session.close()
+# print(s.name)
 
 
 # s.config['configBean.initialOffset'] = 300
@@ -36,5 +41,3 @@ print(s.name)
 #     ).scalar()
 
 # p = pipeline.repository.get_by_name('Monitoring')
-
-t = 1

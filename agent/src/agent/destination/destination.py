@@ -3,6 +3,8 @@ import uuid
 
 from typing import Dict, Optional
 from sqlalchemy.ext.mutable import MutableDict
+from sqlalchemy.orm import relationship
+
 from agent.constants import ANODOT_API_URL
 from agent.db import Entity
 from agent.proxy import Proxy
@@ -16,6 +18,8 @@ class HttpDestination(Entity):
     host_id = Column(String)
     access_key = Column(String)
     config = Column(MutableDict.as_mutable(JSON))
+
+    pipelines = relationship('Pipeline', back_populates='destination')
 
     TYPE = 'http'
     STATUS_URL = 'api/v1/status'

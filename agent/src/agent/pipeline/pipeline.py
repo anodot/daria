@@ -1,3 +1,5 @@
+from sqlalchemy.orm import relationship
+
 from agent import source
 from agent.constants import HOSTNAME
 from agent.db import Entity
@@ -47,7 +49,11 @@ class Pipeline(Entity):
     id = Column(Integer, primary_key=True)
     name = Column(String)
     source_id = Column(Integer, ForeignKey('sources.id'))
+    destination_id = Column(Integer, ForeignKey('destinations.id'))
     config = Column(MutableDict.as_mutable(JSON))
+
+    source_ = relationship('Source', back_populates='pipelines')
+    destination = relationship('HttpDestination')
 
     STATUS_RUNNING = 'RUNNING'
     STATUS_STOPPED = 'STOPPED'
@@ -65,10 +71,15 @@ class Pipeline(Entity):
                  destination: HttpDestination):
         self.name = pipeline_name
         self.config = config
-        self.source = source_
+        self.source_ = source_
         self.source_id = source_.id
         self.destination = destination
+        self.destination_id = destination.id
         self.override_source = config.pop(self.OVERRIDE_SOURCE, {})
+
+    @property
+    def source(self):
+        return self.source_
 
     @property
     def constant_dimensions(self) -> dict:

@@ -1,8 +1,6 @@
 from typing import List
 from agent import destination, source, pipeline
-from agent.db import Session
-
-session = Session()
+from agent.db import session
 
 
 class PipelineNotExistsException(Exception):
@@ -53,7 +51,5 @@ def delete_by_name(pipeline_name: str):
 
 
 def _construct_pipeline(pipeline_: pipeline.Pipeline) -> pipeline.Pipeline:
-    pipeline_.source = source.repository.get(pipeline_.source_id)
-    pipeline_.destination = destination.repository.get()
     pipeline_.override_source = pipeline_.config.pop(pipeline_.OVERRIDE_SOURCE, {})
     return pipeline_

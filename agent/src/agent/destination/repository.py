@@ -1,7 +1,5 @@
 from agent import destination
-from agent.db import Session
-
-session = Session()
+from agent.db import session
 
 
 def exists() -> bool:

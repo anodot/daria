@@ -12,13 +12,20 @@ class Source(Entity):
     name = Column(String)
     type = Column(String)
     config = Column(MutableDict.as_mutable(JSON))
-    pipelines = relationship("Pipeline")
+
+    pipelines = relationship('Pipeline', back_populates='source_')
 
     def __init__(self, name: str, source_type: str, config: dict):
         self.config = config
         self.type = source_type
         self.name = name
         self.sample_data = None
+
+    # todo refactor
+    def __getattr__(self, attr):
+        if attr == 'sample_data':
+            return None
+        raise AttributeError(f'type object {type(self)} has no attribute {attr}')
 
     def to_dict(self) -> dict:
         return {'name': self.name, 'type': self.type, 'config': self.config}

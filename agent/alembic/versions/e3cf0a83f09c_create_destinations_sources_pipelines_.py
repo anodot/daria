@@ -36,9 +36,11 @@ def upgrade():
         sa.Column('id', sa.Integer, autoincrement=True, primary_key=True),
         sa.Column('name', sa.String, nullable=False, unique=True),
         sa.Column('source_id', sa.Integer, nullable=False),
+        sa.Column('destination_id', sa.Integer, nullable=False),
         sa.Column('config', sa.JSON, nullable=False)
     )
-    op.create_foreign_key('fk_source_pipeline', 'pipelines', 'sources', ['source_id'], ['id'])
+    op.create_foreign_key('fk_pipeline_source', 'pipelines', 'sources', ['source_id'], ['id'])
+    op.create_foreign_key('fk_pipeline_destination', 'pipelines', 'destinations', ['destination_id'], ['id'])
 
 
 def downgrade():

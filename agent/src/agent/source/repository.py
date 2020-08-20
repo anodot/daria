@@ -1,8 +1,6 @@
 from typing import List
 from agent import source
-from agent.db import Session
-
-session = Session()
+from agent.db import session
 
 
 def exists(source_name: str) -> bool:
