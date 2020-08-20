@@ -19,8 +19,6 @@ class HttpDestination(Entity):
     access_key = Column(String)
     config = Column(MutableDict.as_mutable(JSON))
 
-    pipelines = relationship('Pipeline', back_populates='destination')
-
     TYPE = 'http'
     STATUS_URL = 'api/v1/status'
 
