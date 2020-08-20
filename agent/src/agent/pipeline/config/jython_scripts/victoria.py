@@ -100,12 +100,6 @@ while True:
                 cur_batch = sdc.createBatch()
         start = end
         end += interval
-    except requests.exceptions.Timeout:
-        # continue reading data if timeout error occurred
-        cur_batch.process(entityName, str(end))
-        start = end
-        end += interval
-        pass
     except Exception as e:
         sdc.log.error(traceback.format_exc())
         raise
