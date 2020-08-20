@@ -2,7 +2,6 @@ global sdc
 
 try:
     sdc.importLock()
-    import anodot
     import sys
     import os
     import time
