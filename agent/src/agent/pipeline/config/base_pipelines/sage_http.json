@@ -366,7 +366,7 @@
       },
       "inputLanes" : [ ],
       "outputLanes" : [ "JythonScripting_01OutputLane15924840586690" ],
-      "eventLanes" : [ ],
+      "eventLanes" : [ "JythonScripting_01_EventLane"],
       "services" : [ ]
     }, {
       "instanceName" : "JavaScriptEvaluator_01",
@@ -812,7 +812,7 @@
         "yPos" : 50,
         "stageType" : "TARGET"
       },
-      "inputLanes" : [ "destination_OutputLane" ],
+      "inputLanes" : [ "destination_OutputLane", "JythonScripting_01_EventLane"],
       "outputLanes" : [ ],
       "eventLanes" : [ ],
       "services" : [ ]

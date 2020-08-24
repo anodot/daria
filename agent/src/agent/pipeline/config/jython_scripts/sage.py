@@ -55,7 +55,7 @@ else:
 
 cur_batch = sdc.createBatch()
 
-N_REQUESTS_TRIES = 3
+N_REQUESTS_TRIES = 5
 
 while True:
     start_time = time.time()
