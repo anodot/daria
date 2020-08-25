@@ -213,12 +213,17 @@ class Pipeline:
     def replace_chars(cls, property_name):
         return property_name.replace('/', '_').replace('.', '_').replace(' ', '_')
 
-    def get_tags(self) -> dict:
+    def meta_tags(self) -> dict:
         return {
             'source': ['anodot-agent'],
             'source_host_id': [self.destination.host_id],
             'source_host_name': [HOSTNAME],
             'pipeline_id': [self.id],
-            'pipeline_type': [self.source.type],
+            'pipeline_type': [self.source.type]
+        }
+
+    def get_tags(self) -> dict:
+        return {
+            **self.meta_tags(),
             **self.tags
         }
