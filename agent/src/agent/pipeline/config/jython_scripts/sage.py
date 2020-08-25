@@ -55,7 +55,7 @@ else:
 
 cur_batch = sdc.createBatch()
 
-N_REQUESTS_TRIES = 7
+N_REQUESTS_TRIES = 5
 
 while True:
     start_time = time.time()
@@ -103,7 +103,7 @@ while True:
                     if i == N_REQUESTS_TRIES:
                         raise
                     sdc.log.error(str(e))
-                    time.sleep(2 ** i)
+                    time.sleep(3 ** i)
 
             data = res.json()
             for hit in data["hits"]:
