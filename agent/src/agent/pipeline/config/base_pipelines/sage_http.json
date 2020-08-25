@@ -2,10 +2,10 @@
   "pipelineConfig" : {
     "schemaVersion" : 6,
     "version" : 17,
-    "pipelineId" : "sagehttpbe91dc16-03e4-4979-835d-425056e18ad5",
+    "pipelineId" : "sagehttp3f008d4f-3724-4c23-adc8-525cb97c2332",
     "title" : "sage_http",
     "description" : "",
-    "uuid" : "fa73c85b-2468-4963-9daf-2a6da8581838",
+    "uuid" : "4bfc8ddd-08e3-4e0c-9bc9-51d4196d9146",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -817,7 +817,48 @@
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
-      "instanceName" : "AnodotDestination_01",
+      "instanceName" : "event_add_metadata_tags",
+      "library" : "streamsets-datacollector-basic-lib",
+      "stageName" : "com_streamsets_pipeline_stage_processor_expression_ExpressionDProcessor",
+      "stageVersion" : "2",
+      "configuration" : [ {
+        "name" : "expressionProcessorConfigs",
+        "value" : [ {
+          "fieldToSet" : "/",
+          "expression" : "${record:value('/')}"
+        } ]
+      }, {
+        "name" : "headerAttributeConfigs",
+        "value" : [ { } ]
+      }, {
+        "name" : "fieldAttributeConfigs",
+        "value" : [ {
+          "fieldToSet" : "/"
+        } ]
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "yPos" : 203,
+        "stageType" : "PROCESSOR",
+        "icon" : "expression.png",
+        "description" : "",
+        "label" : "Add metadata tags",
+        "xPos" : 255
+      },
+      "inputLanes" : [ "JythonScripting_01_EventLane" ],
+      "outputLanes" : [ "ExpressionEvaluator_03OutputLane15983670731270" ],
+      "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
+      "instanceName" : "events_destination",
       "library" : "anodot",
       "stageName" : "anodot_stage_destination_AnodotDTarget",
       "stageVersion" : "1",
@@ -1110,9 +1151,9 @@
         "icon" : "anodot_logo.png",
         "description" : "",
         "label" : "Anodot",
-        "xPos" : 282
+        "xPos" : 482
       },
-      "inputLanes" : [ "JythonScripting_01_EventLane" ],
+      "inputLanes" : [ "ExpressionEvaluator_03OutputLane15983670731270" ],
       "outputLanes" : [ ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -1148,22 +1189,22 @@
       "services" : [ ]
     },
     "info" : {
-      "pipelineId" : "sagehttpbe91dc16-03e4-4979-835d-425056e18ad5",
+      "pipelineId" : "sagehttp3f008d4f-3724-4c23-adc8-525cb97c2332",
       "title" : "sage_http",
       "description" : "",
-      "created" : 1598289851842,
-      "lastModified" : 1598289925205,
+      "created" : 1598367058647,
+      "lastModified" : 1598367090366,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "fa73c85b-2468-4963-9daf-2a6da8581838",
+      "uuid" : "4bfc8ddd-08e3-4e0c-9bc9-51d4196d9146",
       "valid" : true,
       "metadata" : {
         "labels" : [ "mongo", "http" ]
       },
-      "name" : "sagehttpbe91dc16-03e4-4979-835d-425056e18ad5",
+      "name" : "sagehttp3f008d4f-3724-4c23-adc8-525cb97c2332",
       "sdcVersion" : "3.15.0",
-      "sdcId" : "1eb5c29b-e628-11ea-97b1-6d99348ab5c8"
+      "sdcId" : "2ffdce7f-e631-11ea-8faa-d70e1e461c42"
     },
     "metadata" : {
       "labels" : [ "mongo", "http" ]
@@ -1553,7 +1594,7 @@
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "66b2018c-156f-4115-ace8-52e6438453db",
+    "uuid" : "d84f44ef-c79c-457c-854b-058087fc3fc5",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : [ ]

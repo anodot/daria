@@ -17,6 +17,9 @@ def search():
     if token != 'Bearer correct_token':
         return make_response(jsonify({'status': 'fail'}), 401)
 
+    if request.json.get('query') == 'server_error':
+        return 'Fake server error', 500
+
     data = [
         {"ver": 1, "Country": "USA", "AdType": "Display",
          "Exchange": "DoubleClick", "Clicks": 6784.6904, "@timestamp": "2017-12-10T01:00:00Z"},

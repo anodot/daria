@@ -13,6 +13,8 @@ class SageConfigHandler(BaseConfigHandler):
         'source': stages.sage_source.SageScript,
         'JavaScriptEvaluator_01': stages.js_convert_metrics_20.JSConvertMetrics,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties,
+        'event_add_metadata_tags': stages.expression_evaluator.AddMetadataTags,
+        'events_destination': stages.destination.Destination,
         'destination': stages.destination.Destination
     }
 

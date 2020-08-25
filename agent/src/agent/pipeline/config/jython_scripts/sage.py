@@ -55,7 +55,7 @@ else:
 
 cur_batch = sdc.createBatch()
 
-N_REQUESTS_TRIES = 5
+N_REQUESTS_TRIES = 7
 
 while True:
     start_time = time.time()
@@ -86,11 +86,24 @@ while True:
                     res.raise_for_status()
                     sdc.log.debug(str(res.json()))
                     break
-                except Exception as e:
+                except requests.HTTPError as e:
+                    event = sdc.createEvent('sage_error', 1)
+                    event.value = {
+                        'value': 1,
+                        'properties': {
+                            'what': 'sage_http_error',
+                            'target_type': 'counter',
+                            'code': e.response.status_code,
+                        },
+                        'timestamp': time.time()
+                    }
+                    cur_batch.addEvent(event)
+                    cur_batch.process(entityName, offset)
+                    cur_batch = sdc.createBatch()
                     if i == N_REQUESTS_TRIES:
                         raise
                     sdc.log.error(str(e))
-                    time.sleep(i ** 2)
+                    time.sleep(2 ** i)
 
             data = res.json()
             for hit in data["hits"]:
