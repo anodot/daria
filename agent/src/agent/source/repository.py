@@ -58,7 +58,6 @@ def get_by_name(source_name: str) -> source.Source:
 
 def _construct_source(source_: source.Source) -> source.Source:
     source_.__class__ = source.types[source_.type]
-    source_.sample_data = None
     return source_
 
 
