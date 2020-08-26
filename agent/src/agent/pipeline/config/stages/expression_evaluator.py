@@ -25,18 +25,19 @@ def get_convert_timestamp_to_unix_expression(timestamp_type: pipeline.TimestampT
     return value
 
 
+def get_tags_expressions(tags: dict) -> list:
+    tags_expressions = [get_value('/tags', 'emptyMap()')]
+    for tag_name, tag_values in tags.items():
+        tags_expressions.append(get_value(f'/tags/{tag_name}', 'emptyList()'))
+        for idx, val in enumerate(tag_values):
+            tags_expressions.append(get_value(f'/tags/{tag_name}[{idx}]', f'"{val}"'))
+    return tags_expressions
+
+
 class AddProperties(Stage):
     @classmethod
     def _get_dimension_field_path(cls, key):
         return '/properties/' + key
-
-    def get_tags(self) -> list:
-        tags_expressions = [get_value('/tags', 'emptyMap()')]
-        for tag_name, tag_values in self.pipeline.get_tags().items():
-            tags_expressions.append(get_value(f'/tags/{tag_name}', 'emptyList()'))
-            for idx, val in enumerate(tag_values):
-                tags_expressions.append(get_value(f'/tags/{tag_name}[{idx}]', f'"{val}"'))
-        return tags_expressions
 
     def get_config(self) -> dict:
         expressions = []
@@ -48,7 +49,7 @@ class AddProperties(Stage):
                                                                      self.pipeline.timezone)
         expressions.append(get_value('/timestamp', timestamp_to_unix))
         return {
-            'expressionProcessorConfigs': self.get_tags() + expressions
+            'expressionProcessorConfigs': get_tags_expressions(self.pipeline.get_tags()) + expressions
         }
 
 
@@ -70,6 +71,12 @@ class Filtering(Stage):
     def check_dimensions(self):
         check_dims = []
         for d_path in self.pipeline.dimensions_paths:
+            keys = d_path.split('/')
+            path = '/'
+            for key in keys[:-1]:
+                path += key
+                check_dims.append(get_value(f'{path}', f"""record:exists('{path}') && record:value('{path}') != null ? 
+record:value('{path}') : emptyMap()"""))
             check_dims.append(get_value(f'/{d_path}', f"""record:exists('/{d_path}') ? 
 (record:value('/{d_path}') == null) ? 'NULL' : record:value('/{d_path}') : null"""))
         return check_dims
@@ -117,4 +124,11 @@ class SendWatermark(Stage):
         return {
             'expressionProcessorConfigs': [get_value('/watermark', watermark),
                                            get_value('/schemaId', f'"{self.pipeline.get_schema_id()}"')]
+        }
+
+
+class AddMetadataTags(Stage):
+    def get_config(self) -> dict:
+        return {
+            'expressionProcessorConfigs': get_tags_expressions(self.pipeline.meta_tags())
         }

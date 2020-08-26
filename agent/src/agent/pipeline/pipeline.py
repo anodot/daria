@@ -204,6 +204,10 @@ class Pipeline(Entity):
     def delay(self) -> str:
         return self.config.get('delay', 0)
 
+    @property
+    def batch_size(self) -> str:
+        return self.config.get('batch_size', 1000)
+
     def get_schema(self):
         return self.config.get('schema', {})
 
@@ -234,12 +238,17 @@ class Pipeline(Entity):
     def replace_chars(cls, property_name):
         return property_name.replace('/', '_').replace('.', '_').replace(' ', '_')
 
-    def get_tags(self) -> dict:
+    def meta_tags(self) -> dict:
         return {
             'source': ['anodot-agent'],
             'source_host_id': [self.destination.host_id],
             'source_host_name': [HOSTNAME],
             'pipeline_id': [self.name],
-            'pipeline_type': [self.source.type],
+            'pipeline_type': [self.source.type]
+        }
+
+    def get_tags(self) -> dict:
+        return {
+            **self.meta_tags(),
             **self.tags
         }
