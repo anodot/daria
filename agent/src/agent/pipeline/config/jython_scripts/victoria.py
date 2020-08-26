@@ -88,7 +88,7 @@ while True:
                 metric = base_metric
                 metric['timestamp'] = int(timestamp)
                 metric['value'] = value
-                new_record = sdc.createRecord('result created ' + str(get_now_with_delay()))
+                new_record = sdc.createRecord('record created ' + str(get_now_with_delay()))
                 new_record.value = metric
                 cur_batch.add(new_record)
                 i += 1
