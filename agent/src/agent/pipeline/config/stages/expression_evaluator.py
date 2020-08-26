@@ -75,8 +75,8 @@ class Filtering(Stage):
             path = '/'
             for key in keys[:-1]:
                 path += key
-                check_dims.append(get_value(f'{path}'), f"""record:exists('{path}') && record:value('{path}') != null ? 
-record:value('{path}') : emptyMap()""")
+                check_dims.append(get_value(f'{path}', f"""record:exists('{path}') && record:value('{path}') != null ? 
+record:value('{path}') : emptyMap()"""))
             check_dims.append(get_value(f'/{d_path}', f"""record:exists('/{d_path}') ? 
 (record:value('/{d_path}') == null) ? 'NULL' : record:value('/{d_path}') : null"""))
         return check_dims
