@@ -17,6 +17,6 @@ class VictoriaConfigHandler(BaseConfigHandler):
 
     def override_stages(self):
         self.pipeline.config['timestamp'] = {
-            'type': pipeline.TimestampType.UNIX_MS.value
+            'type': pipeline.TimestampType.UNIX.value
         }
         super().override_stages()

@@ -1,3 +1,5 @@
+global sdc
+
 try:
     sdc.importLock()
     import sys
@@ -13,6 +15,7 @@ finally:
 
 entityName = ''
 N_REQUESTS_TRIES = 3
+BATCH_SIZE = 1000
 
 
 def get_now_with_delay():
@@ -52,53 +55,50 @@ def make_request(url_):
     return res
 
 
-url = sdc.userParams['URL'] + '/api/v1/export?' + urllib.urlencode({'match': sdc.userParams['QUERY']})
 interval = get_interval()
-start = get_backfill_offset()
-end = start + interval
-
+end = get_backfill_offset() + interval
+url = sdc.userParams['URL'] + '/api/v1/query?' + urllib.urlencode({
+    'query': sdc.userParams['QUERY'],
+    'timeout': sdc.userParams['QUERY_TIMEOUT'],
+})
 
 while True:
     try:
+        curr_url = url + '&' + urllib.urlencode({'time': end})
         if end > get_now_with_delay():
             time.sleep(end - get_now_with_delay())
         if sdc.isStopped():
             break
 
         i = 0
-        curr_url = url + '&start=' + str(start) + '&end=' + str(end)
         cur_batch = sdc.createBatch()
-        for row in make_request(curr_url).iter_lines():
-            record = json.loads(row.decode("utf-8"))
-            sdc.log.debug(row)
+        res = make_request(curr_url).json()
+        sdc.log.debug(str(res))
+        for result in res['data']['result']:
             base_metric = {
                 "properties": {
-                    "what": record['metric'].pop('__name__'),
+                    "what": result['metric'].pop('__name__'),
                     'target_type': "gauge",
                 },
-                "tags": {
-
-                },
+                "tags": {},
             }
-            for dimension, value in record['metric'].items():
+            for dimension, value in result['metric'].items():
                 base_metric['properties'][dimension] = value
-            for j in range(len(record['timestamps'])):
+            for (timestamp, value) in result['values']:
                 metric = base_metric
-                metric['timestamp'] = record['timestamps'][j]
-                metric['value'] = record['values'][j]
-                new_record = sdc.createRecord('record created ' + str(get_now_with_delay()))
+                metric['timestamp'] = int(timestamp)
+                metric['value'] = value
+                new_record = sdc.createRecord('result created ' + str(get_now_with_delay()))
                 new_record.value = metric
                 cur_batch.add(new_record)
                 i += 1
-                # process batches of the size 1000
-                if i % 1000 == 0:
+                if i % BATCH_SIZE == 0:
                     cur_batch.process(entityName, str(end))
                     cur_batch = sdc.createBatch()
             # if we didn't process the batch for the last time
-            if i % 1000 != 0:
+            if i % BATCH_SIZE != 0:
                 cur_batch.process(entityName, str(end))
                 cur_batch = sdc.createBatch()
-        start = end
         end += interval
     except Exception as e:
         sdc.log.error(traceback.format_exc())
