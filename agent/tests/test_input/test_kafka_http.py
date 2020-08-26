@@ -1,5 +1,3 @@
-import os
-
 from ..fixtures import cli_runner
 from agent import cli
 from agent.streamsets_api_client import api_client

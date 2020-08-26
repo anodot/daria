@@ -1,3 +1,5 @@
+import traceback
+
 from ..fixtures import cli_runner
 from agent.streamsets_api_client import api_client
 from agent import pipeline, source
@@ -20,7 +22,7 @@ class TestDirectory:
         pipeline_id = 'test_dir_csv'
         result = cli_runner.invoke(cli.pipeline.create, ['-a'],
                                    input=f"{pipeline_id}\ntest_dir_csv\n\ny\ncount_records\ny\n\nClicks:gauge\nClicks:clicks\ntimestamp_datetime\nstring\nMMddyyyy\n\nver Country\nExchange optional_dim\nversion:1\n\n\n\n1h\n\n\n")
-        print(result.output)
+        traceback.print_exception(*result.exc_info)
         assert result.exit_code == 0
         assert api_client.get_pipeline(pipeline_id)
         pipeline_obj = pipeline.repository.get_by_name(pipeline_id)

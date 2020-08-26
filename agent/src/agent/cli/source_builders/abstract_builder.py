@@ -42,8 +42,8 @@ class Builder(ABC):
         except (ValueError, TypeError, IndexError) as e:
             logger.exception(str(e))
             print('No preview data available')
-            return
-        return [tools.sdc_record_map_to_dict(record['value']) for record in data[:source.manager.MAX_SAMPLE_RECORDS]]
+            return [], []
+        return [tools.sdc_record_map_to_dict(record['value']) for record in data[:source.manager.MAX_SAMPLE_RECORDS]], errors
 
     @tools.if_validation_enabled
     def print_sample_data(self):
