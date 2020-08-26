@@ -183,6 +183,10 @@ class Pipeline:
     def delay(self) -> str:
         return self.config.get('delay', 0)
 
+    @property
+    def batch_size(self) -> str:
+        return self.config.get('batch_size', 1000)
+
     def get_schema(self):
         return self.config.get('schema', {})
 
