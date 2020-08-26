@@ -13,7 +13,8 @@
     "query_file": {"type": "string"},
     "interval": {"type":  "integer"},
     "delay": {"type":  "integer"},
-    "days_to_backfill": {"type":  "integer"}
+    "days_to_backfill": {"type":  "integer"},
+    "batch_size": {"type":  "integer"}
   },
   "required": ["values", "dimensions", "query_file", "interval"]
 }
