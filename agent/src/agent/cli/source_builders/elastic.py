@@ -27,10 +27,10 @@ class ElasticSourceBuilder(Builder):
 
     @if_validation_enabled
     def print_sample_data(self):
-        records = self.get_sample_records()
-        if not records:
-            return
-        print_json(records)
+        records, errors = self.get_sample_records()
+        if records:
+            print_json(records)
+        print(*errors, sep='\n')
 
     def prompt_index(self, default_config):
         self.source.config[source.ElasticSource.CONFIG_INDEX] = \

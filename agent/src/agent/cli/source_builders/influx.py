@@ -81,9 +81,10 @@ class InfluxSourceBuilder(Builder):
 
     @if_validation_enabled
     def print_sample_data(self):
-        records = self.get_sample_records()
-        if not records or 'series' not in records[0]['results'][0]:
+        records, errors = self.get_sample_records()
+        if records and 'series' in records[0]['results'][0]:
+            series = records[0]['results'][0]['series'][0]
+            print_dicts(map_keys(series['values'], series['columns']))
+        else:
             print('No preview data available')
-            return
-        series = records[0]['results'][0]['series'][0]
-        print_dicts(map_keys(series['values'], series['columns']))
+        print(*errors, sep='\n')

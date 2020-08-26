@@ -293,10 +293,7 @@ class StreamSetsApiClient:
                         for record in stage['errorRecords']:
                             errors.append(record['header']['errorMessage'])
 
-        if errors:
-            raise StreamSetsApiClientException('\n'.join(errors))
-
-        return preview_data
+        return preview_data, errors
 
     @endpoint
     def get_pipeline_errors(self, pipeline_id, stage_name):
