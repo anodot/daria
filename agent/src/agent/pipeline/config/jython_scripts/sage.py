@@ -21,7 +21,7 @@ entityName = ''
 DATEFORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 query_size = int(sdc.userParams.get('QUERY_SIZE', 1000))
-interval = timedelta(seconds=int(sdc.userParams['INTERVAL']) * 60)  # because user specifies the interval in minutes
+interval = timedelta(seconds=int(float(sdc.userParams['INTERVAL']) * 60))  # because user specifies the interval in minutes
 delay = timedelta(minutes=int(sdc.userParams['DELAY']))
 days_to_backfill = timedelta(days=int(sdc.userParams['DAYS_TO_BACKFILL']))
 sdc.log.info('INTERVAL: ' + str(interval))
