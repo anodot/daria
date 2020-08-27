@@ -16,11 +16,12 @@ class TestVictoria:
 
     def test_create(self, cli_runner):
         name = 'test_victoria'
-        query = '{__name__!=""}'
+        interval = 10000
+        query = f'log_messages_total[{interval}s]'
         days_to_backfill = (datetime.now() - datetime(year=2020, month=7, day=7)).days + 1
         result = cli_runner.invoke(
             cli.pipeline.create,
-            input=f'test_victoria\n{name}\n{query}\n{days_to_backfill}\n1209600\n\n'
+            input=f'test_victoria\n{name}\n{query}\n{days_to_backfill}\n{interval}\n\n'
         )
         assert result.exit_code == 0
         assert api_client.get_pipeline(name)
