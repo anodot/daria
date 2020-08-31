@@ -50,7 +50,7 @@ class TestPipelineBase(object):
         assert result.exit_code == 0
         assert api_client.get_pipeline_status(name)['status'] == 'RUNNING'
         # give pipelines some time to send data
-        time.sleep(10)
+        # time.sleep(10)
 
     def test_info(self, cli_runner, name):
         result = cli_runner.invoke(pipeline_cli.info, [name], catch_exceptions=False)
