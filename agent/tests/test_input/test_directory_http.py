@@ -12,7 +12,7 @@ class TestDirectory:
     params = {}
 
     def test_source_create(self, cli_runner):
-        result = cli_runner.invoke(cli.source.create,
+        result = cli_runner.invoke(cli.source.create, catch_exceptions=False,
                                    input="directory\ntest_dir_csv\n/home/test-directory-collector\n*.csv\nDELIMITED\n\ny\n\n\n")
         print(result.output)
         assert result.exit_code == 0
