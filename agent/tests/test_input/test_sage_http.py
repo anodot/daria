@@ -37,5 +37,6 @@ class TestSage:
         assert api_client.get_pipeline(name)
 
     def test_edit(self, cli_runner, options, value):
-        result = cli_runner.invoke(pipeline_cli.edit, options, input=f"\n\n\n\n{value}\n\n\n\n\n\n\n\n\n")
+        result = cli_runner.invoke(pipeline_cli.edit, options, catch_exceptions=False,
+                                   input=f"\n\n\n\n{value}\n\n\n\n\n\n\n\n\n")
         assert result.exit_code == 0

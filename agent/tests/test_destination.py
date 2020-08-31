@@ -34,5 +34,5 @@ def test_edit_destination(cli_runner):
 
 
 def test_update(cli_runner):
-    result = cli_runner.invoke(cli.pipeline.update)
+    result = cli_runner.invoke(cli.pipeline.update, catch_exceptions=False)
     assert result.exit_code == 0
