@@ -83,21 +83,20 @@ class TestKafka:
     }
 
     def test_source_create(self, cli_runner, name):
-        result = cli_runner.invoke(cli.source.create,
+        result = cli_runner.invoke(cli.source.create, catch_exceptions=False,
                                    input=f"kafka\n{name}\nkafka:29092\n{name}\n\n\n")
         assert result.exit_code == 0
         assert os.path.isfile(os.path.join(source.repository.SOURCE_DIRECTORY, f'{name}.json'))
 
     def test_create(self, cli_runner, source_name, name, options, value, timestamp, advanced_options):
         result = cli_runner.invoke(
-            cli.pipeline.create,
-            options,
+            cli.pipeline.create, options, catch_exceptions=False,
             input=f"{source_name}\n{name}\n\n{value}\n{timestamp}\nver Country\nExchange optional_dim ad_type ADTYPE GEN\n\n{advanced_options}\n"
         )
-        print(result.output)
         assert result.exit_code == 0
         assert api_client.get_pipeline(name)
 
     def test_edit(self, cli_runner, options, value):
-        result = cli_runner.invoke(cli.pipeline.edit, options, input=f"\n{value}\n\n\n\n\n\n\n\n\n")
+        result = cli_runner.invoke(cli.pipeline.edit, options, catch_exceptions=False,
+                                   input=f"\n{value}\n\n\n\n\n\n\n\n\n")
         assert result.exit_code == 0

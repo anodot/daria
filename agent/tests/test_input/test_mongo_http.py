@@ -24,24 +24,26 @@ class TestMongo:
     }
 
     def test_source_create(self, cli_runner):
-        result = cli_runner.invoke(source_cli.create,
+        result = cli_runner.invoke(source_cli.create, catch_exceptions=False,
                                    input="""mongo\ntest_mongo\nmongodb://mongo:27017\nroot\nroot\nadmin\ntest\nadtech\n\n2015-01-02 00:00:00\n\n\n\n""")
         assert result.exit_code == 0
         assert os.path.isfile(os.path.join(source.repository.SOURCE_DIRECTORY, 'test_mongo.json'))
 
     def test_source_edit(self, cli_runner):
-        result = cli_runner.invoke(source_cli.edit, ['test_mongo'], input="""\n\n\n\n\n\n\n2015-01-01 00:00:00\n\n\n\n""")
+        result = cli_runner.invoke(source_cli.edit, ['test_mongo'], catch_exceptions=False,
+                                   input="""\n\n\n\n\n\n\n2015-01-01 00:00:00\n\n\n\n""")
         with open(os.path.join(source.repository.SOURCE_DIRECTORY, 'test_mongo.json')) as f:
             source_dict = json.load(f)
             assert source_dict['config']['configBean.initialOffset'] == '2015-01-01 00:00:00'
         assert result.exit_code == 0
 
     def test_create(self, cli_runner, name, options, value, timestamp, advanced_options):
-        result = cli_runner.invoke(pipeline_cli.create, options,
+        result = cli_runner.invoke(pipeline_cli.create, options, catch_exceptions=False,
                                    input=f"test_mongo\n{name}\n\n{value}\n{timestamp}\nver Country\nExchange optional_dim ad_type ADTYPE GEN\n{advanced_options}\n")
         assert result.exit_code == 0
         assert api_client.get_pipeline(name)
 
     def test_edit(self, cli_runner, options, value):
-        result = cli_runner.invoke(pipeline_cli.edit, options, input=f"\n{value}\n\n\n\n\n\n\n\n\n")
+        result = cli_runner.invoke(pipeline_cli.edit, options, catch_exceptions=False,
+                                   input=f"\n{value}\n\n\n\n\n\n\n\n\n")
         assert result.exit_code == 0
