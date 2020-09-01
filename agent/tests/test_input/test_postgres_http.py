@@ -19,18 +19,19 @@ class TestPostgreSQL:
     }
 
     def test_source_create(self, cli_runner, name, type, conn):
-        result = cli_runner.invoke(source_cli.create, input=f"{type}\n{name}\n{conn}\npostgres\npassword\n\n")
+        result = cli_runner.invoke(source_cli.create, catch_exceptions=False,
+                                   input=f"{type}\n{name}\n{conn}\npostgres\npassword\n\n")
         assert result.exit_code == 0
         assert source.repository.exists(name)
 
     def test_create(self, cli_runner, name, source, timestamp_type, timestamp_name):
-        result = cli_runner.invoke(pipeline_cli.create,
+        result = cli_runner.invoke(pipeline_cli.create, catch_exceptions=False,
                                    input=f'{source}\n{name}\ntest\n\n\n1000\n\n\nclicks:gauge impressions:gauge\n{timestamp_name}\n{timestamp_type}\nadsize country\n\n\n')
         assert result.exit_code == 0
         assert api_client.get_pipeline(name)
 
     def test_create_advanced(self, cli_runner, name, source):
-        result = cli_runner.invoke(pipeline_cli.create, ['-a'],
+        result = cli_runner.invoke(pipeline_cli.create, ['-a'], catch_exceptions=False,
                                    input=f'{source}\n{name}\ntest\n\n\n1000\n\ny\ntest\nclicks:gauge impressions:gauge\ntimestamp_unix\nunix\nadsize country\n\nkey1:val1 key2:val2\n\ncountry = \'USA\'\n\n\n')
         assert result.exit_code == 0
         assert api_client.get_pipeline(name)

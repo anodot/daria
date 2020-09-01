@@ -205,6 +205,7 @@ def create_from_json(configs: dict) -> List[Pipeline]:
             pipeline_ = create_pipeline_from_json(config)
             pipelines.append(pipeline_)
         except Exception as e:
+            # todo traceback?
             exceptions[config['pipeline_id']] = str(e)
         if exceptions:
             raise pipeline.PipelineException(json.dumps(exceptions))

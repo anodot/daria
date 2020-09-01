@@ -38,7 +38,7 @@ class TestTCPServer(TestPipelineBase):
         pytest.skip()
 
     def test_start(self, cli_runner, name):
-        result = cli_runner.invoke(cli.pipeline.start, [name])
+        result = cli_runner.invoke(cli.pipeline.start, [name], catch_exceptions=False)
         assert result.exit_code == 0
         assert api_client.get_pipeline_status(name)['status'] == 'RUNNING'
 
