@@ -24,7 +24,7 @@ class TestPipelineBase(object):
 
     def test_create_source_with_file(self, cli_runner, file_name):
         input_file_path = get_input_file_path(file_name + '.json')
-        result = cli_runner.invoke(source_cli.create, ['-f', input_file_path])
+        result = cli_runner.invoke(source_cli.create, ['-f', input_file_path], catch_exceptions=False)
         assert result.exit_code == 0
         with open(input_file_path) as f:
             sources = json.load(f)
@@ -33,7 +33,7 @@ class TestPipelineBase(object):
 
     def test_create_with_file(self, cli_runner, file_name):
         input_file_path = get_input_file_path(file_name + '.json')
-        result = cli_runner.invoke(pipeline_cli.create, ['-f', input_file_path])
+        result = cli_runner.invoke(pipeline_cli.create, ['-f', input_file_path], catch_exceptions=False)
         assert result.exit_code == 0
         with open(input_file_path) as f:
             pipelines = json.load(f)
@@ -42,31 +42,31 @@ class TestPipelineBase(object):
 
     def test_edit_with_file(self, cli_runner, file_name):
         input_file_path = get_input_file_path(file_name + '.json')
-        result = cli_runner.invoke(pipeline_cli.edit, ['-f', input_file_path])
+        result = cli_runner.invoke(pipeline_cli.edit, ['-f', input_file_path], catch_exceptions=False)
         assert result.exit_code == 0
 
     def test_start(self, cli_runner, name):
-        result = cli_runner.invoke(pipeline_cli.start, [name])
+        result = cli_runner.invoke(pipeline_cli.start, [name], catch_exceptions=False)
         assert result.exit_code == 0
         assert api_client.get_pipeline_status(name)['status'] == 'RUNNING'
         # give pipelines some time to send data
-        time.sleep(5)
+        time.sleep(10)
 
     def test_info(self, cli_runner, name):
-        result = cli_runner.invoke(pipeline_cli.info, [name])
+        result = cli_runner.invoke(pipeline_cli.info, [name], catch_exceptions=False)
         assert result.exit_code == 0
 
     def test_stop(self, cli_runner, name):
-        result = cli_runner.invoke(pipeline_cli.stop, [name])
+        result = cli_runner.invoke(pipeline_cli.stop, [name], catch_exceptions=False)
         assert result.exit_code == 0
         assert api_client.get_pipeline_status(name)['status'] in ['STOPPED']
 
     def test_force_stop(self, cli_runner, name):
-        result = cli_runner.invoke(pipeline_cli.force_stop, [name])
+        result = cli_runner.invoke(pipeline_cli.force_stop, [name], catch_exceptions=False)
         assert result.exit_code == 0
 
     def test_reset(self, cli_runner, name):
-        result = cli_runner.invoke(pipeline_cli.reset, [name])
+        result = cli_runner.invoke(pipeline_cli.reset, [name], catch_exceptions=False)
         assert result.exit_code == 0
 
     def test_output(self, name, pipeline_type, output):
@@ -78,12 +78,11 @@ class TestPipelineBase(object):
         assert get_output(f'{name}_{pipeline_type}.json') == expected_output
 
     def test_delete_pipeline(self, cli_runner, name):
-        result = cli_runner.invoke(pipeline_cli.delete, [name])
+        result = cli_runner.invoke(pipeline_cli.delete, [name], catch_exceptions=False)
         assert result.exit_code == 0
         assert not pipeline.repository.exists(name)
 
     def test_source_delete(self, cli_runner, name):
-        result = cli_runner.invoke(source_cli.delete, [name])
-        print(result.output)
+        result = cli_runner.invoke(source_cli.delete, [name], catch_exceptions=False)
         assert result.exit_code == 0
         assert not os.path.isfile(os.path.join(source.repository.SOURCE_DIRECTORY, f'{name}.json'))

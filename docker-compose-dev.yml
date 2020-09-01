@@ -31,7 +31,7 @@ services:
       STREAMSETS_URL: 'http://dc:18630'
       LOG_FILE_PATH: '/var/log/agent.log'
       SDC_DATA_PATH: '/sdc-data'
-#      ENV_PROD: 'false'
+      ENV_PROD: 'false'
       GIT_SHA1: 'local'
     depends_on:
       - dc
