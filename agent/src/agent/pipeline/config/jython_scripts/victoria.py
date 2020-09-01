@@ -55,6 +55,14 @@ def make_request(url_):
     return res
 
 
+def get_metric_name(data):
+    if '__name__' not in result['metric']:
+        if not sdc.userParams['AGGREGATED_METRIC_NAME']:
+            raise Exception("Victoria query result doesn't contain metric __name__ and it wasn't provided by the user")
+        return sdc.userParams['AGGREGATED_METRIC_NAME']
+    return result['metric'].pop('__name__')
+
+
 interval = get_interval()
 end = get_backfill_offset() + interval
 url = sdc.userParams['URL'] + '/api/v1/query?' + urllib.urlencode({
@@ -77,7 +85,7 @@ while True:
         for result in res['data']['result']:
             base_metric = {
                 "properties": {
-                    "what": result['metric'].pop('__name__'),
+                    "what": get_metric_name(result),
                     'target_type': "gauge",
                 },
                 "tags": {},
