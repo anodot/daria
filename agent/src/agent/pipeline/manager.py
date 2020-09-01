@@ -177,7 +177,6 @@ def create_object(pipeline_id: str, source_name: str) -> Pipeline:
     pipeline_ = pipeline.Pipeline(
         pipeline_id,
         source.repository.get_by_name(source_name),
-        {},
         destination.repository.get()
     )
     return pipeline_

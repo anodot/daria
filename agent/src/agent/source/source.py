@@ -24,7 +24,7 @@ class Source(Entity):
     # todo refactor
     def __getattr__(self, attr):
         if attr == 'sample_data':
-            return None
+            return []
         raise AttributeError(f'type object {type(self)} has no attribute {attr}')
 
     def to_dict(self) -> dict:

@@ -37,7 +37,8 @@ def upgrade():
         sa.Column('name', sa.String, nullable=False, unique=True),
         sa.Column('source_id', sa.Integer, nullable=False),
         sa.Column('destination_id', sa.Integer, nullable=False),
-        sa.Column('config', sa.JSON, nullable=False)
+        sa.Column('config', sa.JSON, nullable=False),
+        sa.Column('override_source', sa.JSON, nullable=False)
     )
     op.create_foreign_key('fk_pipeline_source', 'pipelines', 'sources', ['source_id'], ['id'])
     op.create_foreign_key('fk_pipeline_destination', 'pipelines', 'destinations', ['destination_id'], ['id'])

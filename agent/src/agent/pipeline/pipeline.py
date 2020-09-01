@@ -51,6 +51,7 @@ class Pipeline(Entity):
     source_id = Column(Integer, ForeignKey('sources.id'))
     destination_id = Column(Integer, ForeignKey('destinations.id'))
     config = Column(MutableDict.as_mutable(JSON))
+    override_source = Column(MutableDict.as_mutable(JSON))
 
     source_ = relationship('Source', back_populates='pipelines')
     destination = relationship('HttpDestination')
@@ -67,15 +68,14 @@ class Pipeline(Entity):
 
     def __init__(self, pipeline_name: str,
                  source_: source.Source,
-                 config: dict,
                  destination: HttpDestination):
         self.name = pipeline_name
-        self.config = config
+        self.config = {}
         self.source_ = source_
         self.source_id = source_.id
         self.destination = destination
         self.destination_id = destination.id
-        self.override_source = config.pop(self.OVERRIDE_SOURCE, {})
+        self.override_source = {}
 
     @property
     def source(self):

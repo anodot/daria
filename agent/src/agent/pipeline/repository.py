@@ -1,5 +1,5 @@
 from typing import List
-from agent import destination, source, pipeline
+from agent import pipeline
 from agent.db import session
 
 
@@ -18,8 +18,7 @@ def get_by_name(pipeline_name: str) -> pipeline.Pipeline:
     pipeline_ = session.query(pipeline.Pipeline).filter(pipeline.Pipeline.name == pipeline_name).first()
     if not pipeline_:
         raise PipelineNotExistsException(f"Pipeline {pipeline_name} doesn't exist")
-    res = _construct_pipeline(pipeline_)
-    return res
+    return pipeline_
 
 
 def get_by_source(source_name: str) -> List[pipeline.Pipeline]:
@@ -27,10 +26,7 @@ def get_by_source(source_name: str) -> List[pipeline.Pipeline]:
 
 
 def get_all() -> List[pipeline.Pipeline]:
-    pipelines = []
-    for pipeline_entity in session.query(pipeline.Pipeline).all():
-        pipelines.append(_construct_pipeline(pipeline_entity))
-    return pipelines
+    return session.query(pipeline.Pipeline).all()
 
 
 def save(pipeline_: pipeline.Pipeline):
@@ -48,8 +44,3 @@ def delete_by_name(pipeline_name: str):
         raise PipelineNotExistsException(f"Pipeline {pipeline_name} doesn't exist")
     session.delete(pipeline_entity)
     session.commit()
-
-
-def _construct_pipeline(pipeline_: pipeline.Pipeline) -> pipeline.Pipeline:
-    pipeline_.override_source = pipeline_.config.pop(pipeline_.OVERRIDE_SOURCE, {})
-    return pipeline_
