@@ -12,7 +12,7 @@ class PromptConfigVictoria(PromptConfig):
         self.prompt_delay()
         self.config['timestamp'] = {}
         self.config['timestamp']['type'] = 'unix'
-        self.set_static_properties()
+        self.set_static_dimensions()
         self.set_tags()
 
     def prompt_query(self):
@@ -20,8 +20,10 @@ class PromptConfigVictoria(PromptConfig):
                                             default=self.default_config.get('query'))
 
     def prompt_aggregated_metric_name(self):
-        self.config['aggregated_metric_name'] = click.prompt('Aggregated metric name', type=click.STRING,
-                                                             default=self.default_config.get('aggregated_metric_name'))
+        if self.advanced:
+            self.config['aggregated_metric_name'] = \
+                click.prompt('Aggregated metric name', type=click.STRING,
+                             default=self.default_config.get('aggregated_metric_name'))
 
     def prompt_days_to_backfill(self):
         self.config['days_to_backfill'] = \
@@ -35,3 +37,7 @@ class PromptConfigVictoria(PromptConfig):
     def prompt_delay(self):
         self.config['delay'] = click.prompt('Delay (in minutes)', type=click.INT,
                                             default=self.default_config.get('delay', 0))
+
+    def set_static_dimensions(self):
+        if self.advanced:
+            self.prompt_object('static_dimensions', 'Static dimensions')
