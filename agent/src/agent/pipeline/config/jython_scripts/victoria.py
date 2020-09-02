@@ -148,7 +148,6 @@ while True:
         sdc.log.debug(curr_url)
         res = make_request(curr_url).json()
         sdc.log.debug(str(res))
-        sdc.log.debug('anton ' + get_result_key(res))
         process_matrix(res, end) if res['data']['resultType'] == 'matrix' else process_vector(res, end)
         end += interval
     except Exception as e:
