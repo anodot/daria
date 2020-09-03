@@ -12,7 +12,7 @@ class PromptConfigVictoria(PromptConfig):
         self.prompt_delay()
         self.config['timestamp'] = {}
         self.config['timestamp']['type'] = 'unix'
-        self.set_static_dimensions()
+        self.set_static_properties()
         self.set_tags()
 
     def prompt_query(self):
@@ -37,7 +37,3 @@ class PromptConfigVictoria(PromptConfig):
     def prompt_delay(self):
         self.config['delay'] = click.prompt('Delay (in minutes)', type=click.INT,
                                             default=self.default_config.get('delay', 0))
-
-    def set_static_dimensions(self):
-        if self.advanced:
-            self.prompt_object('static_dimensions', 'Static dimensions')

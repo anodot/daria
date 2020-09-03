@@ -74,12 +74,6 @@ def create_base_metric(metric_name):
         },
         "tags": {},
     }
-    if sdc.userParams['STATIC_DIMENSIONS']:
-        for k, v in sdc.userParams['STATIC_DIMENSIONS'].items():
-            base_metric_['properties'][k] = v
-    if sdc.userParams['TAGS']:
-        for k, tags in sdc.userParams['TAGS'].items():
-            base_metric_['tags'][k] = tags
     return base_metric_
 
 
