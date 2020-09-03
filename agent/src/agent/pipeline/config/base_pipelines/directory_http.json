@@ -23,7 +23,7 @@
       "value" : -1
     }, {
       "name" : "notifyOnStates",
-      "value" : [ "RUN_ERROR", "STOPPED", "FINISHED" ]
+      "value" : [ "RUN_ERROR", "START_ERROR", "STOP_ERROR", "RUNNING_ERROR" ]
     }, {
       "name" : "emailIDs",
       "value" : [ ]
@@ -80,7 +80,14 @@
       "value" : 60
     }, {
       "name" : "webhookConfigs",
-      "value" : [ ]
+      "value" : [ {
+        "payload" : "{\n  \"pipeline_status\": \"{{PIPELINE_STATE}}\",\n  \"pipeline_title\": \"{{PIPELINE_TITLE}}\",\n  \"time\": \"{{TIME}}\"\n}",
+        "headers" : [ ],
+        "httpMethod" : "POST",
+        "contentType" : "application/json",
+        "authType" : "NONE",
+        "webhookUrl" : "http://anodot-agent/pipeline-failed"
+      } ]
     }, {
       "name" : "sparkConfigs",
       "value" : [ ]

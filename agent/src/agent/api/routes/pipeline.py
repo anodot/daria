@@ -1,11 +1,12 @@
 import logging
+import time
 
 import requests
 from jsonschema import ValidationError
 from agent.api.routes import needs_pipeline
 from flask import jsonify, Blueprint, request
 from agent.api import routes
-from agent import pipeline, source
+from agent import pipeline, source, proxy
 from agent.streamsets_api_client import StreamSetsApiClientException
 
 pipelines = Blueprint('pipelines', __name__)
@@ -25,7 +26,7 @@ def create():
     try:
         pipelines_ = pipeline.manager.create_from_json(request.get_json())
     except (
-        ValidationError, source.SourceNotExists, source.SourceConfigDeprecated, requests.exceptions.ConnectionError
+            ValidationError, source.SourceNotExists, source.SourceConfigDeprecated, requests.exceptions.ConnectionError
     ) as e:
         return jsonify(str(e)), 400
     except pipeline.PipelineException as e:
@@ -38,8 +39,8 @@ def edit():
     try:
         pipelines_ = pipeline.manager.edit_using_json(request.get_json())
     except (
-        ValidationError, source.SourceNotExists, source.SourceConfigDeprecated,
-        requests.exceptions.ConnectionError, pipeline.repository.PipelineNotExistsException
+            ValidationError, source.SourceNotExists, source.SourceConfigDeprecated,
+            requests.exceptions.ConnectionError, pipeline.repository.PipelineNotExistsException
     ) as e:
         return jsonify(str(e)), 400
     except pipeline.PipelineException as e:
@@ -132,3 +133,22 @@ def reset(pipeline_id):
     except StreamSetsApiClientException as e:
         return jsonify(str(e)), 500
     return jsonify('')
+
+
+@pipelines.route('/pipeline-failed', methods=['POST'])
+def pipeline_failed():
+    data = request.get_json()
+    destination = pipeline.repository.get(data['pipeline_title']).destination
+    metric = [{
+        "properties": {
+            "what": "pipelineError",
+            "pipelineTitle": data['pipeline_title'],
+            "pipelineStatus": data['pipeline_status'],
+            "time": data['time'],
+        },
+        "timestamp": int(time.time()),
+        "value": 1
+    }]
+    res = requests.post(destination.resource_url, json=metric, proxies=proxy.get_config(destination.proxy))
+    res.raise_for_status()
+    return ''
