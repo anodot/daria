@@ -98,6 +98,7 @@ test-pipelines:
 test-api:
 	$(DOCKER_TEST) tests/api/test_destination.py
 	$(DOCKER_TEST) tests/api/source
+	$(DOCKER_TEST) tests/api/pipeline
 
 test-api-scripts:
 	$(DOCKER_TEST) tests/api/test_scripts.py

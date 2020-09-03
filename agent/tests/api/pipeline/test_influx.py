@@ -96,9 +96,17 @@ class TestInflux:
         result = client.post('/pipelines/test_influx/reset')
         assert result.status_code == 200
 
-    def test_list(self, client, er):
-        result = client.get('/pipelines')
-        assert result.data == er
+    def test_pipeline_failed(self, client):
+        res = client.post('/pipeline-failed', json={
+            "pipeline_status": "RUN_ERROR",
+            "pipeline_title": "test_influx",
+            "time": "1970-01-01 00:00:00"
+        })
+        assert res.status_code == 200
+
+    # def test_list(self, client, er):
+    #     result = client.get('/pipelines')
+    #     assert result.data == er
 
     def test_delete(self, client):
         client.delete('/pipelines/test_influx')
