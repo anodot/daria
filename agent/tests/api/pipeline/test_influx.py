@@ -56,15 +56,15 @@ class TestInflux:
 
     def test_source_create(self, client, data, er):
         result = client.post('/sources', json=list(data))
-        # assert result.data == er
+        assert result.data == er
 
     def test_create(self, client, data, er):
         result = client.post('/pipelines', json=list(data))
-        # assert result.data == er
+        assert result.data == er
 
     def test_edit(self, client, data, er):
         result = client.put('/pipelines', json=list(data))
-        # assert result.data == er
+        assert result.data == er
 
     def test_start(self, client):
         result = client.post('/pipelines/test_influx/start')
