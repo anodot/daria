@@ -2,7 +2,6 @@ import logging
 import time
 import requests
 from jsonschema import ValidationError
-from requests import HTTPError
 
 from agent.api.routes import needs_pipeline
 from flask import jsonify, Blueprint, request
@@ -144,7 +143,6 @@ def pipeline_failed():
     metric = [{
         "properties": {
             "what": "pipeline_error_status_count",
-            "pipeline_title": data['pipeline_title'],
             "pipeline_status": data['pipeline_status'],
             "target_type": "counter",
         },
@@ -155,11 +153,7 @@ def pipeline_failed():
     res = requests.post(
         pipeline_.destination.resource_url, json=metric, proxies=proxy.get_config(pipeline_.destination.proxy)
     )
-    try:
-        res.raise_for_status()
-    except HTTPError as e:
-        logger.error(str(e))
-        return ''
+    res.raise_for_status()
     data = res.json()
     if 'errors' in data and data['errors']:
         for error in data['errors']:
