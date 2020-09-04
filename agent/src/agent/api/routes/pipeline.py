@@ -1,15 +1,17 @@
 import logging
 import time
-
 import requests
 from jsonschema import ValidationError
+from requests import HTTPError
+
 from agent.api.routes import needs_pipeline
 from flask import jsonify, Blueprint, request
 from agent.api import routes
-from agent import pipeline, source, proxy
+from agent import pipeline, source, proxy, logger
 from agent.streamsets_api_client import StreamSetsApiClientException
 
 pipelines = Blueprint('pipelines', __name__)
+logger = logger.get_logger(__name__)
 
 
 @pipelines.route('/pipelines', methods=['GET'])
@@ -138,17 +140,28 @@ def reset(pipeline_id):
 @pipelines.route('/pipeline-failed', methods=['POST'])
 def pipeline_failed():
     data = request.get_json()
-    destination = pipeline.repository.get(data['pipeline_title']).destination
+    pipeline_ = pipeline.repository.get(data['pipeline_title'])
     metric = [{
         "properties": {
-            "what": "pipelineError",
-            "pipelineTitle": data['pipeline_title'],
-            "pipelineStatus": data['pipeline_status'],
-            "time": data['time'],
+            "what": "pipeline_error_status_count",
+            "pipeline_title": data['pipeline_title'],
+            "pipeline_status": data['pipeline_status'],
+            "target_type": "counter",
         },
+        "tags": pipeline_.meta_tags(),
         "timestamp": int(time.time()),
         "value": 1
     }]
-    res = requests.post(destination.resource_url, json=metric, proxies=proxy.get_config(destination.proxy))
-    res.raise_for_status()
+    res = requests.post(
+        pipeline_.destination.resource_url, json=metric, proxies=proxy.get_config(pipeline_.destination.proxy)
+    )
+    try:
+        res.raise_for_status()
+    except HTTPError as e:
+        logger.error(str(e))
+        return ''
+    data = res.json()
+    if 'errors' in data and data['errors']:
+        for error in data['errors']:
+            logger.error(error['description'])
     return ''

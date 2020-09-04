@@ -33,6 +33,7 @@ services:
       SDC_DATA_PATH: '/sdc-data'
       ENV_PROD: 'false'
       GIT_SHA1: 'local'
+      AGENT_URL: 'http://anodot-agent'
     depends_on:
       - dc
     volumes:

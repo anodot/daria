@@ -78,12 +78,12 @@
     }, {
       "name" : "webhookConfigs",
       "value" : [ {
-        "payload" : "{\n  \"pipeline_status\": \"{{PIPELINE_STATE}}\",\n  \"pipeline_title\": \"{{PIPELINE_TITLE}}\",\n  \"time\": \"{{TIME}}\"\n}",
+        "payload" : "{\n  \"pipeline_status\": \"{{PIPELINE_STATE}}\",\n  \"pipeline_title\": \"{{PIPELINE_TITLE}}\"\n }",
         "headers" : [ ],
         "httpMethod" : "POST",
         "contentType" : "application/json",
         "authType" : "NONE",
-        "webhookUrl" : "http://anodot-agent/pipeline-failed"
+        "webhookUrl" : "${AGENT_URL}/pipeline-failed"
       } ]
     }, {
       "name" : "sparkConfigs",

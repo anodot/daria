@@ -33,6 +33,7 @@ services:
       LOG_FILE_PATH: '/var/log/agent.log'
       SDC_DATA_PATH: '/sdc-data'
       ENV_PROD: 'false'
+      AGENT_URL: 'http://anodot-agent'
 #      VALIDATION_ENABLED: 'false'
     stdin_open: true
     tty: true

@@ -18,5 +18,7 @@ MONITORING_SOURCE_NAME = 'monitoring'
 
 VALIDATION_ENABLED = True if os.environ.get('VALIDATION_ENABLED') == 'true' else False
 
+AGENT_URL = os.environ.get('AGENT_URL', 'http://anodot-agent')
+
 # todo this constant is wrong
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
