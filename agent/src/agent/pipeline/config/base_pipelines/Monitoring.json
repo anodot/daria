@@ -1949,7 +1949,7 @@
         "value" : "JSON"
       }, {
         "name" : "conf.resourceUrl",
-        "value" : "http://localhost:18630/rest/v1/system/jmx?qry=kafka.consumer:type=*,*"
+        "value" : "http://localhost:18630/rest/v1/system/jmx?qry=kafka.consumer:type=consumer-fetch-manager-metrics,topic=*,partition=*,*"
       }, {
         "name" : "conf.headers",
         "value" : [ ]
