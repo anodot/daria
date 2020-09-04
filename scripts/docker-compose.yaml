@@ -20,8 +20,6 @@ services:
     tty: true
     depends_on:
       - dc
-    environment:
-      AGENT_URL: 'http://anodot-agent'
 #    ports:
 #    - 8080:80
 
