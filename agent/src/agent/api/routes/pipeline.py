@@ -1,14 +1,16 @@
 import logging
-
+import time
 import requests
 from jsonschema import ValidationError
+
 from agent.api.routes import needs_pipeline
 from flask import jsonify, Blueprint, request
 from agent.api import routes
-from agent import pipeline, source
+from agent import pipeline, source, proxy, logger
 from agent.streamsets_api_client import StreamSetsApiClientException
 
 pipelines = Blueprint('pipelines', __name__)
+logger = logger.get_logger(__name__)
 
 
 @pipelines.route('/pipelines', methods=['GET'])
@@ -25,7 +27,7 @@ def create():
     try:
         pipelines_ = pipeline.manager.create_from_json(request.get_json())
     except (
-        ValidationError, source.SourceNotExists, source.SourceConfigDeprecated, requests.exceptions.ConnectionError
+            ValidationError, source.SourceNotExists, source.SourceConfigDeprecated, requests.exceptions.ConnectionError
     ) as e:
         return jsonify(str(e)), 400
     except pipeline.PipelineException as e:
@@ -38,8 +40,8 @@ def edit():
     try:
         pipelines_ = pipeline.manager.edit_using_json(request.get_json())
     except (
-        ValidationError, source.SourceNotExists, source.SourceConfigDeprecated,
-        requests.exceptions.ConnectionError, pipeline.repository.PipelineNotExistsException
+            ValidationError, source.SourceNotExists, source.SourceConfigDeprecated,
+            requests.exceptions.ConnectionError, pipeline.repository.PipelineNotExistsException
     ) as e:
         return jsonify(str(e)), 400
     except pipeline.PipelineException as e:
@@ -132,3 +134,28 @@ def reset(pipeline_id):
     except StreamSetsApiClientException as e:
         return jsonify(str(e)), 500
     return jsonify('')
+
+
+@pipelines.route('/pipeline-failed', methods=['POST'])
+def pipeline_failed():
+    data = request.get_json()
+    pipeline_ = pipeline.repository.get(data['pipeline_title'])
+    metric = [{
+        "properties": {
+            "what": "pipeline_error_status_count",
+            "pipeline_status": data['pipeline_status'],
+            "target_type": "counter",
+        },
+        "tags": pipeline_.meta_tags(),
+        "timestamp": int(time.time()),
+        "value": 1
+    }]
+    res = requests.post(
+        pipeline_.destination.resource_url, json=metric, proxies=proxy.get_config(pipeline_.destination.proxy)
+    )
+    res.raise_for_status()
+    data = res.json()
+    if 'errors' in data and data['errors']:
+        for error in data['errors']:
+            logger.error(error['description'])
+    return ''
