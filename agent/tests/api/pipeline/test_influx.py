@@ -50,7 +50,7 @@ class TestInflux:
             'er': b'[{"dimensions":{"optional":["cpu","host","zone"],"required":[]},"interval":7000000,"measurement_name":"cpu_test","override_source":{},"pipeline_id":"test_influx","properties":{"test":"val"},"source":{"name":"influx"},"target_type":"gauge","value":{"constant":"1","type":"property","values":["usage_active"]}}]\n'
         }],
         'test_list': [{
-            'er': b'[{"dimensions":{"optional":["cpu","host","zone"],"required":[]},"interval":7000000,"measurement_name":"cpu_test","override_source":{},"pipeline_id":"test_influx","properties":{"test":"val"},"source":{"name":"influx"},"target_type":"gauge","value":{"constant":"1","type":"property","values":["usage_active"]}},{"override_source":{},"pipeline_id":"Monitoring","source":{"name":"monitoring"}}]\n'
+            'er': b'[{"override_source":{},"pipeline_id":"Monitoring","source":{"name":"monitoring"}},{"dimensions":{"optional":["cpu","host","zone"],"required":[]},"interval":7000000,"measurement_name":"cpu_test","override_source":{},"pipeline_id":"test_influx","properties":{"test":"val"},"source":{"name":"influx"},"target_type":"gauge","value":{"constant":"1","type":"property","values":["usage_active"]}}]\n'
         }]
     }
 
@@ -96,8 +96,17 @@ class TestInflux:
         result = client.post('/pipelines/test_influx/reset')
         assert result.status_code == 200
 
+    def test_pipeline_failed(self, client):
+        res = client.post('/pipeline-failed', json={
+            "pipeline_status": "RUN_ERROR",
+            "pipeline_title": "test_influx",
+            "time": "1970-01-01 00:00:00"
+        })
+        assert res.status_code == 200
+
     def test_list(self, client, er):
         result = client.get('/pipelines')
+        print(result.data)
         assert result.data == er
 
     def test_delete(self, client):

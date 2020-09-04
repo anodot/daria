@@ -198,7 +198,7 @@ class Pipeline(Entity):
 
     @property
     def days_to_backfill(self) -> str:
-        return self.config.get('days_to_backfill', 0)
+        return self.config.get('days_to_backfill', '0')
 
     @property
     def delay(self) -> str:

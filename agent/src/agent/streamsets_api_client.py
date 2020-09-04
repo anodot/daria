@@ -84,7 +84,6 @@ class StreamSetsApiClient:
         :return:
         """
         logger.info(f'Updating pipeline: {pipeline_id}')
-        logger.info(f'Pipeline data: {pipeline}')
         return self.session.post(self.build_url('pipeline', pipeline_id), json=pipeline)
 
     @endpoint

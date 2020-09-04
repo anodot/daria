@@ -249,8 +249,10 @@ def start(pipeline_obj: Pipeline):
     wait_for_status(pipeline_obj.name, pipeline.Pipeline.STATUS_RUNNING)
     click.secho(f'{pipeline_obj.name} pipeline is running')
     if ENV_PROD:
-        wait_for_sending_data(pipeline_obj.name)
-        click.secho(f'{pipeline_obj.name} pipeline is sending data')
+        if wait_for_sending_data(pipeline_obj.name):
+            click.secho(f'{pipeline_obj.name} pipeline is sending data')
+        else:
+            click.secho(f'{pipeline_obj.name} pipeline did not send any data')
 
 
 def update(pipeline_obj: Pipeline):
@@ -317,8 +319,8 @@ def wait_for_sending_data(pipeline_id: str, tries: int = 5, initial_delay: int =
             raise pipeline.PipelineException(f"Pipeline {pipeline_id} has {stats['errors']} errors")
         delay = initial_delay ** i
         if i == tries:
-            raise pipeline.PipelineException(
-                f"Pipeline {pipeline_id} did not send any data. Received number of records - {stats['in']}")
+            logger.warning(f'Pipeline {pipeline_id} did not send any data. Received number of records - {stats["in"]}')
+            return False
         print(f'Waiting for pipeline {pipeline_id} to send data. Check again after {delay} seconds...')
         time.sleep(delay)
 

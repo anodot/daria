@@ -2,7 +2,7 @@ import json
 import os
 
 from agent.logger import get_logger
-from agent.constants import ERRORS_DIR
+from agent.constants import ERRORS_DIR, AGENT_URL
 from agent.constants import ROOT_DIR
 from agent.pipeline import pipeline as p
 
@@ -63,7 +63,8 @@ class BaseConfigHandler:
         return {
             'TOKEN': self.pipeline.destination.token,
             'PROTOCOL': self.pipeline.destination.PROTOCOL_20,
-            'ANODOT_BASE_URL': self.pipeline.destination.url
+            'ANODOT_BASE_URL': self.pipeline.destination.url,
+            'AGENT_URL': AGENT_URL,
         }
 
     def override_pipeline_config(self):
