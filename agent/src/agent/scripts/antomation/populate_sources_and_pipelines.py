@@ -3,9 +3,16 @@ import json
 import os
 import csv
 import shutil
+import logging
+import sys
 
 from tempfile import NamedTemporaryFile
-from agent import pipeline, source
+from agent import pipeline, source, logger
+
+logger_ = logger.get_logger('scripts.kafka_topology.run')
+handler = logging.StreamHandler(sys.stdout)
+handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+logger_.addHandler(handler)
 
 FAIL = '\033[91m'
 ENDC = '\033[0m'
@@ -91,23 +98,23 @@ def process(directory, checksum_file, create):
     for root, _, filenames in os.walk(directory):
         for filename in filenames:
             if not filename.endswith('.json'):
-                print(f'Skipping {filename}')
+                logger_.info(f'Skipping {filename}')
                 continue
             file_path = os.path.join(root, filename)
             if not should_update(checksum_file, filename, root):
-                print(f"Don't need to update {file_path}")
+                logger_.info(f"Don't need to update {file_path}")
                 continue
             try:
-                print(f'Processing {file_path}')
+                logger_.info(f'Processing {file_path}')
                 with open(file_path) as file:
                     create(file)
-                print('Success')
+                logger_.info('Success')
             except Exception as e:
-                print(f'{FAIL}EXCEPTION: {type(e).__name__}: {str(e)}\n{ENDC}')
+                logger_.exception(f'{FAIL}EXCEPTION: {type(e).__name__}: {str(e)}\n{ENDC}')
                 failed = True
                 continue
             update_checksum(checksum_file, filename, root)
-            print(f'Updated checksum for {file_path}')
+            logger_.info(f'Updated checksum for {file_path}')
     if failed:
         exit(1)
 
