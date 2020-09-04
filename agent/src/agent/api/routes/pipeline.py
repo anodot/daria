@@ -139,7 +139,7 @@ def reset(pipeline_id):
 @pipelines.route('/pipeline-failed', methods=['POST'])
 def pipeline_failed():
     data = request.get_json()
-    pipeline_ = pipeline.repository.get(data['pipeline_title'])
+    pipeline_ = pipeline.repository.get_by_name(data['pipeline_title'])
     metric = [{
         "properties": {
             "what": "pipeline_error_status_count",
