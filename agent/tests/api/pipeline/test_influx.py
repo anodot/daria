@@ -50,7 +50,7 @@ class TestInflux:
             'er': b'[{"dimensions":{"optional":["cpu","host","zone"],"required":[]},"interval":7000000,"measurement_name":"cpu_test","override_source":{},"pipeline_id":"test_influx","properties":{"test":"val"},"source":{"name":"influx"},"target_type":"gauge","value":{"constant":"1","type":"property","values":["usage_active"]}}]\n'
         }],
         'test_list': [{
-            'er': b'[{"dimensions":{"optional":["cpu","host","zone"],"required":[]},"interval":7000000,"measurement_name":"cpu_test","override_source":{},"pipeline_id":"test_influx","properties":{"test":"val"},"source":{"name":"influx"},"target_type":"gauge","value":{"constant":"1","type":"property","values":["usage_active"]}},{"override_source":{},"pipeline_id":"Monitoring","source":{"name":"monitoring"}}]\n'
+            'er': b'[{"override_source":{},"pipeline_id":"Monitoring","source":{"name":"monitoring"}},{"dimensions":{"optional":["cpu","host","zone"],"required":[]},"interval":7000000,"measurement_name":"cpu_test","override_source":{},"pipeline_id":"test_influx","properties":{"test":"val"},"source":{"name":"influx"},"target_type":"gauge","value":{"constant":"1","type":"property","values":["usage_active"]}}]\n'
         }]
     }
 
