@@ -203,11 +203,13 @@ def reset(pipeline_id):
 
 
 @click.command()
-def update():
+@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, required=False)
+def update(pipeline_id):
     """
     Update all pipelines configuration, recreate and restart them
     """
-    for p in pipeline.repository.get_all():
+    pipelines = [pipeline.repository.get(pipeline_id)] if pipeline_id else pipeline.repository.get_all()
+    for p in pipelines:
         try:
             pipeline.manager.update(p)
             click.secho(f'Pipeline {p.name} updated', fg='green')

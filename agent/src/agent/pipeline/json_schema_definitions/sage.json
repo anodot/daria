@@ -11,7 +11,7 @@
       "patternProperties":  {"[^ \\.]+": {"type": "array", "items": {"type": "string"}}}
     },
     "query_file": {"type": "string"},
-    "interval": {"type":  "integer"},
+    "interval": {"type":  "number"},
     "delay": {"type":  "integer"},
     "days_to_backfill": {"type":  "integer"},
     "batch_size": {"type":  "integer"}
