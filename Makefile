@@ -11,7 +11,7 @@ DOCKER_TEST_PARALLEL = $(DOCKER_TEST) -n $(THREADS) --dist=loadfile
 ##---------
 all: build-all test-all
 
-build-all: get-streamsets-libs build-docker sleep setup-elastic setup-kafka setup-victoria
+build-all: get-streamsets-libs build-docker
 
 test-all: run-unit-tests test-flask-app test-destination test-antomation test-api test-api-scripts first-step second-step
 
@@ -82,8 +82,8 @@ test-sage: bootstrap run-sage nap test-destination
 build-docker:
 	docker-compose build --build-arg GIT_SHA1="$(shell git describe --dirty --always)"
 
-first-step: run-first-half test-input-first-half test-pipelines-first-half stop-first-half
-second-step: run-second-half test-input-second-half test-pipelines-second-half
+first-step: run-first-half test-api-first-half test-input-first-half test-pipelines-first-half stop-first-half
+second-step: run-second-half test-api-second-half test-input-second-half test-pipelines-second-half
 
 run-first-half: run-elastic run-influx run-mongo run-victoria sleep setup-elastic setup-victoria
 run-second-half: run-mysql run-postgres run-sage run-kafka nap setup-kafka
@@ -100,6 +100,14 @@ test-pipelines-first-half:
 	$(DOCKER_TEST_PARALLEL) tests/test_pipelines/test_elastic_http.py tests/test_pipelines/test_influx_http.py tests/test_pipelines/test_kafka_http.py tests/test_pipelines/test_mongo_http.py tests/test_pipelines/test_victoria_http.py
 test-pipelines-second-half:
 	$(DOCKER_TEST_PARALLEL) tests/test_pipelines/test_mysql_http.py tests/test_pipelines/test_postgres_http.py tests/test_pipelines/test_sage_http.py tests/test_pipelines/test_directory_http.py tests/test_pipelines/test_tcp_http.py
+
+test-api-first-half:
+	$(DOCKER_TEST) tests/api/test_destination.py
+	$(DOCKER_TEST) tests/api/source/test_elastic.py tests/api/source/test_influx.py tests/api/source/test_mongo.py tests/api/source/test_victoria.py
+	$(DOCKER_TEST) tests/api/pipeline
+
+test-api-second-half:
+	$(DOCKER_TEST) tests/api/source
 
 test-antomation:
 	$(DOCKER_TEST) tests/test_antomation.py
