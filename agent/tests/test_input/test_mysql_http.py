@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from ..fixtures import cli_runner
 from agent.cli import source as source_cli, pipeline as pipeline_cli
 from agent.streamsets_api_client import api_client
@@ -21,13 +23,15 @@ class TestMySQL:
         assert source.repository.exists(name)
 
     def test_create(self, cli_runner, name, source, timestamp_type, timestamp_name):
+        days_to_backfill = (datetime.now() - datetime(year=2017, month=12, day=10)).days + 1
         result = cli_runner.invoke(pipeline_cli.create, catch_exceptions=False,
-                                   input=f'{source}\n{name}\ntest\n\n\n1000\n\n\nclicks:gauge impressions:gauge\n{timestamp_name}\n{timestamp_type}\nadsize country\n\n\n\n')
+                                   input=f'{source}\n{name}\ntest\n\n\n{days_to_backfill}\n\n\nclicks:gauge impressions:gauge\n{timestamp_name}\n{timestamp_type}\nadsize country\n\n\n\n')
         assert result.exit_code == 0
         assert api_client.get_pipeline(name)
 
     def test_create_advanced(self, cli_runner, name, source):
+        days_to_backfill = (datetime.now() - datetime(year=2017, month=12, day=10)).days + 1
         result = cli_runner.invoke(pipeline_cli.create, ['-a'], catch_exceptions=False,
-                                   input=f'{source}\n{name}\ntest\n\n\n1000\n\ny\ntest\nclicks:gauge impressions:gauge\ntimestamp_unix\nunix\nadsize country\n\nkey1:val1 key2:val2\n\ncountry = \'USA\'\n\n\n')
+                                   input=f'{source}\n{name}\ntest\n\n\n{days_to_backfill}\n\ny\ntest\nclicks:gauge impressions:gauge\ntimestamp_unix\nunix\nadsize country\n\nkey1:val1 key2:val2\n\ncountry = \'USA\'\n\n\n')
         assert result.exit_code == 0
         assert api_client.get_pipeline(name)
