@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 
 from ..fixtures import get_input_file_path, cli_runner
 from agent import cli
@@ -18,8 +19,9 @@ class TestElastic:
     }
 
     def test_source_create(self, cli_runner):
+        days_to_backfill = (datetime.now() - datetime(year=2017, month=12, day=10)).days + 1
         result = cli_runner.invoke(cli.source.create, catch_exceptions=False,
-                                   input=f"elastic\ntest_es\nhttp://es:9200\ntest\ntimestamp_unix_ms\nnow-1000d\n\n")
+                                   input=f"elastic\ntest_es\nhttp://es:9200\ntest\ntimestamp_unix_ms\nnow-{days_to_backfill}d\n\n")
         assert result.exit_code == 0
         assert os.path.isfile(os.path.join(source.repository.SOURCE_DIRECTORY, 'test_es.json'))
 
