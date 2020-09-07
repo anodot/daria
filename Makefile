@@ -11,7 +11,7 @@ DOCKER_TEST_PARALLEL = $(DOCKER_TEST) -n $(THREADS) --dist=loadfile
 ##---------
 all: build-all test-all
 
-build-all: get-streamsets-libs build-docker run-base
+build-all: get-streamsets-libs build-docker run-base nap
 
 test-all: run-unit-tests test-flask-app test-destination test-antomation test-api test-api-scripts first-step second-step
 
