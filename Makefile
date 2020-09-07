@@ -13,7 +13,7 @@ all: build-all test-all
 
 build-all: get-streamsets-libs build-docker run-base nap
 
-test-all: run-unit-tests test-flask-app test-destination test-antomation test-api test-api-scripts first-step second-step
+test-all: run-unit-tests test-flask-app test-destination first-step second-step test-antomation test-api-scripts
 
 ##-------------
 ## DEVELOPMENT
@@ -85,8 +85,8 @@ build-docker:
 first-step: run-first-half test-api-first-half test-input-first-half test-pipelines-first-half stop-first-half
 second-step: run-second-half test-api-second-half test-input-second-half test-pipelines-second-half
 
-run-first-half: run-elastic run-influx run-mongo run-victoria sleep setup-elastic setup-victoria
-run-second-half: run-mysql run-postgres run-sage run-kafka nap setup-kafka
+run-first-half: run-elastic run-postgres run-mongo run-victoria sleep setup-elastic setup-victoria
+run-second-half: run-mysql run-influx run-sage run-kafka nap setup-kafka
 
 stop-first-half:
 	docker-compose stop es influx mongo victoria
@@ -103,7 +103,7 @@ test-pipelines-second-half:
 
 test-api-first-half:
 	$(DOCKER_TEST) tests/api/test_destination.py
-	$(DOCKER_TEST) tests/api/source/test_elastic.py tests/api/source/test_influx.py tests/api/source/test_mongo.py tests/api/source/test_victoria.py
+	$(DOCKER_TEST) tests/api/source/test_elastic.py tests/api/source/test_influx.py tests/api/source/test_mongo.py
 	$(DOCKER_TEST) tests/api/pipeline
 
 test-api-second-half:
