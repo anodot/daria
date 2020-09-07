@@ -11,7 +11,7 @@ DOCKER_TEST_PARALLEL = $(DOCKER_TEST) -n $(THREADS) --dist=loadfile
 ##---------
 all: build-all test-all
 
-build-all: get-streamsets-libs build-docker
+build-all: get-streamsets-libs build-docker run-base
 
 test-all: run-unit-tests test-flask-app test-destination test-antomation test-api test-api-scripts first-step second-step
 
@@ -159,6 +159,9 @@ clean-docker-volumes:
 	rm -rf sdc-data
 	rm -rf data
 	$(DOCKER_COMPOSE_DEV) down -v
+
+run-base:
+	docker-compose up -d agent dc squid dummy_destination
 
 run-base-services:
 	$(DOCKER_COMPOSE_DEV) up -d agent dc squid dummy_destination
