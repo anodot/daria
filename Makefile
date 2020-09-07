@@ -13,7 +13,7 @@ all: build-all test-all
 
 build-all: get-streamsets-libs build-docker sleep setup-elastic setup-kafka setup-victoria
 
-test-all: run-unit-tests test-flask-app test-destination test-antomation test-api test-api-scripts test-input test-pipelines
+test-all: run-unit-tests test-flask-app test-destination test-antomation test-api test-api-scripts first-step second-step
 
 ##-------------
 ## DEVELOPMENT
@@ -81,7 +81,25 @@ test-sage: bootstrap run-sage nap test-destination
 ##---------------------------
 build-docker:
 	docker-compose build --build-arg GIT_SHA1="$(shell git describe --dirty --always)"
-	docker-compose up -d
+
+first-step: run-first-half test-input-first-half test-pipelines-first-half stop-first-half
+second-step: run-second-half test-input-second-half test-pipelines-second-half
+
+run-first-half: run-elastic run-influx run-mongo run-victoria sleep setup-elastic setup-victoria
+run-second-half: run-mysql run-postgres run-sage run-kafka nap setup-kafka
+
+stop-first-half:
+	docker-compose stop es influx mongo victoria
+
+test-input-first-half:
+	$(DOCKER_TEST_PARALLEL) tests/test_input/test_elastic_http.py tests/test_input/test_influx_http.py tests/test_input/test_mongo_http.py tests/test_input/test_victoria_http.py tests/test_input/test_tcp_http.py
+test-input-second-half:
+	$(DOCKER_TEST_PARALLEL) tests/test_input/test_mysql_http.py tests/test_input/test_postgres_http.py tests/test_input/test_kafka_http.py tests/test_input/test_sage_http.py tests/test_input/test_directory_http.py
+
+test-pipelines-first-half:
+	$(DOCKER_TEST_PARALLEL) tests/test_pipelines/test_elastic_http.py tests/test_pipelines/test_influx_http.py tests/test_pipelines/test_kafka_http.py tests/test_pipelines/test_mongo_http.py tests/test_pipelines/test_victoria_http.py
+test-pipelines-second-half:
+	$(DOCKER_TEST_PARALLEL) tests/test_pipelines/test_mysql_http.py tests/test_pipelines/test_postgres_http.py tests/test_pipelines/test_sage_http.py tests/test_pipelines/test_directory_http.py tests/test_pipelines/test_tcp_http.py
 
 test-antomation:
 	$(DOCKER_TEST) tests/test_antomation.py
@@ -144,7 +162,6 @@ build-base-services: clean-docker-volumes
 
 run-elastic:
 	$(DOCKER_COMPOSE_DEV) up -d es
-	sleep $(SLEEP)
 
 run-influx:
 	$(DOCKER_COMPOSE_DEV) up -d influx
@@ -154,7 +171,6 @@ run-victoria:
 
 run-kafka: run-zookeeper
 	$(DOCKER_COMPOSE_DEV) up -d kafka
-	sleep $(SLEEP)
 
 run-zookeeper:
 	$(DOCKER_COMPOSE_DEV) up -d zookeeper

@@ -97,6 +97,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./test-datasets:/home
 #      - ./certs:/certs
+    depends_on:
+      - zookeeper
 
   influx:
     image: influxdb
