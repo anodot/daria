@@ -109,7 +109,7 @@ test-api-first-half:
 test-api-second-half:
 	$(DOCKER_TEST) tests/api/source
 
-test-antomation:
+test-antomation: run-mongo
 	$(DOCKER_TEST) tests/test_antomation.py
 
 test-destination:
@@ -162,6 +162,10 @@ clean-docker-volumes:
 
 run-base:
 	docker-compose up -d agent dc squid dummy_destination
+
+run-base-develop:
+	docker-compose up -d agent dc squid dummy_destination
+	docker exec -i anodot-agent python setup.py develop
 
 run-base-services:
 	$(DOCKER_COMPOSE_DEV) up -d agent dc squid dummy_destination
