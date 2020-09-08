@@ -78,7 +78,7 @@
     }, {
       "name" : "webhookConfigs",
       "value" : [ {
-        "payload" : "{\n  \"pipeline_status\": \"{{PIPELINE_STATE}}\",\n  \"pipeline_title\": \"{{PIPELINE_TITLE}}\"\n }",
+        "payload" : "{\n  \"pipeline_status\": \"{{PIPELINE_STATE}}\",\n  \"pipeline_name\": \"{{PIPELINE_TITLE}}\"\n }",
         "headers" : [ ],
         "httpMethod" : "POST",
         "contentType" : "application/json",

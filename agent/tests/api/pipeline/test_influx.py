@@ -99,7 +99,7 @@ class TestInflux:
     def test_pipeline_failed(self, client):
         res = client.post('/pipeline-failed', json={
             "pipeline_status": "RUN_ERROR",
-            "pipeline_title": "test_influx",
+            "pipeline_name": "test_influx",
             "time": "1970-01-01 00:00:00"
         })
         assert res.status_code == 200
