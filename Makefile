@@ -97,18 +97,18 @@ test-input-first-half:
 	$(DOCKER_TEST_PARALLEL) tests/test_input/test_elastic_http.py tests/test_input/test_mongo_http.py tests/test_input/test_victoria_http.py tests/test_input/test_influx_http.py tests/test_input/test_tcp_http.py
 
 test-pipelines-first-half:
-	$(DOCKER_TEST_PARALLEL) tests/test_pipelines/test_elastic_http.py tests/test_pipelines/test_influx_http.py tests/test_pipelines/test_kafka_http.py tests/test_pipelines/test_mongo_http.py tests/test_pipelines/test_victoria_http.py
+	$(DOCKER_TEST_PARALLEL) tests/test_pipelines/test_elastic_http.py tests/test_pipelines/test_influx_http.py tests/test_pipelines/test_mongo_http.py tests/test_pipelines/test_victoria_http.py
 
 run-second-half: run-mysql run-postgres run-sage run-kafka nap setup-kafka
 
 stop-first-half:
-	docker-compose stop es influx mongo victoria
+	docker-compose stop es influx mongo victoriametrics
 
 test-input-second-half:
 	$(DOCKER_TEST_PARALLEL) tests/test_input/test_mysql_http.py tests/test_input/test_postgres_http.py tests/test_input/test_kafka_http.py tests/test_input/test_sage_http.py tests/test_input/test_directory_http.py
 
 test-pipelines-second-half:
-	$(DOCKER_TEST_PARALLEL) tests/test_pipelines/test_mysql_http.py tests/test_pipelines/test_postgres_http.py tests/test_pipelines/test_sage_http.py tests/test_pipelines/test_directory_http.py tests/test_pipelines/test_tcp_http.py
+	$(DOCKER_TEST_PARALLEL) tests/test_pipelines/test_mysql_http.py tests/test_pipelines/test_postgres_http.py tests/test_pipelines/test_kafka_http.py tests/test_pipelines/test_sage_http.py tests/test_pipelines/test_directory_http.py tests/test_pipelines/test_tcp_http.py
 
 test-api-second-half:
 	$(DOCKER_TEST) tests/api/source
