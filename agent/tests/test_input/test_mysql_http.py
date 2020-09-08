@@ -15,6 +15,7 @@ class TestMySQL:
         'test_create': [{'name': 'test_mysql', 'source': 'test_jdbc', 'timestamp_type': '', 'timestamp_name': 'timestamp_unix'},
                         {'name': 'test_mysql_timestamp_ms', 'source': 'test_jdbc', 'timestamp_type': 'unix_ms', 'timestamp_name': 'timestamp_unix_ms'},
                         {'name': 'test_mysql_timestamp_datetime', 'source': 'test_jdbc', 'timestamp_type': 'datetime', 'timestamp_name': 'timestamp_datetime'}],
+        'test_create_timezone': [{'name': 'test_mysql_timezone_datetime', 'source': 'test_jdbc', 'timestamp_type': 'datetime', 'timezone': 'Europe/Berlin', 'timestamp_name': 'timestamp_datetime'}],
         'test_create_advanced': [{'name': 'test_mysql_advanced', 'source': 'test_jdbc'}],
     }
 
@@ -27,6 +28,13 @@ class TestMySQL:
         days_to_backfill = (datetime.now() - datetime(year=2017, month=12, day=10)).days + 1
         result = cli_runner.invoke(pipeline_cli.create, catch_exceptions=False,
                                    input=f'{source}\n{name}\ntest\n\n\n{days_to_backfill}\n\n\nclicks:gauge impressions:gauge\n{timestamp_name}\n{timestamp_type}\nadsize country\n\n\n\n')
+        assert result.exit_code == 0
+        assert api_client.get_pipeline(name)
+
+    def test_create_timezone(self, cli_runner, name, source, timestamp_type, timestamp_name, timezone):
+        days_to_backfill = (datetime.now() - datetime(year=2017, month=12, day=10)).days + 1
+        result = cli_runner.invoke(pipeline_cli.create, ['-a'], catch_exceptions=False,
+                                   input=f'{source}\n{name}\ntest\n\n\n{days_to_backfill}\n\nn\nclicks:gauge impressions:gauge\n{timestamp_name}\n{timestamp_type}\n{timezone}\nadsize country\n\n\n\n\nn\n')
         assert result.exit_code == 0
         assert api_client.get_pipeline(name)
 
