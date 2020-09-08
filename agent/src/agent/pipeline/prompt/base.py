@@ -36,6 +36,7 @@ class PromptConfig:
         if self.config['timestamp']['type'] == 'string':
             self.config['timestamp']['format'] = click.prompt('Timestamp format string', type=click.STRING,
                                                               default=self.config['timestamp'].get('format'))
+        if self.config['timestamp']['type'] in ['string', 'datetime']:
             self.set_timezone()
 
     @infinite_retry

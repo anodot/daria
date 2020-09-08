@@ -1,0 +1,324 @@
+[
+  {
+    "timestamp": 1512864000,
+    "properties": {
+      "adsize": "Sma_ll",
+      "country": "USA",
+      "what": "clicks",
+      "target_type": "gauge"
+    },
+    "value": 6784.69,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_mysql_timestamp_datetime"
+      ],
+      "pipeline_type": [
+        "mysql"
+      ]
+    }
+  },
+  {
+    "timestamp": 1512864000,
+    "properties": {
+      "adsize": "Sma_ll",
+      "country": "USA",
+      "what": "impressions",
+      "target_type": "gauge"
+    },
+    "value": 123.0,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_mysql_timestamp_datetime"
+      ],
+      "pipeline_type": [
+        "mysql"
+      ]
+    }
+  },
+  {
+    "timestamp": 1512867600,
+    "properties": {
+      "adsize": "Sma_ll",
+      "country": "USA",
+      "what": "clicks",
+      "target_type": "gauge"
+    },
+    "value": 6839.0,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_mysql_timestamp_datetime"
+      ],
+      "pipeline_type": [
+        "mysql"
+      ]
+    }
+  },
+  {
+    "timestamp": 1512867600,
+    "properties": {
+      "adsize": "Sma_ll",
+      "country": "USA",
+      "what": "impressions",
+      "target_type": "gauge"
+    },
+    "value": 22.0,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_mysql_timestamp_datetime"
+      ],
+      "pipeline_type": [
+        "mysql"
+      ]
+    }
+  },
+  {
+    "timestamp": 1512871200,
+    "properties": {
+      "adsize": "Sma_ll",
+      "country": "USA",
+      "what": "clicks",
+      "target_type": "gauge"
+    },
+    "value": 690999.0,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_mysql_timestamp_datetime"
+      ],
+      "pipeline_type": [
+        "mysql"
+      ]
+    }
+  },
+  {
+    "timestamp": 1512871200,
+    "properties": {
+      "adsize": "Sma_ll",
+      "country": "USA",
+      "what": "impressions",
+      "target_type": "gauge"
+    },
+    "value": 15.0,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_mysql_timestamp_datetime"
+      ],
+      "pipeline_type": [
+        "mysql"
+      ]
+    }
+  },
+  {
+    "timestamp": 1512874800,
+    "properties": {
+      "adsize": "Sma_ll",
+      "country": "USA",
+      "what": "clicks",
+      "target_type": "gauge"
+    },
+    "value": 7158.97,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_mysql_timestamp_datetime"
+      ],
+      "pipeline_type": [
+        "mysql"
+      ]
+    }
+  },
+  {
+    "timestamp": 1512874800,
+    "properties": {
+      "adsize": "Sma_ll",
+      "country": "USA",
+      "what": "impressions",
+      "target_type": "gauge"
+    },
+    "value": 3.0,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_mysql_timestamp_datetime"
+      ],
+      "pipeline_type": [
+        "mysql"
+      ]
+    }
+  },
+  {
+    "timestamp": 1512882000,
+    "properties": {
+      "adsize": "Sma_ll",
+      "country": "USA",
+      "what": "clicks",
+      "target_type": "gauge"
+    },
+    "value": null,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_mysql_timestamp_datetime"
+      ],
+      "pipeline_type": [
+        "mysql"
+      ]
+    }
+  },
+  {
+    "timestamp": 1512882000,
+    "properties": {
+      "adsize": "Sma_ll",
+      "country": "USA",
+      "what": "impressions",
+      "target_type": "gauge"
+    },
+    "value": 4.0,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_mysql_timestamp_datetime"
+      ],
+      "pipeline_type": [
+        "mysql"
+      ]
+    }
+  },
+  {
+    "timestamp": 1512885600,
+    "properties": {
+      "adsize": "Sma_ll",
+      "what": "clicks",
+      "target_type": "gauge"
+    },
+    "value": 7427.77,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_mysql_timestamp_datetime"
+      ],
+      "pipeline_type": [
+        "mysql"
+      ]
+    }
+  },
+  {
+    "timestamp": 1512885600,
+    "properties": {
+      "adsize": "Sma_ll",
+      "what": "impressions",
+      "target_type": "gauge"
+    },
+    "value": 0.0,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_mysql_timestamp_datetime"
+      ],
+      "pipeline_type": [
+        "mysql"
+      ]
+    }
+  }
+]
