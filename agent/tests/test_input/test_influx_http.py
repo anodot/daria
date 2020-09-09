@@ -1,5 +1,3 @@
-import os
-
 from ..fixtures import cli_runner
 from agent import cli
 from agent.streamsets_api_client import api_client
@@ -20,7 +18,7 @@ class TestInflux:
         result = cli_runner.invoke(cli.source.create, catch_exceptions=False,
                                    input=f"influx\n{name}\nhttp://influx:8086\nadmin\nadmin\ntest\n{offset}\n\n")
         assert result.exit_code == 0
-        assert os.path.isfile(os.path.join(source.repository.SOURCE_DIRECTORY, f'{name}.json'))
+        assert source.repository.exists(name)
 
     def test_create(self, cli_runner, name, source_):
         result = cli_runner.invoke(cli.pipeline.create, catch_exceptions=False,

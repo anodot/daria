@@ -61,6 +61,10 @@ class TestDestination:
         ]
     }
 
+    def test_delete(self, client):
+        result = client.delete('/destination')
+        assert result.status_code == 200
+
     def test_create(self, client, destination_url, data_collection_token, er, status_code, host_id, access_key):
         result = client.post('/destination', json=dict(
             destination_url=destination_url,

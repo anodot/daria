@@ -20,12 +20,26 @@ services:
     tty: true
     depends_on:
       - dc
+    environment:
+      AGENT_DB_HOST: 'db'
+      AGENT_DB_USER: 'agent'
+      AGENT_DB_PASSWORD: 'agent'
 #    ports:
 #    - 8080:80
 
     volumes:
       - sdc-data:/sdc-data
       - agent-data:/usr/src/app/data
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: agent
+      POSTGRES_PASSWORD: agent
+      POSTGRES_DB: agent
+    volumes:
+      - /var/lib/postgresql/data
 
 volumes:
   sdc-data:

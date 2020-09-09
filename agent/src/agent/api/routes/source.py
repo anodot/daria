@@ -8,7 +8,7 @@ sources = Blueprint('test', __name__)
 
 @sources.route('/sources', methods=['GET'])
 def list_sources():
-    return jsonify(source.repository.get_all())
+    return jsonify(source.repository.get_all_names())
 
 
 @sources.route('/sources', methods=['POST'])

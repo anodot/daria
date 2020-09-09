@@ -44,8 +44,8 @@ class TestDirectory:
 
     def test_get(self, client):
         result = client.get('/sources')
-        assert result.data == b'["directory"]\n'
+        assert result.data == b'["monitoring","directory"]\n'
 
     def test_delete(self, client):
         client.delete('sources/directory')
-        assert client.get('/sources').data == b'[]\n'
+        assert client.get('/sources').data ==b'["monitoring"]\n'

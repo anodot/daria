@@ -49,7 +49,7 @@ def send_monitoring_metric(what, value, destination_, file_type):
 
 
 def run(topic, file_type, brokers: list):
-    destination_ = destination.HttpDestination.get()
+    destination_ = destination.repository.get()
     api_client = anodot.ApiClient(destination_.access_key,
                                   proxies=proxy.get_config(destination_.proxy),
                                   base_url=destination_.url)

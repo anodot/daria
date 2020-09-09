@@ -3,7 +3,7 @@ import click
 from agent import pipeline, source
 from agent.pipeline import PipelineException
 from agent.streamsets_api_client import api_client, StreamSetsApiClientException
-from agent.destination import HttpDestination
+from agent import destination
 from agent.tools import infinite_retry
 from jsonschema import ValidationError
 from texttable import Texttable
@@ -30,7 +30,7 @@ def list_pipelines():
 @click.option('-f', '--file', type=click.File())
 def create(advanced, file):
     _check_destination()
-    sources = source.repository.get_all()
+    sources = source.repository.get_all_names()
     _check_sources(sources)
 
     _create_from_file(file) if file else _prompt(advanced, sources)
@@ -57,7 +57,7 @@ def start(pipeline_id, file):
 
     for pipeline_id in pipeline_ids:
         try:
-            p = pipeline.repository.get(pipeline_id)
+            p = pipeline.repository.get_by_name(pipeline_id)
             click.echo(f'Pipeline {pipeline_id} is starting...')
             pipeline.manager.start(p)
         except (StreamSetsApiClientException, pipeline.PipelineException) as e:
@@ -106,7 +106,7 @@ def delete(pipeline_id, file):
 
     for pipeline_id in pipeline_ids:
         try:
-            pipeline.manager.delete(pipeline.repository.get(pipeline_id))
+            pipeline.manager.delete(pipeline.repository.get_by_name(pipeline_id))
             click.echo(f'Pipeline {pipeline_id} deleted')
         except pipeline.repository.PipelineNotExistsException:
             pipeline.manager.delete_by_id(pipeline_id)
@@ -139,7 +139,7 @@ def destination_logs(pipeline_id, enable):
     """
     Enable destination response logs for a pipeline (for debugging purposes only)
     """
-    pipeline_object = pipeline.repository.get(pipeline_id)
+    pipeline_object = pipeline.repository.get_by_name(pipeline_id)
     pipeline.manager.enable_destination_logs(pipeline_object) if enable else pipeline.manager.disable_destination_logs(pipeline_object)
     click.secho('Updated pipeline {}'.format(pipeline_id), fg='green')
 
@@ -195,7 +195,7 @@ def reset(pipeline_id):
     Reset pipeline's offset
     """
     try:
-        pipeline.manager.reset(pipeline.repository.get(pipeline_id))
+        pipeline.manager.reset(pipeline.repository.get_by_name(pipeline_id))
     except StreamSetsApiClientException as e:
         click.secho(str(e), err=True, fg='red')
         return
@@ -212,7 +212,7 @@ def update(pipeline_id):
     for p in pipelines:
         try:
             pipeline.manager.update(p)
-            click.secho(f'Pipeline {p.id} updated', fg='green')
+            click.secho(f'Pipeline {p.name} updated', fg='green')
         except pipeline.PipelineException as e:
             print(str(e))
             continue
@@ -259,7 +259,7 @@ def _edit_using_file(file):
 
 def _prompt_edit(advanced, pipeline_id):
     try:
-        pipeline_manager = pipeline.manager.PipelineManager(pipeline.repository.get(pipeline_id))
+        pipeline_manager = pipeline.manager.PipelineManager(pipeline.repository.get_by_name(pipeline_id))
         pipeline_manager.prompt(pipeline_manager.pipeline.to_dict(), advanced=advanced)
         pipeline.manager.update(pipeline_manager.pipeline)
 
@@ -276,7 +276,7 @@ def _get_previous_pipeline_config(label):
     try:
         pipelines_with_source = api_client.get_pipelines(order_by='CREATED', order='DESC', label=label)
         if len(pipelines_with_source) > 0:
-            pipeline_obj = pipeline.repository.get(pipelines_with_source[-1]['pipelineId'])
+            pipeline_obj = pipeline.repository.get_by_name(pipelines_with_source[-1]['pipelineId'])
             return pipeline_obj.to_dict()
     except source.SourceConfigDeprecated:
         pass
@@ -296,7 +296,7 @@ def _check_sources(sources):
 
 
 def _check_destination():
-    if not HttpDestination.exists():
+    if not destination.repository.exists():
         raise click.ClickException('Destination is not configured. Use "agent destination"')
 
 

@@ -1,7 +1,5 @@
 import os
 
-DATA_DIR = os.environ.get('DATA_DIR', 'data')
-
 SDC_DATA_PATH = os.environ.get('SDC_DATA_PATH', '/sdc-data')
 SDC_RESULTS_PATH = os.path.join(SDC_DATA_PATH, 'out')
 
@@ -22,3 +20,7 @@ AGENT_URL = os.environ.get('AGENT_URL', 'http://anodot-agent')
 
 # todo this constant is wrong
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+AGENT_DB_HOST = os.environ.get('AGENT_DB_HOST', 'db')
+AGENT_DB_USER = os.environ.get('AGENT_DB_USER', 'agent')
+AGENT_DB_PASSWORD = os.environ.get('AGENT_DB_USER', 'agent')

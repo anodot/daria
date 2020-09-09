@@ -18,7 +18,7 @@ def build(pipeline: p.Pipeline):
 
     return {
         'version': '1',
-        'name': pipeline.id,
+        'name': pipeline.name,
         'dimensions': pipeline.dimensions_names + list(pipeline.constant_dimensions_names),
         'measurements': measurements,
         'missingDimPolicy': {

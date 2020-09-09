@@ -43,8 +43,8 @@ class TestElastic:
 
     def test_get(self, client):
         result = client.get('/sources')
-        assert result.data == b'["elastic"]\n'
+        assert result.data == b'["monitoring","elastic"]\n'
 
     def test_delete(self, client):
         client.delete('sources/elastic')
-        assert client.get('/sources').data == b'[]\n'
+        assert client.get('/sources').data ==b'["monitoring"]\n'

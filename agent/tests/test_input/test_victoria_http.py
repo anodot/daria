@@ -1,4 +1,3 @@
-import os
 from datetime import datetime
 
 from ..fixtures import cli_runner
@@ -12,7 +11,7 @@ class TestVictoria:
         result = cli_runner.invoke(cli.source.create, catch_exceptions=False,
                                    input=f"victoria\ntest_victoria\nhttp://victoriametrics:8428\n\n\n")
         assert result.exit_code == 0
-        assert os.path.isfile(os.path.join(source.repository.SOURCE_DIRECTORY, 'test_victoria.json'))
+        assert source.repository.exists('test_victoria')
 
     def test_create(self, cli_runner):
         name = 'test_victoria'

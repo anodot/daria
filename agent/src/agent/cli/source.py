@@ -1,20 +1,18 @@
-import os
 import click
 
 from agent import pipeline
 from agent import source
-from agent.destination import HttpDestination
+from agent import destination
 from agent.tools import infinite_retry
 from jsonschema import ValidationError, SchemaError
 from . import source_builders
 
 
-def autocomplete(ctx, args, incomplete):
-    configs = []
-    for filename in os.listdir(source.repository.SOURCE_DIRECTORY):
-        if filename.endswith('.json') and incomplete in filename:
-            configs.append(filename.replace('.json', ''))
-    return configs
+def autocomplete(ctx, args, incomplete) -> list:
+    return list(map(
+        lambda s: s.name,
+        source.repository.find_by_name_beginning(incomplete)
+    ))
 
 
 @click.group(name='source')
@@ -24,7 +22,7 @@ def source_group():
 
 @click.command(name='list')
 def list_sources():
-    for config in source.repository.get_all():
+    for config in source.repository.get_all_names():
         click.echo(config)
 
 
@@ -32,7 +30,7 @@ def list_sources():
 @click.option('-a', '--advanced', is_flag=True)
 @click.option('-f', '--file', type=click.File())
 def create(advanced, file):
-    if not HttpDestination.exists():
+    if not destination.repository.exists():
         raise click.ClickException('Destination is not configured. Please use `agent destination` command')
     _create_from_file(file) if file else _prompt(advanced)
 
@@ -60,8 +58,7 @@ def delete(name):
 @infinite_retry
 def _prompt_source_name():
     source_name = click.prompt('Enter unique name for this source config', type=click.STRING).strip()
-    if source.repository.exists(source_name):
-        raise click.UsageError(f"Source config {source_name} already exists")
+    source.manager.check_source_name(source_name)
     return source_name
 
 
@@ -76,7 +73,7 @@ def _prompt(advanced: bool):
     source_type = _prompt_source_type()
     source_name = _prompt_source_name()
     builder = source_builders.get_builder(source_name, source_type)
-    source.repository.create(
+    source.repository.save(
         builder.prompt(source.manager.get_previous_source_config(source_type), advanced)
     )
     click.secho('Source config created', fg='green')
@@ -90,16 +87,19 @@ def _edit_using_file(file):
 
 
 def _prompt_edit(name: str, advanced: bool) -> source.Source:
-    source_ = source.repository.get(name)
-    builder = source_builders.get_builder(source_.name, source_.type)
+    source_ = source.repository.get_by_name(name)
+    builder = source_builders.get(source_)
     source_ = builder.prompt(source_.config, advanced=advanced)
-    source.repository.update(source_)
+    source.repository.save(source_)
     click.secho('Source config updated', fg='green')
     return source_
 
 
 def _prompt_source_type():
-    return click.prompt('Choose source', type=click.Choice(source.types)).strip()
+    return click.prompt(
+        'Choose source',
+        type=click.Choice([key for key in source.types.keys() if key != source.TYPE_MONITORING])
+    ).strip()
 
 
 source_group.add_command(create)

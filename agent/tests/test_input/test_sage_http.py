@@ -1,5 +1,3 @@
-import os
-
 from ..fixtures import cli_runner
 from ..fixtures import get_input_file_path
 from agent.cli import source as source_cli, pipeline as pipeline_cli
@@ -24,7 +22,7 @@ class TestSage:
         result = cli_runner.invoke(source_cli.create, catch_exceptions=False,
                                    input=f"sage\ntest_sage\nhttp://sage/api/search\ncorrect_token\n")
         assert result.exit_code == 0
-        assert os.path.isfile(os.path.join(source.repository.SOURCE_DIRECTORY, 'test_sage.json'))
+        assert source.repository.exists('test_sage')
 
     def test_create(self, cli_runner, name, options, value, advanced_options):
         query_file_path = get_input_file_path('sage_query.txt')

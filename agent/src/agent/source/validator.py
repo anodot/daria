@@ -61,6 +61,7 @@ def get_validator(source_: source.Source) -> Validator:
         source.TYPE_SPLUNK: SplunkValidator,
         source.TYPE_DIRECTORY: DirectoryValidator,
         source.TYPE_SAGE: SageValidator,
+        source.TYPE_MONITORING: MonitoringValidator,
         source.TYPE_VICTORIA: VictoriaMetricsValidator,
     }
     return types[source_.type](source_)
@@ -293,3 +294,14 @@ class SplunkValidator(SchemalessValidator):
 
 class DirectoryValidator(SchemalessValidator):
     VALIDATION_SCHEMA_FILE = 'directory.json'
+
+
+class MonitoringValidator(Validator):
+    def validate(self):
+        pass
+
+    def validate_json(self):
+        pass
+
+    def validate_connection(self):
+        pass

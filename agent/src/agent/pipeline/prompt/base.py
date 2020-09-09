@@ -1,7 +1,7 @@
 import click
 import pytz
 
-from agent.cli.source_builders import get_builder
+from agent.cli import source_builders
 from agent.tools import infinite_retry, if_validation_enabled, dict_get_nested
 from agent.pipeline import pipeline as p
 
@@ -138,6 +138,5 @@ class PromptConfig:
     def data_preview(self):
         if click.confirm('Would you like to see the data preview?', default=True):
             # todo this is a temporary solution, it requires a lot of refactoring
-            builder = get_builder(self.pipeline.source.name, self.pipeline.source.type)
-            builder.source = self.pipeline.source
+            builder = source_builders.get(self.pipeline.source)
             builder.print_sample_data()

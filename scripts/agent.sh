@@ -1,5 +1,8 @@
-if [[ $1 == 'upgrade' ]]; then
+if [[ $1 == 'install' ]]; then
+  docker-compose pull && docker-compose up -d && docker exec -i anodot-agent alembic upgrade head
+elif [[ $1 == 'upgrade' ]]; then
   docker-compose pull && docker-compose up -d && sleep 30 && docker exec -i anodot-agent agent update
+  docker exec -i anodot-agent alembic upgrade head
 elif [[ $1 == 'run' ]]; then
     docker-compose up -d && docker exec -it anodot-agent bash
 elif [[ $1 == 'set-heap-size' ]]; then
@@ -15,5 +18,5 @@ elif [[ $1 == 'set-thread-pool-size' ]]; then
   fi
   sed -i '' -E 's/SDC_CONF_RUNNER_THREAD_POOL_SIZE.*/SDC_CONF_RUNNER_THREAD_POOL_SIZE: "'$2'"/' docker-compose.yaml
 else
-  echo "Wrong command supplied. Please use ./agent [run|upgrade|set-heap-size|set-thread-pool-size]"
+  echo "Wrong command supplied. Please use ./agent [install|run|upgrade|set-heap-size|set-thread-pool-size]"
 fi

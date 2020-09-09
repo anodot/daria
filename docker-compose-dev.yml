@@ -32,10 +32,14 @@ services:
       LOG_FILE_PATH: '/var/log/agent.log'
       SDC_DATA_PATH: '/sdc-data'
       ENV_PROD: 'false'
+      AGENT_DB_HOST: 'db'
+      AGENT_DB_USER: 'agent'
+      AGENT_DB_PASSWORD: 'agent'
       GIT_SHA1: 'local'
       AGENT_URL: 'http://anodot-agent'
     depends_on:
       - dc
+      - db
     volumes:
       - ./sdc-data:/sdc-data
       - dummy-destination-data:/output
@@ -45,6 +49,19 @@ services:
       - ./test-datasets:/home
     ports:
       - 80:80
+
+  db:
+    container_name: db
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: agent
+      POSTGRES_PASSWORD: agent
+      POSTGRES_DB: agent
+    ports:
+      - 5432:5432
+    volumes:
+      - /var/lib/postgresql/data
 
   mongo:
     image: mongo
@@ -72,6 +89,8 @@ services:
     expose:
       - "9093"
       - "9094"
+    depends_on:
+      - zookeeper
     environment:
       KAFKA_LISTENERS: PLAINTEXT://:29092,PLAINTEXT_HOST://:9092
 #      KAFKA_LISTENERS: PLAINTEXT://:29092,PLAINTEXT_HOST://:9092,SSL://:9093,SSL_DOCKER://:9094

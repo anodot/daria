@@ -11,7 +11,7 @@ DOCKER_TEST_PARALLEL = $(DOCKER_TEST) -n $(THREADS) --dist=loadfile
 ##---------
 all: build-all test-all
 
-build-all: get-streamsets-libs build-docker sleep setup-elastic setup-kafka setup-victoria
+build-all: get-streamsets-libs build-docker alembic-migrate sleep setup-elastic setup-kafka setup-victoria
 
 test-all: run-unit-tests test-flask-app test-destination test-antomation test-api test-api-scripts test-input test-pipelines
 
@@ -20,9 +20,9 @@ test-all: run-unit-tests test-flask-app test-destination test-antomation test-ap
 ##-------------
 all-dev: clean-docker-volumes build-all-dev sleep test-all
 
-build-all-dev: build-dev sleep setup-elastic setup-kafka setup-victoria
+build-all-dev: build-dev alembic-migrate sleep setup-elastic setup-kafka setup-victoria
 
-run-all-dev: clean-docker-volumes run-dev sleep setup-kafka setup-elastic
+run-all-dev: clean-docker-volumes run-dev alembic-migrate sleep setup-kafka setup-elastic setup-victoria
 
 rerun: bootstrap
 
@@ -127,7 +127,7 @@ run-dev:
 	$(DOCKER_COMPOSE_DEV) up -d
 	docker exec -i anodot-agent python setup.py develop
 
-bootstrap: clean-docker-volumes run-base-services
+bootstrap: clean-docker-volumes run-base-services alembic-migrate
 
 clean-docker-volumes:
 	rm -rf sdc-data
@@ -138,7 +138,9 @@ run-base-services:
 	$(DOCKER_COMPOSE_DEV) up -d agent dc squid dummy_destination
 	docker exec -i anodot-agent python setup.py develop
 
-build-base-services: clean-docker-volumes
+build-base-services: clean-docker-volumes _build-base-services alembic-migrate
+
+_build-base-services:
 	$(DOCKER_COMPOSE_DEV) up -d --build agent dc squid dummy_destination
 	docker exec -i anodot-agent python setup.py develop
 
@@ -182,6 +184,9 @@ setup-elastic:
 
 setup-victoria:
 	./scripts/upload-test-data-to-victoria.sh
+
+alembic-migrate:
+	docker exec -i anodot-agent alembic upgrade head
 
 sleep:
 	sleep $(SLEEP)

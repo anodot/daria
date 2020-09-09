@@ -19,15 +19,16 @@ def test_destination(cli_runner):
     result = cli_runner.invoke(cli.destination, args=['--url=http://wrong-url'], catch_exceptions=False,
                                input='y\nhttp://squid:3128\n\n\nhttp://dummy_destination\ncorrect_token\ncorrect_key\n')
     assert result.exit_code == 0
-    assert destination.HttpDestination.exists()
+    assert destination.repository.exists()
     assert api_client.get_pipeline_status(pipeline.MONITORING)['status'] == 'RUNNING'
 
 
 def test_edit_destination(cli_runner):
-    prev_dest = destination.HttpDestination.get()
+    prev_dest = destination.repository.get()
     result = cli_runner.invoke(cli.destination, catch_exceptions=False,
                                input='y\nhttp://squid:3128\n\n\n\ncorrect_token\n')
-    curr_dest = destination.HttpDestination.get()
+    print(result.output)
+    curr_dest = destination.repository.get()
     assert result.exit_code == 0
     assert curr_dest.host_id == prev_dest.host_id
     assert api_client.get_pipeline_status(pipeline.MONITORING)['status'] == 'RUNNING'

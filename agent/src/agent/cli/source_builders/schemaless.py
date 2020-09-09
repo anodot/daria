@@ -72,9 +72,10 @@ class SchemalessSourceBuilder(Builder, metaclass=ABCMeta):
             raise click.UsageError(e)
 
     def prompt_log(self, default_config):
-        records = self.get_sample_records()
+        records, errors = self.get_sample_records()
         if records:
             print_json(records)
+        print(*errors, sep='\n')
         self.prompt_grok_definition_file(default_config)
         self.source.config[source.SchemalessSource.CONFIG_GROK_PATTERN] = \
             click.prompt('Grok pattern', type=click.STRING,
@@ -105,13 +106,14 @@ class SchemalessSourceBuilder(Builder, metaclass=ABCMeta):
 
     def change_field_names(self, default_config):
         previous_val = default_config.get(source.SchemalessSource.CONFIG_CSV_MAPPING, {})
-        records = self.get_sample_records()
+        records, errors = self.get_sample_records()
         if records:
             print('Records example:')
             print_dicts(records)
             if previous_val:
                 print('Previous mapping:')
                 print_dicts(map_keys(records, previous_val))
+        print(*errors, sep='\n')
         self.prompt_field_mapping(records, previous_val)
 
     @infinite_retry
@@ -138,18 +140,18 @@ class SchemalessSourceBuilder(Builder, metaclass=ABCMeta):
 
     @if_validation_enabled
     def print_sample_data(self):
-        records = self.get_sample_records()
-        if not records:
-            return
-        if self.source.config.get(
-                source.SchemalessSource.CONFIG_DATA_FORMAT) == source.SchemalessSource.DATA_FORMAT_CSV:
+        records, errors = self.get_sample_records()
+        if records:
             if self.source.config.get(
-                    source.SchemalessSource.CONFIG_CSV_HEADER_LINE) == source.SchemalessSource.CONFIG_CSV_HEADER_LINE_NO_HEADER:
-                self.source.sample_data =\
-                    map_keys(records, self.source.config.get(source.SchemalessSource.CONFIG_CSV_MAPPING, {}))
+                    source.SchemalessSource.CONFIG_DATA_FORMAT) == source.SchemalessSource.DATA_FORMAT_CSV:
+                if self.source.config.get(
+                        source.SchemalessSource.CONFIG_CSV_HEADER_LINE) == source.SchemalessSource.CONFIG_CSV_HEADER_LINE_NO_HEADER:
+                    self.source.sample_data =\
+                        map_keys(records, self.source.config.get(source.SchemalessSource.CONFIG_CSV_MAPPING, {}))
+                else:
+                    self.source.sample_data = records
+                print_dicts(self.source.sample_data)
             else:
                 self.source.sample_data = records
-            print_dicts(self.source.sample_data)
-        else:
-            self.source.sample_data = records
-            print_json(records)
+                print_json(records)
+        print(*errors, sep='\n')

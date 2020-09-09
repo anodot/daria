@@ -43,7 +43,7 @@ class TestTCPServer(TestPipelineBase):
         assert api_client.get_pipeline_status(name)['status'] == 'RUNNING'
 
         # streams data
-        pipeline_obj = pipeline.repository.get(name)
+        pipeline_obj = pipeline.repository.get_by_name(name)
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect(('dc', int(pipeline_obj.source.config['conf.ports'][0])))
 

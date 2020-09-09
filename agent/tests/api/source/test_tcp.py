@@ -38,8 +38,8 @@ class TestDirectory:
 
     def test_get(self, client):
         result = client.get('/sources')
-        assert result.data == b'["splunk"]\n'
+        assert result.data == b'["monitoring","splunk"]\n'
 
     def test_delete(self, client):
         client.delete('sources/splunk')
-        assert client.get('/sources').data == b'[]\n'
+        assert client.get('/sources').data ==b'["monitoring"]\n'

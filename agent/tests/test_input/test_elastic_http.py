@@ -1,4 +1,3 @@
-import os
 from datetime import datetime
 
 from ..fixtures import get_input_file_path, cli_runner
@@ -23,7 +22,7 @@ class TestElastic:
         result = cli_runner.invoke(cli.source.create, catch_exceptions=False,
                                    input=f"elastic\ntest_es\nhttp://es:9200\ntest\ntimestamp_unix_ms\nnow-{days_to_backfill}d\n\n")
         assert result.exit_code == 0
-        assert os.path.isfile(os.path.join(source.repository.SOURCE_DIRECTORY, 'test_es.json'))
+        assert source.repository.exists('test_es')
 
     def test_create(self, cli_runner, name, options, value, timestamp, advanced_options):
         query_file_path = get_input_file_path('elastic_query.json')

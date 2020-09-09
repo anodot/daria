@@ -33,18 +33,33 @@ services:
       LOG_FILE_PATH: '/var/log/agent.log'
       SDC_DATA_PATH: '/sdc-data'
       ENV_PROD: 'false'
+      AGENT_DB_HOST: 'db'
+      AGENT_DB_USER: 'agent'
+      AGENT_DB_PASSWORD: 'agent'
       AGENT_URL: 'http://anodot-agent'
 #      VALIDATION_ENABLED: 'false'
     stdin_open: true
     tty: true
     depends_on:
       - dc
+      - db
     volumes:
       - sdc-data:/sdc-data
       - agent-data:/usr/src/app/data
 #      - ./scripts:/usr/src/app/scripts
       - dummy-destination-data:/output
       - ./test-datasets:/home
+
+  db:
+    container_name: db
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: agent
+      POSTGRES_PASSWORD: agent
+      POSTGRES_DB: agent
+    volumes:
+      - /var/lib/postgresql/data
 
   mongo:
     image: mongo
@@ -67,6 +82,8 @@ services:
 #    image: wurstmeister/kafka:0.10.2.1
     image: wurstmeister/kafka
     container_name: agent-kafka
+    depends_on:
+      - zookeeper
 #    ports:
 #      - "9092:9092"
 #    expose:

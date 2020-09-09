@@ -1,7 +1,12 @@
+from sqlalchemy.orm import relationship
+
 from agent import source
 from agent.constants import HOSTNAME
+from agent.db import Entity
 from agent.destination import HttpDestination
 from enum import Enum
+from sqlalchemy.ext.mutable import MutableDict
+from sqlalchemy import Column, Integer, String, JSON, ForeignKey
 
 MONITORING = 'Monitoring'
 
@@ -38,7 +43,19 @@ class FlushBucketSize(Enum):
             return 60 * 60 * 24 * 7
 
 
-class Pipeline:
+class Pipeline(Entity):
+    __tablename__ = 'pipelines'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    source_id = Column(Integer, ForeignKey('sources.id'))
+    destination_id = Column(Integer, ForeignKey('destinations.id'))
+    config = Column(MutableDict.as_mutable(JSON))
+    override_source = Column(MutableDict.as_mutable(JSON))
+
+    source_ = relationship('Source', back_populates='pipelines')
+    destination = relationship('HttpDestination')
+
     STATUS_RUNNING = 'RUNNING'
     STATUS_STOPPED = 'STOPPED'
     STATUS_EDITED = 'EDITED'
@@ -49,16 +66,20 @@ class Pipeline:
 
     TARGET_TYPES = ['counter', 'gauge', 'running_counter']
 
-    def __init__(self, pipeline_id: str,
-                 source_obj: source.Source,
-                 config: dict,
+    def __init__(self, pipeline_name: str,
+                 source_: source.Source,
                  destination: HttpDestination):
-        self.id = pipeline_id
-        self.config = config
-        self.source = source_obj
+        self.name = pipeline_name
+        self.config = {}
+        self.source_ = source_
+        self.source_id = source_.id
         self.destination = destination
-        self.old_config = None
-        self.override_source = config.pop(self.OVERRIDE_SOURCE, {})
+        self.destination_id = destination.id
+        self.override_source = {}
+
+    @property
+    def source(self):
+        return self.source_
 
     @property
     def constant_dimensions(self) -> dict:
@@ -197,7 +218,7 @@ class Pipeline:
         return {
             **self.config,
             self.OVERRIDE_SOURCE: self.override_source,
-            'pipeline_id': self.id,
+            'pipeline_id': self.name,
             'source': {'name': self.source.name},
         }
 
@@ -222,7 +243,7 @@ class Pipeline:
             'source': ['anodot-agent'],
             'source_host_id': [self.destination.host_id],
             'source_host_name': [HOSTNAME],
-            'pipeline_id': [self.id],
+            'pipeline_id': [self.name],
             'pipeline_type': [self.source.type]
         }
 

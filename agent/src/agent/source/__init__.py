@@ -27,6 +27,7 @@ types = {
     TYPE_SPLUNK: TCPSource,
     TYPE_DIRECTORY: DirectorySource,
     TYPE_SAGE: SageSource,
+    TYPE_MONITORING: Source,
     TYPE_VICTORIA: VictoriaMetricsSource,
 }
 

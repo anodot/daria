@@ -60,7 +60,7 @@ def delete(pipeline_id):
 @needs_pipeline
 def start(pipeline_id):
     try:
-        pipeline.manager.start(pipeline.repository.get(pipeline_id))
+        pipeline.manager.start(pipeline.repository.get_by_name(pipeline_id))
     except (pipeline.manager.PipelineFreezeException, pipeline.PipelineException) as e:
         return jsonify(str(e)), 400
     return jsonify('')
@@ -115,14 +115,14 @@ def logs(pipeline_id):
 @pipelines.route('/pipelines/<pipeline_id>/enable-destination-logs', methods=['POST'])
 @needs_pipeline
 def enable_destination_logs(pipeline_id):
-    pipeline.manager.enable_destination_logs(pipeline.repository.get(pipeline_id))
+    pipeline.manager.enable_destination_logs(pipeline.repository.get_by_name(pipeline_id))
     return jsonify('')
 
 
 @pipelines.route('/pipelines/<pipeline_id>/disable-destination-logs', methods=['POST'])
 @needs_pipeline
 def disable_destination_logs(pipeline_id):
-    pipeline.manager.disable_destination_logs(pipeline.repository.get(pipeline_id))
+    pipeline.manager.disable_destination_logs(pipeline.repository.get_by_name(pipeline_id))
     return jsonify('')
 
 
@@ -130,7 +130,7 @@ def disable_destination_logs(pipeline_id):
 @needs_pipeline
 def reset(pipeline_id):
     try:
-        pipeline.manager.reset(pipeline.repository.get(pipeline_id))
+        pipeline.manager.reset(pipeline.repository.get_by_name(pipeline_id))
     except StreamSetsApiClientException as e:
         return jsonify(str(e)), 500
     return jsonify('')
@@ -139,7 +139,7 @@ def reset(pipeline_id):
 @pipelines.route('/pipeline-failed', methods=['POST'])
 def pipeline_failed():
     data = request.get_json()
-    pipeline_ = pipeline.repository.get(data['pipeline_name'])
+    pipeline_ = pipeline.repository.get_by_name(data['pipeline_name'])
     metric = [{
         "properties": {
             "what": "pipeline_error_status_count",

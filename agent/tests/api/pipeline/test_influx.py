@@ -106,7 +106,6 @@ class TestInflux:
 
     def test_list(self, client, er):
         result = client.get('/pipelines')
-        print(result.data)
         assert result.data == er
 
     def test_delete(self, client):
@@ -117,4 +116,4 @@ class TestInflux:
     def test_source_delete(self, client):
         client.delete('/sources/influx')
         result = client.get('/sources')
-        assert result.data == b'[]\n'
+        assert result.data == b'["monitoring"]\n'

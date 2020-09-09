@@ -1,4 +1,4 @@
-import os
+import traceback
 
 from ..fixtures import cli_runner, get_input_file_path
 from agent.cli import source as source_cli, pipeline as pipeline_cli
@@ -15,8 +15,9 @@ class TestTCPServer:
         grok_file_path = get_input_file_path('grok_patterns.txt')
         result = cli_runner.invoke(source_cli.create, catch_exceptions=False,
                                    input="splunk\ntest_tcp_log\n9999\nLOG\n" + grok_file_path + "\n%{NONNEGINT:timestamp_unix_ms} %{TIMESTAMP:timestamp_string} %{NONNEGINT:ver} %{WORD} %{WORD:Country} %{WORD:AdType} %{WORD:Exchange} %{NUMBER:Clicks}\n")
+        traceback.print_exception(*result.exc_info)
         assert result.exit_code == 0
-        assert os.path.isfile(os.path.join(source.repository.SOURCE_DIRECTORY, 'test_tcp_log.json'))
+        assert source.repository.exists('test_tcp_log')
 
     def test_create(self, cli_runner):
         result = cli_runner.invoke(pipeline_cli.create, catch_exceptions=False,

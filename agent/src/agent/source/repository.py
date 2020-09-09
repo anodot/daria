@@ -1,78 +1,64 @@
-import json
-import os
+from typing import List
 from agent import source
-from agent import pipeline
-from agent.constants import DATA_DIR, MONITORING_SOURCE_NAME
-from jsonschema import ValidationError, validate
-
-SOURCE_DIRECTORY = os.path.join(DATA_DIR, 'sources')
+from agent.db import session
 
 
-def _get_file_path(name: str) -> str:
-    return os.path.join(SOURCE_DIRECTORY, name + '.json')
+def exists(source_name: str) -> bool:
+    res = session.query(
+        session.query(source.Source).filter(source.Source.name == source_name).exists()
+    ).scalar()
+    return res
 
 
-def exists(name: str) -> bool:
-    return os.path.isfile(_get_file_path(name))
-
-
-def _save(source_obj: source.Source):
-    with open(_get_file_path(source_obj.name), 'w') as f:
-        json.dump(source_obj.to_dict(), f)
-
-
-def update(source_obj: source.Source):
-    _save(source_obj)
-
-
-def create(source_obj: source.Source):
-    if exists(source_obj.name):
-        raise source.SourceException(f"Source config {source_obj.name} already exists")
-    _save(source_obj)
+def save(source_: source.Source):
+    session.add(source_)
+    session.commit()
 
 
 def delete_by_name(source_name: str):
     if not exists(source_name):
         raise SourceNotExists(f"Source config {source_name} doesn't exist")
-    pipelines = pipeline.repository.get_by_source(source_name)
-    if pipelines:
+    source_entity = session.query(source.Source).filter(source.Source.name == source_name).first()
+    if source_entity.pipelines:
         raise Exception(
-            f"Can't delete. Source is used by {', '.join([p.id for p in pipelines])} pipelines"
-        )
-    os.remove(_get_file_path(source_name))
+                f"Can't delete. Source is used by {', '.join([p.name for p in source_entity.pipelines])} pipelines"
+            )
+    session.delete(source_entity)
+    session.commit()
 
 
-def get_all() -> list:
-    configs = []
-    if not os.path.exists(SOURCE_DIRECTORY):
-        return configs
-
-    for filename in os.listdir(SOURCE_DIRECTORY):
-        if filename.endswith('.json'):
-            configs.append(filename.replace('.json', ''))
-    return configs
+def get_all_names() -> List[str]:
+    res = list(map(
+        lambda row: row[0],
+        session.query(source.Source.name).all()
+    ))
+    return res
 
 
-def get(name: str) -> source.Source:
-    if name == MONITORING_SOURCE_NAME:
-        return source.MonitoringSource(MONITORING_SOURCE_NAME, source.TYPE_MONITORING, {})
-    if not exists(name):
-        raise SourceNotExists(f"Source config {name} doesn't exist")
-    with open(_get_file_path(name)) as f:
-        config = json.load(f)
-    validate(config, source.json_schema)
-    source_obj = source.manager.create_source_obj(name, config['type'])
-    source_obj.config = config['config']
-    try:
-        source.validator.get_validator(source_obj).validate_json()
-    except ValidationError:
-        raise SourceConfigDeprecated(f'Config for source {name} is not supported. Please recreate the source')
-    return source_obj
+def find_by_name_beginning(name_part: str) -> List:
+    res = session.query(source.Source).filter(source.Source.name.like(f'{name_part}%')).all()
+    return res
 
 
-def create_dir():
-    if not os.path.exists(SOURCE_DIRECTORY):
-        os.mkdir(SOURCE_DIRECTORY)
+def get(source_id: int) -> source.Source:
+    source_ = session.query(source.Source).get(source_id)
+    if not source_:
+        raise SourceNotExists(f"Source ID = {source_id} doesn't exist")
+    res = _construct_source(source_)
+    return res
+
+
+def get_by_name(source_name: str) -> source.Source:
+    source_ = session.query(source.Source).filter(source.Source.name == source_name).first()
+    if not source_:
+        raise SourceNotExists(f"Source config {source_name} doesn't exist")
+    res = _construct_source(source_)
+    return res
+
+
+def _construct_source(source_: source.Source) -> source.Source:
+    source_.__class__ = source.types[source_.type]
+    return source_
 
 
 class SourceNotExists(Exception):

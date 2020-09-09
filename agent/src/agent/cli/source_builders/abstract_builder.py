@@ -21,17 +21,17 @@ class Builder(ABC):
         test_pipeline_name = pipeline.manager.create_test_pipeline(self.source)
         try:
             preview = api_client.create_preview(test_pipeline_name)
-            preview_data = api_client.wait_for_preview(test_pipeline_name, preview['previewerId'])
+            preview_data, errors = api_client.wait_for_preview(test_pipeline_name, preview['previewerId'])
         except (Exception, KeyboardInterrupt) as e:
             logger.exception(str(e))
             api_client.delete_pipeline(test_pipeline_name)
             raise
         api_client.delete_pipeline(test_pipeline_name)
 
-        return preview_data
+        return preview_data, errors
 
     def get_sample_records(self):
-        preview_data = self.get_preview_data()
+        preview_data, errors = self.get_preview_data()
 
         if not preview_data:
             print('No preview data available')
@@ -42,12 +42,12 @@ class Builder(ABC):
         except (ValueError, TypeError, IndexError) as e:
             logger.exception(str(e))
             print('No preview data available')
-            return
-        return [tools.sdc_record_map_to_dict(record['value']) for record in data[:source.manager.MAX_SAMPLE_RECORDS]]
+            return [], []
+        return [tools.sdc_record_map_to_dict(record['value']) for record in data[:source.manager.MAX_SAMPLE_RECORDS]], errors
 
     @tools.if_validation_enabled
     def print_sample_data(self):
-        records = self.get_sample_records()
-        if not records:
-            return
-        tools.print_dicts(records)
+        records, errors = self.get_sample_records()
+        if records:
+            tools.print_dicts(records)
+        print(*errors, sep='\n')

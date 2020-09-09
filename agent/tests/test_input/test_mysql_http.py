@@ -1,4 +1,3 @@
-import os
 from datetime import datetime
 
 from ..fixtures import cli_runner
@@ -22,7 +21,7 @@ class TestMySQL:
     def test_source_create(self, cli_runner, name, type, conn):
         result = cli_runner.invoke(source_cli.create, catch_exceptions=False, input=f"{type}\n{name}\n{conn}\n\n\n")
         assert result.exit_code == 0
-        assert os.path.isfile(os.path.join(source.repository.SOURCE_DIRECTORY, f'{name}.json'))
+        assert source.repository.exists(name)
 
     def test_create(self, cli_runner, name, source, timestamp_type, timestamp_name):
         days_to_backfill = (datetime.now() - datetime(year=2017, month=12, day=10)).days + 1

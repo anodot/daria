@@ -74,20 +74,19 @@ state['TAGS'] = {tags}
 
     def set_initial_offset(self):
         source_config = self.pipeline.source.config
-        if not source_config.get('offset'):
-            source_config['offset'] = '0'
+        offset = source_config.get('offset', '0')
 
-        if str(source_config['offset']).isdigit():
-            timestamp = datetime.now() - timedelta(days=int(source_config['offset']))
+        if str(offset).isdigit():
+            timestamp = datetime.now() - timedelta(days=int(offset))
         else:
-            timestamp = datetime.strptime(source_config['offset'], '%d/%m/%Y %H:%M')
+            timestamp = datetime.strptime(offset, '%d/%m/%Y %H:%M')
 
-        source_config['offset'] = int(timestamp.timestamp() * 1e9)
+        offset = int(timestamp.timestamp() * 1e9)
 
         self.get_write_client().write_points([{
             'measurement': 'agent_timestamps',
-            'tags': {'pipeline_id': self.pipeline.id},
-            'fields': {'last_timestamp': source_config['offset']}
+            'tags': {'pipeline_id': self.pipeline.name},
+            'fields': {'last_timestamp': offset}
         }])
 
     def replace_illegal_chars(self, string: str) -> str:
@@ -114,7 +113,7 @@ state['TAGS'] = {tags}
                             constant_properties=str(self.pipeline.constant_dimensions),
                             host_id=self.pipeline.destination.host_id,
                             host_name=HOSTNAME,
-                            pipeline_id=self.pipeline.id,
+                            pipeline_id=self.pipeline.name,
                             tags=json.dumps(self.pipeline.get_tags())
                         )
             if stage['instanceName'] == 'destination':
