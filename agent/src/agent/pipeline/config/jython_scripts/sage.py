@@ -95,6 +95,7 @@ while True:
                             'what': 'sage_http_error',
                             'target_type': 'counter',
                             'code': e.response.status_code,
+                            'pipeline_name': sdc.userParams['PIPELINE_NAME']
                         },
                         'timestamp': time.time()
                     }

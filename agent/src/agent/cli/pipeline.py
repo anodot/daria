@@ -15,13 +15,11 @@ def get_pipelines_ids_complete(ctx, args, incomplete):
 
 @click.command(name='list')
 def list_pipelines():
-    pipelines = api_client.get_pipelines()
-    pipelines_status = api_client.get_pipelines_status()
+    pipelines = pipeline.repository.get_all()
+    statuses = api_client.get_pipelines_status()
 
-    def get_row(item, statuses):
-        return [item['title'], statuses[item['pipelineId']]['status'], item['pipelineId']]
-
-    table = _build_table(['Title', 'Status', 'ID'], pipelines, get_row, pipelines_status)
+    table = _build_table(['Name', 'Type', 'Status'],
+                         [[p.name, p.source.type, statuses[p.name]['status']] for p in pipelines])
     click.echo(table.draw())
 
 
@@ -128,7 +126,7 @@ def logs(pipeline_id, lines, severity):
         logs_ = pipeline.info.get_logs(pipeline_id, severity, lines)
     except StreamSetsApiClientException as e:
         raise click.ClickException(str(e))
-    table = _build_table(['Timestamp', 'Severity', 'Category', 'Message'], logs_, lambda x: x)
+    table = _build_table(['Timestamp', 'Severity', 'Category', 'Message'], logs_)
     click.echo(table.draw())
 
 
@@ -182,7 +180,7 @@ def info(pipeline_id, lines):
             for issue in issues:
                 click.echo(issue)
 
-    table = _build_table(['Timestamp', 'Status', 'Message', 'Records count'], info_['history'], lambda x: x)
+    table = _build_table(['Timestamp', 'Status', 'Message', 'Records count'], info_['history'])
     click.echo('')
     click.secho('=== HISTORY ===', fg='green')
     click.echo(table.draw())
@@ -304,7 +302,7 @@ def _get_default_source(sources):
     return sources[0] if len(sources) == 1 else None
 
 
-def _build_table(header, data, get_row, *args):
+def _build_table(header, rows):
     """
     :param header: list
     :param data: list
@@ -318,10 +316,7 @@ def _build_table(header, data, get_row, *args):
     table.set_header_align(['l' for i in range(len(header))])
 
     max_widths = [len(i) for i in header]
-    for item in data:
-        row = get_row(item, *args)
-        if not row:
-            continue
+    for row in rows:
         table.add_row(row)
         for idx, i in enumerate(row):
             max_widths[idx] = max(max_widths[idx], len(i))

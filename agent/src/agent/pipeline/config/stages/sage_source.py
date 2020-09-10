@@ -16,6 +16,7 @@ class SageScript(Stage):
 
         return {
             'scriptConf.params': [
+                {'key': 'PIPELINE_NAME', 'value': self.pipeline.name},
                 {'key': 'SAGE_TOKEN', 'value': self.pipeline.source.config[source.SageSource.TOKEN]},
                 {'key': 'SAGE_URL', 'value': self.pipeline.source.config[source.SageSource.URL]},
                 {'key': 'QUERY', 'value': query},
