@@ -51,7 +51,6 @@ def create_source_from_json(config: dict) -> source.Source:
 
 
 def edit_using_json(configs: dict) -> List[source.Source]:
-    validate_configs_for_edit(configs)
     exceptions = {}
     sources = []
     for config in configs:
@@ -59,7 +58,6 @@ def edit_using_json(configs: dict) -> List[source.Source]:
             source_ = edit_source_using_json(config)
             print(f"Source {config['name']} updated")
             sources.append(source_)
-            pipeline.manager.update_source_pipelines(source_)
         except Exception as e:
             exceptions[config['name']] = str(e)
     if exceptions:
@@ -68,11 +66,12 @@ def edit_using_json(configs: dict) -> List[source.Source]:
 
 
 def edit_source_using_json(config: dict) -> source.Source:
-    source.manager.validate_config_for_edit(config)
+    validate_config_for_edit(config)
     source_ = source.repository.get_by_name(config['name'])
     source_.set_config(config['config'])
     source.validator.validate(source_)
     source.repository.save(source_)
+    pipeline.manager.update_source_pipelines(source_)
     return source_
 
 
@@ -86,21 +85,6 @@ def validate_configs_for_create(json_data: dict):
 
 def validate_config_for_create(json_data: dict):
     jsonschema.validate(json_data, source.json_schema)
-
-
-def validate_configs_for_edit(json_data: dict):
-    schema = {
-        'type': 'array',
-        'items': {
-            'type': 'object',
-            'properties': {
-                'name': {'type': 'string', 'minLength': 1, 'maxLength': 100, 'enum': source.repository.get_all_names()},
-                'config': {'type': 'object'}
-            },
-            'required': ['name', 'config']
-        }
-    }
-    jsonschema.validate(json_data, schema)
 
 
 def validate_config_for_edit(json_data: dict):
