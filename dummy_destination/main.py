@@ -26,6 +26,15 @@ def to_file():
     return json.dumps({'errors': []})
 
 
+@app.route('/api/v1/alert', methods=['POST'])
+def to_file_simple():
+    file_name = "alert"
+    with open(os.path.join(OUTPUT_DIR, file_name + '.json'), 'a+') as f:
+        json.dump(request.json, f)
+        f.write('\n')
+    return ''
+
+
 @app.route('/api/v1/agents', methods=['POST'])
 def monitoring_api_mock():
     return json.dumps({'errors': []})
