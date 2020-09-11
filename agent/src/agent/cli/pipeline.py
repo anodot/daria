@@ -206,7 +206,7 @@ def update(pipeline_id):
     """
     Update all pipelines configuration, recreate and restart them
     """
-    pipelines = [pipeline.repository.get(pipeline_id)] if pipeline_id else pipeline.repository.get_all()
+    pipelines = [pipeline.repository.get_by_name(pipeline_id)] if pipeline_id else pipeline.repository.get_all()
     for p in pipelines:
         try:
             pipeline.manager.update(p)
