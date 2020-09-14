@@ -1,6 +1,6 @@
 from typing import List
 from agent import pipeline
-from agent.db import session
+from agent.modules.db import session
 
 
 class PipelineNotExistsException(Exception):

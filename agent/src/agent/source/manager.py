@@ -5,7 +5,7 @@ from typing import List
 from agent import pipeline
 from agent import source
 from agent.source import SourceException
-from agent.streamsets_api_client import api_client
+from agent.modules.streamsets_api_client import api_client
 
 MAX_SAMPLE_RECORDS = 3
 

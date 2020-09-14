@@ -6,8 +6,9 @@ from jsonschema import ValidationError
 from agent.api.routes import needs_pipeline
 from flask import jsonify, Blueprint, request
 from agent.api import routes
-from agent import pipeline, source, proxy, logger
-from agent.streamsets_api_client import StreamSetsApiClientException
+from agent import pipeline, source
+from agent.modules import proxy, logger
+from agent.modules.streamsets_api_client import StreamSetsApiClientException
 
 pipelines = Blueprint('pipelines', __name__)
 logger = logger.get_logger(__name__)

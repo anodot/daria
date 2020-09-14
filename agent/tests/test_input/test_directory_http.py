@@ -1,10 +1,6 @@
-import traceback
-
-from ..fixtures import cli_runner
-from agent.streamsets_api_client import api_client
+from agent.modules.streamsets_api_client import api_client
 from agent import pipeline, source
 from agent import cli
-from ..test_pipelines.test_zpipeline_base import pytest_generate_tests
 
 
 class TestDirectory:

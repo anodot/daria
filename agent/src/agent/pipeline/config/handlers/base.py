@@ -1,9 +1,9 @@
 import json
 import os
 
-from agent.logger import get_logger
-from agent.constants import ERRORS_DIR, AGENT_URL
-from agent.constants import ROOT_DIR
+from agent.modules.logger import get_logger
+from agent.modules.constants import ERRORS_DIR, AGENT_URL
+from agent.modules.constants import ROOT_DIR
 from agent.pipeline import pipeline as p
 
 logger = get_logger(__name__)

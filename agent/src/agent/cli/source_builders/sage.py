@@ -1,7 +1,7 @@
 import click
 
 from .abstract_builder import Builder
-from agent.tools import infinite_retry
+from agent.modules.tools import infinite_retry
 from agent import source
 
 

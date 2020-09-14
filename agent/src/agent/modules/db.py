@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from agent.constants import AGENT_DB_HOST, AGENT_DB_USER, AGENT_DB_PASSWORD
+from agent.modules.constants import AGENT_DB_HOST, AGENT_DB_USER, AGENT_DB_PASSWORD
 from sqlalchemy.ext.declarative import declarative_base
 
 Entity = declarative_base()

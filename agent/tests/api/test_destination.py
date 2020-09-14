@@ -1,14 +1,6 @@
 import pytest
 
 from agent.api import main
-from ..test_pipelines.test_zpipeline_base import pytest_generate_tests
-
-
-@pytest.fixture
-def client():
-    main.app.config['TESTING'] = True
-    with main.app.test_client() as client:
-        yield client
 
 
 class TestDestination:
@@ -61,25 +53,25 @@ class TestDestination:
         ]
     }
 
-    def test_delete(self, client):
-        result = client.delete('/destination')
+    def test_delete(self, api_client):
+        result = api_client.delete('/destination')
         assert result.status_code == 200
 
-    def test_create(self, client, destination_url, data_collection_token, er, status_code, host_id, access_key):
-        result = client.post('/destination', json=dict(
+    def test_create(self, api_client, destination_url, data_collection_token, er, status_code, host_id, access_key):
+        result = api_client.post('/destination', json=dict(
             destination_url=destination_url,
             data_collection_token=data_collection_token,
             host_id=host_id,
             access_key=access_key
         ))
         # cleanup
-        client.delete('/destination')
+        api_client.delete('/destination')
         print(result.data)
         assert result.data.startswith(er)
         assert result.status_code == status_code
 
-    def test_create_with_proxy(self, client, proxy_uri, er, status_code):
-        result = client.post('/destination', json=dict(
+    def test_create_with_proxy(self, api_client, proxy_uri, er, status_code):
+        result = api_client.post('/destination', json=dict(
             proxy_uri=proxy_uri,
             proxy_username='',
             proxy_password='',

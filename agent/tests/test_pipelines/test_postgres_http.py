@@ -1,7 +1,6 @@
 import pytest
 
-from ..fixtures import cli_runner
-from .test_zpipeline_base import pytest_generate_tests, TestPipelineBase
+from .test_zpipeline_base import TestPipelineBase
 
 
 class TestPostgreSQL(TestPipelineBase):

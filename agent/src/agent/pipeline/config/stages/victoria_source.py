@@ -2,7 +2,7 @@ import os
 import pytz
 
 from datetime import datetime
-from agent.constants import ROOT_DIR
+from agent.modules.constants import ROOT_DIR
 from agent import source
 from .base import Stage
 

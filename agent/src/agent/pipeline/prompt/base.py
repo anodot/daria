@@ -2,7 +2,7 @@ import click
 import pytz
 
 from agent.cli import source_builders
-from agent.tools import infinite_retry, if_validation_enabled, dict_get_nested
+from agent.modules.tools import infinite_retry, if_validation_enabled, dict_get_nested
 from agent.pipeline import pipeline as p
 
 

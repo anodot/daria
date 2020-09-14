@@ -4,7 +4,8 @@ import gzip
 import logging
 import sys
 
-from agent import destination, proxy, logger
+from agent import destination
+from agent.modules import proxy, logger
 from datetime import datetime
 from kafka import KafkaConsumer
 

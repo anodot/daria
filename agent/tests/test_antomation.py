@@ -2,7 +2,6 @@ import os
 import subprocess
 
 from agent import cli
-from .fixtures import cli_runner
 
 
 def test_antomation(cli_runner):

@@ -1,8 +1,8 @@
 from sqlalchemy.orm import relationship
 
 from agent import source
-from agent.constants import HOSTNAME
-from agent.db import Entity
+from agent.modules.constants import HOSTNAME
+from agent.modules.db import Entity
 from agent.destination import HttpDestination
 from enum import Enum
 from sqlalchemy.ext.mutable import MutableDict

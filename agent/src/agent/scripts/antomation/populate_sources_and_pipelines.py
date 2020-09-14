@@ -7,7 +7,8 @@ import logging
 import sys
 
 from tempfile import NamedTemporaryFile
-from agent import pipeline, source, logger
+from agent import pipeline, source
+from agent.modules import logger
 
 logger_ = logger.get_logger('scripts.antomation.run')
 handler = logging.StreamHandler(sys.stdout)

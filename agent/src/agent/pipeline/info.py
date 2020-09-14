@@ -3,7 +3,7 @@ import re
 
 from datetime import datetime
 from typing import Optional
-from agent.streamsets_api_client import api_client
+from agent.modules.streamsets_api_client import api_client
 
 
 def get_logs(pipeline_id: str, severity: str, number_of_records: int) -> list:

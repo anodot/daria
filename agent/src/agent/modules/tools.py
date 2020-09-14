@@ -3,7 +3,7 @@ import json
 
 from datetime import datetime
 
-from agent.constants import ENV_PROD, VALIDATION_ENABLED
+from agent.modules.constants import ENV_PROD, VALIDATION_ENABLED
 from tabulate import tabulate
 
 

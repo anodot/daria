@@ -2,8 +2,8 @@ import click
 import re
 
 from .abstract_builder import Builder
-from agent.tools import infinite_retry
-from agent import source, tools
+from agent.modules.tools import infinite_retry
+from agent import source
 
 
 class MongoSourceBuilder(Builder):

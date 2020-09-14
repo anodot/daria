@@ -1,7 +1,7 @@
 import click
 
 from .abstract_builder import Builder
-from agent.tools import infinite_retry, print_dicts, map_keys, if_validation_enabled
+from agent.modules.tools import infinite_retry, print_dicts, map_keys, if_validation_enabled
 from agent import source
 
 

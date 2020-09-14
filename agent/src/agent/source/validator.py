@@ -7,8 +7,8 @@ import sqlalchemy
 from datetime import datetime
 from urllib.parse import urlparse, urlunparse
 from agent import source, pipeline
-from agent.streamsets_api_client import api_client
-from agent.tools import if_validation_enabled
+from agent.modules.streamsets_api_client import api_client
+from agent.modules.tools import if_validation_enabled
 from agent.validator import is_valid_url
 
 

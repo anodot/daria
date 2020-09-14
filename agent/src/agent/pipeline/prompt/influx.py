@@ -1,6 +1,6 @@
 import click
 
-from agent.tools import infinite_retry
+from agent.modules.tools import infinite_retry
 from urllib.parse import urljoin
 from .base import PromptConfig
 from agent import source
