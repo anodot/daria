@@ -5,7 +5,7 @@ import time
 import urllib.parse
 import click
 
-from .logger import get_logger
+from agent.modules.logger import get_logger
 from agent.modules.constants import STREAMSETS_PREVIEW_TIMEOUT
 
 logger = get_logger(__name__)

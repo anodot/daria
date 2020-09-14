@@ -128,5 +128,5 @@ def check_source_name(source_name: str):
 
 
 def save(source_: source.Source):
-    anodot_api_client.get_client().send_source_to_bc(source_)
+    # anodot_api_client.get_client().send_source_to_bc(source_)
     source.repository.save(source_)

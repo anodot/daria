@@ -9,7 +9,7 @@ from urllib.parse import urlparse, urlunparse
 from agent import source, pipeline
 from agent.modules.streamsets_api_client import api_client
 from agent.modules.tools import if_validation_enabled
-from agent.validator import is_valid_url
+from agent import validator
 
 
 class ValidationException(Exception):
@@ -82,7 +82,7 @@ class InfluxValidator(Validator):
 
     @if_validation_enabled
     def validate_connection(self):
-        if not is_valid_url(self.source.config['host']):
+        if not validator.is_valid_url(self.source.config['host']):
             raise ValidationException(
                 f"{self.source.config['host']} - wrong url format. Correct format is `scheme://host:port`"
             )
@@ -100,7 +100,7 @@ class InfluxValidator(Validator):
 
     @if_validation_enabled
     def validate_write_host(self):
-        if not is_valid_url(self.source.config['write_host']):
+        if not validator.is_valid_url(self.source.config['write_host']):
             raise ValidationException(
                 f"{self.source.config['write_host']} - wrong url format. Correct format is `scheme://host:port`"
             )
@@ -178,7 +178,7 @@ class JDBCValidator(Validator):
 
     @if_validation_enabled
     def validate_connection_string(self):
-        if not is_valid_url(self.source.config['connection_string']):
+        if not validator.is_valid_url(self.source.config['connection_string']):
             raise ValidationException('Wrong url format. Correct format is `scheme://host:port`')
         result = urlparse(self.source.config['connection_string'])
         if self.source.type == 'mysql' and result.scheme != 'mysql':
@@ -242,7 +242,7 @@ class SageValidator(Validator):
 
     @if_validation_enabled
     def validate_url(self):
-        if not is_valid_url(self.source.config[source.SageSource.URL]):
+        if not validator.is_valid_url(self.source.config[source.SageSource.URL]):
             raise ValidationException('Wrong url format. Correct format is `scheme://host:port`')
         # TODO: check simple request
 

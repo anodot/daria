@@ -2,7 +2,6 @@ import click
 import json
 
 from datetime import datetime
-
 from agent.modules.constants import ENV_PROD, VALIDATION_ENABLED
 from tabulate import tabulate
 
