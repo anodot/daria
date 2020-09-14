@@ -50,7 +50,9 @@ def create_source_from_json(config: dict) -> source.Source:
     return source_
 
 
-def edit_using_json(configs: dict) -> List[source.Source]:
+def edit_using_json(configs: list) -> List[source.Source]:
+    if not isinstance(configs, list):
+        raise ValueError(f'Provided data must be a list of configs, {type(configs).__name__} provided instead')
     exceptions = {}
     sources = []
     for config in configs:

@@ -222,7 +222,9 @@ def create_pipeline_from_json(config: dict) -> Pipeline:
     return pipeline_manager.pipeline
 
 
-def edit_using_json(configs: dict) -> List[Pipeline]:
+def edit_using_json(configs: list) -> List[Pipeline]:
+    if not isinstance(configs, list):
+        raise ValueError(f'Provided data must be a list of configs, {type(configs).__name__} provided instead')
     exceptions = {}
     pipelines = []
     for config in configs:
