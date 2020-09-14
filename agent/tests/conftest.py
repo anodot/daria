@@ -2,6 +2,7 @@ import json
 import os
 import pytest
 
+from agent.api import main
 from click.testing import CliRunner
 
 
@@ -12,6 +13,13 @@ TEST_DATASETS_PATH = '/home'
 @pytest.fixture(scope="session")
 def cli_runner():
     yield CliRunner()
+
+
+@pytest.fixture
+def api_client():
+    main.app.testing = True
+    with main.app.test_client() as client:
+        yield client
 
 
 def get_output(file_name):

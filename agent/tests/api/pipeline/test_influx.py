@@ -1,6 +1,3 @@
-
-
-
 class TestInflux:
     params = {
         'test_source_create': [{
@@ -53,50 +50,50 @@ class TestInflux:
         }]
     }
 
-    def test_source_create(self, client, data, er):
-        result = client.post('/sources', json=list(data))
+    def test_source_create(self, api_client, data, er):
+        result = api_client.post('/sources', json=list(data))
         assert result.data == er
 
-    def test_create(self, client, data, er):
-        result = client.post('/pipelines', json=list(data))
+    def test_create(self, api_client, data, er):
+        result = api_client.post('/pipelines', json=list(data))
         assert result.data == er
 
-    def test_edit(self, client, data, er):
-        result = client.put('/pipelines', json=list(data))
+    def test_edit(self, api_client, data, er):
+        result = api_client.put('/pipelines', json=list(data))
         assert result.data == er
 
-    def test_start(self, client):
-        result = client.post('/pipelines/test_influx/start')
+    def test_start(self, api_client):
+        result = api_client.post('/pipelines/test_influx/start')
         assert result.status_code == 200
 
-    def test_enable_destination_logs(self, client):
-        result = client.post('/pipelines/test_influx/enable-destination-logs')
+    def test_enable_destination_logs(self, api_client):
+        result = api_client.post('/pipelines/test_influx/enable-destination-logs')
         assert result.status_code == 200
 
-    def test_disable_destination_logs(self, client):
-        result = client.post('/pipelines/test_influx/disable-destination-logs')
+    def test_disable_destination_logs(self, api_client):
+        result = api_client.post('/pipelines/test_influx/disable-destination-logs')
         assert result.status_code == 200
 
-    def test_info(self, client):
-        result = client.get('/pipelines/test_influx/info')
+    def test_info(self, api_client):
+        result = api_client.get('/pipelines/test_influx/info')
         assert result.status_code == 200
         assert len(result.data) != 0
 
-    def test_logs(self, client):
-        result = client.get('/pipelines/test_influx/logs')
+    def test_logs(self, api_client):
+        result = api_client.get('/pipelines/test_influx/logs')
         assert result.status_code == 200
         assert len(result.data) != 0
 
-    def test_stop(self, client):
-        result = client.post('/pipelines/test_influx/stop')
+    def test_stop(self, api_client):
+        result = api_client.post('/pipelines/test_influx/stop')
         assert result.status_code == 200
 
-    def test_reset(self, client):
-        result = client.post('/pipelines/test_influx/reset')
+    def test_reset(self, api_client):
+        result = api_client.post('/pipelines/test_influx/reset')
         assert result.status_code == 200
 
-    def test_pipeline_failed(self, client):
-        res = client.post('/pipeline-failed', json={
+    def test_pipeline_failed(self, api_client):
+        res = api_client.post('/pipeline-failed', json={
             "pipeline_status": "RUN_ERROR",
             "pipeline_name": "test_influx",
             "time": "1970-01-01 00:00:00"

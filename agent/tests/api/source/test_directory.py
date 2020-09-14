@@ -1,6 +1,3 @@
-
-
-
 class TestDirectory:
     params = {
         'test_create': [{
@@ -33,18 +30,18 @@ class TestDirectory:
         }]
     }
 
-    def test_create(self, client, data, er):
-        result = client.post('/sources', json=list(data))
+    def test_create(self, api_client, data, er):
+        result = api_client.post('/sources', json=list(data))
         assert result.data == er
 
-    def test_edit(self, client, data, er):
-        result = client.put('/sources', json=list(data))
+    def test_edit(self, api_client, data, er):
+        result = api_client.put('/sources', json=list(data))
         assert result.data == er
 
-    def test_get(self, client):
-        result = client.get('/sources')
+    def test_get(self, api_client):
+        result = api_client.get('/sources')
         assert result.data == b'["monitoring","directory"]\n'
 
-    def test_delete(self, client):
-        client.delete('sources/directory')
-        assert client.get('/sources').data ==b'["monitoring"]\n'
+    def test_delete(self, api_client):
+        api_client.delete('sources/directory')
+        assert api_client.get('/sources').data ==b'["monitoring"]\n'

@@ -1,6 +1,5 @@
 import pytest
 
-
 from .test_zpipeline_base import TestPipelineBase
 
 
