@@ -25,7 +25,7 @@ def create():
 def edit():
     try:
         sources_ = source.manager.edit_using_json(request.get_json())
-    except (ValidationError, ValueError) as e:
+    except (ValidationError, source.SourceException, ValueError) as e:
         return jsonify(str(e)), 400
     return jsonify(list(map(lambda x: x.to_dict(), sources_)))
 

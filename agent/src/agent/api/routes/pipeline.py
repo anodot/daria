@@ -40,10 +40,7 @@ def create():
 def edit():
     try:
         pipelines_ = pipeline.manager.edit_using_json(request.get_json())
-    except (
-            ValidationError, source.SourceNotExists, source.SourceConfigDeprecated,
-            requests.exceptions.ConnectionError, pipeline.repository.PipelineNotExistsException
-    ) as e:
+    except ValueError as e:
         return jsonify(str(e)), 400
     except pipeline.PipelineException as e:
         return jsonify(str(e)), 500
