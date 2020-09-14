@@ -100,16 +100,16 @@ class TestInflux:
         })
         assert res.status_code == 200
 
-    def test_list(self, client, er):
-        result = client.get('/pipelines')
+    def test_list(self, api_client, er):
+        result = api_client.get('/pipelines')
         assert result.data == er
 
-    def test_delete(self, client):
-        client.delete('/pipelines/test_influx')
-        result = client.get('/pipelines')
+    def test_delete(self, api_client):
+        api_client.delete('/pipelines/test_influx')
+        result = api_client.get('/pipelines')
         assert result.data == b'[{"override_source":{},"pipeline_id":"Monitoring","source":{"name":"monitoring"}}]\n'
 
-    def test_source_delete(self, client):
-        client.delete('/sources/influx')
-        result = client.get('/sources')
+    def test_source_delete(self, api_client):
+        api_client.delete('/sources/influx')
+        result = api_client.get('/sources')
         assert result.data == b'["monitoring"]\n'
