@@ -1,5 +1,5 @@
-from agent.anodot_api_client import AnodotApiClient
-from agent import proxy
+from agent.modules.anodot_api_client import AnodotApiClient
+from agent.modules import proxy
 from agent.pipeline import pipeline as p
 
 

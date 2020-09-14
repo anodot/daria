@@ -1,5 +1,5 @@
 from .base import BaseConfigHandler, ConfigHandlerException
-from agent.logger import get_logger
+from agent.modules.logger import get_logger
 from datetime import datetime, timedelta
 from sqlalchemy import create_engine
 from sqlalchemy.exc import SQLAlchemyError

@@ -1,7 +1,7 @@
 import pytest
 
-from ..fixtures import cli_runner
-from .test_zpipeline_base import TestPipelineBase, pytest_generate_tests
+
+from .test_zpipeline_base import TestPipelineBase
 
 
 class TestSage(TestPipelineBase):

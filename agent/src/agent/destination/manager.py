@@ -1,4 +1,5 @@
-from agent import validator, pipeline, proxy
+from agent import validator, pipeline
+from agent.modules import proxy
 from agent import destination
 from result import Result, Ok, Err
 

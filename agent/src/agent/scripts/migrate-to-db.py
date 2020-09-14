@@ -4,9 +4,9 @@ import logging
 import os
 import sys
 
-from agent import logger
+from agent.modules import logger
 from agent import source, pipeline, destination
-from agent.constants import MONITORING_SOURCE_NAME
+from agent.modules.constants import MONITORING_SOURCE_NAME
 
 logger_ = logger.get_logger('scripts.migrate-to-db.run')
 handler = logging.StreamHandler(sys.stdout)

@@ -2,10 +2,10 @@ import urllib
 import requests
 import urllib.parse
 
-from agent.anodot_api_client import AnodotApiClient
+from agent.modules.anodot_api_client import AnodotApiClient
 from agent import destination
-from agent import proxy
-from agent.tools import if_validation_enabled
+from agent.modules import proxy
+from agent.modules.tools import if_validation_enabled
 
 
 class ValidationException(Exception):

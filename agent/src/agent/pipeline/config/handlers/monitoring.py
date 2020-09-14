@@ -1,8 +1,8 @@
 import requests
 
-from agent import proxy
+from agent.modules import proxy
 from .base import BaseConfigHandler
-from agent.constants import HOSTNAME
+from agent.modules.constants import HOSTNAME
 from copy import deepcopy
 
 

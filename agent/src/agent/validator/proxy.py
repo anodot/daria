@@ -1,7 +1,7 @@
 import requests
 
-from agent import proxy
-from agent.tools import if_validation_enabled
+from agent.modules import proxy
+from agent.modules.tools import if_validation_enabled
 
 
 @if_validation_enabled

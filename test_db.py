@@ -1,5 +1,4 @@
-from agent.db import session
-from agent import destination, source, pipeline
+from agent import pipeline
 
 
 # s = session.query(source.Source).filter(source.Source.name == 'test_influx').first()

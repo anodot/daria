@@ -1,7 +1,7 @@
 import click
 import socket
 
-from agent.tools import infinite_retry
+from agent.modules.tools import infinite_retry
 from .schemaless import SchemalessSourceBuilder
 
 

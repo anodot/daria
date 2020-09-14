@@ -6,7 +6,7 @@ import urllib.parse
 import click
 
 from .logger import get_logger
-from agent.constants import STREAMSETS_PREVIEW_TIMEOUT
+from agent.modules.constants import STREAMSETS_PREVIEW_TIMEOUT
 
 logger = get_logger(__name__)
 

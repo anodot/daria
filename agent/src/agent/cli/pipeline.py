@@ -2,9 +2,9 @@ import click
 
 from agent import pipeline, source
 from agent.pipeline import PipelineException
-from agent.streamsets_api_client import api_client, StreamSetsApiClientException
+from agent.modules.streamsets_api_client import api_client, StreamSetsApiClientException
 from agent import destination
-from agent.tools import infinite_retry
+from agent.modules.tools import infinite_retry
 from jsonschema import ValidationError
 from texttable import Texttable
 

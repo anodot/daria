@@ -3,7 +3,7 @@ import click
 from agent import pipeline
 from agent import source
 from agent import destination
-from agent.tools import infinite_retry
+from agent.modules.tools import infinite_retry
 from jsonschema import ValidationError, SchemaError
 from . import source_builders
 

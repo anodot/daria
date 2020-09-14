@@ -1,7 +1,6 @@
 import pytest
 
 from agent.api import main
-from ..test_pipelines.test_zpipeline_base import pytest_generate_tests
 
 
 @pytest.fixture

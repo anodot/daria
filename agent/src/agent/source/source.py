@@ -2,7 +2,7 @@ from agent import source
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy import Column, Integer, String, JSON
-from agent.db import Entity
+from agent.modules.db import Entity
 
 
 class Source(Entity):

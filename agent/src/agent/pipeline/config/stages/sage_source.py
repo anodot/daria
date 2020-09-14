@@ -1,7 +1,7 @@
 import os
 
 from agent import source
-from agent.constants import ROOT_DIR
+from agent.modules.constants import ROOT_DIR
 from .base import Stage
 
 

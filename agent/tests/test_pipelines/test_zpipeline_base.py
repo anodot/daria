@@ -2,19 +2,10 @@ import json
 import os
 import time
 
-from ..fixtures import get_output, get_input_file_path
+from ..conftest import get_output, get_input_file_path
 from agent.cli import source as source_cli, pipeline as pipeline_cli
-from agent.streamsets_api_client import api_client
+from agent.modules.streamsets_api_client import api_client
 from agent import pipeline, source
-
-
-def pytest_generate_tests(metafunc):
-    # called once per each test function
-    if metafunc.function.__name__ not in metafunc.cls.params:
-        return
-    funcarglist = metafunc.cls.params[metafunc.function.__name__]
-    argnames = sorted(funcarglist[0])
-    metafunc.parametrize(argnames, [[funcargs[name] for name in argnames] for funcargs in funcarglist])
 
 
 class TestPipelineBase(object):

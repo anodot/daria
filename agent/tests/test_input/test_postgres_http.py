@@ -1,10 +1,8 @@
 from datetime import datetime
 
-from ..fixtures import cli_runner
 from agent.cli import source as source_cli, pipeline as pipeline_cli
-from agent.streamsets_api_client import api_client
+from agent.modules.streamsets_api_client import api_client
 from agent import source
-from ..test_pipelines.test_zpipeline_base import pytest_generate_tests
 
 
 class TestPostgreSQL:

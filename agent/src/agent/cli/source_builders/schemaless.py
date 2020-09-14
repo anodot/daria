@@ -3,7 +3,7 @@ import json
 
 from .abstract_builder import Builder
 from abc import ABCMeta
-from agent.tools import infinite_retry, print_dicts, print_json, map_keys, if_validation_enabled
+from agent.modules.tools import infinite_retry, print_dicts, print_json, map_keys, if_validation_enabled
 from agent import source
 
 

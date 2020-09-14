@@ -1,7 +1,7 @@
 import click
 
 from agent.pipeline.config import expression_parser
-from agent.tools import infinite_retry, dict_get_nested
+from agent.modules.tools import infinite_retry, dict_get_nested
 from .base import PromptConfig
 
 

@@ -3,11 +3,10 @@ import uuid
 
 from typing import Dict, Optional
 from sqlalchemy.ext.mutable import MutableDict
-from sqlalchemy.orm import relationship
 
-from agent.constants import ANODOT_API_URL
-from agent.db import Entity
-from agent.proxy import Proxy
+from agent.modules.constants import ANODOT_API_URL
+from agent.modules.db import Entity
+from agent.modules.proxy import Proxy
 from sqlalchemy import Column, Integer, String, JSON
 
 

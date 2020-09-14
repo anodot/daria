@@ -11,13 +11,13 @@ from agent import pipeline, destination
 from agent.pipeline.config.validators import get_config_validator
 from agent.pipeline import prompt, load_client_data
 from agent import source
-from agent.anodot_api_client import AnodotApiClient
-from agent.constants import ERRORS_DIR, ENV_PROD, MONITORING_SOURCE_NAME
-from agent.streamsets_api_client import api_client, StreamSetsApiClientException
-from agent.tools import print_json, sdc_record_map_to_dict, if_validation_enabled
-from .. import proxy
+from agent.modules.anodot_api_client import AnodotApiClient
+from agent.modules.constants import ERRORS_DIR, ENV_PROD, MONITORING_SOURCE_NAME
+from agent.modules.streamsets_api_client import api_client, StreamSetsApiClientException
+from agent.modules.tools import print_json, sdc_record_map_to_dict, if_validation_enabled
+from ..modules import proxy
 from .pipeline import Pipeline, PipelineException
-from agent.logger import get_logger
+from agent.modules.logger import get_logger
 from typing import List
 
 

@@ -4,8 +4,8 @@ import agent.destination
 
 from agent.destination import destination
 from agent import validator, pipeline
-from agent.tools import infinite_retry
-from agent.proxy import Proxy
+from agent.modules.tools import infinite_retry
+from agent.modules.proxy import Proxy
 
 
 @infinite_retry
