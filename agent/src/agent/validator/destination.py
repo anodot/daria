@@ -1,4 +1,6 @@
 import urllib
+from typing import Optional
+
 import requests
 import urllib.parse
 
@@ -34,10 +36,9 @@ def is_valid_resource_url(resource_url: str) -> bool:
 
 
 @if_validation_enabled
-def is_valid_access_key(access_key: str, url: str) -> bool:
+def is_valid_access_key(access_key: str, proxy_: Optional[proxy.Proxy], url: str) -> bool:
     try:
-        # todo refactor validation?
-        AnodotApiClient(access_key, proxies={}, base_url=url)
+        AnodotApiClient(access_key, proxy.get_config(proxy_), url)
     except requests.HTTPError:
         return False
     return True

@@ -1,3 +1,4 @@
+from typing import Optional
 from urllib.parse import urlparse, urlunparse
 
 
@@ -8,7 +9,7 @@ class Proxy:
         self.password = password
 
 
-def get_config(proxy: Proxy) -> dict:
+def get_config(proxy: Optional[Proxy]) -> dict:
     proxies = dict()
     if proxy:
         proxy_parsed = urlparse(proxy.uri)

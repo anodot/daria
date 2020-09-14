@@ -66,7 +66,7 @@ def _build(
         destination_.resource_url = resource_url
         destination_.monitoring_url = monitoring_url
     if access_key:
-        if not validator.destination.is_valid_access_key(access_key, destination_.url):
+        if not validator.destination.is_valid_access_key(access_key, destination_.proxy, destination_.url):
             return Err('Access key is invalid')
         destination_.access_key = access_key
     if host_id:

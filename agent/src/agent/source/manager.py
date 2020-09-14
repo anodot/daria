@@ -4,6 +4,7 @@ import jsonschema
 from typing import List
 from agent import pipeline
 from agent import source
+from agent.modules import anodot_api_client
 from agent.source import SourceException
 from agent.modules.streamsets_api_client import api_client
 
@@ -46,7 +47,7 @@ def create_source_from_json(config: dict) -> source.Source:
     source_ = source.manager.create_source_obj(config['name'], config['type'])
     source_.set_config(config['config'])
     source.validator.validate(source_)
-    source.repository.save(source_)
+    save(source_)
     return source_
 
 
@@ -72,7 +73,7 @@ def edit_source_using_json(config: dict) -> source.Source:
     source_ = source.repository.get_by_name(config['name'])
     source_.set_config(config['config'])
     source.validator.validate(source_)
-    source.repository.save(source_)
+    save(source_)
     pipeline.manager.update_source_pipelines(source_)
     return source_
 
@@ -124,3 +125,8 @@ def get_previous_source_config(source_type):
 def check_source_name(source_name: str):
     if source.repository.exists(source_name):
         raise SourceException(f"Source {source_name} already exists")
+
+
+def save(source_: source.Source):
+    anodot_api_client.get_client().send_source_to_bc(source_)
+    source.repository.save(source_)
