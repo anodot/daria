@@ -125,8 +125,3 @@ def get_previous_source_config(source_type):
 def check_source_name(source_name: str):
     if source.repository.exists(source_name):
         raise SourceException(f"Source {source_name} already exists")
-
-
-def save(source_: source.Source):
-    # anodot_api_client.get_client().send_source_to_bc(source_)
-    source.repository.save(source_)

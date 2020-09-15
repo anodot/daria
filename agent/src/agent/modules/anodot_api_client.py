@@ -73,7 +73,8 @@ class AnodotApiClient:
     @endpoint
     def send_pipeline_to_bc(self, pipeline_: pipeline.Pipeline):
         pass
-        # return self.session.post(self._build_url('todo-pipeline'), proxies=self.proxies, json=pipeline_.to_dict())
+        # return self.session.post(self._build_url('todo-pipeline'), proxies=self.proxies,
+        #                          json=pipeline.transform_for_bc(pipeline_))
 
 
 def get_client(destination_: destination.HttpDestination = None) -> AnodotApiClient:

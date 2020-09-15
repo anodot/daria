@@ -7,15 +7,13 @@ import time
 import agent.pipeline.config.handlers as config_handlers
 import jsonschema
 
-from agent import pipeline, destination
+from agent import source, pipeline, destination
 from agent.pipeline.config.validators import get_config_validator
-from agent.pipeline import prompt, load_client_data
-from agent import source
+from agent.pipeline import prompt, load_client_data, Pipeline
 from agent.modules import anodot_api_client
 from agent.modules.constants import ERRORS_DIR, ENV_PROD, MONITORING_SOURCE_NAME
 from agent.modules import streamsets_api_client
 from agent.modules.tools import print_json, sdc_record_map_to_dict, if_validation_enabled
-from .pipeline import Pipeline, PipelineException
 from agent.modules.logger import get_logger
 from typing import List
 
@@ -50,7 +48,7 @@ class PipelineManager:
         except (config_handlers.base.ConfigHandlerException, streamsets_api_client.StreamSetsApiClientException) as e:
             delete(self.pipeline)
             raise pipeline.PipelineException(str(e))
-        save(self.pipeline)
+        pipeline.repository.save(self.pipeline)
         return self.pipeline
 
     @if_validation_enabled
@@ -183,7 +181,7 @@ def create_object(pipeline_id: str, source_name: str) -> Pipeline:
 
 def check_pipeline_id(pipeline_id: str):
     if pipeline.repository.exists(pipeline_id):
-        raise PipelineException(f"Pipeline {pipeline_id} already exists")
+        raise pipeline.PipelineException(f"Pipeline {pipeline_id} already exists")
 
 
 def create_from_file(file):
@@ -268,7 +266,7 @@ def update(pipeline_: Pipeline):
         streamsets_api_client.api_client.update_pipeline(pipeline_.name, new_config)
     except (config_handlers.base.ConfigHandlerException, streamsets_api_client.StreamSetsApiClientException) as e:
         raise pipeline.PipelineException(str(e))
-    save(pipeline_)
+    pipeline.repository.save(pipeline_)
     if start_pipeline:
         start(pipeline_)
 
@@ -472,11 +470,6 @@ def start_monitoring_pipeline():
 def update_monitoring_pipeline():
     pipeline_ = pipeline.repository.get_by_name(pipeline.MONITORING)
     pipeline.manager.update(pipeline_)
-
-
-def save(pipeline_: pipeline.Pipeline):
-    pipeline.repository.save(pipeline_)
-    anodot_api_client.get_client().send_pipeline_to_bc(pipeline_)
 
 
 class PipelineFreezeException(Exception):

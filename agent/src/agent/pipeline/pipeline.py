@@ -1,5 +1,4 @@
 from sqlalchemy.orm import relationship
-
 from agent import source
 from agent.modules.constants import HOSTNAME
 from agent.modules.db import Entity
@@ -252,3 +251,13 @@ class Pipeline(Entity):
             **self.meta_tags(),
             **self.tags
         }
+
+
+def transform_for_bc(pipeline: Pipeline) -> dict:
+    data = {'config': pipeline.to_dict()}
+    data['source'] = data['config'].pop('source')
+    data['source']['type'] = pipeline.source.type
+    # data['created'] = pipeline.created_at
+    # data['updated'] = pipeline.last_edited
+    data.pop('override_source')
+    return data
