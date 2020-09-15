@@ -47,7 +47,7 @@ def create_source_from_json(config: dict) -> source.Source:
     source_ = source.manager.create_source_obj(config['name'], config['type'])
     source_.set_config(config['config'])
     source.validator.validate(source_)
-    save(source_)
+    source.repository.save(source_)
     return source_
 
 
@@ -73,7 +73,7 @@ def edit_source_using_json(config: dict) -> source.Source:
     source_ = source.repository.get_by_name(config['name'])
     source_.set_config(config['config'])
     source.validator.validate(source_)
-    save(source_)
+    source.repository.save(source_)
     pipeline.manager.update_source_pipelines(source_)
     return source_
 
