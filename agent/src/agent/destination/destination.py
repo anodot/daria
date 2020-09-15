@@ -2,12 +2,12 @@ import urllib.parse
 import uuid
 
 from typing import Dict, Optional
+from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.ext.mutable import MutableDict
-
 from agent.modules.constants import ANODOT_API_URL
 from agent.modules.db import Entity
 from agent.modules.proxy import Proxy
-from sqlalchemy import Column, Integer, String, JSON
+from sqlalchemy import Column, Integer, String, JSON, func
 
 
 class HttpDestination(Entity):
@@ -17,6 +17,8 @@ class HttpDestination(Entity):
     host_id = Column(String)
     access_key = Column(String)
     config = Column(MutableDict.as_mutable(JSON))
+    created_at = Column(TIMESTAMP(timezone=True), default=func.now())
+    last_edited = Column(TIMESTAMP(timezone=True), default=func.now(), onupdate=func.now())
 
     TYPE = 'http'
     STATUS_URL = 'api/v1/status'
