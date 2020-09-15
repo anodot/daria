@@ -4,7 +4,7 @@ import click
 
 from agent.modules import proxy
 from agent.modules.logger import get_logger
-from agent import pipeline, source, destination
+from agent import destination
 
 logger = get_logger(__name__)
 
@@ -66,15 +66,14 @@ class AnodotApiClient:
                                  data=data, params={'type': data_type})
 
     @endpoint
-    def send_source_to_bc(self, source_: source.Source):
+    def send_source_data_to_bc(self, source_: dict):
         pass
-        # return self.session.post(self._build_url('todo-source'), proxies=self.proxies, json=source_.to_dict())
+        # return self.session.post(self._build_url('todo-source'), proxies=self.proxies, json=source_data)
 
     @endpoint
-    def send_pipeline_to_bc(self, pipeline_: pipeline.Pipeline):
+    def send_pipeline_data_to_bc(self, pipeline_data: dict):
         pass
-        # return self.session.post(self._build_url('todo-pipeline'), proxies=self.proxies,
-        #                          json=pipeline.transform_for_bc(pipeline_))
+        # return self.session.post(self._build_url('todo-pipeline'), proxies=self.proxies, json=pipeline_data))
 
 
 def get_client(destination_: destination.HttpDestination = None) -> AnodotApiClient:

@@ -11,6 +11,6 @@ logger = get_logger(__name__)
 try:
     api_client = anodot_api_client.get_client()
     for pipeline_ in pipeline.repository.get_all():
-        api_client.send_pipeline_to_bc(pipeline_)
+        api_client.send_pipeline_data_to_bc(pipeline.transform_for_bc(pipeline_))
 except Exception:
     logger.error(traceback.format_exc())
