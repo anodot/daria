@@ -1,8 +1,7 @@
-from sqlalchemy.dialects.postgresql import TIMESTAMP
 from agent import source
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.mutable import MutableDict
-from sqlalchemy import Column, Integer, String, JSON, func
+from sqlalchemy import Column, Integer, String, JSON
 from agent.modules.db import Entity
 
 
@@ -13,8 +12,6 @@ class Source(Entity):
     name = Column(String)
     type = Column(String)
     config = Column(MutableDict.as_mutable(JSON))
-    created_at = Column(TIMESTAMP(timezone=True), default=func.now())
-    last_edited = Column(TIMESTAMP(timezone=True), default=func.now(), onupdate=func.now())
 
     pipelines = relationship('Pipeline', back_populates='source_')
 

@@ -1,12 +1,12 @@
-from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import relationship
+
 from agent import source
 from agent.modules.constants import HOSTNAME
 from agent.modules.db import Entity
 from agent.destination import HttpDestination
 from enum import Enum
 from sqlalchemy.ext.mutable import MutableDict
-from sqlalchemy import Column, Integer, String, JSON, ForeignKey, func
+from sqlalchemy import Column, Integer, String, JSON, ForeignKey
 
 MONITORING = 'Monitoring'
 
@@ -52,8 +52,6 @@ class Pipeline(Entity):
     destination_id = Column(Integer, ForeignKey('destinations.id'))
     config = Column(MutableDict.as_mutable(JSON))
     override_source = Column(MutableDict.as_mutable(JSON))
-    created_at = Column(TIMESTAMP(timezone=True), default=func.now())
-    last_edited = Column(TIMESTAMP(timezone=True), default=func.now(), onupdate=func.now())
 
     source_ = relationship('Source', back_populates='pipelines')
     destination = relationship('HttpDestination')
