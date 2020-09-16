@@ -24,7 +24,6 @@ class HttpDestination(Entity):
     CONFIG_PROXY_USERNAME = 'conf.client.proxy.username'
     CONFIG_PROXY_PASSWORD = 'conf.client.proxy.password'
     CONFIG_PROXY_URI = 'conf.client.proxy.uri'
-    CONFIG_RESOURCE_URL = 'conf.resourceUrl'
     CONFIG_ENABLE_REQUEST_LOGGING = 'conf.client.requestLoggingConfig.enableRequestLogging'
 
     CONFIG_MONITORING_URL = 'monitoring_url'
