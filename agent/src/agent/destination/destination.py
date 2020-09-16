@@ -3,7 +3,6 @@ import uuid
 
 from typing import Dict, Optional
 from sqlalchemy.ext.mutable import MutableDict
-
 from agent.modules.constants import ANODOT_API_URL
 from agent.modules.db import Entity
 from agent.modules.proxy import Proxy
@@ -68,19 +67,12 @@ class HttpDestination(Entity):
 
     @property
     def resource_url(self) -> Optional[str]:
-        return self.config.get(self.CONFIG_RESOURCE_URL)
-
-    @resource_url.setter
-    def resource_url(self, resource_url: str):
-        self.config[self.CONFIG_RESOURCE_URL] = resource_url
+        return \
+            urllib.parse.urljoin(self.url, f'api/v1/metrics?token={self.token}&protocol={HttpDestination.PROTOCOL_20}')
 
     @property
     def monitoring_url(self) -> Optional[str]:
-        return self.config.get(self.CONFIG_MONITORING_URL)
-
-    @monitoring_url.setter
-    def monitoring_url(self, monitoring_url: str):
-        self.config[self.CONFIG_MONITORING_URL] = monitoring_url
+        return urllib.parse.urljoin(self.url, f'api/v1/agents?token={self.token}')
 
     def enable_logs(self):
         self.config[self.CONFIG_ENABLE_REQUEST_LOGGING] = True
@@ -110,10 +102,3 @@ class HttpDestination(Entity):
 
     def get_proxy_username(self) -> str:
         return self.config.get(self.CONFIG_PROXY_USERNAME, '')
-
-
-def build_urls(destination_url: str, data_collection_token: str) -> (str, str):
-    resource_url = urllib.parse.urljoin(
-        destination_url, f'api/v1/metrics?token={data_collection_token}&protocol={HttpDestination.PROTOCOL_20}')
-    monitoring_url = urllib.parse.urljoin(destination_url, f'api/v1/agents?token={data_collection_token}')
-    return resource_url, monitoring_url
