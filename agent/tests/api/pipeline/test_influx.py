@@ -1,3 +1,5 @@
+from agent import pipeline
+
 class TestInflux:
     params = {
         'test_source_create': [{
@@ -93,12 +95,15 @@ class TestInflux:
         assert result.status_code == 200
 
     def test_pipeline_failed(self, api_client):
-        res = api_client.post('/pipeline-failed', json={
-            "pipeline_status": "RUN_ERROR",
-            "pipeline_name": "test_influx",
+        pipeline_name = 'test_influx'
+        pipeline_status = 'RUN_ERROR'
+        res = api_client.post('/pipeline-status-change', json={
+            "pipeline_status": pipeline_status,
+            "pipeline_name": pipeline_name,
             "time": "1970-01-01 00:00:00"
         })
         assert res.status_code == 200
+        assert pipeline.repository.get_by_name(pipeline_name).status == pipeline_status
 
     def test_list(self, api_client, er):
         result = api_client.get('/pipelines')
