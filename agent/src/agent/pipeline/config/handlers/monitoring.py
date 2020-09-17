@@ -42,9 +42,6 @@ state['previous'] = {{}};
                           json=[],
                           timeout=5)
         if r.status_code == 200:
-            for conf in anodot_monitoring_stage['configuration']:
-                if conf['name'] == self.pipeline.destination.CONFIG_RESOURCE_URL:
-                    conf['value'] = self.pipeline.destination.monitoring_url
             anodot_monitoring_stage['uiInfo']['yPos'] += 100
             anodot_monitoring_stage['uiInfo']['label'] = 'Anodot agents API'
             self.config['stages'].append(anodot_monitoring_stage)

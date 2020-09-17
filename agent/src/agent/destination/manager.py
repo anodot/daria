@@ -59,12 +59,9 @@ def _build(
             return Err('Destination url validation failed: ' + str(e))
         destination_.url = url
     if token:
-        resource_url, monitoring_url = destination.build_urls(destination_.url, token)
-        if not validator.destination.is_valid_resource_url(resource_url):
-            return Err('Data collection token is invalid')
         destination_.token = token
-        destination_.resource_url = resource_url
-        destination_.monitoring_url = monitoring_url
+        if not validator.destination.is_valid_resource_url(destination_.resource_url):
+            return Err('Data collection token is invalid')
     if access_key:
         if not validator.destination.is_valid_access_key(access_key, destination_.proxy, destination_.url):
             return Err('Access key is invalid')

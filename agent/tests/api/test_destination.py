@@ -35,7 +35,7 @@ class TestDestination:
                 'data_collection_token': 'correct_token',
                 'host_id': 'ABCDEF',
                 'access_key': 'correct_key',
-                'er': b'{"access_key":"correct_key","config":{"conf.client.useProxy":false,"conf.resourceUrl":"http://dummy_destination/api/v1/metrics?token=correct_token&protocol=anodot20","monitoring_url":"http://dummy_destination/api/v1/agents?token=correct_token","token":"correct_token","url":"http://dummy_destination"},"host_id":"ABCDEF","type":"http"}\n',
+                'er': b'{"access_key":"correct_key","config":{"conf.client.useProxy":false,"token":"correct_token","url":"http://dummy_destination"},"host_id":"ABCDEF","type":"http"}\n',
                 'status_code': 200,
             },
         ],
@@ -47,7 +47,7 @@ class TestDestination:
             },
             {
                 'proxy_uri': 'http://squid:3128',
-                'er': b'{"access_key":"correct_key","config":{"conf.client.proxy.password":"","conf.client.proxy.uri":"http://squid:3128","conf.client.proxy.username":"","conf.client.useProxy":true,"conf.resourceUrl":"http://dummy_destination/api/v1/metrics?token=correct_token&protocol=anodot20","monitoring_url":"http://dummy_destination/api/v1/agents?token=correct_token","token":"correct_token","url":"http://dummy_destination"},"host_id":"ABCDEF","type":"http"}\n',
+                'er': b'{"access_key":"correct_key","config":{"conf.client.proxy.password":"","conf.client.proxy.uri":"http://squid:3128","conf.client.proxy.username":"","conf.client.useProxy":true,"token":"correct_token","url":"http://dummy_destination"},"host_id":"ABCDEF","type":"http"}\n',
                 'status_code': 200
             }
         ]

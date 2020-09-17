@@ -6,11 +6,12 @@ from flask import jsonify
 
 
 def needs_destination(func):
-    if not agent.destination.repository.exists():
-        def foo():
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if not agent.destination.repository.exists():
             return jsonify('Destination is not configured. Please create agent destination first'), 400
-        return foo
-    return func
+        return func(*args, **kwargs)
+    return wrapper
 
 
 def needs_pipeline(func):
