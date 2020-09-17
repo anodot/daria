@@ -30,8 +30,6 @@ curl -X GET http://localhost:8080/destination
         "conf.client.proxy.uri": "http://squid:3128",
         "conf.client.proxy.username": "",
         "conf.client.proxy.password": "",
-        "conf.resourceUrl": "http://dummy_destination/api/v1/metrics?token=correct_token&protocol=anodot20",
-        "monitoring_url": "http://dummy_destination/api/v1/agents?token=correct_token",
         "token": "correct_token",
         "url": "http://dummy_destination"
     },
@@ -81,8 +79,6 @@ curl -X POST http://localhost:8080/destination \
         "conf.client.proxy.uri": "https://example-proxy.com",
         "conf.client.proxy.password": "pass",
         "conf.client.proxy.username": "user",
-        "conf.resourceUrl": "https://api.anodot.com/api/v1/metrics?token=data_collection_token&protocol=anodot20",
-        "monitoring_url": "https://api.anodot.com/api/v1/agents?token=data_collection_token",
         "token": "data_collection_token",
         "url": "https://api.anodot.com"
     },
@@ -143,8 +139,6 @@ curl -X PUT http://localhost:8080/destination \
         "conf.client.proxy.uri": "https://new-example-proxy.com",
         "conf.client.proxy.username": "user",
         "conf.client.proxy.password": "pass",
-        "conf.resourceUrl": "https://new.anodot.com/api/v1/metrics?token=new_token&protocol=anodot20",
-        "monitoring_url": "https://new.anodot.com/api/v1/agents?token=new_token",
         "token": "new_token",
         "url": "https://new.anodot.com"
     },

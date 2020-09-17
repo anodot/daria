@@ -179,7 +179,8 @@ state['TAGS'] = {tags}
                 })
                 self.update_http_stage(stage, self.pipeline.source.config, urljoin(source_config['host'], query))
 
-    def update_http_stage(self, stage, config, url=None):
+    @staticmethod
+    def update_http_stage(stage, config, url=None):
         for conf in stage['configuration']:
             if conf['name'] == 'conf.resourceUrl' and url:
                 conf['value'] = url
