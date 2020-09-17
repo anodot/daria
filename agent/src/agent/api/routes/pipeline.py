@@ -134,10 +134,20 @@ def reset(pipeline_id):
     return jsonify('')
 
 
-@pipelines.route('/pipeline-failed', methods=['POST'])
-def pipeline_failed():
+@pipelines.route('/pipeline-status-change', methods=['POST'])
+def pipeline_status_change():
     data = request.get_json()
     pipeline_ = pipeline.repository.get_by_name(data['pipeline_name'])
+    pipeline_.status = data['pipeline_status']
+    pipeline.repository.save(pipeline_)
+
+    if data['pipeline_status'] in pipeline_.error_statuses:
+        _send_error_status_to_anodot(data, pipeline_)
+
+    return ''
+
+
+def _send_error_status_to_anodot(data, pipeline_):
     metric = [{
         "properties": {
             "what": "pipeline_error_status_count",
@@ -157,4 +167,3 @@ def pipeline_failed():
     if 'errors' in data and data['errors']:
         for error in data['errors']:
             logger.error(error['description'])
-    return ''

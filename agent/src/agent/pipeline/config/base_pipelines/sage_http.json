@@ -23,7 +23,7 @@
       "value" : -1
     }, {
       "name" : "notifyOnStates",
-      "value" : [ "RUN_ERROR", "START_ERROR", "STOP_ERROR", "RUNNING_ERROR" ]
+      "value" : [ "RUN_ERROR", "START_ERROR", "STOP_ERROR", "RUNNING_ERROR", "RUNNING", "STOPPED", "FINISHED", "DISCONNECTED", "CONNECTING" ]
     }, {
       "name" : "emailIDs",
       "value" : [ ]
@@ -80,7 +80,7 @@
         "httpMethod" : "POST",
         "contentType" : "application/json",
         "authType" : "NONE",
-        "webhookUrl" : "${AGENT_URL}/pipeline-failed"
+        "webhookUrl" : "${AGENT_URL}/pipeline-status-change"
       } ]
     }, {
       "name" : "sparkConfigs",
