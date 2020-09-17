@@ -2,7 +2,7 @@ import click
 
 from .abstract_builder import Builder
 from agent.modules.tools import infinite_retry
-from agent import source
+from agent import source, validator
 
 
 class VictoriaSourceBuilder(Builder):
@@ -24,7 +24,7 @@ class VictoriaSourceBuilder(Builder):
     def prompt_url(self, default_config):
         url = click.prompt('VictoriaMetrics API URL', type=click.STRING,
                            default=default_config.get(source.VictoriaMetricsSource.URL)).strip()
-        if not source.validator.is_valid_url(url):
+        if not validator.is_valid_url(url):
             raise click.ClickException('URL has invalid format, please specify both the hostname and protocol')
         self.source.config[source.VictoriaMetricsSource.URL] = url
 
