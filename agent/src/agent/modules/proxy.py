@@ -1,3 +1,6 @@
+import requests
+
+from agent.modules.tools import if_validation_enabled
 from urllib.parse import urlparse, urlunparse
 
 
@@ -18,3 +21,15 @@ def get_config(proxy: Proxy) -> dict:
         proxies['http'] = urlunparse((proxy_parsed.scheme, netloc, proxy_parsed.path, '', '', ''))
         proxies['https'] = proxies['http']
     return proxies
+
+
+@if_validation_enabled
+def is_valid(proxy_obj: Proxy) -> bool:
+    try:
+        requests.get('http://example.com', proxies=get_config(proxy_obj), timeout=5)
+    except requests.exceptions.ProxyError:
+        return False
+    except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+        # we cannot validate a proxy now, probably due to network restrictions
+        return True
+    return True
