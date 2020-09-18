@@ -25,3 +25,4 @@ RUN pip install --upgrade pip && pip install -r requirements.txt && python setup
 RUN apt update && apt install -y vim netcat curl nano cron
 
 ENTRYPOINT ["/custom_entrypoint.sh"]
+CMD ["/start.sh"]
