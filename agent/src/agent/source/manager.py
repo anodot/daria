@@ -4,7 +4,6 @@ import jsonschema
 from typing import List
 from agent import pipeline
 from agent import source
-from agent.modules import anodot_api_client
 from agent.source import SourceException
 from agent.modules.streamsets_api_client import api_client
 
