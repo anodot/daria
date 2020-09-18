@@ -46,18 +46,6 @@ class FlushBucketSize(Enum):
 class Pipeline(Entity):
     __tablename__ = 'pipelines'
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-    source_id = Column(Integer, ForeignKey('sources.id'))
-    destination_id = Column(Integer, ForeignKey('destinations.id'))
-    config = Column(MutableDict.as_mutable(JSON))
-    override_source = Column(MutableDict.as_mutable(JSON))
-    created_at = Column(TIMESTAMP(timezone=True), default=func.now())
-    last_edited = Column(TIMESTAMP(timezone=True), default=func.now(), onupdate=func.now())
-
-    source_ = relationship('Source', back_populates='pipelines')
-    destination = relationship('HttpDestination')
-
     STATUS_RUNNING = 'RUNNING'
     STATUS_STOPPED = 'STOPPED'
     STATUS_EDITED = 'EDITED'
@@ -66,7 +54,22 @@ class Pipeline(Entity):
     OVERRIDE_SOURCE = 'override_source'
     FLUSH_BUCKET_SIZE = 'flush_bucket_size'
 
+    error_statuses = ["RUN_ERROR", "START_ERROR", "STOP_ERROR", "RUNNING_ERROR"]
+
     TARGET_TYPES = ['counter', 'gauge', 'running_counter']
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    source_id = Column(Integer, ForeignKey('sources.id'))
+    destination_id = Column(Integer, ForeignKey('destinations.id'))
+    config = Column(MutableDict.as_mutable(JSON))
+    override_source = Column(MutableDict.as_mutable(JSON))
+    created_at = Column(TIMESTAMP(timezone=True), default=func.now())
+    last_edited = Column(TIMESTAMP(timezone=True), default=func.now(), onupdate=func.now())
+    status = Column(String, default=STATUS_EDITED)
+
+    source_ = relationship('Source', back_populates='pipelines')
+    destination = relationship('HttpDestination')
 
     def __init__(self, pipeline_name: str,
                  source_: source.Source,
