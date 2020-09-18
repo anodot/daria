@@ -11,7 +11,7 @@ from agent.modules.tools import if_validation_enabled
 class ValidationException(Exception):
     pass
 
-  
+
 @if_validation_enabled
 def is_valid_destination_url(url: str, proxy_obj: proxy.Proxy = None) -> bool:
     status_url = urllib.parse.urljoin(url, destination.HttpDestination.STATUS_URL)

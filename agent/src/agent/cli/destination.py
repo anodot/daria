@@ -2,65 +2,10 @@ import click
 import requests
 import agent.destination
 
-from agent.destination import destination
-from agent import validator, pipeline
+from agent.destination import HttpDestination
+from agent import pipeline
 from agent.modules.tools import infinite_retry
-from agent.modules.proxy import Proxy
-
-
-@infinite_retry
-def _prompt_proxy(dest: destination.HttpDestination):
-    if click.confirm('Use proxy for connecting to Anodot?'):
-        uri = _prompt_proxy_uri(dest.get_proxy_url())
-        username = _prompt_proxy_username(dest.get_proxy_username())
-        password = _prompt_proxy_password()
-        proxy = Proxy(uri, username, password)
-        if not validator.proxy.is_valid(proxy):
-            raise click.ClickException('Proxy is invalid')
-        dest.proxy = proxy
-
-
-def _prompt_proxy_uri(default: str) -> str:
-    return click.prompt('Proxy uri', type=click.STRING, default=default)
-
-
-def _prompt_proxy_username(default: str) -> str:
-    return click.prompt('Proxy username', type=click.STRING, default=default)
-
-
-def _prompt_proxy_password() -> str:
-    return click.prompt('Proxy password', type=click.STRING, default='')
-
-
-@infinite_retry
-def _prompt_url(dest: destination.HttpDestination):
-    url = click.prompt('Destination url', type=click.STRING, default=dest.url)
-    try:
-        if not validator.is_valid_url(url):
-            raise click.ClickException('Wrong url format, please specify the protocol and domain name')
-        try:
-            validator.destination.is_valid_destination_url(url, dest.proxy)
-        except validator.destination.ValidationException as e:
-            raise click.ClickException('Destination url validation failed: ' + str(e))
-    except requests.exceptions.ProxyError as e:
-        raise click.ClickException(str(e))
-    dest.url = url
-
-
-@infinite_retry
-def _prompt_token(dest: destination.HttpDestination):
-    token = click.prompt('Anodot api data collection token', type=click.STRING, default=dest.token)
-    dest.token = token
-    if not validator.destination.is_valid_resource_url(dest.resource_url):
-        raise click.ClickException('Data collection token is invalid')
-
-
-@infinite_retry
-def _prompt_access_key(dest: destination.HttpDestination):
-    access_key = click.prompt('Anodot access key', type=click.STRING, default=dest.access_key or '')
-    if access_key and not validator.destination.is_valid_access_key(access_key, dest.url):
-        raise click.ClickException('Access key is invalid')
-    dest.access_key = access_key
+from agent.modules import proxy, validator
 
 
 @click.command()
@@ -86,7 +31,7 @@ def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, a
     else:
         destination_ = agent.destination.repository.get()\
             if agent.destination.repository.exists()\
-            else agent.destination.HttpDestination()
+            else HttpDestination()
         _prompt_proxy(destination_)
         _prompt_url(destination_)
         _prompt_token(destination_)
@@ -104,3 +49,58 @@ def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, a
     except pipeline.pipeline.PipelineException as e:
         raise click.ClickException(str(e))
     click.secho('Destination configured', fg='green')
+
+
+@infinite_retry
+def _prompt_proxy(dest: HttpDestination):
+    if click.confirm('Use proxy for connecting to Anodot?'):
+        uri = _prompt_proxy_uri(dest.get_proxy_url())
+        username = _prompt_proxy_username(dest.get_proxy_username())
+        password = _prompt_proxy_password()
+        proxy_ = proxy.Proxy(uri, username, password)
+        if not proxy.is_valid(proxy_):
+            raise click.ClickException('Proxy is invalid')
+        dest.proxy = proxy_
+
+
+def _prompt_proxy_uri(default: str) -> str:
+    return click.prompt('Proxy uri', type=click.STRING, default=default)
+
+
+def _prompt_proxy_username(default: str) -> str:
+    return click.prompt('Proxy username', type=click.STRING, default=default)
+
+
+def _prompt_proxy_password() -> str:
+    return click.prompt('Proxy password', type=click.STRING, default='')
+
+
+@infinite_retry
+def _prompt_url(dest: HttpDestination):
+    url = click.prompt('Destination url', type=click.STRING, default=dest.url)
+    try:
+        if not validator.is_valid_url(url):
+            raise click.ClickException('Wrong url format, please specify the protocol and domain name')
+        try:
+            agent.destination.validator.is_valid_destination_url(url, dest.proxy)
+        except agent.destination.validator.ValidationException as e:
+            raise click.ClickException('Destination url validation failed: ' + str(e))
+    except requests.exceptions.ProxyError as e:
+        raise click.ClickException(str(e))
+    dest.url = url
+
+
+@infinite_retry
+def _prompt_token(dest: HttpDestination):
+    token = click.prompt('Anodot api data collection token', type=click.STRING, default=dest.token)
+    dest.token = token
+    if not agent.destination.validator.is_valid_resource_url(dest.resource_url):
+        raise click.ClickException('Data collection token is invalid')
+
+
+@infinite_retry
+def _prompt_access_key(dest: HttpDestination):
+    access_key = click.prompt('Anodot access key', type=click.STRING, default=dest.access_key or '')
+    if access_key and not agent.destination.validator.is_valid_access_key(access_key, dest.url):
+        raise click.ClickException('Access key is invalid')
+    dest.access_key = access_key
