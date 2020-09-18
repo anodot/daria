@@ -250,11 +250,6 @@ def start(pipeline_obj: Pipeline):
     api_client.start_pipeline(pipeline_obj.name)
     wait_for_status(pipeline_obj.name, pipeline.Pipeline.STATUS_RUNNING)
     click.secho(f'{pipeline_obj.name} pipeline is running')
-    if ENV_PROD:
-        if wait_for_sending_data(pipeline_obj.name):
-            click.secho(f'{pipeline_obj.name} pipeline is sending data')
-        else:
-            click.secho(f'{pipeline_obj.name} pipeline did not send any data')
 
 
 def update(pipeline_obj: Pipeline):
@@ -295,36 +290,17 @@ def check_status(pipeline_id: str, status: str) -> bool:
     return get_pipeline_status(pipeline_id) == status
 
 
-def wait_for_status(pipeline_id: str, status: str, tries: int = 5, initial_delay: int = 3):
-    for i in range(1, tries + 1):
-        response = api_client.get_pipeline_status(pipeline_id)
-        if response['status'] == status:
+def wait_for_status(pipeline_id: str, status: str, tries: int = 300):
+    for i in range(0, tries):
+        pipeline_ = pipeline.repository.get_by_name(pipeline_id)
+        if pipeline_.status == status:
+            print(f"Pipeline {pipeline_id} is {pipeline_.status}")
             return True
-        delay = initial_delay ** i
         if i == tries:
-            raise PipelineFreezeException(f"Pipeline {pipeline_id} is still {response['status']} after {tries} tries")
-        print(f"Pipeline {pipeline_id} is {response['status']}. Check again after {delay} seconds...")
-        time.sleep(delay)
-
-
-def wait_for_sending_data(pipeline_id: str, tries: int = 5, initial_delay: int = 2):
-    for i in range(1, tries + 1):
-        response = api_client.get_pipeline_metrics(pipeline_id)
-        stats = {
-            'in': response['counters']['pipeline.batchInputRecords.counter']['count'],
-            'out': response['counters']['pipeline.batchOutputRecords.counter']['count'],
-            'errors': response['counters']['pipeline.batchErrorRecords.counter']['count'],
-        }
-        if stats['out'] > 0 and stats['errors'] == 0:
-            return True
-        if stats['errors'] > 0:
-            raise pipeline.PipelineException(f"Pipeline {pipeline_id} has {stats['errors']} errors")
-        delay = initial_delay ** i
-        if i == tries:
-            logger.warning(f'Pipeline {pipeline_id} did not send any data. Received number of records - {stats["in"]}')
-            return False
-        print(f'Waiting for pipeline {pipeline_id} to send data. Check again after {delay} seconds...')
-        time.sleep(delay)
+            raise PipelineFreezeException(f"Pipeline {pipeline_id} is still {pipeline_.status}")
+        if i % 10 == 0:
+            print(f"Pipeline {pipeline_id} is {pipeline_.status}. Checking again...")
+        time.sleep(1)
 
 
 def force_stop_pipeline(pipeline_id: str):
