@@ -16,11 +16,6 @@ app.register_blueprint(scripts.scripts)
 app.config['WTF_CSRF_ENABLED'] = False
 
 
-@app.before_request
-def before_request_func():
-    db.create_session()
-
-
 @app.after_request
 def after_request_func(response):
     db.close_session()

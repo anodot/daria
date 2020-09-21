@@ -33,7 +33,6 @@ def agent(version):
 agent.add_command(source_group)
 agent.add_command(pipeline_group)
 agent.add_command(destination)
-db.create_session()
 
 if __name__ == '__main__':
     agent()

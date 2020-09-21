@@ -11,15 +11,14 @@ _session = None
 
 
 def session():
-    return _session
-
-
-def create_session():
     global _session
-    _session = Session()
+    if not _session:
+        _session = Session()
+    return _session
 
 
 def close_session():
     global _session
-    _session.close()
-    _session = None
+    if _session:
+        _session.close()
+        _session = None
