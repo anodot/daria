@@ -206,7 +206,7 @@ def create_from_json(configs: dict) -> List[Pipeline]:
             pipelines.append(pipeline_)
         except Exception as e:
             # todo traceback?
-            exceptions[config['pipeline_id']] = str(e)
+            exceptions[config['pipeline_id']] = f'{type(e).__name__}: {str(e)}'
         if exceptions:
             raise pipeline.PipelineException(json.dumps(exceptions))
     return pipelines
@@ -233,7 +233,7 @@ def edit_using_json(configs: list) -> List[Pipeline]:
                 edit_pipeline_using_json(config)
             )
         except Exception as e:
-            exceptions[config['pipeline_id']] = str(e)
+            exceptions[config['pipeline_id']] = f'{type(e).__name__}: {str(e)}'
         if exceptions:
             raise pipeline.PipelineException(json.dumps(exceptions))
     return pipelines

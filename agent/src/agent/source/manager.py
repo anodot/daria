@@ -35,7 +35,7 @@ def create_from_json(configs: dict) -> List[source.Source]:
             print(f"Source {config['name']} created")
         except Exception as e:
             # todo traceback?
-            exceptions[config['name']] = str(e)
+            exceptions[config['name']] = f'{type(e).__name__}: {str(e)}'
     if exceptions:
         raise source.SourceException(json.dumps(exceptions))
     return sources
@@ -61,7 +61,7 @@ def edit_using_json(configs: list) -> List[source.Source]:
             print(f"Source {config['name']} updated")
             sources.append(source_)
         except Exception as e:
-            exceptions[config['name']] = str(e)
+            exceptions[config['name']] = f'{type(e).__name__}: {str(e)}'
     if exceptions:
         raise source.SourceException(json.dumps(exceptions))
     return sources
