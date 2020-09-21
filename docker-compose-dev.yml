@@ -37,6 +37,7 @@ services:
       AGENT_DB_PASSWORD: 'agent'
       GIT_SHA1: 'local'
       AGENT_URL: 'http://anodot-agent'
+      PGPASSWORD: 'agent'
     depends_on:
       - dc
       - db

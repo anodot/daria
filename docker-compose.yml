@@ -36,6 +36,7 @@ services:
       AGENT_DB_HOST: 'db'
       AGENT_DB_USER: 'agent'
       AGENT_DB_PASSWORD: 'agent'
+      PGPASSWORD: 'agent'
       AGENT_URL: 'http://anodot-agent'
 #      VALIDATION_ENABLED: 'false'
     stdin_open: true

@@ -6,11 +6,18 @@ COPY . .
 ADD .bashrc /root/.bashrc
 
 VOLUME /usr/src/app/data
-RUN apt update && apt install -y vim nano netcat curl nano postgresql-client
+
+# adding new repo to install correct postgres-client version
+RUN wget --no-check-certificate --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+# using stretch instead of `lsb_release -cs`-pgdg main as it's not working with the current version
+RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main" | tee  /etc/apt/sources.list.d/pgdg.list
+
+RUN apt update && apt install -y vim nano netcat curl nano postgresql-client-12
 
 ENV STREAMSETS_USERNAME="admin" STREAMSETS_PASSWORD="admin" STREAMSETS_URL="http://localhost:18630" \
     LOG_FILE_PATH="/var/log/agent.log" ANODOT_API_URL="http://api.anodot.com" SDC_DATA_PATH="/sdc-data" ENV_PROD='true' \
     GIT_SHA1=local-build VALIDATION_ENABLED="true" FLASK_APP="/usr/src/app/src/agent/api/main.py" FLASK_DEBUG=1
 
 RUN pip install --upgrade pip && pip install -r requirements.txt && python setup.py develop
+
 CMD flask run --host=0.0.0.0 --port=80
