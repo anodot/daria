@@ -1,8 +1,8 @@
 import logging
 import time
 import requests
-from jsonschema import ValidationError
 
+from jsonschema import ValidationError
 from agent.api.routes import needs_pipeline
 from flask import jsonify, Blueprint, request
 from agent.api import routes
@@ -20,12 +20,6 @@ def list_pipelines():
     for p in pipeline.repository.get_all():
         configs.append(p.to_dict())
     return jsonify(configs)
-
-
-@pipelines.route('/pipelines/exists/<pipeline_name>', methods=['GET'])
-@routes.needs_destination
-def exists(pipeline_name):
-    return "yes" if pipeline.repository.exists(pipeline_name) else "no"
 
 
 @pipelines.route('/pipelines', methods=['POST'])
