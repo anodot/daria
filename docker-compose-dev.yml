@@ -41,6 +41,7 @@ services:
       - dc
       - db
     volumes:
+      - ./agent/backup-data:/usr/src/app/backup-data
       - ./sdc-data:/sdc-data
       - dummy-destination-data:/output
       - ./agent:/usr/src/app

@@ -127,14 +127,16 @@ run-dev:
 	$(DOCKER_COMPOSE_DEV) up -d
 	docker exec -i anodot-agent python setup.py develop
 
-bootstrap: clean-docker-volumes run-base-services alembic-migrate
+bootstrap: clean-docker-volumes run-base-services
 
 clean-docker-volumes:
 	rm -rf sdc-data
 	rm -rf data
 	$(DOCKER_COMPOSE_DEV) down -v
 
-run-base-services:
+run-base-services: _run-base-services alembic-migrate
+
+_run-base-services:
 	$(DOCKER_COMPOSE_DEV) up -d agent dc squid dummy_destination
 	docker exec -i anodot-agent python setup.py develop
 

@@ -44,6 +44,7 @@ services:
       - dc
       - db
     volumes:
+      - ./agent/backup-data:/usr/src/app/backup-data
       - sdc-data:/sdc-data
       - agent-data:/usr/src/app/data
 #      - ./scripts:/usr/src/app/scripts
