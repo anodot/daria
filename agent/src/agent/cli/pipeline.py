@@ -119,6 +119,7 @@ def force_delete(pipeline_name):
     errors = pipeline.manager.force_delete(pipeline_name)
     for e in errors:
         click.secho(e, err=True, fg='red')
+    click.echo('Finished')
 
 
 @click.command()
