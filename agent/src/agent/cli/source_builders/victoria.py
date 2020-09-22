@@ -2,7 +2,8 @@ import click
 
 from .abstract_builder import Builder
 from agent.modules.tools import infinite_retry
-from agent import source, validator
+from agent import source
+from agent.modules import validator
 
 
 class VictoriaSourceBuilder(Builder):

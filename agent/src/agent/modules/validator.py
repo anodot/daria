@@ -1,7 +1,4 @@
 from urllib.parse import urlparse
-
-from . import destination
-from . import proxy
 from agent.modules.tools import if_validation_enabled
 
 

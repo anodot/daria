@@ -1,6 +1,5 @@
-from agent import validator, pipeline
+from agent import destination, pipeline
 from agent.modules import proxy
-from agent import destination
 from result import Result, Ok, Err
 
 
@@ -49,21 +48,21 @@ def _build(
 ) -> Result[destination.HttpDestination, str]:
     proxy_ = proxy.Proxy(proxy_host, proxy_username, proxy_password) if proxy_host else None
     if proxy_:
-        if not validator.proxy.is_valid(proxy_):
+        if not proxy.is_valid(proxy_):
             return Err('Proxy data is invalid')
         destination_.proxy = proxy_
     if url:
         try:
-            validator.destination.is_valid_destination_url(url, destination_.proxy)
-        except validator.destination.ValidationException as e:
+            destination.validator.is_valid_destination_url(url, destination_.proxy)
+        except destination.validator.ValidationException as e:
             return Err('Destination url validation failed: ' + str(e))
         destination_.url = url
     if token:
         destination_.token = token
-        if not validator.destination.is_valid_resource_url(destination_.resource_url):
+        if not destination.validator.is_valid_resource_url(destination_.resource_url):
             return Err('Data collection token is invalid')
     if access_key:
-        if not validator.destination.is_valid_access_key(access_key, destination_.proxy, destination_.url):
+        if not destination.validator.is_valid_access_key(access_key, destination_.proxy, destination_.url):
             return Err('Access key is invalid')
         destination_.access_key = access_key
     if host_id:

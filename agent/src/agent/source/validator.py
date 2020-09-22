@@ -9,7 +9,7 @@ from urllib.parse import urlparse, urlunparse
 from agent import source, pipeline
 from agent.modules.streamsets_api_client import api_client
 from agent.modules.tools import if_validation_enabled
-from agent import validator
+from agent.modules import validator
 
 
 class ValidationException(Exception):
