@@ -19,11 +19,5 @@ ENV LOG_FILE_PATH="/var/log/agent.log" ANODOT_API_URL="http://api.anodot.com" EN
 # flask app config
 ENV UWSGI_INI="/usr/src/app/uwsgi.ini"
 
-RUN pip install --upgrade pip && pip install -r requirements.txt && python setup.py install && echo ". /usr/src/app/agent-complete.sh" >> /root/.bashrc
-
-# adding new repo to install correct postgres-client version
-RUN wget --no-check-certificate --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
-# using stretch instead of `lsb_release -cs`-pgdg main as it's not working with the current version
-RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main" | tee  /etc/apt/sources.list.d/pgdg.list
-
-RUN apt update && apt install -y vim netcat curl nano postgresql-client-12
+RUN ./install_requirements.sh
+RUN python setup.py install && echo ". /usr/src/app/agent-complete.sh" >> /root/.bashrc
