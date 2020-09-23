@@ -288,7 +288,7 @@
       "value" : null
     }, {
       "name" : "badRecordsHandling",
-      "value" : "streamsets-datacollector-basic-lib::com_streamsets_pipeline_stage_destination_recordstolocalfilesystem_ToErrorLocalFSDTarget::1"
+      "value" : "streamsets-datacollector-basic-lib::com_streamsets_pipeline_stage_destination_devnull_ToErrorNullDTarget::1"
     }, {
       "name" : "statsAggregatorStage",
       "value" : "streamsets-datacollector-basic-lib::com_streamsets_pipeline_stage_destination_devnull_StatsDpmDirectlyDTarget::1"
@@ -943,29 +943,18 @@
       "services" : [ ]
     } ],
     "errorStage" : {
-      "instanceName" : "WritetoFile_ErrorStage",
+      "instanceName" : "Discard_ErrorStage",
       "library" : "streamsets-datacollector-basic-lib",
-      "stageName" : "com_streamsets_pipeline_stage_destination_recordstolocalfilesystem_ToErrorLocalFSDTarget",
+      "stageName" : "com_streamsets_pipeline_stage_destination_devnull_ToErrorNullDTarget",
       "stageVersion" : "1",
-      "configuration" : [ {
-        "name" : "directory",
-        "value" : "/data/errors/${pipeline:id()}"
-      }, {
-        "name" : "uniquePrefix",
-        "value" : "sdc-${sdc:id()}.error.log"
-      }, {
-        "name" : "rotationIntervalSecs",
-        "value" : "${1 * HOURS}"
-      }, {
-        "name" : "maxFileSizeMbs",
-        "value" : 10
-      } ],
+      "configuration" : [ ],
       "uiInfo" : {
-        "description" : "",
-        "label" : "Error Records - Write to File",
-        "xPos" : 563,
         "yPos" : 50,
-        "stageType" : "TARGET"
+        "stageType" : "TARGET",
+        "icon" : "",
+        "description" : "",
+        "label" : "Error Records - Discard",
+        "xPos" : 1380
       },
       "inputLanes" : [ ],
       "outputLanes" : [ ],

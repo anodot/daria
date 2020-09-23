@@ -11,12 +11,11 @@ from agent import source, pipeline, destination
 from agent.pipeline.config.validators import get_config_validator
 from agent.pipeline import prompt, load_client_data, Pipeline
 from agent.modules import anodot_api_client
-from agent.modules.constants import ERRORS_DIR, ENV_PROD, MONITORING_SOURCE_NAME
+from agent.modules.constants import ENV_PROD, MONITORING_SOURCE_NAME
 from agent.modules import streamsets_api_client
 from agent.modules.tools import print_json, sdc_record_map_to_dict, if_validation_enabled
 from agent.modules.logger import get_logger
 from typing import List
-
 
 logger = get_logger(__name__)
 
@@ -28,7 +27,6 @@ class PipelineManager:
         self.pipeline = pipeline_
         self.prompter = get_prompter(pipeline_.source.type)(self.pipeline)
         self.file_loader = get_file_loader(pipeline_.source.type)()
-        self.sdc_creator = get_sdc_creator(pipeline_)
 
     def prompt(self, default_config, advanced=False):
         self.pipeline.set_config(self.prompter.prompt(default_config, advanced))
@@ -42,8 +40,8 @@ class PipelineManager:
     def create(self) -> Pipeline:
         try:
             streamsets_pipeline = streamsets_api_client.api_client.create_pipeline(self.pipeline.name)
-            new_config = self.sdc_creator.override_base_config(new_uuid=streamsets_pipeline['uuid'],
-                                                               new_title=self.pipeline.name)
+            new_config = get_sdc_creator(self.pipeline)\
+                .override_base_config(new_uuid=streamsets_pipeline['uuid'], new_title=self.pipeline.name)
             streamsets_api_client.api_client.update_pipeline(self.pipeline.name, new_config)
         except (config_handlers.base.ConfigHandlerException, streamsets_api_client.StreamSetsApiClientException) as e:
             delete(self.pipeline)
@@ -371,19 +369,12 @@ def _delete_from_streamsets(pipeline_id: str):
     streamsets_api_client.api_client.delete_pipeline(pipeline_id)
 
 
-def _cleanup_errors_dir(pipeline_id: str):
-    errors_dir = os.path.join(ERRORS_DIR, pipeline_id)
-    if os.path.isdir(errors_dir):
-        shutil.rmtree(errors_dir)
-
-
 def delete(pipeline_: Pipeline):
     _delete_schema(pipeline_)
     try:
         _delete_from_streamsets(pipeline_.name)
     except streamsets_api_client.StreamSetsApiClientException as e:
         raise pipeline.PipelineException(str(e))
-    _cleanup_errors_dir(pipeline_.name)
     pipeline.repository.delete(pipeline_)
 
 
@@ -400,10 +391,6 @@ def force_delete(pipeline_name: str) -> list:
     exceptions = []
     try:
         _delete_from_streamsets(pipeline_name)
-    except Exception as e:
-        exceptions.append(str(e))
-    try:
-        _cleanup_errors_dir(pipeline_name)
     except Exception as e:
         exceptions.append(str(e))
     if pipeline.repository.exists(pipeline_name):

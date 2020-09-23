@@ -27,9 +27,6 @@ services:
 #    ports:
 #    - 8080:80
 
-    volumes:
-      - sdc-data:/sdc-data
-
   db:
     image: postgres
     restart: always
