@@ -257,3 +257,15 @@ class Pipeline(Entity):
             **self.meta_tags(),
             **self.tags
         }
+
+
+def transform_for_bc(pipeline: Pipeline) -> dict:
+    data = {
+        'config': pipeline.to_dict(),
+        'created': pipeline.created_at,
+        'updated': pipeline.last_edited,
+    }
+    data['source'] = data['config'].pop('source')
+    data['source']['type'] = pipeline.source.type
+    data.pop('override_source')
+    return data

@@ -1,7 +1,6 @@
 import click
 
 from agent import pipeline, source
-from agent.pipeline import PipelineException
 from agent.modules.streamsets_api_client import api_client, StreamSetsApiClientException
 from agent import destination
 from agent.modules.tools import infinite_retry
@@ -232,7 +231,7 @@ def pipeline_group():
 def _create_from_file(file):
     try:
         pipeline.manager.create_from_file(file)
-    except (StreamSetsApiClientException, ValidationError, PipelineException) as e:
+    except (StreamSetsApiClientException, ValidationError, pipeline.PipelineException) as e:
         raise click.ClickException(str(e))
 
 
@@ -259,7 +258,7 @@ def _should_prompt_preview(pipeline_: pipeline.Pipeline) -> bool:
 def _edit_using_file(file):
     try:
         pipeline.manager.edit_using_file(file)
-    except PipelineException as e:
+    except pipeline.PipelineException as e:
         raise click.UsageError(str(e))
 
 

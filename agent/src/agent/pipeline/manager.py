@@ -7,19 +7,15 @@ import time
 import agent.pipeline.config.handlers as config_handlers
 import jsonschema
 
-from agent import pipeline, destination
+from agent import source, pipeline, destination
 from agent.pipeline.config.validators import get_config_validator
-from agent.pipeline import prompt, load_client_data
-from agent import source
-from agent.modules.anodot_api_client import AnodotApiClient
-from agent.modules.constants import ERRORS_DIR, ENV_PROD, MONITORING_SOURCE_NAME
-from agent.modules.streamsets_api_client import api_client, StreamSetsApiClientException
+from agent.pipeline import prompt, load_client_data, Pipeline
+from agent.modules import anodot_api_client
+from agent.modules.constants import ENV_PROD, MONITORING_SOURCE_NAME
+from agent.modules import streamsets_api_client
 from agent.modules.tools import print_json, sdc_record_map_to_dict, if_validation_enabled
-from ..modules import proxy
-from .pipeline import Pipeline, PipelineException
 from agent.modules.logger import get_logger
 from typing import List
-
 
 logger = get_logger(__name__)
 
@@ -27,11 +23,10 @@ LOG_LEVELS = [logging.getLevelName(logging.INFO), logging.getLevelName(logging.E
 
 
 class PipelineManager:
-    def __init__(self, pipeline_obj: Pipeline):
-        self.pipeline = pipeline_obj
-        self.prompter = get_prompter(pipeline_obj.source.type)(self.pipeline)
-        self.file_loader = get_file_loader(pipeline_obj.source.type)()
-        self.sdc_creator = get_sdc_creator(pipeline_obj)
+    def __init__(self, pipeline_: Pipeline):
+        self.pipeline = pipeline_
+        self.prompter = get_prompter(pipeline_.source.type)(self.pipeline)
+        self.file_loader = get_file_loader(pipeline_.source.type)()
 
     def prompt(self, default_config, advanced=False):
         self.pipeline.set_config(self.prompter.prompt(default_config, advanced))
@@ -44,11 +39,11 @@ class PipelineManager:
 
     def create(self) -> Pipeline:
         try:
-            pipeline_obj = api_client.create_pipeline(self.pipeline.name)
-            new_config = self.sdc_creator.override_base_config(new_uuid=pipeline_obj['uuid'],
-                                                               new_title=self.pipeline.name)
-            api_client.update_pipeline(self.pipeline.name, new_config)
-        except (config_handlers.base.ConfigHandlerException, StreamSetsApiClientException) as e:
+            streamsets_pipeline = streamsets_api_client.api_client.create_pipeline(self.pipeline.name)
+            new_config = get_sdc_creator(self.pipeline)\
+                .override_base_config(new_uuid=streamsets_pipeline['uuid'], new_title=self.pipeline.name)
+            streamsets_api_client.api_client.update_pipeline(self.pipeline.name, new_config)
+        except (config_handlers.base.ConfigHandlerException, streamsets_api_client.StreamSetsApiClientException) as e:
             delete(self.pipeline)
             raise pipeline.PipelineException(str(e))
         pipeline.repository.save(self.pipeline)
@@ -57,9 +52,9 @@ class PipelineManager:
     @if_validation_enabled
     def show_preview(self):
         try:
-            preview = api_client.create_preview(self.pipeline.name)
-            preview_data, errors = api_client.wait_for_preview(self.pipeline.name, preview['previewerId'])
-        except StreamSetsApiClientException as e:
+            preview = streamsets_api_client.api_client.create_preview(self.pipeline.name)
+            preview_data, errors = streamsets_api_client.api_client.wait_for_preview(self.pipeline.name, preview['previewerId'])
+        except streamsets_api_client.StreamSetsApiClientException as e:
             print(str(e))
             return
 
@@ -77,7 +72,7 @@ class PipelineManager:
         print(*errors, sep='\n')
 
 
-def get_sdc_creator(pipeline_obj: Pipeline) -> config_handlers.base.BaseConfigHandler:
+def get_sdc_creator(pipeline_: Pipeline) -> config_handlers.base.BaseConfigHandler:
     handlers = {
         source.TYPE_MONITORING: config_handlers.monitoring.MonitoringConfigHandler,
         source.TYPE_INFLUX: config_handlers.influx.InfluxConfigHandler,
@@ -91,7 +86,7 @@ def get_sdc_creator(pipeline_obj: Pipeline) -> config_handlers.base.BaseConfigHa
         source.TYPE_SAGE: config_handlers.sage.SageConfigHandler,
         source.TYPE_VICTORIA: config_handlers.victoria.VictoriaConfigHandler,
     }
-    return handlers[pipeline_obj.source.type](pipeline_obj)
+    return handlers[pipeline_.source.type](pipeline_)
 
 
 def get_file_loader(source_type: str):
@@ -184,7 +179,7 @@ def create_object(pipeline_id: str, source_name: str) -> Pipeline:
 
 def check_pipeline_id(pipeline_id: str):
     if pipeline.repository.exists(pipeline_id):
-        raise PipelineException(f"Pipeline {pipeline_id} already exists")
+        raise pipeline.PipelineException(f"Pipeline {pipeline_id} already exists")
 
 
 def create_from_file(file):
@@ -246,35 +241,32 @@ def edit_pipeline_using_json(config: dict) -> Pipeline:
     return pipeline_manager.pipeline
 
 
-def start(pipeline_obj: Pipeline):
-    api_client.start_pipeline(pipeline_obj.name)
-    wait_for_status(pipeline_obj.name, pipeline.Pipeline.STATUS_RUNNING)
-    click.secho(f'{pipeline_obj.name} pipeline is running')
+def start(pipeline_: Pipeline):
+    streamsets_api_client.api_client.start_pipeline(pipeline_.name)
+    wait_for_status(pipeline_.name, pipeline.Pipeline.STATUS_RUNNING)
+    click.secho(f'{pipeline_.name} pipeline is running')
     if ENV_PROD:
-        if wait_for_sending_data(pipeline_obj.name):
-            click.secho(f'{pipeline_obj.name} pipeline is sending data')
+        if wait_for_sending_data(pipeline_.name):
+            click.secho(f'{pipeline_.name} pipeline is sending data')
         else:
-            click.secho(f'{pipeline_obj.name} pipeline did not send any data')
+            click.secho(f'{pipeline_.name} pipeline did not send any data')
 
 
-def update(pipeline_obj: Pipeline):
+def update(pipeline_: Pipeline):
     start_pipeline = False
     try:
-        if get_pipeline_status(pipeline_obj.name) in [pipeline.Pipeline.STATUS_RUNNING, pipeline.Pipeline.STATUS_RETRY]:
-            stop(pipeline_obj)
+        if get_pipeline_status(pipeline_.name) in [pipeline.Pipeline.STATUS_RUNNING, pipeline.Pipeline.STATUS_RETRY]:
+            stop(pipeline_)
             start_pipeline = True
-
-        api_pipeline = api_client.get_pipeline(pipeline_obj.name)
-        new_config = get_sdc_creator(pipeline_obj)\
-            .override_base_config(new_uuid=api_pipeline['uuid'], new_title=pipeline_obj.name)
-        api_client.update_pipeline(pipeline_obj.name, new_config)
-
-    except (config_handlers.base.ConfigHandlerException, StreamSetsApiClientException) as e:
+        api_pipeline = streamsets_api_client.api_client.get_pipeline(pipeline_.name)
+        new_config = get_sdc_creator(pipeline_)\
+            .override_base_config(new_uuid=api_pipeline['uuid'], new_title=pipeline_.name)
+        streamsets_api_client.api_client.update_pipeline(pipeline_.name, new_config)
+    except (config_handlers.base.ConfigHandlerException, streamsets_api_client.StreamSetsApiClientException) as e:
         raise pipeline.PipelineException(str(e))
-
-    pipeline.repository.save(pipeline_obj)
+    pipeline.repository.save(pipeline_)
     if start_pipeline:
-        start(pipeline_obj)
+        start(pipeline_)
 
 
 def update_source_pipelines(source_: source.Source):
@@ -288,7 +280,7 @@ def update_source_pipelines(source_: source.Source):
 
 
 def get_pipeline_status(pipeline_id: str) -> str:
-    return api_client.get_pipeline_status(pipeline_id)['status']
+    return streamsets_api_client.api_client.get_pipeline_status(pipeline_id)['status']
 
 
 def check_status(pipeline_id: str, status: str) -> bool:
@@ -297,7 +289,7 @@ def check_status(pipeline_id: str, status: str) -> bool:
 
 def wait_for_status(pipeline_id: str, status: str, tries: int = 5, initial_delay: int = 3):
     for i in range(1, tries + 1):
-        response = api_client.get_pipeline_status(pipeline_id)
+        response = streamsets_api_client.api_client.get_pipeline_status(pipeline_id)
         if response['status'] == status:
             return True
         delay = initial_delay ** i
@@ -309,7 +301,7 @@ def wait_for_status(pipeline_id: str, status: str, tries: int = 5, initial_delay
 
 def wait_for_sending_data(pipeline_id: str, tries: int = 5, initial_delay: int = 2):
     for i in range(1, tries + 1):
-        response = api_client.get_pipeline_metrics(pipeline_id)
+        response = streamsets_api_client.api_client.get_pipeline_metrics(pipeline_id)
         stats = {
             'in': response['counters']['pipeline.batchInputRecords.counter']['count'],
             'out': response['counters']['pipeline.batchOutputRecords.counter']['count'],
@@ -329,19 +321,19 @@ def wait_for_sending_data(pipeline_id: str, tries: int = 5, initial_delay: int =
 
 def force_stop_pipeline(pipeline_id: str):
     try:
-        api_client.stop_pipeline(pipeline_id)
-    except StreamSetsApiClientException:
+        streamsets_api_client.api_client.stop_pipeline(pipeline_id)
+    except streamsets_api_client.StreamSetsApiClientException:
         pass
 
     if not check_status(pipeline_id, pipeline.Pipeline.STATUS_STOPPING):
         raise pipeline.PipelineException("Can't force stop a pipeline not in the STOPPING state")
 
-    api_client.force_stop_pipeline(pipeline_id)
+    streamsets_api_client.api_client.force_stop_pipeline(pipeline_id)
     wait_for_status(pipeline_id, pipeline.Pipeline.STATUS_STOPPED)
 
 
-def stop(pipeline_obj: Pipeline):
-    return stop_by_id(pipeline_obj.name)
+def stop(pipeline_: Pipeline):
+    return stop_by_id(pipeline_.name)
 
 
 def can_stop(pipeline_id: str) -> bool:
@@ -350,7 +342,7 @@ def can_stop(pipeline_id: str) -> bool:
 
 def stop_by_id(pipeline_id: str):
     print("Stopping the pipeline")
-    api_client.stop_pipeline(pipeline_id)
+    streamsets_api_client.api_client.stop_pipeline(pipeline_id)
     try:
         wait_for_status(pipeline_id, pipeline.Pipeline.STATUS_STOPPED)
     except PipelineFreezeException:
@@ -358,41 +350,31 @@ def stop_by_id(pipeline_id: str):
         force_stop_pipeline(pipeline_id)
 
 
-def reset(pipeline_obj: Pipeline):
+def reset(pipeline_: Pipeline):
     try:
-        api_client.reset_pipeline(pipeline_obj.name)
-        get_sdc_creator(pipeline_obj).set_initial_offset()
-    except (config_handlers.base.ConfigHandlerException, StreamSetsApiClientException) as e:
+        streamsets_api_client.api_client.reset_pipeline(pipeline_.name)
+        get_sdc_creator(pipeline_).set_initial_offset()
+    except (config_handlers.base.ConfigHandlerException, streamsets_api_client.StreamSetsApiClientException) as e:
         raise pipeline.PipelineException(str(e))
 
 
-def _delete_schema(pipeline_obj: Pipeline):
-    if 'schema' in pipeline_obj.config:
-        anodot_api_client = AnodotApiClient(pipeline_obj.destination.access_key,
-                                            proxy.get_config(pipeline_obj.destination.proxy),
-                                            base_url=pipeline_obj.destination.url)
-        anodot_api_client.delete_schema(pipeline_obj.config['schema']['id'])
+def _delete_schema(pipeline_: Pipeline):
+    if 'schema' in pipeline_.config:
+        anodot_api_client.get_client(pipeline_.destination).delete_schema(pipeline_.config['schema']['id'])
 
 
 def _delete_from_streamsets(pipeline_id: str):
     if check_status(pipeline_id, pipeline.Pipeline.STATUS_RUNNING):
         stop_by_id(pipeline_id)
-    api_client.delete_pipeline(pipeline_id)
-
-
-def _cleanup_errors_dir(pipeline_id: str):
-    errors_dir = os.path.join(ERRORS_DIR, pipeline_id)
-    if os.path.isdir(errors_dir):
-        shutil.rmtree(errors_dir)
+    streamsets_api_client.api_client.delete_pipeline(pipeline_id)
 
 
 def delete(pipeline_: Pipeline):
     _delete_schema(pipeline_)
     try:
         _delete_from_streamsets(pipeline_.name)
-    except StreamSetsApiClientException as e:
+    except streamsets_api_client.StreamSetsApiClientException as e:
         raise pipeline.PipelineException(str(e))
-    _cleanup_errors_dir(pipeline_.name)
     pipeline.repository.delete(pipeline_)
 
 
@@ -411,10 +393,6 @@ def force_delete(pipeline_name: str) -> list:
         _delete_from_streamsets(pipeline_name)
     except Exception as e:
         exceptions.append(str(e))
-    try:
-        _cleanup_errors_dir(pipeline_name)
-    except Exception as e:
-        exceptions.append(str(e))
     if pipeline.repository.exists(pipeline_name):
         pipeline_ = pipeline.repository.get_by_name(pipeline_name)
         try:
@@ -425,16 +403,16 @@ def force_delete(pipeline_name: str) -> list:
     return exceptions
 
 
-def enable_destination_logs(pipeline_obj: Pipeline):
-    pipeline_obj.destination.enable_logs()
-    destination.repository.save(pipeline_obj.destination)
-    update(pipeline_obj)
+def enable_destination_logs(pipeline_: Pipeline):
+    pipeline_.destination.enable_logs()
+    destination.repository.save(pipeline_.destination)
+    update(pipeline_)
 
 
-def disable_destination_logs(pipeline_obj: Pipeline):
-    pipeline_obj.destination.disable_logs()
-    destination.repository.save(pipeline_obj.destination)
-    update(pipeline_obj)
+def disable_destination_logs(pipeline_: Pipeline):
+    pipeline_.destination.disable_logs()
+    destination.repository.save(pipeline_.destination)
+    update(pipeline_)
 
 
 def _update_stage_config(source_: source.Source, stage):
@@ -449,9 +427,9 @@ def create_test_pipeline(source_: source.Source) -> str:
     _update_stage_config(source_, pipeline_config['stages'][0])
     test_pipeline_name = _get_test_pipeline_name(source_)
 
-    new_pipeline = api_client.create_pipeline(test_pipeline_name)
+    new_pipeline = streamsets_api_client.api_client.create_pipeline(test_pipeline_name)
     pipeline_config['uuid'] = new_pipeline['uuid']
-    api_client.update_pipeline(test_pipeline_name, pipeline_config)
+    streamsets_api_client.api_client.update_pipeline(test_pipeline_name, pipeline_config)
     return test_pipeline_name
 
 
