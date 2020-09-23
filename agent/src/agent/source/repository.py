@@ -4,44 +4,44 @@ from agent.modules.db import session
 
 
 def exists(source_name: str) -> bool:
-    res = session.query(
-        session.query(source.Source).filter(source.Source.name == source_name).exists()
+    res = session().query(
+        session().query(source.Source).filter(source.Source.name == source_name).exists()
     ).scalar()
     return res
 
 
 def save(source_: source.Source):
-    session.add(source_)
-    session.commit()
+    session().add(source_)
+    session().commit()
 
 
 def delete_by_name(source_name: str):
     if not exists(source_name):
         raise SourceNotExists(f"Source config {source_name} doesn't exist")
-    source_entity = session.query(source.Source).filter(source.Source.name == source_name).first()
+    source_entity = session().query(source.Source).filter(source.Source.name == source_name).first()
     if source_entity.pipelines:
         raise Exception(
                 f"Can't delete. Source is used by {', '.join([p.name for p in source_entity.pipelines])} pipelines"
             )
-    session.delete(source_entity)
-    session.commit()
+    session().delete(source_entity)
+    session().commit()
 
 
 def get_all_names() -> List[str]:
     res = list(map(
         lambda row: row[0],
-        session.query(source.Source.name).all()
+        session().query(source.Source.name).all()
     ))
     return res
 
 
 def find_by_name_beginning(name_part: str) -> List:
-    res = session.query(source.Source).filter(source.Source.name.like(f'{name_part}%')).all()
+    res = session().query(source.Source).filter(source.Source.name.like(f'{name_part}%')).all()
     return res
 
 
 def get(source_id: int) -> source.Source:
-    source_ = session.query(source.Source).get(source_id)
+    source_ = session().query(source.Source).get(source_id)
     if not source_:
         raise SourceNotExists(f"Source ID = {source_id} doesn't exist")
     res = _construct_source(source_)
@@ -49,7 +49,7 @@ def get(source_id: int) -> source.Source:
 
 
 def get_by_name(source_name: str) -> source.Source:
-    source_ = session.query(source.Source).filter(source.Source.name == source_name).first()
+    source_ = session().query(source.Source).filter(source.Source.name == source_name).first()
     if not source_:
         raise SourceNotExists(f"Source config {source_name} doesn't exist")
     res = _construct_source(source_)
