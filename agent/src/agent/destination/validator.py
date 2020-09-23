@@ -2,7 +2,8 @@ import urllib
 import requests
 import urllib.parse
 
-from agent.modules.anodot_api_client import AnodotApiClient
+from typing import Optional
+from agent.modules import anodot_api_client
 from agent import destination
 from agent.modules import proxy
 from agent.modules.tools import if_validation_enabled
@@ -34,10 +35,9 @@ def is_valid_resource_url(resource_url: str) -> bool:
 
 
 @if_validation_enabled
-def is_valid_access_key(access_key: str, url: str) -> bool:
+def is_valid_access_key(access_key: str, proxy_: Optional[proxy.Proxy], url: str) -> bool:
     try:
-        # todo refactor validation?
-        AnodotApiClient(access_key, proxies={}, base_url=url)
+        anodot_api_client.AnodotApiClient(access_key, proxy.get_config(proxy_), url)
     except requests.HTTPError:
         return False
     return True

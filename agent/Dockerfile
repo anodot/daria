@@ -7,6 +7,8 @@ ARG GIT_SHA1=local-build
 WORKDIR /usr/src/app
 
 COPY . .
+COPY ./custom_entrypoint.sh /
+RUN chmod +x /custom_entrypoint.sh
 COPY .bashrc /root/.bashrc
 
 VOLUME /usr/src/app/data
@@ -20,4 +22,7 @@ ENV LOG_FILE_PATH="/var/log/agent.log" ANODOT_API_URL="http://api.anodot.com" EN
 ENV UWSGI_INI="/usr/src/app/uwsgi.ini"
 
 RUN pip install --upgrade pip && pip install -r requirements.txt && python setup.py install && echo ". /usr/src/app/agent-complete.sh" >> /root/.bashrc
-RUN apt update && apt install -y vim netcat curl nano
+RUN apt update && apt install -y vim netcat curl nano cron
+
+ENTRYPOINT ["/custom_entrypoint.sh"]
+CMD ["/start.sh"]

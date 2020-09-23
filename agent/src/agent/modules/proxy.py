@@ -1,5 +1,6 @@
 import requests
 
+from typing import Optional
 from agent.modules.tools import if_validation_enabled
 from urllib.parse import urlparse, urlunparse
 
@@ -11,7 +12,7 @@ class Proxy:
         self.password = password
 
 
-def get_config(proxy: Proxy) -> dict:
+def get_config(proxy: Optional[Proxy]) -> dict:
     proxies = dict()
     if proxy:
         proxy_parsed = urlparse(proxy.uri)
