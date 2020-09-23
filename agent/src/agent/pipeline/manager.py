@@ -7,19 +7,17 @@ import time
 import agent.pipeline.config.handlers as config_handlers
 import jsonschema
 
-from agent import pipeline, destination
+from agent import source, pipeline, destination
 from agent.pipeline.config.validators import get_config_validator
 from agent.pipeline import prompt, load_client_data
-from agent import source
 from agent.modules.anodot_api_client import AnodotApiClient
-from agent.modules.constants import ERRORS_DIR, ENV_PROD, MONITORING_SOURCE_NAME
+from agent.modules.constants import ENV_PROD, MONITORING_SOURCE_NAME
 from agent.modules.streamsets_api_client import api_client, StreamSetsApiClientException
 from agent.modules.tools import print_json, sdc_record_map_to_dict, if_validation_enabled
 from ..modules import proxy
 from .pipeline import Pipeline, PipelineException
 from agent.modules.logger import get_logger
 from typing import List
-
 
 logger = get_logger(__name__)
 
@@ -31,7 +29,6 @@ class PipelineManager:
         self.pipeline = pipeline_obj
         self.prompter = get_prompter(pipeline_obj.source.type)(self.pipeline)
         self.file_loader = get_file_loader(pipeline_obj.source.type)()
-        self.sdc_creator = get_sdc_creator(pipeline_obj)
 
     def prompt(self, default_config, advanced=False):
         self.pipeline.set_config(self.prompter.prompt(default_config, advanced))
@@ -44,9 +41,9 @@ class PipelineManager:
 
     def create(self) -> Pipeline:
         try:
-            pipeline_obj = api_client.create_pipeline(self.pipeline.name)
-            new_config = self.sdc_creator.override_base_config(new_uuid=pipeline_obj['uuid'],
-                                                               new_title=self.pipeline.name)
+            streamsets_pipeline = api_client.create_pipeline(self.pipeline.name)
+            new_config = get_sdc_creator(self.pipeline)\
+                .override_base_config(new_uuid=streamsets_pipeline['uuid'], new_title=self.pipeline.name)
             api_client.update_pipeline(self.pipeline.name, new_config)
         except (config_handlers.base.ConfigHandlerException, StreamSetsApiClientException) as e:
             delete(self.pipeline)
@@ -265,7 +262,7 @@ def update(pipeline_obj: Pipeline):
             start_pipeline = True
 
         api_pipeline = api_client.get_pipeline(pipeline_obj.name)
-        new_config = get_sdc_creator(pipeline_obj)\
+        new_config = get_sdc_creator(pipeline_obj) \
             .override_base_config(new_uuid=api_pipeline['uuid'], new_title=pipeline_obj.name)
         api_client.update_pipeline(pipeline_obj.name, new_config)
 
@@ -380,19 +377,12 @@ def _delete_from_streamsets(pipeline_id: str):
     api_client.delete_pipeline(pipeline_id)
 
 
-def _cleanup_errors_dir(pipeline_id: str):
-    errors_dir = os.path.join(ERRORS_DIR, pipeline_id)
-    if os.path.isdir(errors_dir):
-        shutil.rmtree(errors_dir)
-
-
 def delete(pipeline_: Pipeline):
     _delete_schema(pipeline_)
     try:
         _delete_from_streamsets(pipeline_.name)
     except StreamSetsApiClientException as e:
         raise pipeline.PipelineException(str(e))
-    _cleanup_errors_dir(pipeline_.name)
     pipeline.repository.delete(pipeline_)
 
 
@@ -409,10 +399,6 @@ def force_delete(pipeline_name: str) -> list:
     exceptions = []
     try:
         _delete_from_streamsets(pipeline_name)
-    except Exception as e:
-        exceptions.append(str(e))
-    try:
-        _cleanup_errors_dir(pipeline_name)
     except Exception as e:
         exceptions.append(str(e))
     if pipeline.repository.exists(pipeline_name):

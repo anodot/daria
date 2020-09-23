@@ -12,7 +12,7 @@ COPY .bashrc /root/.bashrc
 VOLUME /usr/src/app/data
 
 ENV SDC_CONF_PARSER_LIMIT="20048576" STREAMSETS_USERNAME="admin" STREAMSETS_PASSWORD="admin" \
-    STREAMSETS_URL="http://localhost:18630" SDC_DATA_PATH="/sdc-data"
+    STREAMSETS_URL="http://localhost:18630"
 
 ENV LOG_FILE_PATH="/var/log/agent.log" ANODOT_API_URL="http://api.anodot.com" ENV_PROD='true' VALIDATION_ENABLED="true"
 
