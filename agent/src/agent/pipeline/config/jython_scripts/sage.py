@@ -109,6 +109,8 @@ while True:
 
             data = res.json()
             for hit in data["hits"]:
+                if '@timestamp' not in hit:
+                    hit['@timestamp'] = end_time
                 hit['@timestamp'] = re.sub(r'(\.[0-9]+)', '', hit['@timestamp'])
                 record = sdc.createRecord('record created ' + str(datetime.now()))
                 record.value = hit
