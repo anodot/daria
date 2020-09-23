@@ -1,5 +1,6 @@
 from agent import pipeline
 
+
 class TestInflux:
     params = {
         'test_source_create': [{
@@ -13,7 +14,8 @@ class TestInflux:
                     'db': 'test',
                 }
             }],
-            'er': b'[{"config":{"db":"test","host":"http://influx:8086","password":"admin","username":"admin"},"name":"influx","type":"influx"}]\n'
+            'er': [{"config": {"db": "test", "host": "http://influx:8086", "password": "admin", "username": "admin"},
+                    "name": "influx", "type": "influx"}]
         }],
         'test_create': [{
             'data': [{
@@ -29,7 +31,10 @@ class TestInflux:
                 "properties": {"test": "wrong"},
                 "interval": 7000000
             }],
-            'er': b'[{"dimensions":{"optional":["wrong"],"required":[]},"interval":7000000,"measurement_name":"wrong","override_source":{},"pipeline_id":"test_influx","properties":{"test":"wrong"},"source":{"name":"influx"},"target_type":"gauge","value":{"constant":"1","type":"property","values":["wrong"]}}]\n'
+            'er': [{"dimensions": {"optional": ["wrong"], "required": []}, "interval": 7000000,
+                    "measurement_name": "wrong", "override_source": {}, "pipeline_id": "test_influx",
+                    "properties": {"test": "wrong"}, "source": {"name": "influx"}, "target_type": "gauge",
+                    "value": {"constant": "1", "type": "property", "values": ["wrong"]}}]
         }],
         'test_edit': [{
             'data': [{
@@ -45,24 +50,31 @@ class TestInflux:
                 "properties": {"test": "val"},
                 "interval": 7000000
             }],
-            'er': b'[{"dimensions":{"optional":["cpu","host","zone"],"required":[]},"interval":7000000,"measurement_name":"cpu_test","override_source":{},"pipeline_id":"test_influx","properties":{"test":"val"},"source":{"name":"influx"},"target_type":"gauge","value":{"constant":"1","type":"property","values":["usage_active"]}}]\n'
+            'er': [{"dimensions": {"optional": ["cpu", "host", "zone"], "required": []}, "interval": 7000000,
+                    "measurement_name": "cpu_test", "override_source": {}, "pipeline_id": "test_influx",
+                    "properties": {"test": "val"}, "source": {"name": "influx"}, "target_type": "gauge",
+                    "value": {"constant": "1", "type": "property", "values": ["usage_active"]}}]
         }],
         'test_list': [{
-            'er': b'[{"override_source":{},"pipeline_id":"Monitoring","source":{"name":"monitoring"}},{"dimensions":{"optional":["cpu","host","zone"],"required":[]},"interval":7000000,"measurement_name":"cpu_test","override_source":{},"pipeline_id":"test_influx","properties":{"test":"val"},"source":{"name":"influx"},"target_type":"gauge","value":{"constant":"1","type":"property","values":["usage_active"]}}]\n'
+            'er': [{"override_source": {}, "pipeline_id": "Monitoring", "source": {"name": "monitoring"}},
+                   {"dimensions": {"optional": ["cpu", "host", "zone"], "required": []}, "interval": 7000000,
+                    "measurement_name": "cpu_test", "override_source": {}, "pipeline_id": "test_influx",
+                    "properties": {"test": "val"}, "source": {"name": "influx"}, "target_type": "gauge",
+                    "value": {"constant": "1", "type": "property", "values": ["usage_active"]}}]
         }]
     }
 
     def test_source_create(self, api_client, data, er):
         result = api_client.post('/sources', json=list(data))
-        assert result.data == er
+        assert result.json == er
 
     def test_create(self, api_client, data, er):
         result = api_client.post('/pipelines', json=list(data))
-        assert result.data == er
+        assert result.json == er
 
     def test_edit(self, api_client, data, er):
         result = api_client.put('/pipelines', json=list(data))
-        assert result.data == er
+        assert result.json == er
 
     def test_start(self, api_client):
         result = api_client.post('/pipelines/test_influx/start')
@@ -107,14 +119,14 @@ class TestInflux:
 
     def test_list(self, api_client, er):
         result = api_client.get('/pipelines')
-        assert result.data == er
+        assert result.json == er
 
     def test_delete(self, api_client):
         api_client.delete('/pipelines/test_influx')
         result = api_client.get('/pipelines')
-        assert result.data == b'[{"override_source":{},"pipeline_id":"Monitoring","source":{"name":"monitoring"}}]\n'
+        assert result.json == [{"override_source":{},"pipeline_id":"Monitoring","source":{"name":"monitoring"}}]
 
     def test_source_delete(self, api_client):
         api_client.delete('/sources/influx')
         result = api_client.get('/sources')
-        assert result.data == b'["monitoring"]\n'
+        assert result.json == ["monitoring"]

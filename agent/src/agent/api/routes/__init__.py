@@ -17,7 +17,7 @@ def needs_destination(func):
 def needs_pipeline(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        pipeline_id = kwargs['pipeline_id']
+        pipeline_id = kwargs['pipeline_name']
         if not agent.pipeline.repository.exists(pipeline_id):
             return jsonify(f'Pipeline {pipeline_id} does not exist'), 400
         return func(*args, **kwargs)
