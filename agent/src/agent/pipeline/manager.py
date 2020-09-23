@@ -203,7 +203,7 @@ def create_from_json(configs: dict) -> List[Pipeline]:
             pipelines.append(pipeline_)
         except Exception as e:
             # todo traceback?
-            exceptions[config['pipeline_id']] = str(e)
+            exceptions[config['pipeline_id']] = f'{type(e).__name__}: {str(e)}'
         if exceptions:
             raise pipeline.PipelineException(json.dumps(exceptions))
     return pipelines
@@ -230,7 +230,7 @@ def edit_using_json(configs: list) -> List[Pipeline]:
                 edit_pipeline_using_json(config)
             )
         except Exception as e:
-            exceptions[config['pipeline_id']] = str(e)
+            exceptions[config['pipeline_id']] = f'{type(e).__name__}: {str(e)}'
         if exceptions:
             raise pipeline.PipelineException(json.dumps(exceptions))
     return pipelines
@@ -360,11 +360,6 @@ def reset(pipeline_: Pipeline):
         raise pipeline.PipelineException(str(e))
 
 
-def _delete_locally(pipeline_: Pipeline):
-    if pipeline.repository.exists(pipeline_.name):
-        pipeline.repository.delete_by_name(pipeline_.name)
-
-
 def _delete_schema(pipeline_: Pipeline):
     if 'schema' in pipeline_.config:
         anodot_api_client.get_client(pipeline_.destination).delete_schema(pipeline_.config['schema']['id'])
@@ -389,18 +384,36 @@ def delete(pipeline_: Pipeline):
     except streamsets_api_client.StreamSetsApiClientException as e:
         raise pipeline.PipelineException(str(e))
     _cleanup_errors_dir(pipeline_.name)
-    _delete_locally(pipeline.repository.get_by_name(pipeline_.name))
+    pipeline.repository.delete(pipeline_)
 
 
-def delete_by_id(pipeline_id: str):
+def delete_by_name(pipeline_name: str):
+    delete(pipeline.repository.get_by_name(pipeline_name))
+
+
+def force_delete(pipeline_name: str) -> list:
+    """
+    Try do delete everything related to the pipeline
+    :param pipeline_name: string
+    :return: list of errors that occurred during deletion
+    """
+    exceptions = []
     try:
-        _delete_from_streamsets(pipeline_id)
-    except streamsets_api_client.StreamSetsApiClientException as e:
-        raise pipeline.PipelineException(str(e))
-    _cleanup_errors_dir(pipeline_id)
-    if pipeline.repository.exists(pipeline_id):
-        _delete_schema(pipeline.repository.get_by_name(pipeline_id))
-        _delete_locally(pipeline.repository.get_by_name(pipeline_id))
+        _delete_from_streamsets(pipeline_name)
+    except Exception as e:
+        exceptions.append(str(e))
+    try:
+        _cleanup_errors_dir(pipeline_name)
+    except Exception as e:
+        exceptions.append(str(e))
+    if pipeline.repository.exists(pipeline_name):
+        pipeline_ = pipeline.repository.get_by_name(pipeline_name)
+        try:
+            _delete_schema(pipeline_)
+        except Exception as e:
+            exceptions.append(str(e))
+        pipeline.repository.delete(pipeline_)
+    return exceptions
 
 
 def enable_destination_logs(pipeline_: Pipeline):

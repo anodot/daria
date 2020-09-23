@@ -24,7 +24,7 @@ class DirectoryConfigHandler(BaseConfigHandler):
         self.pipeline.config.update(schema_definition)
         pipeline_config = super().get_pipeline_config()
         pipeline_config.update({
-            'SCHEMA_ID': schema_definition['schema']['id'],
+            'SCHEMA_ID': self.pipeline.get_schema()['id'],
             'PROTOCOL': self.pipeline.destination.PROTOCOL_30
         })
         return pipeline_config
