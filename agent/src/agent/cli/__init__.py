@@ -3,6 +3,7 @@ import click
 from agent.cli.destination import destination
 from agent.cli.pipeline import pipeline_group
 from agent.cli.source import source_group
+from agent.modules import db
 from agent.version import __version__, __build_time__, __git_sha1__
 
 

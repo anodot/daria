@@ -1,6 +1,7 @@
 import wtforms_json
 
 from flask import Flask, jsonify
+from agent.modules import db
 from agent.api.routes.destination import destination_
 from agent.api.routes import source, pipeline, scripts
 from agent.version import __version__
@@ -15,10 +16,12 @@ app.register_blueprint(scripts.scripts)
 app.config['WTF_CSRF_ENABLED'] = False
 
 
+@app.after_request
+def after_request_func(response):
+    db.close_session()
+    return response
+
+
 @app.route('/version', methods=['GET'])
 def version():
     return jsonify('Daria Agent version: ' + __version__)
-
-
-if __name__ == "__main__":
-    app.run()

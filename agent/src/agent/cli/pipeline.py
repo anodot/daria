@@ -100,18 +100,26 @@ def delete(pipeline_id, file):
     if not file and not pipeline_id:
         raise click.UsageError('Specify pipeline id or file')
 
-    pipeline_ids = [item['pipeline_id'] for item in pipeline.manager.extract_configs(file)] if file else [pipeline_id]
+    pipeline_names = [item['pipeline_id'] for item in pipeline.manager.extract_configs(file)] if file else [pipeline_id]
 
-    for pipeline_id in pipeline_ids:
+    for pipeline_name in pipeline_names:
         try:
-            pipeline.manager.delete(pipeline.repository.get_by_name(pipeline_id))
-            click.echo(f'Pipeline {pipeline_id} deleted')
-        except pipeline.repository.PipelineNotExistsException:
-            pipeline.manager.delete_by_id(pipeline_id)
-            click.echo(f'Pipeline {pipeline_id} deleted')
-        except (StreamSetsApiClientException, pipeline.PipelineException) as e:
+            pipeline.manager.delete_by_name(pipeline_name)
+            click.echo(f'Pipeline {pipeline_name} deleted')
+        except (
+                StreamSetsApiClientException, pipeline.PipelineException, pipeline.repository.PipelineNotExistsException
+        ) as e:
             click.secho(str(e), err=True, fg='red')
             continue
+
+
+@click.command()
+@click.argument('pipeline_name', autocompletion=get_pipelines_ids_complete)
+def force_delete(pipeline_name):
+    errors = pipeline.manager.force_delete(pipeline_name)
+    for e in errors:
+        click.secho(e, err=True, fg='red')
+    click.echo('Finished')
 
 
 @click.command()
@@ -331,6 +339,7 @@ pipeline_group.add_command(start)
 pipeline_group.add_command(stop)
 pipeline_group.add_command(force_stop)
 pipeline_group.add_command(delete)
+pipeline_group.add_command(force_delete)
 pipeline_group.add_command(logs)
 pipeline_group.add_command(info)
 pipeline_group.add_command(reset)

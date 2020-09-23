@@ -72,5 +72,5 @@ def _build(
 
 def delete():
     pipeline.manager.stop_by_id(pipeline.MONITORING)
-    pipeline.manager.delete_by_id(pipeline.MONITORING)
+    pipeline.manager.delete_by_name(pipeline.MONITORING)
     destination.repository.delete()
