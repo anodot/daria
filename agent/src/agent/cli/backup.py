@@ -13,11 +13,8 @@ def backup():
 
 
 @click.command()
-@click.argument('dump_file')
+@click.argument('dump_file', type=click.Path(exists=True))
 def restore(dump_file):
-    if not os.path.isfile(dump_file):
-        click.secho(f'Cannot open {dump_file}, make sure you enter the correct path', err=True, fg='red')
-        return
     if click.confirm(f'Are you sure you want to restore `{AGENT_DB}` database from the dump? All current data in the database will be overwritten'):
         if os.system(f'pg_restore -c -h {AGENT_DB_HOST} -U {AGENT_DB_USER} -d {AGENT_DB} {dump_file}') == 0:
             click.secho(f'Database {AGENT_DB} successfully restored', fg='green')

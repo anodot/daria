@@ -39,8 +39,7 @@ services:
       POSTGRES_PASSWORD: agent
       POSTGRES_DB: agent
     volumes:
-#      todo what path?
-      - backup-data:/backup-data
+      - backup-data:/usr/src/app/backup-data
       - /var/lib/postgresql/data
 
 volumes:
