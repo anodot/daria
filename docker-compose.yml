@@ -190,5 +190,6 @@ services:
 
 
 volumes:
+  sdc-data:
   agent-data:
   dummy-destination-data:
