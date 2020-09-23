@@ -66,17 +66,10 @@ class AnodotApiClient:
                                  data=data, params={'type': data_type})
 
     @endpoint
-    def send_source_data_to_bc(self, source_: dict):
-        pass
-        # return self.session.post(self._build_url('todo-source'), proxies=self.proxies, json=source_data)
-
-    @endpoint
     def send_pipeline_data_to_bc(self, pipeline_data: dict):
         pass
         # return self.session.post(self._build_url('todo-pipeline'), proxies=self.proxies, json=pipeline_data))
 
 
-def get_client(destination_: destination.HttpDestination = None) -> AnodotApiClient:
-    if not destination_:
-        destination_ = destination.repository.get()
+def get_client(destination_: destination.HttpDestination) -> AnodotApiClient:
     return AnodotApiClient(destination_.access_key, proxy.get_config(destination_.proxy), destination_.url)
