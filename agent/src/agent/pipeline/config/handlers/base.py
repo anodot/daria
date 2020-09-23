@@ -2,7 +2,7 @@ import json
 import os
 
 from agent.modules.logger import get_logger
-from agent.modules.constants import ERRORS_DIR, AGENT_URL
+from agent.modules.constants import AGENT_URL
 from agent.modules.constants import ROOT_DIR
 from agent.pipeline import pipeline as p
 
@@ -34,12 +34,6 @@ class BaseConfigHandler:
 
     def override_base_config(self, new_uuid=None, new_title=None):
         self.config = self.load_base_config()
-
-        # create errors dir
-        errors_dir = os.path.join(ERRORS_DIR, self.pipeline.name)
-        if not os.path.isdir(errors_dir):
-            os.makedirs(errors_dir)
-            os.chmod(errors_dir, 0o777)
         if new_uuid:
             self.config['uuid'] = new_uuid
         if new_title:

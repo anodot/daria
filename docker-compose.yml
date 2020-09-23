@@ -7,7 +7,7 @@ services:
       - "18630:18630"
     restart: on-failure
     volumes:
-      - sdc-data:/data
+      - /data
       - ./certs:/home/certs
       - ./test-datasets/test-directory-collector:/home/test-directory-collector
 #      - ./test-datasets:/kerberos
@@ -31,7 +31,6 @@ services:
       STREAMSETS_PASSWORD: 'admin'
       STREAMSETS_URL: 'http://dc:18630'
       LOG_FILE_PATH: '/var/log/agent.log'
-      SDC_DATA_PATH: '/sdc-data'
       ENV_PROD: 'false'
       AGENT_DB_HOST: 'db'
       AGENT_DB_USER: 'agent'
@@ -44,7 +43,6 @@ services:
       - dc
       - db
     volumes:
-      - sdc-data:/sdc-data
       - agent-data:/usr/src/app/data
 #      - ./scripts:/usr/src/app/scripts
       - dummy-destination-data:/output
@@ -192,6 +190,5 @@ services:
 
 
 volumes:
-  sdc-data:
   agent-data:
   dummy-destination-data:

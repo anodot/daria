@@ -9,7 +9,7 @@ services:
       SDC_JAVA_OPTS: "-Xmx1024m -Xms1024m -server"
       SDC_CONF_RUNNER_THREAD_POOL_SIZE: "200"
     volumes:
-      - sdc-data:/data
+      - /data
 
   agent:
     image: anodot/daria:latest
@@ -26,9 +26,8 @@ services:
       AGENT_DB_PASSWORD: 'agent'
 #    ports:
 #    - 8080:80
-
     volumes:
-      - sdc-data:/sdc-data
+      - /sdc-data
 
   db:
     image: postgres
@@ -41,5 +40,4 @@ services:
       - /var/lib/postgresql/data
 
 volumes:
-  sdc-data:
   agent-data:
