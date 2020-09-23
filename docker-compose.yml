@@ -7,7 +7,7 @@ services:
       - "18630:18630"
     restart: on-failure
     volumes:
-      - /data
+      - sdc-data:/data
       - ./certs:/home/certs
       - ./test-datasets/test-directory-collector:/home/test-directory-collector
 #      - ./test-datasets:/kerberos

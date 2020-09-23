@@ -42,7 +42,7 @@ class PipelineManager:
     def create(self) -> Pipeline:
         try:
             streamsets_pipeline = api_client.create_pipeline(self.pipeline.name)
-            new_config = get_config_handler(self.pipeline)\
+            new_config = get_sdc_creator(self.pipeline)\
                 .override_base_config(new_uuid=streamsets_pipeline['uuid'], new_title=self.pipeline.name)
             api_client.update_pipeline(self.pipeline.name, new_config)
         except (config_handlers.base.ConfigHandlerException, StreamSetsApiClientException) as e:
@@ -74,7 +74,7 @@ class PipelineManager:
         print(*errors, sep='\n')
 
 
-def get_config_handler(pipeline_obj: Pipeline) -> config_handlers.base.BaseConfigHandler:
+def get_sdc_creator(pipeline_obj: Pipeline) -> config_handlers.base.BaseConfigHandler:
     handlers = {
         source.TYPE_MONITORING: config_handlers.monitoring.MonitoringConfigHandler,
         source.TYPE_INFLUX: config_handlers.influx.InfluxConfigHandler,
@@ -262,7 +262,7 @@ def update(pipeline_obj: Pipeline):
             start_pipeline = True
 
         api_pipeline = api_client.get_pipeline(pipeline_obj.name)
-        new_config = get_config_handler(pipeline_obj) \
+        new_config = get_sdc_creator(pipeline_obj) \
             .override_base_config(new_uuid=api_pipeline['uuid'], new_title=pipeline_obj.name)
         api_client.update_pipeline(pipeline_obj.name, new_config)
 
@@ -358,7 +358,7 @@ def stop_by_id(pipeline_id: str):
 def reset(pipeline_obj: Pipeline):
     try:
         api_client.reset_pipeline(pipeline_obj.name)
-        get_config_handler(pipeline_obj).set_initial_offset()
+        get_sdc_creator(pipeline_obj).set_initial_offset()
     except (config_handlers.base.ConfigHandlerException, StreamSetsApiClientException) as e:
         raise pipeline.PipelineException(str(e))
 
