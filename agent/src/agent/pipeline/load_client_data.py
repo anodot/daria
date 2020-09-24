@@ -93,6 +93,9 @@ class ElasticLoadClientData(LoadClientData):
     def load(self, client_config, edit=False):
         super().load(client_config, edit)
         self.load_dimensions()
+        if 'query_file' in self.client_config:
+            with open(self.client_config['query_file']) as f:
+                self.client_config['query'] = f.read()
         return self.client_config
 
 
@@ -116,6 +119,13 @@ class DirectoryLoadClientData(LoadClientData):
 
 class SageLoadClientData(LoadClientData):
     VALIDATION_SCHEMA_FILE_NAME = 'sage'
+
+    def load(self, client_config, edit=False):
+        super().load(client_config, edit)
+        if 'query_file' in self.client_config:
+            with open(self.client_config['query_file']) as f:
+                self.client_config['query'] = f.read()
+        return self.client_config
 
 
 class VictoriaLoadClientData(LoadClientData):
