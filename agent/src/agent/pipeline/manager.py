@@ -343,8 +343,8 @@ def stop(pipeline_: Pipeline):
     return stop_by_id(pipeline_.name)
 
 
-def can_stop(pipeline_id: str) -> bool:
-    return get_pipeline_status(pipeline_id) == Pipeline.STATUS_RUNNING
+def is_running(pipeline_name: str) -> bool:
+    return get_pipeline_status(pipeline_name) == Pipeline.STATUS_RUNNING
 
 
 def stop_by_id(pipeline_id: str):

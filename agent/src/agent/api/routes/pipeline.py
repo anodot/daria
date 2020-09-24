@@ -73,8 +73,6 @@ def start(pipeline_name):
 @pipelines.route('/pipelines/<pipeline_name>/stop', methods=['POST'])
 @needs_pipeline
 def stop(pipeline_name):
-    if not pipeline.manager.can_stop(pipeline_name):
-        return f'Cannot stop the pipeline `{pipeline_name}` that is in status {pipeline.manager.get_pipeline_status(pipeline_name)}', 400
     try:
         pipeline.manager.stop_by_id(pipeline_name)
     except StreamSetsApiClientException as e:

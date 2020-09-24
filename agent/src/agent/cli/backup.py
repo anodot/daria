@@ -19,7 +19,7 @@ def backup():
 def restore(dump_file):
     if click.confirm(f'Are you sure you want to restore `{AGENT_DB}` database from the dump? All current data in the database will be overwritten'):
         if os.system(f'pg_restore -c -h {AGENT_DB_HOST} -U {AGENT_DB_USER} -d {AGENT_DB} {dump_file}') == 0:
-            click.secho(f'Database {AGENT_DB} successfully restored', fg='green')
+            click.secho(f'Database `{AGENT_DB}` successfully restored', fg='green')
             _restore_pipelines()
 
 
@@ -28,10 +28,12 @@ def _restore_pipelines():
     for pipeline_ in not_existing:
         click.echo(f'Creating pipeline {pipeline_.name}')
         pipeline.manager.create(pipeline_)
+        _update_status(pipeline_)
         click.secho('Success', fg='green')
     for pipeline_ in existing:
         click.echo(f'Updating pipeline {pipeline_.name}')
         pipeline.manager.update(pipeline_)
+        _update_status(pipeline_)
         click.secho('Success', fg='green')
 
 
@@ -45,3 +47,24 @@ def _get_pipelines():
         else:
             not_existing.append(p)
     return existing, not_existing
+
+
+def _update_status(pipeline_: pipeline.Pipeline):
+    if _should_change_status(pipeline_):
+        # we care only if it's running or stopped
+        if pipeline.manager.is_running(pipeline_.name):
+            # then stop it
+            pipeline.manager.stop(pipeline_)
+        else:
+            # then start it
+            if not _can_start(pipeline_):
+                pipeline.manager.stop(pipeline_)
+            pipeline.manager.start(pipeline_)
+
+
+def _should_change_status(pipeline_: pipeline.Pipeline) -> bool:
+    return pipeline_.status != pipeline.manager.get_pipeline_status(pipeline_.name)
+
+
+def _can_start(pipeline_: pipeline.Pipeline) -> bool:
+    return pipeline.manager.get_pipeline_status(pipeline_.name) in [pipeline.Pipeline.STATUS_STOPPED, pipeline.Pipeline.STATUS_EDITED]
