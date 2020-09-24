@@ -18,6 +18,5 @@ class ElasticConfigHandler(BaseConfigHandler):
     }
 
     def override_stages(self):
-        with open(self.pipeline.config['query_file']) as f:
-            self.pipeline.source.config[ElasticSource.CONFIG_QUERY] = f.read()
+        self.pipeline.source.config[ElasticSource.CONFIG_QUERY] = self.pipeline.query
         super().override_stages()
