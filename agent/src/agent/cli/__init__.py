@@ -1,9 +1,9 @@
 import click
 
+from agent.cli.backup import backup, restore
 from agent.cli.destination import destination
 from agent.cli.pipeline import pipeline_group
 from agent.cli.source import source_group
-from agent.modules import db
 from agent.version import __version__, __build_time__, __git_sha1__
 
 
@@ -32,6 +32,8 @@ def agent(version):
 
 agent.add_command(source_group)
 agent.add_command(pipeline_group)
+agent.add_command(backup)
+agent.add_command(restore)
 agent.add_command(destination)
 
 if __name__ == '__main__':

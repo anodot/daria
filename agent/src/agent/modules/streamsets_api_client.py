@@ -148,7 +148,7 @@ class StreamSetsApiClient:
 
     @endpoint
     def get_pipeline(self, pipeline_id: str):
-        logger.info('Get pipelines')
+        logger.info(f'Get pipeline {pipeline_id}')
         params = {'pipelineId': pipeline_id}
         return self.session.get(self.build_url('pipelines'), params=params)
 

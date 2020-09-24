@@ -35,6 +35,7 @@ services:
       AGENT_DB_HOST: 'db'
       AGENT_DB_USER: 'agent'
       AGENT_DB_PASSWORD: 'agent'
+      PGPASSWORD: 'agent'
       AGENT_URL: 'http://anodot-agent'
 #      VALIDATION_ENABLED: 'false'
     stdin_open: true
@@ -43,6 +44,7 @@ services:
       - dc
       - db
     volumes:
+      - ./agent/backup-data:/usr/src/app/backup-data
       - agent-data:/usr/src/app/data
 #      - ./scripts:/usr/src/app/scripts
       - dummy-destination-data:/output
