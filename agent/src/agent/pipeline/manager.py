@@ -2,7 +2,6 @@ import json
 import logging
 import click
 import os
-import shutil
 import time
 import agent.pipeline.config.handlers as config_handlers
 import jsonschema
@@ -13,7 +12,7 @@ from agent.pipeline import prompt, load_client_data, Pipeline
 from agent.modules import anodot_api_client
 from agent.modules.constants import ENV_PROD, MONITORING_SOURCE_NAME
 from agent.modules import streamsets_api_client
-from agent.modules.tools import print_json, sdc_record_map_to_dict, if_validation_enabled
+from agent.modules.tools import print_json, sdc_record_map_to_dict
 from agent.modules.logger import get_logger
 from typing import List
 
@@ -22,7 +21,7 @@ logger = get_logger(__name__)
 LOG_LEVELS = [logging.getLevelName(logging.INFO), logging.getLevelName(logging.ERROR)]
 
 
-class PipelineManager:
+class PipelineBuilder:
     def __init__(self, pipeline_: Pipeline):
         self.pipeline = pipeline_
         self.prompter = get_prompter(pipeline_.source.type)(self.pipeline)
@@ -33,43 +32,32 @@ class PipelineManager:
 
     def load_config(self, config, edit=False):
         self.pipeline.set_config(self.file_loader.load(config, edit))
+        self.validate_config()
 
     def validate_config(self):
         get_config_validator(self.pipeline).validate(self.pipeline)
 
-    def create(self) -> Pipeline:
-        try:
-            streamsets_pipeline = streamsets_api_client.api_client.create_pipeline(self.pipeline.name)
-            new_config = get_sdc_creator(self.pipeline)\
-                .override_base_config(new_uuid=streamsets_pipeline['uuid'], new_title=self.pipeline.name)
-            streamsets_api_client.api_client.update_pipeline(self.pipeline.name, new_config)
-        except (config_handlers.base.ConfigHandlerException, streamsets_api_client.StreamSetsApiClientException) as e:
-            delete(self.pipeline)
-            raise pipeline.PipelineException(str(e))
-        pipeline.repository.save(self.pipeline)
-        return self.pipeline
 
-    @if_validation_enabled
-    def show_preview(self):
-        try:
-            preview = streamsets_api_client.api_client.create_preview(self.pipeline.name)
-            preview_data, errors = streamsets_api_client.api_client.wait_for_preview(self.pipeline.name, preview['previewerId'])
-        except streamsets_api_client.StreamSetsApiClientException as e:
-            print(str(e))
-            return
+def show_preview(pipeline_: Pipeline):
+    try:
+        preview = streamsets_api_client.api_client.create_preview(pipeline_.name)
+        preview_data, errors = streamsets_api_client.api_client.wait_for_preview(pipeline_.name, preview['previewerId'])
+    except streamsets_api_client.StreamSetsApiClientException as e:
+        print(str(e))
+        return
 
-        if preview_data['batchesOutput']:
-            for output in preview_data['batchesOutput'][0]:
-                if 'destination_OutputLane' in output['output']:
-                    data = output['output']['destination_OutputLane'][:source.manager.MAX_SAMPLE_RECORDS]
-                    if data:
-                        print_json([sdc_record_map_to_dict(record['value']) for record in data])
-                    else:
-                        print('Could not fetch any data matching the provided config')
-                    break
-        else:
-            print('Could not fetch any data matching the provided config')
-        print(*errors, sep='\n')
+    if preview_data['batchesOutput']:
+        for output in preview_data['batchesOutput'][0]:
+            if 'destination_OutputLane' in output['output']:
+                data = output['output']['destination_OutputLane'][:source.manager.MAX_SAMPLE_RECORDS]
+                if data:
+                    print_json([sdc_record_map_to_dict(record['value']) for record in data])
+                else:
+                    print('Could not fetch any data matching the provided config')
+                break
+    else:
+        print('Could not fetch any data matching the provided config')
+    print(*errors, sep='\n')
 
 
 def get_sdc_creator(pipeline_: Pipeline) -> config_handlers.base.BaseConfigHandler:
@@ -209,12 +197,11 @@ def create_from_json(configs: dict) -> List[Pipeline]:
 
 def create_pipeline_from_json(config: dict) -> Pipeline:
     validate_config_for_create(config)
-    pipeline_manager = PipelineManager(create_object(config['pipeline_id'], config['source']))
-    pipeline_manager.load_config(config)
-    pipeline_manager.validate_config()
-    pipeline_manager.create()
-    print(f'Pipeline {pipeline_manager.pipeline.name} created')
-    return pipeline_manager.pipeline
+    pipeline_builder = PipelineBuilder(create_object(config['pipeline_id'], config['source']))
+    pipeline_builder.load_config(config)
+    create(pipeline_builder.pipeline)
+    print(f'Pipeline {pipeline_builder.pipeline.name} created')
+    return pipeline_builder.pipeline
 
 
 def edit_using_json(configs: list) -> List[Pipeline]:
@@ -235,10 +222,10 @@ def edit_using_json(configs: list) -> List[Pipeline]:
 
 
 def edit_pipeline_using_json(config: dict) -> Pipeline:
-    pipeline_manager = PipelineManager(pipeline.repository.get_by_name(config['pipeline_id']))
-    pipeline_manager.load_config(config, edit=True)
-    update(pipeline_manager.pipeline)
-    return pipeline_manager.pipeline
+    pipeline_builder = PipelineBuilder(pipeline.repository.get_by_name(config['pipeline_id']))
+    pipeline_builder.load_config(config, edit=True)
+    update(pipeline_builder.pipeline)
+    return pipeline_builder.pipeline
 
 
 def start(pipeline_: Pipeline):
@@ -250,6 +237,26 @@ def start(pipeline_: Pipeline):
             click.secho(f'{pipeline_.name} pipeline is sending data')
         else:
             click.secho(f'{pipeline_.name} pipeline did not send any data')
+
+
+def create(pipeline_: Pipeline):
+    _create_in_streamsets(pipeline_)
+    pipeline.repository.save(pipeline_)
+
+
+def _create_in_streamsets(pipeline_: Pipeline):
+    try:
+        streamsets_pipeline = streamsets_api_client.api_client.create_pipeline(pipeline_.name)
+        new_config = get_sdc_creator(pipeline_)\
+            .override_base_config(new_uuid=streamsets_pipeline['uuid'], new_title=pipeline_.name)
+        streamsets_api_client.api_client.update_pipeline(pipeline_.name, new_config)
+    except (config_handlers.base.ConfigHandlerException, streamsets_api_client.StreamSetsApiClientException) as e:
+        try:
+            _delete_from_streamsets(pipeline_.name)
+        except streamsets_api_client.StreamSetsApiClientException:
+            # ignore if it doesn't exist in streamsets
+            pass
+        raise pipeline.PipelineException(str(e))
 
 
 def update(pipeline_: Pipeline):
@@ -272,7 +279,7 @@ def update(pipeline_: Pipeline):
 def update_source_pipelines(source_: source.Source):
     for pipeline_ in pipeline.repository.get_by_source(source_.name):
         try:
-            pipeline.manager.update(pipeline_)
+            update(pipeline_)
         except pipeline.PipelineException as e:
             print(str(e))
             continue
@@ -336,8 +343,8 @@ def stop(pipeline_: Pipeline):
     return stop_by_id(pipeline_.name)
 
 
-def can_stop(pipeline_id: str) -> bool:
-    return get_pipeline_status(pipeline_id) == Pipeline.STATUS_RUNNING
+def is_running(pipeline_name: str) -> bool:
+    return get_pipeline_status(pipeline_name) == Pipeline.STATUS_RUNNING
 
 
 def stop_by_id(pipeline_id: str):
@@ -461,15 +468,13 @@ def _get_test_pipeline_name(source_: source.Source) -> str:
 def start_monitoring_pipeline():
     if not source.repository.exists(MONITORING_SOURCE_NAME):
         source.repository.save(source.Source(MONITORING_SOURCE_NAME, source.TYPE_MONITORING, {}))
-    pipeline_ = pipeline.manager.create_object(pipeline.MONITORING, MONITORING_SOURCE_NAME)
-    pipeline_manager = pipeline.manager.PipelineManager(pipeline_)
-    pipeline_manager.create()
-    pipeline.manager.start(pipeline_)
+    pipeline_ = create_object(pipeline.MONITORING, MONITORING_SOURCE_NAME)
+    create(pipeline_)
+    start(pipeline_)
 
 
 def update_monitoring_pipeline():
-    pipeline_ = pipeline.repository.get_by_name(pipeline.MONITORING)
-    pipeline.manager.update(pipeline_)
+    update(pipeline.repository.get_by_name(pipeline.MONITORING))
 
 
 class PipelineFreezeException(Exception):

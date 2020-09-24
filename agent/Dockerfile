@@ -21,8 +21,8 @@ ENV LOG_FILE_PATH="/var/log/agent.log" ANODOT_API_URL="http://api.anodot.com" EN
 # flask app config
 ENV UWSGI_INI="/usr/src/app/uwsgi.ini"
 
-RUN pip install --upgrade pip && pip install -r requirements.txt && python setup.py install && echo ". /usr/src/app/agent-complete.sh" >> /root/.bashrc
-RUN apt update && apt install -y vim netcat curl nano cron
+RUN ./install_requirements.sh
+RUN python setup.py install && echo ". /usr/src/app/agent-complete.sh" >> /root/.bashrc
 
 ENTRYPOINT ["/custom_entrypoint.sh"]
 CMD ["/start.sh"]

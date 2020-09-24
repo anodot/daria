@@ -239,15 +239,15 @@ def _prompt(advanced: bool, sources: list):
     source_name = click.prompt('Choose source config', type=click.Choice(sources), default=_get_default_source(sources))
     pipeline_id = _prompt_pipeline_id()
 
-    pipeline_manager = pipeline.manager.PipelineManager(pipeline.manager.create_object(pipeline_id, source_name))
+    pipeline_manager = pipeline.manager.PipelineBuilder(pipeline.manager.create_object(pipeline_id, source_name))
     previous_config = _get_previous_pipeline_config(pipeline_manager.pipeline.source.type)
     pipeline_manager.prompt(previous_config, advanced)
-    pipeline_ = pipeline_manager.create()
+    pipeline.manager.create(pipeline_manager.pipeline)
 
     click.secho('Created pipeline {}'.format(pipeline_id), fg='green')
-    if _should_prompt_preview(pipeline_):
+    if _should_prompt_preview(pipeline_manager.pipeline):
         if click.confirm('Would you like to see the result data preview?', default=True):
-            pipeline_manager.show_preview()
+            pipeline.manager.show_preview(pipeline_manager.pipeline)
             print('To change the config use `agent pipeline edit`')
 
 
@@ -264,14 +264,14 @@ def _edit_using_file(file):
 
 def _prompt_edit(advanced, pipeline_id):
     try:
-        pipeline_manager = pipeline.manager.PipelineManager(pipeline.repository.get_by_name(pipeline_id))
+        pipeline_manager = pipeline.manager.PipelineBuilder(pipeline.repository.get_by_name(pipeline_id))
         pipeline_manager.prompt(pipeline_manager.pipeline.to_dict(), advanced=advanced)
         pipeline.manager.update(pipeline_manager.pipeline)
 
         click.secho('Updated pipeline {}'.format(pipeline_id), fg='green')
         if _should_prompt_preview(pipeline_manager.pipeline):
             if click.confirm('Would you like to see the result data preview?', default=True):
-                pipeline_manager.show_preview()
+                pipeline.manager.show_preview(pipeline_manager.pipeline)
                 print('To change the config use `agent pipeline edit`')
     except pipeline.repository.PipelineNotExistsException:
         raise click.UsageError(f'{pipeline_id} does not exist')

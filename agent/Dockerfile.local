@@ -8,13 +8,13 @@ RUN chmod +x /custom_entrypoint.sh
 ADD .bashrc /root/.bashrc
 
 VOLUME /usr/src/app/data
-RUN apt update && apt install -y vim nano netcat curl nano cron
 
 ENV STREAMSETS_USERNAME="admin" STREAMSETS_PASSWORD="admin" STREAMSETS_URL="http://localhost:18630" \
     LOG_FILE_PATH="/var/log/agent.log" ANODOT_API_URL="http://api.anodot.com" ENV_PROD='true' \
     GIT_SHA1=local-build VALIDATION_ENABLED="true" FLASK_APP="/usr/src/app/src/agent/api/main.py" FLASK_DEBUG=1
 
-RUN pip install --upgrade pip && pip install -r requirements.txt && python setup.py develop
+RUN ./install_requirements.sh
+RUN python setup.py develop
 
 ENTRYPOINT ["/custom_entrypoint.sh"]
 CMD flask run --host=0.0.0.0 --port=80
