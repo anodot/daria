@@ -41,4 +41,4 @@ def update(pipeline: p.Pipeline) -> dict:
         api_client.delete_schema(pipeline.get_schema_id())
 
     created_schema = api_client.create_schema(new_schema)
-    return created_schema
+    return created_schema['schema']
