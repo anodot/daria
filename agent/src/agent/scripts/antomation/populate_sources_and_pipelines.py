@@ -62,6 +62,11 @@ def get_checksum(file_path):
     md5_hash = hashlib.md5()
     with open(file_path, "rb") as file:
         content = file.read()
+        file.seek(0)
+        for config in json.load(file):
+            if 'query_file' in config:
+                with open(config['query_file'], 'rb') as f:
+                    content += f.read()
         md5_hash.update(content)
     return md5_hash.hexdigest()
 

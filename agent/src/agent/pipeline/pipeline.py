@@ -1,3 +1,5 @@
+from typing import Optional
+
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import relationship
 from agent import source
@@ -194,8 +196,16 @@ class Pipeline(Entity):
         return self.config.get('values_array_filter_metrics', [])
 
     @property
-    def query_file(self) -> str:
+    def query_file(self) -> Optional[str]:
         return self.config.get('query_file')
+
+    @property
+    def query(self) -> Optional[str]:
+        return self.config.get('query')
+
+    @query.setter
+    def query(self, query):
+        self.config['query'] = query
 
     @property
     def interval(self) -> str:
