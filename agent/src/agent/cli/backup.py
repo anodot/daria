@@ -4,7 +4,8 @@ import os
 from datetime import datetime
 from agent.modules.constants import AGENT_DB_USER, AGENT_DB, BACKUP_DIRECTORY, AGENT_DB_HOST
 from agent import pipeline
-from agent.modules.streamsets_api_client import api_client as streamsets_api_client
+from agent.modules.streamsets_api_client import api_client as streamsets_api_client, StreamSetsApiClientException
+from agent.pipeline import Pipeline
 
 
 @click.command()
@@ -49,7 +50,7 @@ def _get_pipelines():
     return existing, not_existing
 
 
-def _update_status(pipeline_: pipeline.Pipeline):
+def _update_status(pipeline_: Pipeline):
     if _should_change_status(pipeline_):
         # we care only if it's running or stopped
         if pipeline.manager.is_running(pipeline_.name):
@@ -58,13 +59,20 @@ def _update_status(pipeline_: pipeline.Pipeline):
         else:
             # then start it
             if not _can_start(pipeline_):
-                pipeline.manager.stop(pipeline_)
+                try:
+                    pipeline.manager.stop(pipeline_)
+                except StreamSetsApiClientException:
+                    pipeline.manager.force_stop_pipeline(pipeline_.name)
             pipeline.manager.start(pipeline_)
 
 
-def _should_change_status(pipeline_: pipeline.Pipeline) -> bool:
-    return pipeline_.status != pipeline.manager.get_pipeline_status(pipeline_.name)
+def _should_change_status(pipeline_: Pipeline) -> bool:
+    # most likely we won't export broken pipelines, so only running, edited and stopped matter
+    if pipeline_.status == Pipeline.STATUS_RUNNING:
+        return pipeline.manager.get_pipeline_status(pipeline_.name) != Pipeline.STATUS_RUNNING
+    if pipeline_.status in [Pipeline.STATUS_EDITED, Pipeline.STATUS_STOPPED]:
+        return pipeline.manager.get_pipeline_status(pipeline_.name) not in [Pipeline.STATUS_EDITED, Pipeline.STATUS_STOPPED]
 
 
-def _can_start(pipeline_: pipeline.Pipeline) -> bool:
-    return pipeline.manager.get_pipeline_status(pipeline_.name) in [pipeline.Pipeline.STATUS_STOPPED, pipeline.Pipeline.STATUS_EDITED]
+def _can_start(pipeline_: Pipeline) -> bool:
+    return pipeline.manager.get_pipeline_status(pipeline_.name) in [Pipeline.STATUS_STOPPED, Pipeline.STATUS_EDITED]
