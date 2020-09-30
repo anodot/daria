@@ -89,6 +89,7 @@ def force_stop(pipeline_name):
         pipeline.manager.force_stop_pipeline(pipeline_name)
     except pipeline.manager.PipelineFreezeException as e:
         return jsonify(str(e)), 400
+    return jsonify('')
 
 
 @pipelines.route('/pipelines/<pipeline_name>/info', methods=['GET'])

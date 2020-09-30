@@ -74,10 +74,6 @@ class InfluxValidator(Validator):
         self.validate_json()
         self.validate_connection()
         self.validate_db()
-        if 'write_host' in self.source.config:
-            self.validate_write_host()
-            self.validate_write_db()
-            self.validate_write_access()
         self.validate_offset()
 
     @if_validation_enabled
@@ -96,34 +92,6 @@ class InfluxValidator(Validator):
         if not any([db['name'] == self.source.config['db'] for db in client.get_list_database()]):
             raise ValidationException(
                 f"Database {self.source.config['db']} not found. Please check your credentials again"
-            )
-
-    @if_validation_enabled
-    def validate_write_host(self):
-        if not validator.is_valid_url(self.source.config['write_host']):
-            raise ValidationException(
-                f"{self.source.config['write_host']} - wrong url format. Correct format is `scheme://host:port`"
-            )
-        client = source.db.get_influx_client(self.source.config['write_host'])
-        client.ping()
-
-    @if_validation_enabled
-    def validate_write_db(self):
-        client = source.db.get_influx_client(self.source.config['write_host'], self.source.config.get('write_username'),
-                                             self.source.config.get('write_password'))
-        if not any([db['name'] == self.source.config['write_db'] for db in client.get_list_database()]):
-            raise ValidationException(
-                f"Database {self.source.config['write_db']} not found. Please check your credentials again")
-
-    @if_validation_enabled
-    def validate_write_access(self):
-        client = source.db.get_influx_client(self.source.config['write_host'], self.source.config.get('write_username'),
-                                             self.source.config.get('write_password'),
-                                             self.source.config['write_db'])
-        if not source.db.has_write_access(client):
-            raise ValidationException(
-                f"""User {self.source.config.get('write_username')} does not have write permissions for db
-                 {self.source.config['write_db']} at {self.source.config['write_host']}"""
             )
 
     def validate_offset(self):

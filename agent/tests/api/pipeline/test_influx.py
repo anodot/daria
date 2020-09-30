@@ -29,9 +29,9 @@ class TestInflux:
                 },
                 "target_type": "gauge",
                 "properties": {"test": "wrong"},
-                "interval": 7000000
+                "interval": 5
             }],
-            'er': [{"dimensions": {"optional": ["wrong"], "required": []}, "interval": 7000000,
+            'er': [{"dimensions": {"optional": ["wrong"], "required": []}, "interval": 5,
                     "measurement_name": "wrong", "override_source": {}, "pipeline_id": "test_influx",
                     "properties": {"test": "wrong"}, "source": {"name": "influx"}, "target_type": "gauge",
                     "value": {"constant": "1", "type": "property", "values": ["wrong"]}}]
@@ -48,16 +48,16 @@ class TestInflux:
                 },
                 "target_type": "gauge",
                 "properties": {"test": "val"},
-                "interval": 7000000
+                "interval": 5
             }],
-            'er': [{"dimensions": {"optional": ["cpu", "host", "zone"], "required": []}, "interval": 7000000,
+            'er': [{"dimensions": {"optional": ["cpu", "host", "zone"], "required": []}, "interval": 5,
                     "measurement_name": "cpu_test", "override_source": {}, "pipeline_id": "test_influx",
                     "properties": {"test": "val"}, "source": {"name": "influx"}, "target_type": "gauge",
                     "value": {"constant": "1", "type": "property", "values": ["usage_active"]}}]
         }],
         'test_list': [{
             'er': [{"override_source": {}, "pipeline_id": "Monitoring", "source": {"name": "monitoring"}},
-                   {"dimensions": {"optional": ["cpu", "host", "zone"], "required": []}, "interval": 7000000,
+                   {"dimensions": {"optional": ["cpu", "host", "zone"], "required": []}, "interval": 5,
                     "measurement_name": "cpu_test", "override_source": {}, "pipeline_id": "test_influx",
                     "properties": {"test": "val"}, "source": {"name": "influx"}, "target_type": "gauge",
                     "value": {"constant": "1", "type": "property", "values": ["usage_active"]}}]
@@ -80,14 +80,6 @@ class TestInflux:
         result = api_client.post('/pipelines/test_influx/start')
         assert result.status_code == 200
 
-    def test_enable_destination_logs(self, api_client):
-        result = api_client.post('/pipelines/test_influx/enable-destination-logs')
-        assert result.status_code == 200
-
-    def test_disable_destination_logs(self, api_client):
-        result = api_client.post('/pipelines/test_influx/disable-destination-logs')
-        assert result.status_code == 200
-
     def test_info(self, api_client):
         result = api_client.get('/pipelines/test_influx/info')
         assert result.status_code == 200
@@ -98,8 +90,14 @@ class TestInflux:
         assert result.status_code == 200
         assert len(result.data) != 0
 
-    def test_stop(self, api_client):
-        result = api_client.post('/pipelines/test_influx/stop')
+    def test_enable_destination_logs(self, api_client):
+        result = api_client.post('/pipelines/test_influx/force-stop')
+        assert result.status_code == 200
+        result = api_client.post('/pipelines/test_influx/enable-destination-logs')
+        assert result.status_code == 200
+
+    def test_disable_destination_logs(self, api_client):
+        result = api_client.post('/pipelines/test_influx/disable-destination-logs')
         assert result.status_code == 200
 
     def test_reset(self, api_client):

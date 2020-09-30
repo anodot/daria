@@ -9,13 +9,6 @@ class InfluxSourceBuilder(Builder):
     def prompt(self, default_config, advanced=False):
         self.prompt_connection(default_config)
         self.prompt_db(default_config)
-
-        client = source.db.get_influx_client(self.source.config['host'], self.source.config['username'],
-                                          self.source.config['password'],
-                                          self.source.config['db'])
-        if self.source.config['username'] != '' and not source.db.has_write_access(client):
-            self.prompt_write_host(default_config)
-            self.prompt_write_db(default_config)
         self.prompt_offset(default_config)
         self.source.set_config(self.source.config)
         return self.source
@@ -39,31 +32,6 @@ class InfluxSourceBuilder(Builder):
         self.source.config['db'] = click.prompt('Database', type=click.STRING, default=default_config.get('db')).strip()
         try:
             self.validator.validate_db()
-        except source.validator.ValidationException as e:
-            raise click.UsageError(e)
-        click.secho('Access authorized')
-
-    @infinite_retry
-    def prompt_write_host(self, default_config):
-        self.source.config['write_host'] = click.prompt('InfluxDB API url for writing data', type=click.STRING,
-                                                        default=default_config.get('write_host')).strip()
-        try:
-            self.validator.validate_write_host()
-        except source.validator.ValidationException as e:
-            raise click.UsageError(e)
-        click.secho('Connection successful')
-
-    @infinite_retry
-    def prompt_write_db(self, default_config):
-        self.source.config['write_username'] = click.prompt('Username', type=click.STRING,
-                                                            default=default_config.get('write_username', '')).strip()
-        self.source.config['write_password'] = click.prompt('Password', type=click.STRING,
-                                                            default=default_config.get('write_password', ''))
-        self.source.config['write_db'] = click.prompt('Write database', type=click.STRING,
-                                                      default=default_config.get('write_db', '')).strip()
-        try:
-            self.validator.validate_write_db()
-            self.validator.validate_write_access()
         except source.validator.ValidationException as e:
             raise click.UsageError(e)
         click.secho('Access authorized')

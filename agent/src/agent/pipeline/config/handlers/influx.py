@@ -3,9 +3,7 @@ import json
 from . import base
 from agent.modules.logger import get_logger
 from agent.modules.constants import HOSTNAME
-from datetime import datetime, timedelta
-from influxdb import InfluxDBClient
-from urllib.parse import urljoin, urlparse, quote_plus
+from urllib.parse import urljoin, quote_plus
 from agent.pipeline.config import stages
 
 logger = get_logger(__name__)
@@ -39,58 +37,6 @@ state['TAGS'] = {tags}
     PIPELINE_BASE_CONFIG_NAME = 'influx_http.json'
 
     QUERY_GET_DATA = "SELECT+{dimensions}+FROM+{metric}+WHERE+%28%22time%22+%3E%3D+${{record:value('/last_timestamp')}}+AND+%22time%22+%3C+${{record:value('/last_timestamp')}}%2B{interval}+AND+%22time%22+%3C+now%28%29+-+{delay}%29+{where}"
-
-    def get_write_client(self):
-        host, db, username, password = self.get_write_config()
-        influx_url_parsed = urlparse(host)
-        influx_url = influx_url_parsed.netloc.split(':')
-        args = {'database': db, 'host': influx_url[0], 'port': influx_url[1]}
-        if username != '':
-            args['username'] = username
-            args['password'] = password
-        if influx_url_parsed.scheme == 'https':
-            args['ssl'] = True
-        return InfluxDBClient(**args)
-
-    def get_write_config(self):
-        source_config = self.pipeline.source.config
-        if 'write_host' in source_config:
-            host = source_config['write_host']
-            db = source_config['write_db']
-            username = source_config.get('write_username', '')
-            password = source_config.get('write_password', '')
-        else:
-            host = source_config['host']
-            db = source_config['db']
-            username = source_config.get('username', '')
-            password = source_config.get('password', '')
-        return host, db, username, password
-
-    def set_write_config_pipeline(self):
-        host, db, username, password = self.get_write_config()
-        config = {'host': host, 'db': db}
-        if username != '':
-            config['conf.client.authType'] = 'BASIC'
-            config['conf.client.basicAuth.username'] = username
-            config['conf.client.basicAuth.password'] = password
-        return config
-
-    def set_initial_offset(self):
-        source_config = self.pipeline.source.config
-        offset = source_config.get('offset', '0')
-
-        if str(offset).isdigit():
-            timestamp = datetime.now() - timedelta(days=int(offset))
-        else:
-            timestamp = datetime.strptime(offset, '%d/%m/%Y %H:%M')
-
-        offset = int(timestamp.timestamp() * 1e9)
-
-        self.get_write_client().write_points([{
-            'measurement': 'agent_timestamps',
-            'tags': {'pipeline_id': self.pipeline.name},
-            'fields': {'last_timestamp': offset}
-        }])
 
     def override_stages(self):
         super().override_stages()
@@ -134,7 +80,6 @@ state['TAGS'] = {tags}
 
         delay = self.pipeline.config.get('delay', '0s')
         columns = quote_plus(','.join(dimensions_to_select + values_to_select))
-        self.set_initial_offset()
 
         where = self.pipeline.config.get('filtering')
         where = f'AND+%28{quote_plus(where)}%29' if where else ''

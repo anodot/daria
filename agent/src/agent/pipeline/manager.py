@@ -382,7 +382,8 @@ def delete(pipeline_: Pipeline):
         _delete_from_streamsets(pipeline_.name)
     except streamsets_api_client.StreamSetsApiClientException as e:
         raise pipeline.PipelineException(str(e))
-    pipeline.repository.delete(pipeline_)
+    finally:
+        pipeline.repository.delete(pipeline_)
 
 
 def delete_by_name(pipeline_name: str):

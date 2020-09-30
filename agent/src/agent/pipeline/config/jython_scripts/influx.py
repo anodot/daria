@@ -25,7 +25,7 @@ if sdc.lastOffsets.containsKey(entityName):
 elif sdc.userParams['INITIAL_OFFSET']:
     offset = to_timestamp(datetime.strptime(sdc.userParams['INITIAL_OFFSET'], '%d/%m/%Y %H:%M'))
 else:
-    offset = datetime.utcnow().replace(second=0, microsecond=0) - interval
+    offset = to_timestamp(datetime.utcnow().replace(second=0, microsecond=0) - interval)
 
 while True:
     if offset > get_now_with_delay():
