@@ -1,8 +1,6 @@
-import os
 import pytz
 
 from datetime import datetime
-from agent.modules.constants import ROOT_DIR
 from agent import source
 from .base import Stage
 
@@ -19,7 +17,7 @@ class VictoriaScript(Stage):
         return ''
 
     def get_config(self) -> dict:
-        with open(os.path.join(ROOT_DIR, self.JYTHON_SCRIPTS_PATH, self.JYTHON_SCRIPT)) as f:
+        with open(self.get_jython_file_path()) as f:
             return {
                 'scriptConf.params': [
                     {'key': 'URL', 'value': self.pipeline.source.config[source.VictoriaMetricsSource.URL]},

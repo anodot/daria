@@ -9,7 +9,7 @@ logger = get_logger(__name__)
 class KafkaConfigHandler(BaseConfigHandler):
     PIPELINE_BASE_CONFIG_NAME = 'kafka_http.json'
 
-    stages = {
+    stages_to_override = {
         'source': stages.source.Source,
         'JavaScriptEvaluator_01': stages.js_convert_metrics_20.JSConvertMetrics,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties,

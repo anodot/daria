@@ -16,7 +16,7 @@ class JDBCConfigHandler(BaseConfigHandler):
 
     QUERY = "SELECT * FROM {table} WHERE {offset_column} > ${{OFFSET}} {condition} ORDER BY {offset_column} LIMIT {limit}"
 
-    stages = {
+    stages_to_override = {
         'source': stages.source.Source,
         'JavaScriptEvaluator_01': stages.js_convert_metrics_20.JSConvertMetrics,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties,

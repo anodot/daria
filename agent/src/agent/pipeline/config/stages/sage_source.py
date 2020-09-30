@@ -1,7 +1,4 @@
-import os
-
 from agent import source
-from agent.modules.constants import ROOT_DIR
 from .base import Stage
 
 
@@ -9,7 +6,7 @@ class SageScript(Stage):
     JYTHON_SCRIPT = 'sage.py'
 
     def get_config(self) -> dict:
-        with open(os.path.join(ROOT_DIR, self.JYTHON_SCRIPTS_PATH, self.JYTHON_SCRIPT)) as f:
+        with open(self.get_jython_file_path()) as f:
             script = f.read()
 
         return {
