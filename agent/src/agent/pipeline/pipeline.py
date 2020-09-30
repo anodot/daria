@@ -53,10 +53,15 @@ class Pipeline(Entity):
     STATUS_EDITED = 'EDITED'
     STATUS_RETRY = 'RETRY'
     STATUS_STOPPING = 'STOPPING'
+    STATUS_STARTING = 'STARTING'
+    STATUS_RUN_ERROR = 'RUN_ERROR'
+    STATUS_START_ERROR = 'START_ERROR'
+    STATUS_STOP_ERROR = 'STOP_ERROR'
+    STATUS_RUNNING_ERROR = 'RUNNING_ERROR'
     OVERRIDE_SOURCE = 'override_source'
     FLUSH_BUCKET_SIZE = 'flush_bucket_size'
 
-    error_statuses = ["RUN_ERROR", "START_ERROR", "STOP_ERROR", "RUNNING_ERROR"]
+    error_statuses = [STATUS_RUN_ERROR, STATUS_START_ERROR, STATUS_STOP_ERROR, STATUS_RUNNING_ERROR]
 
     TARGET_TYPES = ['counter', 'gauge', 'running_counter']
 
