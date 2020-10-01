@@ -2,7 +2,7 @@ from typing import Optional
 
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import relationship
-from agent import source
+from agent import source, pipeline
 from agent.modules.constants import HOSTNAME
 from agent.modules.db import Entity
 from agent.destination import HttpDestination
@@ -206,6 +206,12 @@ class Pipeline(Entity):
 
     @property
     def query(self) -> Optional[str]:
+        # pipelines weren't migrated properly and miss query in the database
+        # todo delete it when agent upgrade tool is released
+        if not self.config.get('query') and self.query_file:
+            with open(self.query_file) as f:
+                self.query = f.read()
+            pipeline.repository.save(self)
         return self.config.get('query')
 
     @query.setter
@@ -274,13 +280,13 @@ class Pipeline(Entity):
         }
 
 
-def transform_for_bc(pipeline: Pipeline) -> dict:
+def transform_for_bc(pipeline_: Pipeline) -> dict:
     data = {
-        'config': pipeline.to_dict(),
-        'created': pipeline.created_at,
-        'updated': pipeline.last_edited,
+        'config': pipeline_.to_dict(),
+        'created': pipeline_.created_at,
+        'updated': pipeline_.last_edited,
     }
     data['source'] = data['config'].pop('source')
-    data['source']['type'] = pipeline.source.type
+    data['source']['type'] = pipeline_.source.type
     data.pop('override_source')
     return data
