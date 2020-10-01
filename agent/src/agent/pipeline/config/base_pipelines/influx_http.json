@@ -352,7 +352,7 @@
       "stageVersion" : "1",
       "configuration" : [ {
         "name" : "script",
-        "value" : "global sdc\n\ntry:\n    sdc.importLock()\n    import time\n    from datetime import datetime, timedelta\nfinally:\n    sdc.importUnlock()\n\n\ndef get_now_with_delay():\n    return int(time.time()) - int(sdc.userParams['INTERVAL_IN_MINUTES']) * 60\n\n\ndef to_timestamp(a_date):\n    epoch = datetime(1970, 1, 1)\n    return int((a_date - epoch).total_seconds())\n\n\nentityName = ''\ninterval = timedelta(seconds=int(float(sdc.userParams['INTERVAL_IN_MINUTES']) * 60))\n\nif sdc.lastOffsets.containsKey(entityName):\n    offset = int(float(sdc.lastOffsets.get(entityName)))\nelif sdc.userParams['INITIAL_OFFSET']:\n    offset = to_timestamp(datetime.strptime(sdc.userParams['INITIAL_OFFSET'], '%d/%m/%Y %H:%M'))\nelse:\n    offset = datetime.utcnow().replace(second=0, microsecond=0) - interval\n\nwhile True:\n    if offset > get_now_with_delay():\n        time.sleep(offset - get_now_with_delay())\n    cur_batch = sdc.createBatch()\n    record = sdc.createRecord('record created ' + str(datetime.now()))\n    record.value = {'last_timestamp': int(offset) * int(1e9)}\n    cur_batch.add(record)\n    cur_batch.process(entityName, str(offset))\n    offset += interval.total_seconds()"
+        "value" : ""
       }, {
         "name" : "scriptConf.batchSize",
         "value" : 1000
@@ -365,7 +365,7 @@
       }, {
         "name" : "scriptConf.params",
         "value" : [ {
-          "key" : "INTERVAL_IN_MINUTES",
+          "key" : "INTERVAL_IN_SECONDS",
           "value" : "1000"
         }, {
           "key" : "INITIAL_OFFSET",

@@ -8,8 +8,12 @@ finally:
     sdc.importUnlock()
 
 
+def get_interval():
+    return int(sdc.userParams['INTERVAL_IN_SECONDS'])
+
+
 def get_now_with_delay():
-    return int(time.time()) - int(sdc.userParams['INTERVAL_IN_MINUTES']) * 60
+    return int(time.time()) - int(sdc.userParams['DELAY_IN_SECONDS'])
 
 
 def to_timestamp(date):
@@ -18,7 +22,7 @@ def to_timestamp(date):
 
 
 entityName = ''
-interval = timedelta(seconds=int(float(sdc.userParams['INTERVAL_IN_MINUTES']) * 60))
+interval = timedelta(seconds=get_interval())
 
 if sdc.lastOffsets.containsKey(entityName):
     offset = int(float(sdc.lastOffsets.get(entityName)))

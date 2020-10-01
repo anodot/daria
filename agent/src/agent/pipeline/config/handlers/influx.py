@@ -94,8 +94,7 @@ state['TAGS'] = {tags}
                     'dimensions': columns,
                     'metric': measurement_name,
                     'delay': delay,
-                    # interval is in minutes
-                    'interval': str(int(self.pipeline.config.get('interval', 60) * 60)) + 's',
+                    'interval': str(self.pipeline.config.get('interval', 60)) + 's',
                     'where': where
                 })
                 self.update_http_stage(stage, self.pipeline.source.config, urljoin(source_config['host'], query))
