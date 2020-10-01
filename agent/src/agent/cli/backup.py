@@ -52,20 +52,15 @@ def _get_pipelines():
 
 
 def _update_status(pipeline_: Pipeline):
-    for function in _change_status_functions(pipeline_):
-        function(pipeline_)
-
-
-def _change_status_functions(pipeline_: Pipeline) -> List[Callable]:
     expected_status = pipeline_.status
     actual_status = pipeline.manager.get_pipeline_status(pipeline_.name)
     if expected_status in [Pipeline.STATUS_RUNNING, Pipeline.STATUS_STARTING]:
         if actual_status in [Pipeline.STATUS_EDITED, Pipeline.STATUS_STOPPED, Pipeline.STATUS_RUN_ERROR,
                              Pipeline.STATUS_STOP_ERROR, Pipeline.STATUS_START_ERROR]:
-            return [pipeline.manager.start]
+            pipeline.manager.start(pipeline_)
         elif actual_status == Pipeline.STATUS_STOPPING:
-            return [pipeline.manager.force_stop_pipeline, pipeline.manager.start]
-    if expected_status in [Pipeline.STATUS_EDITED, Pipeline.STATUS_STOPPED, Pipeline.STATUS_STOPPING]:
+            pipeline.manager.force_stop_pipeline(pipeline_.name)
+            pipeline.manager.start(pipeline_)
+    elif expected_status in [Pipeline.STATUS_EDITED, Pipeline.STATUS_STOPPED, Pipeline.STATUS_STOPPING]:
         if actual_status in [Pipeline.STATUS_RUNNING, Pipeline.STATUS_STARTING]:
-            return [pipeline.manager.stop]
-    return []
+            pipeline.manager.stop(pipeline_)
