@@ -343,10 +343,6 @@ def stop(pipeline_: Pipeline):
     return stop_by_id(pipeline_.name)
 
 
-def is_running(pipeline_name: str) -> bool:
-    return get_pipeline_status(pipeline_name) == Pipeline.STATUS_RUNNING
-
-
 def stop_by_id(pipeline_id: str):
     print("Stopping the pipeline")
     streamsets_api_client.api_client.stop_pipeline(pipeline_id)

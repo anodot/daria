@@ -1,10 +1,12 @@
 import click
 import os
 
+from typing import Callable, List
 from datetime import datetime
 from agent.modules.constants import AGENT_DB_USER, AGENT_DB, BACKUP_DIRECTORY, AGENT_DB_HOST
 from agent import pipeline
 from agent.modules.streamsets_api_client import api_client as streamsets_api_client
+from agent.pipeline import Pipeline
 
 
 @click.command()
@@ -49,22 +51,16 @@ def _get_pipelines():
     return existing, not_existing
 
 
-def _update_status(pipeline_: pipeline.Pipeline):
-    if _should_change_status(pipeline_):
-        # we care only if it's running or stopped
-        if pipeline.manager.is_running(pipeline_.name):
-            # then stop it
-            pipeline.manager.stop(pipeline_)
-        else:
-            # then start it
-            if not _can_start(pipeline_):
-                pipeline.manager.stop(pipeline_)
+def _update_status(pipeline_: Pipeline):
+    expected_status = pipeline_.status
+    actual_status = pipeline.manager.get_pipeline_status(pipeline_.name)
+    if expected_status in [Pipeline.STATUS_RUNNING, Pipeline.STATUS_STARTING]:
+        if actual_status in [Pipeline.STATUS_EDITED, Pipeline.STATUS_STOPPED, Pipeline.STATUS_RUN_ERROR,
+                             Pipeline.STATUS_STOP_ERROR, Pipeline.STATUS_START_ERROR]:
             pipeline.manager.start(pipeline_)
-
-
-def _should_change_status(pipeline_: pipeline.Pipeline) -> bool:
-    return pipeline_.status != pipeline.manager.get_pipeline_status(pipeline_.name)
-
-
-def _can_start(pipeline_: pipeline.Pipeline) -> bool:
-    return pipeline.manager.get_pipeline_status(pipeline_.name) in [pipeline.Pipeline.STATUS_STOPPED, pipeline.Pipeline.STATUS_EDITED]
+        elif actual_status == Pipeline.STATUS_STOPPING:
+            pipeline.manager.force_stop_pipeline(pipeline_.name)
+            pipeline.manager.start(pipeline_)
+    elif expected_status in [Pipeline.STATUS_EDITED, Pipeline.STATUS_STOPPED, Pipeline.STATUS_STOPPING]:
+        if actual_status in [Pipeline.STATUS_RUNNING, Pipeline.STATUS_STARTING]:
+            pipeline.manager.stop(pipeline_)
