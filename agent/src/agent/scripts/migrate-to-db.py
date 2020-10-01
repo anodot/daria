@@ -75,6 +75,10 @@ def migrate_pipelines(data_dir):
                 pipeline_ = pipeline.manager.create_object(pipeline_id, data['source']['name'])
                 data.pop('source')
                 pipeline_.config = data
+                # add elastic/sage queries to the config
+                if pipeline_.query_file:
+                    with open(pipeline_.query_file) as ff:
+                        pipeline_.query = ff.read()
                 pipeline.repository.save(pipeline_)
                 logger_.info(f'Pipeline {pipeline_id} successfully migrated')
     except Exception:
