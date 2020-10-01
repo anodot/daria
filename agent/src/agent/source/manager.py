@@ -22,7 +22,7 @@ def edit_using_file(file):
     edit_using_json(extract_configs(file))
 
 
-def create_from_json(configs: dict) -> List[source.Source]:
+def create_from_json(configs: list) -> List[source.Source]:
     validate_configs_for_create(configs)
     exceptions = {}
     sources = []
@@ -77,7 +77,7 @@ def edit_source_using_json(config: dict) -> source.Source:
     return source_
 
 
-def validate_configs_for_create(json_data: dict):
+def validate_configs_for_create(json_data: list):
     schema = {
         'type': 'array',
         'items': source.json_schema

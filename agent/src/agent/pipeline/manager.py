@@ -129,7 +129,7 @@ def extract_configs(file):
     return data
 
 
-def validate_configs_for_create(configs: dict):
+def validate_configs_for_create(configs: list):
     json_schema = {
         'type': 'array',
         'items': {
@@ -178,7 +178,7 @@ def edit_using_file(file):
     edit_using_json(extract_configs(file))
 
 
-def create_from_json(configs: dict) -> List[Pipeline]:
+def create_from_json(configs: list) -> List[Pipeline]:
     validate_configs_for_create(configs)
     exceptions = {}
     pipelines = []
