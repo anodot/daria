@@ -65,7 +65,7 @@ curl -X POST http://localhost:8080/pipelines \
         },
         "target_type": "gauge",
         "properties": {"test": "val"},
-        "interval": 7000000
+        "interval": 100
     }
 ]'
 ```
@@ -82,7 +82,7 @@ curl -X POST http://localhost:8080/pipelines \
             ],
             "required": []
         },
-        "interval": 7000000,
+        "interval": 100,
         "measurement_name": "cpu_test",
         "override_source": {},
         "pipeline_id": "test_influx",
@@ -127,7 +127,7 @@ curl -X POST http://localhost:8080/pipelines \
         },
         "target_type": "gauge",
         "properties": {"test": "val"},
-        "interval": 7000000
+        "interval": 100
     }
 ]'
 ```
@@ -144,7 +144,7 @@ curl -X POST http://localhost:8080/pipelines \
             ],
             "required": []
         },
-        "interval": 7000000,
+        "interval": 100,
         "measurement_name": "different_measurment",
         "override_source": {},
         "pipeline_id": "test_influx",

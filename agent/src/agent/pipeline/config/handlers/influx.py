@@ -3,14 +3,17 @@ import json
 from . import base
 from agent.modules.logger import get_logger
 from agent.modules.constants import HOSTNAME
-from datetime import datetime, timedelta
-from influxdb import InfluxDBClient
-from urllib.parse import urljoin, urlparse, quote_plus
+from urllib.parse import urljoin, quote_plus
+from agent.pipeline.config import stages
 
 logger = get_logger(__name__)
 
 
 class InfluxConfigHandler(base.BaseConfigHandler):
+    stages_to_override = {
+        'source': stages.influx_source.InfluxScript,
+    }
+
     DECLARE_VARS_JS = """/*
 state['MEASUREMENT_NAME'] = 'clicks';
 state['REQUIRED_DIMENSIONS'] = ['AdType', 'Exchange'];
@@ -34,66 +37,9 @@ state['TAGS'] = {tags}
     PIPELINE_BASE_CONFIG_NAME = 'influx_http.json'
 
     QUERY_GET_DATA = "SELECT+{dimensions}+FROM+{metric}+WHERE+%28%22time%22+%3E%3D+${{record:value('/last_timestamp')}}+AND+%22time%22+%3C+${{record:value('/last_timestamp')}}%2B{interval}+AND+%22time%22+%3C+now%28%29+-+{delay}%29+{where}"
-    QUERY_GET_TIMESTAMP = "SELECT+last_timestamp+FROM+agent_timestamps+WHERE+pipeline_id%3D%27${pipeline:id()}%27+ORDER+BY+time+DESC+LIMIT+1"
-    QUERY_CHECK_DATA = "SELECT+{dimensions}+FROM+{metric}+WHERE+%28%22time%22+%3E+${{record:value('/last_timestamp_value')}}+AND+%22time%22+%3C+now%28%29+-+{delay}%29+{where}+ORDER+BY+time+ASC+limit+1"
-
-    def get_write_client(self):
-        host, db, username, password = self.get_write_config()
-        influx_url_parsed = urlparse(host)
-        influx_url = influx_url_parsed.netloc.split(':')
-        args = {'database': db, 'host': influx_url[0], 'port': influx_url[1]}
-        if username != '':
-            args['username'] = username
-            args['password'] = password
-        if influx_url_parsed.scheme == 'https':
-            args['ssl'] = True
-        return InfluxDBClient(**args)
-
-    def get_write_config(self):
-        source_config = self.pipeline.source.config
-        if 'write_host' in source_config:
-            host = source_config['write_host']
-            db = source_config['write_db']
-            username = source_config.get('write_username', '')
-            password = source_config.get('write_password', '')
-        else:
-            host = source_config['host']
-            db = source_config['db']
-            username = source_config.get('username', '')
-            password = source_config.get('password', '')
-        return host, db, username, password
-
-    def set_write_config_pipeline(self):
-        host, db, username, password = self.get_write_config()
-        config = {'host': host, 'db': db}
-        if username != '':
-            config['conf.client.authType'] = 'BASIC'
-            config['conf.client.basicAuth.username'] = username
-            config['conf.client.basicAuth.password'] = password
-        return config
-
-    def set_initial_offset(self):
-        source_config = self.pipeline.source.config
-        offset = source_config.get('offset', '0')
-
-        if str(offset).isdigit():
-            timestamp = datetime.now() - timedelta(days=int(offset))
-        else:
-            timestamp = datetime.strptime(offset, '%d/%m/%Y %H:%M')
-
-        offset = int(timestamp.timestamp() * 1e9)
-
-        self.get_write_client().write_points([{
-            'measurement': 'agent_timestamps',
-            'tags': {'pipeline_id': self.pipeline.name},
-            'fields': {'last_timestamp': offset}
-        }])
-
-    def replace_illegal_chars(self, string: str) -> str:
-        return string.replace(' ', '_').replace('.', '_').replace('<', '_')
 
     def override_stages(self):
-
+        super().override_stages()
         self.update_source_configs()
         required = [self.replace_illegal_chars(d) for d in self.pipeline.config['dimensions']['required']]
         optional = [self.replace_illegal_chars(d) for d in self.pipeline.config['dimensions']['optional']]
@@ -122,10 +68,8 @@ state['TAGS'] = {tags}
                         conf['value'] = self.pipeline.destination.config[conf['name']]
 
     def update_source_configs(self):
-
-        dimensions = self.pipeline.dimensions_names
         source_config = self.pipeline.source.config
-        dimensions_to_select = [f'"{d}"::tag' for d in dimensions]
+        dimensions_to_select = [f'"{d}"::tag' for d in self.pipeline.dimensions_names]
         values_to_select = ['*::field' if v == '*' else f'"{v}"::field' for v in self.pipeline.config['value']['values']]
         username = source_config.get('username', '')
         password = source_config.get('password', '')
@@ -135,13 +79,7 @@ state['TAGS'] = {tags}
             self.pipeline.source.config['conf.client.basicAuth.password'] = password
 
         delay = self.pipeline.config.get('delay', '0s')
-        interval = self.pipeline.config.get('interval', 60)
         columns = quote_plus(','.join(dimensions_to_select + values_to_select))
-        self.set_initial_offset()
-
-        write_config = self.set_write_config_pipeline()
-        write_config['conf.spoolingPeriod'] = interval
-        write_config['conf.poolingTimeoutSecs'] = interval
 
         where = self.pipeline.config.get('filtering')
         where = f'AND+%28{quote_plus(where)}%29' if where else ''
@@ -156,28 +94,14 @@ state['TAGS'] = {tags}
                     'dimensions': columns,
                     'metric': measurement_name,
                     'delay': delay,
-                    'interval': str(interval) + 's',
+                    'interval': str(self.pipeline.config.get('interval', 60)) + 's',
                     'where': where
                 })
                 self.update_http_stage(stage, self.pipeline.source.config, urljoin(source_config['host'], query))
 
-            if stage['instanceName'] == 'get_last_agent_timestamp':
-                get_timestamp_url = urljoin(write_config['host'],
-                                            f"/query?db={write_config['db']}&epoch=ns&q={self.QUERY_GET_TIMESTAMP}")
-                self.update_http_stage(stage, write_config, get_timestamp_url)
-
-            if stage['instanceName'] == 'save_next_record_timestamp':
-                self.update_http_stage(stage, write_config, urljoin(write_config['host'],
-                                                      f"/write?db={write_config['db']}&precision=ns"))
-
-            if stage['instanceName'] == 'get_next_record_timestamp':
-                query = f"/query?db={source_config['db']}&epoch=ns&q={self.QUERY_CHECK_DATA}".format(**{
-                    'dimensions': columns,
-                    'metric': measurement_name,
-                    'delay': delay,
-                    'where': where
-                })
-                self.update_http_stage(stage, self.pipeline.source.config, urljoin(source_config['host'], query))
+    @staticmethod
+    def replace_illegal_chars(string: str) -> str:
+        return string.replace(' ', '_').replace('.', '_').replace('<', '_')
 
     @staticmethod
     def update_http_stage(stage, config, url=None):

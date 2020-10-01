@@ -9,7 +9,7 @@ logger = get_logger(__name__)
 class VictoriaConfigHandler(BaseConfigHandler):
     PIPELINE_BASE_CONFIG_NAME = 'victoria_http.json'
 
-    stages = {
+    stages_to_override = {
         'source': stages.victoria_source.VictoriaScript,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties,
         'destination': stages.destination.Destination

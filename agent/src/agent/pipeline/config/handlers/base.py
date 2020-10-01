@@ -16,7 +16,7 @@ class BaseConfigHandler:
     PIPELINE_BASE_CONFIG_NAME = ''
     BASE_PIPELINE_CONFIGS_PATH = os.path.join('pipeline', 'config', 'base_pipelines')
 
-    stages = {}
+    stages_to_override = {}
 
     def __init__(self, pipeline: p.Pipeline):
         self.config = {}
@@ -47,8 +47,8 @@ class BaseConfigHandler:
 
     def override_stages(self):
         for stage in self.config['stages']:
-            if stage['instanceName'] in self.stages:
-                stage_config = self.stages[stage['instanceName']](self.pipeline, stage).get_config()
+            if stage['instanceName'] in self.stages_to_override:
+                stage_config = self.stages_to_override[stage['instanceName']](self.pipeline, stage).get_config()
                 for conf in stage['configuration']:
                     if conf['name'] in stage_config:
                         conf['value'] = stage_config[conf['name']]

@@ -1,8 +1,5 @@
-import time
-
 from urllib.parse import urlparse
 from influxdb import InfluxDBClient
-from influxdb.exceptions import InfluxDBClientError
 from pymongo import MongoClient
 
 
@@ -18,22 +15,6 @@ def get_influx_client(host, username=None, password=None, db=None) -> InfluxDBCl
     if db:
         args['database'] = db
     return InfluxDBClient(**args)
-
-
-def has_write_access(client: InfluxDBClient):
-    try:
-        client.write_points([{
-            "measurement": "agent_test",
-            "time": time.time_ns(),
-            "fields": {
-                "val": 1.0
-            }
-        }])
-    except InfluxDBClientError as e:
-        if e.code == 403:
-            return False
-    client.drop_measurement('agent_test')
-    return True
 
 
 def get_mongo_client(connection_string: str, username: str, password: str, auth_source: str) -> MongoClient:
