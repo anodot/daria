@@ -274,13 +274,13 @@ class Pipeline(Entity):
         }
 
 
-def transform_for_bc(pipeline_: Pipeline) -> dict:
+def transform_for_bc(pipeline: Pipeline) -> dict:
     data = {
-        'config': pipeline_.to_dict(),
-        'created': pipeline_.created_at,
-        'updated': pipeline_.last_edited,
+        'config': pipeline.to_dict(),
+        'created': pipeline.created_at,
+        'updated': pipeline.last_edited,
     }
     data['source'] = data['config'].pop('source')
-    data['source']['type'] = pipeline_.source.type
+    data['source']['type'] = pipeline.source.type
     data.pop('override_source')
     return data
