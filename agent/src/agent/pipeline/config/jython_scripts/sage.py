@@ -116,12 +116,13 @@ while True:
                 record.value = hit
                 cur_batch.add(record)
 
-            last = data.get('last', None)
-            if last is None:
-                break
+            # last = data.get('last', None)
+            # if last is None:
+            #     break
 
-            cur_batch.process(entityName, data["hits"][-1]['@timestamp'])
-            cur_batch = sdc.createBatch()
+            # cur_batch.process(entityName, data["hits"][-1]['@timestamp'])
+            # cur_batch = sdc.createBatch()
+            break
 
         # send batch and save offset
         offset = end_time
