@@ -99,7 +99,7 @@ class Pipeline(Entity):
 
     @property
     def flush_bucket_size(self) -> FlushBucketSize:
-        return FlushBucketSize(self.config.get(self.FLUSH_BUCKET_SIZE))
+        return FlushBucketSize(self.config.get(self.FLUSH_BUCKET_SIZE, '1d'))
 
     @flush_bucket_size.setter
     def flush_bucket_size(self, value: str):
