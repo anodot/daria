@@ -14,7 +14,7 @@ class SageConfigHandler(BaseConfigHandler):
         'JavaScriptEvaluator_01': stages.js_convert_metrics_20.JSConvertMetrics,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties,
         'event_add_metadata_tags': stages.expression_evaluator.AddMetadataTags,
-        'events_destination': stages.destination.Destination,
+        'events_destination': stages.destination.EventsDestination,
         'destination': stages.destination.Destination
     }
 

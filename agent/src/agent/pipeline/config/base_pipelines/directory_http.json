@@ -834,6 +834,9 @@
         "name" : "conf.dataGeneratorFormatConfig.csvFileFormat",
         "value" : "CSV"
       }, {
+        "name" : "conf.agentOffsetUrl",
+        "value" : ""
+      }, {
         "name" : "conf.dataGeneratorFormatConfig.csvHeader",
         "value" : "NO_HEADER"
       }, {

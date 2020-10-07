@@ -617,6 +617,9 @@
         "name" : "conf.dataGeneratorFormatConfig.charset",
         "value" : "UTF-8"
       }, {
+        "name" : "conf.agentOffsetUrl",
+        "value" : ""
+      }, {
         "name" : "conf.dataGeneratorFormatConfig.csvFileFormat",
         "value" : "CSV"
       }, {

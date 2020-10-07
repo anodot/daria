@@ -172,3 +172,12 @@ def _send_error_status_to_anodot(data, pipeline_):
     if 'errors' in data and data['errors']:
         for error in data['errors']:
             logger.error(error['description'])
+
+
+@pipelines.route('/pipeline-offset/<pipeline_name>', methods=['POST'])
+@needs_pipeline
+def pipeline_offset(pipeline_name):
+    pipeline_ = pipeline.repository.get_by_name(pipeline_name)
+    pipeline_.offset = request.get_json()['offset']
+    pipeline.repository.save(pipeline_)
+    return jsonify('')

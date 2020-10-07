@@ -74,6 +74,7 @@ class Pipeline(Entity):
     created_at = Column(TIMESTAMP(timezone=True), default=func.now())
     last_edited = Column(TIMESTAMP(timezone=True), default=func.now(), onupdate=func.now())
     status = Column(String, default=STATUS_EDITED)
+    offset = Column(String)
 
     source_ = relationship('Source', back_populates='pipelines')
     destination = relationship('HttpDestination')
