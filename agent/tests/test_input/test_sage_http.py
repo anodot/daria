@@ -13,7 +13,7 @@ class TestSage:
              'advanced_options': 'key1:val1\n\n\n'},
             {'name': 'test_sage', 'options': [], 'value': 'n\nClicks:gauge\nClicks:clicks',
              'advanced_options': '\n\n'}],
-        'test_edit': [{'options': ['test_sage_value_const'], 'value': 'y\nclicks\n\n\n'}],
+        'test_edit': [{'options': ['-a', 'test_sage_value_const'], 'value': 'y\nclicks\n\n\n\n'}],
     }
 
     def test_source_create(self, cli_runner):
@@ -34,5 +34,5 @@ class TestSage:
 
     def test_edit(self, cli_runner, options, value):
         result = cli_runner.invoke(pipeline_cli.edit, options, catch_exceptions=False,
-                                   input=f"\n\n\n\n{value}\n\n\n\n\n\n\n\n\n")
+                                   input=f"\n\n\n\n{value}\n\n\n\n\n\n\n\n\n\n\n\n")
         assert result.exit_code == 0

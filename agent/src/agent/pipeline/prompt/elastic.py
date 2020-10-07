@@ -29,4 +29,4 @@ class PromptConfigElastic(PromptConfigSchemaless):
             errors = query_validator.get_errors(query, offset_field)
             if errors:
                 raise click.ClickException(errors)
-            self.pipeline.query = query
+            self.config['query'] = query

@@ -21,7 +21,7 @@ class PromptConfigSage(PromptConfigSchemaless):
         self.config['query_file'] = click.prompt('Query file path', type=click.Path(exists=True, dir_okay=False),
                                                  default=self.default_config.get('query_file'))
         with open(self.config['query_file']) as f:
-            self.pipeline.query = f.read()
+            self.config['query'] = f.read()
 
     def set_delay(self):
         self.config['delay'] = click.prompt('Delay, minutes', type=click.INT,

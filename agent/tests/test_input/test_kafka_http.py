@@ -73,7 +73,7 @@ class TestKafka:
             },
         ],
         'test_edit': [
-            {'options': ['test_kfk_value_const'], 'value': 'y\nclicks\n\n'},
+            {'options': ['test_kfk_value_const', '-a'], 'value': 'y\nclicks\n\n\n\n'},
             {'options': ['test_kfk_timestamp_string', '-a'], 'value': 'n\nn\n\nClicks:agg_type\nClicks:metric'}
         ],
     }
@@ -94,5 +94,5 @@ class TestKafka:
 
     def test_edit(self, cli_runner, options, value):
         result = cli_runner.invoke(cli.pipeline.edit, options, catch_exceptions=False,
-                                   input=f"\n{value}\n\n\n\n\n\n\n\n\n")
+                                   input=f"\n{value}\n\n\n\n\n\n\n\n\n\n\n\n")
         assert result.exit_code == 0
