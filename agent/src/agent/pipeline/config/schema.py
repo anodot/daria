@@ -1,4 +1,4 @@
-from agent.modules import anodot_api_client
+from agent.destination import anodot_api_client
 from agent.pipeline import Pipeline
 
 

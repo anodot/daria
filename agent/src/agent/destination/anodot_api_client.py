@@ -43,7 +43,7 @@ class AnodotApiClient:
         self.session.headers.update({'Authorization': 'Bearer ' + self._get_auth_token(destination_)})
 
     def _get_auth_token(self, destination_: HttpDestination):
-        token = destination.repository.get_auth_token(destination_)
+        token = destination_.auth_token
         if not token:
             token = AuthenticationToken(destination_, self._retrieve_new_token(destination_))
             destination.repository.save_auth_token(token)

@@ -22,6 +22,8 @@ class HttpDestination(Entity):
     created_at = Column(TIMESTAMP(timezone=True), default=func.now())
     last_edited = Column(TIMESTAMP(timezone=True), default=func.now(), onupdate=func.now())
 
+    auth_token = relationship("AuthenticationToken", cascade="delete", uselist=False)
+
     TYPE = 'http'
     STATUS_URL = 'api/v1/status'
 
@@ -115,7 +117,7 @@ class AuthenticationToken(Entity):
     destination_id = Column(Integer, ForeignKey('destinations.id'))
     authentication_token = Column(String, nullable=False)
     created_at = Column(TIMESTAMP(timezone=True), default=func.now())
-    # todo delete cascade
+
     destination = relationship('HttpDestination')
 
     EXPIRATION_PERIOD_IN_SECONDS = 24 * 60 * 60

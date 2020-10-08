@@ -2,8 +2,7 @@ import urllib
 import requests
 import urllib.parse
 
-from agent.destination import HttpDestination
-from agent.modules import anodot_api_client
+from agent.destination import HttpDestination, anodot_api_client
 from agent.modules import proxy
 from agent.modules.tools import if_validation_enabled
 

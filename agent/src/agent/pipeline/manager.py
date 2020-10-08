@@ -10,7 +10,7 @@ from agent import source, pipeline, destination
 from agent.pipeline.config import schema
 from agent.pipeline.config.validators import get_config_validator
 from agent.pipeline import prompt, load_client_data, Pipeline
-from agent.modules import anodot_api_client
+from agent.destination import anodot_api_client
 from agent.modules.constants import ENV_PROD, MONITORING_SOURCE_NAME
 from agent.modules import streamsets_api_client
 from agent.modules.tools import print_json, sdc_record_map_to_dict

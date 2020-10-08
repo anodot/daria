@@ -1,7 +1,7 @@
 import traceback
 
 from agent import pipeline, destination
-from agent.modules.anodot_api_client import AnodotApiClient
+from agent.destination.anodot_api_client import AnodotApiClient
 from agent.modules.logger import get_logger
 
 logger = get_logger(__name__)

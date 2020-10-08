@@ -1,4 +1,3 @@
-from typing import Optional
 from agent.destination import HttpDestination, AuthenticationToken
 from agent.modules.db import session
 
@@ -26,12 +25,6 @@ def delete():
         return
     session().delete(get())
     session().commit()
-
-
-def get_auth_token(destination_: HttpDestination) -> Optional[AuthenticationToken]:
-    if not destination_.id:
-        return None
-    return session().query(AuthenticationToken).filter(AuthenticationToken.destination_id == destination_.id).first()
 
 
 def save_auth_token(token: AuthenticationToken):
