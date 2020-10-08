@@ -9,7 +9,7 @@ class DestinationForm(FlaskForm):
         Optional(), URL(False, 'Wrong url format, please specify the protocol and domain name')
     ])
     host_id = StringField('Host ID')
-    access_key = StringField('Access key', default='')
+    access_key = StringField('Access key', [DataRequired()])
     proxy_uri = StringField('Proxy URI', [Optional(), URL(False, 'Proxy url is invalid')], default='')
     proxy_username = StringField('Proxy username', default='')
     proxy_password = StringField('Proxy password', default='')

@@ -43,14 +43,13 @@ class AnodotApiClient:
         self.session.headers.update({'Authorization': 'Bearer ' + self._get_auth_token(destination_)})
 
     def _get_auth_token(self, destination_: HttpDestination):
-        token = destination_.auth_token
-        if not token:
-            token = AuthenticationToken(destination_, self._retrieve_new_token(destination_))
-            destination.repository.save_auth_token(token)
-        elif token.is_expired():
-            token.update(self._retrieve_new_token(destination_))
-            destination.repository.save_auth_token(token)
-        return token.authentication_token
+        if not destination_.auth_token:
+            destination_.auth_token = AuthenticationToken(destination_, self._retrieve_new_token(destination_))
+            destination.repository.save_auth_token(destination_.auth_token)
+        elif destination_.auth_token.is_expired():
+            destination_.auth_token.update(self._retrieve_new_token(destination_))
+            destination.repository.save_auth_token(destination_.auth_token)
+        return destination_.auth_token.authentication_token
 
     def _retrieve_new_token(self, destination_: HttpDestination):
         response = requests.post(self._build_url('access-token'), json={'refreshToken': destination_.access_key},

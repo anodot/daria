@@ -41,7 +41,7 @@ class HttpDestination(Entity):
     def __init__(self):
         self.config: Dict[str, any] = {self.CONFIG_PROXY_USE: False}
         self.host_id = self.generate_host_id()
-        self.access_key = ''
+        self.access_key = None
 
     def to_dict(self) -> dict:
         return {

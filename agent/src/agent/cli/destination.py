@@ -100,6 +100,6 @@ def _prompt_token(dest: HttpDestination):
 
 @infinite_retry
 def _prompt_access_key(dest: HttpDestination):
-    dest.access_key = click.prompt('Anodot access key', type=click.STRING, default=dest.access_key or '')
-    if dest.access_key and not agent.destination.validator.is_valid_access_key(dest):
+    dest.access_key = click.prompt('Anodot access key', type=click.STRING, default=dest.access_key)
+    if not agent.destination.validator.is_valid_access_key(dest):
         raise click.ClickException('Access key is invalid')
