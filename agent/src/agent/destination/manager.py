@@ -1,4 +1,5 @@
 from agent import destination, pipeline
+from agent.destination import HttpDestination
 from agent.modules import proxy
 from result import Result, Ok, Err
 
@@ -11,8 +12,8 @@ def create(
     proxy_username: str = None,
     proxy_password: str = None,
     host_id: str = None,
-) -> Result[destination.HttpDestination, str]:
-    result = _build(destination.HttpDestination(), token, url, access_key, proxy_host, proxy_username, proxy_password, host_id)
+) -> Result[HttpDestination, str]:
+    result = _build(HttpDestination(), token, url, access_key, proxy_host, proxy_username, proxy_password, host_id)
     if not result.is_err():
         destination.repository.save(result.value)
         pipeline.manager.start_monitoring_pipeline()
@@ -20,7 +21,7 @@ def create(
 
 
 def edit(
-    destination_: destination.HttpDestination,
+    destination_: HttpDestination,
     token: str,
     url: str,
     access_key: str = None,
@@ -28,7 +29,7 @@ def edit(
     proxy_username: str = None,
     proxy_password: str = None,
     host_id: str = None,
-) -> Result[destination.HttpDestination, str]:
+) -> Result[HttpDestination, str]:
     result = _build(destination_, token, url, access_key, proxy_host, proxy_username, proxy_password, host_id)
     if not result.is_err():
         destination.repository.save(result.value)
@@ -37,7 +38,7 @@ def edit(
 
 
 def _build(
-    destination_: destination.HttpDestination,
+    destination_: HttpDestination,
     token: str,
     url: str,
     access_key: str = None,
@@ -45,7 +46,7 @@ def _build(
     proxy_username: str = None,
     proxy_password: str = None,
     host_id: str = None,
-) -> Result[destination.HttpDestination, str]:
+) -> Result[HttpDestination, str]:
     proxy_ = proxy.Proxy(proxy_host, proxy_username, proxy_password) if proxy_host else None
     if proxy_:
         if not proxy.is_valid(proxy_):
@@ -62,9 +63,9 @@ def _build(
         if not destination.validator.is_valid_resource_url(destination_.resource_url):
             return Err('Data collection token is invalid')
     if access_key:
-        if not destination.validator.is_valid_access_key(access_key, destination_.proxy, destination_.url):
-            return Err('Access key is invalid')
         destination_.access_key = access_key
+        if not destination.validator.is_valid_access_key(destination_):
+            return Err('Access key is invalid')
     if host_id:
         destination_.host_id = host_id
     return Ok(destination_)

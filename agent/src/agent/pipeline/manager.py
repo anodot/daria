@@ -7,6 +7,7 @@ import agent.pipeline.config.handlers as config_handlers
 import jsonschema
 
 from agent import source, pipeline, destination
+from agent.pipeline.config import schema
 from agent.pipeline.config.validators import get_config_validator
 from agent.pipeline import prompt, load_client_data, Pipeline
 from agent.modules import anodot_api_client
@@ -363,7 +364,7 @@ def reset(pipeline_: Pipeline):
 
 def _delete_schema(pipeline_: Pipeline):
     if 'schema' in pipeline_.config:
-        anodot_api_client.get_client(pipeline_.destination).delete_schema(pipeline_.config['schema']['id'])
+        anodot_api_client.AnodotApiClient(pipeline_.destination).delete_schema(pipeline_.config['schema']['id'])
 
 
 def _delete_from_streamsets(pipeline_id: str):
@@ -476,3 +477,29 @@ def update_monitoring_pipeline():
 
 class PipelineFreezeException(Exception):
     pass
+
+
+def transform_for_bc(pipeline_: Pipeline) -> dict:
+    data = {
+        'pipeline_id': pipeline_.name,
+        'created': int(pipeline_.created_at.timestamp()),
+        'updated': int(pipeline_.last_edited.timestamp()),
+        'status': pipeline_.status,
+        'schemaId': pipeline_.get_schema_id(),
+        'source': {
+            'name': pipeline_.source.name,
+            'type': pipeline_.source.type,
+        },
+        'scheduling': {
+            'interval': int(pipeline_.config.get('interval', 0)),
+            'delay': int(pipeline_.config.get('delay', 0)),
+        },
+        # 'progress': {
+        #     'last_offset': pipeline_.offset,
+        # },
+        'schema': pipeline_.get_schema() if pipeline_.get_schema_id() else schema.build(pipeline_),
+        'config': pipeline_.config,
+    }
+    data['config'].pop('interval', 0)
+    data['config'].pop('delay', 0)
+    return data

@@ -2,9 +2,8 @@ import urllib
 import requests
 import urllib.parse
 
-from typing import Optional
+from agent.destination import HttpDestination
 from agent.modules import anodot_api_client
-from agent import destination
 from agent.modules import proxy
 from agent.modules.tools import if_validation_enabled
 
@@ -15,7 +14,7 @@ class ValidationException(Exception):
 
 @if_validation_enabled
 def is_valid_destination_url(url: str, proxy_obj: proxy.Proxy = None) -> bool:
-    status_url = urllib.parse.urljoin(url, destination.HttpDestination.STATUS_URL)
+    status_url = urllib.parse.urljoin(url, HttpDestination.STATUS_URL)
     try:
         response = requests.get(status_url, proxies=proxy.get_config(proxy_obj), timeout=5)
         response.raise_for_status()
@@ -35,9 +34,9 @@ def is_valid_resource_url(resource_url: str) -> bool:
 
 
 @if_validation_enabled
-def is_valid_access_key(access_key: str, proxy_: Optional[proxy.Proxy], url: str) -> bool:
+def is_valid_access_key(destination_: HttpDestination) -> bool:
     try:
-        anodot_api_client.AnodotApiClient(access_key, proxy.get_config(proxy_), url)
+        anodot_api_client.AnodotApiClient(destination_)
     except requests.HTTPError:
         return False
     return True
