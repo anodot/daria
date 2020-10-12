@@ -89,8 +89,8 @@ class PromptConfig:
 
     def get_default_object_value(self, property_name: str) -> str:
         default = ''
-        if property_name in self.config and self.config[property_name]:
-            default = ' '.join([key + ':' + val for key, val in self.config[property_name].items()])
+        if property_name in self.default_config and self.default_config[property_name]:
+            default = ' '.join([key + ':' + val for key, val in self.default_config[property_name].items()])
         return default
 
     def set_static_properties(self):
