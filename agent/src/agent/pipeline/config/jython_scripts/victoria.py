@@ -83,6 +83,8 @@ def process_matrix(result_, end_):
     for result_ in result_['data']['result']:
         base_metric = create_base_metric(get_metric_name(result_))
         for dimension, value in result_['metric'].items():
+            dimension = dimension.replace(" ", "_").replace(".", "_")
+            value = value.replace(" ", "_").replace(".", "_")
             base_metric['properties'][dimension] = value
         for timestamp, value in result_[get_result_key(res)]:
             metric = base_metric
@@ -107,6 +109,8 @@ def process_vector(result_, end_):
     for result_ in result_['data']['result']:
         base_metric = create_base_metric(get_metric_name(result_))
         for dimension, value in result_['metric'].items():
+            dimension = dimension.replace(" ", "_").replace(".", "_")
+            value = value.replace(" ", "_").replace(".", "_")
             base_metric['properties'][dimension] = value
         timestamp, value = result_[get_result_key(res)]
         metric = base_metric
@@ -122,13 +126,12 @@ def process_vector(result_, end_):
         # if we didn't process the batch for the last time
     if i % BATCH_SIZE != 0:
         cur_batch.process(entityName, str(end_))
-        cur_batch = sdc.createBatch()
 
 
 interval = get_interval()
 end = get_backfill_offset() + interval
 url = sdc.userParams['URL'] + '/api/v1/query?' + urllib.urlencode({
-    'query': sdc.userParams['QUERY'],
+    'query': sdc.userParams['QUERY'].encode('utf-8'),
     'timeout': sdc.userParams['QUERY_TIMEOUT'],
 })
 
