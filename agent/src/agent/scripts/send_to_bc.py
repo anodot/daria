@@ -9,18 +9,25 @@ from agent.modules.logger import get_logger
 destination_ = destination.repository.get()
 logger = get_logger(__name__)
 
-try:
-    api_client = AnodotApiClient(destination_)
-    pipelines = pipeline.repository.get_all()
-except Exception:
-    metric = [{
+
+def send_error_metric(pipeline_id=None):
+    metric = {
         'properties': {
             'what': 'agent_to_bc_error',
         },
         'value': 1,
         'timestamp': int(time.time())
-    }]
+    }
+    if pipeline_id:
+        metric['properties']['pipeline_id'] = pipeline_id
     requests.post(destination_.resource_url, json=metric)
+
+
+try:
+    api_client = AnodotApiClient(destination_)
+    pipelines = pipeline.repository.get_all()
+except Exception:
+    send_error_metric()
     raise
 
 for pipeline_ in pipelines:
@@ -28,13 +35,5 @@ for pipeline_ in pipelines:
         try:
             api_client.send_pipeline_data_to_bc(pipeline.manager.transform_for_bc(pipeline_))
         except Exception:
-            metric = [{
-                'properties': {
-                    'what': 'agent_to_bc_error',
-                    'pipeline_id': pipeline_.name,
-                },
-                'value': 1,
-                'timestamp': int(time.time())
-            }]
-            requests.post(destination_.resource_url, json=metric)
+            send_error_metric(pipeline_.name)
             logger.error(traceback.format_exc())
