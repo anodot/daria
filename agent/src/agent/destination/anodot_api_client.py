@@ -13,11 +13,7 @@ logger = get_logger(__name__)
 def endpoint(func):
     """
     Decorator for api endpoints. Logs errors and returns json response
-
-    :param func:
-    :return:
     """
-
     def wrapper(*args, **kwargs):
         res = func(*args, **kwargs)
         try:
@@ -27,7 +23,6 @@ def endpoint(func):
             if res.text:
                 logger.error(res.text)
             raise
-
     return wrapper
 
 
@@ -37,30 +32,25 @@ class AnodotApiClientException(click.ClickException):
 
 class AnodotApiClient:
     def __init__(self, destination_: HttpDestination):
-        self.destination = destination_
+        self.destination_id = destination_.id
+        self.url = destination_.url
+        self.access_key = destination_.access_key
+        self.auth_token = destination_.auth_token
+        self.proxies = proxy.get_config(destination_.proxy)
         self.session = requests.Session()
         self._update_session_authorization()
 
-    @property
-    def url(self):
-        return self.destination.url
-
-    @property
-    def proxies(self):
-        return proxy.get_config(self.destination.proxy)
-
     def _update_session_authorization(self):
-        if not self.destination.auth_token:
-            self.destination.auth_token = \
-                AuthenticationToken(self.destination, self._retrieve_new_token(self.destination))
-            destination.repository.save_auth_token(self.destination.auth_token)
-        elif self.destination.auth_token.is_expired():
-            self.destination.auth_token.update(self._retrieve_new_token(self.destination))
-            destination.repository.save_auth_token(self.destination.auth_token)
-        self.session.headers.update({'Authorization': 'Bearer ' + self.destination.auth_token.authentication_token})
+        if not self.auth_token:
+            self.auth_token = AuthenticationToken(self.destination_id, self._retrieve_new_token())
+            destination.repository.save_auth_token(self.auth_token)
+        elif self.auth_token.is_expired():
+            self.auth_token.update(self._retrieve_new_token())
+            destination.repository.save_auth_token(self.auth_token)
+        self.session.headers.update({'Authorization': 'Bearer ' + self.auth_token.authentication_token})
 
-    def _retrieve_new_token(self, destination_: HttpDestination):
-        response = requests.post(self._build_url('access-token'), json={'refreshToken': destination_.access_key},
+    def _retrieve_new_token(self):
+        response = requests.post(self._build_url('access-token'), json={'refreshToken': self.access_key},
                                  proxies=self.proxies)
         response.raise_for_status()
         return response.text.replace('"', '')
@@ -70,14 +60,17 @@ class AnodotApiClient:
 
     @endpoint
     def create_schema(self, schema):
+        self._update_session_authorization()
         return self.session.post(self._build_url('stream-schemas'), json=schema, proxies=self.proxies)
 
     @endpoint
     def delete_schema(self, schema_id):
+        self._update_session_authorization()
         return self.session.delete(self._build_url('stream-schemas', schema_id), proxies=self.proxies)
 
     @endpoint
     def send_topology_data(self, data_type, data):
+        self._update_session_authorization()
         return self.session.post(self._build_url('topology', 'data'), proxies=self.proxies,
                                  data=data, params={'type': data_type})
 

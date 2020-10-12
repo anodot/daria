@@ -1,6 +1,7 @@
 import time
 import traceback
 import requests
+from requests import HTTPError
 
 from agent import pipeline, destination
 from agent.destination.anodot_api_client import AnodotApiClient
@@ -34,6 +35,10 @@ for pipeline_ in pipelines:
     if pipeline_.name != pipeline.MONITORING:
         try:
             api_client.send_pipeline_data_to_bc(pipeline.manager.transform_for_bc(pipeline_))
+        except HTTPError as e:
+            if not e.response.status_code == 404:
+                send_error_metric(pipeline_.name)
+                logger.error(traceback.format_exc())
         except Exception:
             send_error_metric(pipeline_.name)
             logger.error(traceback.format_exc())

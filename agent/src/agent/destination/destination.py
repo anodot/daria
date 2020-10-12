@@ -118,13 +118,10 @@ class AuthenticationToken(Entity):
     authentication_token = Column(String, nullable=False)
     created_at = Column(TIMESTAMP(timezone=True), default=func.now())
 
-    destination = relationship('HttpDestination')
-
     EXPIRATION_PERIOD_IN_SECONDS = 24 * 60 * 60
 
-    def __init__(self, destination_: HttpDestination, token: str):
-        self.destination_id = destination_.id
-        self.destination = destination_
+    def __init__(self, destination_id: int, token: str):
+        self.destination_id = destination_id
         self.authentication_token = token
         self.created_at = datetime.now()
 
