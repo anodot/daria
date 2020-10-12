@@ -1,3 +1,5 @@
+import traceback
+
 from agent import cli
 from agent.modules.streamsets_api_client import api_client
 from agent import source
@@ -67,7 +69,7 @@ class TestKafka:
                 'source_name': 'test_kfk',
                 'name': 'test_kafka_timezone',
                 'options': ['-a'],
-                'value': 'n\ny\n \n\n ',
+                'value': 'n\ny\n \nClicks:gauge\n ',
                 'timestamp': 'timestamp_string\nstring\nM/d/yyyy H:mm:ss\nEurope/Berlin',
                 'advanced_options': '\n\n\n\nn'
             },
@@ -89,6 +91,7 @@ class TestKafka:
             cli.pipeline.create, options, catch_exceptions=False,
             input=f"{source_name}\n{name}\n\n{value}\n{timestamp}\nver Country\nExchange optional_dim ad_type ADTYPE GEN\n\n{advanced_options}\n"
         )
+        traceback.print_exception(*result.exc_info)
         assert result.exit_code == 0
         assert api_client.get_pipeline(name)
 
