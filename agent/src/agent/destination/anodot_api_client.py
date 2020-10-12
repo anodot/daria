@@ -37,20 +37,27 @@ class AnodotApiClientException(click.ClickException):
 
 class AnodotApiClient:
     def __init__(self, destination_: HttpDestination):
-        self.url = destination_.url
-        self.proxies = proxy.get_config(destination_.proxy)
+        self.destination = destination_
         self.session = requests.Session()
-        self.auth_token = destination_.auth_token
-        self.session.headers.update({'Authorization': 'Bearer ' + self.auth_token})
+        self._update_session_authorization()
 
-    def _get_auth_token(self):
-        if not self.auth_token:
-            self.auth_token = AuthenticationToken(destination_, self._retrieve_new_token(destination_))
-            destination.repository.save_auth_token(destination_.auth_token)
-        elif destination_.auth_token.is_expired():
-            destination_.auth_token.update(self._retrieve_new_token(destination_))
-            destination.repository.save_auth_token(destination_.auth_token)
-        return destination_.auth_token.authentication_token
+    @property
+    def url(self):
+        return self.destination.url
+
+    @property
+    def proxies(self):
+        return proxy.get_config(self.destination.proxy)
+
+    def _update_session_authorization(self):
+        if not self.destination.auth_token:
+            self.destination.auth_token = \
+                AuthenticationToken(self.destination, self._retrieve_new_token(self.destination))
+            destination.repository.save_auth_token(self.destination.auth_token)
+        elif self.destination.auth_token.is_expired():
+            self.destination.auth_token.update(self._retrieve_new_token(self.destination))
+            destination.repository.save_auth_token(self.destination.auth_token)
+        self.session.headers.update({'Authorization': 'Bearer ' + self.destination.auth_token.authentication_token})
 
     def _retrieve_new_token(self, destination_: HttpDestination):
         response = requests.post(self._build_url('access-token'), json={'refreshToken': destination_.access_key},
@@ -76,4 +83,5 @@ class AnodotApiClient:
 
     @endpoint
     def send_pipeline_data_to_bc(self, pipeline_data: dict):
+        self._update_session_authorization()
         return self.session.post(self._build_url('bc', 'agents'), proxies=self.proxies, json=pipeline_data)
