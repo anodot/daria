@@ -32,24 +32,26 @@ class AnodotApiClientException(click.ClickException):
 
 
 class AnodotApiClient:
-    def __init__(self, destination_: HttpDestination):
+    def __init__(self, destination_: HttpDestination, use_authentication: bool = True):
         self.url = destination_.url
         self.access_key = destination_.access_key
         self.proxies = proxy.get_config(destination_.proxy)
-        self.auth_token = destination_.auth_token if destination_.auth_token else self._create_token(destination_.id)
         self.session = requests.Session()
-    
+        if use_authentication:
+            self.auth_token = destination_.auth_token if destination_.auth_token else self._create_token(destination_.id)
+            self.session.headers.update({'Authorization': 'Bearer ' + self.auth_token.authentication_token})
+
     def _create_token(self, destination_id: int):
-        auth_token = AuthenticationToken(destination_id, self._retrieve_new_token())
+        auth_token = AuthenticationToken(destination_id, self.get_new_token())
         destination.repository.save_auth_token(auth_token)
 
     def refresh_session_authorization(self):
-        if self.auth_token.is_expired():
-            self.auth_token.update(self._retrieve_new_token())
+        if self.auth_token and self.auth_token.is_expired():
+            self.auth_token.update(self.get_new_token())
             destination.repository.save_auth_token(self.auth_token)
-        self.session.headers.update({'Authorization': 'Bearer ' + self.auth_token.authentication_token})
+            self.session.headers.update({'Authorization': 'Bearer ' + self.auth_token.authentication_token})
 
-    def _retrieve_new_token(self):
+    def get_new_token(self):
         response = requests.post(self._build_url('access-token'), json={'refreshToken': self.access_key},
                                  proxies=self.proxies)
         response.raise_for_status()

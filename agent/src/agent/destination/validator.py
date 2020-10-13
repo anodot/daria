@@ -19,7 +19,6 @@ def is_valid_destination_url(url: str, proxy_obj: proxy.Proxy = None) -> bool:
         response.raise_for_status()
     except (ConnectionError, requests.HTTPError, requests.exceptions.ConnectionError,
             requests.exceptions.ProxyError) as e:
-        # todo this is a temporary solution, validation should be unified across the whole project
         raise ValidationException(str(e))
     return True
 
@@ -35,7 +34,8 @@ def is_valid_resource_url(resource_url: str) -> bool:
 @if_validation_enabled
 def is_valid_access_key(destination_: HttpDestination) -> bool:
     try:
-        anodot_api_client.AnodotApiClient(destination_)
+        client = anodot_api_client.AnodotApiClient(destination_, False)
+        client.get_new_token()
     except requests.HTTPError:
         return False
     return True
