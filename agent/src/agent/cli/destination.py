@@ -4,6 +4,7 @@ import agent.destination
 
 from agent.destination import HttpDestination
 from agent import pipeline
+from agent.destination.anodot_api_client import AnodotApiClient
 from agent.modules.tools import infinite_retry
 from agent.modules import proxy, validator
 
@@ -28,6 +29,7 @@ def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, a
         result = agent.destination.manager.create(token, url, access_key, proxy_host, proxy_user, proxy_password, host_id)
         if result.is_err():
             raise click.ClickException(result.value)
+        destination_ = result.value
     else:
         destination_ = agent.destination.repository.get()\
             if agent.destination.repository.exists()\
@@ -37,6 +39,8 @@ def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, a
         _prompt_token(destination_)
         _prompt_access_key(destination_)
         agent.destination.repository.save(destination_)
+    auth_token = agent.destination.AuthenticationToken(destination_.id, AnodotApiClient(destination_).get_new_token())
+    agent.destination.repository.save_auth_token(auth_token)
 
     click.secho('Connection to Anodot established')
     try:

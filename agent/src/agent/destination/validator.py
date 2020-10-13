@@ -34,7 +34,7 @@ def is_valid_resource_url(resource_url: str) -> bool:
 @if_validation_enabled
 def is_valid_access_key(destination_: HttpDestination) -> bool:
     try:
-        client = anodot_api_client.AnodotApiClient(destination_, False)
+        client = anodot_api_client.AnodotApiClient(destination_)
         client.get_new_token()
     except requests.HTTPError:
         return False
