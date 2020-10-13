@@ -7,8 +7,6 @@ ARG GIT_SHA1=local-build
 WORKDIR /usr/src/app
 
 COPY . .
-COPY ./custom_entrypoint.sh /
-RUN chmod +x /custom_entrypoint.sh
 COPY .bashrc /root/.bashrc
 
 VOLUME /usr/src/app/data
