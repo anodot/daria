@@ -44,6 +44,7 @@ class AnodotApiClient:
     def _create_token(self, destination_id: int):
         auth_token = AuthenticationToken(destination_id, self.get_new_token())
         destination.repository.save_auth_token(auth_token)
+        return auth_token
 
     def refresh_session_authorization(self):
         if self.auth_token and self.auth_token.is_expired():
