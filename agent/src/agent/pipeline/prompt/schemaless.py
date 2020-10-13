@@ -30,7 +30,10 @@ class PromptConfigSchemaless(PromptConfig):
 
     @infinite_retry
     def prompt_values(self):
-        self.prompt_object('values', 'Value properties with target types. Example - property:counter property2:gauge')
+        self.config['values'] = self.prompt_object(
+            'Value properties with target types. Example - property:counter property2:gauge',
+            self.get_default_object_value('values')
+        )
 
         if not set(self.config['values'].values()).issubset(self.target_types) and self.static_what():
             raise click.UsageError(f'Target type should be on of: {", ".join(self.target_types)}')
@@ -75,7 +78,10 @@ class PromptConfigSchemaless(PromptConfig):
     @infinite_retry
     def set_measurement_names(self):
         prompt_text = 'Measurement names' if self.config.get('static_what', True) else 'Measurement properties names'
-        self.prompt_object('measurement_names', prompt_text + '. Example -  property:measure property2:measure2')
+        self.config['measurement_names'] = self.prompt_object(
+            prompt_text + '. Example -  property:measure property2:measure2',
+            self.get_default_object_value('measurement_names')
+        )
         if not set(self.config['measurement_names'].keys()).issubset(set(self.config['values'].keys())):
             raise click.UsageError('Wrong property name')
         if not self.static_what():
