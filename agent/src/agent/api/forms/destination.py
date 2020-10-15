@@ -17,3 +17,4 @@ class DestinationForm(FlaskForm):
 
 class EditDestinationForm(DestinationForm):
     data_collection_token = StringField('Data collection token')
+    access_key = StringField('Access key')

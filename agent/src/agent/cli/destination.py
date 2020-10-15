@@ -29,7 +29,6 @@ def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, a
         result = agent.destination.manager.create(token, url, access_key, proxy_host, proxy_user, proxy_password, host_id)
         if result.is_err():
             raise click.ClickException(result.value)
-        destination_ = result.value
     else:
         destination_ = agent.destination.repository.get()\
             if agent.destination.repository.exists()\
@@ -38,20 +37,24 @@ def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, a
         _prompt_url(destination_)
         _prompt_token(destination_)
         _prompt_access_key(destination_)
-        agent.destination.repository.save(destination_)
-    auth_token = agent.destination.AuthenticationToken(destination_.id, AnodotApiClient(destination_).get_new_token())
-    agent.destination.repository.save_auth_token(auth_token)
-
-    click.secho('Connection to Anodot established')
-    try:
-        if pipeline.repository.exists(pipeline.MONITORING):
-            click.secho('Updating Monitoring pipeline...')
-            pipeline.manager.update_monitoring_pipeline()
+        if not agent.destination.repository.exists():
+            agent.destination.repository.save(destination_)
+            # todo duplicate code, try to avoid it
+            auth_token = agent.destination.AuthenticationToken(destination_.id, AnodotApiClient(destination_).get_new_token())
+            agent.destination.repository.save_auth_token(auth_token)
         else:
-            click.secho('Starting Monitoring pipeline...')
-            pipeline.manager.start_monitoring_pipeline()
-    except pipeline.pipeline.PipelineException as e:
-        raise click.ClickException(str(e))
+            agent.destination.repository.save(destination_)
+
+        click.secho('Connection to Anodot established')
+        try:
+            if pipeline.repository.exists(pipeline.MONITORING):
+                click.secho('Updating Monitoring pipeline...')
+                pipeline.manager.update_monitoring_pipeline()
+            else:
+                click.secho('Starting Monitoring pipeline...')
+                pipeline.manager.start_monitoring_pipeline()
+        except pipeline.pipeline.PipelineException as e:
+            raise click.ClickException(str(e))
     click.secho('Destination configured', fg='green')
 
 
@@ -65,6 +68,8 @@ def _prompt_proxy(dest: HttpDestination):
         if not proxy.is_valid(proxy_):
             raise click.ClickException('Proxy is invalid')
         dest.proxy = proxy_
+    else:
+        dest.proxy = None
 
 
 def _prompt_proxy_uri(default: str) -> str:

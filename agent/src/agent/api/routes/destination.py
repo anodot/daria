@@ -1,7 +1,6 @@
 from agent import destination
 from flask import Blueprint, request
 from agent.api.forms.destination import DestinationForm, EditDestinationForm
-from agent.destination.anodot_api_client import AnodotApiClient
 
 destination_ = Blueprint('destination', __name__)
 
@@ -31,8 +30,6 @@ def create():
     )
     if result.is_err():
         return result.value, 400
-    auth_token = destination.AuthenticationToken(result.value.id, AnodotApiClient(result.value).get_new_token())
-    destination.repository.save_auth_token(auth_token)
     return result.value.to_dict(), 200
 
 

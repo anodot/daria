@@ -1,5 +1,6 @@
 from agent import destination, pipeline
 from agent.destination import HttpDestination
+from agent.destination.anodot_api_client import AnodotApiClient
 from agent.modules import proxy
 from result import Result, Ok, Err
 
@@ -15,8 +16,10 @@ def create(
 ) -> Result[HttpDestination, str]:
     result = _build(HttpDestination(), token, url, access_key, proxy_host, proxy_username, proxy_password, host_id)
     if not result.is_err():
-        destination.repository.save(result.value)
         pipeline.manager.start_monitoring_pipeline()
+        # todo duplicate code, try to avoid it
+        auth_token = destination.AuthenticationToken(result.value.id, AnodotApiClient(result.value).get_new_token())
+        destination.repository.save_auth_token(auth_token)
     return result
 
 
@@ -32,7 +35,6 @@ def edit(
 ) -> Result[HttpDestination, str]:
     result = _build(destination_, token, url, access_key, proxy_host, proxy_username, proxy_password, host_id)
     if not result.is_err():
-        destination.repository.save(result.value)
         pipeline.manager.update_monitoring_pipeline()
     return result
 
@@ -68,6 +70,7 @@ def _build(
             return Err('Access key is invalid')
     if host_id:
         destination_.host_id = host_id
+    destination.repository.save(destination_)
     return Ok(destination_)
 
 
