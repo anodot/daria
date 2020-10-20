@@ -13,7 +13,7 @@ class TestElastic:
              'timestamp': '_source/timestamp_unix\nunix', 'advanced_options': 'key1:val1\n\n\n'},
             {'name': 'test_es_timestamp_ms', 'options': [], 'value': 'n\n_source/Clicks:gauge\n_source/Clicks:clicks',
              'timestamp': '_source/timestamp_unix_ms\nunix_ms', 'advanced_options': '\n\n'}],
-        'test_edit': [{'options': ['test_es_value_const'], 'value': 'y\nclicks\n\n\n'}],
+        'test_edit': [{'options': ['-a', 'test_es_value_const'], 'value': 'y\nclicks\n\n\n\n'}],
     }
 
     def test_source_create(self, cli_runner):
@@ -32,5 +32,5 @@ class TestElastic:
 
     def test_edit(self, cli_runner, options, value):
         result = cli_runner.invoke(cli.pipeline.edit, options, catch_exceptions=False,
-                                   input=f"\n\n{value}\n\n\n\n\n\n\n\n\n")
+                                   input=f"\n\n{value}\n\n\n\n\n\n\n\n\n\n\n\n")
         assert result.exit_code == 0

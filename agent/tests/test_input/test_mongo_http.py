@@ -15,7 +15,7 @@ class TestMongo:
                         {'name': 'test_timestamp_string', 'options': ['-a'], 'value': 'n\n\n\nClicks:gauge\nClicks:clicks',
                          'timestamp': 'timestamp_string\nstring\nM/d/yyyy H:mm:ss',
                          'advanced_options': 'key1:val1\n\n\n'}],
-        'test_edit': [{'options': ['test_value_const'], 'value': 'y\nclicks\n\n'}],
+        'test_edit': [{'options': ['-a', 'test_value_const'], 'value': 'y\nclicks\n\n\n\n'}],
     }
 
     def test_source_create(self, cli_runner):
@@ -39,5 +39,5 @@ class TestMongo:
 
     def test_edit(self, cli_runner, options, value):
         result = cli_runner.invoke(pipeline_cli.edit, options, catch_exceptions=False,
-                                   input=f"\n{value}\n\n\n\n\n\n\n\n\n")
+                                   input=f"\n{value}\n\n\n\n\n\n\n\n\n\n\n\n")
         assert result.exit_code == 0

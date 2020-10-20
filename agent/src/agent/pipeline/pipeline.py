@@ -100,7 +100,7 @@ class Pipeline(Entity):
 
     @property
     def flush_bucket_size(self) -> FlushBucketSize:
-        return FlushBucketSize(self.config.get(self.FLUSH_BUCKET_SIZE))
+        return FlushBucketSize(self.config.get(self.FLUSH_BUCKET_SIZE, '1d'))
 
     @flush_bucket_size.setter
     def flush_bucket_size(self, value: str):
@@ -245,7 +245,7 @@ class Pipeline(Entity):
 
     def set_config(self, config: dict):
         self.override_source = config.pop(self.OVERRIDE_SOURCE, {})
-        self.config.update(config)
+        self.config = config
 
     def get_property_path(self, property_value: str) -> str:
         mapping = self.source.config.get('csv_mapping', {})
@@ -273,15 +273,3 @@ class Pipeline(Entity):
             **self.meta_tags(),
             **self.tags
         }
-
-
-def transform_for_bc(pipeline: Pipeline) -> dict:
-    data = {
-        'config': pipeline.to_dict(),
-        'created': pipeline.created_at,
-        'updated': pipeline.last_edited,
-    }
-    data['source'] = data['config'].pop('source')
-    data['source']['type'] = pipeline.source.type
-    data.pop('override_source')
-    return data

@@ -81,32 +81,24 @@ class PromptConfig:
     def set_timezone(self):
         if not self.advanced:
             return
-        timezone = click.prompt('Timezone (e.g. Europe/London)', type=click.STRING, default=self.default_config.get('timezone', 'UTC'))
+        timezone = click.prompt('Timezone (e.g. Europe/London)', type=click.STRING,
+                                default=self.default_config.get('timezone', 'UTC'))
         if timezone not in pytz.all_timezones:
             raise click.UsageError('Wrong timezone provided')
         self.config['timezone'] = timezone
 
-    @infinite_retry
-    def prompt_object(self, property_name, prompt_text):
-        self.config[property_name] = self.default_config.get(property_name, {})
-
-        properties_str = ''
-        if self.config[property_name]:
-            properties_str = ' '.join([key + ':' + val for key, val in self.config[property_name].items()])
-
-        self.config[property_name] = {}
-
-        properties_str = click.prompt(prompt_text, type=click.STRING, default=properties_str)
-        for i in properties_str.split():
-            pair = i.split(':')
-            if len(pair) != 2:
-                raise click.UsageError('Wrong format, correct example - key:val key2:val2')
-
-            self.config[property_name][pair[0]] = pair[1]
+    def get_default_object_value(self, property_name: str) -> str:
+        default = ''
+        if property_name in self.default_config and self.default_config[property_name]:
+            default = ' '.join([key + ':' + val for key, val in self.default_config[property_name].items()])
+        return default
 
     def set_static_properties(self):
         if self.advanced:
-            self.prompt_object('properties', 'Additional properties')
+            self.config['properties'] = {}
+            properties = self.prompt_object('Additional properties', self.get_default_object_value('properties'))
+            for k, v in properties.items():
+                self.config['properties'][k.replace(' ', '_').replace('.', '_')] = v.replace(' ', '_').replace('.', '_')
 
     def set_tags(self):
         if self.advanced:
@@ -140,3 +132,15 @@ class PromptConfig:
             # todo this is a temporary solution, it requires a lot of refactoring
             builder = source_builders.get(self.pipeline.source)
             builder.print_sample_data()
+
+    @staticmethod
+    @infinite_retry
+    def prompt_object(prompt_text, default='') -> dict:
+        properties_str = click.prompt(prompt_text, type=click.STRING, default=default)
+        result = {}
+        for i in properties_str.split():
+            pair = i.split(':')
+            if len(pair) != 2:
+                raise click.UsageError('Wrong format, correct example - key:val key2:val2')
+            result[pair[0]] = pair[1]
+        return result

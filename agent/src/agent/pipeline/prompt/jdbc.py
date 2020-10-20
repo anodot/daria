@@ -25,7 +25,10 @@ class PromptConfigJDBC(PromptConfig):
 
     @infinite_retry
     def prompt_values(self):
-        self.prompt_object('values', 'Value columns with target types. Example - column:counter column2:gauge')
+        self.config['values'] = self.prompt_object(
+            'Value columns with target types. Example - column:counter column2:gauge',
+            self.get_default_object_value('values')
+        )
         if not set(self.config['values'].values()).issubset(('counter', 'gauge')):
             raise click.UsageError('Target type should be counter or gauge')
         self.validate_properties_names(self.config['values'].keys(), self.pipeline.source.sample_data)

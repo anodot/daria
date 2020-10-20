@@ -1,13 +1,15 @@
 import urllib.parse
 import uuid
 
+from datetime import datetime
 from typing import Dict, Optional
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.ext.mutable import MutableDict
+from sqlalchemy.orm import relationship
 from agent.modules.constants import ANODOT_API_URL
 from agent.modules.db import Entity
 from agent.modules.proxy import Proxy
-from sqlalchemy import Column, Integer, String, JSON, func
+from sqlalchemy import Column, Integer, String, JSON, func, ForeignKey
 
 
 class HttpDestination(Entity):
@@ -19,6 +21,8 @@ class HttpDestination(Entity):
     config = Column(MutableDict.as_mutable(JSON))
     created_at = Column(TIMESTAMP(timezone=True), default=func.now())
     last_edited = Column(TIMESTAMP(timezone=True), default=func.now(), onupdate=func.now())
+
+    auth_token = relationship("AuthenticationToken", cascade="delete", uselist=False)
 
     TYPE = 'http'
     STATUS_URL = 'api/v1/status'
@@ -37,7 +41,7 @@ class HttpDestination(Entity):
     def __init__(self):
         self.config: Dict[str, any] = {self.CONFIG_PROXY_USE: False}
         self.host_id = self.generate_host_id()
-        self.access_key = ''
+        self.access_key = None
 
     def to_dict(self) -> dict:
         return {
@@ -104,3 +108,27 @@ class HttpDestination(Entity):
 
     def get_proxy_username(self) -> str:
         return self.config.get(self.CONFIG_PROXY_USERNAME, '')
+
+
+class AuthenticationToken(Entity):
+    __tablename__ = 'authentication_tokens'
+
+    id = Column(Integer, primary_key=True)
+    destination_id = Column(Integer, ForeignKey('destinations.id'))
+    authentication_token = Column(String, nullable=False)
+    created_at = Column(TIMESTAMP(timezone=True), default=func.now())
+
+    EXPIRATION_PERIOD_IN_SECONDS = 24 * 60 * 60
+
+    def __init__(self, destination_id: int, token: str):
+        self.destination_id = destination_id
+        self.authentication_token = token
+        self.created_at = datetime.now()
+
+    def update(self, token: str):
+        self.authentication_token = token
+        self.created_at = datetime.now()
+
+    def is_expired(self) -> bool:
+        # leave 100 sec gap just to be sure we're not using expired token
+        return (datetime.now() - self.created_at).seconds > self.EXPIRATION_PERIOD_IN_SECONDS - 100
