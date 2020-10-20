@@ -1,6 +1,7 @@
 from typing import List
 from agent import pipeline
 from agent.modules.db import session
+from agent.pipeline import PipelineOffset
 
 
 class PipelineNotExistsException(Exception):
@@ -41,3 +42,8 @@ def delete(pipeline_: pipeline.Pipeline):
 
 def delete_by_name(pipeline_name: str):
     delete(get_by_name(pipeline_name))
+
+
+def save_offset(pipeline_offset: PipelineOffset):
+    session().add(pipeline_offset)
+    session().commit()

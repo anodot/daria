@@ -16,7 +16,7 @@ class DirectoryConfigHandler(BaseConfigHandler):
         'ExpressionEvaluator_03': stages.expression_evaluator.Filtering,
         'process_finish_file_event': stages.expression_evaluator.SendWatermark,
         'destination': stages.destination.Destination,
-        'destination_watermark': stages.destination.Destination,
+        'destination_watermark': stages.destination.WatermarkDestination,
     }
 
     def get_pipeline_config(self) -> dict:

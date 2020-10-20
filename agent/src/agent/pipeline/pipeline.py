@@ -75,6 +75,7 @@ class Pipeline(Entity):
     last_edited = Column(TIMESTAMP(timezone=True), default=func.now(), onupdate=func.now())
     status = Column(String, default=STATUS_EDITED)
 
+    offset = relationship("PipelineOffset", cascade="delete", uselist=False)
     source_ = relationship('Source', back_populates='pipelines')
     destination = relationship('HttpDestination')
 
@@ -272,3 +273,15 @@ class Pipeline(Entity):
             **self.meta_tags(),
             **self.tags
         }
+
+
+class PipelineOffset(Entity):
+    __tablename__ = 'pipeline_offsets'
+
+    id = Column(Integer, primary_key=True)
+    pipeline_id = Column(Integer, ForeignKey('pipelines.id'))
+    offset = Column(String)
+
+    def __init__(self, pipeline_id: int, offset: str):
+        self.pipeline_id = pipeline_id
+        self.offset = offset

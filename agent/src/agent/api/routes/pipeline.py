@@ -9,6 +9,7 @@ from agent.api import routes
 from agent import pipeline, source
 from agent.modules import proxy, logger
 from agent.modules.streamsets_api_client import StreamSetsApiClientException
+from agent.pipeline import PipelineOffset
 
 pipelines = Blueprint('pipelines', __name__)
 logger = logger.get_logger(__name__)
@@ -172,3 +173,15 @@ def _send_error_status_to_anodot(data, pipeline_):
     if 'errors' in data and data['errors']:
         for error in data['errors']:
             logger.error(error['description'])
+
+
+@pipelines.route('/pipeline-offset/<pipeline_name>', methods=['POST'])
+@needs_pipeline
+def pipeline_offset(pipeline_name):
+    pipeline_ = pipeline.repository.get_by_name(pipeline_name)
+    if pipeline_.offset:
+        pipeline_.offset.offset = request.get_json()['offset']
+    else:
+        pipeline_.offset = PipelineOffset(pipeline_.id, request.get_json()['offset'])
+    pipeline.repository.save_offset(pipeline_.offset)
+    return jsonify('')
