@@ -179,10 +179,9 @@ def _send_error_status_to_anodot(data, pipeline_):
 @needs_pipeline
 def pipeline_offset(pipeline_name):
     pipeline_ = pipeline.repository.get_by_name(pipeline_name)
-    pipeline_offset_ = pipeline.repository.get_offset(pipeline_.id)
-    if pipeline_offset_:
-        pipeline_offset_.offset = request.get_json()['offset']
+    if pipeline_.offset:
+        pipeline_.offset.offset = request.get_json()['offset']
     else:
-        pipeline_offset_ = PipelineOffset(pipeline_.id, request.get_json()['offset'])
-    pipeline.repository.save_offset(pipeline_offset_)
+        pipeline_.offset = PipelineOffset(pipeline_.id, request.get_json()['offset'])
+    pipeline.repository.save_offset(pipeline_.offset)
     return jsonify('')

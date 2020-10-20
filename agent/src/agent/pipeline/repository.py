@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 from agent import pipeline
 from agent.modules.db import session
 from agent.pipeline import PipelineOffset
@@ -42,10 +42,6 @@ def delete(pipeline_: pipeline.Pipeline):
 
 def delete_by_name(pipeline_name: str):
     delete(get_by_name(pipeline_name))
-
-
-def get_offset(pipeline_id: int) -> Optional[PipelineOffset]:
-    return session().query(pipeline.PipelineOffset).filter(pipeline.PipelineOffset.pipeline_id == pipeline_id).first()
 
 
 def save_offset(pipeline_offset: PipelineOffset):
