@@ -111,7 +111,7 @@ run-unit-tests:
 
 get-streamsets-libs: install-streamsets-requirements
 	rm -rf streamsets/lib/*
-	curl -L https://github.com/anodot/anodot-sdc-stage/releases/download/v1.0.1/anodot-1.0.1.tar.gz -o /tmp/sdc.tar.gz && tar xvfz /tmp/sdc.tar.gz -C streamsets/lib
+	curl -L https://github.com/anodot/anodot-sdc-stage/releases/download/v1.1.0/anodot-1.1.0.tar.gz -o /tmp/sdc.tar.gz && tar xvfz /tmp/sdc.tar.gz -C streamsets/lib
 
 install-streamsets-requirements:
 	pip install --upgrade pip && pip install --target streamsets/python-libs -r streamsets/python_requirements.txt

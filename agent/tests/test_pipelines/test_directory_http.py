@@ -3,6 +3,7 @@ import pytest
 from ..conftest import get_output
 from agent import source
 from .test_zpipeline_base import TestPipelineBase
+from agent import pipeline
 
 
 class TestDirectory(TestPipelineBase):
@@ -50,3 +51,9 @@ class TestDirectory(TestPipelineBase):
 
     def test_force_stop(self, cli_runner, name=None):
         pytest.skip()
+
+    def test_offset(self):
+        pipeline_ = pipeline.repository.get_by_name('test_dir_csv')
+        offset = pipeline.repository.get_offset(pipeline_.id)
+        assert offset
+        assert offset.offset == '1512864000'
