@@ -1,16 +1,44 @@
+import time
 import traceback
+import requests
+from requests import HTTPError
 
 from agent import pipeline, destination
-from agent.modules import anodot_api_client
+from agent.destination.anodot_api_client import AnodotApiClient
 from agent.modules.logger import get_logger
 
+destination_ = destination.repository.get()
 logger = get_logger(__name__)
 
-# note that pipelines might have different destinations in future
-# so we'll need different clients for them
+
+def send_error_metric(pipeline_id=None):
+    metric = {
+        'properties': {
+            'what': 'agent_to_bc_error',
+        },
+        'value': 1,
+        'timestamp': int(time.time())
+    }
+    if pipeline_id:
+        metric['properties']['pipeline_id'] = pipeline_id
+    requests.post(destination_.resource_url, json=metric)
+
+
 try:
-    api_client = anodot_api_client.get_client(destination.repository.get())
-    for pipeline_ in pipeline.repository.get_all():
-        api_client.send_pipeline_data_to_bc(pipeline.transform_for_bc(pipeline_))
+    api_client = AnodotApiClient(destination_)
+    pipelines = pipeline.repository.get_all()
 except Exception:
-    logger.error(traceback.format_exc())
+    send_error_metric()
+    raise
+
+for pipeline_ in pipelines:
+    if pipeline_.name != pipeline.MONITORING:
+        try:
+            api_client.send_pipeline_data_to_bc(pipeline.manager.transform_for_bc(pipeline_))
+        except HTTPError as e:
+            if not e.response.status_code == 404:
+                send_error_metric(pipeline_.name)
+                logger.error(traceback.format_exc())
+        except Exception:
+            send_error_metric(pipeline_.name)
+            logger.error(traceback.format_exc())

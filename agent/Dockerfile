@@ -7,8 +7,6 @@ ARG GIT_SHA1=local-build
 WORKDIR /usr/src/app
 
 COPY . .
-COPY ./custom_entrypoint.sh /
-RUN chmod +x /custom_entrypoint.sh
 COPY .bashrc /root/.bashrc
 
 VOLUME /usr/src/app/data
@@ -23,6 +21,3 @@ ENV UWSGI_INI="/usr/src/app/uwsgi.ini"
 
 RUN ./install_requirements.sh
 RUN python setup.py install && echo ". /usr/src/app/agent-complete.sh" >> /root/.bashrc
-
-ENTRYPOINT ["/custom_entrypoint.sh"]
-CMD ["/start.sh"]

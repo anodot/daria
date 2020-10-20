@@ -52,7 +52,7 @@ services:
 
   db:
     container_name: db
-    image: postgres
+    image: postgres:9.6.19
     restart: always
     environment:
       POSTGRES_USER: agent
@@ -62,7 +62,7 @@ services:
       - /var/lib/postgresql/data
 
   mongo:
-    image: mongo
+    image: mongo:4.4.1
     restart: always
 #    ports:
 #      - "27017:27017"
@@ -80,7 +80,7 @@ services:
 #      - "2181:2181"
   kafka:
 #    image: wurstmeister/kafka:0.10.2.1
-    image: wurstmeister/kafka
+    image: wurstmeister/kafka:2.12-2.4.1
     container_name: agent-kafka
     depends_on:
       - zookeeper
@@ -116,7 +116,7 @@ services:
 #      - ./certs:/certs
 
   influx:
-    image: influxdb
+    image: influxdb:1.8.3
 #    ports:
 #      - "8086:8086"
     volumes:
@@ -136,7 +136,7 @@ services:
       - "daria-test2:10.0.0.28"
 
   mysql:
-    image: mysql
+    image: mysql:8.0.21
     container_name: agent-mysql
     environment:
       MYSQL_ROOT_HOST: "%"
@@ -148,7 +148,7 @@ services:
       - ./volumes/mysql-initdb:/docker-entrypoint-initdb.d
 
   postgres:
-    image: postgres
+    image: postgres:9.6.19
     environment:
       POSTGRES_DB: test
       POSTGRES_PASSWORD: password
@@ -179,7 +179,7 @@ services:
 
   victoriametrics:
     container_name: victoriametrics
-    image: victoriametrics/victoria-metrics
+    image: victoriametrics/victoria-metrics:v1.43.0
     ports:
       - 8428:8428
     volumes:

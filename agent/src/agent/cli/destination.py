@@ -4,6 +4,7 @@ import agent.destination
 
 from agent.destination import HttpDestination
 from agent import pipeline
+from agent.destination.anodot_api_client import AnodotApiClient
 from agent.modules.tools import infinite_retry
 from agent.modules import proxy, validator
 
@@ -36,18 +37,24 @@ def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, a
         _prompt_url(destination_)
         _prompt_token(destination_)
         _prompt_access_key(destination_)
-        agent.destination.repository.save(destination_)
-
-    click.secho('Connection to Anodot established')
-    try:
-        if pipeline.repository.exists(pipeline.MONITORING):
-            click.secho('Updating Monitoring pipeline...')
-            pipeline.manager.update_monitoring_pipeline()
+        if not agent.destination.repository.exists():
+            agent.destination.repository.save(destination_)
+            # todo duplicate code, try to avoid it
+            auth_token = agent.destination.AuthenticationToken(destination_.id, AnodotApiClient(destination_).get_new_token())
+            agent.destination.repository.save_auth_token(auth_token)
         else:
-            click.secho('Starting Monitoring pipeline...')
-            pipeline.manager.start_monitoring_pipeline()
-    except pipeline.pipeline.PipelineException as e:
-        raise click.ClickException(str(e))
+            agent.destination.repository.save(destination_)
+
+        click.secho('Connection to Anodot established')
+        try:
+            if pipeline.repository.exists(pipeline.MONITORING):
+                click.secho('Updating Monitoring pipeline...')
+                pipeline.manager.update_monitoring_pipeline()
+            else:
+                click.secho('Starting Monitoring pipeline...')
+                pipeline.manager.start_monitoring_pipeline()
+        except pipeline.pipeline.PipelineException as e:
+            raise click.ClickException(str(e))
     click.secho('Destination configured', fg='green')
 
 
@@ -61,6 +68,8 @@ def _prompt_proxy(dest: HttpDestination):
         if not proxy.is_valid(proxy_):
             raise click.ClickException('Proxy is invalid')
         dest.proxy = proxy_
+    else:
+        dest.proxy = None
 
 
 def _prompt_proxy_uri(default: str) -> str:
@@ -100,7 +109,6 @@ def _prompt_token(dest: HttpDestination):
 
 @infinite_retry
 def _prompt_access_key(dest: HttpDestination):
-    access_key = click.prompt('Anodot access key', type=click.STRING, default=dest.access_key or '')
-    if access_key and not agent.destination.validator.is_valid_access_key(access_key, dest.proxy, dest.url):
+    dest.access_key = click.prompt('Anodot access key', type=click.STRING, default=dest.access_key)
+    if not agent.destination.validator.is_valid_access_key(dest):
         raise click.ClickException('Access key is invalid')
-    dest.access_key = access_key
