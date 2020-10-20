@@ -54,6 +54,5 @@ class TestDirectory(TestPipelineBase):
 
     def test_offset(self):
         pipeline_ = pipeline.repository.get_by_name('test_dir_csv')
-        offset = pipeline.repository.get_offset(pipeline_.id)
-        assert offset
-        assert offset.offset == '1512864000'
+        assert pipeline_.offset
+        assert pipeline_.offset.offset == '1512864000'
