@@ -3,11 +3,11 @@ import re
 
 from datetime import datetime
 from typing import Optional
-from agent.modules.streamsets_api_client import api_client
+from agent.pipeline import streamsets_helper
 
 
 def get_logs(pipeline_id: str, severity: str, number_of_records: int) -> list:
-    logs = api_client.get_pipeline_logs(pipeline_id, severity=severity)
+    logs = streamsets_helper.get_api_client(pipeline_id).get_pipeline_logs(pipeline_id, severity=severity)
     return _transform_logs(logs[:number_of_records])
 
 
@@ -21,10 +21,11 @@ def _transform_logs(logs: dict) -> list:
 
 
 def get(pipeline_id: str, number_of_history_records: int) -> dict:
-    status = api_client.get_pipeline_status(pipeline_id)
-    metrics = json.loads(status['metrics']) if status['metrics'] else api_client.get_pipeline_metrics(pipeline_id)
-    pipeline_info = api_client.get_pipeline(pipeline_id)
-    history = api_client.get_pipeline_history(pipeline_id)
+    streamsets_api_client = streamsets_helper.get_api_client(pipeline_id)
+    status = streamsets_api_client.get_pipeline_status(pipeline_id)
+    metrics = json.loads(status['metrics']) if status['metrics'] else streamsets_api_client.get_pipeline_metrics(pipeline_id)
+    pipeline_info = streamsets_api_client.get_pipeline(pipeline_id)
+    history = streamsets_api_client.get_pipeline_history(pipeline_id)
     info = {
         'status': '{status} {message}'.format(**status),
         'metrics': _get_metrics_string(metrics),
@@ -55,7 +56,7 @@ def _get_metric_errors(pipeline_id: str, metrics: Optional[dict]) -> list:
             stage_name = re.search('stage\.(.+)\.errorRecords\.counter', name)
             if counter['count'] == 0 or not stage_name:
                 continue
-            for error in api_client.get_pipeline_errors(pipeline_id, stage_name.group(1)):
+            for error in streamsets_helper.get_api_client(pipeline_id).get_pipeline_errors(pipeline_id, stage_name.group(1)):
                 errors.append(f'{_get_timestamp(error["header"]["errorTimestamp"])} - {error["header"]["errorMessage"]}')
     return errors
 

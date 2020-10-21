@@ -1,5 +1,4 @@
 from typing import Optional
-
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import relationship
 from agent import source
@@ -9,6 +8,7 @@ from agent.destination import HttpDestination
 from enum import Enum
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy import Column, Integer, String, JSON, ForeignKey, func
+from agent.modules.streamsets import StreamSets
 
 MONITORING = 'Monitoring'
 
@@ -45,6 +45,7 @@ class FlushBucketSize(Enum):
             return 60 * 60 * 24 * 7
 
 
+# todo update where created
 class Pipeline(Entity):
     __tablename__ = 'pipelines'
 
@@ -74,14 +75,17 @@ class Pipeline(Entity):
     created_at = Column(TIMESTAMP(timezone=True), default=func.now())
     last_edited = Column(TIMESTAMP(timezone=True), default=func.now(), onupdate=func.now())
     status = Column(String, default=STATUS_EDITED)
+    streamsets_id = Column(Integer, ForeignKey('streamsets.id'))
 
     offset = relationship("PipelineOffset", cascade="delete", uselist=False)
     source_ = relationship('Source', back_populates='pipelines')
     destination = relationship('HttpDestination')
+    streamsets = relationship('StreamSets')
 
     def __init__(self, pipeline_name: str,
                  source_: source.Source,
-                 destination: HttpDestination):
+                 destination: HttpDestination,
+                 streamsets: StreamSets):
         self.name = pipeline_name
         self.config = {}
         self.source_ = source_
@@ -89,6 +93,8 @@ class Pipeline(Entity):
         self.destination = destination
         self.destination_id = destination.id
         self.override_source = {}
+        self.streamsets_id = streamsets.id
+        self.streamsets = streamsets
 
     @property
     def source(self):

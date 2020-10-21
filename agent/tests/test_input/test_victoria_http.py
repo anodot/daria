@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from agent import cli
-from agent.modules.streamsets_api_client import api_client
+from agent.modules.streamsets.streamsets_api_client import api_client
 from agent import source
 
 

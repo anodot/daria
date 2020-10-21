@@ -1,15 +1,15 @@
 import click
 
 from agent import pipeline, source
-from agent.modules.streamsets_api_client import api_client, StreamSetsApiClientException
 from agent import destination
+from agent.modules.streamsets import StreamSetsApiClientException
 from agent.modules.tools import infinite_retry
 from jsonschema import ValidationError
 from texttable import Texttable
 
 
 def get_pipelines_ids_complete(ctx, args, incomplete):
-    return [p['pipelineId'] for p in api_client.get_pipelines() if incomplete in p['pipelineId']]
+    return [p.name for p in pipeline.repository.get_all() if incomplete in p.name]
 
 
 @click.command(name='list')

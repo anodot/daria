@@ -4,7 +4,7 @@ import time
 
 from ..conftest import get_output, get_input_file_path
 from agent.cli import source as source_cli, pipeline as pipeline_cli
-from agent.modules.streamsets_api_client import api_client
+from agent.modules.streamsets import StreamSetsApiClient
 from agent import pipeline, source
 
 
@@ -27,9 +27,10 @@ class TestPipelineBase(object):
         result = cli_runner.invoke(pipeline_cli.create, ['-f', input_file_path], catch_exceptions=False)
         assert result.exit_code == 0
         with open(input_file_path) as f:
-            pipelines = json.load(f)
-            for pipeline_ in pipelines:
-                assert api_client.get_pipeline(pipeline_['pipeline_id'])
+            for pipeline_config in json.load(f):
+                pipeline_ = pipeline.repository.get_by_name(pipeline_config['pipeline_id'])
+                api_client = StreamSetsApiClient(pipeline_.streamsets)
+                assert api_client.get_pipeline(pipeline_config['pipeline_id'])
 
     def test_edit_with_file(self, cli_runner, file_name):
         input_file_path = get_input_file_path(file_name + '.json')

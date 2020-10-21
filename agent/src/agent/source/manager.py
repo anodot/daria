@@ -5,7 +5,6 @@ from typing import List
 from agent import pipeline
 from agent import source
 from agent.source import SourceException
-from agent.modules.streamsets_api_client import api_client
 
 MAX_SAMPLE_RECORDS = 3
 
@@ -114,6 +113,7 @@ def get_previous_source_config(source_type):
     try:
         pipelines_with_source = api_client.get_pipelines(order_by='CREATED', order='DESC', label=source_type)
         if len(pipelines_with_source) > 0:
+            # todo use last edited?
             pipeline_obj = pipeline.repository.get_by_name(pipelines_with_source[-1]['pipelineId'])
             return pipeline_obj.source.config
     except source.SourceConfigDeprecated:

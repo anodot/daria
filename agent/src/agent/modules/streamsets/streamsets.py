@@ -1,10 +1,11 @@
 import json
-import os
 import requests
 import time
 import urllib.parse
 import click
 
+from sqlalchemy import Column, Integer, String
+from agent.modules.db import Entity
 from agent.modules.logger import get_logger
 from agent.modules.constants import STREAMSETS_PREVIEW_TIMEOUT
 
@@ -39,104 +40,54 @@ def endpoint(func):
     return wrapper
 
 
-class StreamSetsApiClientException(click.ClickException):
-    pass
+class StreamSets(Entity):
+    __tablename__ = 'streamsets'
+
+    id = Column(Integer, primary_key=True)
+    url = Column(String)
+    username = Column(String)
+    password = Column(String)
+
+    def __init__(self, url, username, password):
+        self.url = url
+        self.username = username
+        self.password = password
 
 
 class StreamSetsApiClient:
-
-    def __init__(self, username, password, base_url='http://localhost:18630'):
-        """
-
-        :param username: string
-        :param password: string
-        :param base_url: string
-        """
-        self.base_url = base_url
+    def __init__(self, streamsets: StreamSets):
+        self.base_url = streamsets.url
         self.session = requests.Session()
-        self.session.auth = (username, password)
+        self.session.auth = (streamsets.username, streamsets.password)
         self.session.headers.update({'X-Requested-By': 'sdc'})
 
-    def build_url(self, *args):
-        """
-        Build url for endpoints
-        :param args:
-        :return: string
-        """
+    def _build_url(self, *args):
         return urllib.parse.urljoin(self.base_url, '/'.join(['/rest/v1', *args]))
 
     @endpoint
     def create_pipeline(self, name):
-        """
-
-        :param name: string
-        :return:
-        """
         logger.info(f'Creating pipeline: {name}')
-        return self.session.put(self.build_url('pipeline', name))
+        return self.session.put(self._build_url('pipeline', name))
 
     @endpoint
-    def update_pipeline(self, pipeline_id, pipeline):
-        """
-
-        :param pipeline_id: string
-        :param pipeline: dict - pipeline config object
-        :return:
-        """
+    def update_pipeline(self, pipeline_id: str, pipeline_config: dict):
         logger.info(f'Updating pipeline: {pipeline_id}')
-        return self.session.post(self.build_url('pipeline', pipeline_id), json=pipeline)
+        return self.session.post(self._build_url('pipeline', pipeline_id), json=pipeline_config)
 
     @endpoint
-    def update_pipeline_rules(self, pipeline_id, rules):
-        """
-
-        :param pipeline_id: string
-        :param rules: dict - pipeline rules object
-        :return:
-        """
-        logger.info(f'Updating pipeline rules: {pipeline_id}')
-        logger.info(f'Rules data: {rules}')
-        return self.session.post(self.build_url('pipeline', pipeline_id, 'rules'), json=rules)
-
-    @endpoint
-    def get_pipeline_rules(self, pipeline_id):
-        """
-
-        :param pipeline_id: string
-        :return:
-        """
-        logger.info(f'Get pipeline rules: {pipeline_id}')
-        return self.session.get(self.build_url('pipeline', pipeline_id, 'rules'))
-
-    @endpoint
-    def start_pipeline(self, pipeline_id):
-        """
-
-        :param pipeline_id: string
-        :return:
-        """
+    def start_pipeline(self, pipeline_id: str):
         logger.info(f'Start pipeline: {pipeline_id}')
-        return self.session.post(self.build_url('pipeline', pipeline_id, 'start'))
+        return self.session.post(self._build_url('pipeline', pipeline_id, 'start'))
 
     @endpoint
-    def stop_pipeline(self, pipeline_id):
-        """
-
-        :param pipeline_id: string
-        :return:
-        """
+    def stop_pipeline(self, pipeline_id: str):
         logger.info(f'Stop pipeline: {pipeline_id}')
-        return self.session.post(self.build_url('pipeline', pipeline_id, 'stop'))
+        return self.session.post(self._build_url('pipeline', pipeline_id, 'stop'))
 
     @endpoint
-    def force_stop_pipeline(self, pipeline_id):
-        """
-
-        :param pipeline_id: string
-        :return:
-        """
+    def force_stop_pipeline(self, pipeline_id: str):
         logger.info(f'Force stop pipeline: {pipeline_id}')
-        return self.session.post(self.build_url('pipeline', pipeline_id, 'forceStop'))
+        return self.session.post(self._build_url('pipeline', pipeline_id, 'forceStop'))
 
     @endpoint
     def get_pipelines(self, order_by='NAME', order='ASC', label=None):
@@ -144,28 +95,23 @@ class StreamSetsApiClient:
         params = {'orderBy': order_by, 'order': order}
         if label:
             params['label'] = label
-        return self.session.get(self.build_url('pipelines'), params=params)
+        return self.session.get(self._build_url('pipelines'), params=params)
 
     @endpoint
     def get_pipeline(self, pipeline_id: str):
         logger.info(f'Get pipeline {pipeline_id}')
         params = {'pipelineId': pipeline_id}
-        return self.session.get(self.build_url('pipelines'), params=params)
+        return self.session.get(self._build_url('pipelines'), params=params)
 
     @endpoint
     def get_pipelines_status(self):
         logger.info('Get pipelines status')
-        return self.session.get(self.build_url('pipelines', 'status'))
+        return self.session.get(self._build_url('pipelines', 'status'))
 
     @endpoint
-    def delete_pipeline(self, pipeline_id):
-        """
-
-        :param pipeline_id: string
-        :return:
-        """
+    def delete_pipeline(self, pipeline_id: str):
         logger.info(f'Delete pipeline: {pipeline_id}')
-        return self.session.delete(self.build_url('pipeline', pipeline_id))
+        return self.session.delete(self._build_url('pipeline', pipeline_id))
 
     @endpoint
     def get_pipeline_logs(self, pipeline_id, severity=None):
@@ -178,84 +124,59 @@ class StreamSetsApiClient:
         params = {'pipeline': pipeline_id, 'endingOffset': -1}
         if severity:
             params['severity'] = severity
-        return self.session.get(self.build_url('system', 'logs'), params=params)
+        return self.session.get(self._build_url('system', 'logs'), params=params)
 
     @endpoint
-    def get_pipeline(self, pipeline_id):
-        """
-
-        :param pipeline_id: string
-        :return:
-        """
+    def get_pipeline(self, pipeline_id: str):
         logger.info(f'Get pipeline {pipeline_id}')
-        return self.session.get(self.build_url('pipeline', pipeline_id))
+        return self.session.get(self._build_url('pipeline', pipeline_id))
 
     @endpoint
     def get_pipeline_status(self, pipeline_id: str):
         logger.info(f'Get pipeline status {pipeline_id}')
-        return self.session.get(self.build_url('pipeline', pipeline_id, 'status'))
+        return self.session.get(self._build_url('pipeline', pipeline_id, 'status'))
 
     @endpoint
-    def get_pipeline_history(self, pipeline_id):
-        """
-
-        :param pipeline_id: string
-        :return:
-        """
+    def get_pipeline_history(self, pipeline_id: str):
         logger.info(f'Get pipeline history {pipeline_id}')
-        return self.session.get(self.build_url('pipeline', pipeline_id, 'history'))
+        return self.session.get(self._build_url('pipeline', pipeline_id, 'history'))
 
     @endpoint
-    def get_pipeline_metrics(self, pipeline_id):
-        """
-
-        :param pipeline_id: string
-        :return:
-        """
+    def get_pipeline_metrics(self, pipeline_id: str):
         logger.info(f'Get pipeline metrics {pipeline_id}')
-        return self.session.get(self.build_url('pipeline', pipeline_id, 'metrics'))
+        return self.session.get(self._build_url('pipeline', pipeline_id, 'metrics'))
 
     @endpoint
-    def reset_pipeline(self, pipeline_id):
-        """
-
-        :param pipeline_id: string
-        :return:
-        """
+    def reset_pipeline(self, pipeline_id: str):
         logger.info(f'Reset pipeline offset {pipeline_id}')
-        return self.session.post(self.build_url('pipeline', pipeline_id, 'resetOffset'))
+        return self.session.post(self._build_url('pipeline', pipeline_id, 'resetOffset'))
 
     @endpoint
-    def delete_by_filtering(self, filter_text):
-        """
-
-        :param filter_text: string
-        :return:
-        """
+    def delete_by_filtering(self, filter_text: str):
         logger.info(f'Delete pipelines with text: {filter_text}')
-        return self.session.post(self.build_url('pipelines', 'deleteByFiltering'), params={'filterText': filter_text})
+        return self.session.post(self._build_url('pipelines', 'deleteByFiltering'), params={'filterText': filter_text})
 
     @endpoint
     def validate(self, pipeline_id: str):
         logger.info(f'Validate pipeline {pipeline_id}')
-        return self.session.get(self.build_url('pipeline', pipeline_id, 'validate'),
+        return self.session.get(self._build_url('pipeline', pipeline_id, 'validate'),
                                 params={'timeout': STREAMSETS_PREVIEW_TIMEOUT})
 
     @endpoint
     def create_preview(self, pipeline_id: str):
         logger.info(f'Create pipeline {pipeline_id} preview')
-        return self.session.post(self.build_url('pipeline', pipeline_id, 'preview'),
+        return self.session.post(self._build_url('pipeline', pipeline_id, 'preview'),
                                  params={'timeout': STREAMSETS_PREVIEW_TIMEOUT})
 
     @endpoint
     def get_preview(self, pipeline_id: str, previewer_id: str):
         logger.info(f'Validate pipeline {pipeline_id}')
-        return self.session.get(self.build_url('pipeline', pipeline_id, 'preview', previewer_id))
+        return self.session.get(self._build_url('pipeline', pipeline_id, 'preview', previewer_id))
 
     @endpoint
     def get_preview_status(self, pipeline_id: str, previewer_id: str):
         logger.info(f'Validate pipeline {pipeline_id}')
-        return self.session.get(self.build_url('pipeline', pipeline_id, 'preview', previewer_id, 'status'))
+        return self.session.get(self._build_url('pipeline', pipeline_id, 'preview', previewer_id, 'status'))
 
     def wait_for_preview(self, pipeline_id, preview_id, tries=6, initial_delay=2):
         for i in range(1, tries + 1):
@@ -297,10 +218,9 @@ class StreamSetsApiClient:
     @endpoint
     def get_pipeline_errors(self, pipeline_id, stage_name):
         logger.info(f'Get pipeline {pipeline_id} errors')
-        return self.session.get(self.build_url('pipeline', pipeline_id, 'errorRecords'),
+        return self.session.get(self._build_url('pipeline', pipeline_id, 'errorRecords'),
                                 params={'stageInstanceName': stage_name})
 
 
-api_client = StreamSetsApiClient(os.environ.get('STREAMSETS_USERNAME', 'admin'),
-                                 os.environ.get('STREAMSETS_PASSWORD', 'admin'),
-                                 os.environ.get('STREAMSETS_URL', 'http://localhost:18630'))
+class StreamSetsApiClientException(click.ClickException):
+    pass

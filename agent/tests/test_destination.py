@@ -2,7 +2,7 @@ import pytest
 
 from agent import cli
 from agent import destination, pipeline
-from agent.modules.streamsets_api_client import api_client
+from agent.modules.streamsets.streamsets_api_client import api_client
 
 WAITING_TIME = 3
 

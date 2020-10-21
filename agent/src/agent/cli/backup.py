@@ -1,11 +1,9 @@
 import click
 import os
 
-from typing import Callable, List
 from datetime import datetime
 from agent.modules.constants import AGENT_DB_USER, AGENT_DB, BACKUP_DIRECTORY, AGENT_DB_HOST
 from agent import pipeline
-from agent.modules.streamsets_api_client import api_client as streamsets_api_client
 from agent.pipeline import Pipeline
 
 
@@ -40,6 +38,7 @@ def _restore_pipelines():
 
 
 def _get_pipelines():
+    # todo don't forget
     streamsets_pipelines = [p['pipelineId'] for p in streamsets_api_client.get_pipelines()]
     existing = []
     not_existing = []
