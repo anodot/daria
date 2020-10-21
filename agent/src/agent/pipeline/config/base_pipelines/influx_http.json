@@ -1114,7 +1114,7 @@
         "value" : ""
       }, {
         "name" : "conf.client.useProxy",
-        "value" : true
+        "value" : false
       }, {
         "name" : "conf.client.proxy.uri",
         "value" : "http://squid:3128"
