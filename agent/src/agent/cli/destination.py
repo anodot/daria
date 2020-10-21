@@ -68,8 +68,6 @@ def _prompt_proxy(dest: HttpDestination):
         if not proxy.is_valid(proxy_):
             raise click.ClickException('Proxy is invalid')
         dest.proxy = proxy_
-    else:
-        dest.proxy = None
 
 
 def _prompt_proxy_uri(default: str) -> str:
