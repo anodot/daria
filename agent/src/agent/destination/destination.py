@@ -97,11 +97,17 @@ class HttpDestination(Entity):
         return None
 
     @proxy.setter
-    def proxy(self, proxy: Proxy):
-        self.config[self.CONFIG_PROXY_USE] = True
-        self.config[self.CONFIG_PROXY_URI] = proxy.uri
-        self.config[self.CONFIG_PROXY_USERNAME] = proxy.username
-        self.config[self.CONFIG_PROXY_PASSWORD] = proxy.password
+    def proxy(self, proxy: Optional[Proxy]):
+        if proxy:
+            self.config[self.CONFIG_PROXY_USE] = True
+            self.config[self.CONFIG_PROXY_URI] = proxy.uri
+            self.config[self.CONFIG_PROXY_USERNAME] = proxy.username
+            self.config[self.CONFIG_PROXY_PASSWORD] = proxy.password
+        else:
+            self.config[self.CONFIG_PROXY_USE] = False
+            self.config[self.CONFIG_PROXY_URI] = ''
+            self.config[self.CONFIG_PROXY_USERNAME] = ''
+            self.config[self.CONFIG_PROXY_PASSWORD] = ''
 
     def get_proxy_url(self) -> str:
         return self.config.get(self.CONFIG_PROXY_URI, '')
@@ -131,4 +137,4 @@ class AuthenticationToken(Entity):
 
     def is_expired(self) -> bool:
         # leave 100 sec gap just to be sure we're not using expired token
-        return (datetime.now() - self.created_at).seconds > self.EXPIRATION_PERIOD_IN_SECONDS - 100
+        return (datetime.now() - self.created_at).total_seconds() > self.EXPIRATION_PERIOD_IN_SECONDS - 100

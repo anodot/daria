@@ -111,8 +111,10 @@ class Pipeline(Entity):
         return self.constant_dimensions.keys()
 
     @property
-    def dimensions(self):
-        dimensions = self.config['dimensions']
+    def dimensions(self) -> list:
+        dimensions = self.config.get('dimensions')
+        if not dimensions:
+            return []
         if type(self.config['dimensions']) is dict:
             dimensions = self.config['dimensions']['required'] + self.config['dimensions'].get('optional', [])
         return dimensions
@@ -146,15 +148,20 @@ class Pipeline(Entity):
         return self.config['timestamp'].get('format')
 
     @property
-    def values(self):
-        return self.config['values'].keys()
+    def values(self) -> list:
+        if self.source.type == source.TYPE_INFLUX:
+            value = self.config.get('value', {})
+            return value['values'] if 'values' in value else []
+        return list(self.config.get('values', {}).keys())
 
     @property
     def values_paths(self):
         return [self.get_property_path(value) for value in self.values]
 
     @property
-    def target_types(self):
+    def target_types(self) -> list:
+        if self.source.type == source.TYPE_INFLUX:
+            return [self.config['target_type']] * len(self.values)
         return list(self.config['values'].values())
 
     @property
