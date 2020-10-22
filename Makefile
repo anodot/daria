@@ -11,7 +11,7 @@ DOCKER_TEST_PARALLEL = $(DOCKER_TEST) -n $(THREADS) --dist=loadfile
 ##---------
 all: build-all test-all
 
-build-all: get-streamsets-libs build-docker sleep alembic-migrate setup-elastic setup-kafka setup-victoria
+build-all: get-streamsets-libs build-docker sleep alembic-migrate setup-all
 
 test-all: run-unit-tests test-flask-app test-destination test-antomation test-api test-api-scripts test-input test-pipelines
 
@@ -20,9 +20,9 @@ test-all: run-unit-tests test-flask-app test-destination test-antomation test-ap
 ##-------------
 all-dev: clean-docker-volumes build-all-dev sleep test-all
 
-build-all-dev: build-dev sleep alembic-migrate setup-elastic setup-kafka setup-victoria
+build-all-dev: build-dev sleep alembic-migrate setup-all
 
-run-all-dev: clean-docker-volumes run-dev sleep alembic-migrate setup-kafka setup-elastic setup-victoria
+run-all-dev: clean-docker-volumes run-dev sleep alembic-migrate setup-all
 
 rerun: bootstrap
 
@@ -115,6 +115,8 @@ get-streamsets-libs: install-streamsets-requirements
 
 install-streamsets-requirements:
 	pip install --upgrade pip && pip install --target streamsets/python-libs -r streamsets/python_requirements.txt
+
+setup-all: setup-victoria setup-kafka setup-elastic
 
 ##-----------------------
 ## DEV DEPENDENCY TARGETS

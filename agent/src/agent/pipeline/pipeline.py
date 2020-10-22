@@ -111,8 +111,10 @@ class Pipeline(Entity):
         return self.constant_dimensions.keys()
 
     @property
-    def dimensions(self):
-        dimensions = self.config['dimensions']
+    def dimensions(self) -> list:
+        dimensions = self.config.get('dimensions')
+        if not dimensions:
+            return []
         if type(self.config['dimensions']) is dict:
             dimensions = self.config['dimensions']['required'] + self.config['dimensions'].get('optional', [])
         return dimensions
@@ -147,7 +149,7 @@ class Pipeline(Entity):
 
     @property
     def values(self):
-        return self.config['values'].keys()
+        return self.config.get('values', {}).keys()
 
     @property
     def values_paths(self):
