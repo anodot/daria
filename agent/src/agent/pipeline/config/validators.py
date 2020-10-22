@@ -21,7 +21,16 @@ class ElasticValidator(BaseValidator):
             raise click.ClickException(errors)
 
 
+class JDBCValidator(BaseValidator):
+    @staticmethod
+    def validate(pipeline):
+        if source.JDBCSource.TIMESTAMP_CONDITION not in pipeline.query:
+            raise click.ClickException(f'Please add {source.JDBCSource.TIMESTAMP_CONDITION} constant to the query')
+
+
 def get_config_validator(pipeline: p.Pipeline) -> BaseValidator:
     if pipeline.source.type == source.TYPE_ELASTIC:
         return ElasticValidator()
+    if pipeline.source.type in [source.TYPE_MYSQL, source.TYPE_POSTGRES]:
+        JDBCValidator()
     return BaseValidator()

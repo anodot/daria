@@ -23,18 +23,6 @@ class PromptConfigSage(PromptConfigSchemaless):
         with open(self.config['query_file']) as f:
             self.config['query'] = f.read()
 
-    def set_delay(self):
-        self.config['delay'] = click.prompt('Delay, minutes', type=click.INT,
-                                            default=self.default_config.get('delay', 0))
-
-    def set_interval(self):
-        self.config['interval'] = click.prompt('Interval, minutes', type=click.INT,
-                                               default=self.default_config.get('interval', 5))
-
-    def set_number_of_days_to_backfill(self):
-        self.config['days_to_backfill'] = click.prompt('Number of days to backfill', type=click.INT,
-                                                       default=self.default_config.get('days_to_backfill', 0))
-
     def set_dimensions(self):
         self.config['dimensions'] = self.prompt_dimensions('Dimensions',
                                                            default_value=self.default_config.get('dimensions', []))

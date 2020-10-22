@@ -144,3 +144,16 @@ class PromptConfig:
                 raise click.UsageError('Wrong format, correct example - key:val key2:val2')
             result[pair[0]] = pair[1]
         return result
+
+    def prompt_days_to_backfill(self):
+        self.config['days_to_backfill'] = \
+            click.prompt('Collect since (days ago)', type=click.INT,
+                         default=self.default_config.get('days_to_backfill', 0))
+
+    def prompt_interval(self):
+        self.config['interval'] = click.prompt('Query interval (in seconds)', type=click.INT,
+                                               default=self.default_config.get('interval'))
+
+    def prompt_delay(self):
+        self.config['delay'] = click.prompt('Delay (in minutes)', type=click.INT,
+                                            default=self.default_config.get('delay', 0))

@@ -24,20 +24,20 @@ class TestMySQL:
     def test_create(self, cli_runner, name, source, timestamp_type, timestamp_name):
         days_to_backfill = (datetime.now() - datetime(year=2017, month=12, day=10)).days + 1
         result = cli_runner.invoke(pipeline_cli.create, catch_exceptions=False,
-                                   input=f'{source}\n{name}\ntest\n\n\n{days_to_backfill}\n\n\nclicks:gauge impressions:gauge\n{timestamp_name}\n{timestamp_type}\nadsize country\n\n\n\n')
+                                   input=f'{source}\n{name}\nSELECT * FROM test WHERE {{TIMESTAMP_CONDITION}}\n60\n{days_to_backfill}\n\n\n\nclicks:gauge impressions:gauge\n{timestamp_name}\n{timestamp_type}\nadsize country\n\n\n\n')
         assert result.exit_code == 0
         assert api_client.get_pipeline(name)
 
     def test_create_timezone(self, cli_runner, name, source, timestamp_type, timestamp_name, timezone):
         days_to_backfill = (datetime.now() - datetime(year=2017, month=12, day=10)).days + 1
         result = cli_runner.invoke(pipeline_cli.create, ['-a'], catch_exceptions=False,
-                                   input=f'{source}\n{name}\ntest\n\n\n{days_to_backfill}\n\nn\nclicks:gauge impressions:gauge\n{timestamp_name}\n{timestamp_type}\n{timezone}\nadsize country\n\n\n\n\nn\n')
+                                   input=f'{source}\n{name}\nSELECT * FROM test WHERE {{TIMESTAMP_CONDITION}}\n60\n{days_to_backfill}\n\n\nn\nclicks:gauge impressions:gauge\n{timestamp_name}\n{timestamp_type}\n{timezone}\nadsize country\n\n\n\n\nn\n')
         assert result.exit_code == 0
         assert api_client.get_pipeline(name)
 
     def test_create_advanced(self, cli_runner, name, source):
         days_to_backfill = (datetime.now() - datetime(year=2017, month=12, day=10)).days + 1
         result = cli_runner.invoke(pipeline_cli.create, ['-a'], catch_exceptions=False,
-                                   input=f'{source}\n{name}\ntest\n\n\n{days_to_backfill}\n\ny\ntest\nclicks:gauge impressions:gauge\ntimestamp_unix\nunix\nadsize country\n\nkey1:val1 key2:val2\n\ncountry = \'USA\'\n\n\n')
+                                   input=f'{source}\n{name}\nSELECT * FROM test WHERE {{TIMESTAMP_CONDITION}}\n60\n{days_to_backfill}\n\n\ny\ntest\nclicks:gauge impressions:gauge\ntimestamp_unix\nunix\nadsize country\n\nkey1:val1 key2:val2\n\ncountry = \'USA\'\n\n\n')
         assert result.exit_code == 0
         assert api_client.get_pipeline(name)

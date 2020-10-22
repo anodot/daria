@@ -82,10 +82,6 @@ class InfluxLoadClientData(LoadClientData):
 class JDBCLoadClientData(LoadClientData):
     VALIDATION_SCHEMA_FILE_NAME = 'jdbc'
 
-    def load(self, client_config, edit=False):
-        super().load(client_config, edit)
-        return self.client_config
-
 
 class ElasticLoadClientData(LoadClientData):
     VALIDATION_SCHEMA_FILE_NAME = 'elastic'
