@@ -498,11 +498,11 @@ def transform_for_bc(pipeline_: Pipeline) -> dict:
         },
         'scheduling': {
             'interval': int(pipeline_.config.get('interval', 0)),
-            'delay': int(pipeline_.config.get('delay', 0)),
+            'delay': pipeline_.config.get('delay', 0),
         },
-        # 'progress': {
-        #     'last_offset': pipeline_.offset,
-        # },
+        'progress': {
+            'last_offset': pipeline_.offset.offset if pipeline_.offset else '',
+        },
         'schema': pipeline_.get_schema() if pipeline_.get_schema_id() else schema.build(pipeline_),
         'config': pipeline_.config,
     }

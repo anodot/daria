@@ -31,14 +31,19 @@ except Exception:
     send_error_metric()
     raise
 
+num_of_errors = 0
 for pipeline_ in pipelines:
     if pipeline_.name != pipeline.MONITORING:
         try:
             api_client.send_pipeline_data_to_bc(pipeline.manager.transform_for_bc(pipeline_))
         except HTTPError as e:
             if not e.response.status_code == 404:
+                num_of_errors += 1
                 send_error_metric(pipeline_.name)
                 logger.error(traceback.format_exc())
         except Exception:
+            num_of_errors += 1
             send_error_metric(pipeline_.name)
             logger.error(traceback.format_exc())
+
+exit(num_of_errors)
