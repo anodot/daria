@@ -7,7 +7,7 @@ from agent import source
 class JDBCSourceStage(Stage):
     def get_config(self) -> dict:
         return {
-            'query': self.pipeline.query,
+            'query': self.get_query(),
             'queryInterval': '${' + str(self.pipeline.interval) + ' * SECONDS}',
             'offsetColumn': self.pipeline.timestamp_path,
             'initialOffset': self.get_initial_offset(),
@@ -15,14 +15,21 @@ class JDBCSourceStage(Stage):
         }
 
     def get_query(self):
-        timestamp_condition = f'''{self.pipeline.timestamp_path} > {{OFFSET}} 
-AND {self.pipeline.timestamp_path} <= {{OFFSET}} + {self.get_interval()}'''
+        timestamp_condition = f'''{self.pipeline.timestamp_path} > ${{OFFSET}} 
+AND {self.pipeline.timestamp_path} <= {self.get_interval()}'''
         if self.pipeline.delay:
             timestamp_condition += f'AND {self.pipeline.timestamp_path} < {self.get_delay()}'
-        return self.pipeline.query.replace(f'({source.JDBCSource.TIMESTAMP_CONDITION})', timestamp_condition)
+        return self.pipeline.query.replace(f'{source.JDBCSource.TIMESTAMP_CONDITION}', timestamp_condition) + ' ORDER BY ' + self.pipeline.timestamp_path
 
     def get_interval(self):
-        return self.pipeline.interval
+        if self.pipeline.timestamp_type == pipeline.TimestampType.DATETIME:
+            if self.pipeline.source.type == source.TYPE_MYSQL:
+                return f'DATE_ADD("${{OFFSET}}", INTERVAL {self.pipeline.interval} SECOND)'
+            if self.pipeline.source.type == source.TYPE_POSTGRES:
+                return f'{{OFFSET}} + INTERVAL {self.pipeline.interval} SECOND'
+        elif self.pipeline.timestamp_type == pipeline.TimestampType.UNIX_MS:
+            return '${OFFSET} + ' + str(self.pipeline.interval * 1e3)
+        return '${OFFSET} + ' + str(self.pipeline.interval)
 
     def get_delay(self):
         return self.pipeline.delay

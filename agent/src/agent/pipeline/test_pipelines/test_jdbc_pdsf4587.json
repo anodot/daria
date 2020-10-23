@@ -171,7 +171,7 @@
     },
     "fragments" : [ ],
     "stages" : [ {
-      "instanceName" : "JDBCQueryConsumer_01",
+      "instanceName" : "source",
       "library" : "streamsets-datacollector-jdbc-lib",
       "stageName" : "com_streamsets_pipeline_stage_origin_jdbc_JdbcDSource",
       "stageVersion" : "10",

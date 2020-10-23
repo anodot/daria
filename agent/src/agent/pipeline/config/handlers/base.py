@@ -32,8 +32,8 @@ class BaseConfigHandler:
         self.config['metadata']['labels'] = [self.pipeline.source.type,
                                              self.pipeline.destination.TYPE]
 
-    def override_base_config(self, new_uuid=None, new_title=None):
-        self.config = self.load_base_config()
+    def override_base_config(self, new_uuid=None, new_title=None, base_config=None):
+        self.config = self.load_base_config() if not base_config else base_config
         if new_uuid:
             self.config['uuid'] = new_uuid
         if new_title:

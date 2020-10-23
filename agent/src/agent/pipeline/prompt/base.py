@@ -5,6 +5,11 @@ from agent.cli import source_builders
 from agent.modules.tools import infinite_retry, if_validation_enabled, dict_get_nested
 from agent.pipeline import pipeline as p
 
+from agent.modules.logger import get_logger
+
+
+logger = get_logger(__name__)
+
 
 class PromptConfig:
     timestamp_types = ['string', 'datetime', 'unix', 'unix_ms']
@@ -131,7 +136,9 @@ class PromptConfig:
         if click.confirm('Would you like to see the data preview?', default=True):
             # todo this is a temporary solution, it requires a lot of refactoring
             builder = source_builders.get(self.pipeline.source)
-            builder.print_sample_data()
+            test_pipeline = p.Pipeline(self.pipeline.name, self.pipeline.source, self.pipeline.destination)
+            test_pipeline.set_config(self.config)
+            builder.print_sample_data(test_pipeline)
 
     @staticmethod
     @infinite_retry
