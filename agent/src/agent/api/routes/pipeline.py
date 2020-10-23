@@ -7,8 +7,7 @@ from agent.api.routes import needs_pipeline
 from flask import jsonify, Blueprint, request
 from agent.api import routes
 from agent import pipeline, source
-from agent.modules import proxy, logger
-from agent.modules.streamsets.streamsets_api_client import StreamSetsApiClientException
+from agent.modules import proxy, logger, streamsets
 from agent.pipeline import PipelineOffset
 
 pipelines = Blueprint('pipelines', __name__)
@@ -29,7 +28,7 @@ def create():
     try:
         pipelines_ = pipeline.manager.create_from_json(request.get_json())
     except (
-            ValidationError, source.SourceNotExists, source.SourceConfigDeprecated, requests.exceptions.ConnectionError
+            ValidationError, source.SourceNotExists, requests.exceptions.ConnectionError
     ) as e:
         return jsonify(str(e)), 400
     except pipeline.PipelineException as e:
@@ -66,7 +65,7 @@ def force_delete(pipeline_name):
 def start(pipeline_name):
     try:
         pipeline.manager.start(pipeline.repository.get_by_name(pipeline_name))
-    except (pipeline.manager.PipelineFreezeException, pipeline.PipelineException) as e:
+    except (streamsets.PipelineFreezeException, pipeline.PipelineException) as e:
         return jsonify(str(e)), 400
     return jsonify('')
 
@@ -75,10 +74,10 @@ def start(pipeline_name):
 @needs_pipeline
 def stop(pipeline_name):
     try:
-        pipeline.manager.stop_by_id(pipeline_name)
-    except StreamSetsApiClientException as e:
+        pipeline.manager.stop(pipeline_name)
+    except streamsets.StreamSetsApiClientException as e:
         return jsonify(str(e)), 400
-    except pipeline.manager.PipelineFreezeException as e:
+    except streamsets.PipelineFreezeException as e:
         return jsonify(str(e)), 400
     return jsonify('')
 
@@ -88,7 +87,7 @@ def stop(pipeline_name):
 def force_stop(pipeline_name):
     try:
         pipeline.manager.force_stop_pipeline(pipeline_name)
-    except pipeline.manager.PipelineFreezeException as e:
+    except streamsets.PipelineFreezeException as e:
         return jsonify(str(e)), 400
     return jsonify('')
 
@@ -99,7 +98,7 @@ def info(pipeline_name):
     number_of_history_records = int(request.args.get('number_of_history_records', 10))
     try:
         return jsonify(pipeline.info.get(pipeline_name, number_of_history_records))
-    except StreamSetsApiClientException as e:
+    except streamsets.StreamSetsApiClientException as e:
         return jsonify(str(e)), 500
 
 
@@ -112,7 +111,7 @@ def logs(pipeline_name):
     number_of_records = int(request.args.get('number_of_records', 10))
     try:
         return jsonify(pipeline.info.get_logs(pipeline_name, severity, number_of_records))
-    except StreamSetsApiClientException as e:
+    except streamsets.StreamSetsApiClientException as e:
         return jsonify(str(e)), 500
 
 
@@ -135,7 +134,7 @@ def disable_destination_logs(pipeline_name):
 def reset(pipeline_name):
     try:
         pipeline.manager.reset(pipeline.repository.get_by_name(pipeline_name))
-    except StreamSetsApiClientException as e:
+    except streamsets.StreamSetsApiClientException as e:
         return jsonify(str(e)), 500
     return jsonify('')
 

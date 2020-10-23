@@ -1,6 +1,7 @@
 import click
 import requests
 
+from agent import destination, pipeline
 from agent.modules.streamsets import StreamSets
 from agent.modules import streamsets, constants
 from agent.modules.streamsets.repository import StreamsetsNotExistsException
@@ -15,6 +16,8 @@ def streamsets_group():
 @click.command()
 def add():
     _prompt_streamsets(StreamSets('', '', ''))
+    if destination.repository.exists():
+        pipeline.manager.create_monitoring_pipelines()
 
 
 # todo autocompletion

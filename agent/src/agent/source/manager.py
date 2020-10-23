@@ -110,14 +110,9 @@ def extract_configs(file):
 
 
 def get_previous_source_config(source_type):
-    try:
-        pipelines_with_source = api_client.get_pipelines(order_by='CREATED', order='DESC', label=source_type)
-        if len(pipelines_with_source) > 0:
-            # todo use last edited?
-            pipeline_obj = pipeline.repository.get_by_name(pipelines_with_source[-1]['pipelineId'])
-            return pipeline_obj.source.config
-    except source.SourceConfigDeprecated:
-        pass
+    source_ = source.repository.get_last_edited(source_type)
+    if source_:
+        return source_.config
     return {}
 
 

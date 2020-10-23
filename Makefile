@@ -12,6 +12,7 @@ DOCKER_TEST_PARALLEL = $(DOCKER_TEST) -n $(THREADS) --dist=loadfile
 all: build-all test-all
 
 build-all: get-streamsets-libs build-docker sleep alembic-migrate setup-all
+	docker exec -i anodot-agent python src/agent/scripts/upgrade/create_default_streamsets.py
 
 test-all: run-unit-tests test-flask-app test-destination test-antomation test-api test-api-scripts test-input test-send-to-bc test-pipelines
 

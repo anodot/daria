@@ -11,6 +11,8 @@ from agent.modules.constants import STREAMSETS_PREVIEW_TIMEOUT
 
 logger = get_logger(__name__)
 
+# todo move to pipeline?
+
 
 def endpoint(func):
     """
@@ -58,6 +60,7 @@ class StreamSetsApiClient:
     def __init__(self, streamsets: StreamSets):
         self.base_url = streamsets.url
         self.session = requests.Session()
+        self.session.keep_alive = False
         self.session.auth = (streamsets.username, streamsets.password)
         self.session.headers.update({'X-Requested-By': 'sdc'})
 
@@ -104,7 +107,7 @@ class StreamSetsApiClient:
         return self.session.get(self._build_url('pipelines'), params=params)
 
     @endpoint
-    def get_pipelines_status(self):
+    def get_pipelines_status(self) -> requests.Response:
         logger.info('Get pipelines status')
         return self.session.get(self._build_url('pipelines', 'status'))
 
@@ -150,11 +153,6 @@ class StreamSetsApiClient:
     def reset_pipeline(self, pipeline_id: str):
         logger.info(f'Reset pipeline offset {pipeline_id}')
         return self.session.post(self._build_url('pipeline', pipeline_id, 'resetOffset'))
-
-    @endpoint
-    def delete_by_filtering(self, filter_text: str):
-        logger.info(f'Delete pipelines with text: {filter_text}')
-        return self.session.post(self._build_url('pipelines', 'deleteByFiltering'), params={'filterText': filter_text})
 
     @endpoint
     def validate(self, pipeline_id: str):
@@ -221,6 +219,22 @@ class StreamSetsApiClient:
         return self.session.get(self._build_url('pipeline', pipeline_id, 'errorRecords'),
                                 params={'stageInstanceName': stage_name})
 
+    def wait_for_status(self, pipeline_id: str, status: str, tries: int = 5, initial_delay: int = 3):
+        for i in range(1, tries + 1):
+            response = self.get_pipeline_status(pipeline_id)
+            if response['status'] == status:
+                return True
+            delay = initial_delay ** i
+            if i == tries:
+                raise PipelineFreezeException(
+                    f"Pipeline {pipeline_id} is still {response['status']} after {tries} tries")
+            print(f"Pipeline {pipeline_id} is {response['status']}. Check again after {delay} seconds...")
+            time.sleep(delay)
+
 
 class StreamSetsApiClientException(click.ClickException):
+    pass
+
+
+class PipelineFreezeException(Exception):
     pass

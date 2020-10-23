@@ -36,8 +36,9 @@ class Validator:
 
     @if_validation_enabled
     def validate_connection(self):
+        # todo validate all streamsets?
         streamsets_api_client = StreamSetsApiClient(streamsets.repository.get_any())
-        test_pipeline_name = pipeline.manager.create_test_pipeline(self.source)
+        test_pipeline_name = pipeline.manager.create_test_pipeline(self.source, streamsets_api_client)
         try:
             validate_status = streamsets_api_client.validate(test_pipeline_name)
             streamsets_api_client.wait_for_preview(test_pipeline_name, validate_status['previewerId'])

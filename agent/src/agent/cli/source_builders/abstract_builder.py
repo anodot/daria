@@ -17,8 +17,8 @@ class Builder(ABC):
         pass
 
     def get_preview_data(self):
-        test_pipeline_name = pipeline.manager.create_test_pipeline(self.source)
         streamsets_api_client = StreamSetsApiClient(streamsets.repository.get_any())
+        test_pipeline_name = pipeline.manager.create_test_pipeline(self.source, streamsets_api_client)
         try:
             preview = streamsets_api_client.create_preview(test_pipeline_name)
             preview_data, errors = streamsets_api_client.wait_for_preview(test_pipeline_name, preview['previewerId'])
@@ -27,7 +27,6 @@ class Builder(ABC):
             streamsets_api_client.delete_pipeline(test_pipeline_name)
             raise
         streamsets_api_client.delete_pipeline(test_pipeline_name)
-
         return preview_data, errors
 
     def get_sample_records(self):

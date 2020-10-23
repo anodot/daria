@@ -1,3 +1,5 @@
+from typing import List
+
 from agent.modules.db import session
 from agent.modules.streamsets.streamsets import StreamSets
 
@@ -7,6 +9,10 @@ def get(id_: int) -> StreamSets:
     if not streamsets:
         raise StreamsetsNotExistsException(f"StreamSets with id {id_} doesn't exist")
     return streamsets
+
+
+def get_all() -> List[StreamSets]:
+    return session().query(StreamSets).all()
 
 
 def get_by_url(url: str) -> StreamSets:

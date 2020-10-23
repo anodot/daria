@@ -6,6 +6,7 @@ from agent.modules.streamsets import StreamSetsApiClientException
 from agent.modules.tools import infinite_retry
 from jsonschema import ValidationError
 from texttable import Texttable
+from agent.pipeline import streamsets_helper
 
 
 def get_pipelines_ids_complete(ctx, args, incomplete):
@@ -15,7 +16,7 @@ def get_pipelines_ids_complete(ctx, args, incomplete):
 @click.command(name='list')
 def list_pipelines():
     pipelines = pipeline.repository.get_all()
-    statuses = api_client.get_pipelines_status()
+    statuses = streamsets_helper.get_all_pipeline_statuses()
 
     table = _build_table(['Name', 'Type', 'Status'],
                          [[p.name, p.source.type, statuses[p.name]['status']] for p in pipelines])
@@ -73,7 +74,7 @@ def stop(pipeline_id, file):
 
     for pipeline_id in pipeline_ids:
         try:
-            pipeline.manager.stop_by_id(pipeline_id)
+            pipeline.manager.stop(pipeline_id)
             click.secho(f'Pipeline {pipeline_id} is stopped', fg='green')
         except (StreamSetsApiClientException, pipeline.PipelineException) as e:
             click.secho(str(e), err=True, fg='red')
@@ -239,15 +240,15 @@ def _prompt(advanced: bool, sources: list):
     source_name = click.prompt('Choose source config', type=click.Choice(sources), default=_get_default_source(sources))
     pipeline_id = _prompt_pipeline_id()
 
-    pipeline_manager = pipeline.manager.PipelineBuilder(pipeline.manager.create_object(pipeline_id, source_name))
-    previous_config = _get_previous_pipeline_config(pipeline_manager.pipeline.source.type)
-    pipeline_manager.prompt(previous_config, advanced)
-    pipeline.manager.create(pipeline_manager.pipeline)
+    pipeline_builder = pipeline.manager.PipelineBuilder(pipeline.manager.create_object(pipeline_id, source_name))
+    previous_config = _get_previous_pipeline_config(pipeline_builder.pipeline.source.type)
+    pipeline_builder.prompt(previous_config, advanced)
+    pipeline.manager.create(pipeline_builder.pipeline)
 
     click.secho('Created pipeline {}'.format(pipeline_id), fg='green')
-    if _should_prompt_preview(pipeline_manager.pipeline):
+    if _should_prompt_preview(pipeline_builder.pipeline):
         if click.confirm('Would you like to see the result data preview?', default=True):
-            pipeline.manager.show_preview(pipeline_manager.pipeline)
+            pipeline.manager.show_preview(pipeline_builder.pipeline)
             print('To change the config use `agent pipeline edit`')
 
 
@@ -264,27 +265,25 @@ def _edit_using_file(file):
 
 def _prompt_edit(advanced, pipeline_id):
     try:
-        pipeline_manager = pipeline.manager.PipelineBuilder(pipeline.repository.get_by_name(pipeline_id))
-        pipeline_manager.prompt(pipeline_manager.pipeline.to_dict(), advanced=advanced)
-        pipeline.manager.update(pipeline_manager.pipeline)
+        pipeline_builder = pipeline.manager.PipelineBuilder(pipeline.repository.get_by_name(pipeline_id))
+        pipeline_builder.prompt(pipeline_builder.pipeline.to_dict(), advanced=advanced)
+        pipeline.manager.update(pipeline_builder.pipeline)
 
         click.secho('Updated pipeline {}'.format(pipeline_id), fg='green')
-        if _should_prompt_preview(pipeline_manager.pipeline):
+        if _should_prompt_preview(pipeline_builder.pipeline):
             if click.confirm('Would you like to see the result data preview?', default=True):
-                pipeline.manager.show_preview(pipeline_manager.pipeline)
+                pipeline.manager.show_preview(pipeline_builder.pipeline)
                 print('To change the config use `agent pipeline edit`')
     except pipeline.repository.PipelineNotExistsException:
         raise click.UsageError(f'{pipeline_id} does not exist')
 
 
-def _get_previous_pipeline_config(label):
-    try:
-        pipelines_with_source = api_client.get_pipelines(order_by='CREATED', order='DESC', label=label)
-        if len(pipelines_with_source) > 0:
-            pipeline_obj = pipeline.repository.get_by_name(pipelines_with_source[-1]['pipelineId'])
-            return pipeline_obj.to_dict()
-    except source.SourceConfigDeprecated:
-        pass
+def _get_previous_pipeline_config(source_type: str):
+    # todo is it working correctly?
+    # todo improve, like for source
+    pipelines_with_source = pipeline.repository.get_by_source(source_type)
+    if pipelines_with_source:
+        return min(pipelines_with_source, key=lambda p: p.last_edited).to_dict()
     return {}
 
 

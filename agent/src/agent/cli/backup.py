@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 from agent.modules.constants import AGENT_DB_USER, AGENT_DB, BACKUP_DIRECTORY, AGENT_DB_HOST
 from agent import pipeline
-from agent.pipeline import Pipeline
+from agent.pipeline import Pipeline, streamsets_helper
 
 
 @click.command()
@@ -38,8 +38,8 @@ def _restore_pipelines():
 
 
 def _get_pipelines():
-    # todo don't forget
-    streamsets_pipelines = [p['pipelineId'] for p in streamsets_api_client.get_pipelines()]
+    # todo is it working correctly?
+    streamsets_pipelines = [p['pipelineId'] for p in streamsets_helper.get_all_pipelines()]
     existing = []
     not_existing = []
     for p in pipeline.repository.get_all():
@@ -62,4 +62,4 @@ def _update_status(pipeline_: Pipeline):
             pipeline.manager.start(pipeline_)
     elif expected_status in [Pipeline.STATUS_EDITED, Pipeline.STATUS_STOPPED, Pipeline.STATUS_STOPPING]:
         if actual_status in [Pipeline.STATUS_RUNNING, Pipeline.STATUS_STARTING]:
-            pipeline.manager.stop(pipeline_)
+            pipeline.manager.stop(pipeline_.name)

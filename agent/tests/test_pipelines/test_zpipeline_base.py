@@ -40,7 +40,7 @@ class TestPipelineBase(object):
     def test_start(self, cli_runner, name):
         result = cli_runner.invoke(pipeline_cli.start, [name], catch_exceptions=False)
         assert result.exit_code == 0
-        assert api_client.get_pipeline_status(name)['status'] == 'RUNNING'
+        assert pipeline.manager.get_pipeline_status(name) == 'RUNNING'
         # give pipelines some time to send data
         time.sleep(10)
 
@@ -51,7 +51,7 @@ class TestPipelineBase(object):
     def test_stop(self, cli_runner, name):
         result = cli_runner.invoke(pipeline_cli.stop, [name], catch_exceptions=False)
         assert result.exit_code == 0
-        assert api_client.get_pipeline_status(name)['status'] in ['STOPPED']
+        assert pipeline.manager.get_pipeline_status(name) in ['STOPPED']
 
     def test_force_stop(self, cli_runner, name):
         result = cli_runner.invoke(pipeline_cli.force_stop, [name], catch_exceptions=False)

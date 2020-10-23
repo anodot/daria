@@ -45,7 +45,6 @@ class FlushBucketSize(Enum):
             return 60 * 60 * 24 * 7
 
 
-# todo update where created
 class Pipeline(Entity):
     __tablename__ = 'pipelines'
 

@@ -42,7 +42,7 @@ class PipelineBuilder:
 
 def show_preview(pipeline_: Pipeline):
     try:
-        streamsets_api_client = streamsets_helper.get_api_client(pipeline_.name)
+        streamsets_api_client = streamsets_helper.get_api_client(pipeline_)
         preview = streamsets_api_client.create_preview(pipeline_.name)
         preview_data, errors = streamsets_api_client.wait_for_preview(pipeline_.name, preview['previewerId'])
     except streamsets.StreamSetsApiClientException as e:
@@ -159,11 +159,12 @@ def validate_config_for_create(config: dict):
     jsonschema.validate(config, json_schema)
 
 
-def create_object(pipeline_id: str, source_name: str) -> Pipeline:
+def create_object(pipeline_id: str, source_name: str, streamsets_: StreamSets = None) -> Pipeline:
     pipeline_ = pipeline.Pipeline(
         pipeline_id,
         source.repository.get_by_name(source_name),
-        destination.repository.get()
+        destination.repository.get(),
+        streamsets_ if streamsets_ else pipeline.streamsets_helper.choose_streamsets(),
     )
     return pipeline_
 
@@ -232,8 +233,9 @@ def edit_pipeline_using_json(config: dict) -> Pipeline:
 
 
 def start(pipeline_: Pipeline):
-    streamsets_helper.get_api_client(pipeline_.name).start_pipeline(pipeline_.name)
-    wait_for_status(pipeline_.name, pipeline.Pipeline.STATUS_RUNNING)
+    client = streamsets_helper.get_api_client(pipeline_)
+    client.start_pipeline(pipeline_.name)
+    client.wait_for_status(pipeline_.name, pipeline.Pipeline.STATUS_RUNNING)
     click.secho(f'{pipeline_.name} pipeline is running')
     if ENV_PROD:
         if wait_for_sending_data(pipeline_.name):
@@ -249,7 +251,7 @@ def create(pipeline_: Pipeline):
 
 def _create_in_streamsets(pipeline_: Pipeline):
     try:
-        streamsets_api_client = streamsets_helper.get_api_client(pipeline_.name)
+        streamsets_api_client = streamsets_helper.get_api_client(pipeline_)
         streamsets_pipeline = streamsets_api_client.create_pipeline(pipeline_.name)
         new_config = get_sdc_creator(pipeline_)\
             .override_base_config(new_uuid=streamsets_pipeline['uuid'], new_title=pipeline_.name)
@@ -266,9 +268,9 @@ def _create_in_streamsets(pipeline_: Pipeline):
 def update(pipeline_: Pipeline):
     start_pipeline = False
     try:
-        streamsets_api_client = streamsets_helper.get_api_client(pipeline_.name)
+        streamsets_api_client = streamsets_helper.get_api_client(pipeline_)
         if get_pipeline_status(pipeline_.name) in [pipeline.Pipeline.STATUS_RUNNING, pipeline.Pipeline.STATUS_RETRY]:
-            stop(pipeline_)
+            stop(pipeline_.name)
             start_pipeline = True
         api_pipeline = streamsets_api_client.get_pipeline(pipeline_.name)
         new_config = get_sdc_creator(pipeline_)\
@@ -292,28 +294,16 @@ def update_source_pipelines(source_: source.Source):
 
 
 def get_pipeline_status(pipeline_id: str) -> str:
-    return streamsets_helper.get_api_client(pipeline_id).get_pipeline_status(pipeline_id)['status']
+    return streamsets_helper.get_api_client_by_id(pipeline_id).get_pipeline_status(pipeline_id)['status']
 
 
 def check_status(pipeline_id: str, status: str) -> bool:
     return get_pipeline_status(pipeline_id) == status
 
 
-def wait_for_status(pipeline_id: str, status: str, tries: int = 5, initial_delay: int = 3):
-    for i in range(1, tries + 1):
-        response = streamsets_helper.get_api_client(pipeline_id).get_pipeline_status(pipeline_id)
-        if response['status'] == status:
-            return True
-        delay = initial_delay ** i
-        if i == tries:
-            raise PipelineFreezeException(f"Pipeline {pipeline_id} is still {response['status']} after {tries} tries")
-        print(f"Pipeline {pipeline_id} is {response['status']}. Check again after {delay} seconds...")
-        time.sleep(delay)
-
-
 def wait_for_sending_data(pipeline_id: str, tries: int = 5, initial_delay: int = 2):
     for i in range(1, tries + 1):
-        response = streamsets_helper.get_api_client(pipeline_id).get_pipeline_metrics(pipeline_id)
+        response = streamsets_helper.get_api_client_by_id(pipeline_id).get_pipeline_metrics(pipeline_id)
         stats = {
             'in': response['counters']['pipeline.batchInputRecords.counter']['count'],
             'out': response['counters']['pipeline.batchOutputRecords.counter']['count'],
@@ -332,7 +322,7 @@ def wait_for_sending_data(pipeline_id: str, tries: int = 5, initial_delay: int =
 
 
 def force_stop_pipeline(pipeline_id: str):
-    streamsets_api_client = streamsets_helper.get_api_client(pipeline_id)
+    streamsets_api_client = streamsets_helper.get_api_client_by_id(pipeline_id)
     try:
         streamsets_api_client.stop_pipeline(pipeline_id)
     except streamsets.StreamSetsApiClientException:
@@ -342,26 +332,23 @@ def force_stop_pipeline(pipeline_id: str):
         raise pipeline.PipelineException("Can't force stop a pipeline not in the STOPPING state")
 
     streamsets_api_client.force_stop_pipeline(pipeline_id)
-    wait_for_status(pipeline_id, pipeline.Pipeline.STATUS_STOPPED)
+    streamsets_api_client.wait_for_status(pipeline_id, pipeline.Pipeline.STATUS_STOPPED)
 
 
-def stop(pipeline_: Pipeline):
-    return stop_by_id(pipeline_.name)
-
-
-def stop_by_id(pipeline_id: str):
+def stop(pipeline_id: str):
     print("Stopping the pipeline")
-    streamsets_helper.get_api_client(pipeline_id).stop_pipeline(pipeline_id)
+    client = streamsets_helper.get_api_client_by_id(pipeline_id)
+    client.stop_pipeline(pipeline_id)
     try:
-        wait_for_status(pipeline_id, pipeline.Pipeline.STATUS_STOPPED)
-    except PipelineFreezeException:
+        client.wait_for_status(pipeline_id, pipeline.Pipeline.STATUS_STOPPED)
+    except streamsets.PipelineFreezeException:
         print("Force stopping the pipeline")
         force_stop_pipeline(pipeline_id)
 
 
 def reset(pipeline_: Pipeline):
     try:
-        streamsets_helper.get_api_client(pipeline_.name).reset_pipeline(pipeline_.name)
+        streamsets_helper.get_api_client(pipeline_).reset_pipeline(pipeline_.name)
         get_sdc_creator(pipeline_).set_initial_offset()
     except (config_handlers.base.ConfigHandlerException, streamsets.StreamSetsApiClientException) as e:
         raise pipeline.PipelineException(str(e))
@@ -374,8 +361,8 @@ def _delete_schema(pipeline_: Pipeline):
 
 def _delete_from_streamsets(pipeline_id: str):
     if check_status(pipeline_id, pipeline.Pipeline.STATUS_RUNNING):
-        stop_by_id(pipeline_id)
-    streamsets_helper.get_api_client(pipeline_id).delete_pipeline(pipeline_id)
+        stop(pipeline_id)
+    streamsets_helper.get_api_client_by_id(pipeline_id).delete_pipeline(pipeline_id)
 
 
 def delete(pipeline_: Pipeline):
@@ -431,13 +418,11 @@ def _update_stage_config(source_: source.Source, stage):
             conf['value'] = source_.config[conf['name']]
 
 
-def create_test_pipeline(source_: source.Source) -> str:
+def create_test_pipeline(source_: source.Source, streamsets_api_client: StreamSetsApiClient) -> str:
     with open(_get_test_pipeline_file_path(source_)) as f:
         pipeline_config = json.load(f)['pipelineConfig']
     _update_stage_config(source_, pipeline_config['stages'][0])
     test_pipeline_name = _get_test_pipeline_name(source_)
-
-    streamsets_api_client = StreamSetsApiClient(streamsets.repository.get_any())
     new_pipeline = streamsets_api_client.create_pipeline(test_pipeline_name)
     pipeline_config['uuid'] = new_pipeline['uuid']
     streamsets_api_client.update_pipeline(test_pipeline_name, pipeline_config)
@@ -469,20 +454,18 @@ def _get_test_pipeline_name(source_: source.Source) -> str:
     return _get_test_pipeline_file_name(source_) + source_.name
 
 
-def start_monitoring_pipeline():
+def create_monitoring_pipelines():
     if not source.repository.exists(MONITORING_SOURCE_NAME):
         source.repository.save(source.Source(MONITORING_SOURCE_NAME, source.TYPE_MONITORING, {}))
-    pipeline_ = create_object(pipeline.MONITORING, MONITORING_SOURCE_NAME)
-    create(pipeline_)
-    start(pipeline_)
+    for streamsets_ in streamsets_helper.get_streamsets_without_monitoring():
+        # todo we should be able to distinguish streamsets instances in metrics
+        pipeline_ = create_object(pipeline.MONITORING, MONITORING_SOURCE_NAME, streamsets_)
+        create(pipeline_)
+        start(pipeline_)
 
 
 def update_monitoring_pipeline():
     update(pipeline.repository.get_by_name(pipeline.MONITORING))
-
-
-class PipelineFreezeException(Exception):
-    pass
 
 
 def transform_for_bc(pipeline_: Pipeline) -> dict:
@@ -509,7 +492,3 @@ def transform_for_bc(pipeline_: Pipeline) -> dict:
     data['config'].pop('interval', 0)
     data['config'].pop('delay', 0)
     return data
-
-
-def choose_streamsets() -> StreamSets:
-    pass

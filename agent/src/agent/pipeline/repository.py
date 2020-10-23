@@ -1,8 +1,5 @@
 from typing import List, Dict
-
 from sqlalchemy import func
-
-from agent import pipeline
 from agent.modules.db import session
 from agent.pipeline import PipelineOffset, Pipeline
 

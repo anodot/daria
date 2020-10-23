@@ -16,7 +16,7 @@ def create(
 ) -> Result[HttpDestination, str]:
     result = _build(HttpDestination(), token, url, access_key, proxy_host, proxy_username, proxy_password, host_id)
     if not result.is_err():
-        pipeline.manager.start_monitoring_pipeline()
+        pipeline.manager.create_monitoring_pipelines()
         # todo duplicate code, try to avoid it
         auth_token = destination.AuthenticationToken(result.value.id, AnodotApiClient(result.value).get_new_token())
         destination.repository.save_auth_token(auth_token)
@@ -75,6 +75,6 @@ def _build(
 
 
 def delete():
-    pipeline.manager.stop_by_id(pipeline.MONITORING)
+    pipeline.manager.stop(pipeline.MONITORING)
     pipeline.manager.delete_by_name(pipeline.MONITORING)
     destination.repository.delete()

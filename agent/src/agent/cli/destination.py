@@ -39,7 +39,7 @@ def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, a
         _prompt_access_key(destination_)
         if not agent.destination.repository.exists():
             agent.destination.repository.save(destination_)
-            # todo duplicate code, try to avoid it
+            # todo code duplicate, try to avoid it
             auth_token = agent.destination.AuthenticationToken(destination_.id, AnodotApiClient(destination_).get_new_token())
             agent.destination.repository.save_auth_token(auth_token)
         else:
@@ -52,7 +52,8 @@ def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, a
                 pipeline.manager.update_monitoring_pipeline()
             else:
                 click.secho('Starting Monitoring pipeline...')
-                pipeline.manager.start_monitoring_pipeline()
+                # todo code duplicate
+                pipeline.manager.create_monitoring_pipelines()
         except pipeline.pipeline.PipelineException as e:
             raise click.ClickException(str(e))
     click.secho('Destination configured', fg='green')
