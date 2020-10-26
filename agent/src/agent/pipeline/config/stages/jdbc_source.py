@@ -15,10 +15,13 @@ class JDBCSourceStage(Stage):
         }
 
     def get_query(self):
-        timestamp_condition = f'''{self.pipeline.timestamp_path} > ${{OFFSET}} 
-AND {self.pipeline.timestamp_path} <= {self.get_interval()}'''
+        if self.pipeline.timestamp_type == pipeline.TimestampType.DATETIME:
+            timestamp_condition = f'{self.pipeline.timestamp_path} > "${{OFFSET}}"'
+        else:
+            timestamp_condition = f'{self.pipeline.timestamp_path} > ${{OFFSET}}'
+        timestamp_condition += f' AND {self.pipeline.timestamp_path} <= {self.get_interval()}'
         if self.pipeline.delay:
-            timestamp_condition += f'AND {self.pipeline.timestamp_path} < {self.get_delay()}'
+            timestamp_condition += f' AND {self.pipeline.timestamp_path} < {self.get_delay()}'
         return self.pipeline.query.replace(f'{source.JDBCSource.TIMESTAMP_CONDITION}', timestamp_condition) + ' ORDER BY ' + self.pipeline.timestamp_path
 
     def get_interval(self):

@@ -3,7 +3,7 @@ import pytz
 
 from agent.cli import source_builders
 from agent.modules.tools import infinite_retry, if_validation_enabled, dict_get_nested
-from agent.pipeline import pipeline as p
+from agent import pipeline
 
 from agent.modules.logger import get_logger
 
@@ -14,11 +14,11 @@ logger = get_logger(__name__)
 class PromptConfig:
     timestamp_types = ['string', 'datetime', 'unix', 'unix_ms']
 
-    def __init__(self, pipeline: p.Pipeline):
+    def __init__(self, pipeline_: pipeline.Pipeline):
         self.advanced = False
         self.default_config = {}
         self.config = {}
-        self.pipeline = pipeline
+        self.pipeline = pipeline_
 
     def prompt(self, default_config, advanced=False):
         self.advanced = advanced
@@ -136,9 +136,10 @@ class PromptConfig:
         if click.confirm('Would you like to see the data preview?', default=True):
             # todo this is a temporary solution, it requires a lot of refactoring
             builder = source_builders.get(self.pipeline.source)
-            test_pipeline = p.Pipeline(self.pipeline.name, self.pipeline.source, self.pipeline.destination)
+            test_pipeline = pipeline.Pipeline(self.pipeline.name, self.pipeline.source, self.pipeline.destination)
             test_pipeline.set_config(self.config)
             builder.print_sample_data(test_pipeline)
+            pipeline.repository.remove_from_session(test_pipeline)
 
     @staticmethod
     @infinite_retry

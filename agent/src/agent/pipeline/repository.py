@@ -47,3 +47,7 @@ def delete_by_name(pipeline_name: str):
 def save_offset(pipeline_offset: PipelineOffset):
     session().add(pipeline_offset)
     session().commit()
+
+
+def remove_from_session(pipeline_: pipeline.Pipeline):
+    session().expunge(pipeline_)

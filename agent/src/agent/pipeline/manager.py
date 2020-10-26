@@ -435,7 +435,6 @@ def create_test_pipeline(pipeline_: pipeline.Pipeline) -> str:
         pipeline_config_ = json.load(f)['pipelineConfig']
 
     test_pipeline_name = _get_test_pipeline_name(pipeline_.source_)
-    logger.info(pipeline_.query)
 
     new_pipeline = streamsets_api_client.api_client.create_pipeline(test_pipeline_name)
     pipeline_config = get_sdc_creator(pipeline_) \
