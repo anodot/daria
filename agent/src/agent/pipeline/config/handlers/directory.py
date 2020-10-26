@@ -10,7 +10,7 @@ class DirectoryConfigHandler(BaseConfigHandler):
     PIPELINE_BASE_CONFIG_NAME = 'directory_http.json'
 
     stages_to_override = {
-        'source': stages.source.Source,
+        'source': stages.schemaless_source.SchemalessSource,
         'JavaScriptEvaluator_01': stages.js_convert_metrics_20.JSConvertMetrics,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties30,
         'ExpressionEvaluator_03': stages.expression_evaluator.Filtering,

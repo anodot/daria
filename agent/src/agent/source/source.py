@@ -100,7 +100,7 @@ class MongoSource(Source):
             del self.config[source.MongoSource.CONFIG_USERNAME]
 
 
-class SchemalessSource(Source):
+class SchemalessSource:
     CONFIG_DATA_FORMAT = 'conf.dataFormat'
     CONFIG_CSV_MAPPING = 'csv_mapping'
 
@@ -151,14 +151,8 @@ class SchemalessSource(Source):
 
     data_formats = [DATA_FORMAT_JSON, DATA_FORMAT_CSV, DATA_FORMAT_AVRO, DATA_FORMAT_LOG]
 
-    def set_config(self, config):
-        super().set_config(config)
-        if self.config.get('grok_definition_file'):
-            with open(self.config['grok_definition_file']) as f:
-                self.config[self.CONFIG_GROK_PATTERN_DEFINITION] = f.read()
 
-
-class KafkaSource(SchemalessSource):
+class KafkaSource(Source, SchemalessSource):
     CONFIG_BROKER_LIST = 'conf.brokerURI'
     CONFIG_CONSUMER_GROUP = 'conf.consumerGroup'
     CONFIG_TOPIC_LIST = 'conf.topicList'
@@ -186,11 +180,11 @@ class VictoriaMetricsSource(Source):
     PASSWORD = 'password'
 
 
-class DirectorySource(SchemalessSource):
+class DirectorySource(Source, SchemalessSource):
     pass
 
 
-class TCPSource(SchemalessSource):
+class TCPSource(Source, SchemalessSource):
     pass
 
 
