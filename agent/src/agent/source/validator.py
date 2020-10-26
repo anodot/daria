@@ -36,7 +36,7 @@ class Validator:
 
     @if_validation_enabled
     def validate_connection(self):
-        test_pipeline_name = pipeline.manager.create_test_pipeline()
+        test_pipeline_name = pipeline.manager.create_test_pipeline(pipeline.manager.build_test_pipeline(self.source))
         try:
             validate_status = api_client.validate(test_pipeline_name)
             api_client.wait_for_preview(test_pipeline_name, validate_status['previewerId'])
