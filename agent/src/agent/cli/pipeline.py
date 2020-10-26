@@ -2,11 +2,11 @@ import click
 
 from agent import pipeline, source
 from agent import destination
-from agent.modules.streamsets import StreamSetsApiClientException
+from agent.pipeline.streamsets import StreamSetsApiClientException
 from agent.modules.tools import infinite_retry
 from jsonschema import ValidationError
 from texttable import Texttable
-from agent.pipeline import streamsets_helper
+from agent.pipeline import streamsets
 
 
 def get_pipelines_ids_complete(ctx, args, incomplete):
@@ -16,7 +16,7 @@ def get_pipelines_ids_complete(ctx, args, incomplete):
 @click.command(name='list')
 def list_pipelines():
     pipelines = pipeline.repository.get_all()
-    statuses = streamsets_helper.get_all_pipeline_statuses()
+    statuses = streamsets.manager.get_all_pipeline_statuses()
 
     table = _build_table(['Name', 'Type', 'Status'],
                          [[p.name, p.source.type, statuses[p.name]['status']] for p in pipelines])

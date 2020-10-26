@@ -4,7 +4,7 @@ import time
 
 from ..conftest import get_output, get_input_file_path
 from agent.cli import source as source_cli, pipeline as pipeline_cli
-from agent.modules.streamsets import StreamSetsApiClient
+from agent.pipeline.streamsets import StreamSetsApiClient
 from agent import pipeline, source
 
 

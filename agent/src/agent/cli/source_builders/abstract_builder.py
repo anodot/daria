@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
 from agent import source, pipeline
-from agent.modules import tools, streamsets
+from agent.modules import tools
+from agent.pipeline import streamsets
 from agent.modules.logger import get_logger
-from agent.modules.streamsets import StreamSetsApiClient
+from agent.pipeline.streamsets import StreamSetsApiClient
 
 logger = get_logger(__name__)
 

@@ -1,6 +1,6 @@
 from agent import cli
 from agent import source
-from agent.pipeline import streamsets_helper
+from agent.pipeline import streamsets
 
 
 class TestInflux:
@@ -22,11 +22,11 @@ class TestInflux:
         result = cli_runner.invoke(cli.pipeline.create, catch_exceptions=False,
                                    input=f'{source_}\n{name}\ncpu_test\n\nusage_active usage_idle\n\ncp<u zone host\n\n1200000\n\n\n')
         assert result.exit_code == 0
-        assert streamsets_helper.get_api_client_by_id(name).get_pipeline(name)
+        assert streamsets.manager.get_api_client_by_id(name).get_pipeline(name)
 
     def test_create_adv(self, cli_runner):
         pipeline_id = 'test_influx_adv'
         result = cli_runner.invoke(cli.pipeline.create, ['-a'], catch_exceptions=False,
                                    input=f"test_influx\n{pipeline_id}\ncpu_test\n\nusage_active usage_idle\n\ncp<u zone host\n \nkey:val key1:val1\nkey:val key1:val1\n\n1200000\nzone = 'GEO'\n\n\n")
         assert result.exit_code == 0
-        assert streamsets_helper.get_api_client_by_id(pipeline_id).get_pipeline('test_influx_adv')
+        assert streamsets.manager.get_api_client_by_id(pipeline_id).get_pipeline('test_influx_adv')

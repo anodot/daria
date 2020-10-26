@@ -1,5 +1,5 @@
 from agent.modules import streamsets, constants
-from agent.modules.streamsets import StreamSets
+from agent.pipeline.streamsets import StreamSets
 
 streamsets.repository.save(
     StreamSets(

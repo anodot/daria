@@ -11,8 +11,6 @@ from agent.modules.constants import STREAMSETS_PREVIEW_TIMEOUT
 
 logger = get_logger(__name__)
 
-# todo move to pipeline?
-
 
 def endpoint(func):
     """
@@ -107,7 +105,7 @@ class StreamSetsApiClient:
         return self.session.get(self._build_url('pipelines'), params=params)
 
     @endpoint
-    def get_pipelines_status(self) -> requests.Response:
+    def get_pipeline_statuses(self) -> requests.Response:
         logger.info('Get pipelines status')
         return self.session.get(self._build_url('pipelines', 'status'))
 

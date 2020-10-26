@@ -6,7 +6,7 @@ from agent import cli, source, destination
 # cli.destination()
 # cli.pipeline.create()
 # cli.update()
-from agent.modules import streamsets
+from agent.pipeline import streamsets
 from agent.pipeline import Pipeline
 from agent.source import Source
 

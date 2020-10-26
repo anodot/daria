@@ -8,7 +8,7 @@ from agent.destination import HttpDestination
 from enum import Enum
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy import Column, Integer, String, JSON, ForeignKey, func
-from agent.modules.streamsets import StreamSets
+from agent.pipeline.streamsets import StreamSets
 
 MONITORING = 'Monitoring'
 

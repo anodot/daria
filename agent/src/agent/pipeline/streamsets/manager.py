@@ -1,7 +1,7 @@
 from typing import Dict, List
 from agent import pipeline
-from agent.modules.streamsets import StreamSetsApiClient, StreamSets
-from agent.modules import streamsets
+from agent.pipeline.streamsets import StreamSetsApiClient, StreamSets
+from agent.pipeline import streamsets
 from agent.pipeline import Pipeline
 
 _clients: Dict[int, StreamSetsApiClient] = {}
@@ -45,7 +45,7 @@ def get_all_pipeline_statuses() -> dict:
     statuses = {}
     for streamsets_ in streamsets.repository.get_all():
         client = StreamSetsApiClient(streamsets_)
-        statuses = {**statuses, **client.get_pipelines_status()}
+        statuses = {**statuses, **client.get_pipeline_statuses()}
     return statuses
 
 

@@ -4,7 +4,8 @@ import os
 from datetime import datetime
 from agent.modules.constants import AGENT_DB_USER, AGENT_DB, BACKUP_DIRECTORY, AGENT_DB_HOST
 from agent import pipeline
-from agent.pipeline import Pipeline, streamsets_helper
+from agent.pipeline import Pipeline
+from agent.pipeline import streamsets
 
 
 @click.command()
@@ -39,7 +40,7 @@ def _restore_pipelines():
 
 def _get_pipelines():
     # todo is it working correctly?
-    streamsets_pipelines = [p['pipelineId'] for p in streamsets_helper.get_all_pipelines()]
+    streamsets_pipelines = [p['pipelineId'] for p in streamsets.manager.get_all_pipelines()]
     existing = []
     not_existing = []
     for p in pipeline.repository.get_all():

@@ -7,9 +7,10 @@ import sqlalchemy
 from datetime import datetime
 from urllib.parse import urlparse, urlunparse
 from agent import source, pipeline
-from agent.modules.streamsets import StreamSetsApiClient
+from agent.pipeline.streamsets import StreamSetsApiClient
 from agent.modules.tools import if_validation_enabled
-from agent.modules import validator, streamsets
+from agent.modules import validator
+from agent.pipeline import streamsets
 
 
 class ValidationException(Exception):

@@ -1,6 +1,6 @@
 from agent import pipeline, source
 from agent import cli
-from agent.pipeline import streamsets_helper
+from agent.pipeline import streamsets
 
 
 class TestDirectory:
@@ -18,7 +18,7 @@ class TestDirectory:
         result = cli_runner.invoke(cli.pipeline.create, ['-a'], catch_exceptions=False,
                                    input=f"{pipeline_id}\ntest_dir_csv\n\ny\ncount_records\ny\n\nClicks:gauge\nClicks:clicks\ntimestamp_datetime\nstring\nMMddyyyy\n\nver Country\nExchange optional_dim\nversion:1\n\n\n\n1h\n\n\n")
         assert result.exit_code == 0
-        assert streamsets_helper.get_api_client_by_id(pipeline_id).get_pipeline(pipeline_id)
+        assert streamsets.manager.get_api_client_by_id(pipeline_id).get_pipeline(pipeline_id)
         pipeline_obj = pipeline.repository.get_by_name(pipeline_id)
         assert pipeline_obj.config['schema'] == {
             'id': '111111-22222-3333-4444',

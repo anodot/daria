@@ -3,7 +3,7 @@ import traceback
 from ..conftest import get_input_file_path
 from agent.cli import source as source_cli, pipeline as pipeline_cli
 from agent import source
-from agent.pipeline import streamsets_helper
+from agent.pipeline import streamsets
 
 
 class TestTCPServer:
@@ -23,4 +23,4 @@ class TestTCPServer:
         result = cli_runner.invoke(pipeline_cli.create, catch_exceptions=False,
                                    input=f"test_tcp_log\n{pipeline_id}\n\nn\nClicks:gauge\nClicks:clicks\ntimestamp_unix_ms\nunix_ms\nver Country\nExchange optional_dim\n\n")
         assert result.exit_code == 0
-        assert streamsets_helper.get_api_client_by_id(pipeline_id).get_pipeline(pipeline_id)
+        assert streamsets.manager.get_api_client_by_id(pipeline_id).get_pipeline(pipeline_id)

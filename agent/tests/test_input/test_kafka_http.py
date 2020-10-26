@@ -2,7 +2,7 @@ import traceback
 
 from agent import cli
 from agent import source
-from agent.pipeline import streamsets_helper
+from agent.pipeline import streamsets
 
 
 class TestKafka:
@@ -93,7 +93,7 @@ class TestKafka:
         )
         traceback.print_exception(*result.exc_info)
         assert result.exit_code == 0
-        assert streamsets_helper.get_api_client_by_id(name).get_pipeline(name)
+        assert streamsets.manager.get_api_client_by_id(name).get_pipeline(name)
 
     def test_edit(self, cli_runner, options, value):
         result = cli_runner.invoke(cli.pipeline.edit, options, catch_exceptions=False,

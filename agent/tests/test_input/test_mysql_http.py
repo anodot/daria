@@ -1,7 +1,7 @@
 from datetime import datetime
 from agent.cli import source as source_cli, pipeline as pipeline_cli
 from agent import source
-from agent.pipeline import streamsets_helper
+from agent.pipeline import streamsets
 
 
 class TestMySQL:
@@ -25,18 +25,18 @@ class TestMySQL:
         result = cli_runner.invoke(pipeline_cli.create, catch_exceptions=False,
                                    input=f'{source}\n{name}\ntest\n\n\n{days_to_backfill}\n\n\nclicks:gauge impressions:gauge\n{timestamp_name}\n{timestamp_type}\nadsize country\n\n\n\n')
         assert result.exit_code == 0
-        assert streamsets_helper.get_api_client_by_id(name).get_pipeline(name)
+        assert streamsets.manager.get_api_client_by_id(name).get_pipeline(name)
 
     def test_create_timezone(self, cli_runner, name, source, timestamp_type, timestamp_name, timezone):
         days_to_backfill = (datetime.now() - datetime(year=2017, month=12, day=10)).days + 1
         result = cli_runner.invoke(pipeline_cli.create, ['-a'], catch_exceptions=False,
                                    input=f'{source}\n{name}\ntest\n\n\n{days_to_backfill}\n\nn\nclicks:gauge impressions:gauge\n{timestamp_name}\n{timestamp_type}\n{timezone}\nadsize country\n\n\n\n\nn\n')
         assert result.exit_code == 0
-        assert streamsets_helper.get_api_client_by_id(name).get_pipeline(name)
+        assert streamsets.manager.get_api_client_by_id(name).get_pipeline(name)
 
     def test_create_advanced(self, cli_runner, name, source):
         days_to_backfill = (datetime.now() - datetime(year=2017, month=12, day=10)).days + 1
         result = cli_runner.invoke(pipeline_cli.create, ['-a'], catch_exceptions=False,
                                    input=f'{source}\n{name}\ntest\n\n\n{days_to_backfill}\n\ny\ntest\nclicks:gauge impressions:gauge\ntimestamp_unix\nunix\nadsize country\n\nkey1:val1 key2:val2\n\ncountry = \'USA\'\n\n\n')
         assert result.exit_code == 0
-        assert streamsets_helper.get_api_client_by_id(name).get_pipeline(name)
+        assert streamsets.manager.get_api_client_by_id(name).get_pipeline(name)

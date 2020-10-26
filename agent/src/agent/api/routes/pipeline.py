@@ -7,8 +7,8 @@ from agent.api.routes import needs_pipeline
 from flask import jsonify, Blueprint, request
 from agent.api import routes
 from agent import pipeline, source
-from agent.modules import proxy, logger, streamsets
-from agent.pipeline import PipelineOffset
+from agent.modules import proxy, logger
+from agent.pipeline import PipelineOffset, streamsets
 
 pipelines = Blueprint('pipelines', __name__)
 logger = logger.get_logger(__name__)
