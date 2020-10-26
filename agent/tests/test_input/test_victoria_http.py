@@ -21,7 +21,7 @@ class TestVictoria:
             input=f'test_victoria\n{name}\n{query}\n{days_to_backfill}\n{interval}\n\n'
         )
         assert result.exit_code == 0
-        assert streamsets.manager.get_api_client_by_id(name).get_pipeline(name)
+        assert streamsets.manager.get_pipeline(name)
 
     def test_create_advanced(self, cli_runner):
         name = 'test_victoria_a'
@@ -33,7 +33,7 @@ class TestVictoria:
             input=f'test_victoria\n{name}\n{query}\naggregated_metric\n{days_to_backfill}\n{interval}\n\nstatic:dimension\ntag:value\n'
         )
         assert result.exit_code == 0
-        assert streamsets.manager.get_api_client_by_id(name).get_pipeline(name)
+        assert streamsets.manager.get_pipeline(name)
 
     def test_edit(self, cli_runner):
         result = cli_runner.invoke(cli.pipeline.edit, ['test_victoria'], catch_exceptions=False, input=f"\n\n\n\n")

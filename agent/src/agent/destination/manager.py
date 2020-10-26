@@ -75,6 +75,6 @@ def _build(
 
 
 def delete():
-    pipeline.manager.stop(pipeline.MONITORING)
+    pipeline.streamsets.manager.stop(pipeline.MONITORING)
     pipeline.manager.delete_by_name(pipeline.MONITORING)
     destination.repository.delete()

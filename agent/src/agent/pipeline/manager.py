@@ -42,9 +42,8 @@ class PipelineBuilder:
 
 def show_preview(pipeline_: Pipeline):
     try:
-        streamsets_api_client = streamsets.manager.get_api_client(pipeline_)
-        preview = streamsets_api_client.create_preview(pipeline_.name)
-        preview_data, errors = streamsets_api_client.wait_for_preview(pipeline_.name, preview['previewerId'])
+        preview = streamsets.manager.create_preview(pipeline_.name)
+        preview_data, errors = streamsets.manager.wait_for_preview(pipeline_.name, preview['previewerId'])
     except streamsets.StreamSetsApiClientException as e:
         print(str(e))
         return
@@ -164,7 +163,7 @@ def create_object(pipeline_id: str, source_name: str, streamsets_: StreamSets = 
         pipeline_id,
         source.repository.get_by_name(source_name),
         destination.repository.get(),
-        streamsets_ if streamsets_ else pipeline.streamsets.streamsets.manager.choose_streamsets(),
+        streamsets_ if streamsets_ else pipeline.streamsets.manager.choose_streamsets(),
     )
     return pipeline_
 
@@ -233,9 +232,7 @@ def edit_pipeline_using_json(config: dict) -> Pipeline:
 
 
 def start(pipeline_: Pipeline):
-    client = streamsets.manager.get_api_client(pipeline_)
-    client.start_pipeline(pipeline_.name)
-    client.wait_for_status(pipeline_.name, pipeline.Pipeline.STATUS_RUNNING)
+    streamsets.manager.start(pipeline_.name)
     click.secho(f'{pipeline_.name} pipeline is running')
     if ENV_PROD:
         if wait_for_sending_data(pipeline_.name):
@@ -251,14 +248,13 @@ def create(pipeline_: Pipeline):
 
 def _create_in_streamsets(pipeline_: Pipeline):
     try:
-        streamsets_api_client = streamsets.manager.get_api_client(pipeline_)
-        streamsets_pipeline = streamsets_api_client.create_pipeline(pipeline_.name)
+        streamsets_pipeline = streamsets.manager.create_pipeline(pipeline_.name)
         new_config = get_sdc_creator(pipeline_)\
             .override_base_config(new_uuid=streamsets_pipeline['uuid'], new_title=pipeline_.name)
-        streamsets_api_client.update_pipeline(pipeline_.name, new_config)
+        streamsets.manager.update_pipeline(pipeline_.name, new_config)
     except (config_handlers.base.ConfigHandlerException, streamsets.StreamSetsApiClientException) as e:
         try:
-            _delete_from_streamsets(pipeline_.name)
+            streamsets.manager.delete(pipeline_.name)
         except streamsets.StreamSetsApiClientException:
             # ignore if it doesn't exist in streamsets
             pass
@@ -268,14 +264,13 @@ def _create_in_streamsets(pipeline_: Pipeline):
 def update(pipeline_: Pipeline):
     start_pipeline = False
     try:
-        streamsets_api_client = streamsets.manager.get_api_client(pipeline_)
-        if get_pipeline_status(pipeline_.name) in [pipeline.Pipeline.STATUS_RUNNING, pipeline.Pipeline.STATUS_RETRY]:
-            stop(pipeline_.name)
+        if streamsets.manager.get_pipeline_status(pipeline_.name) in [pipeline.Pipeline.STATUS_RUNNING, pipeline.Pipeline.STATUS_RETRY]:
+            streamsets.manager.stop(pipeline_.name)
             start_pipeline = True
-        api_pipeline = streamsets_api_client.get_pipeline(pipeline_.name)
+        api_pipeline = streamsets.manager.get_pipeline(pipeline_.name)
         new_config = get_sdc_creator(pipeline_)\
             .override_base_config(new_uuid=api_pipeline['uuid'], new_title=pipeline_.name)
-        streamsets_api_client.update_pipeline(pipeline_.name, new_config)
+        streamsets.manager.update_pipeline(pipeline_.name, new_config)
     except (config_handlers.base.ConfigHandlerException, streamsets.StreamSetsApiClientException) as e:
         raise pipeline.PipelineException(str(e))
     pipeline.repository.save(pipeline_)
@@ -293,17 +288,9 @@ def update_source_pipelines(source_: source.Source):
         print(f'Pipeline {pipeline_.name} updated')
 
 
-def get_pipeline_status(pipeline_id: str) -> str:
-    return streamsets.manager.get_api_client_by_id(pipeline_id).get_pipeline_status(pipeline_id)['status']
-
-
-def check_status(pipeline_id: str, status: str) -> bool:
-    return get_pipeline_status(pipeline_id) == status
-
-
 def wait_for_sending_data(pipeline_id: str, tries: int = 5, initial_delay: int = 2):
     for i in range(1, tries + 1):
-        response = streamsets.manager.get_api_client_by_id(pipeline_id).get_pipeline_metrics(pipeline_id)
+        response = streamsets.manager.get_pipeline_metrics(pipeline_id)
         stats = {
             'in': response['counters']['pipeline.batchInputRecords.counter']['count'],
             'out': response['counters']['pipeline.batchOutputRecords.counter']['count'],
@@ -321,34 +308,9 @@ def wait_for_sending_data(pipeline_id: str, tries: int = 5, initial_delay: int =
         time.sleep(delay)
 
 
-def force_stop_pipeline(pipeline_id: str):
-    streamsets_api_client = streamsets.manager.get_api_client_by_id(pipeline_id)
-    try:
-        streamsets_api_client.stop_pipeline(pipeline_id)
-    except streamsets.StreamSetsApiClientException:
-        pass
-
-    if not check_status(pipeline_id, pipeline.Pipeline.STATUS_STOPPING):
-        raise pipeline.PipelineException("Can't force stop a pipeline not in the STOPPING state")
-
-    streamsets_api_client.force_stop_pipeline(pipeline_id)
-    streamsets_api_client.wait_for_status(pipeline_id, pipeline.Pipeline.STATUS_STOPPED)
-
-
-def stop(pipeline_id: str):
-    print("Stopping the pipeline")
-    client = streamsets.manager.get_api_client_by_id(pipeline_id)
-    client.stop_pipeline(pipeline_id)
-    try:
-        client.wait_for_status(pipeline_id, pipeline.Pipeline.STATUS_STOPPED)
-    except streamsets.PipelineFreezeException:
-        print("Force stopping the pipeline")
-        force_stop_pipeline(pipeline_id)
-
-
 def reset(pipeline_: Pipeline):
     try:
-        streamsets.manager.get_api_client(pipeline_).reset_pipeline(pipeline_.name)
+        streamsets.manager.reset_pipeline(pipeline_.name)
         get_sdc_creator(pipeline_).set_initial_offset()
     except (config_handlers.base.ConfigHandlerException, streamsets.StreamSetsApiClientException) as e:
         raise pipeline.PipelineException(str(e))
@@ -359,16 +321,10 @@ def _delete_schema(pipeline_: Pipeline):
         anodot_api_client.AnodotApiClient(pipeline_.destination).delete_schema(pipeline_.config['schema']['id'])
 
 
-def _delete_from_streamsets(pipeline_id: str):
-    if check_status(pipeline_id, pipeline.Pipeline.STATUS_RUNNING):
-        stop(pipeline_id)
-    streamsets.manager.get_api_client_by_id(pipeline_id).delete_pipeline(pipeline_id)
-
-
 def delete(pipeline_: Pipeline):
     _delete_schema(pipeline_)
     try:
-        _delete_from_streamsets(pipeline_.name)
+        streamsets.manager.delete(pipeline_.name)
     except streamsets.StreamSetsApiClientException as e:
         raise pipeline.PipelineException(str(e))
     finally:
@@ -387,7 +343,7 @@ def force_delete(pipeline_name: str) -> list:
     """
     exceptions = []
     try:
-        _delete_from_streamsets(pipeline_name)
+        streamsets.manager.delete(pipeline_name)
     except Exception as e:
         exceptions.append(str(e))
     if pipeline.repository.exists(pipeline_name):

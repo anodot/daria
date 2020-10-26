@@ -30,7 +30,7 @@ class TestSage:
         result = cli_runner.invoke(pipeline_cli.create, options, catch_exceptions=False,
                                    input=f"test_sage\n{name}\n{query_file_path}\n\n{interval}\n{days_to_backfill}\n{value}\nver Country Exchange\n{advanced_options}\n")
         assert result.exit_code == 0
-        assert streamsets.manager.get_api_client_by_id(name).get_pipeline(name)
+        assert streamsets.manager.get_pipeline(name)
 
     def test_edit(self, cli_runner, options, value):
         result = cli_runner.invoke(pipeline_cli.edit, options, catch_exceptions=False,

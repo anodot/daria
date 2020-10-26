@@ -23,4 +23,4 @@ class TestTCPServer:
         result = cli_runner.invoke(pipeline_cli.create, catch_exceptions=False,
                                    input=f"test_tcp_log\n{pipeline_id}\n\nn\nClicks:gauge\nClicks:clicks\ntimestamp_unix_ms\nunix_ms\nver Country\nExchange optional_dim\n\n")
         assert result.exit_code == 0
-        assert streamsets.manager.get_api_client_by_id(pipeline_id).get_pipeline(pipeline_id)
+        assert streamsets.manager.get_pipeline(pipeline_id)

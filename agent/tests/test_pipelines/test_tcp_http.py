@@ -4,6 +4,7 @@ import socket
 from agent import cli
 from .test_zpipeline_base import TestPipelineBase
 from agent import pipeline, source
+from agent.pipeline import streamsets
 
 
 class TestTCPServer(TestPipelineBase):
@@ -38,7 +39,7 @@ class TestTCPServer(TestPipelineBase):
     def test_start(self, cli_runner, name):
         result = cli_runner.invoke(cli.pipeline.start, [name], catch_exceptions=False)
         assert result.exit_code == 0
-        assert pipeline.manager.get_pipeline_status(name) == 'RUNNING'
+        assert streamsets.manager.get_pipeline_status(name) == 'RUNNING'
 
         # streams data
         pipeline_obj = pipeline.repository.get_by_name(name)

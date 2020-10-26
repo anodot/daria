@@ -1,7 +1,7 @@
 from typing import List
 
 from agent.modules.db import session
-from agent.modules.streamsets.streamsets import StreamSets
+from agent.pipeline.streamsets import StreamSets
 
 
 def get(id_: int) -> StreamSets:

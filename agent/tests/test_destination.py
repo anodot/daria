@@ -2,6 +2,7 @@ import pytest
 
 from agent import cli
 from agent import destination, pipeline
+from agent.pipeline import streamsets
 
 WAITING_TIME = 3
 
@@ -18,7 +19,7 @@ def test_destination(cli_runner):
                                input='y\nhttp://squid:3128\n\n\nhttp://dummy_destination\ncorrect_token\ncorrect_key\n')
     assert result.exit_code == 0
     assert destination.repository.exists()
-    assert pipeline.manager.get_pipeline_status(pipeline.MONITORING) == 'RUNNING'
+    assert streamsets.manager.get_pipeline_status(pipeline.MONITORING) == 'RUNNING'
 
 
 def test_edit_destination(cli_runner):
@@ -29,7 +30,7 @@ def test_edit_destination(cli_runner):
     curr_dest = destination.repository.get()
     assert result.exit_code == 0
     assert curr_dest.host_id == prev_dest.host_id
-    assert pipeline.manager.get_pipeline_status(pipeline.MONITORING) == 'RUNNING'
+    assert streamsets.manager.get_pipeline_status(pipeline.MONITORING) == 'RUNNING'
 
 
 def test_update(cli_runner):

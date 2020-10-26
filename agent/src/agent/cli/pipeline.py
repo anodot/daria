@@ -17,7 +17,6 @@ def get_pipelines_ids_complete(ctx, args, incomplete):
 def list_pipelines():
     pipelines = pipeline.repository.get_all()
     statuses = streamsets.manager.get_all_pipeline_statuses()
-
     table = _build_table(['Name', 'Type', 'Status'],
                          [[p.name, p.source.type, statuses[p.name]['status']] for p in pipelines])
     click.echo(table.draw())
@@ -74,7 +73,7 @@ def stop(pipeline_id, file):
 
     for pipeline_id in pipeline_ids:
         try:
-            pipeline.manager.stop(pipeline_id)
+            streamsets.manager.stop(pipeline_id)
             click.secho(f'Pipeline {pipeline_id} is stopped', fg='green')
         except (StreamSetsApiClientException, pipeline.PipelineException) as e:
             click.secho(str(e), err=True, fg='red')
@@ -86,7 +85,7 @@ def stop(pipeline_id, file):
 def force_stop(pipeline_id):
     try:
         click.echo('Force pipeline stopping...')
-        pipeline.manager.force_stop_pipeline(pipeline_id)
+        streamsets.manager.force_stop_pipeline(pipeline_id)
         click.secho('Pipeline is stopped', fg='green')
     except (StreamSetsApiClientException, pipeline.PipelineException) as e:
         click.secho(str(e), err=True, fg='red')
@@ -131,7 +130,7 @@ def logs(pipeline_id, lines, severity):
     Show pipeline logs
     """
     try:
-        logs_ = pipeline.info.get_logs(pipeline_id, severity, lines)
+        logs_ = streamsets.manager.get_pipeline_logs(pipeline_id, severity, lines)
     except StreamSetsApiClientException as e:
         raise click.ClickException(str(e))
     table = _build_table(['Timestamp', 'Severity', 'Category', 'Message'], logs_)
@@ -158,7 +157,7 @@ def info(pipeline_id, lines):
     Show pipeline status, errors if any, statistics about amount of records sent
     """
     try:
-        info_ = pipeline.info.get(pipeline_id, lines)
+        info_ = streamsets.manager.get_pipeline_info(pipeline_id, lines)
     except StreamSetsApiClientException as e:
         raise click.ClickException(str(e))
     click.secho('=== STATUS ===', fg='green')

@@ -74,7 +74,7 @@ def start(pipeline_name):
 @needs_pipeline
 def stop(pipeline_name):
     try:
-        pipeline.manager.stop(pipeline_name)
+        streamsets.manager.stop(pipeline_name)
     except streamsets.StreamSetsApiClientException as e:
         return jsonify(str(e)), 400
     except streamsets.PipelineFreezeException as e:
@@ -86,7 +86,7 @@ def stop(pipeline_name):
 @needs_pipeline
 def force_stop(pipeline_name):
     try:
-        pipeline.manager.force_stop_pipeline(pipeline_name)
+        streamsets.manager.force_stop_pipeline(pipeline_name)
     except streamsets.PipelineFreezeException as e:
         return jsonify(str(e)), 400
     return jsonify('')
@@ -97,7 +97,7 @@ def force_stop(pipeline_name):
 def info(pipeline_name):
     number_of_history_records = int(request.args.get('number_of_history_records', 10))
     try:
-        return jsonify(pipeline.info.get(pipeline_name, number_of_history_records))
+        return jsonify(streamsets.manager.get_pipeline_info(pipeline_name, number_of_history_records))
     except streamsets.StreamSetsApiClientException as e:
         return jsonify(str(e)), 500
 
@@ -110,7 +110,7 @@ def logs(pipeline_name):
     severity = request.args.get('severity', logging.getLevelName(logging.INFO))
     number_of_records = int(request.args.get('number_of_records', 10))
     try:
-        return jsonify(pipeline.info.get_logs(pipeline_name, severity, number_of_records))
+        return jsonify(streamsets.manager.get_pipeline_logs(pipeline_name, severity, number_of_records))
     except streamsets.StreamSetsApiClientException as e:
         return jsonify(str(e)), 500
 
