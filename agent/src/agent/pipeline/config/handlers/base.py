@@ -18,9 +18,10 @@ class BaseConfigHandler:
 
     stages_to_override = {}
 
-    def __init__(self, pipeline: p.Pipeline):
+    def __init__(self, pipeline: p.Pipeline, is_preview=False):
         self.config = {}
         self.pipeline = pipeline
+        self.is_preview = is_preview
 
     def load_base_config(self):
         with open(os.path.join(ROOT_DIR, self.BASE_PIPELINE_CONFIGS_PATH, self.PIPELINE_BASE_CONFIG_NAME)) as f:

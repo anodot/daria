@@ -10,6 +10,7 @@ from enum import Enum
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy import Column, Integer, String, JSON, ForeignKey, func
 
+
 MONITORING = 'Monitoring'
 
 
@@ -45,8 +46,7 @@ class FlushBucketSize(Enum):
             return 60 * 60 * 24 * 7
 
 
-class Pipeline(Entity):
-    __tablename__ = 'pipelines'
+class Pipeline:
 
     STATUS_RUNNING = 'RUNNING'
     STATUS_STOPPED = 'STOPPED'

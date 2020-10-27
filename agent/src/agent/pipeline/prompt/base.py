@@ -136,10 +136,9 @@ class PromptConfig:
         if click.confirm('Would you like to see the data preview?', default=True):
             # todo this is a temporary solution, it requires a lot of refactoring
             builder = source_builders.get(self.pipeline.source)
-            test_pipeline = pipeline.Pipeline(self.pipeline.name, self.pipeline.source, self.pipeline.destination)
+            test_pipeline = pipeline.Pipeline(self.pipeline.name + 'preview', self.pipeline.source, self.pipeline.destination)
             test_pipeline.set_config(self.config)
             builder.print_sample_data(test_pipeline)
-            pipeline.repository.remove_from_session(test_pipeline)
 
     @staticmethod
     @infinite_retry

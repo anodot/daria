@@ -4,7 +4,7 @@ import json
 from .abstract_builder import Builder
 from abc import ABCMeta
 from agent.modules.tools import infinite_retry, print_dicts, print_json, map_keys, if_validation_enabled
-from agent import source
+from agent import source, pipeline
 
 
 class SchemalessSourceBuilder(Builder, metaclass=ABCMeta):
@@ -139,8 +139,8 @@ class SchemalessSourceBuilder(Builder, metaclass=ABCMeta):
         self.source.config[source.SchemalessSource.CONFIG_CSV_MAPPING] = data
 
     @if_validation_enabled
-    def print_sample_data(self):
-        records, errors = self.get_sample_records()
+    def print_sample_data(self, pipeline_: pipeline.Pipeline = None):
+        records, errors = self.get_sample_records(pipeline_)
         if records:
             if self.source.config.get(
                     source.SchemalessSource.CONFIG_DATA_FORMAT) == source.SchemalessSource.DATA_FORMAT_CSV:

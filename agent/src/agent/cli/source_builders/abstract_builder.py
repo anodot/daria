@@ -29,7 +29,6 @@ class Builder(ABC):
             api_client.delete_pipeline(test_pipeline_name)
             raise
         api_client.delete_pipeline(test_pipeline_name)
-
         return preview_data, errors
 
     def get_sample_records(self, pipeline_: pipeline.Pipeline = None):

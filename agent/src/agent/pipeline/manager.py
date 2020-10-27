@@ -16,6 +16,7 @@ from agent.modules import streamsets_api_client
 from agent.modules.tools import print_json, sdc_record_map_to_dict
 from agent.modules.logger import get_logger
 from typing import List
+from copy import deepcopy
 
 logger = get_logger(__name__)
 
@@ -61,7 +62,7 @@ def show_preview(pipeline_: Pipeline):
     print(*errors, sep='\n')
 
 
-def get_sdc_creator(pipeline_: Pipeline) -> config_handlers.base.BaseConfigHandler:
+def get_sdc_creator(pipeline_: Pipeline, is_preview=False) -> config_handlers.base.BaseConfigHandler:
     handlers = {
         source.TYPE_MONITORING: config_handlers.monitoring.MonitoringConfigHandler,
         source.TYPE_INFLUX: config_handlers.influx.InfluxConfigHandler,
@@ -75,7 +76,7 @@ def get_sdc_creator(pipeline_: Pipeline) -> config_handlers.base.BaseConfigHandl
         source.TYPE_SAGE: config_handlers.sage.SageConfigHandler,
         source.TYPE_VICTORIA: config_handlers.victoria.VictoriaConfigHandler,
     }
-    return handlers[pipeline_.source.type](pipeline_)
+    return handlers[pipeline_.source.type](pipeline_, is_preview)
 
 
 def get_file_loader(source_type: str):
@@ -427,6 +428,7 @@ def _update_stage_config(source_: source.Source, stage):
 
 
 def build_test_pipeline(source_: source.Source):
+    # test_source = source.Source(source_.name, source_.type, source_.config)
     return pipeline.Pipeline(_get_test_pipeline_name(source_), source_, destination.repository.get())
 
 
@@ -437,10 +439,10 @@ def create_test_pipeline(pipeline_: pipeline.Pipeline) -> str:
     test_pipeline_name = _get_test_pipeline_name(pipeline_.source_)
 
     new_pipeline = streamsets_api_client.api_client.create_pipeline(test_pipeline_name)
-    pipeline_config = get_sdc_creator(pipeline_) \
+    pipeline_config = get_sdc_creator(pipeline_, is_preview=True) \
         .override_base_config(new_uuid=new_pipeline['uuid'], base_config=pipeline_config_)
     streamsets_api_client.api_client.update_pipeline(test_pipeline_name, pipeline_config)
-
+    del pipeline_
     return test_pipeline_name
 
 
