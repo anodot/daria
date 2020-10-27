@@ -55,13 +55,6 @@ class TestInflux:
                     "properties": {"test": "val"}, "source": {"name": "influx"}, "target_type": "gauge",
                     "value": {"constant": "1", "type": "property", "values": ["usage_active"]}}]
         }],
-        'test_list': [{
-            'er': [{"override_source": {}, "pipeline_id": "Monitoring", "source": {"name": "monitoring"}},
-                   {"dimensions": {"optional": ["cpu", "host", "zone"], "required": []}, "interval": 5,
-                    "measurement_name": "cpu_test", "override_source": {}, "pipeline_id": "test_influx",
-                    "properties": {"test": "val"}, "source": {"name": "influx"}, "target_type": "gauge",
-                    "value": {"constant": "1", "type": "property", "values": ["usage_active"]}}]
-        }]
     }
 
     def test_source_create(self, api_client, data, er):
@@ -115,14 +108,10 @@ class TestInflux:
         assert res.status_code == 200
         assert pipeline.repository.get_by_name(pipeline_name).status == pipeline_status
 
-    def test_list(self, api_client, er):
-        result = api_client.get('/pipelines')
-        assert result.json == er
-
     def test_delete(self, api_client):
         api_client.delete('/pipelines/test_influx')
         result = api_client.get('/pipelines')
-        assert result.json == [{"override_source":{},"pipeline_id":"Monitoring","source":{"name":"monitoring"}}]
+        assert result.json == [{"override_source": {}, "pipeline_id": "Monitoring", "source": {"name": "monitoring"}}]
 
     def test_source_delete(self, api_client):
         api_client.delete('/sources/influx')

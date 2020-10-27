@@ -164,7 +164,7 @@ def _get_history_info(history: list, number_of_history_records: int) -> list:
     return info
 
 
-def force_stop_pipeline(pipeline_id: str):
+def force_stop(pipeline_id: str):
     client = _client(pipeline_id)
     try:
         client.stop_pipeline(pipeline_id)
@@ -172,7 +172,7 @@ def force_stop_pipeline(pipeline_id: str):
         pass
     if not get_pipeline_status(pipeline_id) == pipeline.Pipeline.STATUS_STOPPING:
         raise pipeline.PipelineException("Can't force stop a pipeline not in the STOPPING state")
-    client.force_stop_pipeline(pipeline_id)
+    client.force_stop(pipeline_id)
     client.wait_for_status(pipeline_id, pipeline.Pipeline.STATUS_STOPPED)
 
 
@@ -184,7 +184,7 @@ def stop(pipeline_id: str):
         client.wait_for_status(pipeline_id, pipeline.Pipeline.STATUS_STOPPED)
     except streamsets.PipelineFreezeException:
         print("Force stopping the pipeline")
-        force_stop_pipeline(pipeline_id)
+        force_stop(pipeline_id)
 
 
 def reset_pipeline(pipeline_id: str):

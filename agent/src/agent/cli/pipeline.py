@@ -85,7 +85,7 @@ def stop(pipeline_id, file):
 def force_stop(pipeline_id):
     try:
         click.echo('Force pipeline stopping...')
-        streamsets.manager.force_stop_pipeline(pipeline_id)
+        streamsets.manager.force_stop(pipeline_id)
         click.secho('Pipeline is stopped', fg='green')
     except (StreamSetsApiClientException, pipeline.PipelineException) as e:
         click.secho(str(e), err=True, fg='red')

@@ -86,7 +86,7 @@ def stop(pipeline_name):
 @needs_pipeline
 def force_stop(pipeline_name):
     try:
-        streamsets.manager.force_stop_pipeline(pipeline_name)
+        streamsets.manager.force_stop(pipeline_name)
     except streamsets.PipelineFreezeException as e:
         return jsonify(str(e)), 400
     return jsonify('')

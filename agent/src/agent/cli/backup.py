@@ -58,7 +58,7 @@ def _update_status(pipeline_: Pipeline):
                              Pipeline.STATUS_STOP_ERROR, Pipeline.STATUS_START_ERROR]:
             pipeline.manager.start(pipeline_)
         elif actual_status == Pipeline.STATUS_STOPPING:
-            streamsets.manager.force_stop_pipeline(pipeline_.name)
+            streamsets.manager.force_stop(pipeline_.name)
             pipeline.manager.start(pipeline_)
     elif expected_status in [Pipeline.STATUS_EDITED, Pipeline.STATUS_STOPPED, Pipeline.STATUS_STOPPING]:
         if actual_status in [Pipeline.STATUS_RUNNING, Pipeline.STATUS_STARTING]:

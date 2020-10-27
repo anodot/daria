@@ -86,7 +86,7 @@ class StreamSetsApiClient:
         return self.session.post(self._build_url('pipeline', pipeline_id, 'stop'))
 
     @endpoint
-    def force_stop_pipeline(self, pipeline_id: str):
+    def force_stop(self, pipeline_id: str):
         logger.info(f'Force stop pipeline: {pipeline_id}')
         return self.session.post(self._build_url('pipeline', pipeline_id, 'forceStop'))
 
