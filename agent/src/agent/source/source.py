@@ -16,7 +16,7 @@ class Source(Entity):
     created_at = Column(TIMESTAMP(timezone=True), default=func.now())
     last_edited = Column(TIMESTAMP(timezone=True), default=func.now(), onupdate=func.now())
 
-    pipelines = relationship('Pipeline', back_populates='source_')
+    pipelines = relationship('Pipeline', back_populates='source_', enable_typechecks=False)
 
     def __init__(self, name: str, source_type: str, config: dict):
         self.config = config
