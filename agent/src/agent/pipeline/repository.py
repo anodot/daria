@@ -53,3 +53,7 @@ def count_by_streamsets() -> Dict[int, int]:
     """ Returns { streamsets_id: number_of_pipelines } """
     res = session().query(Pipeline.streamsets_id, func.count(Pipeline.streamsets_id)).group_by(Pipeline.streamsets_id).all()
     return {streamsets_id: number for (streamsets_id, number) in res}
+
+
+def get_by_streamsets(streamsets_id) -> List[Pipeline]:
+    return session().query(Pipeline).filter(Pipeline.streamsets_id == streamsets_id).all()

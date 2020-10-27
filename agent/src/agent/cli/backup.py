@@ -39,7 +39,6 @@ def _restore_pipelines():
 
 
 def _get_pipelines():
-    # todo is it working correctly?
     streamsets_pipelines = [p['pipelineId'] for p in streamsets.manager.get_all_pipelines()]
     existing = []
     not_existing = []

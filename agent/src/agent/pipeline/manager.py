@@ -414,14 +414,20 @@ def create_monitoring_pipelines():
     if not source.repository.exists(MONITORING_SOURCE_NAME):
         source.repository.save(source.Source(MONITORING_SOURCE_NAME, source.TYPE_MONITORING, {}))
     for streamsets_ in streamsets.manager.get_streamsets_without_monitoring():
-        # todo we should be able to distinguish streamsets instances in metrics
-        pipeline_ = create_object(pipeline.MONITORING, MONITORING_SOURCE_NAME, streamsets_)
+        pipeline_ = create_object(f'{pipeline.MONITORING}_{streamsets_.id}', MONITORING_SOURCE_NAME, streamsets_)
         create(pipeline_)
         start(pipeline_)
 
 
-def update_monitoring_pipeline():
-    update(pipeline.repository.get_by_name(pipeline.MONITORING))
+def update_monitoring_pipelines():
+    for streamsets_ in streamsets.repository.get_all():
+        update(pipeline.repository.get_by_name(f'{pipeline.MONITORING}_{streamsets_.id}'))
+
+
+def delete_monitoring_pipelines():
+    for streamsets_ in streamsets.repository.get_all():
+        pipeline.streamsets.manager.stop(f'{pipeline.MONITORING}_{streamsets_.id}')
+        pipeline.manager.delete_by_name(f'{pipeline.MONITORING}_{streamsets_.id}')
 
 
 def transform_for_bc(pipeline_: Pipeline) -> dict:

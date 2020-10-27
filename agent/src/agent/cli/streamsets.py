@@ -1,12 +1,17 @@
 import click
 import requests
 
+from typing import List
 from agent import destination, pipeline
 from agent.pipeline.streamsets import StreamSets
-from agent.pipeline import streamsets
+from agent.pipeline import streamsets, Pipeline
 from agent.modules import constants
 from agent.pipeline.streamsets.repository import StreamsetsNotExistsException
 from agent.modules.tools import infinite_retry
+
+
+def get_url_complete(ctx, args, incomplete):
+    return [s.url for s in streamsets.repository.get_all() if incomplete in s.url]
 
 
 @click.group(name='streamsets')
@@ -21,9 +26,8 @@ def add():
         pipeline.manager.create_monitoring_pipelines()
 
 
-# todo autocompletion
 @click.command()
-@click.argument('url')
+@click.argument('url', autocompletion=get_url_complete)
 def edit(url):
     try:
         s = streamsets.repository.get_by_url(url)
@@ -32,14 +36,29 @@ def edit(url):
     _prompt_streamsets(s)
 
 
-# todo autocompletion
 @click.command()
-@click.argument('url')
+@click.argument('url', autocompletion=get_url_complete)
 def delete(url):
     try:
-        streamsets.repository.delete_by_url(url)
+        streamsets_ = streamsets.repository.get_by_url(url)
+        pipelines = pipeline.repository.get_by_streamsets(streamsets_)
+        if _has_pipelines(pipelines):
+            # -1 because we don't count Monitoring
+            if not click.confirm(f'Streamsets with url {streamsets_.url} contains {len(pipelines) - 1} pipelines, all these pipelines will be DELETED, continue?'):
+                return
+            for pipeline_ in pipelines:
+                pipeline.repository.delete(pipeline_)
+        streamsets.repository.delete(streamsets_)
     except StreamsetsNotExistsException:
         raise click.UsageError(f'StreamSets with url {url} does not exist')
+
+
+def _has_pipelines(pipelines: List[Pipeline]) -> bool:
+    if len(pipelines) > 1:
+        return True
+    if len(pipelines) == 1 and not pipelines[0].name == pipeline.MONITORING:
+        return True
+    return False
 
 
 def _prompt_streamsets(streamsets_: StreamSets):
@@ -56,3 +75,8 @@ def _prompt_url():
     if not status == 200:
         raise Exception(f'Provided url returned {status} status code')
     return url
+
+
+streamsets_group.add_command(add)
+streamsets_group.add_command(edit)
+streamsets_group.add_command(delete)

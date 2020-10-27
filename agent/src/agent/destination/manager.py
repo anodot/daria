@@ -35,7 +35,7 @@ def edit(
 ) -> Result[HttpDestination, str]:
     result = _build(destination_, token, url, access_key, proxy_host, proxy_username, proxy_password, host_id)
     if not result.is_err():
-        pipeline.manager.update_monitoring_pipeline()
+        pipeline.manager.update_monitoring_pipelines()
     return result
 
 
@@ -75,6 +75,5 @@ def _build(
 
 
 def delete():
-    pipeline.streamsets.manager.stop(pipeline.MONITORING)
-    pipeline.manager.delete_by_name(pipeline.MONITORING)
+    pipeline.manager.delete_monitoring_pipelines()
     destination.repository.delete()

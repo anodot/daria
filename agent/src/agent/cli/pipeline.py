@@ -277,12 +277,10 @@ def _prompt_edit(advanced, pipeline_id):
         raise click.UsageError(f'{pipeline_id} does not exist')
 
 
-def _get_previous_pipeline_config(source_type: str):
-    # todo is it working correctly?
-    # todo improve, like for source
+def _get_previous_pipeline_config(source_type: str) -> dict:
     pipelines_with_source = pipeline.repository.get_by_source(source_type)
     if pipelines_with_source:
-        return min(pipelines_with_source, key=lambda p: p.last_edited).to_dict()
+        return max(pipelines_with_source, key=lambda p: p.last_edited).to_dict()
     return {}
 
 

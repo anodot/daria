@@ -4,8 +4,6 @@ from agent import cli
 from agent import destination, pipeline
 from agent.pipeline import streamsets
 
-WAITING_TIME = 3
-
 
 @pytest.fixture(autouse=True)
 def host_id(monkeypatch):
@@ -19,7 +17,8 @@ def test_destination(cli_runner):
                                input='y\nhttp://squid:3128\n\n\nhttp://dummy_destination\ncorrect_token\ncorrect_key\n')
     assert result.exit_code == 0
     assert destination.repository.exists()
-    assert streamsets.manager.get_pipeline_status(pipeline.MONITORING) == 'RUNNING'
+    for streamsets_ in streamsets.repository.get_all():
+        assert streamsets.manager.get_pipeline_status(f'{pipeline.MONITORING}_{streamsets_.id}') == 'RUNNING'
 
 
 def test_edit_destination(cli_runner):
@@ -30,7 +29,8 @@ def test_edit_destination(cli_runner):
     curr_dest = destination.repository.get()
     assert result.exit_code == 0
     assert curr_dest.host_id == prev_dest.host_id
-    assert streamsets.manager.get_pipeline_status(pipeline.MONITORING) == 'RUNNING'
+    for streamsets_ in streamsets.repository.get_all():
+        assert streamsets.manager.get_pipeline_status(f'{pipeline.MONITORING}_{streamsets_.id}') == 'RUNNING'
 
 
 def test_update(cli_runner):

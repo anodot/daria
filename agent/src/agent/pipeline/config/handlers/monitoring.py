@@ -16,6 +16,7 @@ state['host_id'] = 'host_id';
 state['host_id'] = '{host_id}';
 state['host_name'] = '{host_name}';
 state['previous'] = {{}};
+state['streamsets_id'] = {streamsets_id}
 """
 
     def override_stages(self):
@@ -33,7 +34,8 @@ state['previous'] = {{}};
                     if conf['name'] == 'initScript':
                         conf['value'] = self.DECLARE_VARS_JS.format(
                             host_id=self.pipeline.destination.host_id,
-                            host_name=HOSTNAME
+                            host_name=HOSTNAME,
+                            streamsets_id=self.pipeline.streamsets_id,
                         )
 
         # check if monitoring is available

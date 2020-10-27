@@ -12,9 +12,8 @@ DOCKER_TEST_PARALLEL = $(DOCKER_TEST) -n $(THREADS) --dist=loadfile
 all: build-all test-all
 
 build-all: get-streamsets-libs build-docker sleep alembic-migrate setup-all
-	docker exec -i anodot-agent python src/agent/scripts/upgrade/create_default_streamsets.py
 
-test-all: run-unit-tests test-flask-app test-destination test-antomation test-api test-api-scripts test-input test-send-to-bc test-pipelines
+test-all: run-unit-tests test-flask-app test-streamsets test-destination test-antomation test-api test-api-scripts test-input test-send-to-bc test-pipelines
 
 ##-------------
 ## DEVELOPMENT
@@ -93,6 +92,9 @@ test-send-to-bc:
 test-destination:
 	$(DOCKER_TEST) tests/test_destination.py
 
+test-streamsets:
+	$(DOCKER_TEST) tests/test_streamsets.py
+
 test-input:
 	$(DOCKER_TEST_PARALLEL) tests/test_input/
 
@@ -133,7 +135,7 @@ run-dev:
 	$(DOCKER_COMPOSE_DEV) up -d
 	docker exec -i anodot-agent python setup.py develop
 
-bootstrap: clean-docker-volumes run-base-services nap test-destination
+bootstrap: clean-docker-volumes run-base-services create-default-streamsets test-destination
 
 clean-docker-volumes:
 	rm -rf sdc-data
@@ -201,3 +203,6 @@ sleep:
 
 nap:
 	sleep $(NAP)
+
+create-default-streamsets:
+	docker exec -i anodot-agent python src/agent/scripts/upgrade/create_default_streamsets.py

@@ -17,8 +17,7 @@ def _client(pipeline_id: str) -> StreamSetsApiClient:
     return _clients[pipeline_.streamsets.id]
 
 
-# todo return type
-def get_pipeline(pipeline_id: str):
+def get_pipeline(pipeline_id: str) -> dict:
     return _client(pipeline_id).get_pipeline(pipeline_id)
 
 
@@ -41,8 +40,8 @@ def get_pipeline_status(pipeline_id: str) -> str:
     return _client(pipeline_id).get_pipeline_status(pipeline_id)['status']
 
 
-def get_pipeline_metrics(pipeline_id: str):
-    _client(pipeline_id).get_pipeline_metrics(pipeline_id)
+def get_pipeline_metrics(pipeline_id: str) -> dict:
+    return _client(pipeline_id).get_pipeline_metrics(pipeline_id)
 
 
 def choose_streamsets() -> StreamSets:
@@ -63,12 +62,11 @@ def get_all_pipelines() -> List[dict]:
     pipelines = []
     for streamsets_ in streamsets.repository.get_all():
         client = StreamSetsApiClient(streamsets_)
-        pipelines.append(client.get_pipelines())
+        pipelines = pipelines + client.get_pipelines()
     return pipelines
 
 
 def get_all_pipeline_statuses() -> dict:
-    # todo show streamsets id?
     statuses = {}
     for streamsets_ in streamsets.repository.get_all():
         client = StreamSetsApiClient(streamsets_)
@@ -110,7 +108,7 @@ def get_pipeline_info(pipeline_id: str, number_of_history_records: int) -> dict:
     return info
 
 
-def _get_metrics_string(metrics_obj):
+def _get_metrics_string(metrics_obj) -> str:
     if metrics_obj:
         stats = {
             'in': metrics_obj['counters']['pipeline.batchInputRecords.counter']['count'],
@@ -130,11 +128,11 @@ def _get_metric_errors(pipeline_id: str, metrics: Optional[dict]) -> list:
             if counter['count'] == 0 or not stage_name:
                 continue
             for error in _client(pipeline_id).get_pipeline_errors(pipeline_id, stage_name.group(1)):
-                errors.append(f'{_get_timestamp(error["header"]["errorTimestamp"])} - {error["header"]["errorMessage"]}')
+                errors.append(f'{_format_timestamp(error["header"]["errorTimestamp"])} - {error["header"]["errorMessage"]}')
     return errors
 
 
-def _get_timestamp(utc_time):
+def _format_timestamp(utc_time) -> str:
     return datetime.utcfromtimestamp(utc_time / 1000).strftime('%Y-%m-%d %H:%M:%S')
 
 
@@ -157,12 +155,12 @@ def _extract_stage_issues(pipeline_info: dict) -> dict:
     return stage_issues
 
 
-def _get_history_info(history: list, number_of_history_records: int):
+def _get_history_info(history: list, number_of_history_records: int) -> list:
     info = []
     for item in history[:number_of_history_records]:
         metrics_str = _get_metrics_string(json.loads(item['metrics'])) if item['metrics'] else ' '
         message = item['message'] if item['message'] else ' '
-        info.append([_get_timestamp(item['timeStamp']), item['status'], message, metrics_str])
+        info.append([_format_timestamp(item['timeStamp']), item['status'], message, metrics_str])
     return info
 
 

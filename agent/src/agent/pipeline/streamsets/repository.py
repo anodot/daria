@@ -1,5 +1,4 @@
 from typing import List
-
 from agent.modules.db import session
 from agent.pipeline.streamsets import StreamSets
 
@@ -31,8 +30,8 @@ def save(streamsets: StreamSets):
     session().commit()
 
 
-def delete_by_url(url: str):
-    session().delete(get_by_url(url))
+def delete(streamsets: StreamSets):
+    session().delete(streamsets)
     session().commit()
 
 

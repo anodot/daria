@@ -49,10 +49,9 @@ def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, a
         try:
             if pipeline.repository.exists(pipeline.MONITORING):
                 click.secho('Updating Monitoring pipeline...')
-                pipeline.manager.update_monitoring_pipeline()
+                pipeline.manager.update_monitoring_pipelines()
             else:
                 click.secho('Starting Monitoring pipeline...')
-                # todo code duplicate
                 pipeline.manager.create_monitoring_pipelines()
         except pipeline.pipeline.PipelineException as e:
             raise click.ClickException(str(e))
