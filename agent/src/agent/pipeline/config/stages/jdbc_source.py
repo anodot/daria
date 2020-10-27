@@ -15,21 +15,25 @@ class JDBCSourceStage(Stage):
         }
 
     def get_query(self):
-        if self.pipeline.timestamp_type == pipeline.TimestampType.DATETIME:
-            timestamp_condition = f'{self.pipeline.timestamp_path} > "${{OFFSET}}"'
-        else:
-            timestamp_condition = f'{self.pipeline.timestamp_path} > ${{OFFSET}}'
-        timestamp_condition += f' AND {self.pipeline.timestamp_path} <= {self.get_interval()}'
+        timestamp_condition = self.get_timestamp_condition() + f' AND {self.pipeline.timestamp_path} <= {self.get_interval()}'
         if self.pipeline.delay:
             timestamp_condition += f' AND {self.pipeline.timestamp_path} < {self.get_delay()}'
         return self.pipeline.query.replace(f'{source.JDBCSource.TIMESTAMP_CONDITION}', timestamp_condition) + ' ORDER BY ' + self.pipeline.timestamp_path
+
+    def get_timestamp_condition(self):
+        if self.pipeline.timestamp_type == pipeline.TimestampType.DATETIME:
+            if self.pipeline.source.type == source.TYPE_POSTGRES:
+                return f"{self.pipeline.timestamp_path} > timestamp '${{OFFSET}}'"
+            return f'{self.pipeline.timestamp_path} > "${{OFFSET}}"'
+
+        return f'{self.pipeline.timestamp_path} > ${{OFFSET}}'
 
     def get_interval(self):
         if self.pipeline.timestamp_type == pipeline.TimestampType.DATETIME:
             if self.pipeline.source.type == source.TYPE_MYSQL:
                 return f'DATE_ADD("${{OFFSET}}", INTERVAL {self.pipeline.interval} SECOND)'
             if self.pipeline.source.type == source.TYPE_POSTGRES:
-                return f'{{OFFSET}} + INTERVAL {self.pipeline.interval} SECOND'
+                return f"timestamp '${{OFFSET}}' + INTERVAL '{self.pipeline.interval} SECOND'"
         elif self.pipeline.timestamp_type == pipeline.TimestampType.UNIX_MS:
             return '${OFFSET} + ' + str(self.pipeline.interval * 1e3)
         return '${OFFSET} + ' + str(self.pipeline.interval)
