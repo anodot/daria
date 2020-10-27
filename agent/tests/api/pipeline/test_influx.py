@@ -109,11 +109,15 @@ class TestInflux:
         assert pipeline.repository.get_by_name(pipeline_name).status == pipeline_status
 
     def test_delete(self, api_client):
-        api_client.delete('/pipelines/test_influx')
+        pipeline_id = 'test_influx'
+        api_client.delete(f'/pipelines/{pipeline_id}')
         result = api_client.get('/pipelines')
-        assert result.json == [{"override_source": {}, "pipeline_id": "Monitoring", "source": {"name": "monitoring"}}]
+        for obj in result.json:
+            if obj['pipeline_id'] == pipeline_id:
+                raise Exception
 
     def test_source_delete(self, api_client):
-        api_client.delete('/sources/influx')
+        source = 'influx'
+        api_client.delete(f'/sources/{source}')
         result = api_client.get('/sources')
-        assert result.json == ["monitoring"]
+        assert source not in result.json
