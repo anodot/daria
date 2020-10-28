@@ -131,14 +131,6 @@ class Pipeline(Entity):
         return [self.get_property_path(value) for value in self.config['dimensions']['required']]
 
     @property
-    def required_dimensions_names(self):
-        return [self.replace_chars(value) for value in self.config['dimensions']['required']]
-
-    @property
-    def optional_dimensions_names(self):
-        return [self.replace_chars(value) for value in self.config['dimensions'].get('optional', [])]
-
-    @property
     def timestamp_path(self) -> str:
         return self.get_property_path(self.config['timestamp']['name'])
 

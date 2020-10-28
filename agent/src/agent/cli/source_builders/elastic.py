@@ -26,7 +26,7 @@ class ElasticSourceBuilder(Builder):
         print('Successfully connected to the source')
 
     @if_validation_enabled
-    def print_sample_data(self, pipeline_: pipeline.Pipeline = None):
+    def print_sample_data(self, pipeline_: pipeline.Pipeline):
         records, errors = self.get_sample_records(pipeline_)
         if records:
             print_json(records)

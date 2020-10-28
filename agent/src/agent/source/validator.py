@@ -4,18 +4,12 @@ import jsonschema
 import requests
 import sqlalchemy
 
-import time
-
 from datetime import datetime
 from urllib.parse import urlparse, urlunparse
 from agent import source, pipeline
 from agent.modules.streamsets_api_client import api_client
 from agent.modules.tools import if_validation_enabled
 from agent.modules import validator
-
-from agent.modules import logger
-
-logger = logger.get_logger(__name__)
 
 
 class ValidationException(Exception):

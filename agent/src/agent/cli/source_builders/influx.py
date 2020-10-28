@@ -48,7 +48,7 @@ class InfluxSourceBuilder(Builder):
             raise click.UsageError(e)
 
     @if_validation_enabled
-    def print_sample_data(self, pipeline_: pipeline.Pipeline = None):
+    def print_sample_data(self, pipeline_: pipeline.Pipeline):
         records, errors = self.get_sample_records(pipeline_)
         if records and 'series' in records[0]['results'][0]:
             series = records[0]['results'][0]['series'][0]

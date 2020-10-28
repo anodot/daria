@@ -17,9 +17,7 @@ class Builder(ABC):
     def prompt(self, default_config, advanced=False) -> source.Source:
         pass
 
-    def get_preview_data(self, pipeline_: pipeline.Pipeline = None):
-        if not pipeline_:
-            pipeline_ = pipeline.manager.build_test_pipeline(self.source)
+    def get_preview_data(self, pipeline_: pipeline.Pipeline):
         test_pipeline_name = pipeline.manager.create_test_pipeline(pipeline_)
         try:
             preview = api_client.create_preview(test_pipeline_name)
@@ -31,7 +29,7 @@ class Builder(ABC):
         api_client.delete_pipeline(test_pipeline_name)
         return preview_data, errors
 
-    def get_sample_records(self, pipeline_: pipeline.Pipeline = None):
+    def get_sample_records(self, pipeline_: pipeline.Pipeline):
         preview_data, errors = self.get_preview_data(pipeline_)
 
         if not preview_data:
@@ -47,7 +45,7 @@ class Builder(ABC):
         return [tools.sdc_record_map_to_dict(record['value']) for record in data[:source.manager.MAX_SAMPLE_RECORDS]], errors
 
     @tools.if_validation_enabled
-    def print_sample_data(self, pipeline_: pipeline.Pipeline = None):
+    def print_sample_data(self, pipeline_: pipeline.Pipeline):
         records, errors = self.get_sample_records(pipeline_)
         if records:
             tools.print_dicts(records)
