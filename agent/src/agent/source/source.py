@@ -100,7 +100,7 @@ class MongoSource(Source):
             del self.config[source.MongoSource.CONFIG_USERNAME]
 
 
-class SchemalessSource:
+class SchemalessSource(Source):
     CONFIG_DATA_FORMAT = 'conf.dataFormat'
     CONFIG_CSV_MAPPING = 'csv_mapping'
 
@@ -152,7 +152,7 @@ class SchemalessSource:
     data_formats = [DATA_FORMAT_JSON, DATA_FORMAT_CSV, DATA_FORMAT_AVRO, DATA_FORMAT_LOG]
 
 
-class KafkaSource(Source, SchemalessSource):
+class KafkaSource(SchemalessSource):
     CONFIG_BROKER_LIST = 'conf.brokerURI'
     CONFIG_CONSUMER_GROUP = 'conf.consumerGroup'
     CONFIG_TOPIC_LIST = 'conf.topicList'
@@ -180,11 +180,11 @@ class VictoriaMetricsSource(Source):
     PASSWORD = 'password'
 
 
-class DirectorySource(Source, SchemalessSource):
+class DirectorySource(SchemalessSource):
     pass
 
 
-class TCPSource(Source, SchemalessSource):
+class TCPSource(SchemalessSource):
     pass
 
 

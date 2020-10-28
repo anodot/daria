@@ -16,7 +16,6 @@ from agent.modules import streamsets_api_client
 from agent.modules.tools import print_json, sdc_record_map_to_dict
 from agent.modules.logger import get_logger
 from typing import List
-from copy import deepcopy
 
 logger = get_logger(__name__)
 

@@ -32,5 +32,5 @@ def get_config_validator(pipeline: p.Pipeline) -> BaseValidator:
     if pipeline.source.type == source.TYPE_ELASTIC:
         return ElasticValidator()
     if pipeline.source.type in [source.TYPE_MYSQL, source.TYPE_POSTGRES]:
-        JDBCValidator()
+        return JDBCValidator()
     return BaseValidator()

@@ -5,11 +5,6 @@ from agent.cli import source_builders
 from agent.modules.tools import infinite_retry, if_validation_enabled, dict_get_nested
 from agent import pipeline
 
-from agent.modules.logger import get_logger
-
-
-logger = get_logger(__name__)
-
 
 class PromptConfig:
     timestamp_types = ['string', 'datetime', 'unix', 'unix_ms']
