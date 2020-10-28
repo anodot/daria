@@ -61,6 +61,10 @@ def _construct_source(source_: source.Source) -> source.Source:
     return source_
 
 
+def get_all() -> List[source.Source]:
+    return session().query(source.Source).all()
+
+
 class SourceNotExists(Exception):
     pass
 
