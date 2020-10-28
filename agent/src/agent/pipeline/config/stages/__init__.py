@@ -6,4 +6,3 @@ from . import sage_source
 from . import victoria_source
 from . import influx_source
 from . import jdbc_source
-from . import schemaless_source
