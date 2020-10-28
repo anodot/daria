@@ -82,7 +82,7 @@ state['TAGS'] = {tags}
             if stage['instanceName'] == 'get_interval_records':
                 for conf in stage['configuration']:
                     if conf['name'] == 'conf.resourceUrl':
-                        params = "/query?db={source_config['db']}&epoch=ms&q="
+                        params = f"/query?db={source_config['db']}&epoch=ms&q="
                         conf['value'] = urljoin(source_config['host'], params + self.get_query())
                         continue
 
