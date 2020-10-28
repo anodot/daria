@@ -74,8 +74,8 @@ def _extract_pipeline_issues(pipeline_info: dict) -> list:
 
 def _format(info: dict) -> str:
     keys = ['severity', 'configGroup', 'configName', 'message']
-    return ' - '.join(list(filter(
-        lambda x: x is not None,
+    return ' - '.join(list(map(
+        lambda x: str(x),
         map(info.get, keys)
     )))
 
