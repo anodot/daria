@@ -39,7 +39,16 @@ class JDBCSourceStage(Stage):
         return '${OFFSET} + ' + str(self.pipeline.interval)
 
     def get_delay(self):
-        return self.pipeline.delay
+        if self.pipeline.timestamp_type == pipeline.TimestampType.DATETIME:
+            return f"NOW() - INTERVAL '{self.pipeline.delay}' MINUTE"
+        if self.pipeline.source.type == source.TYPE_POSTGRES:
+            curr_timestamp = 'extract(epoch from now())'
+        else:
+            curr_timestamp = 'UNIX_TIMESTAMP()'
+        unix_t = f'({curr_timestamp} - {self.pipeline.delay}*60)'
+        if self.pipeline.timestamp_type == pipeline.TimestampType.UNIX_MS:
+            unix_t += '*1000'
+        return unix_t
 
     def get_initial_offset(self):
         timestamp = datetime.now() - timedelta(days=int(self.pipeline.days_to_backfill))
