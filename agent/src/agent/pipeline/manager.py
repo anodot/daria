@@ -428,8 +428,8 @@ def _update_stage_config(source_: source.Source, stage):
 
 
 def build_test_pipeline(source_: source.Source):
-    # test_source = source.Source(source_.name, source_.type, source_.config)
-    return pipeline.Pipeline(_get_test_pipeline_name(source_), source_, destination.repository.get())
+    test_source = source.Source(source_.name, source_.type, source_.config)
+    return pipeline.Pipeline(_get_test_pipeline_name(source_), test_source, destination.repository.get())
 
 
 def create_test_pipeline(pipeline_: pipeline.Pipeline) -> str:
@@ -442,7 +442,6 @@ def create_test_pipeline(pipeline_: pipeline.Pipeline) -> str:
     pipeline_config = get_sdc_creator(pipeline_, is_preview=True) \
         .override_base_config(new_uuid=new_pipeline['uuid'], base_config=pipeline_config_)
     streamsets_api_client.api_client.update_pipeline(test_pipeline_name, pipeline_config)
-    pipeline.repository.remove_from_session(pipeline_)
     return test_pipeline_name
 
 

@@ -139,6 +139,7 @@ class PromptConfig:
             test_pipeline = pipeline.Pipeline(self.pipeline.name + 'preview', self.pipeline.source, self.pipeline.destination)
             test_pipeline.set_config(self.config)
             builder.print_sample_data(test_pipeline)
+            pipeline.repository.remove_from_session(test_pipeline)
 
     @staticmethod
     @infinite_retry
