@@ -442,7 +442,7 @@ def create_test_pipeline(pipeline_: pipeline.Pipeline) -> str:
     pipeline_config = get_sdc_creator(pipeline_, is_preview=True) \
         .override_base_config(new_uuid=new_pipeline['uuid'], base_config=pipeline_config_)
     streamsets_api_client.api_client.update_pipeline(test_pipeline_name, pipeline_config)
-    del pipeline_
+    pipeline.repository.remove_from_session(pipeline_)
     return test_pipeline_name
 
 
