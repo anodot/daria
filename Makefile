@@ -58,11 +58,11 @@ test-mongo: bootstrap run-mongo
 	$(DOCKER_TEST) tests/test_input/test_mongo_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_mongo_http.py
 
-test-mysql: bootstrap run-mysql
+test-mysql: bootstrap run-mysql sleep
 	$(DOCKER_TEST) tests/test_input/test_mysql_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_mysql_http.py
 
-test-postgres: bootstrap run-postgres
+test-postgres: bootstrap run-postgres sleep
 	$(DOCKER_TEST) tests/test_input/test_postgres_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_postgres_http.py
 
@@ -127,7 +127,7 @@ run-dev:
 	$(DOCKER_COMPOSE_DEV) up -d
 	docker exec -i anodot-agent python setup.py develop
 
-bootstrap: clean-docker-volumes run-base-services sleep test-destination
+bootstrap: clean-docker-volumes run-base-services nap test-destination
 
 clean-docker-volumes:
 	rm -rf sdc-data
@@ -168,11 +168,9 @@ run-mongo:
 
 run-mysql:
 	$(DOCKER_COMPOSE_DEV) up -d mysql
-	sleep $(SLEEP)
 
 run-postgres:
 	$(DOCKER_COMPOSE_DEV) up -d postgres
-	sleep $(SLEEP)
 
 run-sage:
 	docker-compose up -d --build sage
