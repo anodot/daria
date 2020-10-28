@@ -47,6 +47,7 @@ class FlushBucketSize(Enum):
 
 
 class Pipeline(Entity):
+    __tablename__ = 'pipelines'
 
     STATUS_RUNNING = 'RUNNING'
     STATUS_STOPPED = 'STOPPED'
