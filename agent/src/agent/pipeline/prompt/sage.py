@@ -7,9 +7,9 @@ class PromptConfigSage(PromptConfigSchemaless):
 
     def prompt_config(self):
         self.set_query()
-        self.set_delay()
-        self.set_interval()
-        self.set_number_of_days_to_backfill()
+        self.prompt_delay()
+        self.prompt_interval()
+        self.prompt_days_to_backfill()
         # self.data_preview()
         self.set_values()
         self.set_measurement_names()
