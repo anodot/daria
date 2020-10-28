@@ -67,9 +67,17 @@ def _get_timestamp(utc_time):
 def _extract_pipeline_issues(pipeline_info: dict) -> list:
     pipeline_issues = []
     if pipeline_info['issues']['issueCount'] > 0:
-        for i in pipeline_info['issues']['pipelineIssues']:
-            pipeline_issues.append('{severity} - {configGroup} - {configName} - {message}'.format(**i))
+        for issue in pipeline_info['issues']['pipelineIssues']:
+            pipeline_issues.append(_format(issue))
     return pipeline_issues
+
+
+def _format(info: dict) -> str:
+    keys = ['severity', 'configGroup', 'configName', 'message']
+    return ' - '.join(list(filter(
+        lambda x: x is not None,
+        map(info.get, keys)
+    )))
 
 
 def _extract_stage_issues(pipeline_info: dict) -> dict:
