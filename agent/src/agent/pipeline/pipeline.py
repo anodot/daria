@@ -46,7 +46,7 @@ class FlushBucketSize(Enum):
             return 60 * 60 * 24 * 7
 
 
-class Pipeline:
+class Pipeline(Entity):
 
     STATUS_RUNNING = 'RUNNING'
     STATUS_STOPPED = 'STOPPED'
