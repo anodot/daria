@@ -1,6 +1,5 @@
 import click
 
-from datetime import datetime, timedelta
 from .abstract_builder import Builder
 from agent.modules.tools import infinite_retry, print_dicts, map_keys, if_validation_enabled
 from agent import source
@@ -47,9 +46,6 @@ class InfluxSourceBuilder(Builder):
             self.validator.validate_offset()
         except source.validator.ValidationException as e:
             raise click.UsageError(e)
-        if self.source.config['offset'].isdigit():
-            self.source.config['offset'] = \
-                (datetime.now() - timedelta(days=int(self.source.config['offset']))).strftime('%d/%m/%Y %H:%M')
 
     @if_validation_enabled
     def print_sample_data(self):
