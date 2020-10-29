@@ -5,7 +5,7 @@ from .base import Stage
 class Destination(Stage):
     def get_config(self) -> dict:
         return {
-            'conf.agentOffsetUrl': AGENT_URL + '/pipeline-offset/${PIPELINE_ID}'
+            'conf.agentOffsetUrl': AGENT_URL + '/pipeline-offset/${pipeline:id()}'
         }
 
 
