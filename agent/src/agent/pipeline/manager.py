@@ -375,6 +375,7 @@ def _update_stage_config(source_: source.Source, stage):
 
 
 def build_test_pipeline(source_: source.Source):
+    # todo ?
     test_source = source.Source(source_.name, source_.type, source_.config)
     return pipeline.Pipeline(_get_test_pipeline_name(source_), test_source,
                              destination.repository.get(), streamsets.repository.get_any())

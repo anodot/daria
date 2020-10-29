@@ -4,12 +4,13 @@ import pytz
 from agent.cli import source_builders
 from agent.modules.tools import infinite_retry, if_validation_enabled, dict_get_nested
 from agent import pipeline
+from agent.pipeline import Pipeline, streamsets
 
 
 class PromptConfig:
     timestamp_types = ['string', 'datetime', 'unix', 'unix_ms']
 
-    def __init__(self, pipeline_: pipeline.Pipeline):
+    def __init__(self, pipeline_: Pipeline):
         self.advanced = False
         self.default_config = {}
         self.config = {}
@@ -131,7 +132,8 @@ class PromptConfig:
         if click.confirm('Would you like to see the data preview?', default=True):
             # todo this is a temporary solution, it requires a lot of refactoring
             builder = source_builders.get(self.pipeline.source)
-            test_pipeline = pipeline.Pipeline(self.pipeline.name + 'preview', self.pipeline.source, self.pipeline.destination)
+            test_pipeline = Pipeline(self.pipeline.name + 'preview', self.pipeline.source,
+                                     self.pipeline.destination, streamsets.repository.get_any())
             test_pipeline.set_config(self.config)
             builder.print_sample_data(test_pipeline)
             pipeline.repository.remove_from_session(test_pipeline)
