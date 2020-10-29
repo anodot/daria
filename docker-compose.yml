@@ -190,6 +190,9 @@ services:
       - '--retentionPeriod=600'
     restart: always
 
+  datagen:
+    image: agent-testing
+
 
 volumes:
   sdc-data:

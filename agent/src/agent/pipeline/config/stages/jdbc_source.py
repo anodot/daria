@@ -18,7 +18,8 @@ class JDBCSourceStage(Stage):
         timestamp_condition = self.get_timestamp_condition() + f' AND {self.pipeline.timestamp_path} <= {self.get_interval()}'
         if self.pipeline.delay:
             timestamp_condition += f' AND {self.pipeline.timestamp_path} < {self.get_delay()}'
-        return self.pipeline.query.replace(f'{source.JDBCSource.TIMESTAMP_CONDITION}', timestamp_condition) + ' ORDER BY ' + self.pipeline.timestamp_path
+        return self.pipeline.query.replace(f'{source.JDBCSource.TIMESTAMP_CONDITION}',
+                                           timestamp_condition) + ' ORDER BY ' + self.pipeline.timestamp_path
 
     def get_timestamp_condition(self):
         if self.pipeline.timestamp_type == pipeline.TimestampType.DATETIME:
@@ -51,7 +52,8 @@ class JDBCSourceStage(Stage):
         return unix_t
 
     def get_initial_offset(self):
-        timestamp = datetime.now() - timedelta(days=int(self.pipeline.days_to_backfill))
+        timestamp = (datetime.now() - timedelta(days=int(self.pipeline.days_to_backfill)) - timedelta(
+            seconds=self.pipeline.interval)).replace(second=0)
         if self.pipeline.timestamp_type == pipeline.TimestampType.DATETIME:
             return timestamp.strftime('%Y-%m-%d %H:%M:%S')
         elif self.pipeline.timestamp_type == pipeline.TimestampType.UNIX_MS:

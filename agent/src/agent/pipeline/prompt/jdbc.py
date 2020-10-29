@@ -1,6 +1,7 @@
 import click
 
 from agent.modules.tools import infinite_retry
+from agent.pipeline.validators import jdbc_query
 from .base import PromptConfig
 
 
@@ -29,9 +30,14 @@ class PromptConfigJDBC(PromptConfig):
             raise click.UsageError('Target type should be counter or gauge')
         self.validate_properties_names(self.config['values'].keys(), self.pipeline.source.sample_data)
 
+    @infinite_retry
     def set_query(self):
         self.config['query'] = click.prompt('Query', type=click.STRING, default=self.default_config.get('query'))
+        errors = jdbc_query.get_errors(self.config['query'])
+        if errors:
+            raise click.ClickException(errors)
 
+    @infinite_retry
     def set_values(self):
         self.config['count_records'] = int(click.confirm('Count records?',
                                                          default=self.default_config.get('count_records', False)))
