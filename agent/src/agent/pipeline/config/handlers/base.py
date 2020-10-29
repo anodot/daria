@@ -60,6 +60,7 @@ class BaseConfigHandler:
             'PROTOCOL': self.pipeline.destination.PROTOCOL_20,
             'ANODOT_BASE_URL': self.pipeline.destination.url,
             'AGENT_URL': AGENT_URL,
+            'PIPELINE_ID': self.pipeline.name,
         }
 
     def override_pipeline_config(self):
