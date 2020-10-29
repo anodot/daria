@@ -19,7 +19,7 @@ class Builder(ABC):
 
     def get_preview_data(self, pipeline_: pipeline.Pipeline):
         streamsets_api_client = StreamSetsApiClient(streamsets.repository.get_any())
-        test_pipeline_name = pipeline.manager.create_test_pipeline(pipeline_)
+        test_pipeline_name = pipeline.manager.create_test_pipeline(pipeline_, streamsets_api_client)
         try:
             preview = streamsets_api_client.create_preview(test_pipeline_name)
             preview_data, errors = streamsets_api_client.wait_for_preview(test_pipeline_name, preview['previewerId'])
