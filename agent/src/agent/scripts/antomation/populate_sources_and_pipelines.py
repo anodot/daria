@@ -134,9 +134,10 @@ def delete_not_existing(directory, module, type_):
         all_names = _extract_all_names(directory, module, type_)
         for obj in module.repository.get_all():
             if obj.name not in all_names and obj.name != pipeline.MONITORING and obj.name != constants.MONITORING_SOURCE_NAME:
-                logger_.info(f'{obj.name} {type_} not found in configs, deleting')
+                logger_.info(f'{type_} {obj.name} not found in configs, deleting')
                 module.manager.delete(obj)
                 logger_.info('Success')
+        logger_.info('Done')
 
 
 def _extract_all_names(directory, module, type_):
@@ -149,7 +150,7 @@ def _extract_all_names(directory, module, type_):
             with open(os.path.join(root, filename)) as file:
                 for config in module.manager.extract_configs(file):
                     if name_key not in config:
-                        raise Exception(f'{type_} config must contain {name_key}')
+                        raise Exception(f'{type_} config must contain a `{name_key}`, check {file.name}')
                     names.append(config[name_key])
     return names
 
