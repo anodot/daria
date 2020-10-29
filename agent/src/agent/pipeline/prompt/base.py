@@ -3,17 +3,17 @@ import pytz
 
 from agent.cli import source_builders
 from agent.modules.tools import infinite_retry, if_validation_enabled, dict_get_nested
-from agent.pipeline import pipeline as p
+from agent import pipeline
 
 
 class PromptConfig:
     timestamp_types = ['string', 'datetime', 'unix', 'unix_ms']
 
-    def __init__(self, pipeline: p.Pipeline):
+    def __init__(self, pipeline_: pipeline.Pipeline):
         self.advanced = False
         self.default_config = {}
         self.config = {}
-        self.pipeline = pipeline
+        self.pipeline = pipeline_
 
     def prompt(self, default_config, advanced=False):
         self.advanced = advanced
@@ -131,7 +131,10 @@ class PromptConfig:
         if click.confirm('Would you like to see the data preview?', default=True):
             # todo this is a temporary solution, it requires a lot of refactoring
             builder = source_builders.get(self.pipeline.source)
-            builder.print_sample_data()
+            test_pipeline = pipeline.Pipeline(self.pipeline.name + 'preview', self.pipeline.source, self.pipeline.destination)
+            test_pipeline.set_config(self.config)
+            builder.print_sample_data(test_pipeline)
+            pipeline.repository.remove_from_session(test_pipeline)
 
     @staticmethod
     @infinite_retry
@@ -144,3 +147,16 @@ class PromptConfig:
                 raise click.UsageError('Wrong format, correct example - key:val key2:val2')
             result[pair[0]] = pair[1]
         return result
+
+    def prompt_days_to_backfill(self):
+        self.config['days_to_backfill'] = \
+            click.prompt('Collect since (days ago)', type=click.INT,
+                         default=self.default_config.get('days_to_backfill', 0))
+
+    def prompt_interval(self):
+        self.config['interval'] = click.prompt('Query interval (in seconds)', type=click.INT,
+                                               default=self.default_config.get('interval'))
+
+    def prompt_delay(self):
+        self.config['delay'] = click.prompt('Delay (in minutes)', type=click.INT,
+                                            default=self.default_config.get('delay', 0))

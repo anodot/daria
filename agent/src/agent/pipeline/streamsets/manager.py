@@ -139,9 +139,14 @@ def _format_timestamp(utc_time) -> str:
 def _extract_pipeline_issues(pipeline_info: dict) -> list:
     pipeline_issues = []
     if pipeline_info['issues']['issueCount'] > 0:
-        for i in pipeline_info['issues']['pipelineIssues']:
-            pipeline_issues.append('{severity} - {configGroup} - {configName} - {message}'.format(**i))
+        for issue in pipeline_info['issues']['pipelineIssues']:
+            pipeline_issues.append(_format(issue))
     return pipeline_issues
+
+
+def _format(info: dict) -> str:
+    keys = ['severity', 'configGroup', 'configName', 'message']
+    return ' - '.join([info[key] for key in keys if key in info])
 
 
 def _extract_stage_issues(pipeline_info: dict) -> dict:

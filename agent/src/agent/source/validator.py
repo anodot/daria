@@ -38,7 +38,7 @@ class Validator:
     @if_validation_enabled
     def validate_connection(self):
         streamsets_api_client = StreamSetsApiClient(streamsets.repository.get_any())
-        test_pipeline_name = pipeline.manager.create_test_pipeline(self.source, streamsets_api_client)
+        test_pipeline_name = pipeline.manager.create_test_pipeline(pipeline.manager.build_test_pipeline(self.source))
         try:
             validate_status = streamsets_api_client.validate(test_pipeline_name)
             streamsets_api_client.wait_for_preview(test_pipeline_name, validate_status['previewerId'])
@@ -135,10 +135,10 @@ class JDBCValidator(Validator):
         eng.connect()
 
     def _get_connection_url(self):
-        conn_info = urlparse(self.source.config['connection_string'])
-        if self.source.config.get('hikariConfigBean.useCredentials'):
-            userpass = self.source.config['hikariConfigBean.username'] + ':' + self.source.config[
-                'hikariConfigBean.password']
+        conn_info = urlparse(self.source.config[source.JDBCSource.CONFIG_CONNECTION_STRING])
+        if self.source.config.get(source.JDBCSource.CONFIG_PASSWORD):
+            userpass = self.source.config[source.JDBCSource.CONFIG_USERNAME] + ':' + self.source.config[
+                source.JDBCSource.CONFIG_PASSWORD]
             netloc = userpass + '@' + conn_info.netloc
         else:
             netloc = conn_info.netloc
@@ -147,9 +147,9 @@ class JDBCValidator(Validator):
 
     @if_validation_enabled
     def validate_connection_string(self):
-        if not validator.is_valid_url(self.source.config['connection_string']):
+        if not validator.is_valid_url(self.source.config[source.JDBCSource.CONFIG_CONNECTION_STRING]):
             raise ValidationException('Wrong url format. Correct format is `scheme://host:port`')
-        result = urlparse(self.source.config['connection_string'])
+        result = urlparse(self.source.config[source.JDBCSource.CONFIG_CONNECTION_STRING])
         if self.source.type == 'mysql' and result.scheme != 'mysql':
             raise ValidationException('Wrong url scheme. Use `mysql`')
         if self.source.type == 'postgres' and result.scheme != 'postgresql':

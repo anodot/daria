@@ -18,9 +18,10 @@ class BaseConfigHandler:
 
     stages_to_override = {}
 
-    def __init__(self, pipeline: p.Pipeline):
+    def __init__(self, pipeline: p.Pipeline, is_preview=False):
         self.config = {}
         self.pipeline = pipeline
+        self.is_preview = is_preview
 
     def load_base_config(self):
         with open(os.path.join(ROOT_DIR, self.BASE_PIPELINE_CONFIGS_PATH, self.PIPELINE_BASE_CONFIG_NAME)) as f:
@@ -32,8 +33,8 @@ class BaseConfigHandler:
         self.config['metadata']['labels'] = [self.pipeline.source.type,
                                              self.pipeline.destination.TYPE]
 
-    def override_base_config(self, new_uuid=None, new_title=None):
-        self.config = self.load_base_config()
+    def override_base_config(self, new_uuid=None, new_title=None, base_config=None):
+        self.config = self.load_base_config() if not base_config else base_config
         if new_uuid:
             self.config['uuid'] = new_uuid
         if new_title:

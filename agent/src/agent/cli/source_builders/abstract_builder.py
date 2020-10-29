@@ -17,9 +17,9 @@ class Builder(ABC):
     def prompt(self, default_config, advanced=False) -> source.Source:
         pass
 
-    def get_preview_data(self):
+    def get_preview_data(self, pipeline_: pipeline.Pipeline):
         streamsets_api_client = StreamSetsApiClient(streamsets.repository.get_any())
-        test_pipeline_name = pipeline.manager.create_test_pipeline(self.source, streamsets_api_client)
+        test_pipeline_name = pipeline.manager.create_test_pipeline(pipeline_)
         try:
             preview = streamsets_api_client.create_preview(test_pipeline_name)
             preview_data, errors = streamsets_api_client.wait_for_preview(test_pipeline_name, preview['previewerId'])
@@ -30,8 +30,8 @@ class Builder(ABC):
         streamsets_api_client.delete_pipeline(test_pipeline_name)
         return preview_data, errors
 
-    def get_sample_records(self):
-        preview_data, errors = self.get_preview_data()
+    def get_sample_records(self, pipeline_: pipeline.Pipeline):
+        preview_data, errors = self.get_preview_data(pipeline_)
 
         if not preview_data:
             print('No preview data available')
@@ -46,8 +46,8 @@ class Builder(ABC):
         return [tools.sdc_record_map_to_dict(record['value']) for record in data[:source.manager.MAX_SAMPLE_RECORDS]], errors
 
     @tools.if_validation_enabled
-    def print_sample_data(self):
-        records, errors = self.get_sample_records()
+    def print_sample_data(self, pipeline_: pipeline.Pipeline):
+        records, errors = self.get_sample_records(pipeline_)
         if records:
             tools.print_dicts(records)
         print(*errors, sep='\n')

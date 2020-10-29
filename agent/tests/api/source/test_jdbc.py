@@ -11,7 +11,7 @@ class TestJdbc:
                     'conf.pagination.query_interval': 10,
                 }
             }],
-            'er': b'[{"config":{"conf.pagination.query_interval":10,"connection_string":"mysql://root@mysql:3306/test","hikariConfigBean.connectionString":"jdbc:mysql://root@mysql:3306/test","hikariConfigBean.password":"","hikariConfigBean.username":""},"name":"mysql","type":"mysql"}]\n'
+            'er': b'[{"config":{"conf.pagination.query_interval":10,"connection_string":"mysql://root@mysql:3306/test","hikariConfigBean.password":"","hikariConfigBean.username":""},"name":"mysql","type":"mysql"}]\n'
         }],
         'test_edit': [{
             'data': [{
@@ -24,7 +24,7 @@ class TestJdbc:
                     'conf.pagination.query_interval': 5,
                 }
             }],
-            'er': b'[{"config":{"conf.pagination.query_interval":5,"connection_string":"mysql://root@mysql:3306/test","hikariConfigBean.connectionString":"jdbc:mysql://root@mysql:3306/test","hikariConfigBean.password":"","hikariConfigBean.username":""},"name":"mysql","type":"mysql"}]\n'
+            'er': b'[{"config":{"conf.pagination.query_interval":5,"connection_string":"mysql://root@mysql:3306/test","hikariConfigBean.password":"","hikariConfigBean.username":""},"name":"mysql","type":"mysql"}]\n'
         }]
     }
 

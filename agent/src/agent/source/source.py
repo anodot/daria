@@ -59,9 +59,12 @@ class ElasticSource(Source):
 
 
 class JDBCSource(Source):
-    def set_config(self, config):
-        super().set_config(config)
-        self.config['hikariConfigBean.connectionString'] = 'jdbc:' + self.config['connection_string']
+    CONFIG_CONNECTION_STRING = 'connection_string'
+    CONFIG_USE_CREDENTIALS = 'hikariConfigBean.useCredentials'
+    CONFIG_USERNAME = 'hikariConfigBean.username'
+    CONFIG_PASSWORD = 'hikariConfigBean.password'
+
+    TIMESTAMP_CONDITION = '{TIMESTAMP_CONDITION}'
 
 
 class MongoSource(Source):
@@ -150,8 +153,8 @@ class SchemalessSource(Source):
 
     def set_config(self, config):
         super().set_config(config)
-        if self.config.get('grok_definition_file'):
-            with open(self.config['grok_definition_file']) as f:
+        if self.config.get(self.CONFIG_GROK_PATTERN_FILE):
+            with open(self.config[self.CONFIG_GROK_PATTERN_FILE]) as f:
                 self.config[self.CONFIG_GROK_PATTERN_DEFINITION] = f.read()
 
 

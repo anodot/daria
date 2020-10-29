@@ -62,6 +62,10 @@ def _construct_source(source_: Source) -> Source:
     return source_
 
 
+def get_all() -> List[source.Source]:
+    return session().query(source.Source).all()
+
+
 def get_last_edited(source_type: str) -> Optional[Source]:
     return session().query(Source).filter(Source.type == source_type).order_by(Source.last_edited.desc()).first()
 

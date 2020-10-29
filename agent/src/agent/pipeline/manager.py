@@ -62,7 +62,7 @@ def show_preview(pipeline_: Pipeline):
     print(*errors, sep='\n')
 
 
-def get_sdc_creator(pipeline_: Pipeline) -> config_handlers.base.BaseConfigHandler:
+def get_sdc_creator(pipeline_: Pipeline, is_preview=False) -> config_handlers.base.BaseConfigHandler:
     handlers = {
         source.TYPE_MONITORING: config_handlers.monitoring.MonitoringConfigHandler,
         source.TYPE_INFLUX: config_handlers.influx.InfluxConfigHandler,
@@ -76,7 +76,7 @@ def get_sdc_creator(pipeline_: Pipeline) -> config_handlers.base.BaseConfigHandl
         source.TYPE_SAGE: config_handlers.sage.SageConfigHandler,
         source.TYPE_VICTORIA: config_handlers.victoria.VictoriaConfigHandler,
     }
-    return handlers[pipeline_.source.type](pipeline_)
+    return handlers[pipeline_.source.type](pipeline_, is_preview)
 
 
 def get_file_loader(source_type: str):
@@ -374,13 +374,20 @@ def _update_stage_config(source_: source.Source, stage):
             conf['value'] = source_.config[conf['name']]
 
 
-def create_test_pipeline(source_: source.Source, streamsets_api_client: StreamSetsApiClient) -> str:
-    with open(_get_test_pipeline_file_path(source_)) as f:
-        pipeline_config = json.load(f)['pipelineConfig']
-    _update_stage_config(source_, pipeline_config['stages'][0])
-    test_pipeline_name = _get_test_pipeline_name(source_)
+def build_test_pipeline(source_: source.Source):
+    test_source = source.Source(source_.name, source_.type, source_.config)
+    return pipeline.Pipeline(_get_test_pipeline_name(source_), test_source, destination.repository.get())
+
+
+def create_test_pipeline(pipeline_: pipeline.Pipeline, streamsets_api_client: StreamSetsApiClient) -> str:
+    with open(_get_test_pipeline_file_path(pipeline_.source_)) as f:
+        pipeline_config_ = json.load(f)['pipelineConfig']
+
+    test_pipeline_name = _get_test_pipeline_name(pipeline_.source_)
+
     new_pipeline = streamsets_api_client.create_pipeline(test_pipeline_name)
-    pipeline_config['uuid'] = new_pipeline['uuid']
+    pipeline_config = get_sdc_creator(pipeline_, is_preview=True) \
+        .override_base_config(new_uuid=new_pipeline['uuid'], base_config=pipeline_config_)
     streamsets_api_client.update_pipeline(test_pipeline_name, pipeline_config)
     return test_pipeline_name
 

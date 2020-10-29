@@ -10,6 +10,7 @@ from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy import Column, Integer, String, JSON, ForeignKey, func
 from agent.pipeline.streamsets import StreamSets
 
+
 MONITORING = 'Monitoring'
 
 

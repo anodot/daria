@@ -159,8 +159,8 @@ services:
     environment:
       MYSQL_ROOT_HOST: "%"
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-    ports:
-      - "3306:3306"
+#    ports:
+#      - "3306:3306"
     volumes:
       - /var/lib/mysql
       - ./volumes/mysql-initdb:/docker-entrypoint-initdb.d
