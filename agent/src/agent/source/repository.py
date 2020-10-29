@@ -1,68 +1,70 @@
 from typing import List
 from agent import source
 from agent.modules.db import session
+from agent.source import Source
 
 
 def exists(source_name: str) -> bool:
     res = session().query(
-        session().query(source.Source).filter(source.Source.name == source_name).exists()
+        session().query(Source).filter(Source.name == source_name).exists()
     ).scalar()
     return res
 
 
-def save(source_: source.Source):
+def save(source_: Source):
     session().add(source_)
     session().commit()
 
 
-def delete_by_name(source_name: str):
-    if not exists(source_name):
-        raise SourceNotExists(f"Source config {source_name} doesn't exist")
-    source_entity = session().query(source.Source).filter(source.Source.name == source_name).first()
-    if source_entity.pipelines:
+def delete(source_: Source):
+    if source_.pipelines:
         raise Exception(
-                f"Can't delete. Source is used by {', '.join([p.name for p in source_entity.pipelines])} pipelines"
+                f"Can't delete. Source is used by {', '.join([p.name for p in source_.pipelines])} pipelines"
             )
-    session().delete(source_entity)
+    session().delete(source_)
     session().commit()
+
+
+def delete_by_name(source_name: str):
+    delete(get_by_name(source_name))
 
 
 def get_all_names() -> List[str]:
     res = list(map(
         lambda row: row[0],
-        session().query(source.Source.name).all()
+        session().query(Source.name).all()
     ))
     return res
 
 
 def find_by_name_beginning(name_part: str) -> List:
-    res = session().query(source.Source).filter(source.Source.name.like(f'{name_part}%')).all()
+    res = session().query(Source).filter(Source.name.like(f'{name_part}%')).all()
     return res
 
 
-def get(source_id: int) -> source.Source:
-    source_ = session().query(source.Source).get(source_id)
+def get(source_id: int) -> Source:
+    source_ = session().query(Source).get(source_id)
     if not source_:
         raise SourceNotExists(f"Source ID = {source_id} doesn't exist")
     res = _construct_source(source_)
     return res
 
 
-def get_by_name(source_name: str) -> source.Source:
-    source_ = session().query(source.Source).filter(source.Source.name == source_name).first()
+def get_by_name(source_name: str) -> Source:
+    source_ = session().query(Source).filter(Source.name == source_name).first()
     if not source_:
         raise SourceNotExists(f"Source config {source_name} doesn't exist")
     res = _construct_source(source_)
     return res
 
 
-def _construct_source(source_: source.Source) -> source.Source:
+def _construct_source(source_: Source) -> Source:
     source_.__class__ = source.types[source_.type]
     return source_
 
 
-def get_all() -> List[source.Source]:
-    return session().query(source.Source).all()
+def get_all() -> List[Source]:
+    return session().query(Source).all()
 
 
 class SourceNotExists(Exception):
