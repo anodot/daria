@@ -77,7 +77,7 @@ class Pipeline(Entity):
     status = Column(String, default=STATUS_EDITED)
 
     offset = relationship("PipelineOffset", cascade="delete", uselist=False)
-    source_ = relationship('Source', back_populates='pipelines', enable_typechecks=False)
+    source_ = relationship('Source', back_populates='pipelines')
     destination = relationship('HttpDestination')
 
     def __init__(self, pipeline_name: str,
