@@ -1,3 +1,4 @@
+import argparse
 import hashlib
 import json
 import os
@@ -123,6 +124,14 @@ def process(directory, checksum_file, create):
             logger_.info(f'Updated checksum for {file_path}')
     if failed:
         exit(1)
+
+
+def delete_not_existing():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--keep-not-existing', action='store_true', help="shows output")
+    if not parser.parse_args().keep_not_existing:
+        for pipeline_ in pipeline.repository.get_all():
+            t = 1
 
 
 process(SOURCES_DIR, SOURCES_CHECKSUMS, populate_source_from_file)
