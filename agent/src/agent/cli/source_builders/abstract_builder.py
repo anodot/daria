@@ -17,7 +17,8 @@ class Builder(ABC):
     def prompt(self, default_config, advanced=False) -> source.Source:
         pass
 
-    def get_preview_data(self, pipeline_: pipeline.Pipeline):
+    @staticmethod
+    def get_preview_data(pipeline_: pipeline.Pipeline):
         streamsets_api_client = StreamSetsApiClient(streamsets.repository.get_any())
         test_pipeline_name = pipeline.manager.create_test_pipeline(pipeline_, streamsets_api_client)
         try:

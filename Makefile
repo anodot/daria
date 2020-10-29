@@ -205,4 +205,4 @@ nap:
 	sleep $(NAP)
 
 create-default-streamsets:
-	docker exec -i anodot-agent python src/agent/scripts/upgrade/create_default_streamsets.py
+	docker exec -i anodot-agent python src/agent/scripts/upgrade/2.3.0-create_default_streamsets.py

@@ -375,7 +375,7 @@ def _update_stage_config(source_: source.Source, stage):
 
 
 def build_test_pipeline(source_: source.Source):
-    # todo ?
+    # creating new source because we're going to delete test pipeline from session and they're connected
     test_source = source.Source(source_.name, source_.type, source_.config)
     return pipeline.Pipeline(_get_test_pipeline_name(source_), test_source,
                              destination.repository.get(), streamsets.repository.get_any())
@@ -416,7 +416,7 @@ def _get_test_pipeline_file_name(source_: source.Source) -> str:
 
 
 def _get_test_pipeline_name(source_: source.Source) -> str:
-    return _get_test_pipeline_file_name(source_) + source_.name
+    return _get_test_pipeline_file_name(source_) + source_.name + '_preview'
 
 
 def create_monitoring_pipelines():
