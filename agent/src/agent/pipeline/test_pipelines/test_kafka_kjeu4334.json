@@ -171,7 +171,7 @@
     },
     "fragments" : [ ],
     "stages" : [ {
-      "instanceName" : "KafkaMultitopicConsumer_01",
+      "instanceName" : "source",
       "library" : "streamsets-datacollector-apache-kafka_2_0-lib",
       "stageName" : "com_streamsets_pipeline_stage_origin_multikafka_MultiKafkaDSource",
       "stageVersion" : "2",

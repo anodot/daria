@@ -1,6 +1,6 @@
 import pytest
 
-from agent.pipeline.elastic import query_validator
+from agent.pipeline.validators import elastic_query
 
 
 @pytest.mark.parametrize("query, offset_field, er", [
@@ -12,7 +12,7 @@ from agent.pipeline.elastic import query_validator
     ('"aort":\n   [{"timestamp":\n\n       { "order": "asc" }}],', 'timestamp', False),
 ])
 def test_timestamp_validation(query, offset_field, er):
-    assert query_validator.is_valid_timestamp(query, offset_field) == er
+    assert elastic_query.is_valid_timestamp(query, offset_field) == er
 
 
 @pytest.mark.parametrize("query, er", [
@@ -22,4 +22,4 @@ def test_timestamp_validation(query, offset_field, er):
     ('"query": {"range": {"timestamp_unix_ms": {"gt": OFFSET}}}', False),
 ])
 def test_offset_validation(query, er):
-    assert query_validator.is_valid_offset(query) == er
+    assert elastic_query.is_valid_offset(query) == er

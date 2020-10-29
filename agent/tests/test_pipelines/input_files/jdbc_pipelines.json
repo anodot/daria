@@ -2,35 +2,28 @@
   {
     "source": "test_jdbc",
     "pipeline_id": "test_jdbc_file_short",
-    "table": "test",
     "values": {"clicks": "gauge", "impressions": "gauge"},
     "dimensions": ["adsize", "country"],
-    "queryInterval": 20,
+    "interval": 86400,
+    "query": "SELECT * FROM test WHERE {TIMESTAMP_CONDITION}",
     "timestamp": {
       "type": "unix_ms",
       "name": "timestamp_unix_ms"
-    },
-    "offset_column": "id",
-    "initial_offset": 1000,
-    "limit": 500
+    }
   },
   {
     "source": "test_jdbc",
     "pipeline_id": "test_jdbc_file_full",
-    "table": "test",
     "values": {"clicks": "gauge", "impressions": "gauge"},
     "count_records": true,
     "count_records_measurement_name": "test",
     "dimensions": ["adsize", "country"],
-    "queryInterval": 20,
     "timestamp": {
       "type": "datetime",
       "name": "timestamp_datetime"
     },
     "properties": {"key1": "val1", "key2":  "val2"},
-    "offset_column": "id",
-    "initial_offset": 1000,
-    "limit": 500,
-    "condition": "Country = 'USA'"
+    "interval": 86400,
+    "query": "SELECT * FROM test WHERE {TIMESTAMP_CONDITION} AND Country = 'USA'"
   }
 ]

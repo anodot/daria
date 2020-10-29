@@ -5,6 +5,7 @@ from agent.modules.logger import get_logger
 from agent.modules.constants import HOSTNAME
 from urllib.parse import urljoin, quote_plus
 from agent.pipeline.config import stages
+from agent import source
 
 logger = get_logger(__name__)
 
@@ -12,6 +13,7 @@ logger = get_logger(__name__)
 class InfluxConfigHandler(base.BaseConfigHandler):
     stages_to_override = {
         'source': stages.influx_source.InfluxScript,
+        'destination': stages.destination.Destination
     }
 
     DECLARE_VARS_JS = """/*
@@ -41,19 +43,17 @@ state['TAGS'] = {tags}
     def override_stages(self):
         super().override_stages()
         self.update_source_configs()
-        required = [self.replace_illegal_chars(d) for d in self.pipeline.config['dimensions']['required']]
-        optional = [self.replace_illegal_chars(d) for d in self.pipeline.config['dimensions']['optional']]
 
         for stage in self.config['stages']:
             if stage['instanceName'] == 'transform_records':
                 for conf in stage['configuration']:
                     if conf['name'] == 'stageRequiredFields':
-                        conf['value'] = ['/' + d for d in required]
+                        conf['value'] = ['/' + d for d in self.get_required_dimensions()]
 
                     if conf['name'] == 'initScript':
                         conf['value'] = self.DECLARE_VARS_JS.format(
-                            required_dimensions=str(required),
-                            optional_dimensions=str(optional),
+                            required_dimensions=str(self.get_required_dimensions()),
+                            optional_dimensions=str(self.get_optional_dimensions()),
                             measurement_name=self.replace_illegal_chars(self.pipeline.config['measurement_name']),
                             target_type=self.pipeline.config.get('target_type', 'gauge'),
                             constant_properties=str(self.pipeline.constant_dimensions),
@@ -62,15 +62,15 @@ state['TAGS'] = {tags}
                             pipeline_id=self.pipeline.name,
                             tags=json.dumps(self.pipeline.get_tags())
                         )
-            if stage['instanceName'] == 'destination':
-                for conf in stage['configuration']:
-                    if conf['name'] in self.pipeline.destination.config:
-                        conf['value'] = self.pipeline.destination.config[conf['name']]
+
+    def get_required_dimensions(self):
+        return [self.replace_illegal_chars(d) for d in self.pipeline.config['dimensions']['required']]
+
+    def get_optional_dimensions(self):
+        return [self.replace_illegal_chars(d) for d in self.pipeline.config['dimensions'].get('optional', [])]
 
     def update_source_configs(self):
         source_config = self.pipeline.source.config
-        dimensions_to_select = [f'"{d}"::tag' for d in self.pipeline.dimensions_names]
-        values_to_select = ['*::field' if v == '*' else f'"{v}"::field' for v in self.pipeline.config['value']['values']]
         username = source_config.get('username', '')
         password = source_config.get('password', '')
         if username != '':
@@ -78,6 +78,24 @@ state['TAGS'] = {tags}
             self.pipeline.source.config['conf.client.basicAuth.username'] = username
             self.pipeline.source.config['conf.client.basicAuth.password'] = password
 
+        for stage in self.config['stages']:
+            if stage['instanceName'] == 'get_interval_records':
+                for conf in stage['configuration']:
+                    if conf['name'] == 'conf.resourceUrl':
+                        params = f"/query?db={source_config['db']}&epoch=ms&q="
+                        conf['value'] = urljoin(source_config['host'], params + self.get_query())
+                        continue
+
+                    if conf['name'] in source_config:
+                        conf['value'] = source_config[conf['name']]
+
+    def get_query(self):
+        if self.is_preview:
+            return f"select+%2A+from+{self.config['measurement_name']}+limit+{source.manager.MAX_SAMPLE_RECORDS}"
+
+        dimensions_to_select = [f'"{d}"::tag' for d in self.pipeline.dimensions_names]
+        values_to_select = ['*::field' if v == '*' else f'"{v}"::field' for v in
+                            self.pipeline.config['value']['values']]
         delay = self.pipeline.config.get('delay', '0s')
         columns = quote_plus(','.join(dimensions_to_select + values_to_select))
 
@@ -88,27 +106,14 @@ state['TAGS'] = {tags}
         if '.' not in measurement_name and ' ' not in measurement_name:
             measurement_name = f'%22{measurement_name}%22'
 
-        for stage in self.config['stages']:
-            if stage['instanceName'] == 'get_interval_records':
-                query = f"/query?db={source_config['db']}&epoch=ms&q={self.QUERY_GET_DATA}".format(**{
-                    'dimensions': columns,
-                    'metric': measurement_name,
-                    'delay': delay,
-                    'interval': str(self.pipeline.config.get('interval', 60)) + 's',
-                    'where': where
-                })
-                self.update_http_stage(stage, self.pipeline.source.config, urljoin(source_config['host'], query))
+        return self.QUERY_GET_DATA.format(**{
+            'dimensions': columns,
+            'metric': measurement_name,
+            'delay': delay,
+            'interval': str(self.pipeline.config.get('interval', 60)) + 's',
+            'where': where
+        })
 
     @staticmethod
     def replace_illegal_chars(string: str) -> str:
         return string.replace(' ', '_').replace('.', '_').replace('<', '_')
-
-    @staticmethod
-    def update_http_stage(stage, config, url=None):
-        for conf in stage['configuration']:
-            if conf['name'] == 'conf.resourceUrl' and url:
-                conf['value'] = url
-                continue
-
-            if conf['name'] in config:
-                conf['value'] = config[conf['name']]

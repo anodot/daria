@@ -10,6 +10,7 @@ from enum import Enum
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy import Column, Integer, String, JSON, ForeignKey, func
 
+
 MONITORING = 'Monitoring'
 
 

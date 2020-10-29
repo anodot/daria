@@ -1,7 +1,10 @@
 {
   "type": "object",
   "properties": {
-    "table": {"type": "string", "minLength": 1},
+    "query": {"type": "string"},
+    "days_to_backfill": {"type": "integer"},
+    "interval": {"type": "integer"},
+    "delay": {"type": "integer"},
     "values": {"type": "object"},
     "count_records": {"type": "boolean"},
     "dimensions": {"type": "array", "items": {"type": "string"}},
@@ -13,10 +16,7 @@
     "tags": {
       "type": "object",
       "patternProperties":  {"[^ \\.]+": {"type": "array", "items": {"type": "string"}}}
-    },
-    "offset_column": {"type": "string", "minLength": 1},
-    "initial_offset": {"oneOf": [{"type": "string", "minLength": 1}, {"type": "integer", "minimum": 0}]},
-    "limit": {"type": "integer", "minimum": 1}
+    }
   },
-  "required": ["table", "dimensions", "timestamp", "offset_column"]
+  "required": ["query", "interval", "dimensions", "timestamp"]
 }
