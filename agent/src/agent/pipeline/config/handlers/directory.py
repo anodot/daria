@@ -20,11 +20,16 @@ class DirectoryConfigHandler(BaseConfigHandler):
     }
 
     def get_pipeline_config(self) -> dict:
-        schema_definition = schema.update(self.pipeline)
-        self.pipeline.config['schema'] = schema_definition
+        if not self.is_preview:
+            schema_definition = schema.update(self.pipeline)
+            self.pipeline.config['schema'] = schema_definition
+            schema_id = schema_definition['id']
+        else:
+            schema_id = 'preview'
+
         pipeline_config = super().get_pipeline_config()
         pipeline_config.update({
-            'SCHEMA_ID': schema_definition['id'],
+            'SCHEMA_ID': schema_id,
             'PROTOCOL': self.pipeline.destination.PROTOCOL_30
         })
         return pipeline_config

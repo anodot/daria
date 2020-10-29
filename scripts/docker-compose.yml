@@ -24,7 +24,7 @@ services:
       AGENT_DB_HOST: 'db'
       AGENT_DB_USER: 'agent'
       AGENT_DB_PASSWORD: 'agent'
-      PGPASSWORD: 'agent'
+      STREAMSETS_URL: 'http://dc:18630'
 #    ports:
 #    - 8080:80
 
