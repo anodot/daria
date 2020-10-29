@@ -52,8 +52,9 @@ class JDBCSourceStage(Stage):
         return unix_t
 
     def get_initial_offset(self):
-        timestamp = (datetime.now() - timedelta(days=int(self.pipeline.days_to_backfill)) - timedelta(
-            seconds=self.pipeline.interval)).replace(second=0)
+        timestamp = (datetime.now() - timedelta(days=int(self.pipeline.days_to_backfill))).replace(second=0)
+        if not self.pipeline.days_to_backfill:
+            timestamp -= timedelta(seconds=self.pipeline.interval)
         if self.pipeline.timestamp_type == pipeline.TimestampType.DATETIME:
             return timestamp.strftime('%Y-%m-%d %H:%M:%S')
         elif self.pipeline.timestamp_type == pipeline.TimestampType.UNIX_MS:
