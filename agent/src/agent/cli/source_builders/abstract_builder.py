@@ -24,9 +24,9 @@ class Builder(ABC):
             preview_data, errors = api_client.wait_for_preview(test_pipeline_name, preview['previewerId'])
         except (Exception, KeyboardInterrupt) as e:
             logger.exception(str(e))
-            # api_client.delete_pipeline(test_pipeline_name)
+            api_client.delete_pipeline(test_pipeline_name)
             raise
-        # api_client.delete_pipeline(test_pipeline_name)
+        api_client.delete_pipeline(test_pipeline_name)
         return preview_data, errors
 
     def get_sample_records(self, pipeline_: pipeline.Pipeline):
