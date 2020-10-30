@@ -4,13 +4,13 @@ import jsonschema
 from typing import List
 from agent import pipeline
 from agent import source
-from agent.source import SourceException
+from agent.source import SourceException, Source
 from agent.modules.streamsets_api_client import api_client
 
 MAX_SAMPLE_RECORDS = 3
 
 
-def create_source_obj(source_name: str, source_type: str) -> source.Source:
+def create_source_obj(source_name: str, source_type: str) -> Source:
     return source.types[source_type](source_name, source_type, {})
 
 
@@ -22,7 +22,7 @@ def edit_using_file(file):
     edit_using_json(extract_configs(file))
 
 
-def create_from_json(configs: list) -> List[source.Source]:
+def create_from_json(configs: list) -> List[Source]:
     validate_configs_for_create(configs)
     exceptions = {}
     sources = []
@@ -41,7 +41,7 @@ def create_from_json(configs: list) -> List[source.Source]:
     return sources
 
 
-def create_source_from_json(config: dict) -> source.Source:
+def create_source_from_json(config: dict) -> Source:
     source.manager.validate_config_for_create(config)
     source_ = source.manager.create_source_obj(config['name'], config['type'])
     source_.set_config(config['config'])
@@ -50,7 +50,7 @@ def create_source_from_json(config: dict) -> source.Source:
     return source_
 
 
-def edit_using_json(configs: list) -> List[source.Source]:
+def edit_using_json(configs: list) -> List[Source]:
     if not isinstance(configs, list):
         raise ValueError(f'Provided data must be a list of configs, {type(configs).__name__} provided instead')
     exceptions = {}
@@ -67,7 +67,7 @@ def edit_using_json(configs: list) -> List[source.Source]:
     return sources
 
 
-def edit_source_using_json(config: dict) -> source.Source:
+def edit_source_using_json(config: dict) -> Source:
     validate_config_for_edit(config)
     source_ = source.repository.get_by_name(config['name'])
     source_.set_config(config['config'])
@@ -124,3 +124,7 @@ def get_previous_source_config(source_type):
 def check_source_name(source_name: str):
     if source.repository.exists(source_name):
         raise SourceException(f"Source {source_name} already exists")
+
+
+def delete(source_: Source):
+    source.repository.delete(source_)
