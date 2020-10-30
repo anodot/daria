@@ -2,8 +2,7 @@ import traceback
 
 from ..conftest import get_input_file_path
 from agent.cli import source as source_cli, pipeline as pipeline_cli
-from agent import source
-from agent.pipeline import streamsets
+from agent import source, streamsets
 
 
 class TestTCPServer:

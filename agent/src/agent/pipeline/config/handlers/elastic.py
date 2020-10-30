@@ -7,8 +7,6 @@ logger = get_logger(__name__)
 
 
 class ElasticConfigHandler(BaseConfigHandler):
-    PIPELINE_BASE_CONFIG_NAME = 'elastic_http.json'
-
     stages_to_override = {
         'source': stages.source.Source,
         'JavaScriptEvaluator_01': stages.js_convert_metrics_20.JSConvertMetrics,
@@ -17,6 +15,6 @@ class ElasticConfigHandler(BaseConfigHandler):
         'destination': stages.destination.Destination
     }
 
-    def override_stages(self):
+    def _override_stages(self):
         self.pipeline.source.config[ElasticSource.CONFIG_QUERY] = self.pipeline.query
-        super().override_stages()
+        super()._override_stages()

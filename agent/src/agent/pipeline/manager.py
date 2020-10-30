@@ -1,22 +1,20 @@
 import json
 import logging
-import click
-import os
-import time
+import random
+import string
 import agent.pipeline.config.handlers as config_handlers
 import jsonschema
 
-from agent import source, pipeline, destination
-from agent.pipeline.streamsets import StreamSetsApiClient, StreamSets
+from agent import source, pipeline, destination, streamsets
 from agent.pipeline.config import schema
 from agent.pipeline.config.validators import get_config_validator
-from agent.pipeline import prompt, load_client_data, Pipeline
+from agent.pipeline import prompt, load_client_data, Pipeline, TestPipeline
 from agent.destination import anodot_api_client
-from agent.pipeline import streamsets
-from agent.modules.constants import ENV_PROD, MONITORING_SOURCE_NAME
+from agent.modules.constants import MONITORING_SOURCE_NAME
 from agent.modules.tools import print_json, sdc_record_map_to_dict
 from agent.modules.logger import get_logger
 from typing import List
+from agent.source import Source
 
 logger = get_logger(__name__)
 
@@ -42,8 +40,8 @@ class PipelineBuilder:
 
 def show_preview(pipeline_: Pipeline):
     try:
-        preview = streamsets.manager.create_preview(pipeline_.name)
-        preview_data, errors = streamsets.manager.wait_for_preview(pipeline_.name, preview['previewerId'])
+        preview = streamsets.manager.create_preview(pipeline_)
+        preview_data, errors = streamsets.manager.wait_for_preview(pipeline_, preview['previewerId'])
     except streamsets.StreamSetsApiClientException as e:
         print(str(e))
         return
@@ -62,7 +60,7 @@ def show_preview(pipeline_: Pipeline):
     print(*errors, sep='\n')
 
 
-def get_sdc_creator(pipeline_: Pipeline, is_preview=False) -> config_handlers.base.BaseConfigHandler:
+def get_sdc_config_handler(pipeline_: Pipeline, is_preview=False) -> config_handlers.base.BaseConfigHandler:
     handlers = {
         source.TYPE_MONITORING: config_handlers.monitoring.MonitoringConfigHandler,
         source.TYPE_INFLUX: config_handlers.influx.InfluxConfigHandler,
@@ -158,12 +156,11 @@ def validate_config_for_create(config: dict):
     jsonschema.validate(config, json_schema)
 
 
-def create_object(pipeline_id: str, source_name: str, streamsets_: StreamSets = None) -> Pipeline:
+def create_object(pipeline_id: str, source_name: str) -> Pipeline:
     pipeline_ = pipeline.Pipeline(
         pipeline_id,
         source.repository.get_by_name(source_name),
         destination.repository.get(),
-        streamsets_ if streamsets_ else pipeline.streamsets.manager.choose_streamsets(),
     )
     return pipeline_
 
@@ -171,10 +168,6 @@ def create_object(pipeline_id: str, source_name: str, streamsets_: StreamSets = 
 def check_pipeline_id(pipeline_id: str):
     if pipeline.repository.exists(pipeline_id):
         raise pipeline.PipelineException(f"Pipeline {pipeline_id} already exists")
-
-
-def create_from_file(file):
-    create_from_json(json.load(file))
 
 
 def edit_using_file(file):
@@ -227,91 +220,28 @@ def edit_using_json(configs: list) -> List[Pipeline]:
 def edit_pipeline_using_json(config: dict) -> Pipeline:
     pipeline_builder = PipelineBuilder(pipeline.repository.get_by_name(config['pipeline_id']))
     pipeline_builder.load_config(config, edit=True)
-    update(pipeline_builder.pipeline)
+    streamsets.manager.update(pipeline_builder.pipeline)
     return pipeline_builder.pipeline
 
 
-def start(pipeline_: Pipeline):
-    streamsets.manager.start(pipeline_.name)
-    click.secho(f'{pipeline_.name} pipeline is running')
-    if ENV_PROD:
-        if wait_for_sending_data(pipeline_.name):
-            click.secho(f'{pipeline_.name} pipeline is sending data')
-        else:
-            click.secho(f'{pipeline_.name} pipeline did not send any data')
-
-
 def create(pipeline_: Pipeline):
-    _create_in_streamsets(pipeline_)
+    streamsets.manager.create(pipeline_)
     pipeline.repository.save(pipeline_)
 
 
-def _create_in_streamsets(pipeline_: Pipeline):
-    try:
-        streamsets_pipeline = streamsets.manager.create_pipeline(pipeline_.name)
-        new_config = get_sdc_creator(pipeline_)\
-            .override_base_config(new_uuid=streamsets_pipeline['uuid'], new_title=pipeline_.name)
-        streamsets.manager.update_pipeline(pipeline_.name, new_config)
-    except (config_handlers.base.ConfigHandlerException, streamsets.StreamSetsApiClientException) as e:
-        try:
-            streamsets.manager.delete(pipeline_.name)
-        except streamsets.StreamSetsApiClientException:
-            # ignore if it doesn't exist in streamsets
-            pass
-        raise pipeline.PipelineException(str(e))
-
-
-def update(pipeline_: Pipeline):
-    start_pipeline = False
-    try:
-        if streamsets.manager.get_pipeline_status(pipeline_.name) in [pipeline.Pipeline.STATUS_RUNNING, pipeline.Pipeline.STATUS_RETRY]:
-            streamsets.manager.stop(pipeline_.name)
-            start_pipeline = True
-        api_pipeline = streamsets.manager.get_pipeline(pipeline_.name)
-        new_config = get_sdc_creator(pipeline_)\
-            .override_base_config(new_uuid=api_pipeline['uuid'], new_title=pipeline_.name)
-        streamsets.manager.update_pipeline(pipeline_.name, new_config)
-    except (config_handlers.base.ConfigHandlerException, streamsets.StreamSetsApiClientException) as e:
-        raise pipeline.PipelineException(str(e))
-    pipeline.repository.save(pipeline_)
-    if start_pipeline:
-        start(pipeline_)
-
-
-def update_source_pipelines(source_: source.Source):
+def update_source_pipelines(source_: Source):
     for pipeline_ in pipeline.repository.get_by_source(source_.name):
         try:
-            update(pipeline_)
-        except pipeline.PipelineException as e:
+            streamsets.manager.update(pipeline_)
+        except streamsets.manager.StreamsetsException as e:
             print(str(e))
             continue
         print(f'Pipeline {pipeline_.name} updated')
 
 
-def wait_for_sending_data(pipeline_id: str, tries: int = 5, initial_delay: int = 2):
-    for i in range(1, tries + 1):
-        response = streamsets.manager.get_pipeline_metrics(pipeline_id)
-        stats = {
-            'in': response['counters']['pipeline.batchInputRecords.counter']['count'],
-            'out': response['counters']['pipeline.batchOutputRecords.counter']['count'],
-            'errors': response['counters']['pipeline.batchErrorRecords.counter']['count'],
-        }
-        if stats['out'] > 0 and stats['errors'] == 0:
-            return True
-        if stats['errors'] > 0:
-            raise pipeline.PipelineException(f"Pipeline {pipeline_id} has {stats['errors']} errors")
-        delay = initial_delay ** i
-        if i == tries:
-            logger.warning(f'Pipeline {pipeline_id} did not send any data. Received number of records - {stats["in"]}')
-            return False
-        print(f'Waiting for pipeline {pipeline_id} to send data. Check again after {delay} seconds...')
-        time.sleep(delay)
-
-
 def reset(pipeline_: Pipeline):
     try:
         streamsets.manager.reset_pipeline(pipeline_.name)
-        get_sdc_creator(pipeline_).set_initial_offset()
     except (config_handlers.base.ConfigHandlerException, streamsets.StreamSetsApiClientException) as e:
         raise pipeline.PipelineException(str(e))
 
@@ -324,7 +254,7 @@ def _delete_schema(pipeline_: Pipeline):
 def delete(pipeline_: Pipeline):
     _delete_schema(pipeline_)
     try:
-        streamsets.manager.delete(pipeline_.name)
+        streamsets.manager.delete(pipeline_)
     except streamsets.StreamSetsApiClientException as e:
         raise pipeline.PipelineException(str(e))
     finally:
@@ -342,8 +272,9 @@ def force_delete(pipeline_name: str) -> list:
     :return: list of errors that occurred during deletion
     """
     exceptions = []
+    pipeline_ = pipeline.repository.get_by_name(pipeline_name)
     try:
-        streamsets.manager.delete(pipeline_name)
+        streamsets.manager.delete(pipeline_)
     except Exception as e:
         exceptions.append(str(e))
     if pipeline.repository.exists(pipeline_name):
@@ -359,83 +290,52 @@ def force_delete(pipeline_name: str) -> list:
 def enable_destination_logs(pipeline_: Pipeline):
     pipeline_.destination.enable_logs()
     destination.repository.save(pipeline_.destination)
-    update(pipeline_)
+    streamsets.manager.update(pipeline_)
 
 
 def disable_destination_logs(pipeline_: Pipeline):
     pipeline_.destination.disable_logs()
     destination.repository.save(pipeline_.destination)
-    update(pipeline_)
+    streamsets.manager.update(pipeline_)
 
 
-def _update_stage_config(source_: source.Source, stage):
+def _update_stage_config(source_: Source, stage):
     for conf in stage['configuration']:
         if conf['name'] in source_.config:
             conf['value'] = source_.config[conf['name']]
 
 
-def build_test_pipeline(source_: source.Source):
-    # creating new source because we're going to delete test pipeline from session and they're connected
-    test_source = source.Source(source_.name, source_.type, source_.config)
-    return pipeline.Pipeline(_get_test_pipeline_name(source_), test_source,
-                             destination.repository.get(), streamsets.repository.get_any())
+def build_test_pipeline(source_: Source) -> TestPipeline:
+    # creating a new source because in another case it will mess with the db session
+    test_source = Source(source_.name, source_.type, source_.config)
+    return TestPipeline(_get_test_pipeline_name(test_source), test_source, destination.repository.get())
 
 
-def create_test_pipeline(pipeline_: pipeline.Pipeline, streamsets_api_client: StreamSetsApiClient) -> str:
-    with open(_get_test_pipeline_file_path(pipeline_.source_)) as f:
-        pipeline_config_ = json.load(f)['pipelineConfig']
-
-    test_pipeline_name = _get_test_pipeline_name(pipeline_.source_)
-
-    new_pipeline = streamsets_api_client.create_pipeline(test_pipeline_name)
-    pipeline_config = get_sdc_creator(pipeline_, is_preview=True) \
-        .override_base_config(new_uuid=new_pipeline['uuid'], base_config=pipeline_config_)
-    streamsets_api_client.update_pipeline(test_pipeline_name, pipeline_config)
-    return test_pipeline_name
+def _get_test_pipeline_name(source_: Source) -> str:
+    return '_'.join([source_.type, source_.name, 'preview', _generate_random_string()])
 
 
-def _get_test_pipeline_file_path(source_: source.Source) -> str:
-    return os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), 'test_pipelines', _get_test_pipeline_file_name(source_) + '.json'
-    )
-
-
-def _get_test_pipeline_file_name(source_: source.Source) -> str:
-    files = {
-        source.TYPE_INFLUX: 'test_influx_qwe093',
-        source.TYPE_MONGO: 'test_mongo_rand847',
-        source.TYPE_KAFKA: 'test_kafka_kjeu4334',
-        source.TYPE_MYSQL: 'test_jdbc_pdsf4587',
-        source.TYPE_POSTGRES: 'test_jdbc_pdsf4587',
-        source.TYPE_ELASTIC: 'test_elastic_asdfs3245',
-        source.TYPE_SPLUNK: 'test_tcp_server_jksrj322',
-        source.TYPE_DIRECTORY: 'test_directory_ksdjfjk21',
-        source.TYPE_SAGE: 'test_sage_jfhdkj',
-    }
-    return files[source_.type]
-
-
-def _get_test_pipeline_name(source_: source.Source) -> str:
-    return _get_test_pipeline_file_name(source_) + source_.name + '_preview'
+def _generate_random_string(size: int = 6):
+    return ''.join(random.SystemRandom().choice(string.ascii_lowercase + string.digits) for _ in range(size))
 
 
 def create_monitoring_pipelines():
     if not source.repository.exists(MONITORING_SOURCE_NAME):
-        source.repository.save(source.Source(MONITORING_SOURCE_NAME, source.TYPE_MONITORING, {}))
+        source.repository.save(Source(MONITORING_SOURCE_NAME, source.TYPE_MONITORING, {}))
     for streamsets_ in streamsets.manager.get_streamsets_without_monitoring():
-        pipeline_ = create_object(f'{pipeline.MONITORING}_{streamsets_.id}', MONITORING_SOURCE_NAME, streamsets_)
-        create(pipeline_)
-        start(pipeline_)
+        pipeline_ = create_object(f'{pipeline.MONITORING}_{streamsets_.id}', MONITORING_SOURCE_NAME)
+        pipeline_.set_streamsets(streamsets_)
+        streamsets.manager.create_monitoring_pipeline(pipeline_)
+        pipeline.repository.save(pipeline_)
 
 
 def update_monitoring_pipelines():
     for streamsets_ in streamsets.repository.get_all():
-        update(pipeline.repository.get_by_name(f'{pipeline.MONITORING}_{streamsets_.id}'))
+        streamsets.manager.update(pipeline.repository.get_by_name(f'{pipeline.MONITORING}_{streamsets_.id}'))
 
 
 def delete_monitoring_pipelines():
     for streamsets_ in streamsets.repository.get_all():
-        pipeline.streamsets.manager.stop(f'{pipeline.MONITORING}_{streamsets_.id}')
         pipeline.manager.delete_by_name(f'{pipeline.MONITORING}_{streamsets_.id}')
 
 
@@ -463,3 +363,7 @@ def transform_for_bc(pipeline_: Pipeline) -> dict:
     data['config'].pop('interval', 0)
     data['config'].pop('delay', 0)
     return data
+
+
+def is_monitoring(pipeline_: Pipeline) -> bool:
+    return pipeline_.name.startswith(pipeline.MONITORING)

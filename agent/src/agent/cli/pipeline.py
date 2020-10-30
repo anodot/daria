@@ -1,12 +1,12 @@
+import json
 import click
 
-from agent import pipeline, source
+from agent import pipeline, source, streamsets
 from agent import destination
-from agent.pipeline.streamsets import StreamSetsApiClientException
+from agent.streamsets import StreamSetsApiClientException
 from agent.modules.tools import infinite_retry
 from jsonschema import ValidationError
 from texttable import Texttable
-from agent.pipeline import streamsets
 
 
 def get_pipelines_ids_complete(ctx, args, incomplete):
@@ -54,9 +54,8 @@ def start(pipeline_id, file):
 
     for pipeline_id in pipeline_ids:
         try:
-            p = pipeline.repository.get_by_name(pipeline_id)
             click.echo(f'Pipeline {pipeline_id} is starting...')
-            pipeline.manager.start(p)
+            streamsets.manager.start(pipeline.repository.get_by_name(pipeline_id))
         except (StreamSetsApiClientException, pipeline.PipelineException) as e:
             click.secho(str(e), err=True, fg='red')
             continue
@@ -216,9 +215,9 @@ def update(pipeline_id):
     pipelines = [pipeline.repository.get_by_name(pipeline_id)] if pipeline_id else pipeline.repository.get_all()
     for p in pipelines:
         try:
-            pipeline.manager.update(p)
+            streamsets.manager.update(p)
             click.secho(f'Pipeline {p.name} updated', fg='green')
-        except pipeline.PipelineException as e:
+        except streamsets.manager.StreamsetsException as e:
             print(str(e))
             continue
 
@@ -230,7 +229,7 @@ def pipeline_group():
 
 def _create_from_file(file):
     try:
-        pipeline.manager.create_from_file(file)
+        pipeline.manager.create_from_json(json.load(file))
     except (StreamSetsApiClientException, ValidationError, pipeline.PipelineException) as e:
         raise click.ClickException(str(e))
 
@@ -258,7 +257,7 @@ def _should_prompt_preview(pipeline_: pipeline.Pipeline) -> bool:
 def _edit_using_file(file):
     try:
         pipeline.manager.edit_using_file(file)
-    except pipeline.PipelineException as e:
+    except (pipeline.PipelineException, streamsets.manager.StreamsetsException) as e:
         raise click.UsageError(str(e))
 
 
@@ -266,7 +265,9 @@ def _prompt_edit(advanced, pipeline_id):
     try:
         pipeline_builder = pipeline.manager.PipelineBuilder(pipeline.repository.get_by_name(pipeline_id))
         pipeline_builder.prompt(pipeline_builder.pipeline.to_dict(), advanced=advanced)
-        pipeline.manager.update(pipeline_builder.pipeline)
+        streamsets.manager.update(pipeline_builder.pipeline)
+        # todo save here?
+        pipeline.repository.save(pipeline_builder.pipeline)
 
         click.secho('Updated pipeline {}'.format(pipeline_id), fg='green')
         if _should_prompt_preview(pipeline_builder.pipeline):
@@ -306,17 +307,10 @@ def _get_default_source(sources):
 
 
 def _build_table(header, rows):
-    """
-    :param header: list
-    :param data: list
-    :param get_row: function - accepts item as first argument and *args; return false if row is needed to be skipped
-    :param args: list
-    :return:
-    """
     table = Texttable()
     table.set_deco(Texttable.HEADER)
     table.header(header)
-    table.set_header_align(['l' for i in range(len(header))])
+    table.set_header_align(['l' for _ in range(len(header))])
 
     max_widths = [len(i) for i in header]
     for row in rows:

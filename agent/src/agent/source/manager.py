@@ -1,4 +1,6 @@
 import json
+import traceback
+
 import jsonschema
 
 from typing import List
@@ -33,8 +35,7 @@ def create_from_json(configs: list) -> List[source.Source]:
             )
             print(f"Source {config['name']} created")
         except Exception as e:
-            # todo traceback?
-            exceptions[config['name']] = f'{type(e).__name__}: {str(e)}'
+            exceptions[config['name']] = f'{type(e).__name__}:\n' + traceback.format_exc()
     if exceptions:
         raise source.SourceException(json.dumps(exceptions))
     return sources

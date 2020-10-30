@@ -66,7 +66,7 @@ class StreamSetsApiClient:
         return urllib.parse.urljoin(self.base_url, '/'.join(['/rest/v1', *args]))
 
     @endpoint
-    def create_pipeline(self, name):
+    def create_pipeline(self, name: str):
         logger.info(f'Creating pipeline: {name}')
         return self.session.put(self._build_url('pipeline', name))
 
@@ -115,7 +115,7 @@ class StreamSetsApiClient:
         return self.session.delete(self._build_url('pipeline', pipeline_id))
 
     @endpoint
-    def get_pipeline_logs(self, pipeline_id, severity=None):
+    def get_pipeline_logs(self, pipeline_id: str, severity=None):
         """
         :param pipeline_id: string
         :param severity: string [INFO, ERROR], default - None
@@ -174,7 +174,7 @@ class StreamSetsApiClient:
         logger.info(f'Validate pipeline {pipeline_id}')
         return self.session.get(self._build_url('pipeline', pipeline_id, 'preview', previewer_id, 'status'))
 
-    def wait_for_preview(self, pipeline_id, preview_id, tries=6, initial_delay=2):
+    def wait_for_preview(self, pipeline_id: str, preview_id: str, tries=6, initial_delay=2):
         for i in range(1, tries + 1):
             response = self.get_preview_status(pipeline_id, preview_id)
             if response['status'] == 'TIMED_OUT':
@@ -212,7 +212,7 @@ class StreamSetsApiClient:
         return preview_data, errors
 
     @endpoint
-    def get_pipeline_errors(self, pipeline_id, stage_name):
+    def get_pipeline_errors(self, pipeline_id: str, stage_name):
         logger.info(f'Get pipeline {pipeline_id} errors')
         return self.session.get(self._build_url('pipeline', pipeline_id, 'errorRecords'),
                                 params={'stageInstanceName': stage_name})

@@ -4,5 +4,5 @@ from agent import cli, source, destination, pipeline
 
 # cli.source.edit(["test_mongo"])
 # cli.destination()
-# cli.pipeline.create()
+cli.pipeline.create()
 # cli.update()

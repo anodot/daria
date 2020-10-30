@@ -6,9 +6,9 @@ from jsonschema import ValidationError
 from agent.api.routes import needs_pipeline
 from flask import jsonify, Blueprint, request
 from agent.api import routes
-from agent import pipeline, source
+from agent import pipeline, source, streamsets
 from agent.modules import proxy, logger
-from agent.pipeline import PipelineOffset, streamsets
+from agent.pipeline import PipelineOffset
 
 pipelines = Blueprint('pipelines', __name__)
 logger = logger.get_logger(__name__)
@@ -31,7 +31,7 @@ def create():
             ValidationError, source.SourceNotExists, requests.exceptions.ConnectionError
     ) as e:
         return jsonify(str(e)), 400
-    except pipeline.PipelineException as e:
+    except (pipeline.PipelineException, streamsets.manager.StreamsetsException) as e:
         return jsonify(str(e)), 500
     return jsonify(list(map(lambda x: x.to_dict(), pipelines_)))
 
@@ -42,7 +42,7 @@ def edit():
         pipelines_ = pipeline.manager.edit_using_json(request.get_json())
     except ValueError as e:
         return jsonify(str(e)), 400
-    except pipeline.PipelineException as e:
+    except (pipeline.PipelineException, streamsets.manager.StreamsetsException) as e:
         return jsonify(str(e)), 500
     return jsonify(list(map(lambda x: x.to_dict(), pipelines_)))
 
@@ -64,7 +64,7 @@ def force_delete(pipeline_name):
 @needs_pipeline
 def start(pipeline_name):
     try:
-        pipeline.manager.start(pipeline.repository.get_by_name(pipeline_name))
+        streamsets.manager.start(pipeline.repository.get_by_name(pipeline_name))
     except (streamsets.PipelineFreezeException, pipeline.PipelineException) as e:
         return jsonify(str(e)), 400
     return jsonify('')

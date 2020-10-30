@@ -1,8 +1,7 @@
 import pytest
 
-from agent import cli
+from agent import cli, streamsets
 from agent import destination, pipeline
-from agent.pipeline import streamsets
 
 
 @pytest.fixture(autouse=True)
@@ -18,7 +17,7 @@ def test_destination(cli_runner):
     assert result.exit_code == 0
     assert destination.repository.exists()
     for streamsets_ in streamsets.repository.get_all():
-        assert streamsets.manager.get_pipeline_status(f'{pipeline.MONITORING}_{streamsets_.id}') == 'RUNNING'
+        assert streamsets.manager.get_pipeline_status_by_id(f'{pipeline.MONITORING}_{streamsets_.id}') == 'RUNNING'
 
 
 def test_edit_destination(cli_runner):
@@ -30,7 +29,7 @@ def test_edit_destination(cli_runner):
     assert result.exit_code == 0
     assert curr_dest.host_id == prev_dest.host_id
     for streamsets_ in streamsets.repository.get_all():
-        assert streamsets.manager.get_pipeline_status(f'{pipeline.MONITORING}_{streamsets_.id}') == 'RUNNING'
+        assert streamsets.manager.get_pipeline_status_by_id(f'{pipeline.MONITORING}_{streamsets_.id}') == 'RUNNING'
 
 
 def test_update(cli_runner):

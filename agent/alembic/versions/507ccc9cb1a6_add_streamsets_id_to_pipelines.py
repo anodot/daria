@@ -18,7 +18,7 @@ depends_on = None
 
 def upgrade():
     op.add_column('pipelines', sa.Column('streamsets_id', sa.Integer))
-    op.create_foreign_key('fk_streamsets_id', 'pipelines', 'streamsets', ['streamsets_id'], ['id'])
+    op.create_foreign_key('fk_pipeline_streamsets', 'pipelines', 'streamsets', ['streamsets_id'], ['id'])
 
 
 def downgrade():

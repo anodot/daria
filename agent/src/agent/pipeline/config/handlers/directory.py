@@ -7,8 +7,6 @@ logger = get_logger(__name__)
 
 
 class DirectoryConfigHandler(BaseConfigHandler):
-    PIPELINE_BASE_CONFIG_NAME = 'directory_http.json'
-
     stages_to_override = {
         'source': stages.source.Source,
         'JavaScriptEvaluator_01': stages.js_convert_metrics_20.JSConvertMetrics,
@@ -19,7 +17,7 @@ class DirectoryConfigHandler(BaseConfigHandler):
         'destination_watermark': stages.destination.WatermarkDestination,
     }
 
-    def get_pipeline_config(self) -> dict:
+    def _get_pipeline_config(self) -> dict:
         if not self.is_preview:
             schema_definition = schema.update(self.pipeline)
             self.pipeline.config['schema'] = schema_definition
@@ -27,7 +25,7 @@ class DirectoryConfigHandler(BaseConfigHandler):
         else:
             schema_id = 'preview'
 
-        pipeline_config = super().get_pipeline_config()
+        pipeline_config = super()._get_pipeline_config()
         pipeline_config.update({
             'SCHEMA_ID': schema_id,
             'PROTOCOL': self.pipeline.destination.PROTOCOL_30

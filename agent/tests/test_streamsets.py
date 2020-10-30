@@ -1,5 +1,4 @@
-from agent import cli
-from agent.pipeline import streamsets
+from agent import cli, streamsets
 
 
 def test_streamsets_1(cli_runner):

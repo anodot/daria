@@ -7,16 +7,14 @@ logger = get_logger(__name__)
 
 
 class VictoriaConfigHandler(BaseConfigHandler):
-    PIPELINE_BASE_CONFIG_NAME = 'victoria_http.json'
-
     stages_to_override = {
         'source': stages.victoria_source.VictoriaScript,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties,
         'destination': stages.destination.Destination
     }
 
-    def override_stages(self):
+    def _override_stages(self):
         self.pipeline.config['timestamp'] = {
             'type': pipeline.TimestampType.UNIX.value
         }
-        super().override_stages()
+        super()._override_stages()

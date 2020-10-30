@@ -1,6 +1,5 @@
-from agent import cli
+from agent import cli, streamsets
 from agent import source
-from agent.pipeline import streamsets
 
 
 class TestInflux:

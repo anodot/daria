@@ -6,9 +6,6 @@ logger = get_logger(__name__)
 
 
 class JDBCConfigHandler(BaseConfigHandler):
-    PIPELINE_BASE_CONFIG_NAME = 'jdbc_http.json'
-    PIPELINES_BASE_CONFIGS_PATH = 'base_pipelines/jdbc_{destination_name}.json'
-
     stages_to_override = {
         'source': stages.jdbc_source.JDBCSourceStage,
         'JavaScriptEvaluator_01': stages.js_convert_metrics_20.JSConvertMetrics,

@@ -6,11 +6,9 @@ import sqlalchemy
 
 from datetime import datetime
 from urllib.parse import urlparse, urlunparse
-from agent import source, pipeline
-from agent.pipeline.streamsets import StreamSetsApiClient
+from agent import source, pipeline, streamsets
 from agent.modules.tools import if_validation_enabled
 from agent.modules import validator
-from agent.pipeline import streamsets
 
 
 class ValidationException(Exception):
@@ -37,14 +35,13 @@ class Validator:
 
     @if_validation_enabled
     def validate_connection(self):
-        streamsets_api_client = StreamSetsApiClient(streamsets.repository.get_any())
-        test_pipeline_name = pipeline.manager\
-            .create_test_pipeline(pipeline.manager.build_test_pipeline(self.source), streamsets_api_client)
+        test_pipeline = pipeline.manager.build_test_pipeline(self.source)
         try:
-            validate_status = streamsets_api_client.validate(test_pipeline_name)
-            streamsets_api_client.wait_for_preview(test_pipeline_name, validate_status['previewerId'])
+            streamsets.manager.create(test_pipeline)
+            validate_status = streamsets.manager.validate(test_pipeline)
+            streamsets.manager.wait_for_preview(test_pipeline, validate_status['previewerId'])
         finally:
-            streamsets_api_client.delete_pipeline(test_pipeline_name)
+            streamsets.manager.delete(test_pipeline)
         return True
 
 

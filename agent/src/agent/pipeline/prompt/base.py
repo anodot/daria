@@ -4,7 +4,7 @@ import pytz
 from agent.cli import source_builders
 from agent.modules.tools import infinite_retry, if_validation_enabled, dict_get_nested
 from agent import pipeline
-from agent.pipeline import Pipeline, streamsets
+from agent.pipeline import Pipeline
 
 
 class PromptConfig:

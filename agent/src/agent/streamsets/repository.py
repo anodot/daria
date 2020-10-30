@@ -1,6 +1,6 @@
 from typing import List
 from agent.modules.db import session
-from agent.pipeline.streamsets import StreamSets
+from agent.streamsets import StreamSets
 
 
 def get(id_: int) -> StreamSets:
@@ -19,10 +19,6 @@ def get_by_url(url: str) -> StreamSets:
     if not streamsets:
         raise StreamsetsNotExistsException(f"StreamSets with url {url} doesn't exist")
     return streamsets
-
-
-def get_any() -> StreamSets:
-    return session().query(StreamSets).first()
 
 
 def save(streamsets: StreamSets):

@@ -4,9 +4,8 @@ import time
 
 from ..conftest import get_output, get_input_file_path
 from agent.cli import source as source_cli, pipeline as pipeline_cli
-from agent.pipeline.streamsets import StreamSetsApiClient
-from agent import pipeline, source
-from agent.pipeline import streamsets
+from agent.streamsets import StreamSetsApiClient
+from agent import pipeline, source, streamsets
 
 
 class TestPipelineBase(object):
@@ -41,7 +40,7 @@ class TestPipelineBase(object):
     def test_start(self, cli_runner, name):
         result = cli_runner.invoke(pipeline_cli.start, [name], catch_exceptions=False)
         assert result.exit_code == 0
-        assert streamsets.manager.get_pipeline_status(name) == 'RUNNING'
+        assert streamsets.manager.get_pipeline_status_by_id(name) == 'RUNNING'
         # give pipelines some time to send data
         time.sleep(10)
 
@@ -52,7 +51,7 @@ class TestPipelineBase(object):
     def test_stop(self, cli_runner, name):
         result = cli_runner.invoke(pipeline_cli.stop, [name], catch_exceptions=False)
         assert result.exit_code == 0
-        assert streamsets.manager.get_pipeline_status(name) in ['STOPPED']
+        assert streamsets.manager.get_pipeline_status_by_id(name) in ['STOPPED']
 
     def test_force_stop(self, cli_runner, name):
         result = cli_runner.invoke(pipeline_cli.force_stop, [name], catch_exceptions=False)

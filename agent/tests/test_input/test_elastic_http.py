@@ -1,9 +1,8 @@
 from datetime import datetime
 
 from ..conftest import get_input_file_path
-from agent import cli
+from agent import cli, streamsets
 from agent import source
-from agent.pipeline import streamsets
 
 
 class TestElastic:

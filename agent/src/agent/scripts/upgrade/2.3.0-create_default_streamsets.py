@@ -1,6 +1,6 @@
-from agent.pipeline import streamsets
+from agent import streamsets
 from agent.modules import constants
-from agent.pipeline.streamsets import StreamSets
+from agent.streamsets import StreamSets
 
 streamsets.repository.save(StreamSets(
     constants.DEFAULT_STREAMSETS_URL,

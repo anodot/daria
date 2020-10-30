@@ -36,12 +36,10 @@ state['HOST_NAME'] = '{host_name}'
 state['PIPELINE_ID'] = '{pipeline_id}'
 state['TAGS'] = {tags}
 """
-    PIPELINE_BASE_CONFIG_NAME = 'influx_http.json'
-
     QUERY_GET_DATA = "SELECT+{dimensions}+FROM+{metric}+WHERE+%28%22time%22+%3E%3D+${{record:value('/last_timestamp')}}+AND+%22time%22+%3C+${{record:value('/last_timestamp')}}%2B{interval}+AND+%22time%22+%3C+now%28%29+-+{delay}%29+{where}"
 
-    def override_stages(self):
-        super().override_stages()
+    def _override_stages(self):
+        super()._override_stages()
         self.update_source_configs()
 
         for stage in self.config['stages']:

@@ -1,6 +1,5 @@
-from agent import pipeline, source
+from agent import pipeline, source, streamsets
 from agent import cli
-from agent.pipeline import streamsets
 
 
 class TestDirectory:
