@@ -196,6 +196,9 @@ services:
       - '--retentionPeriod=600'
     restart: always
 
+  datagen:
+    image: datagen
+
 volumes:
   agent-data:
   dummy-destination-data:
