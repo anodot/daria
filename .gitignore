@@ -7,6 +7,6 @@ dist/
 agent.log
 agent/data/*
 version.py
-sdc-data/
+sdc-data*/
 streamsets/python-libs/
 agent/backup-data/

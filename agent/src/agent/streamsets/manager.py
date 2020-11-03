@@ -1,5 +1,7 @@
 import json
+import logging
 import re
+import sys
 import time
 import click
 import agent.pipeline.config.handlers as config_handlers
@@ -13,6 +15,9 @@ from agent.streamsets import StreamSetsApiClient, StreamSets
 from agent.pipeline import Pipeline
 
 logger = get_logger(__name__)
+handler = logging.StreamHandler(sys.stdout)
+handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+logger.addHandler(handler)
 
 _clients: Dict[int, StreamSetsApiClient] = {}
 
@@ -333,6 +338,14 @@ def create_monitoring_pipeline(pipeline_: Pipeline):
     start(pipeline_)
 
 
+def get_pipeline_offset(pipeline_: Pipeline) -> dict:
+    return _client(pipeline_).get_pipeline_offset(pipeline_.name)
+
+
+def post_pipeline_offset(pipeline_: Pipeline, offset: dict) -> dict:
+    return _client(pipeline_).post_pipeline_offset(pipeline_.name, offset)
+
+
 class StreamsetsBalancer:
     def __init__(self):
         self.streamsets_pipelines = self._get_streamsets_pipelines()
@@ -352,6 +365,9 @@ class StreamsetsBalancer:
             if pipeline_.streamsets_id not in sp:
                 sp[pipeline_.streamsets_id] = []
             sp[pipeline_.streamsets_id].append(pipeline_)
+        for streamsets_ in streamsets.repository.get_all():
+            if streamsets_.id not in sp:
+                sp[streamsets_.id] = []
         return sp
 
     def _is_balanced(self) -> bool:
@@ -368,10 +384,19 @@ class StreamsetsBalancer:
 
     def move_pipeline(self, from_streamsets_id: int):
         pipeline_ = self.streamsets_pipelines[from_streamsets_id].pop()
+        logger.info(f'Moving `{pipeline_.name}` from `{pipeline_.streamsets.url}`')
+        offset = get_pipeline_offset(pipeline_)
+        should_start = pipeline_.status in [Pipeline.STATUS_STARTING, Pipeline.STATUS_RUNNING]
+
         delete(pipeline_)
         create(pipeline_)
-        # todo set new pipeline offset
-        self.streamsets_pipelines[pipeline_.streamsets_id] = pipeline_
+        pipeline.repository.save(pipeline_)
+        post_pipeline_offset(pipeline_, offset)
+        if should_start:
+            start(pipeline_)
+
+        self.streamsets_pipelines[pipeline_.streamsets_id].append(pipeline_)
+        logger.info(f'Moved `{pipeline_.name}` to `{pipeline_.streamsets.url}`')
 
     def _get_busiest_streamsets(self) -> int:
         max_ = 0

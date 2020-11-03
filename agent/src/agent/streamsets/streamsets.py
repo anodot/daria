@@ -153,6 +153,16 @@ class StreamSetsApiClient:
         return self.session.post(self._build_url('pipeline', pipeline_id, 'resetOffset'))
 
     @endpoint
+    def get_pipeline_offset(self, pipeline_id: str):
+        logger.info(f'Get `{pipeline_id}` offset')
+        return self.session.get(self._build_url('pipeline', pipeline_id, 'committedOffsets'))
+
+    @endpoint
+    def post_pipeline_offset(self, pipeline_id: str, offset: dict):
+        logger.info(f'Post `{pipeline_id}` offset')
+        return self.session.post(self._build_url('pipeline', pipeline_id, 'committedOffsets'), json=offset)
+
+    @endpoint
     def validate(self, pipeline_id: str):
         logger.info(f'Validate pipeline {pipeline_id}')
         return self.session.get(self._build_url('pipeline', pipeline_id, 'validate'),

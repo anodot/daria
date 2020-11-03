@@ -139,7 +139,7 @@ bootstrap: clean-docker-volumes run-base-services create-default-streamsets test
 
 clean-docker-volumes:
 	rm -rf sdc-data
-	rm -rf data
+	rm -rf sdc-data2
 	$(DOCKER_COMPOSE_DEV) down -v
 
 run-base-services: _run-base-services nap alembic-migrate
@@ -153,6 +153,9 @@ build-base-services: clean-docker-volumes _build-base-services nap alembic-migra
 _build-base-services:
 	$(DOCKER_COMPOSE_DEV) up -d --build agent dc squid dummy_destination
 	docker exec -i anodot-agent python setup.py develop
+
+run-dc2:
+	$(DOCKER_COMPOSE_DEV) up -d dc2
 
 run-elastic:
 	$(DOCKER_COMPOSE_DEV) up -d es

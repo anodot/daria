@@ -7,9 +7,7 @@ ARG GIT_SHA1=local-build
 WORKDIR /usr/src/app
 
 COPY . .
-COPY .bashrc /root/.bashrc
-
-VOLUME /usr/src/app/data
+COPY .bashrc /root/.bashr
 
 ENV SDC_CONF_PARSER_LIMIT="20048576" STREAMSETS_USERNAME="admin" STREAMSETS_PASSWORD="admin" \
     STREAMSETS_URL="http://localhost:18630"

@@ -25,7 +25,7 @@ services:
       - "18629:18630"
     restart: on-failure
     volumes:
-      - sdc-data:/data
+      - ./sdc-data2:/data
       - ./certs:/home/certs
       - ./test-datasets/test-directory-collector:/home/test-directory-collector
     environment:
@@ -58,7 +58,6 @@ services:
       - ./agent/backup-data:/usr/src/app/backup-data
       - dummy-destination-data:/output
       - ./agent:/usr/src/app
-      - ./data:/usr/src/app/data
 #      - ./scripts:/usr/src/app/scripts
       - ./test-datasets:/home
     ports:
