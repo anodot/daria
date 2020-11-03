@@ -21,7 +21,8 @@ entityName = ''
 DATEFORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 query_size = int(sdc.userParams.get('QUERY_SIZE', 1000))
-interval = timedelta(seconds=int(float(sdc.userParams['INTERVAL']) * 60))  # because user specifies the interval in minutes
+interval = timedelta(
+    seconds=int(float(sdc.userParams['INTERVAL']) * 60))  # because user specifies the interval in minutes
 delay = timedelta(minutes=int(sdc.userParams['DELAY']))
 days_to_backfill = timedelta(days=int(sdc.userParams['DAYS_TO_BACKFILL']))
 sdc.log.info('INTERVAL: ' + str(interval))
@@ -77,6 +78,7 @@ while True:
                 "size": query_size,
                 "after": last
             }
+            skip = False
             for i in range(1, N_REQUESTS_TRIES + 1):
                 try:
                     sdc.log.debug(str(body))
@@ -102,10 +104,19 @@ while True:
                     cur_batch.addEvent(event)
                     cur_batch.process(entityName, offset)
                     cur_batch = sdc.createBatch()
-                    if i == N_REQUESTS_TRIES:
-                        raise
                     sdc.log.error(str(e))
+                    if i == N_REQUESTS_TRIES:
+                        if e.response.status_code == 504:
+                            sdc.log.info(str(body))
+                            skip = True
+                            break
+
+                        raise
+
                     time.sleep(3 ** i)
+
+            if skip:
+                break
 
             data = res.json()
             for hit in data["hits"]:
