@@ -16,16 +16,17 @@ def save(source_: Source):
     session().commit()
 
 
-def delete_by_name(source_name: str):
-    if not exists(source_name):
-        raise SourceNotExists(f"Source config {source_name} doesn't exist")
-    source_entity = session().query(Source).filter(Source.name == source_name).first()
-    if source_entity.pipelines:
+def delete(source_: Source):
+    if source_.pipelines:
         raise Exception(
-                f"Can't delete. Source is used by {', '.join([p.name for p in source_entity.pipelines])} pipelines"
+                f"Can't delete. Source is used by {', '.join([p.name for p in source_.pipelines])} pipelines"
             )
-    session().delete(source_entity)
+    session().delete(source_)
     session().commit()
+
+
+def delete_by_name(source_name: str):
+    delete(get_by_name(source_name))
 
 
 def get_all_names() -> List[str]:
@@ -62,8 +63,8 @@ def _construct_source(source_: Source) -> Source:
     return source_
 
 
-def get_all() -> List[source.Source]:
-    return session().query(source.Source).all()
+def get_all() -> List[Source]:
+    return session().query(Source).all()
 
 
 def get_last_edited(source_type: str) -> Optional[Source]:

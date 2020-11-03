@@ -1,3 +1,4 @@
+import argparse
 import hashlib
 import json
 import os
@@ -8,7 +9,7 @@ import sys
 
 from tempfile import NamedTemporaryFile
 from agent import pipeline, source, streamsets
-from agent.modules import logger
+from agent.modules import logger, constants
 
 logger_ = logger.get_logger('scripts.antomation.run')
 handler = logging.StreamHandler(sys.stdout)
@@ -30,7 +31,7 @@ def populate_source_from_file(file):
     for config in source.manager.extract_configs(file):
         try:
             if 'name' not in config:
-                raise Exception('Source config should contain a source name')
+                raise Exception(f'Source configs must contain a `name` field, check {file.name}')
             if source.repository.exists(config['name']):
                 source.manager.edit_source_using_json(config)
             else:
@@ -46,7 +47,7 @@ def populate_pipeline_from_file(file):
     for config in pipeline.manager.extract_configs(file):
         try:
             if 'pipeline_id' not in config:
-                raise Exception('Pipeline config should contain a pipeline_id')
+                raise Exception(f'Pipeline configs must contain a `pipeline_id` field, check {file.name}')
             if pipeline.repository.exists(config['pipeline_id']):
                 pipeline.manager.edit_pipeline_using_json(config)
             else:
@@ -126,5 +127,37 @@ def process(directory, checksum_file, create):
         exit(1)
 
 
+def delete_not_existing(directory, module, type_):
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--keep-not-existing', action='store_true', help="shows output")
+    if not parser.parse_args().keep_not_existing:
+        logger_.info('Looking for removed pipelines')
+        all_names = _extract_all_names(directory, module, type_)
+        for obj in module.repository.get_all():
+            if obj.name not in all_names and obj.name != pipeline.MONITORING and obj.name != constants.MONITORING_SOURCE_NAME:
+                logger_.info(f'{type_} {obj.name} not found in configs, deleting')
+                module.manager.delete(obj)
+                logger_.info('Success')
+        logger_.info('Done')
+
+
+def _extract_all_names(directory, module, type_):
+    names = []
+    name_key = 'pipeline_id' if type_ == 'Pipeline' else 'name'
+    for root, _, filenames in os.walk(directory):
+        for filename in filenames:
+            if not filename.endswith('.json'):
+                continue
+            with open(os.path.join(root, filename)) as file:
+                for config in module.manager.extract_configs(file):
+                    if name_key not in config:
+                        raise Exception(f'{type_} config must contain a `{name_key}`, check {file.name}')
+                    names.append(config[name_key])
+    return names
+
+
 process(SOURCES_DIR, SOURCES_CHECKSUMS, populate_source_from_file)
 process(PIPELINES_DIR, PIPELINES_CHECKSUMS, populate_pipeline_from_file)
+
+delete_not_existing(PIPELINES_DIR, pipeline, 'Pipeline')
+delete_not_existing(SOURCES_DIR, source, 'Source')
