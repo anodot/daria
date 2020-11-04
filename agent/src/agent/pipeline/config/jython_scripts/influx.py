@@ -31,12 +31,15 @@ elif sdc.userParams['INITIAL_OFFSET']:
 else:
     offset = to_timestamp(datetime.utcnow().replace(second=0, microsecond=0) - interval)
 
+sdc.log.info('OFFSET: ' + str(offset))
+
 while True:
-    if offset > get_now_with_delay():
-        time.sleep(offset - get_now_with_delay())
+    now_with_delay = get_now_with_delay() - interval.total_seconds()
+    if offset > now_with_delay:
+        time.sleep(offset - now_with_delay)
     cur_batch = sdc.createBatch()
     record = sdc.createRecord('record created ' + str(datetime.now()))
     record.value = {'last_timestamp': int(offset) * int(1e9)}
+    offset += interval.total_seconds()
     cur_batch.add(record)
     cur_batch.process(entityName, str(offset))
-    offset += interval.total_seconds()

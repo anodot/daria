@@ -195,6 +195,10 @@ services:
       - '--httpListenAddr=:8428'
       - '--retentionPeriod=600'
     restart: always
+#
+#  datagen:
+#    image: datagen
+#    container_name: data-gen
 
 volumes:
   agent-data:
