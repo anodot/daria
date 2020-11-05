@@ -4,15 +4,28 @@ import pytest
 
 from agent.api import main
 from click.testing import CliRunner
-
+from agent.modules import db
 
 DUMMY_DESTINATION_OUTPUT_PATH = '/output'
 TEST_DATASETS_PATH = '/home'
 
 
+class MyRunner(CliRunner):
+    def invoke(self, *args, **kwargs):
+        try:
+            result = super(MyRunner, self).invoke(*args, **kwargs)
+            db.session().commit()
+            return result
+        except Exception:
+            db.session().rollback()
+            raise
+        finally:
+            db.close_session()
+
+
 @pytest.fixture(scope="session")
 def cli_runner():
-    yield CliRunner()
+    yield MyRunner()
 
 
 @pytest.fixture

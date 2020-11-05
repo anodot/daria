@@ -4,7 +4,7 @@ import logging
 import os
 import sys
 
-from agent.modules import logger
+from agent.modules import logger, db
 from agent import source, pipeline, destination
 from agent.modules.constants import MONITORING_SOURCE_NAME
 
@@ -89,3 +89,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Migrate destination, sources and pipelines from files to postgres')
     parser.add_argument('--data_dir', default='/usr/src/app/data', help='Directory where destination, sources and pipelines stored')
     run(parser.parse_args().data_dir)
+    # todo this is temporary
+    db.session().commit()
+    db.session().close()

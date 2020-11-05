@@ -139,16 +139,24 @@ def reset(pipeline_name):
     return jsonify('')
 
 
-@pipelines.route('/pipeline-status-change', methods=['POST'])
-def pipeline_status_change():
+@pipelines.route('/pipeline-status-change/<pipeline_id>', methods=['POST'])
+def pipeline_status_change(pipeline_id: str):
     data = request.get_json()
-    pipeline_ = pipeline.repository.get_by_name(data['pipeline_name'])
+
+    last = time.time()
+    # logger.info(f'{pipeline_id} Get pipeline')
+    pipeline_ = pipeline.repository.get_by_name(pipeline_id)
+    # logger.info(f'{pipeline_id} Done Get pipeline ' + str(time.time() - last))
+
     pipeline_.status = data['pipeline_status']
+
+    last = time.time()
+    # logger.info(f'{pipeline_id} Save pipeline')
     pipeline.repository.save(pipeline_)
+    # logger.info(f'{pipeline_id} Done Save pipeline ' + str(time.time() - last))
 
     if data['pipeline_status'] in pipeline_.error_statuses:
         _send_error_status_to_anodot(data, pipeline_)
-
     return ''
 
 

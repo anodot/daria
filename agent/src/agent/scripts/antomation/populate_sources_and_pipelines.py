@@ -9,7 +9,7 @@ import sys
 
 from tempfile import NamedTemporaryFile
 from agent import pipeline, source, streamsets
-from agent.modules import logger, constants
+from agent.modules import logger, constants, db
 
 logger_ = logger.get_logger('scripts.antomation.run')
 handler = logging.StreamHandler(sys.stdout)
@@ -166,3 +166,7 @@ process(PIPELINES_DIR, PIPELINES_CHECKSUMS, populate_pipeline_from_file)
 
 delete_not_existing(PIPELINES_DIR, pipeline, 'Pipeline')
 delete_not_existing(SOURCES_DIR, source, 'Source')
+
+# todo this is temporary
+db.session().commit()
+db.session().close()

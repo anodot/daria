@@ -21,13 +21,13 @@ def test_destination(cli_runner):
 
 
 def test_edit_destination(cli_runner):
-    prev_dest = destination.repository.get()
+    prev_dest_host_id = destination.repository.get().host_id
     result = cli_runner.invoke(cli.destination, catch_exceptions=False,
                                input='y\nhttp://squid:3128\n\n\n\ncorrect_token\n')
     print(result.output)
     curr_dest = destination.repository.get()
     assert result.exit_code == 0
-    assert curr_dest.host_id == prev_dest.host_id
+    assert curr_dest.host_id == prev_dest_host_id
     for streamsets_ in streamsets.repository.get_all():
         assert streamsets.manager.get_pipeline_status_by_id(f'{pipeline.MONITORING}_{streamsets_.id}') == 'RUNNING'
 

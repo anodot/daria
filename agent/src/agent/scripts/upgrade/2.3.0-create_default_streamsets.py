@@ -1,5 +1,5 @@
 from agent import streamsets
-from agent.modules import constants
+from agent.modules import constants, db
 from agent.streamsets import StreamSets
 
 streamsets.repository.save(StreamSets(
@@ -7,3 +7,6 @@ streamsets.repository.save(StreamSets(
     constants.DEFAULT_STREAMSETS_USERNAME,
     constants.DEFAULT_STREAMSETS_PASSWORD,
 ))
+# todo this is temporary
+db.session().commit()
+db.session().close()

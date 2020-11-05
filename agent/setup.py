@@ -22,7 +22,7 @@ setup(
     include_package_data=True,
     entry_points='''
         [console_scripts]
-        agent=agent.cli:agent
+        agent=agent.cli:agent_entry_point
     ''',
     zip_safe=False,
     version=app_version

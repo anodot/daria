@@ -38,12 +38,12 @@ def get_all() -> List[Pipeline]:
 
 def save(pipeline_: Pipeline):
     session().add(pipeline_)
-    session().commit()
+    session().flush()
 
 
 def delete(pipeline_: Pipeline):
     session().delete(pipeline_)
-    session().commit()
+    session().flush()
 
 
 def delete_by_name(pipeline_name: str):
@@ -52,7 +52,7 @@ def delete_by_name(pipeline_name: str):
 
 def save_offset(pipeline_offset: PipelineOffset):
     session().add(pipeline_offset)
-    session().commit()
+    session().flush()
 
 
 def count_by_streamsets() -> Dict[int, int]:

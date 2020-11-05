@@ -5,6 +5,7 @@ from agent.cli.destination import destination
 from agent.cli.pipeline import pipeline_group
 from agent.cli.source import source_group
 from agent.cli.streamsets import streamsets_group
+from agent.modules import db
 from agent.version import __version__, __build_time__, __git_sha1__
 
 
@@ -31,6 +32,17 @@ def agent(version):
         click.echo('Git commit: ' + __git_sha1__)
 
 
+def agent_entry_point():
+    try:
+        agent()
+        db.session().commit()
+    except Exception:
+        db.session().rollback()
+        raise
+    finally:
+        db.close_session()
+
+
 agent.add_command(source_group)
 agent.add_command(pipeline_group)
 agent.add_command(backup)
@@ -39,4 +51,4 @@ agent.add_command(destination)
 agent.add_command(streamsets_group)
 
 if __name__ == '__main__':
-    agent()
+    agent_entry_point()

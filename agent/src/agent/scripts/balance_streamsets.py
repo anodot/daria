@@ -1,3 +1,4 @@
+from agent.modules import db
 from agent.modules.logger import get_logger
 from agent import streamsets
 
@@ -14,3 +15,6 @@ elif len(streamsets_) == 1:
 
 balancer = streamsets.manager.StreamsetsBalancer()
 balancer.balance()
+# todo this is temporary
+db.session().commit()
+db.session().close()

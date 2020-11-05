@@ -335,7 +335,6 @@ def validate(pipeline_: Pipeline):
 
 def create_monitoring_pipeline(pipeline_: Pipeline):
     _create(pipeline_)
-    start(pipeline_)
 
 
 def get_pipeline_offset(pipeline_: Pipeline) -> dict:

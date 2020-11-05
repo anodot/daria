@@ -23,12 +23,12 @@ def get_by_url(url: str) -> StreamSets:
 
 def save(streamsets: StreamSets):
     session().add(streamsets)
-    session().commit()
+    session().flush()
 
 
 def delete(streamsets: StreamSets):
     session().delete(streamsets)
-    session().commit()
+    session().flush()
 
 
 class StreamsetsNotExistsException(Exception):

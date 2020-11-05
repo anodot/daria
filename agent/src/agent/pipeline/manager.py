@@ -2,6 +2,8 @@ import json
 import logging
 import random
 import string
+import traceback
+
 import agent.pipeline.config.handlers as config_handlers
 import jsonschema
 
@@ -184,8 +186,7 @@ def create_from_json(configs: list) -> List[Pipeline]:
             pipeline_ = create_pipeline_from_json(config)
             pipelines.append(pipeline_)
         except Exception as e:
-            # todo traceback?
-            exceptions[config['pipeline_id']] = f'{type(e).__name__}: {str(e)}'
+            exceptions[config['pipeline_id']] = f'{type(e).__name__}: {traceback.format_exc()}'
         if exceptions:
             raise pipeline.PipelineException(json.dumps(exceptions))
     return pipelines
@@ -324,8 +325,9 @@ def create_monitoring_pipelines():
     for streamsets_ in streamsets.manager.get_streamsets_without_monitoring():
         pipeline_ = create_object(f'{pipeline.MONITORING}_{streamsets_.id}', MONITORING_SOURCE_NAME)
         pipeline_.set_streamsets(streamsets_)
-        streamsets.manager.create_monitoring_pipeline(pipeline_)
         pipeline.repository.save(pipeline_)
+        streamsets.manager.create_monitoring_pipeline(pipeline_)
+        streamsets.manager.start(pipeline_)
 
 
 def update_monitoring_pipelines():

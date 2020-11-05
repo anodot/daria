@@ -47,7 +47,6 @@ def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, a
 
         click.secho('Connection to Anodot established')
         try:
-            # todo is it correct to check only one monitoring?
             if pipeline.repository.monitoring_exists():
                 click.secho('Updating Monitoring pipeline...')
                 pipeline.manager.update_monitoring_pipelines()

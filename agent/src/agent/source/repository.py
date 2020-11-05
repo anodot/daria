@@ -13,7 +13,7 @@ def exists(source_name: str) -> bool:
 
 def save(source_: Source):
     session().add(source_)
-    session().commit()
+    session().flush()
 
 
 def delete(source_: Source):
@@ -22,7 +22,7 @@ def delete(source_: Source):
                 f"Can't delete. Source is used by {', '.join([p.name for p in source_.pipelines])} pipelines"
             )
     session().delete(source_)
-    session().commit()
+    session().flush()
 
 
 def delete_by_name(source_name: str):
