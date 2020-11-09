@@ -2,7 +2,9 @@ import traceback
 import wtforms_json
 
 from flask import Flask, jsonify
+
 from agent.modules import db
+from agent.api.routes.streamsets import streamsets
 from agent.api.routes.destination import destination_
 from agent.api.routes import source, pipeline, scripts
 from agent.modules.logger import get_logger
@@ -13,6 +15,7 @@ logger = get_logger(__name__)
 wtforms_json.init()
 
 app = Flask(__name__)
+app.register_blueprint(streamsets)
 app.register_blueprint(destination_)
 app.register_blueprint(source.sources)
 app.register_blueprint(pipeline.pipelines)

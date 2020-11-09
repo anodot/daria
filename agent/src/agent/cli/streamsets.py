@@ -1,14 +1,13 @@
 import click
 import requests
 
-from agent import destination, pipeline, streamsets
+from agent import streamsets
 from agent.modules.logger import get_logger
 from agent.streamsets import StreamSets
 from agent.modules import constants, validator
 from agent.modules.tools import infinite_retry
 
 logger = get_logger(__name__, stdout=True)
-# todo api
 
 
 def get_url_complete(ctx, args, incomplete):
@@ -20,11 +19,17 @@ def streamsets_group():
     pass
 
 
+@click.command(name='list')
+def list_():
+    for name in streamsets.repository.get_all_names():
+        click.echo(name)
+
+
 @click.command()
 def add():
-    _prompt_streamsets(StreamSets('', '', ''))
-    if destination.repository.exists():
-        pipeline.manager.create_monitoring_pipelines()
+    streamsets.manager.create_streamsets(
+        _prompt_streamsets(StreamSets('', '', ''))
+    )
 
 
 @click.command()
@@ -34,23 +39,20 @@ def edit(url):
         s = streamsets.repository.get_by_url(url)
     except streamsets.repository.StreamsetsNotExistsException as e:
         raise click.ClickException(str(e))
-    _prompt_streamsets(s)
+    streamsets_ = _prompt_streamsets(s)
+    streamsets.repository.save(streamsets_)
 
 
 @click.command()
 @click.argument('url', autocompletion=get_url_complete)
 def delete(url):
     try:
-        streamsets_ = streamsets.repository.get_by_url(url)
-        if _has_pipelines(streamsets_):
-            if not _can_move_pipelines():
-                raise click.ClickException('Cannot move pipelines to a different streamsets as only one streamsets instance exists, cannot delete streamsets that has pipelines')
-            streamsets.manager.StreamsetsBalancer().unload_streamsets(streamsets_)
-        pipeline.manager.delete_monitoring_pipeline(streamsets_)
-        streamsets.repository.delete(streamsets_)
-    except streamsets.repository.StreamsetsNotExistsException as e:
+        streamsets.manager.delete_streamsets(
+            streamsets.repository.get_by_url(url)
+        )
+    except (streamsets.repository.StreamsetsNotExistsException, streamsets.manager.StreamsetsException) as e:
         raise click.ClickException(str(e))
-    click.echo(f'Streamsets `{url}` is deleted from agent')
+    click.echo(f'Streamsets `{url}` is successfully deleted from the agent')
 
 
 @click.command()
@@ -65,35 +67,20 @@ def balance():
     streamsets.manager.StreamsetsBalancer().balance()
 
 
-def _has_pipelines(streamsets_: StreamSets) -> bool:
-    pipelines = pipeline.repository.get_by_streamsets_id(streamsets_.id)
-    if len(pipelines) > 1:
-        return True
-    if len(pipelines) == 1 and not pipeline.manager.is_monitoring(pipelines[0]):
-        return True
-    return False
-
-
-def _can_move_pipelines():
-    return len(streamsets.repository.get_all()) > 1
-
-
-def _prompt_streamsets(streamsets_: StreamSets):
-    streamsets_.url = _prompt_url()
+def _prompt_streamsets(streamsets_: StreamSets) -> StreamSets:
+    streamsets_.url = _prompt_url(streamsets_.url if streamsets_.url else None)
     streamsets_.username = click.prompt('Username', type=click.STRING, default=constants.DEFAULT_STREAMSETS_USERNAME)
     streamsets_.password = click.prompt('Password', type=click.STRING, default=constants.DEFAULT_STREAMSETS_PASSWORD)
     try:
-        streamsets.StreamSetsApiClient(streamsets_).get_pipelines()
-    except streamsets.UnauthorizedException:
-        raise click.ClickException('Wrong username or password provided')
-    except streamsets.ApiClientException as e:
+        streamsets.validator.validate(streamsets_)
+    except streamsets.validator.ValidationException as e:
         raise click.ClickException(str(e))
-    streamsets.repository.save(streamsets_)
+    return streamsets_
 
 
 @infinite_retry
-def _prompt_url() -> str:
-    url = click.prompt('Enter streamsets url', type=click.STRING)
+def _prompt_url(default=None) -> str:
+    url = click.prompt('Enter streamsets url', type=click.STRING, default=default)
     if not validator.is_valid_url(url):
         raise click.ClickException('Wrong url format, please specify protocol and domain name')
     res = requests.get(url)
@@ -104,6 +91,7 @@ def _prompt_url() -> str:
     return url
 
 
+streamsets_group.add_command(list_)
 streamsets_group.add_command(add)
 streamsets_group.add_command(edit)
 streamsets_group.add_command(delete)

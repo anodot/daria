@@ -22,8 +22,8 @@ def source_group():
 
 @click.command(name='list')
 def list_sources():
-    for config in source.repository.get_all_names():
-        click.echo(config)
+    for name in source.repository.get_all_names():
+        click.echo(name)
 
 
 @click.command()

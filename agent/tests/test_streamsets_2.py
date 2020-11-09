@@ -33,5 +33,5 @@ def test_balance_streamsets(cli_runner):
 
 def _is_balanced() -> bool:
     len1 = len(pipeline.repository.get_by_streamsets_id(1))
-    len2 = len(pipeline.repository.get_by_streamsets_id(3))
+    len2 = len(pipeline.repository.get_by_streamsets_id(4))
     return abs(len1 - len2) < 2

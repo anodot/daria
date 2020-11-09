@@ -106,6 +106,7 @@ test-pipelines:
 
 test-api:
 	$(DOCKER_TEST) tests/api/test_destination.py
+	$(DOCKER_TEST) tests/api/test_streamsets.py
 	$(DOCKER_TEST) tests/api/source
 	$(DOCKER_TEST) tests/api/pipeline
 
@@ -138,7 +139,7 @@ run-dev:
 	$(DOCKER_COMPOSE_DEV) up -d
 	docker exec -i anodot-agent python setup.py develop
 
-bootstrap: clean-docker-volumes run-base-services create-default-streamsets test-destination
+bootstrap: clean-docker-volumes run-base-services test-streamsets test-destination
 
 clean-docker-volumes:
 	rm -rf sdc-data
@@ -209,6 +210,3 @@ sleep:
 
 nap:
 	sleep $(NAP)
-
-create-default-streamsets:
-	docker exec -i anodot-agent python src/agent/scripts/upgrade/2.3.0-create_default_streamsets.py

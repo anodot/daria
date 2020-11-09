@@ -31,5 +31,13 @@ def delete(streamsets: StreamSets):
     session().flush()
 
 
+def get_all_names() -> List[str]:
+    res = list(map(
+        lambda row: row[0],
+        session().query(StreamSets.url).all()
+    ))
+    return res
+
+
 class StreamsetsNotExistsException(Exception):
     pass

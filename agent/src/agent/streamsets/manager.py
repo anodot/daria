@@ -5,7 +5,7 @@ import agent.pipeline.config.handlers as config_handlers
 
 from datetime import datetime
 from typing import Dict, List, Optional
-from agent import pipeline, streamsets
+from agent import pipeline, streamsets, destination
 from agent.modules.constants import ENV_PROD
 from agent.modules.logger import get_logger
 from agent.streamsets import StreamSetsApiClient, StreamSets
@@ -16,6 +16,36 @@ logger = get_logger(__name__, stdout=True)
 _clients: Dict[int, StreamSetsApiClient] = {}
 
 
+def create_streamsets(streamsets_: StreamSets):
+    streamsets.repository.save(streamsets_)
+    if destination.repository.exists():
+        pipeline.manager.create_monitoring_pipelines()
+
+
+def delete_streamsets(streamsets_: StreamSets):
+    if _has_pipelines(streamsets_):
+        if not _can_move_pipelines():
+            raise StreamsetsException(
+                'Cannot move pipelines to a different streamsets as only one streamsets instance exists, cannot delete streamsets that has pipelines'
+            )
+        streamsets.manager.StreamsetsBalancer().unload_streamsets(streamsets_)
+    pipeline.manager.delete_monitoring_pipeline(streamsets_)
+    streamsets.repository.delete(streamsets_)
+
+
+def _has_pipelines(streamsets_: StreamSets) -> bool:
+    pipelines = pipeline.repository.get_by_streamsets_id(streamsets_.id)
+    if len(pipelines) > 1:
+        return True
+    if len(pipelines) == 1 and not pipeline.manager.is_monitoring(pipelines[0]):
+        return True
+    return False
+
+
+def _can_move_pipelines():
+    return len(streamsets.repository.get_all()) > 1
+
+
 def _client(pipeline_: Pipeline) -> StreamSetsApiClient:
     global _clients
     if not pipeline_.streamsets:
@@ -24,7 +54,7 @@ def _client(pipeline_: Pipeline) -> StreamSetsApiClient:
         _clients[pipeline_.streamsets.id] = StreamSetsApiClient(pipeline_.streamsets)
     return _clients[pipeline_.streamsets.id]
 
-# запустить один или два стримсетса доп, сбалансировать, а потом один удалить через кли чтоб оно разбалансировало
+
 def create(pipeline_: Pipeline, streamsets_: StreamSets = None):
     if pipeline_.streamsets:
         raise StreamsetsException(
