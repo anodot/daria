@@ -3,6 +3,7 @@ from sqlalchemy import func
 from agent import pipeline
 from agent.modules.db import session
 from agent.pipeline import PipelineOffset, Pipeline
+from agent.streamsets import StreamSets
 
 
 class PipelineNotExistsException(Exception):
@@ -61,5 +62,5 @@ def count_by_streamsets() -> Dict[int, int]:
     return {streamsets_id: number for (streamsets_id, number) in res if streamsets_id is not None}
 
 
-def get_by_streamsets(streamsets_id) -> List[Pipeline]:
+def get_by_streamsets_id(streamsets_id: int) -> List[Pipeline]:
     return session().query(Pipeline).filter(Pipeline.streamsets_id == streamsets_id).all()

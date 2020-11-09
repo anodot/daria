@@ -3,7 +3,6 @@ import click
 
 from agent import pipeline, source, streamsets
 from agent import destination
-from agent.streamsets import StreamSetsApiClientException
 from agent.modules.tools import infinite_retry
 from jsonschema import ValidationError
 from texttable import Texttable
@@ -56,7 +55,7 @@ def start(pipeline_id, file):
         try:
             click.echo(f'Pipeline {pipeline_id} is starting...')
             streamsets.manager.start(pipeline.repository.get_by_name(pipeline_id))
-        except (StreamSetsApiClientException, pipeline.PipelineException) as e:
+        except (streamsets.ApiClientException, pipeline.PipelineException) as e:
             click.secho(str(e), err=True, fg='red')
             continue
 
@@ -74,7 +73,7 @@ def stop(pipeline_id, file):
         try:
             streamsets.manager.stop(pipeline_id)
             click.secho(f'Pipeline {pipeline_id} is stopped', fg='green')
-        except (StreamSetsApiClientException, pipeline.PipelineException) as e:
+        except (streamsets.ApiClientException, pipeline.PipelineException) as e:
             click.secho(str(e), err=True, fg='red')
             continue
 
@@ -86,7 +85,7 @@ def force_stop(pipeline_id):
         click.echo('Force pipeline stopping...')
         streamsets.manager.force_stop(pipeline_id)
         click.secho('Pipeline is stopped', fg='green')
-    except (StreamSetsApiClientException, pipeline.PipelineException) as e:
+    except (streamsets.ApiClientException, pipeline.PipelineException) as e:
         click.secho(str(e), err=True, fg='red')
         return
 
@@ -105,7 +104,7 @@ def delete(pipeline_id, file):
             pipeline.manager.delete_by_name(pipeline_name)
             click.echo(f'Pipeline {pipeline_name} deleted')
         except (
-                StreamSetsApiClientException, pipeline.PipelineException, pipeline.repository.PipelineNotExistsException
+                streamsets.ApiClientException, pipeline.PipelineException, pipeline.repository.PipelineNotExistsException
         ) as e:
             click.secho(str(e), err=True, fg='red')
             continue
@@ -130,7 +129,7 @@ def logs(pipeline_id, lines, severity):
     """
     try:
         logs_ = streamsets.manager.get_pipeline_logs(pipeline_id, severity, lines)
-    except StreamSetsApiClientException as e:
+    except streamsets.ApiClientException as e:
         raise click.ClickException(str(e))
     table = _build_table(['Timestamp', 'Severity', 'Category', 'Message'], logs_)
     click.echo(table.draw())
@@ -157,7 +156,7 @@ def info(pipeline_id, lines):
     """
     try:
         info_ = streamsets.manager.get_pipeline_info(pipeline_id, lines)
-    except StreamSetsApiClientException as e:
+    except streamsets.ApiClientException as e:
         raise click.ClickException(str(e))
     click.secho('=== STATUS ===', fg='green')
     click.echo(info_['status'])
@@ -200,7 +199,7 @@ def reset(pipeline_id):
     """
     try:
         pipeline.manager.reset(pipeline.repository.get_by_name(pipeline_id))
-    except StreamSetsApiClientException as e:
+    except streamsets.ApiClientException as e:
         click.secho(str(e), err=True, fg='red')
         return
     click.echo('Pipeline offset reset')
@@ -230,7 +229,7 @@ def pipeline_group():
 def _create_from_file(file):
     try:
         pipeline.manager.create_from_json(json.load(file))
-    except (StreamSetsApiClientException, ValidationError, pipeline.PipelineException) as e:
+    except (streamsets.ApiClientException, ValidationError, pipeline.PipelineException) as e:
         raise click.ClickException(str(e))
 
 

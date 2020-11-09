@@ -75,7 +75,7 @@ def start(pipeline_name):
 def stop(pipeline_name):
     try:
         streamsets.manager.stop(pipeline_name)
-    except streamsets.StreamSetsApiClientException as e:
+    except streamsets.ApiClientException as e:
         return jsonify(str(e)), 400
     except streamsets.PipelineFreezeException as e:
         return jsonify(str(e)), 400
@@ -98,7 +98,7 @@ def info(pipeline_name):
     number_of_history_records = int(request.args.get('number_of_history_records', 10))
     try:
         return jsonify(streamsets.manager.get_pipeline_info(pipeline_name, number_of_history_records))
-    except streamsets.StreamSetsApiClientException as e:
+    except streamsets.ApiClientException as e:
         return jsonify(str(e)), 500
 
 
@@ -111,7 +111,7 @@ def logs(pipeline_name):
     number_of_records = int(request.args.get('number_of_records', 10))
     try:
         return jsonify(streamsets.manager.get_pipeline_logs(pipeline_name, severity, number_of_records))
-    except streamsets.StreamSetsApiClientException as e:
+    except streamsets.ApiClientException as e:
         return jsonify(str(e)), 500
 
 
@@ -134,7 +134,7 @@ def disable_destination_logs(pipeline_name):
 def reset(pipeline_name):
     try:
         pipeline.manager.reset(pipeline.repository.get_by_name(pipeline_name))
-    except streamsets.StreamSetsApiClientException as e:
+    except streamsets.ApiClientException as e:
         return jsonify(str(e)), 500
     return jsonify('')
 
@@ -142,19 +142,9 @@ def reset(pipeline_name):
 @pipelines.route('/pipeline-status-change/<pipeline_id>', methods=['POST'])
 def pipeline_status_change(pipeline_id: str):
     data = request.get_json()
-
-    last = time.time()
-    # logger.info(f'{pipeline_id} Get pipeline')
     pipeline_ = pipeline.repository.get_by_name(pipeline_id)
-    # logger.info(f'{pipeline_id} Done Get pipeline ' + str(time.time() - last))
-
     pipeline_.status = data['pipeline_status']
-
-    last = time.time()
-    # logger.info(f'{pipeline_id} Save pipeline')
     pipeline.repository.save(pipeline_)
-    # logger.info(f'{pipeline_id} Done Save pipeline ' + str(time.time() - last))
-
     if data['pipeline_status'] in pipeline_.error_statuses:
         _send_error_status_to_anodot(data, pipeline_)
     return ''

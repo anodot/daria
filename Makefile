@@ -13,7 +13,7 @@ all: build-all test-all
 
 build-all: get-streamsets-libs build-docker sleep alembic-migrate setup-all
 
-test-all: run-unit-tests test-flask-app test-streamsets test-destination test-antomation test-api test-api-scripts test-input test-send-to-bc test-pipelines
+test-all: run-unit-tests test-flask-app test-streamsets test-destination test-antomation test-api test-api-scripts test-input test-streamsets-2 test-send-to-bc test-pipelines
 
 ##-------------
 ## DEVELOPMENT
@@ -94,6 +94,9 @@ test-destination:
 
 test-streamsets:
 	$(DOCKER_TEST) tests/test_streamsets.py
+
+test-streamsets-2:
+	$(DOCKER_TEST) tests/test_streamsets_2.py
 
 test-input:
 	$(DOCKER_TEST_PARALLEL) tests/test_input/

@@ -4,17 +4,12 @@ import json
 import os
 import csv
 import shutil
-import logging
-import sys
 
 from tempfile import NamedTemporaryFile
 from agent import pipeline, source, streamsets
 from agent.modules import logger, constants, db
 
-logger_ = logger.get_logger('scripts.antomation.run')
-handler = logging.StreamHandler(sys.stdout)
-handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
-logger_.addHandler(handler)
+logger_ = logger.get_logger('scripts.antomation.run', stdout=True)
 
 FAIL = '\033[91m'
 ENDC = '\033[0m'

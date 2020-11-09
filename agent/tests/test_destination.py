@@ -17,7 +17,8 @@ def test_destination(cli_runner):
     assert result.exit_code == 0
     assert destination.repository.exists()
     for streamsets_ in streamsets.repository.get_all():
-        assert streamsets.manager.get_pipeline_status_by_id(f'{pipeline.MONITORING}_{streamsets_.id}') == 'RUNNING'
+        status = streamsets.manager.get_pipeline_status_by_id(pipeline.manager.get_monitoring_name(streamsets_))
+        assert status == 'RUNNING'
 
 
 def test_edit_destination(cli_runner):
@@ -29,7 +30,8 @@ def test_edit_destination(cli_runner):
     assert result.exit_code == 0
     assert curr_dest.host_id == prev_dest_host_id
     for streamsets_ in streamsets.repository.get_all():
-        assert streamsets.manager.get_pipeline_status_by_id(f'{pipeline.MONITORING}_{streamsets_.id}') == 'RUNNING'
+        status = streamsets.manager.get_pipeline_status_by_id(pipeline.manager.get_monitoring_name(streamsets_))
+        assert status == 'RUNNING'
 
 
 def test_update(cli_runner):

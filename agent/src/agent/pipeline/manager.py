@@ -3,7 +3,6 @@ import logging
 import random
 import string
 import traceback
-
 import agent.pipeline.config.handlers as config_handlers
 import jsonschema
 
@@ -17,6 +16,7 @@ from agent.modules.tools import print_json, sdc_record_map_to_dict
 from agent.modules.logger import get_logger
 from typing import List
 from agent.source import Source
+from agent.streamsets import StreamSets
 
 logger = get_logger(__name__)
 
@@ -44,7 +44,7 @@ def show_preview(pipeline_: Pipeline):
     try:
         preview = streamsets.manager.create_preview(pipeline_)
         preview_data, errors = streamsets.manager.wait_for_preview(pipeline_, preview['previewerId'])
-    except streamsets.StreamSetsApiClientException as e:
+    except streamsets.ApiClientException as e:
         print(str(e))
         return
 
@@ -243,7 +243,7 @@ def update_source_pipelines(source_: Source):
 def reset(pipeline_: Pipeline):
     try:
         streamsets.manager.reset_pipeline(pipeline_.name)
-    except (config_handlers.base.ConfigHandlerException, streamsets.StreamSetsApiClientException) as e:
+    except (config_handlers.base.ConfigHandlerException, streamsets.ApiClientException) as e:
         raise pipeline.PipelineException(str(e))
 
 
@@ -256,7 +256,7 @@ def delete(pipeline_: Pipeline):
     _delete_schema(pipeline_)
     try:
         streamsets.manager.delete(pipeline_)
-    except streamsets.StreamSetsApiClientException as e:
+    except streamsets.ApiClientException as e:
         raise pipeline.PipelineException(str(e))
     pipeline.repository.delete(pipeline_)
 
@@ -323,7 +323,7 @@ def create_monitoring_pipelines():
     if not source.repository.exists(MONITORING_SOURCE_NAME):
         source.repository.save(Source(MONITORING_SOURCE_NAME, source.TYPE_MONITORING, {}))
     for streamsets_ in streamsets.manager.get_streamsets_without_monitoring():
-        pipeline_ = create_object(f'{pipeline.MONITORING}_{streamsets_.id}', MONITORING_SOURCE_NAME)
+        pipeline_ = create_object(get_monitoring_name(streamsets_), MONITORING_SOURCE_NAME)
         pipeline_.set_streamsets(streamsets_)
         pipeline.repository.save(pipeline_)
         streamsets.manager.create_monitoring_pipeline(pipeline_)
@@ -332,12 +332,18 @@ def create_monitoring_pipelines():
 
 def update_monitoring_pipelines():
     for streamsets_ in streamsets.repository.get_all():
-        streamsets.manager.update(pipeline.repository.get_by_name(f'{pipeline.MONITORING}_{streamsets_.id}'))
+        streamsets.manager.update(
+            pipeline.repository.get_by_name(get_monitoring_name(streamsets_))
+        )
 
 
-def delete_monitoring_pipelines():
+def delete_all_monitoring_pipelines():
     for streamsets_ in streamsets.repository.get_all():
-        pipeline.manager.delete_by_name(f'{pipeline.MONITORING}_{streamsets_.id}')
+        delete_monitoring_pipeline(streamsets_)
+
+
+def delete_monitoring_pipeline(streamsets_: StreamSets):
+    pipeline.manager.delete_by_name(get_monitoring_name(streamsets_))
 
 
 def transform_for_bc(pipeline_: Pipeline) -> dict:
@@ -368,3 +374,7 @@ def transform_for_bc(pipeline_: Pipeline) -> dict:
 
 def is_monitoring(pipeline_: Pipeline) -> bool:
     return pipeline_.name.startswith(pipeline.MONITORING)
+
+
+def get_monitoring_name(streamsets_: StreamSets):
+    return f'{pipeline.MONITORING}_{streamsets_.id}'

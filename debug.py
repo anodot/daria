@@ -1,8 +1,12 @@
 from agent import cli, source, destination, pipeline, streamsets
-
-# help('modules')
+from agent.modules import db
 
 # cli.source.edit(["test_mongo"])
 # cli.destination()
 # cli.pipeline.create()
 # cli.update()
+
+cli.streamsets.delete(["asdfa"])
+
+db.session().commit()
+db.session().close()

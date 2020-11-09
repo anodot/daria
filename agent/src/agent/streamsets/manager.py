@@ -1,9 +1,6 @@
 import json
-import logging
 import re
-import sys
 import time
-import click
 import agent.pipeline.config.handlers as config_handlers
 
 from datetime import datetime
@@ -14,10 +11,7 @@ from agent.modules.logger import get_logger
 from agent.streamsets import StreamSetsApiClient, StreamSets
 from agent.pipeline import Pipeline
 
-logger = get_logger(__name__)
-handler = logging.StreamHandler(sys.stdout)
-handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
-logger.addHandler(handler)
+logger = get_logger(__name__, stdout=True)
 
 _clients: Dict[int, StreamSetsApiClient] = {}
 
@@ -30,13 +24,13 @@ def _client(pipeline_: Pipeline) -> StreamSetsApiClient:
         _clients[pipeline_.streamsets.id] = StreamSetsApiClient(pipeline_.streamsets)
     return _clients[pipeline_.streamsets.id]
 
-
-def create(pipeline_: Pipeline):
+# запустить один или два стримсетса доп, сбалансировать, а потом один удалить через кли чтоб оно разбалансировало
+def create(pipeline_: Pipeline, streamsets_: StreamSets = None):
     if pipeline_.streamsets:
         raise StreamsetsException(
             f'Pipeline with ID `{pipeline_.name}` already created in the streamsets `{pipeline_.streamsets.url}`'
         )
-    pipeline_.set_streamsets(choose_streamsets())
+    pipeline_.set_streamsets(streamsets_ if streamsets_ else choose_streamsets())
     _create(pipeline_)
 
 
@@ -47,11 +41,11 @@ def _create(pipeline_: Pipeline):
             pipeline_,
             _get_new_config(streamsets_pipeline, pipeline_)
         )
-    except (config_handlers.base.ConfigHandlerException, streamsets.StreamSetsApiClientException) as e:
+    except (config_handlers.base.ConfigHandlerException, streamsets.ApiClientException) as e:
         try:
             delete(pipeline_)
             pipeline_.delete_streamsets()
-        except streamsets.StreamSetsApiClientException:
+        except streamsets.ApiClientException:
             # ignore if it doesn't exist in streamsets
             pass
         raise StreamsetsException(str(e))
@@ -67,7 +61,7 @@ def update(pipeline_: Pipeline):
             pipeline_,
             _get_new_config(get_pipeline(pipeline_.name), pipeline_)
         )
-    except (config_handlers.base.ConfigHandlerException, streamsets.StreamSetsApiClientException) as e:
+    except (config_handlers.base.ConfigHandlerException, streamsets.ApiClientException) as e:
         raise StreamsetsException(str(e))
     if start_pipeline:
         start(pipeline_)
@@ -119,16 +113,15 @@ def get_pipeline_metrics(pipeline_id: str) -> dict:
     return _client(pipeline.repository.get_by_name(pipeline_id)).get_pipeline_metrics(pipeline_id)
 
 
-def choose_streamsets() -> StreamSets:
-    # choose streamsets with the lowest number of pipelines
-    pipeline_streamsets = pipeline.repository.count_by_streamsets()
-    streamsets_ = streamsets.repository.get_all()
-
-    def foo(s: StreamSets):
+def choose_streamsets(*, exclude: int = None) -> StreamSets:
+    def add_empty(s: StreamSets):
         if s.id not in pipeline_streamsets:
             pipeline_streamsets[s.id] = 0
-
-    map(foo, streamsets_)
+    # choose streamsets with the lowest number of pipelines
+    pipeline_streamsets = pipeline.repository.count_by_streamsets()
+    map(add_empty, streamsets.repository.get_all())
+    if exclude:
+        del pipeline_streamsets[exclude]
     id_ = min(pipeline_streamsets, key=pipeline_streamsets.get)
     return streamsets.repository.get(id_)
 
@@ -250,7 +243,7 @@ def force_stop(pipeline_id: str):
     client = _client(pipeline.repository.get_by_name(pipeline_id))
     try:
         client.stop_pipeline(pipeline_id)
-    except streamsets.StreamSetsApiClientException:
+    except streamsets.ApiClientException:
         pass
     if not get_pipeline_status_by_id(pipeline_id) == Pipeline.STATUS_STOPPING:
         raise pipeline.PipelineException("Can't force stop a pipeline not in the STOPPING state")
@@ -292,13 +285,12 @@ def start(pipeline_: Pipeline):
     client = _client(pipeline_)
     client.start_pipeline(pipeline_.name)
     client.wait_for_status(pipeline_.name, Pipeline.STATUS_RUNNING)
-    # todo remove click
-    click.secho(f'{pipeline_.name} pipeline is running')
+    logger.info(f'{pipeline_.name} pipeline is running')
     if ENV_PROD:
         if _wait_for_sending_data(pipeline_.name):
-            click.secho(f'{pipeline_.name} pipeline is sending data')
+            logger.info(f'{pipeline_.name} pipeline is sending data')
         else:
-            click.secho(f'{pipeline_.name} pipeline did not send any data')
+            logger.info(f'{pipeline_.name} pipeline did not send any data')
 
 
 def _create_pipeline(pipeline_: Pipeline):
@@ -337,21 +329,45 @@ def create_monitoring_pipeline(pipeline_: Pipeline):
     _create(pipeline_)
 
 
-def get_pipeline_offset(pipeline_: Pipeline) -> dict:
+def get_pipeline_offset(pipeline_: Pipeline) -> Optional[dict]:
     return _client(pipeline_).get_pipeline_offset(pipeline_.name)
 
 
-def post_pipeline_offset(pipeline_: Pipeline, offset: dict) -> dict:
+def set_pipeline_offset(pipeline_: Pipeline, offset: dict) -> dict:
     return _client(pipeline_).post_pipeline_offset(pipeline_.name, offset)
 
 
 class StreamsetsBalancer:
     def __init__(self):
-        self.streamsets_pipelines = self._get_streamsets_pipelines()
+        self.streamsets_pipelines: Dict[int, List[Pipeline]] = self._get_streamsets_pipelines()
 
     def balance(self):
-        while not self._is_balanced():
-            self.move_pipeline(from_streamsets_id=self._get_busiest_streamsets())
+        while not self.is_balanced():
+            self.move_from_streamsets(self._get_busiest_streamsets_id())
+
+    def unload_streamsets(self, streamsets_: StreamSets):
+        for pipeline_ in self.streamsets_pipelines[streamsets_.id]:
+            self._move(pipeline_, choose_streamsets(exclude=streamsets_.id))
+
+    def move_from_streamsets(self, streamsets_id: int):
+        pipeline_ = self.streamsets_pipelines[streamsets_id].pop()
+        self._move(pipeline_, choose_streamsets())
+        self.streamsets_pipelines[pipeline_.streamsets_id].append(pipeline_)
+        logger.info(f'Moved `{pipeline_.name}` to `{pipeline_.streamsets.url}`')
+
+    @staticmethod
+    def _move(pipeline_: Pipeline, to_streamsets: StreamSets):
+        logger.info(f'Moving `{pipeline_.name}` from `{pipeline_.streamsets.url}` to `{to_streamsets.url}`')
+        offset = get_pipeline_offset(pipeline_)
+        should_start = pipeline_.status in [Pipeline.STATUS_STARTING, Pipeline.STATUS_RUNNING]
+
+        delete(pipeline_)
+        create(pipeline_, to_streamsets)
+        pipeline.repository.save(pipeline_)
+        if offset:
+            set_pipeline_offset(pipeline_, offset)
+        if should_start:
+            start(pipeline_)
 
     @staticmethod
     def _get_streamsets_pipelines() -> dict:
@@ -369,7 +385,9 @@ class StreamsetsBalancer:
                 sp[streamsets_.id] = []
         return sp
 
-    def _is_balanced(self) -> bool:
+    def is_balanced(self) -> bool:
+        if len(self.streamsets_pipelines.keys()) < 2:
+            return True
         max_ = 0
         min_ = 0
         for _, pipelines_ in self.streamsets_pipelines.items():
@@ -379,31 +397,10 @@ class StreamsetsBalancer:
             elif len_ < min_ or min_ == 0:
                 min_ = len_
         # streamsets are balanced if the difference in num of their pipelines is 0 or 1
-        return max_ - min_ < 2 or len(self.streamsets_pipelines.keys()) < 2
+        return max_ - min_ < 2
 
-    def move_pipeline(self, from_streamsets_id: int):
-        pipeline_ = self.streamsets_pipelines[from_streamsets_id].pop()
-        logger.info(f'Moving `{pipeline_.name}` from `{pipeline_.streamsets.url}`')
-        offset = get_pipeline_offset(pipeline_)
-        should_start = pipeline_.status in [Pipeline.STATUS_STARTING, Pipeline.STATUS_RUNNING]
-
-        delete(pipeline_)
-        create(pipeline_)
-        pipeline.repository.save(pipeline_)
-        post_pipeline_offset(pipeline_, offset)
-        if should_start:
-            start(pipeline_)
-
-        self.streamsets_pipelines[pipeline_.streamsets_id].append(pipeline_)
-        logger.info(f'Moved `{pipeline_.name}` to `{pipeline_.streamsets.url}`')
-
-    def _get_busiest_streamsets(self) -> int:
-        max_ = 0
-        key = None
-        for streamsets_id, pipelines_ in self.streamsets_pipelines.items():
-            if len(pipelines_) > max_:
-                max_ = len(pipelines_)
-                key = streamsets_id
+    def _get_busiest_streamsets_id(self) -> int:
+        key, _ = max(self.streamsets_pipelines.items(), key=lambda x: len(x))
         return key
 
 

@@ -75,5 +75,5 @@ def _build(
 
 
 def delete():
-    pipeline.manager.delete_monitoring_pipelines()
+    pipeline.manager.delete_all_monitoring_pipelines()
     destination.repository.delete()

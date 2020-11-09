@@ -2,7 +2,6 @@ import json
 import requests
 import time
 import urllib.parse
-import click
 
 from sqlalchemy import Column, Integer, String
 from agent.modules.db import Entity
@@ -32,9 +31,15 @@ def endpoint(func):
                 try:
                     response = res.json()
                     logger.exception(response['RemoteException'])
-                    raise StreamSetsApiClientException(response['RemoteException']['message'])
+                    if res.status_code == 401:
+                        raise UnauthorizedException('Unauthorized')
+                    else:
+                        raise ApiClientException(
+                            response['RemoteException']['message'],
+                            response['RemoteException']['exception'],
+                        )
                 except json.decoder.JSONDecodeError:
-                    raise StreamSetsApiClientException(res.text)
+                    raise ApiClientException(res.text)
             raise
 
     return wrapper
@@ -188,7 +193,7 @@ class StreamSetsApiClient:
         for i in range(1, tries + 1):
             response = self.get_preview_status(pipeline_id, preview_id)
             if response['status'] == 'TIMED_OUT':
-                raise StreamSetsApiClientException(f"No data. Connection timed out")
+                raise ApiClientException(f"No data. Connection timed out")
 
             if response['status'] not in ['VALIDATING', 'CREATED', 'RUNNING', 'STARTING', 'FINISHING', 'CANCELLING',
                                           'TIMING_OUT']:
@@ -196,7 +201,7 @@ class StreamSetsApiClient:
 
             delay = initial_delay ** i
             if i == tries:
-                raise StreamSetsApiClientException(f"No data")
+                raise ApiClientException(f"No data")
             print(f"Waiting for data. Check again after {delay} seconds...")
             time.sleep(delay)
 
@@ -240,8 +245,16 @@ class StreamSetsApiClient:
             time.sleep(delay)
 
 
-class StreamSetsApiClientException(click.ClickException):
-    pass
+class ApiClientException(Exception):
+    def __init__(self, message: str, exception_type: str = ''):
+        self.exception_type = exception_type
+        self.message = message
+
+
+class UnauthorizedException(Exception):
+    def __init__(self, message: str):
+        self.message = message
+        self.exception_type = ''
 
 
 class PipelineFreezeException(Exception):

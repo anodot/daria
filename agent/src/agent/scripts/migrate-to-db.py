@@ -1,17 +1,12 @@
 import argparse
 import json
-import logging
 import os
-import sys
 
 from agent.modules import logger, db
 from agent import source, pipeline, destination
 from agent.modules.constants import MONITORING_SOURCE_NAME
 
-logger_ = logger.get_logger('scripts.migrate-to-db.run')
-handler = logging.StreamHandler(sys.stdout)
-handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
-logger_.addHandler(handler)
+logger_ = logger.get_logger('scripts.migrate-to-db.run', stdout=True)
 
 
 def run(data_dir):

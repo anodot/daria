@@ -34,8 +34,13 @@ def agent(version):
 
 def agent_entry_point():
     try:
-        agent()
+        agent(standalone_mode=False)
         db.session().commit()
+    except click.exceptions.Abort:
+        click.echo('Aborted!\n')
+        return
+    except click.ClickException as e:
+        click.secho(str(e), err=True, fg='red')
     except Exception:
         db.session().rollback()
         raise

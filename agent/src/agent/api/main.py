@@ -18,19 +18,16 @@ app.register_blueprint(source.sources)
 app.register_blueprint(pipeline.pipelines)
 app.register_blueprint(scripts.scripts)
 app.config['WTF_CSRF_ENABLED'] = False
-app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = True
+app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = False
 
 
 @app.teardown_request
 def teardown_request_func(exception):
     try:
         if exception:
-            logger.info('Api exception rollback')
             db.session().rollback()
         else:
-            logger.info('Api ok commit')
             db.session().commit()
-        logger.info('Api close session')
         db.close_session()
     except Exception:
         logger.error(traceback.format_exc())
