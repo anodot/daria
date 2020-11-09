@@ -265,7 +265,6 @@ def _prompt_edit(advanced, pipeline_id):
         pipeline_builder = pipeline.manager.PipelineBuilder(pipeline.repository.get_by_name(pipeline_id))
         pipeline_builder.prompt(pipeline_builder.pipeline.to_dict(), advanced=advanced)
         streamsets.manager.update(pipeline_builder.pipeline)
-        # todo save here?
         pipeline.repository.save(pipeline_builder.pipeline)
 
         click.secho('Updated pipeline {}'.format(pipeline_id), fg='green')

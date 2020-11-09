@@ -306,7 +306,7 @@ def _update_stage_config(source_: Source, stage):
 
 
 def build_test_pipeline(source_: Source) -> TestPipeline:
-    # creating a new source because in another case it will mess with the db session
+    # creating a new source because otherwise it will mess with the db session
     test_source = Source(source_.name, source_.type, source_.config)
     return TestPipeline(_get_test_pipeline_name(test_source), test_source, destination.repository.get())
 
