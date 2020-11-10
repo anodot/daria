@@ -150,6 +150,7 @@ class Pipeline(Entity):
 
     @property
     def values(self) -> list:
+        # todo fix circular imports and return source.TYPE_INFLUX
         if self.source.type == 'influx':
             value = self.config.get('value', {})
             return value['values'] if 'values' in value else []
@@ -161,6 +162,7 @@ class Pipeline(Entity):
 
     @property
     def target_types(self) -> list:
+        # todo fix circular imports and return source.TYPE_INFLUX
         if self.source.type == 'influx':
             return [self.config['target_type']] * len(self.values)
         return list(self.config['values'].values())

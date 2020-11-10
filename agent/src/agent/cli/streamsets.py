@@ -1,3 +1,5 @@
+import traceback
+
 import click
 import requests
 
@@ -61,7 +63,7 @@ def balance():
     if len(streamsets_) == 1:
         logger.info(f'You have only one streamsets instance, can\'t balance')
         return
-    elif len(streamsets_) == 1:
+    elif len(streamsets_) == 0:
         logger.info(f'You don\'t have any streamsets instances, can\'t balance')
         return
     streamsets.manager.StreamsetsBalancer().balance()
@@ -83,11 +85,14 @@ def _prompt_url(default=None) -> str:
     url = click.prompt('Enter streamsets url', type=click.STRING, default=default)
     if not validator.is_valid_url(url):
         raise click.ClickException('Wrong url format, please specify protocol and domain name')
-    res = requests.get(url)
     try:
+        res = requests.get(url)
         res.raise_for_status()
     except requests.exceptions.HTTPError:
         raise click.ClickException(f'Provided url returned {res.status_code} status code')
+    except Exception as e:
+        logger.debug(traceback.format_exc())
+        raise click.ClickException(f'ERROR: {str(e)}')
     return url
 
 
