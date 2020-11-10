@@ -1,13 +1,22 @@
+import os
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
+from agent.modules import constants
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
+
+# overwrite user, pass and db host in the alembic.ini
+section = config.config_ini_section
+config.set_section_option(section, "DB_USER", constants.AGENT_DB_USER)
+config.set_section_option(section, "DB_PASS", constants.AGENT_DB_PASSWORD)
+config.set_section_option(section, "DB_HOST", constants.AGENT_DB_HOST)
+config.set_section_option(section, "DB_NAME", constants.AGENT_DB)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
