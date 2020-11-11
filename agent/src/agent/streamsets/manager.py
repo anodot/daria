@@ -418,16 +418,9 @@ class StreamsetsBalancer:
     def is_balanced(self) -> bool:
         if len(self.streamsets_pipelines.keys()) < 2:
             return True
-        max_ = 0
-        min_ = 0
-        for _, pipelines_ in self.streamsets_pipelines.items():
-            len_ = len(pipelines_)
-            if len_ > max_:
-                max_ = len_
-            elif len_ < min_ or min_ == 0:
-                min_ = len_
         # streamsets are balanced if the difference in num of their pipelines is 0 or 1
-        return max_ - min_ < 2
+        lengths = [len(pipelines_) for pipelines_ in self.streamsets_pipelines.values()]
+        return max(lengths) - min(lengths) < 2
 
     def _get_busiest_streamsets_id(self) -> int:
         key, _ = max(self.streamsets_pipelines.items(), key=lambda x: len(x))
