@@ -26,7 +26,7 @@ jobs:
     - name: Test
       run: make test-all
 
-    - if: !contains(github.ref, 'beta')
+    - if: ${{ !contains(github.ref, 'beta') }}
       name: Tag latest
       run: docker image tag daria_agent:latest anodot/daria:latest && docker image tag daria_dc:latest anodot/streamsets:latest
 
