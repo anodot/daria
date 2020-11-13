@@ -27,7 +27,7 @@ class DefaultHelp(click.Group):
 @click.option('-v', '--version', is_flag=True, default=False)
 def agent(version):
     if version:
-        click.echo('Daria Agent version: ' + __version__)
+        click.echo('Daria Agent version ' + __version__)
         click.echo('Build Time (UTC): ' + __build_time__)
         click.echo('Git commit: ' + __git_sha1__)
 

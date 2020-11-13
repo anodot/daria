@@ -52,11 +52,13 @@ class StreamSets(Entity):
     url = Column(String)
     username = Column(String)
     password = Column(String)
+    agent_external_url = Column(String)
 
-    def __init__(self, url, username, password):
+    def __init__(self, url: str, username: str, password: str, agent_external_url: str):
         self.url = url
         self.username = username
         self.password = password
+        self.agent_external_url = agent_external_url
 
 
 class StreamSetsApiClient:

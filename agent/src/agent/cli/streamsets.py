@@ -1,5 +1,4 @@
 import traceback
-
 import click
 import requests
 
@@ -30,7 +29,7 @@ def list_():
 @click.command()
 def add():
     streamsets.manager.create_streamsets(
-        _prompt_streamsets(StreamSets('', '', ''))
+        _prompt_streamsets(StreamSets('', '', '', ''))
     )
 
 
@@ -77,14 +76,17 @@ def _prompt_streamsets(streamsets_: StreamSets) -> StreamSets:
         streamsets.validator.validate(streamsets_)
     except streamsets.validator.ValidationException as e:
         raise click.ClickException(str(e))
+    streamsets_.agent_external_url = _prompt_agent_external_url()
     return streamsets_
 
 
 @infinite_retry
 def _prompt_url(default=None) -> str:
     url = click.prompt('Enter streamsets url', type=click.STRING, default=default)
-    if not validator.is_valid_url(url):
-        raise click.ClickException('Wrong url format, please specify protocol and domain name')
+    try:
+        validator.validate_url_format_with_port(url)
+    except validator.ValidationException as e:
+        raise click.ClickException(str(e))
     try:
         res = requests.get(url)
         res.raise_for_status()
@@ -93,6 +95,17 @@ def _prompt_url(default=None) -> str:
     except Exception as e:
         logger.debug(traceback.format_exc())
         raise click.ClickException(f'ERROR: {str(e)}')
+    return url
+
+
+@infinite_retry
+def _prompt_agent_external_url() -> str:
+    url = click.prompt('Agent external URL', constants.AGENT_DEFAULT_URL)
+    try:
+        validator.validate_url_format(url)
+        streamsets.validator.validate_agent_external_url(url)
+    except (validator.ValidationException, streamsets.validator.ValidationException) as e:
+        raise click.ClickException(str(e))
     return url
 
 

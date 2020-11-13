@@ -3,7 +3,6 @@ import os
 
 from agent import source
 from agent.modules.logger import get_logger
-from agent.modules.constants import AGENT_URL
 from agent.modules.constants import ROOT_DIR
 from agent.pipeline import Pipeline
 
@@ -96,7 +95,7 @@ class BaseConfigHandler:
             'TOKEN': self.pipeline.destination.token,
             'PROTOCOL': self.pipeline.destination.PROTOCOL_20,
             'ANODOT_BASE_URL': self.pipeline.destination.url,
-            'AGENT_URL': AGENT_URL,
+            'AGENT_URL': self.pipeline.streamsets.agent_external_url,
         }
 
     def _override_pipeline_config(self):

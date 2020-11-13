@@ -15,9 +15,9 @@ def validate_configs(configs: list):
         'items': {
             'type': 'object',
             'properties': {
-                'source': {'url': 'string', 'username': 'string', 'password': 'string'},
+                'source': {'url': 'string', 'username': 'string', 'password': 'string', 'agent_external_url': 'string'},
             },
-            'required': ['url']
+            'required': ['url', 'agent_external_url']
         }
     }
     jsonschema.validate(configs, json_schema)
@@ -31,7 +31,7 @@ def validate_configs_for_edit(configs: list):
             'properties': {
                 'source': {'url': 'string', 'username': 'string', 'password': 'string'},
             },
-            'required': ['url', 'username', 'password']
+            'required': ['username', 'password', 'agent_external_url']
         }
     }
     jsonschema.validate(configs, json_schema)
@@ -68,9 +68,11 @@ def add():
             config['url'],
             config.get('username', constants.DEFAULT_STREAMSETS_USERNAME),
             config.get('password', constants.DEFAULT_STREAMSETS_PASSWORD),
+            config['agent_external_url'],
         )
         try:
             stream_sets.validator.validate(streamsets_)
+            stream_sets.validator.validate_agent_external_url(streamsets_.agent_external_url)
         except stream_sets.validator.ValidationException as e:
             return jsonify(str(e)), 400
         stream_sets.manager.create_streamsets(streamsets_)
@@ -91,8 +93,10 @@ def edit():
             return jsonify(str(e)), 400
         streamsets_.username = config['username']
         streamsets_.password = config['password']
+        streamsets_.agent_external_url = config['agent_external_url']
         try:
             stream_sets.validator.validate(streamsets_)
+            stream_sets.validator.validate_agent_external_url(streamsets_.agent_external_url)
         except stream_sets.validator.ValidationException as e:
             return jsonify(str(e)), 400
         stream_sets.repository.save(streamsets_)

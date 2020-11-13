@@ -87,8 +87,10 @@ def _prompt_proxy_password() -> str:
 def _prompt_url(dest: HttpDestination):
     url = click.prompt('Destination url', type=click.STRING, default=dest.url)
     try:
-        if not validator.is_valid_url(url):
-            raise click.ClickException('Wrong url format, please specify the protocol and domain name')
+        try:
+            validator.validate_url_format(url)
+        except validator.ValidationException as e:
+            raise click.ClickException(str(e))
         try:
             agent.destination.validator.is_valid_destination_url(url, dest.proxy)
         except agent.destination.validator.ValidationException as e:

@@ -38,4 +38,4 @@ def teardown_request_func(exception):
 
 @app.route('/version', methods=['GET'])
 def version():
-    return jsonify('Daria Agent version: ' + __version__)
+    return jsonify('Daria Agent version ' + __version__)
