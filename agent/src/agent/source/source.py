@@ -1,5 +1,4 @@
 from sqlalchemy.dialects.postgresql import TIMESTAMP
-from agent import source
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy import Column, Integer, String, JSON, func
@@ -53,9 +52,9 @@ class ElasticSource(Source):
     def set_config(self, config):
         super().set_config(config)
         if 'query_interval_sec' in self.config:
-            self.config[source.ElasticSource.CONFIG_QUERY_INTERVAL] = '${' + str(
+            self.config[ElasticSource.CONFIG_QUERY_INTERVAL] = '${' + str(
                 self.config['query_interval_sec']) + ' * SECONDS}'
-        self.config[source.ElasticSource.CONFIG_IS_INCREMENTAL] = True
+        self.config[ElasticSource.CONFIG_IS_INCREMENTAL] = True
 
 
 class JDBCSource(Source):
@@ -93,11 +92,11 @@ class MongoSource(Source):
 
     def set_config(self, config):
         super().set_config(config)
-        if self.config[source.MongoSource.CONFIG_USERNAME] != '':
-            self.config[source.MongoSource.CONFIG_AUTH_TYPE] = self.AUTH_TYPE_USER_PASS
+        if self.config[MongoSource.CONFIG_USERNAME] != '':
+            self.config[MongoSource.CONFIG_AUTH_TYPE] = self.AUTH_TYPE_USER_PASS
         else:
-            self.config[source.MongoSource.CONFIG_AUTH_TYPE] = self.AUTH_TYPE_NONE
-            del self.config[source.MongoSource.CONFIG_USERNAME]
+            self.config[MongoSource.CONFIG_AUTH_TYPE] = self.AUTH_TYPE_NONE
+            del self.config[MongoSource.CONFIG_USERNAME]
 
 
 class SchemalessSource(Source):
