@@ -14,13 +14,6 @@ class TestDestination:
         print(json.loads(result.data))
         assert result.status_code == 400
 
-    def test_fail_create2(self, api_client):
-        result = api_client.post(
-            '/streamsets', json=[{'url': self.URL, 'agent_external_url': 'abrakadabra'}]
-        )
-        print(json.loads(result.data))
-        assert result.status_code == 400
-
     def test_wrong_credentials(self, api_client):
         result = api_client.post(
             '/streamsets',
