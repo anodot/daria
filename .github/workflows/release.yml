@@ -21,7 +21,7 @@ jobs:
       run: make build-all
 
     - name: Check version
-      run: VERSION=${GITHUB_REF/refs\/tags\//} && ver=$(docker exec -i anodot-agent agent -v | grep version) && if [ ${ver#*:} != $VERSION ]; then exit 1; fi
+      run: VERSION=${GITHUB_REF/refs\/tags\//} && ver=$(docker exec -i anodot-agent agent -v | grep version | cut -d' ' -f4) && if [ ${ver} != $VERSION ]; then exit 1; fi
 
     - name: Test
       run: make test-all
