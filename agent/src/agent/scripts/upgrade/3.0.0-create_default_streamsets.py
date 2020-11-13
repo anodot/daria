@@ -12,6 +12,7 @@ streamsets.repository.save(StreamSets(
     constants.DEFAULT_STREAMSETS_URL,
     constants.DEFAULT_STREAMSETS_USERNAME,
     constants.DEFAULT_STREAMSETS_PASSWORD,
+    constants.AGENT_DEFAULT_URL,
 ))
 logger.info(f'Created streamsets `{constants.DEFAULT_STREAMSETS_URL}`')
 

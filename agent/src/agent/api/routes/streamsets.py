@@ -72,7 +72,6 @@ def add():
         )
         try:
             stream_sets.validator.validate(streamsets_)
-            stream_sets.validator.validate_agent_external_url(streamsets_.agent_external_url)
         except stream_sets.validator.ValidationException as e:
             return jsonify(str(e)), 400
         stream_sets.manager.create_streamsets(streamsets_)
@@ -96,7 +95,6 @@ def edit():
         streamsets_.agent_external_url = config['agent_external_url']
         try:
             stream_sets.validator.validate(streamsets_)
-            stream_sets.validator.validate_agent_external_url(streamsets_.agent_external_url)
         except stream_sets.validator.ValidationException as e:
             return jsonify(str(e)), 400
         stream_sets.repository.save(streamsets_)

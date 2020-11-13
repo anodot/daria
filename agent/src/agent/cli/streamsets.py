@@ -103,7 +103,6 @@ def _prompt_agent_external_url() -> str:
     url = click.prompt('Agent external URL', constants.AGENT_DEFAULT_URL)
     try:
         validator.validate_url_format(url)
-        streamsets.validator.validate_agent_external_url(url)
     except (validator.ValidationException, streamsets.validator.ValidationException) as e:
         raise click.ClickException(str(e))
     return url
