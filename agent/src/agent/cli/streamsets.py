@@ -31,6 +31,7 @@ def add():
     streamsets.manager.create_streamsets(
         _prompt_streamsets(StreamSets('', '', '', ''))
     )
+    click.secho('StreamSets instance added to the agent', fg='green')
 
 
 @click.command()
@@ -42,6 +43,7 @@ def edit(url):
         raise click.ClickException(str(e))
     streamsets_ = _prompt_streamsets(s)
     streamsets.repository.save(streamsets_)
+    click.secho('Changes saved', fg='green')
 
 
 @click.command()
@@ -53,7 +55,7 @@ def delete(url):
         )
     except (streamsets.repository.StreamsetsNotExistsException, streamsets.manager.StreamsetsException) as e:
         raise click.ClickException(str(e))
-    click.echo(f'Streamsets `{url}` is successfully deleted from the agent')
+    click.secho(f'Streamsets `{url}` is deleted from the agent', fg='green')
 
 
 @click.command()
@@ -66,6 +68,7 @@ def balance():
         logger.info(f'You don\'t have any streamsets instances, can\'t balance')
         return
     streamsets.manager.StreamsetsBalancer().balance()
+    click.secho('Done', fg='green')
 
 
 def _prompt_streamsets(streamsets_: StreamSets) -> StreamSets:
@@ -76,7 +79,7 @@ def _prompt_streamsets(streamsets_: StreamSets) -> StreamSets:
         streamsets.validator.validate(streamsets_)
     except streamsets.validator.ValidationException as e:
         raise click.ClickException(str(e))
-    streamsets_.agent_external_url = _prompt_agent_external_url()
+    streamsets_.agent_external_url = _prompt_agent_external_url(streamsets_)
     return streamsets_
 
 
@@ -99,8 +102,9 @@ def _prompt_url(default=None) -> str:
 
 
 @infinite_retry
-def _prompt_agent_external_url() -> str:
-    url = click.prompt('Agent external URL', constants.AGENT_DEFAULT_URL)
+def _prompt_agent_external_url(streamsets_: StreamSets) -> str:
+    default = streamsets_.agent_external_url if streamsets_.agent_external_url else constants.AGENT_DEFAULT_URL
+    url = click.prompt('Agent external URL', default)
     try:
         validator.validate_url_format(url)
     except (validator.ValidationException, streamsets.validator.ValidationException) as e:

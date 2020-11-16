@@ -8,7 +8,7 @@ from flask import jsonify, Blueprint, request
 from agent.api import routes
 from agent import pipeline, source, streamsets
 from agent.modules import proxy, logger
-from agent.pipeline import PipelineOffset
+from agent.pipeline import PipelineOffset, Pipeline
 
 pipelines = Blueprint('pipelines', __name__)
 logger = logger.get_logger(__name__)
@@ -145,17 +145,17 @@ def pipeline_status_change(pipeline_id: str):
     pipeline_ = pipeline.repository.get_by_name(pipeline_id)
     pipeline_.status = data['pipeline_status']
     pipeline.repository.save(pipeline_)
-    if data['pipeline_status'] in pipeline_.error_statuses:
-        _send_error_status_to_anodot(data, pipeline_)
+    if pipeline_.status in pipeline_.error_statuses:
+        _send_error_status_to_anodot(pipeline_)
     return ''
 
 
-def _send_error_status_to_anodot(data, pipeline_):
+def _send_error_status_to_anodot(pipeline_: Pipeline):
     metric = [{
         "properties": {
             "what": "pipeline_error_status_count",
-            "pipeline_name": data["pipeline_name"],
-            "pipeline_status": data['pipeline_status'],
+            "pipeline_name": pipeline_.name,
+            "pipeline_status": pipeline_.status,
             "target_type": "counter",
         },
         "tags": pipeline_.meta_tags(),

@@ -6,6 +6,7 @@ import agent.pipeline.config.handlers as config_handlers
 from datetime import datetime
 from typing import Dict, List, Optional
 from agent import pipeline, streamsets, destination
+from agent.modules import db
 from agent.modules.constants import ENV_PROD
 from agent.modules.logger import get_logger
 from agent.streamsets import StreamSetsApiClient, StreamSets
@@ -394,6 +395,7 @@ class StreamsetsBalancer:
         delete(pipeline_)
         create(pipeline_, to_streamsets)
         pipeline.repository.save(pipeline_)
+        db.session().commit()
         if offset:
             set_pipeline_offset(pipeline_, offset)
         if should_start:
