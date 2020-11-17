@@ -7,7 +7,6 @@ from datetime import datetime
 from typing import Dict, List, Optional
 from agent import pipeline, streamsets, destination
 from agent.modules import db
-from agent.modules.constants import ENV_PROD
 from agent.modules.logger import get_logger
 from agent.streamsets import StreamSetsApiClient, StreamSets
 from agent.pipeline import Pipeline
@@ -317,14 +316,13 @@ def start(pipeline_: Pipeline):
     client.start_pipeline(pipeline_.name)
     client.wait_for_status(pipeline_.name, Pipeline.STATUS_RUNNING)
     logger.info(f'{pipeline_.name} pipeline is running')
-    if ENV_PROD:
-        try:
-            if _wait_for_sending_data(pipeline_.name):
-                logger.info(f'{pipeline_.name} pipeline is sending data')
-            else:
-                logger.info(f'{pipeline_.name} pipeline did not send any data')
-        except streamsets.PipelineException as e:
-            logger.error(str(e))
+    try:
+        if _wait_for_sending_data(pipeline_.name):
+            logger.info(f'{pipeline_.name} pipeline is sending data')
+        else:
+            logger.info(f'{pipeline_.name} pipeline did not send any data')
+    except streamsets.PipelineException as e:
+        logger.error(str(e))
 
 
 def _create_pipeline(pipeline_: Pipeline):
