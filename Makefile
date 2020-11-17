@@ -1,4 +1,4 @@
-NAP = 20
+NAP = 25
 SLEEP = 60
 THREADS = 6
 DOCKER_COMPOSE_DEV_FILE = docker-compose-dev.yml

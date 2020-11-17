@@ -39,5 +39,11 @@ def get_all_names() -> List[str]:
     return res
 
 
+def exists(url: str) -> bool:
+    return bool(session().query(
+        session().query(StreamSets).filter(StreamSets.url == url).exists()
+    ).scalar())
+
+
 class StreamsetsNotExistsException(Exception):
     pass

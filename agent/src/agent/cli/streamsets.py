@@ -86,6 +86,8 @@ def _prompt_streamsets(streamsets_: StreamSets) -> StreamSets:
 @infinite_retry
 def _prompt_url(default=None) -> str:
     url = click.prompt('Enter streamsets url', type=click.STRING, default=default)
+    if streamsets.repository.exists(url):
+        raise click.ClickException(f'StreamSets with URL `{url}` already exists')
     try:
         validator.validate_url_format_with_port(url)
     except validator.ValidationException as e:

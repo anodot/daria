@@ -259,5 +259,9 @@ class UnauthorizedException(Exception):
         self.exception_type = ''
 
 
+class PipelineException(Exception):
+    pass
+
+
 class PipelineFreezeException(Exception):
     pass
