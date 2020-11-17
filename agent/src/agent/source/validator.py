@@ -6,8 +6,7 @@ import sqlalchemy
 
 from datetime import datetime
 from urllib.parse import urlparse, urlunparse
-from agent import source, pipeline
-from agent.modules.streamsets_api_client import api_client
+from agent import source, pipeline, streamsets
 from agent.modules.tools import if_validation_enabled
 from agent.modules import validator
 
@@ -36,18 +35,18 @@ class Validator:
 
     @if_validation_enabled
     def validate_connection(self):
-        test_pipeline_name = pipeline.manager.create_test_pipeline(pipeline.manager.build_test_pipeline(self.source))
+        test_pipeline = pipeline.manager.build_test_pipeline(self.source)
         try:
-            validate_status = api_client.validate(test_pipeline_name)
-            api_client.wait_for_preview(test_pipeline_name, validate_status['previewerId'])
+            streamsets.manager.create(test_pipeline)
+            validate_status = streamsets.manager.validate(test_pipeline)
+            streamsets.manager.wait_for_preview(test_pipeline, validate_status['previewerId'])
         finally:
-            api_client.delete_pipeline(test_pipeline_name)
+            streamsets.manager.delete(test_pipeline)
         return True
 
 
 def validate(source_: source.Source):
-    validator = get_validator(source_)
-    validator.validate()
+    get_validator(source_).validate()
 
 
 def get_validator(source_: source.Source) -> Validator:
@@ -78,10 +77,10 @@ class InfluxValidator(Validator):
 
     @if_validation_enabled
     def validate_connection(self):
-        if not validator.is_valid_url(self.source.config['host']):
-            raise ValidationException(
-                f"{self.source.config['host']} - wrong url format. Correct format is `scheme://host:port`"
-            )
+        try:
+            validator.validate_url_format_with_port(self.source.config['host'])
+        except validator.ValidationException as e:
+            raise ValidationException(str(e))
         client = source.db.get_influx_client(self.source.config['host'])
         client.ping()
 
@@ -146,8 +145,10 @@ class JDBCValidator(Validator):
 
     @if_validation_enabled
     def validate_connection_string(self):
-        if not validator.is_valid_url(self.source.config[source.JDBCSource.CONFIG_CONNECTION_STRING]):
-            raise ValidationException('Wrong url format. Correct format is `scheme://host:port`')
+        try:
+            validator.validate_url_format_with_port(self.source.config[source.JDBCSource.CONFIG_CONNECTION_STRING])
+        except validator.ValidationException as e:
+            raise ValidationException(str(e))
         result = urlparse(self.source.config[source.JDBCSource.CONFIG_CONNECTION_STRING])
         if self.source.type == 'mysql' and result.scheme != 'mysql':
             raise ValidationException('Wrong url scheme. Use `mysql`')
@@ -210,8 +211,10 @@ class SageValidator(Validator):
 
     @if_validation_enabled
     def validate_url(self):
-        if not validator.is_valid_url(self.source.config[source.SageSource.URL]):
-            raise ValidationException('Wrong url format. Correct format is `scheme://host:port`')
+        try:
+            validator.validate_url_format(self.source.config[source.SageSource.URL])
+        except validator.ValidationException as e:
+            raise ValidationException(str(e))
         # TODO: check simple request
 
     @if_validation_enabled

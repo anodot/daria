@@ -3,7 +3,7 @@ import os
 
 from setuptools import setup, find_packages
 
-app_version = '2.3.1'
+app_version = '3.0.0-beta-3'
 
 
 def build_time():
@@ -22,7 +22,7 @@ setup(
     include_package_data=True,
     entry_points='''
         [console_scripts]
-        agent=agent.cli:agent
+        agent=agent.cli:agent_entry_point
     ''',
     zip_safe=False,
     version=app_version

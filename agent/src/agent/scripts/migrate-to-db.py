@@ -1,20 +1,20 @@
 import argparse
 import json
-import logging
 import os
-import sys
 
-from agent.modules import logger
-from agent import source, pipeline, destination
+from agent.modules import logger, db
+from agent import source, pipeline, destination, streamsets
 from agent.modules.constants import MONITORING_SOURCE_NAME
 
-logger_ = logger.get_logger('scripts.migrate-to-db.run')
-handler = logging.StreamHandler(sys.stdout)
-handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
-logger_.addHandler(handler)
+logger_ = logger.get_logger('scripts.migrate-to-db.run', stdout=True)
 
 
 def run(data_dir):
+    if len(streamsets.repository.get_all()) == 0:
+        print(
+            'You haven\'t created a streamsets instance in the database, please run `agent streamsets add` first'
+        )
+        exit(1)
     migrate_destination(data_dir)
     migrate_sources(data_dir)
     migrate_pipelines(data_dir)
@@ -56,11 +56,16 @@ def migrate_sources(data_dir):
                 source_ = source.Source(data['name'], data['type'], data['config'])
                 source.repository.save(source_)
                 logger_.info(f'Source {data["name"]} successfully migrated')
-    except Exception:
-        logger_.exception('Uncaught exception')
+    except Exception as e:
+        logger_.exception(f'Uncaught exception: {str(e)}')
 
 
 def migrate_pipelines(data_dir):
+    streamsets_ = streamsets.repository.get_all()
+    if len(streamsets_) > 1:
+        print('You have more than one streamsets instance, currently it\'s possible to migrate only to a single streamsets. You can add more streamsets after migration and then run `agent streamsets balance`')
+        exit(1)
+    streamsets_ = streamsets_[0]
     try:
         pipeline_dir = os.path.join(data_dir, 'pipelines')
         for filename in os.listdir(pipeline_dir):
@@ -73,6 +78,7 @@ def migrate_pipelines(data_dir):
                     logger_.info(f'Pipeline {pipeline_id} already exists, skipping')
                     continue
                 pipeline_ = pipeline.manager.create_object(pipeline_id, data['source']['name'])
+                pipeline_.set_streamsets(streamsets_)
                 data.pop('source')
                 pipeline_.config = data
                 # add elastic/sage queries to the config
@@ -89,3 +95,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Migrate destination, sources and pipelines from files to postgres')
     parser.add_argument('--data_dir', default='/usr/src/app/data', help='Directory where destination, sources and pipelines stored')
     run(parser.parse_args().data_dir)
+    # todo this is temporary
+    db.session().commit()
+    db.session().close()

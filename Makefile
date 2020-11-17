@@ -13,7 +13,7 @@ all: build-all test-all
 
 build-all: get-streamsets-libs build-docker sleep alembic-migrate setup-all
 
-test-all: run-unit-tests test-flask-app test-destination test-antomation test-api test-api-scripts test-input test-send-to-bc test-pipelines
+test-all: run-unit-tests test-flask-app test-streamsets test-destination test-antomation test-api test-api-scripts test-input test-streamsets-2 test-send-to-bc test-pipelines
 
 ##-------------
 ## DEVELOPMENT
@@ -92,6 +92,12 @@ test-send-to-bc:
 test-destination:
 	$(DOCKER_TEST) tests/test_destination.py
 
+test-streamsets:
+	$(DOCKER_TEST) tests/test_streamsets.py
+
+test-streamsets-2:
+	$(DOCKER_TEST) tests/test_streamsets_2.py
+
 test-input:
 	$(DOCKER_TEST_PARALLEL) tests/test_input/
 
@@ -100,6 +106,7 @@ test-pipelines:
 
 test-api:
 	$(DOCKER_TEST) tests/api/test_destination.py
+	$(DOCKER_TEST) tests/api/test_streamsets.py
 	$(DOCKER_TEST) tests/api/source
 	$(DOCKER_TEST) tests/api/pipeline
 
@@ -132,11 +139,11 @@ run-dev:
 	$(DOCKER_COMPOSE_DEV) up -d
 	docker exec -i anodot-agent python setup.py develop
 
-bootstrap: clean-docker-volumes run-base-services nap test-destination
+bootstrap: clean-docker-volumes run-base-services test-streamsets test-destination
 
 clean-docker-volumes:
 	rm -rf sdc-data
-	rm -rf data
+	rm -rf sdc-data2
 	$(DOCKER_COMPOSE_DEV) down -v
 
 run-base-services: _run-base-services nap alembic-migrate
@@ -150,6 +157,9 @@ build-base-services: clean-docker-volumes _build-base-services nap alembic-migra
 _build-base-services:
 	$(DOCKER_COMPOSE_DEV) up -d --build agent dc squid dummy_destination
 	docker exec -i anodot-agent python setup.py develop
+
+run-dc2:
+	$(DOCKER_COMPOSE_DEV) up -d dc2
 
 run-elastic:
 	$(DOCKER_COMPOSE_DEV) up -d es

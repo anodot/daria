@@ -207,7 +207,3 @@ class SourceException(Exception):
 
 class SourceNotExists(SourceException):
     pass
-
-
-class SourceConfigDeprecated(SourceException):
-    pass

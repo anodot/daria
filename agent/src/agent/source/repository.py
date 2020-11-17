@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from agent import source
 from agent.modules.db import session
 from agent.source import Source
@@ -13,7 +13,7 @@ def exists(source_name: str) -> bool:
 
 def save(source_: Source):
     session().add(source_)
-    session().commit()
+    session().flush()
 
 
 def delete(source_: Source):
@@ -22,7 +22,7 @@ def delete(source_: Source):
                 f"Can't delete. Source is used by {', '.join([p.name for p in source_.pipelines])} pipelines"
             )
     session().delete(source_)
-    session().commit()
+    session().flush()
 
 
 def delete_by_name(source_name: str):
@@ -67,9 +67,9 @@ def get_all() -> List[Source]:
     return session().query(Source).all()
 
 
+def get_last_edited(source_type: str) -> Optional[Source]:
+    return session().query(Source).filter(Source.type == source_type).order_by(Source.last_edited.desc()).first()
+
+
 class SourceNotExists(Exception):
-    pass
-
-
-class SourceConfigDeprecated(Exception):
     pass

@@ -1,9 +1,7 @@
 from abc import ABC, abstractmethod
-from agent import source, pipeline
+from agent import source, pipeline, streamsets
 from agent.modules import tools
-from agent.modules.streamsets_api_client import api_client
 from agent.modules.logger import get_logger
-
 
 logger = get_logger(__name__)
 
@@ -17,20 +15,21 @@ class Builder(ABC):
     def prompt(self, default_config, advanced=False) -> source.Source:
         pass
 
-    def get_preview_data(self, pipeline_: pipeline.Pipeline):
-        test_pipeline_name = pipeline.manager.create_test_pipeline(pipeline_)
+    @staticmethod
+    def _get_preview_data(test_pipeline: pipeline.Pipeline):
+        streamsets.manager.create(test_pipeline)
         try:
-            preview = api_client.create_preview(test_pipeline_name)
-            preview_data, errors = api_client.wait_for_preview(test_pipeline_name, preview['previewerId'])
+            preview = streamsets.manager.create_preview(test_pipeline)
+            preview_data, errors = streamsets.manager.wait_for_preview(test_pipeline, preview['previewerId'])
         except (Exception, KeyboardInterrupt) as e:
             logger.exception(str(e))
-            api_client.delete_pipeline(test_pipeline_name)
             raise
-        api_client.delete_pipeline(test_pipeline_name)
+        finally:
+            streamsets.manager.delete(test_pipeline)
         return preview_data, errors
 
-    def get_sample_records(self, pipeline_: pipeline.Pipeline):
-        preview_data, errors = self.get_preview_data(pipeline_)
+    def _get_sample_records(self, pipeline_: pipeline.Pipeline):
+        preview_data, errors = self._get_preview_data(pipeline_)
 
         if not preview_data:
             print('No preview data available')
@@ -46,7 +45,7 @@ class Builder(ABC):
 
     @tools.if_validation_enabled
     def print_sample_data(self, pipeline_: pipeline.Pipeline):
-        records, errors = self.get_sample_records(pipeline_)
+        records, errors = self._get_sample_records(pipeline_)
         if records:
             tools.print_dicts(records)
         print(*errors, sep='\n')

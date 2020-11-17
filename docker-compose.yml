@@ -17,9 +17,22 @@ services:
 #      SDC_JAVA_OPTS: "-Djava.security.auth.login.config=/kerberos/kafka-consumer_jaas.conf -Dsun.security.krb5.debug=true -Djava.security.krb5.conf=/etc/krb5.conf"
 #      SDC_CONF_PARSER_LIMIT: 2048576
       SDC_CONF_RUNNER_THREAD_POOL_SIZE: "2000"
-
 #    extra_hosts:
 #      - "daria-test2:10.0.0.28"
+
+#  creating second streamsets to run tests on multiple instances
+  dc2:
+    build: streamsets
+    ports:
+      - "18629:18630"
+    restart: on-failure
+    volumes:
+      - sdc-data2:/data
+      - ./certs:/home/certs
+      - ./test-datasets/test-directory-collector:/home/test-directory-collector
+    environment:
+      SDC_CONF_PRODUCTION_MAXBATCHSIZE: "50"
+      SDC_CONF_RUNNER_THREAD_POOL_SIZE: "2000"
 
   agent:
     build: agent
@@ -45,7 +58,6 @@ services:
       - db
     volumes:
       - ./agent/backup-data:/usr/src/app/backup-data
-      - agent-data:/usr/src/app/data
 #      - ./scripts:/usr/src/app/scripts
       - dummy-destination-data:/output
       - ./test-datasets:/home
@@ -193,5 +205,6 @@ services:
 
 volumes:
   sdc-data:
+  sdc-data2:
   agent-data:
   dummy-destination-data:

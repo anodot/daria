@@ -1,8 +1,6 @@
 from datetime import datetime
-
 from agent.cli import source as source_cli, pipeline as pipeline_cli
-from agent.modules.streamsets_api_client import api_client
-from agent import source
+from agent import source, streamsets
 
 
 class TestPostgreSQL:
@@ -29,11 +27,11 @@ class TestPostgreSQL:
         result = cli_runner.invoke(pipeline_cli.create, catch_exceptions=False,
                                    input=f'{source}\n{name}\nSELECT * FROM test WHERE {{TIMESTAMP_CONDITION}}\n86400\n{days_to_backfill}\n1\n{timestamp_name}\n{timestamp_type}\n\n\nclicks:gauge impressions:gauge\nadsize country\n\n\n\n')
         assert result.exit_code == 0
-        assert api_client.get_pipeline(name)
+        assert streamsets.manager.get_pipeline(name)
 
     def test_create_advanced(self, cli_runner, name, source):
         days_to_backfill = (datetime.now() - datetime(year=2017, month=12, day=10)).days + 1
         result = cli_runner.invoke(pipeline_cli.create, ['-a'], catch_exceptions=False,
                                    input=f'{source}\n{name}\nSELECT * FROM test WHERE {{TIMESTAMP_CONDITION}} AND country = \'USA\'\n86400\n{days_to_backfill}\n1\ntimestamp_unix\nunix\n\ny\ntest\nclicks:gauge impressions:gauge\nadsize country\nkey1:val1 key2:val2\n\n\n\n')
         assert result.exit_code == 0
-        assert api_client.get_pipeline(name)
+        assert streamsets.manager.get_pipeline(name)

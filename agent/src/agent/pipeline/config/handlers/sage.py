@@ -7,8 +7,6 @@ logger = get_logger(__name__)
 
 
 class SageConfigHandler(BaseConfigHandler):
-    PIPELINE_BASE_CONFIG_NAME = 'sage_http.json'
-
     stages_to_override = {
         'source': stages.sage_source.SageScript,
         'JavaScriptEvaluator_01': stages.js_convert_metrics_20.JSConvertMetrics,
@@ -18,9 +16,9 @@ class SageConfigHandler(BaseConfigHandler):
         'destination': stages.destination.Destination
     }
 
-    def override_stages(self):
+    def _override_stages(self):
         self.pipeline.config['timestamp'] = {
             'name': '@timestamp',
             'type': pipeline.TimestampType.UTC_STRING.value
         }
-        super().override_stages()
+        super()._override_stages()

@@ -44,4 +44,4 @@ class TestDirectory:
 
     def test_delete(self, api_client):
         api_client.delete('sources/directory')
-        assert api_client.get('/sources').data ==b'["monitoring"]\n'
+        assert api_client.get('/sources').data == b'["monitoring"]\n'

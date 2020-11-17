@@ -1,6 +1,5 @@
 from agent.cli import source as source_cli, pipeline as pipeline_cli
-from agent.modules.streamsets_api_client import api_client
-from agent import source
+from agent import source, streamsets
 
 
 class TestMongo:
@@ -35,7 +34,7 @@ class TestMongo:
         result = cli_runner.invoke(pipeline_cli.create, options, catch_exceptions=False,
                                    input=f"test_mongo\n{name}\n\n{value}\n{timestamp}\nver Country\nExchange optional_dim ad_type ADTYPE GEN\n{advanced_options}\n")
         assert result.exit_code == 0
-        assert api_client.get_pipeline(name)
+        assert streamsets.manager.get_pipeline(name)
 
     def test_edit(self, cli_runner, options, value):
         result = cli_runner.invoke(pipeline_cli.edit, options, catch_exceptions=False,

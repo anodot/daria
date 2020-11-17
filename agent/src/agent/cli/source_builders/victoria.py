@@ -25,8 +25,10 @@ class VictoriaSourceBuilder(Builder):
     def prompt_url(self, default_config):
         url = click.prompt('VictoriaMetrics API URL', type=click.STRING,
                            default=default_config.get(source.VictoriaMetricsSource.URL)).strip()
-        if not validator.is_valid_url(url):
-            raise click.ClickException('URL has invalid format, please specify both the hostname and protocol')
+        try:
+            validator.validate_url_format_with_port(url)
+        except validator.ValidationException as e:
+            raise click.ClickException(str(e))
         self.source.config[source.VictoriaMetricsSource.URL] = url
 
     def prompt_username(self, default_config):

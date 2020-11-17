@@ -6,8 +6,6 @@ logger = get_logger(__name__)
 
 
 class MongoConfigHandler(BaseConfigHandler):
-    PIPELINE_BASE_CONFIG_NAME = 'mongo_http.json'
-
     stages_to_override = {
         'source': stages.source.Source,
         'JavaScriptEvaluator_01': stages.js_convert_metrics_20.JSConvertMetrics,

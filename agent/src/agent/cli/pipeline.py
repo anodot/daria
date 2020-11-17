@@ -1,7 +1,7 @@
+import json
 import click
 
-from agent import pipeline, source
-from agent.modules.streamsets_api_client import api_client, StreamSetsApiClientException
+from agent import pipeline, source, streamsets
 from agent import destination
 from agent.modules.tools import infinite_retry
 from jsonschema import ValidationError
@@ -9,16 +9,15 @@ from texttable import Texttable
 
 
 def get_pipelines_ids_complete(ctx, args, incomplete):
-    return [p['pipelineId'] for p in api_client.get_pipelines() if incomplete in p['pipelineId']]
+    return [p.name for p in pipeline.repository.get_all() if incomplete in p.name]
 
 
 @click.command(name='list')
 def list_pipelines():
     pipelines = pipeline.repository.get_all()
-    statuses = api_client.get_pipelines_status()
-
-    table = _build_table(['Name', 'Type', 'Status'],
-                         [[p.name, p.source.type, statuses[p.name]['status']] for p in pipelines])
+    statuses = streamsets.manager.get_all_pipeline_statuses()
+    table = _build_table(['Name', 'Type', 'Status', 'Streamsets URL'],
+                         [[p.name, p.source.type, statuses[p.name]['status'], p.streamsets.url] for p in pipelines])
     click.echo(table.draw())
 
 
@@ -54,10 +53,9 @@ def start(pipeline_id, file):
 
     for pipeline_id in pipeline_ids:
         try:
-            p = pipeline.repository.get_by_name(pipeline_id)
             click.echo(f'Pipeline {pipeline_id} is starting...')
-            pipeline.manager.start(p)
-        except (StreamSetsApiClientException, pipeline.PipelineException) as e:
+            streamsets.manager.start(pipeline.repository.get_by_name(pipeline_id))
+        except (streamsets.ApiClientException, pipeline.PipelineException) as e:
             click.secho(str(e), err=True, fg='red')
             continue
 
@@ -73,9 +71,9 @@ def stop(pipeline_id, file):
 
     for pipeline_id in pipeline_ids:
         try:
-            pipeline.manager.stop_by_id(pipeline_id)
+            streamsets.manager.stop(pipeline_id)
             click.secho(f'Pipeline {pipeline_id} is stopped', fg='green')
-        except (StreamSetsApiClientException, pipeline.PipelineException) as e:
+        except (streamsets.ApiClientException, pipeline.PipelineException) as e:
             click.secho(str(e), err=True, fg='red')
             continue
 
@@ -85,9 +83,9 @@ def stop(pipeline_id, file):
 def force_stop(pipeline_id):
     try:
         click.echo('Force pipeline stopping...')
-        pipeline.manager.force_stop_pipeline(pipeline_id)
+        streamsets.manager.force_stop(pipeline_id)
         click.secho('Pipeline is stopped', fg='green')
-    except (StreamSetsApiClientException, pipeline.PipelineException) as e:
+    except (streamsets.ApiClientException, pipeline.PipelineException) as e:
         click.secho(str(e), err=True, fg='red')
         return
 
@@ -106,7 +104,7 @@ def delete(pipeline_id, file):
             pipeline.manager.delete_by_name(pipeline_name)
             click.echo(f'Pipeline {pipeline_name} deleted')
         except (
-                StreamSetsApiClientException, pipeline.PipelineException, pipeline.repository.PipelineNotExistsException
+                streamsets.ApiClientException, pipeline.PipelineException, pipeline.repository.PipelineNotExistsException
         ) as e:
             click.secho(str(e), err=True, fg='red')
             continue
@@ -130,8 +128,8 @@ def logs(pipeline_id, lines, severity):
     Show pipeline logs
     """
     try:
-        logs_ = pipeline.info.get_logs(pipeline_id, severity, lines)
-    except StreamSetsApiClientException as e:
+        logs_ = streamsets.manager.get_pipeline_logs(pipeline_id, severity, lines)
+    except streamsets.ApiClientException as e:
         raise click.ClickException(str(e))
     table = _build_table(['Timestamp', 'Severity', 'Category', 'Message'], logs_)
     click.echo(table.draw())
@@ -157,8 +155,8 @@ def info(pipeline_id, lines):
     Show pipeline status, errors if any, statistics about amount of records sent
     """
     try:
-        info_ = pipeline.info.get(pipeline_id, lines)
-    except StreamSetsApiClientException as e:
+        info_ = streamsets.manager.get_pipeline_info(pipeline_id, lines)
+    except streamsets.ApiClientException as e:
         raise click.ClickException(str(e))
     click.secho('=== STATUS ===', fg='green')
     click.echo(info_['status'])
@@ -201,7 +199,7 @@ def reset(pipeline_id):
     """
     try:
         pipeline.manager.reset(pipeline.repository.get_by_name(pipeline_id))
-    except StreamSetsApiClientException as e:
+    except streamsets.ApiClientException as e:
         click.secho(str(e), err=True, fg='red')
         return
     click.echo('Pipeline offset reset')
@@ -216,9 +214,9 @@ def update(pipeline_id):
     pipelines = [pipeline.repository.get_by_name(pipeline_id)] if pipeline_id else pipeline.repository.get_all()
     for p in pipelines:
         try:
-            pipeline.manager.update(p)
+            streamsets.manager.update(p)
             click.secho(f'Pipeline {p.name} updated', fg='green')
-        except pipeline.PipelineException as e:
+        except streamsets.manager.StreamsetsException as e:
             print(str(e))
             continue
 
@@ -230,8 +228,8 @@ def pipeline_group():
 
 def _create_from_file(file):
     try:
-        pipeline.manager.create_from_file(file)
-    except (StreamSetsApiClientException, ValidationError, pipeline.PipelineException) as e:
+        pipeline.manager.create_from_json(json.load(file))
+    except (streamsets.ApiClientException, ValidationError, pipeline.PipelineException) as e:
         raise click.ClickException(str(e))
 
 
@@ -239,15 +237,15 @@ def _prompt(advanced: bool, sources: list):
     source_name = click.prompt('Choose source config', type=click.Choice(sources), default=_get_default_source(sources))
     pipeline_id = _prompt_pipeline_id()
 
-    pipeline_manager = pipeline.manager.PipelineBuilder(pipeline.manager.create_object(pipeline_id, source_name))
-    previous_config = _get_previous_pipeline_config(pipeline_manager.pipeline.source.type)
-    pipeline_manager.prompt(previous_config, advanced)
-    pipeline.manager.create(pipeline_manager.pipeline)
+    pipeline_builder = pipeline.manager.PipelineBuilder(pipeline.manager.create_object(pipeline_id, source_name))
+    previous_config = _get_previous_pipeline_config(pipeline_builder.pipeline.source.type)
+    pipeline_builder.prompt(previous_config, advanced)
+    pipeline.manager.create(pipeline_builder.pipeline)
 
     click.secho('Created pipeline {}'.format(pipeline_id), fg='green')
-    if _should_prompt_preview(pipeline_manager.pipeline):
+    if _should_prompt_preview(pipeline_builder.pipeline):
         if click.confirm('Would you like to see the result data preview?', default=True):
-            pipeline.manager.show_preview(pipeline_manager.pipeline)
+            pipeline.manager.show_preview(pipeline_builder.pipeline)
             print('To change the config use `agent pipeline edit`')
 
 
@@ -258,33 +256,30 @@ def _should_prompt_preview(pipeline_: pipeline.Pipeline) -> bool:
 def _edit_using_file(file):
     try:
         pipeline.manager.edit_using_file(file)
-    except pipeline.PipelineException as e:
+    except (pipeline.PipelineException, streamsets.manager.StreamsetsException) as e:
         raise click.UsageError(str(e))
 
 
 def _prompt_edit(advanced, pipeline_id):
     try:
-        pipeline_manager = pipeline.manager.PipelineBuilder(pipeline.repository.get_by_name(pipeline_id))
-        pipeline_manager.prompt(pipeline_manager.pipeline.to_dict(), advanced=advanced)
-        pipeline.manager.update(pipeline_manager.pipeline)
+        pipeline_builder = pipeline.manager.PipelineBuilder(pipeline.repository.get_by_name(pipeline_id))
+        pipeline_builder.prompt(pipeline_builder.pipeline.to_dict(), advanced=advanced)
+        streamsets.manager.update(pipeline_builder.pipeline)
+        pipeline.repository.save(pipeline_builder.pipeline)
 
         click.secho('Updated pipeline {}'.format(pipeline_id), fg='green')
-        if _should_prompt_preview(pipeline_manager.pipeline):
+        if _should_prompt_preview(pipeline_builder.pipeline):
             if click.confirm('Would you like to see the result data preview?', default=True):
-                pipeline.manager.show_preview(pipeline_manager.pipeline)
+                pipeline.manager.show_preview(pipeline_builder.pipeline)
                 print('To change the config use `agent pipeline edit`')
     except pipeline.repository.PipelineNotExistsException:
         raise click.UsageError(f'{pipeline_id} does not exist')
 
 
-def _get_previous_pipeline_config(label):
-    try:
-        pipelines_with_source = api_client.get_pipelines(order_by='CREATED', order='DESC', label=label)
-        if len(pipelines_with_source) > 0:
-            pipeline_obj = pipeline.repository.get_by_name(pipelines_with_source[-1]['pipelineId'])
-            return pipeline_obj.to_dict()
-    except source.SourceConfigDeprecated:
-        pass
+def _get_previous_pipeline_config(source_type: str) -> dict:
+    pipelines_with_source = pipeline.repository.get_by_source(source_type)
+    if pipelines_with_source:
+        return max(pipelines_with_source, key=lambda p: p.last_edited).to_dict()
     return {}
 
 
@@ -310,17 +305,10 @@ def _get_default_source(sources):
 
 
 def _build_table(header, rows):
-    """
-    :param header: list
-    :param data: list
-    :param get_row: function - accepts item as first argument and *args; return false if row is needed to be skipped
-    :param args: list
-    :return:
-    """
     table = Texttable()
     table.set_deco(Texttable.HEADER)
     table.header(header)
-    table.set_header_align(['l' for i in range(len(header))])
+    table.set_header_align(['l' for _ in range(len(header))])
 
     max_widths = [len(i) for i in header]
     for row in rows:

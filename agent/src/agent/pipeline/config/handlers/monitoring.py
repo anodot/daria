@@ -7,8 +7,6 @@ from copy import deepcopy
 
 
 class MonitoringConfigHandler(BaseConfigHandler):
-    PIPELINE_BASE_CONFIG_NAME = 'Monitoring.json'
-
     DECLARE_VARS_JS = """/*
 state['host_id'] = 'host_id';
 */
@@ -16,9 +14,10 @@ state['host_id'] = 'host_id';
 state['host_id'] = '{host_id}';
 state['host_name'] = '{host_name}';
 state['previous'] = {{}};
+state['streamsets_url'] = '{streamsets_url}'
 """
 
-    def override_stages(self):
+    def _override_stages(self):
         anodot_monitoring_stage = None
         for stage in self.config['stages']:
             if stage['instanceName'] == 'HTTPClient_03':
@@ -33,7 +32,8 @@ state['previous'] = {{}};
                     if conf['name'] == 'initScript':
                         conf['value'] = self.DECLARE_VARS_JS.format(
                             host_id=self.pipeline.destination.host_id,
-                            host_name=HOSTNAME
+                            host_name=HOSTNAME,
+                            streamsets_url=self.pipeline.streamsets.url,
                         )
 
         # check if monitoring is available
@@ -49,5 +49,5 @@ state['previous'] = {{}};
             anodot_monitoring_stage['uiInfo']['label'] = 'Anodot agents API'
             self.config['stages'].append(anodot_monitoring_stage)
 
-    def set_labels(self):
+    def _set_labels(self):
         pass

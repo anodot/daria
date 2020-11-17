@@ -27,7 +27,7 @@ class ElasticSourceBuilder(Builder):
 
     @if_validation_enabled
     def print_sample_data(self, pipeline_: pipeline.Pipeline):
-        records, errors = self.get_sample_records(pipeline_)
+        records, errors = self._get_sample_records(pipeline_)
         if records:
             print_json(records)
         print(*errors, sep='\n')

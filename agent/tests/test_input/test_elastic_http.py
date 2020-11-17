@@ -1,8 +1,7 @@
 from datetime import datetime
 
 from ..conftest import get_input_file_path
-from agent import cli
-from agent.modules.streamsets_api_client import api_client
+from agent import cli, streamsets
 from agent import source
 
 
@@ -28,7 +27,7 @@ class TestElastic:
         result = cli_runner.invoke(cli.pipeline.create, options, catch_exceptions=False,
                                    input=f"test_es\n{name}\n{query_file_path}\n\n{value}\n{timestamp}\n_source/ver _source/Country\n_source/Exchange optional_dim ad_type ADTYPE GEN\n{advanced_options}\n")
         assert result.exit_code == 0
-        assert api_client.get_pipeline(name)
+        assert streamsets.manager.get_pipeline(name)
 
     def test_edit(self, cli_runner, options, value):
         result = cli_runner.invoke(cli.pipeline.edit, options, catch_exceptions=False,

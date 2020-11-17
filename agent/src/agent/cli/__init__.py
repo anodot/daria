@@ -4,6 +4,8 @@ from agent.cli.backup import backup, restore
 from agent.cli.destination import destination
 from agent.cli.pipeline import pipeline_group
 from agent.cli.source import source_group
+from agent.cli.streamsets import streamsets_group
+from agent.modules import db
 from agent.version import __version__, __build_time__, __git_sha1__
 
 
@@ -25,9 +27,27 @@ class DefaultHelp(click.Group):
 @click.option('-v', '--version', is_flag=True, default=False)
 def agent(version):
     if version:
-        click.echo('Daria Agent version: ' + __version__)
+        click.echo('Daria Agent version ' + __version__)
         click.echo('Build Time (UTC): ' + __build_time__)
         click.echo('Git commit: ' + __git_sha1__)
+
+
+def agent_entry_point():
+    try:
+        agent(standalone_mode=False)
+        db.session().commit()
+    except click.exceptions.Abort:
+        click.echo('Aborted!\n')
+        db.session().rollback()
+        return
+    except click.ClickException as e:
+        click.secho(str(e), err=True, fg='red')
+        db.session().rollback()
+    except Exception:
+        db.session().rollback()
+        raise
+    finally:
+        db.close_session()
 
 
 agent.add_command(source_group)
@@ -35,6 +55,7 @@ agent.add_command(pipeline_group)
 agent.add_command(backup)
 agent.add_command(restore)
 agent.add_command(destination)
+agent.add_command(streamsets_group)
 
 if __name__ == '__main__':
-    agent()
+    agent_entry_point()

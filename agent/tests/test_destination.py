@@ -1,10 +1,7 @@
 import pytest
 
-from agent import cli
+from agent import cli, streamsets
 from agent import destination, pipeline
-from agent.modules.streamsets_api_client import api_client
-
-WAITING_TIME = 3
 
 
 @pytest.fixture(autouse=True)
@@ -19,18 +16,22 @@ def test_destination(cli_runner):
                                input='y\nhttp://squid:3128\n\n\nhttp://dummy_destination\ncorrect_token\ncorrect_key\n')
     assert result.exit_code == 0
     assert destination.repository.exists()
-    assert api_client.get_pipeline_status(pipeline.MONITORING)['status'] == 'RUNNING'
+    for streamsets_ in streamsets.repository.get_all():
+        status = streamsets.manager.get_pipeline_status_by_id(pipeline.manager.get_monitoring_name(streamsets_))
+        assert status == 'RUNNING'
 
 
 def test_edit_destination(cli_runner):
-    prev_dest = destination.repository.get()
+    prev_dest_host_id = destination.repository.get().host_id
     result = cli_runner.invoke(cli.destination, catch_exceptions=False,
                                input='y\nhttp://squid:3128\n\n\n\ncorrect_token\n')
     print(result.output)
     curr_dest = destination.repository.get()
     assert result.exit_code == 0
-    assert curr_dest.host_id == prev_dest.host_id
-    assert api_client.get_pipeline_status(pipeline.MONITORING)['status'] == 'RUNNING'
+    assert curr_dest.host_id == prev_dest_host_id
+    for streamsets_ in streamsets.repository.get_all():
+        status = streamsets.manager.get_pipeline_status_by_id(pipeline.manager.get_monitoring_name(streamsets_))
+        assert status == 'RUNNING'
 
 
 def test_update(cli_runner):

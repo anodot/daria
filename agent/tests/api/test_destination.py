@@ -1,8 +1,3 @@
-import pytest
-
-from agent.api import main
-
-
 class TestDestination:
     params = {
         'test_create': [

@@ -4,8 +4,8 @@ import time
 
 from ..conftest import get_output, get_input_file_path
 from agent.cli import source as source_cli, pipeline as pipeline_cli
-from agent.modules.streamsets_api_client import api_client
-from agent import pipeline, source
+from agent.streamsets import StreamSetsApiClient
+from agent import pipeline, source, streamsets
 
 
 class TestPipelineBase(object):
@@ -27,9 +27,10 @@ class TestPipelineBase(object):
         result = cli_runner.invoke(pipeline_cli.create, ['-f', input_file_path], catch_exceptions=False)
         assert result.exit_code == 0
         with open(input_file_path) as f:
-            pipelines = json.load(f)
-            for pipeline_ in pipelines:
-                assert api_client.get_pipeline(pipeline_['pipeline_id'])
+            for pipeline_config in json.load(f):
+                pipeline_ = pipeline.repository.get_by_name(pipeline_config['pipeline_id'])
+                api_client = StreamSetsApiClient(pipeline_.streamsets)
+                assert api_client.get_pipeline(pipeline_config['pipeline_id'])
 
     def test_edit_with_file(self, cli_runner, file_name):
         input_file_path = get_input_file_path(file_name + '.json')
@@ -39,7 +40,7 @@ class TestPipelineBase(object):
     def test_start(self, cli_runner, name):
         result = cli_runner.invoke(pipeline_cli.start, [name], catch_exceptions=False)
         assert result.exit_code == 0
-        assert api_client.get_pipeline_status(name)['status'] == 'RUNNING'
+        assert streamsets.manager.get_pipeline_status_by_id(name) == 'RUNNING'
         # give pipelines some time to send data
         time.sleep(10)
 
@@ -50,7 +51,7 @@ class TestPipelineBase(object):
     def test_stop(self, cli_runner, name):
         result = cli_runner.invoke(pipeline_cli.stop, [name], catch_exceptions=False)
         assert result.exit_code == 0
-        assert api_client.get_pipeline_status(name)['status'] in ['STOPPED']
+        assert streamsets.manager.get_pipeline_status_by_id(name) in ['STOPPED']
 
     def test_force_stop(self, cli_runner, name):
         result = cli_runner.invoke(pipeline_cli.force_stop, [name], catch_exceptions=False)

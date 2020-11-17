@@ -1,8 +1,6 @@
 from typing import Optional
-
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import relationship
-from agent import source
 from agent.modules.constants import HOSTNAME
 from agent.modules.db import Entity
 from agent.destination import HttpDestination
@@ -75,14 +73,14 @@ class Pipeline(Entity):
     created_at = Column(TIMESTAMP(timezone=True), default=func.now())
     last_edited = Column(TIMESTAMP(timezone=True), default=func.now(), onupdate=func.now())
     status = Column(String, default=STATUS_EDITED)
+    streamsets_id = Column(Integer, ForeignKey('streamsets.id'))
 
     offset = relationship("PipelineOffset", cascade="delete", uselist=False)
     source_ = relationship('Source', back_populates='pipelines')
     destination = relationship('HttpDestination')
+    streamsets = relationship('StreamSets')
 
-    def __init__(self, pipeline_name: str,
-                 source_: source.Source,
-                 destination: HttpDestination):
+    def __init__(self, pipeline_name: str, source_, destination: HttpDestination):
         self.name = pipeline_name
         self.config = {}
         self.source_ = source_
@@ -90,6 +88,8 @@ class Pipeline(Entity):
         self.destination = destination
         self.destination_id = destination.id
         self.override_source = {}
+        self.streamsets_id = None
+        self.streamsets = None
 
     @property
     def source(self):
@@ -150,7 +150,8 @@ class Pipeline(Entity):
 
     @property
     def values(self) -> list:
-        if self.source.type == source.TYPE_INFLUX:
+        # todo fix circular imports and return source.TYPE_INFLUX
+        if self.source.type == 'influx':
             value = self.config.get('value', {})
             return value['values'] if 'values' in value else []
         return list(self.config.get('values', {}).keys())
@@ -161,7 +162,8 @@ class Pipeline(Entity):
 
     @property
     def target_types(self) -> list:
-        if self.source.type == source.TYPE_INFLUX:
+        # todo fix circular imports and return source.TYPE_INFLUX
+        if self.source.type == 'influx':
             return [self.config['target_type']] * len(self.values)
         return list(self.config['values'].values())
 
@@ -237,6 +239,14 @@ class Pipeline(Entity):
     def batch_size(self) -> str:
         return self.config.get('batch_size', 1000)
 
+    def set_streamsets(self, streamsets):
+        self.streamsets_id = streamsets.id
+        self.streamsets = streamsets
+
+    def delete_streamsets(self):
+        self.streamsets_id = None
+        self.streamsets = None
+
     def get_schema(self):
         return self.config.get('schema', {})
 
@@ -281,6 +291,11 @@ class Pipeline(Entity):
             **self.meta_tags(),
             **self.tags
         }
+
+
+class TestPipeline(Pipeline):
+    def __init__(self, pipeline_name: str, source_, destination: HttpDestination):
+        super().__init__(pipeline_name, source_, destination)
 
 
 class PipelineOffset(Entity):

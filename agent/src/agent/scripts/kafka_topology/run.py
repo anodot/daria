@@ -1,18 +1,13 @@
 import anodot
 import argparse
 import gzip
-import logging
-import sys
 
 from agent import destination
 from agent.modules import proxy, logger
 from datetime import datetime
 from kafka import KafkaConsumer
 
-logger_ = logger.get_logger('scripts.kafka_topology.run')
-handler = logging.StreamHandler(sys.stdout)
-handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
-logger_.addHandler(handler)
+logger_ = logger.get_logger('scripts.kafka_topology.run', stdout=True)
 
 
 def get_file_path(name):

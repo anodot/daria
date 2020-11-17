@@ -33,7 +33,7 @@ except Exception:
 
 num_of_errors = 0
 for pipeline_ in pipelines:
-    if pipeline_.name != pipeline.MONITORING:
+    if not pipeline.manager.is_monitoring(pipeline_):
         try:
             api_client.send_pipeline_data_to_bc(pipeline.manager.transform_for_bc(pipeline_))
         except HTTPError as e:

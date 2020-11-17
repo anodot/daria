@@ -4,17 +4,12 @@ import json
 import os
 import csv
 import shutil
-import logging
-import sys
 
 from tempfile import NamedTemporaryFile
-from agent import pipeline, source
-from agent.modules import logger, constants
+from agent import pipeline, source, streamsets
+from agent.modules import logger, constants, db
 
-logger_ = logger.get_logger('scripts.antomation.run')
-handler = logging.StreamHandler(sys.stdout)
-handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
-logger_.addHandler(handler)
+logger_ = logger.get_logger('scripts.antomation.run', stdout=True)
 
 FAIL = '\033[91m'
 ENDC = '\033[0m'
@@ -51,8 +46,9 @@ def populate_pipeline_from_file(file):
             if pipeline.repository.exists(config['pipeline_id']):
                 pipeline.manager.edit_pipeline_using_json(config)
             else:
-                pipeline_ = pipeline.manager.create_pipeline_from_json(config)
-                pipeline.manager.start(pipeline_)
+                streamsets.manager.start(
+                    pipeline.manager.create_pipeline_from_json(config)
+                )
         except Exception as e:
             exceptions.append(str(e))
     if exceptions:
@@ -133,11 +129,16 @@ def delete_not_existing(directory, module, type_):
         logger_.info('Looking for removed pipelines')
         all_names = _extract_all_names(directory, module, type_)
         for obj in module.repository.get_all():
-            if obj.name not in all_names and obj.name != pipeline.MONITORING and obj.name != constants.MONITORING_SOURCE_NAME:
+            if obj.name not in all_names and not is_monitoring(obj):
                 logger_.info(f'{type_} {obj.name} not found in configs, deleting')
                 module.manager.delete(obj)
                 logger_.info('Success')
         logger_.info('Done')
+
+
+def is_monitoring(obj) -> bool:
+    return (isinstance(obj, pipeline.Pipeline) and pipeline.manager.is_monitoring(obj)) or \
+           (isinstance(obj, source.Source) and obj.name == constants.MONITORING_SOURCE_NAME)
 
 
 def _extract_all_names(directory, module, type_):
@@ -160,3 +161,7 @@ process(PIPELINES_DIR, PIPELINES_CHECKSUMS, populate_pipeline_from_file)
 
 delete_not_existing(PIPELINES_DIR, pipeline, 'Pipeline')
 delete_not_existing(SOURCES_DIR, source, 'Source')
+
+# todo this is temporary
+db.session().commit()
+db.session().close()

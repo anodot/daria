@@ -6,10 +6,9 @@ from jsonschema import ValidationError
 from agent.api.routes import needs_pipeline
 from flask import jsonify, Blueprint, request
 from agent.api import routes
-from agent import pipeline, source
+from agent import pipeline, source, streamsets
 from agent.modules import proxy, logger
-from agent.modules.streamsets_api_client import StreamSetsApiClientException
-from agent.pipeline import PipelineOffset
+from agent.pipeline import PipelineOffset, Pipeline
 
 pipelines = Blueprint('pipelines', __name__)
 logger = logger.get_logger(__name__)
@@ -29,10 +28,10 @@ def create():
     try:
         pipelines_ = pipeline.manager.create_from_json(request.get_json())
     except (
-            ValidationError, source.SourceNotExists, source.SourceConfigDeprecated, requests.exceptions.ConnectionError
+            ValidationError, source.SourceNotExists, requests.exceptions.ConnectionError
     ) as e:
         return jsonify(str(e)), 400
-    except pipeline.PipelineException as e:
+    except (pipeline.PipelineException, streamsets.manager.StreamsetsException) as e:
         return jsonify(str(e)), 500
     return jsonify(list(map(lambda x: x.to_dict(), pipelines_)))
 
@@ -43,7 +42,7 @@ def edit():
         pipelines_ = pipeline.manager.edit_using_json(request.get_json())
     except ValueError as e:
         return jsonify(str(e)), 400
-    except pipeline.PipelineException as e:
+    except (pipeline.PipelineException, streamsets.manager.StreamsetsException) as e:
         return jsonify(str(e)), 500
     return jsonify(list(map(lambda x: x.to_dict(), pipelines_)))
 
@@ -65,8 +64,8 @@ def force_delete(pipeline_name):
 @needs_pipeline
 def start(pipeline_name):
     try:
-        pipeline.manager.start(pipeline.repository.get_by_name(pipeline_name))
-    except (pipeline.manager.PipelineFreezeException, pipeline.PipelineException) as e:
+        streamsets.manager.start(pipeline.repository.get_by_name(pipeline_name))
+    except (streamsets.PipelineFreezeException, pipeline.PipelineException) as e:
         return jsonify(str(e)), 400
     return jsonify('')
 
@@ -75,10 +74,10 @@ def start(pipeline_name):
 @needs_pipeline
 def stop(pipeline_name):
     try:
-        pipeline.manager.stop_by_id(pipeline_name)
-    except StreamSetsApiClientException as e:
+        streamsets.manager.stop(pipeline_name)
+    except streamsets.ApiClientException as e:
         return jsonify(str(e)), 400
-    except pipeline.manager.PipelineFreezeException as e:
+    except streamsets.PipelineFreezeException as e:
         return jsonify(str(e)), 400
     return jsonify('')
 
@@ -87,8 +86,8 @@ def stop(pipeline_name):
 @needs_pipeline
 def force_stop(pipeline_name):
     try:
-        pipeline.manager.force_stop_pipeline(pipeline_name)
-    except pipeline.manager.PipelineFreezeException as e:
+        streamsets.manager.force_stop(pipeline_name)
+    except streamsets.PipelineFreezeException as e:
         return jsonify(str(e)), 400
     return jsonify('')
 
@@ -98,8 +97,8 @@ def force_stop(pipeline_name):
 def info(pipeline_name):
     number_of_history_records = int(request.args.get('number_of_history_records', 10))
     try:
-        return jsonify(pipeline.info.get(pipeline_name, number_of_history_records))
-    except StreamSetsApiClientException as e:
+        return jsonify(streamsets.manager.get_pipeline_info(pipeline_name, number_of_history_records))
+    except streamsets.ApiClientException as e:
         return jsonify(str(e)), 500
 
 
@@ -111,8 +110,8 @@ def logs(pipeline_name):
     severity = request.args.get('severity', logging.getLevelName(logging.INFO))
     number_of_records = int(request.args.get('number_of_records', 10))
     try:
-        return jsonify(pipeline.info.get_logs(pipeline_name, severity, number_of_records))
-    except StreamSetsApiClientException as e:
+        return jsonify(streamsets.manager.get_pipeline_logs(pipeline_name, severity, number_of_records))
+    except streamsets.ApiClientException as e:
         return jsonify(str(e)), 500
 
 
@@ -135,30 +134,28 @@ def disable_destination_logs(pipeline_name):
 def reset(pipeline_name):
     try:
         pipeline.manager.reset(pipeline.repository.get_by_name(pipeline_name))
-    except StreamSetsApiClientException as e:
+    except streamsets.ApiClientException as e:
         return jsonify(str(e)), 500
     return jsonify('')
 
 
-@pipelines.route('/pipeline-status-change', methods=['POST'])
-def pipeline_status_change():
+@pipelines.route('/pipeline-status-change/<pipeline_id>', methods=['POST'])
+def pipeline_status_change(pipeline_id: str):
     data = request.get_json()
-    pipeline_ = pipeline.repository.get_by_name(data['pipeline_name'])
+    pipeline_ = pipeline.repository.get_by_name(pipeline_id)
     pipeline_.status = data['pipeline_status']
     pipeline.repository.save(pipeline_)
-
-    if data['pipeline_status'] in pipeline_.error_statuses:
-        _send_error_status_to_anodot(data, pipeline_)
-
+    if pipeline_.status in pipeline_.error_statuses:
+        _send_error_status_to_anodot(pipeline_)
     return ''
 
 
-def _send_error_status_to_anodot(data, pipeline_):
+def _send_error_status_to_anodot(pipeline_: Pipeline):
     metric = [{
         "properties": {
             "what": "pipeline_error_status_count",
-            "pipeline_name": data["pipeline_name"],
-            "pipeline_status": data['pipeline_status'],
+            "pipeline_name": pipeline_.name,
+            "pipeline_status": pipeline_.status,
             "target_type": "counter",
         },
         "tags": pipeline_.meta_tags(),

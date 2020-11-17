@@ -39,7 +39,7 @@ def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, a
         _prompt_access_key(destination_)
         if not agent.destination.repository.exists():
             agent.destination.repository.save(destination_)
-            # todo duplicate code, try to avoid it
+            # todo code duplicate, try to avoid it
             auth_token = agent.destination.AuthenticationToken(destination_.id, AnodotApiClient(destination_).get_new_token())
             agent.destination.repository.save_auth_token(auth_token)
         else:
@@ -47,12 +47,11 @@ def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, a
 
         click.secho('Connection to Anodot established')
         try:
-            if pipeline.repository.exists(pipeline.MONITORING):
-                click.secho('Updating Monitoring pipeline...')
-                pipeline.manager.update_monitoring_pipeline()
+            if pipeline.repository.monitoring_exists():
+                click.secho('Updating Monitoring pipelines...')
+                pipeline.manager.update_monitoring_pipelines()
             else:
-                click.secho('Starting Monitoring pipeline...')
-                pipeline.manager.start_monitoring_pipeline()
+                pipeline.manager.create_monitoring_pipelines()
         except pipeline.pipeline.PipelineException as e:
             raise click.ClickException(str(e))
     click.secho('Destination configured', fg='green')
@@ -88,8 +87,10 @@ def _prompt_proxy_password() -> str:
 def _prompt_url(dest: HttpDestination):
     url = click.prompt('Destination url', type=click.STRING, default=dest.url)
     try:
-        if not validator.is_valid_url(url):
-            raise click.ClickException('Wrong url format, please specify the protocol and domain name')
+        try:
+            validator.validate_url_format(url)
+        except validator.ValidationException as e:
+            raise click.ClickException(str(e))
         try:
             agent.destination.validator.is_valid_destination_url(url, dest.proxy)
         except agent.destination.validator.ValidationException as e:

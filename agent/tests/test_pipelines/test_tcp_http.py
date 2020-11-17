@@ -1,8 +1,7 @@
 import pytest
 import socket
 
-from agent import cli
-from agent.modules.streamsets_api_client import api_client
+from agent import cli, streamsets
 from .test_zpipeline_base import TestPipelineBase
 from agent import pipeline, source
 
@@ -39,15 +38,17 @@ class TestTCPServer(TestPipelineBase):
     def test_start(self, cli_runner, name):
         result = cli_runner.invoke(cli.pipeline.start, [name], catch_exceptions=False)
         assert result.exit_code == 0
-        assert api_client.get_pipeline_status(name)['status'] == 'RUNNING'
+        assert streamsets.manager.get_pipeline_status_by_id(name) == 'RUNNING'
 
         # streams data
-        pipeline_obj = pipeline.repository.get_by_name(name)
+        pipeline_ = pipeline.repository.get_by_name(name)
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect(('dc', int(pipeline_obj.source.config['conf.ports'][0])))
+        # strip http:// and port from the end
+        host = pipeline_.streamsets.url[7:-6]
+        s.connect((host, int(pipeline_.source.config['conf.ports'][0])))
 
         data = {'LOG': 'log.txt', 'DELIMITED': 'test.csv', 'JSON': 'test_json_items'}
-        with open(f'/home/{data[pipeline_obj.source.config["conf.dataFormat"]]}', 'r') as f:
+        with open(f'/home/{data[pipeline_.source.config["conf.dataFormat"]]}', 'r') as f:
             for line in f.readlines():
                 s.sendall(f'{line}\n'.encode())
         s.close()

@@ -72,7 +72,7 @@ class SchemalessSourceBuilder(Builder, metaclass=ABCMeta):
             raise click.UsageError(e)
 
     def prompt_log(self, default_config):
-        records, errors = self.get_sample_records(pipeline.manager.build_test_pipeline(self.source))
+        records, errors = self._get_sample_records(pipeline.manager.build_test_pipeline(self.source))
         if records:
             print_json(records)
         print(*errors, sep='\n')
@@ -106,7 +106,7 @@ class SchemalessSourceBuilder(Builder, metaclass=ABCMeta):
 
     def change_field_names(self, default_config):
         previous_val = default_config.get(source.SchemalessSource.CONFIG_CSV_MAPPING, {})
-        records, errors = self.get_sample_records(pipeline.manager.build_test_pipeline(self.source))
+        records, errors = self._get_sample_records(pipeline.manager.build_test_pipeline(self.source))
         if records:
             print('Records example:')
             print_dicts(records)
@@ -140,7 +140,7 @@ class SchemalessSourceBuilder(Builder, metaclass=ABCMeta):
 
     @if_validation_enabled
     def print_sample_data(self, pipeline_: pipeline.Pipeline):
-        records, errors = self.get_sample_records(pipeline_)
+        records, errors = self._get_sample_records(pipeline_)
         if records:
             if self.source.config.get(
                     source.SchemalessSource.CONFIG_DATA_FORMAT) == source.SchemalessSource.DATA_FORMAT_CSV:

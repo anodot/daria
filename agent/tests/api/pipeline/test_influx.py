@@ -55,13 +55,6 @@ class TestInflux:
                     "properties": {"test": "val"}, "source": {"name": "influx"}, "target_type": "gauge",
                     "value": {"constant": "1", "type": "property", "values": ["usage_active"]}}]
         }],
-        'test_list': [{
-            'er': [{"override_source": {}, "pipeline_id": "Monitoring", "source": {"name": "monitoring"}},
-                   {"dimensions": {"optional": ["cpu", "host", "zone"], "required": []}, "interval": 5,
-                    "measurement_name": "cpu_test", "override_source": {}, "pipeline_id": "test_influx",
-                    "properties": {"test": "val"}, "source": {"name": "influx"}, "target_type": "gauge",
-                    "value": {"constant": "1", "type": "property", "values": ["usage_active"]}}]
-        }]
     }
 
     def test_source_create(self, api_client, data, er):
@@ -107,7 +100,7 @@ class TestInflux:
     def test_pipeline_failed(self, api_client):
         pipeline_name = 'test_influx'
         pipeline_status = 'RUN_ERROR'
-        res = api_client.post('/pipeline-status-change', json={
+        res = api_client.post(f'/pipeline-status-change/{pipeline_name}', json={
             "pipeline_status": pipeline_status,
             "pipeline_name": pipeline_name,
             "time": "1970-01-01 00:00:00"
@@ -115,16 +108,16 @@ class TestInflux:
         assert res.status_code == 200
         assert pipeline.repository.get_by_name(pipeline_name).status == pipeline_status
 
-    def test_list(self, api_client, er):
-        result = api_client.get('/pipelines')
-        assert result.json == er
-
     def test_delete(self, api_client):
-        api_client.delete('/pipelines/test_influx')
+        pipeline_id = 'test_influx'
+        api_client.delete(f'/pipelines/{pipeline_id}')
         result = api_client.get('/pipelines')
-        assert result.json == [{"override_source":{},"pipeline_id":"Monitoring","source":{"name":"monitoring"}}]
+        for obj in result.json:
+            if obj['pipeline_id'] == pipeline_id:
+                raise Exception
 
     def test_source_delete(self, api_client):
-        api_client.delete('/sources/influx')
+        source = 'influx'
+        api_client.delete(f'/sources/{source}')
         result = api_client.get('/sources')
-        assert result.json == ["monitoring"]
+        assert source not in result.json

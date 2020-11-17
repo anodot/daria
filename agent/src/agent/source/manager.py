@@ -1,11 +1,12 @@
 import json
+import traceback
+
 import jsonschema
 
 from typing import List
 from agent import pipeline
 from agent import source
 from agent.source import SourceException, Source
-from agent.modules.streamsets_api_client import api_client
 
 MAX_SAMPLE_RECORDS = 3
 
@@ -34,8 +35,7 @@ def create_from_json(configs: list) -> List[Source]:
             )
             print(f"Source {config['name']} created")
         except Exception as e:
-            # todo traceback?
-            exceptions[config['name']] = f'{type(e).__name__}: {str(e)}'
+            exceptions[config['name']] = f'{type(e).__name__}:\n' + traceback.format_exc()
     if exceptions:
         raise source.SourceException(json.dumps(exceptions))
     return sources
@@ -111,13 +111,9 @@ def extract_configs(file):
 
 
 def get_previous_source_config(source_type):
-    try:
-        pipelines_with_source = api_client.get_pipelines(order_by='CREATED', order='DESC', label=source_type)
-        if len(pipelines_with_source) > 0:
-            pipeline_obj = pipeline.repository.get_by_name(pipelines_with_source[-1]['pipelineId'])
-            return pipeline_obj.source.config
-    except source.SourceConfigDeprecated:
-        pass
+    source_ = source.repository.get_last_edited(source_type)
+    if source_:
+        return source_.config
     return {}
 
 

@@ -1,11 +1,9 @@
 import click
 import os
 
-from typing import Callable, List
 from datetime import datetime
 from agent.modules.constants import AGENT_DB_USER, AGENT_DB, BACKUP_DIRECTORY, AGENT_DB_HOST
-from agent import pipeline
-from agent.modules.streamsets_api_client import api_client as streamsets_api_client
+from agent import pipeline, streamsets
 from agent.pipeline import Pipeline
 
 
@@ -34,13 +32,13 @@ def _restore_pipelines():
         click.secho('Success', fg='green')
     for pipeline_ in existing:
         click.echo(f'Updating pipeline {pipeline_.name}')
-        pipeline.manager.update(pipeline_)
+        streamsets.manager.update(pipeline_)
         _update_status(pipeline_)
         click.secho('Success', fg='green')
 
 
 def _get_pipelines():
-    streamsets_pipelines = [p['pipelineId'] for p in streamsets_api_client.get_pipelines()]
+    streamsets_pipelines = [p['pipelineId'] for p in streamsets.manager.get_all_pipelines()]
     existing = []
     not_existing = []
     for p in pipeline.repository.get_all():
@@ -53,14 +51,14 @@ def _get_pipelines():
 
 def _update_status(pipeline_: Pipeline):
     expected_status = pipeline_.status
-    actual_status = pipeline.manager.get_pipeline_status(pipeline_.name)
+    actual_status = streamsets.manager.get_pipeline_status(pipeline_)
     if expected_status in [Pipeline.STATUS_RUNNING, Pipeline.STATUS_STARTING]:
         if actual_status in [Pipeline.STATUS_EDITED, Pipeline.STATUS_STOPPED, Pipeline.STATUS_RUN_ERROR,
                              Pipeline.STATUS_STOP_ERROR, Pipeline.STATUS_START_ERROR]:
-            pipeline.manager.start(pipeline_)
+            streamsets.manager.start(pipeline_)
         elif actual_status == Pipeline.STATUS_STOPPING:
-            pipeline.manager.force_stop_pipeline(pipeline_.name)
-            pipeline.manager.start(pipeline_)
+            streamsets.manager.force_stop(pipeline_.name)
+            streamsets.manager.start(pipeline_)
     elif expected_status in [Pipeline.STATUS_EDITED, Pipeline.STATUS_STOPPED, Pipeline.STATUS_STOPPING]:
         if actual_status in [Pipeline.STATUS_RUNNING, Pipeline.STATUS_STARTING]:
-            pipeline.manager.stop(pipeline_)
+            streamsets.manager.stop(pipeline_.name)
