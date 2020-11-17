@@ -1,5 +1,6 @@
 import json
 import os
+import time
 
 from ..conftest import get_output, get_input_file_path
 from agent.cli import source as source_cli, pipeline as pipeline_cli
@@ -40,6 +41,8 @@ class TestPipelineBase(object):
         result = cli_runner.invoke(pipeline_cli.start, [name], catch_exceptions=False)
         assert result.exit_code == 0
         assert streamsets.manager.get_pipeline_status_by_id(name) == 'RUNNING'
+        # give pipelines some time to send data
+        time.sleep(10)
 
     def test_info(self, cli_runner, name):
         result = cli_runner.invoke(pipeline_cli.info, [name], catch_exceptions=False)
