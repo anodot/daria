@@ -29,7 +29,7 @@ def list_():
 @click.command()
 def add():
     streamsets.manager.create_streamsets(
-        _prompt_streamsets(StreamSets('', '', '', ''))
+        _prompt_streamsets(StreamSets(_prompt_url(), '', '', ''))
     )
     click.secho('StreamSets instance added to the agent', fg='green')
 
@@ -72,7 +72,6 @@ def balance():
 
 
 def _prompt_streamsets(streamsets_: StreamSets) -> StreamSets:
-    streamsets_.url = _prompt_url(streamsets_.url if streamsets_.url else None)
     streamsets_.username = click.prompt('Username', type=click.STRING, default=constants.DEFAULT_STREAMSETS_USERNAME)
     streamsets_.password = click.prompt('Password', type=click.STRING, default=constants.DEFAULT_STREAMSETS_PASSWORD)
     try:
@@ -84,8 +83,10 @@ def _prompt_streamsets(streamsets_: StreamSets) -> StreamSets:
 
 
 @infinite_retry
-def _prompt_url(default=None) -> str:
-    url = click.prompt('Enter streamsets url', type=click.STRING, default=default)
+def _prompt_url() -> str:
+    url = click.prompt('Enter streamsets url', type=click.STRING)
+    if streamsets.repository.exists(url):
+        raise click.ClickException(f'StreamSets with URL `{url}` already exists')
     try:
         validator.validate_url_format_with_port(url)
     except validator.ValidationException as e:

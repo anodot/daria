@@ -277,7 +277,7 @@ def force_stop(pipeline_id: str):
     except streamsets.ApiClientException:
         pass
     if not get_pipeline_status_by_id(pipeline_id) == Pipeline.STATUS_STOPPING:
-        raise pipeline.PipelineException("Can't force stop a pipeline not in the STOPPING state")
+        raise streamsets.PipelineException("Can't force stop a pipeline not in the STOPPING state")
     client.force_stop(pipeline_id)
     client.wait_for_status(pipeline_id, Pipeline.STATUS_STOPPED)
 
@@ -318,10 +318,13 @@ def start(pipeline_: Pipeline):
     client.wait_for_status(pipeline_.name, Pipeline.STATUS_RUNNING)
     logger.info(f'{pipeline_.name} pipeline is running')
     if ENV_PROD:
-        if _wait_for_sending_data(pipeline_.name):
-            logger.info(f'{pipeline_.name} pipeline is sending data')
-        else:
-            logger.info(f'{pipeline_.name} pipeline did not send any data')
+        try:
+            if _wait_for_sending_data(pipeline_.name):
+                logger.info(f'{pipeline_.name} pipeline is sending data')
+            else:
+                logger.info(f'{pipeline_.name} pipeline did not send any data')
+        except streamsets.PipelineException as e:
+            logger.error(str(e))
 
 
 def _create_pipeline(pipeline_: Pipeline):
@@ -343,7 +346,7 @@ def _wait_for_sending_data(pipeline_id: str, tries: int = 5, initial_delay: int 
         if stats['out'] > 0 and stats['errors'] == 0:
             return True
         if stats['errors'] > 0:
-            raise pipeline.PipelineException(f"Pipeline {pipeline_id} has {stats['errors']} errors")
+            raise streamsets.PipelineException(f"Pipeline {pipeline_id} has {stats['errors']} errors")
         delay = initial_delay ** i
         if i == tries:
             logger.warning(f'Pipeline {pipeline_id} did not send any data. Received number of records - {stats["in"]}')

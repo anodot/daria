@@ -33,7 +33,7 @@ state['streamsets_url'] = '{streamsets_url}'
                         conf['value'] = self.DECLARE_VARS_JS.format(
                             host_id=self.pipeline.destination.host_id,
                             host_name=HOSTNAME,
-                            streamsets_url=self.pipeline.streamsets.url,
+                            streamsets_url=self.pipeline.streamsets.url.replace('.', '_').replace(' ', '_'),
                         )
 
         # check if monitoring is available
