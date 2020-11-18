@@ -23,12 +23,12 @@ def get_by_url(url: str) -> StreamSets:
 
 def save(streamsets: StreamSets):
     session().add(streamsets)
-    session().flush()
+    session().commit()
 
 
 def delete(streamsets: StreamSets):
     session().delete(streamsets)
-    session().flush()
+    session().commit()
 
 
 def get_all_names() -> List[str]:
