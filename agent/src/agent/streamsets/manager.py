@@ -293,8 +293,8 @@ def stop(pipeline_id: str):
         force_stop(pipeline_id)
 
 
-def reset_pipeline(pipeline_id: str):
-    _client(pipeline.repository.get_by_name(pipeline_id)).reset_pipeline(pipeline_id)
+def reset_pipeline(pipeline_: Pipeline):
+    _client(pipeline_).reset_pipeline(pipeline_.name)
 
 
 def delete(pipeline_: Pipeline):
@@ -332,6 +332,8 @@ def _create_pipeline(pipeline_: Pipeline):
 
 
 def _update_pipeline(pipeline_: Pipeline, config: dict):
+    if pipeline_.offset:
+        _client(pipeline_).post_pipeline_offset(pipeline_.name, pipeline_.offset.offset)
     return _client(pipeline_).update_pipeline(pipeline_.name, config)
 
 
@@ -367,10 +369,6 @@ def get_pipeline_offset(pipeline_: Pipeline) -> Optional[dict]:
     return _client(pipeline_).get_pipeline_offset(pipeline_.name)
 
 
-def set_pipeline_offset(pipeline_: Pipeline, offset: dict) -> dict:
-    return _client(pipeline_).post_pipeline_offset(pipeline_.name, offset)
-
-
 class StreamsetsBalancer:
     def __init__(self):
         self.streamsets_pipelines: Dict[int, List[Pipeline]] = self._get_streamsets_pipelines()
@@ -392,15 +390,12 @@ class StreamsetsBalancer:
     @staticmethod
     def _move(pipeline_: Pipeline, to_streamsets: StreamSets):
         logger.info(f'Moving `{pipeline_.name}` from `{pipeline_.streamsets.url}` to `{to_streamsets.url}`')
-        offset = get_pipeline_offset(pipeline_)
         should_start = pipeline_.status in [Pipeline.STATUS_STARTING, Pipeline.STATUS_RUNNING]
 
         delete(pipeline_)
         create(pipeline_, to_streamsets)
         pipeline.repository.save(pipeline_)
         db.session().commit()
-        if offset:
-            set_pipeline_offset(pipeline_, offset)
         if should_start:
             start(pipeline_)
 
