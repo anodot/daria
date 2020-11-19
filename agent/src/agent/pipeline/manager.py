@@ -254,8 +254,9 @@ def update_pipeline_offset(pipeline_: Pipeline):
 def reset(pipeline_: Pipeline):
     try:
         streamsets.manager.reset_pipeline(pipeline_)
-        pipeline.repository.delete_offset(pipeline_.offset)
-        pipeline_.offset = None
+        if pipeline_.offset:
+            pipeline.repository.delete_offset(pipeline_.offset)
+            pipeline_.offset = None
     except (config_handlers.base.ConfigHandlerException, streamsets.ApiClientException) as e:
         raise pipeline.PipelineException(str(e))
 
@@ -339,7 +340,7 @@ def create_monitoring_pipelines():
         pipeline_ = create_object(get_monitoring_name(streamsets_), MONITORING_SOURCE_NAME)
         pipeline_.set_streamsets(streamsets_)
         pipeline.repository.save(pipeline_)
-        streamsets.manager.create_monitoring_pipeline(pipeline_)
+        streamsets.manager.create(pipeline_)
         streamsets.manager.start(pipeline_)
 
 

@@ -74,7 +74,7 @@ class StreamSetsApiClient:
 
     @endpoint
     def create_pipeline(self, name: str):
-        logger.info(f'Creating pipeline: {name}')
+        logger.info(f'Creating pipeline `{name}`')
         return self.session.put(self._build_url('pipeline', name))
 
     @endpoint

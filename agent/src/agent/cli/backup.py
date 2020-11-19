@@ -26,12 +26,12 @@ def restore(dump_file):
 def _restore_pipelines():
     existing, not_existing = _get_pipelines()
     for pipeline_ in not_existing:
-        click.echo(f'Creating pipeline {pipeline_.name}')
+        click.echo(f'Creating pipeline `{pipeline_.name}`')
         pipeline.manager.create(pipeline_)
         _update_status(pipeline_)
         click.secho('Success', fg='green')
     for pipeline_ in existing:
-        click.echo(f'Updating pipeline {pipeline_.name}')
+        click.echo(f'Updating pipeline `{pipeline_.name}`')
         streamsets.manager.update(pipeline_)
         _update_status(pipeline_)
         click.secho('Success', fg='green')
