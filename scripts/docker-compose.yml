@@ -6,7 +6,7 @@ services:
     restart: on-failure
     container_name: anodot-sdc
     environment:
-      SDC_JAVA_OPTS: "-Xmx1024m -Xms1024m -server"
+      SDC_JAVA_OPTS: "-Xmx2048m -Xms2048m -server"
       SDC_CONF_RUNNER_THREAD_POOL_SIZE: "200"
     volumes:
       - sdc-data:/data
@@ -20,13 +20,16 @@ services:
     tty: true
     depends_on:
       - dc
+      - db
     environment:
       AGENT_DB_HOST: 'db'
       AGENT_DB_USER: 'agent'
       AGENT_DB_PASSWORD: 'agent'
       STREAMSETS_URL: 'http://dc:18630'
-#    ports:
-#    - 8080:80
+    ports:
+      - 8080:80
+    volumes:
+      - ./backup-data:/usr/src/app/backup-data
 
   db:
     image: postgres
@@ -36,9 +39,7 @@ services:
       POSTGRES_PASSWORD: agent
       POSTGRES_DB: agent
     volumes:
-      - backup-data:/usr/src/app/backup-data
       - /var/lib/postgresql/data
 
 volumes:
   sdc-data:
-  agent-data:
