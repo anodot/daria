@@ -398,7 +398,6 @@ class StreamsetsBalancer:
         delete(pipeline_)
         create(pipeline_, to_streamsets)
         pipeline.repository.save(pipeline_)
-        db.session().commit()
         if offset:
             set_pipeline_offset(pipeline_, offset)
         if should_start:
