@@ -17,19 +17,19 @@ def get() -> HttpDestination:
 
 def save(destination_: HttpDestination):
     session().add(destination_)
-    session().flush()
+    session().commit()
 
 
 def delete():
     if not exists():
         return
     session().delete(get())
-    session().flush()
+    session().commit()
 
 
 def save_auth_token(token: AuthenticationToken):
     session().add(token)
-    session().flush()
+    session().commit()
 
 
 class DestinationNotExists(Exception):

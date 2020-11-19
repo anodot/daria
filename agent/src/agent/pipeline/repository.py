@@ -39,12 +39,12 @@ def get_all() -> List[Pipeline]:
 
 def save(pipeline_: Pipeline):
     session().add(pipeline_)
-    session().flush()
+    session().commit()
 
 
 def delete(pipeline_: Pipeline):
     session().delete(pipeline_)
-    session().flush()
+    session().commit()
 
 
 def delete_by_name(pipeline_name: str):

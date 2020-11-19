@@ -140,23 +140,6 @@
     "properties": {
       "adsize": "Sma_ll",
       "country": "USA",
-      "what": "clicks",
-      "target_type": "gauge"
-    },
-    "tags": {
-      "source": ["anodot-agent"],
-      "source_host_id": ["ABCDEF"],
-      "source_host_name": ["agent"],
-      "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"]
-    },
-    "value": null
-  },
-  {
-    "timestamp": 1512885600,
-    "properties": {
-      "adsize": "Sma_ll",
-      "country": "USA",
       "what": "impressions",
       "target_type": "gauge"
     },

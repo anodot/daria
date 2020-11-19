@@ -339,8 +339,8 @@ def create_monitoring_pipelines():
     for streamsets_ in streamsets.manager.get_streamsets_without_monitoring():
         pipeline_ = create_object(get_monitoring_name(streamsets_), MONITORING_SOURCE_NAME)
         pipeline_.set_streamsets(streamsets_)
-        pipeline.repository.save(pipeline_)
         streamsets.manager.create(pipeline_)
+        pipeline.repository.save(pipeline_)
         streamsets.manager.start(pipeline_)
 
 
