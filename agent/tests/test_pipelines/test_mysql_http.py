@@ -11,7 +11,7 @@ class TestMySQL(TestPipelineBase):
         'test_start': [{'name': 'test_mysql'}, {'name': 'test_mysql_timestamp_ms'}, {'name': 'test_mysql_timestamp_datetime'},
                        {'name': 'test_mysql_advanced'}, {'name': 'test_jdbc_file_short'}, {'name': 'test_jdbc_file_full'}, {'name': 'test_mysql_timezone_datetime'}],
         'test_reset': [{'name': 'test_mysql'}],
-        'test_stop': [{'name': 'test_mysql'}, {'name': 'test_mysql_timestamp_ms'}, {'name': 'test_mysql_timestamp_datetime'},
+        'test_force_stop': [{'name': 'test_mysql'}, {'name': 'test_mysql_timestamp_ms'}, {'name': 'test_mysql_timestamp_datetime'},
                       {'name': 'test_mysql_advanced'}, {'name': 'test_jdbc_file_short'}, {'name': 'test_jdbc_file_full'}, {'name': 'test_mysql_timezone_datetime'}],
         'test_output': [{'name': 'test_mysql', 'output': 'jdbc.json', 'pipeline_type': 'mysql'},
                         {'name': 'test_mysql_timestamp_ms', 'output': 'jdbc.json', 'pipeline_type': 'mysql'},
@@ -29,5 +29,5 @@ class TestMySQL(TestPipelineBase):
     def test_info(self, cli_runner, name=None):
         pytest.skip()
 
-    def test_force_stop(self, cli_runner, name=None):
+    def test_stop(self, cli_runner, name=None):
         pytest.skip()
