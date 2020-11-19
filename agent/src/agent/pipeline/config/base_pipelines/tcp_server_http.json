@@ -14,7 +14,7 @@
       "value" : "http://localhost:18633"
     }, {
       "name" : "deliveryGuarantee",
-      "value" : "AT_LEAST_ONCE"
+      "value" : "AT_MOST_ONCE"
     }, {
       "name" : "shouldRetry",
       "value" : true
