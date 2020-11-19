@@ -56,6 +56,11 @@ def save_offset(pipeline_offset: PipelineOffset):
     session().commit()
 
 
+def delete_offset(pipeline_offset: PipelineOffset):
+    session().delete(pipeline_offset)
+    session().commit()
+
+
 def count_by_streamsets() -> Dict[int, int]:
     """ Returns { streamsets_id: number_of_pipelines } """
     res = session().query(Pipeline.streamsets_id, func.count(Pipeline.streamsets_id)).group_by(Pipeline.streamsets_id).all()

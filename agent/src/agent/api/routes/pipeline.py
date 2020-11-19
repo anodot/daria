@@ -174,11 +174,6 @@ def _send_error_status_to_anodot(pipeline_: Pipeline):
 
 @pipelines.route('/pipeline-offset/<pipeline_name>', methods=['POST'])
 @needs_pipeline
-def pipeline_offset(pipeline_name):
-    pipeline_ = pipeline.repository.get_by_name(pipeline_name)
-    if pipeline_.offset:
-        pipeline_.offset.offset = request.get_json()['offset']
-    else:
-        pipeline_.offset = PipelineOffset(pipeline_.id, request.get_json()['offset'])
-    pipeline.repository.save_offset(pipeline_.offset)
+def pipeline_offset_changed(pipeline_name):
+    pipeline.manager.update_pipeline_offset(pipeline.repository.get_by_name(pipeline_name))
     return jsonify('')

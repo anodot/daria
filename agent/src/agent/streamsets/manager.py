@@ -56,29 +56,20 @@ def _client(pipeline_: Pipeline) -> StreamSetsApiClient:
     return _clients[pipeline_.streamsets.id]
 
 
-def create(pipeline_: Pipeline, streamsets_: StreamSets = None):
-    if pipeline_.streamsets:
-        raise StreamsetsException(
-            f'Pipeline with ID `{pipeline_.name}` already created in the streamsets `{pipeline_.streamsets.url}`'
-        )
-    pipeline_.set_streamsets(streamsets_ if streamsets_ else choose_streamsets())
-    _create(pipeline_)
-
-
-def _create(pipeline_: Pipeline):
+def create(pipeline_: Pipeline):
+    if not pipeline_.streamsets:
+        pipeline_.set_streamsets(_choose_streamsets())
     try:
         streamsets_pipeline = _create_pipeline(pipeline_)
+    except streamsets.ApiClientException as e:
+        raise StreamsetsException(str(e))
+    try:
         _update_pipeline(
             pipeline_,
             _get_new_config(streamsets_pipeline, pipeline_)
         )
     except (config_handlers.base.ConfigHandlerException, streamsets.ApiClientException) as e:
-        try:
-            delete(pipeline_)
-            pipeline_.delete_streamsets()
-        except streamsets.ApiClientException:
-            # ignore if it doesn't exist in streamsets
-            pass
+        delete(pipeline_)
         raise StreamsetsException(str(e))
 
 
@@ -144,7 +135,7 @@ def get_pipeline_metrics(pipeline_id: str) -> dict:
     return _client(pipeline.repository.get_by_name(pipeline_id)).get_pipeline_metrics(pipeline_id)
 
 
-def choose_streamsets(*, exclude: int = None) -> StreamSets:
+def _choose_streamsets(*, exclude: int = None) -> StreamSets:
     def add_empty(s: StreamSets):
         if s.id not in pipeline_streamsets:
             pipeline_streamsets[s.id] = 0
@@ -293,8 +284,8 @@ def stop(pipeline_id: str):
         force_stop(pipeline_id)
 
 
-def reset_pipeline(pipeline_id: str):
-    _client(pipeline.repository.get_by_name(pipeline_id)).reset_pipeline(pipeline_id)
+def reset_pipeline(pipeline_: Pipeline):
+    _client(pipeline_).reset_pipeline(pipeline_.name)
 
 
 def delete(pipeline_: Pipeline):
@@ -332,6 +323,8 @@ def _create_pipeline(pipeline_: Pipeline):
 
 
 def _update_pipeline(pipeline_: Pipeline, config: dict):
+    if pipeline_.offset:
+        _client(pipeline_).post_pipeline_offset(pipeline_.name, pipeline_.offset.offset)
     return _client(pipeline_).update_pipeline(pipeline_.name, config)
 
 
@@ -359,16 +352,8 @@ def validate(pipeline_: Pipeline):
     return _client(pipeline_).validate(pipeline_.name)
 
 
-def create_monitoring_pipeline(pipeline_: Pipeline):
-    _create(pipeline_)
-
-
 def get_pipeline_offset(pipeline_: Pipeline) -> Optional[dict]:
     return _client(pipeline_).get_pipeline_offset(pipeline_.name)
-
-
-def set_pipeline_offset(pipeline_: Pipeline, offset: dict) -> dict:
-    return _client(pipeline_).post_pipeline_offset(pipeline_.name, offset)
 
 
 class StreamsetsBalancer:
@@ -381,25 +366,24 @@ class StreamsetsBalancer:
 
     def unload_streamsets(self, streamsets_: StreamSets):
         for pipeline_ in self.streamsets_pipelines[streamsets_.id]:
-            self._move(pipeline_, choose_streamsets(exclude=streamsets_.id))
+            self._move(pipeline_, _choose_streamsets(exclude=streamsets_.id))
 
     def move_from_streamsets(self, streamsets_id: int):
         pipeline_ = self.streamsets_pipelines[streamsets_id].pop()
-        self._move(pipeline_, choose_streamsets())
+        self._move(pipeline_, _choose_streamsets())
         self.streamsets_pipelines[pipeline_.streamsets_id].append(pipeline_)
         logger.info(f'Moved `{pipeline_.name}` to `{pipeline_.streamsets.url}`')
 
     @staticmethod
     def _move(pipeline_: Pipeline, to_streamsets: StreamSets):
         logger.info(f'Moving `{pipeline_.name}` from `{pipeline_.streamsets.url}` to `{to_streamsets.url}`')
-        offset = get_pipeline_offset(pipeline_)
         should_start = pipeline_.status in [Pipeline.STATUS_STARTING, Pipeline.STATUS_RUNNING]
 
         delete(pipeline_)
-        create(pipeline_, to_streamsets)
+        pipeline_.set_streamsets(to_streamsets)
+        create(pipeline_)
         pipeline.repository.save(pipeline_)
-        if offset:
-            set_pipeline_offset(pipeline_, offset)
+        db.session().commit()
         if should_start:
             start(pipeline_)
 

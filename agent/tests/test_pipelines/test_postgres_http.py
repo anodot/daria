@@ -13,7 +13,7 @@ class TestPostgreSQL(TestPipelineBase):
                        {'name': 'test_postgres_advanced'}, {'name': 'test_jdbc_file_short_postgres'},
                        {'name': 'test_jdbc_file_full_postgres'}],
         'test_reset': [{'name': 'test_postgres'}],
-        'test_stop': [{'name': 'test_postgres'}, {'name': 'test_postgres_timestamp_ms'},
+        'test_force_stop': [{'name': 'test_postgres'}, {'name': 'test_postgres_timestamp_ms'},
                       {'name': 'test_postgres_timestamp_datetime'},
                       {'name': 'test_postgres_advanced'}, {'name': 'test_jdbc_file_short_postgres'},
                       {'name': 'test_jdbc_file_full_postgres'}],
@@ -36,5 +36,5 @@ class TestPostgreSQL(TestPipelineBase):
     def test_info(self, cli_runner, name=None):
         pytest.skip()
 
-    def test_force_stop(self, cli_runner, name=None):
+    def test_stop(self, cli_runner, name=None):
         pytest.skip()
