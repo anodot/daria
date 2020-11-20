@@ -324,7 +324,7 @@ def _create_pipeline(pipeline_: Pipeline):
 
 def _update_pipeline(pipeline_: Pipeline, config: dict):
     if pipeline_.offset:
-        _client(pipeline_).post_pipeline_offset(pipeline_.name, pipeline_.offset.offset)
+        _client(pipeline_).post_pipeline_offset(pipeline_.name, json.loads(pipeline_.offset.offset))
     return _client(pipeline_).update_pipeline(pipeline_.name, config)
 
 
@@ -352,8 +352,11 @@ def validate(pipeline_: Pipeline):
     return _client(pipeline_).validate(pipeline_.name)
 
 
-def get_pipeline_offset(pipeline_: Pipeline) -> Optional[dict]:
-    return _client(pipeline_).get_pipeline_offset(pipeline_.name)
+def get_pipeline_offset(pipeline_: Pipeline) -> Optional[str]:
+    res = _client(pipeline_).get_pipeline_offset(pipeline_.name)
+    if res:
+        return json.dumps(res)
+    return None
 
 
 class StreamsetsBalancer:
