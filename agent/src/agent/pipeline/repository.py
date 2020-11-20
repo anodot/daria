@@ -69,3 +69,7 @@ def count_by_streamsets() -> Dict[int, int]:
 
 def get_by_streamsets_id(streamsets_id: int) -> List[Pipeline]:
     return session().query(Pipeline).filter(Pipeline.streamsets_id == streamsets_id).all()
+
+
+def get_all_offsets() -> List[PipelineOffset]:
+    return session().query(PipelineOffset).all()
