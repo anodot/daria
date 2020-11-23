@@ -303,8 +303,8 @@ class PipelineOffset(Entity):
 
     id = Column(Integer, primary_key=True)
     pipeline_id = Column(Integer, ForeignKey('pipelines.id'))
-    offset = Column(MutableDict.as_mutable(JSON))
+    offset = Column(String)
 
-    def __init__(self, pipeline_id: int, offset: dict):
+    def __init__(self, pipeline_id: int, offset: str):
         self.pipeline_id = pipeline_id
         self.offset = offset

@@ -1,3 +1,5 @@
+import json
+
 import pytest
 
 from ..conftest import get_output
@@ -55,4 +57,4 @@ class TestDirectory(TestPipelineBase):
     def test_offset(self):
         pipeline_ = pipeline.repository.get_by_name('test_dir_csv')
         assert pipeline_.offset
-        assert pipeline_.offset.offset == {"version": 2, "offsets": {"$com.streamsets.pipeline.stage.origin.spooldir.SpoolDirSource.offset.version$": "1", "/home/test-directory-collector/12102017_test.csv": "{\"POS\":\"-1\"}"}}
+        assert json.loads(pipeline_.offset.offset) == {"version": 2, "offsets": {"$com.streamsets.pipeline.stage.origin.spooldir.SpoolDirSource.offset.version$": "1", "/home/test-directory-collector/12102017_test.csv": "{\"POS\":\"-1\"}"}}
