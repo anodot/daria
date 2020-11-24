@@ -9,9 +9,6 @@ from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy import Column, Integer, String, JSON, ForeignKey, func
 
 
-MONITORING = 'Monitoring'
-
-
 class PipelineException(Exception):
     pass
 

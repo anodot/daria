@@ -51,8 +51,8 @@ class TestSources:
 
     def test_get(self, api_client):
         result = api_client.get('/sources')
-        assert result.data == b'["monitoring","kafka_source"]\n'
+        assert result.data == b'["kafka_source"]\n'
 
     def test_delete(self, api_client):
         api_client.delete('sources/kafka_source')
-        assert api_client.get('/sources').data ==b'["monitoring"]\n'
+        assert api_client.get('/sources').data ==b'[]\n'

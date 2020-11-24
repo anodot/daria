@@ -40,8 +40,8 @@ class TestDirectory:
 
     def test_get(self, api_client):
         result = api_client.get('/sources')
-        assert result.data == b'["monitoring","directory"]\n'
+        assert result.data == b'"directory"]\n'
 
     def test_delete(self, api_client):
         api_client.delete('sources/directory')
-        assert api_client.get('/sources').data == b'["monitoring"]\n'
+        assert api_client.get('/sources').data == b'[]\n'

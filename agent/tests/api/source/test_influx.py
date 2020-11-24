@@ -65,8 +65,8 @@ class TestInflux:
 
     def test_get(self, api_client):
         result = api_client.get('/sources')
-        assert result.json == ["monitoring", "influx"]
+        assert result.json == ["influx"]
 
     def test_delete(self, api_client):
         api_client.delete('sources/influx')
-        assert api_client.get('/sources').json == ["monitoring"]
+        assert api_client.get('/sources').json == []

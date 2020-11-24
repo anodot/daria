@@ -25,7 +25,6 @@ class BaseConfigLoader:
     @classmethod
     def _get_configs(cls) -> dict:
         return {
-            source.TYPE_MONITORING: 'Monitoring.json',
             source.TYPE_INFLUX: 'influx_http.json',
             source.TYPE_MONGO: 'mongo_http.json',
             source.TYPE_KAFKA: 'kafka_http.json',

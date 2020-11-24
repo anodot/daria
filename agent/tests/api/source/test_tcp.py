@@ -34,8 +34,8 @@ class TestDirectory:
 
     def test_get(self, api_client):
         result = api_client.get('/sources')
-        assert result.data == b'["monitoring","splunk"]\n'
+        assert result.data == b'["splunk"]\n'
 
     def test_delete(self, api_client):
         api_client.delete('sources/splunk')
-        assert api_client.get('/sources').data ==b'["monitoring"]\n'
+        assert api_client.get('/sources').data ==b'[]\n'

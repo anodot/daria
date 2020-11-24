@@ -15,7 +15,6 @@ TYPE_SPLUNK = 'splunk'
 TYPE_DIRECTORY = 'directory'
 TYPE_SAGE = 'sage'
 TYPE_VICTORIA = 'victoria'
-TYPE_MONITORING = 'Monitoring'
 
 types = {
     TYPE_INFLUX: InfluxSource,
@@ -27,7 +26,6 @@ types = {
     TYPE_SPLUNK: TCPSource,
     TYPE_DIRECTORY: DirectorySource,
     TYPE_SAGE: SageSource,
-    TYPE_MONITORING: Source,
     TYPE_VICTORIA: VictoriaMetricsSource,
 }
 

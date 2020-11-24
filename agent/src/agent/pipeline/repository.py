@@ -16,12 +16,6 @@ def exists(pipeline_name: str) -> bool:
     ).scalar())
 
 
-def monitoring_exists() -> bool:
-    return bool(session().query(
-        session().query(Pipeline).filter(Pipeline.name.like(f'{pipeline.MONITORING}%')).exists()
-    ).scalar())
-
-
 def get_by_name(pipeline_name: str) -> Pipeline:
     pipeline_ = session().query(Pipeline).filter(Pipeline.name == pipeline_name).first()
     if not pipeline_:

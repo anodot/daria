@@ -33,30 +33,19 @@ def read_data(topic, file_type, brokers: list) -> int:
     return count_messages
 
 
-def send_monitoring_metric(what, value, destination_, file_type):
-    anodot.send([anodot.Metric20(what=what,
-                                 value=value,
-                                 target_type=anodot.TargetType.GAUGE,
-                                 timestamp=datetime.now(),
-                                 dimensions={'source': 'kafka_to_topology_monitoring', 'file_type': file_type})],
-                token=destination_.token,
-                logger=logger_,
-                base_url=destination_.url)
-
-
 def run(topic, file_type, brokers: list):
     destination_ = destination.repository.get()
     api_client = anodot.ApiClient(destination_.access_key,
                                   proxies=proxy.get_config(destination_.proxy),
                                   base_url=destination_.url)
     messages_received = read_data(topic, file_type, brokers)
-    send_monitoring_metric('messages_read', messages_received, destination_, file_type)
+    # send_monitoring_metric('messages_read', messages_received, destination_, file_type)
 
     logger_.info(str(messages_received) + ' messages was read')
 
     with open(get_file_path(file_type), 'rb') as f_in:
         result = api_client.send_topology_data(file_type, gzip.compress(f_in.read()))
-        send_monitoring_metric('messages_sent', messages_received, destination_, file_type)
+        # send_monitoring_metric('messages_sent', messages_received, destination_, file_type)
         logger_.info('File sent: ' + str(result))
 
 
