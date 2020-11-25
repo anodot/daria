@@ -39,7 +39,6 @@ def endpoint(func):
     """
 
     def wrapper(*args, **kwargs):
-        res = None
         for i in range(MAX_TRIES):
             try:
                 res = func(*args, **kwargs)
@@ -50,10 +49,10 @@ def endpoint(func):
             except requests.ConnectionError:
                 continue
             except requests.exceptions.HTTPError:
-                if not res or not res.text:
-                    raise
+                if res.text:
+                    _parse_error_response(res)
 
-                _parse_error_response(res)
+                raise
 
     return wrapper
 
