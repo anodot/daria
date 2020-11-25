@@ -11,8 +11,8 @@ from agent.modules.tools import if_validation_enabled
 from agent.modules import validator
 
 
-class ValidationException(Exception):
-    pass
+def validate(source_: source.Source):
+    get_validator(source_).validate()
 
 
 class Validator:
@@ -40,30 +40,11 @@ class Validator:
             streamsets.manager.create(test_pipeline)
             validate_status = streamsets.manager.validate(test_pipeline)
             streamsets.manager.wait_for_preview(test_pipeline, validate_status['previewerId'])
+        except streamsets.ApiClientException as e:
+            raise ValidationException(str(e))
         finally:
             streamsets.manager.delete(test_pipeline)
         return True
-
-
-def validate(source_: source.Source):
-    get_validator(source_).validate()
-
-
-def get_validator(source_: source.Source) -> Validator:
-    types = {
-        source.TYPE_INFLUX: InfluxValidator,
-        source.TYPE_KAFKA: KafkaValidator,
-        source.TYPE_MONGO: MongoValidator,
-        source.TYPE_MYSQL: JDBCValidator,
-        source.TYPE_POSTGRES: JDBCValidator,
-        source.TYPE_ELASTIC: ElasticValidator,
-        source.TYPE_SPLUNK: SplunkValidator,
-        source.TYPE_DIRECTORY: DirectoryValidator,
-        source.TYPE_SAGE: SageValidator,
-        source.TYPE_MONITORING: MonitoringValidator,
-        source.TYPE_VICTORIA: VictoriaMetricsValidator,
-    }
-    return types[source_.type](source_)
 
 
 class InfluxValidator(Validator):
@@ -276,3 +257,24 @@ class MonitoringValidator(Validator):
 
     def validate_connection(self):
         pass
+
+
+class ValidationException(Exception):
+    pass
+
+
+def get_validator(source_: source.Source) -> Validator:
+    types = {
+        source.TYPE_INFLUX: InfluxValidator,
+        source.TYPE_KAFKA: KafkaValidator,
+        source.TYPE_MONGO: MongoValidator,
+        source.TYPE_MYSQL: JDBCValidator,
+        source.TYPE_POSTGRES: JDBCValidator,
+        source.TYPE_ELASTIC: ElasticValidator,
+        source.TYPE_SPLUNK: SplunkValidator,
+        source.TYPE_DIRECTORY: DirectoryValidator,
+        source.TYPE_SAGE: SageValidator,
+        source.TYPE_MONITORING: MonitoringValidator,
+        source.TYPE_VICTORIA: VictoriaMetricsValidator,
+    }
+    return types[source_.type](source_)

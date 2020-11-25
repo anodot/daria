@@ -7,6 +7,7 @@ from agent.destination import HttpDestination
 from enum import Enum
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy import Column, Integer, String, JSON, ForeignKey, func
+from agent import source
 
 
 MONITORING = 'Monitoring'
@@ -80,7 +81,7 @@ class Pipeline(Entity):
     destination = relationship('HttpDestination')
     streamsets = relationship('StreamSets')
 
-    def __init__(self, pipeline_name: str, source_, destination: HttpDestination):
+    def __init__(self, pipeline_name: str, source_: source.Source, destination: HttpDestination):
         self.name = pipeline_name
         self.config = {}
         self.source_ = source_

@@ -1,7 +1,6 @@
 import json
 import re
 import time
-import agent.pipeline.config.handlers as config_handlers
 
 from datetime import datetime
 from typing import Dict, List, Optional
@@ -68,7 +67,7 @@ def create(pipeline_: Pipeline):
             pipeline_,
             _get_new_config(streamsets_pipeline, pipeline_)
         )
-    except (config_handlers.base.ConfigHandlerException, streamsets.ApiClientException) as e:
+    except (streamsets.handlers.base.ConfigHandlerException, streamsets.ApiClientException) as e:
         delete(pipeline_)
         raise StreamsetsException(str(e))
 
@@ -83,7 +82,7 @@ def update(pipeline_: Pipeline):
             pipeline_,
             _get_new_config(get_pipeline(pipeline_.name), pipeline_)
         )
-    except (config_handlers.base.ConfigHandlerException, streamsets.ApiClientException) as e:
+    except (streamsets.handlers.base.ConfigHandlerException, streamsets.ApiClientException) as e:
         raise StreamsetsException(str(e))
     if start_pipeline:
         start(pipeline_)
@@ -98,9 +97,9 @@ def _get_new_config(streamsets_pipeline: dict, pipeline_: Pipeline) -> dict:
 
 
 def _get_config_loader(pipeline_: Pipeline):
-    return config_handlers.base.TestPipelineBaseConfigLoader \
+    return streamsets.handlers.base.TestPipelineBaseConfigLoader \
         if isinstance(pipeline_, pipeline.TestPipeline) \
-        else config_handlers.base.BaseConfigLoader
+        else streamsets.handlers.base.BaseConfigLoader
 
 
 def get_pipeline(pipeline_id: str) -> dict:

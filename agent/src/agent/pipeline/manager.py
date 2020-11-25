@@ -3,7 +3,6 @@ import logging
 import random
 import string
 import traceback
-import agent.pipeline.config.handlers as config_handlers
 import jsonschema
 
 from agent import source, pipeline, destination, streamsets
@@ -62,19 +61,19 @@ def show_preview(pipeline_: Pipeline):
     print(*errors, sep='\n')
 
 
-def get_sdc_config_handler(pipeline_: Pipeline, is_preview=False) -> config_handlers.base.BaseConfigHandler:
+def get_sdc_config_handler(pipeline_: Pipeline, is_preview=False) -> streamsets.handlers.base.BaseConfigHandler:
     handlers = {
-        source.TYPE_MONITORING: config_handlers.monitoring.MonitoringConfigHandler,
-        source.TYPE_INFLUX: config_handlers.influx.InfluxConfigHandler,
-        source.TYPE_MONGO: config_handlers.mongo.MongoConfigHandler,
-        source.TYPE_KAFKA: config_handlers.kafka.KafkaConfigHandler,
-        source.TYPE_MYSQL: config_handlers.jdbc.JDBCConfigHandler,
-        source.TYPE_POSTGRES: config_handlers.jdbc.JDBCConfigHandler,
-        source.TYPE_ELASTIC: config_handlers.elastic.ElasticConfigHandler,
-        source.TYPE_SPLUNK: config_handlers.tcp.TCPConfigHandler,
-        source.TYPE_DIRECTORY: config_handlers.directory.DirectoryConfigHandler,
-        source.TYPE_SAGE: config_handlers.sage.SageConfigHandler,
-        source.TYPE_VICTORIA: config_handlers.victoria.VictoriaConfigHandler,
+        source.TYPE_MONITORING: streamsets.handlers.monitoring.MonitoringConfigHandler,
+        source.TYPE_INFLUX: streamsets.handlers.influx.InfluxConfigHandler,
+        source.TYPE_MONGO: streamsets.handlers.mongo.MongoConfigHandler,
+        source.TYPE_KAFKA: streamsets.handlers.kafka.KafkaConfigHandler,
+        source.TYPE_MYSQL: streamsets.handlers.jdbc.JDBCConfigHandler,
+        source.TYPE_POSTGRES: streamsets.handlers.jdbc.JDBCConfigHandler,
+        source.TYPE_ELASTIC: streamsets.handlers.elastic.ElasticConfigHandler,
+        source.TYPE_SPLUNK: streamsets.handlers.tcp.TCPConfigHandler,
+        source.TYPE_DIRECTORY: streamsets.handlers.directory.DirectoryConfigHandler,
+        source.TYPE_SAGE: streamsets.handlers.sage.SageConfigHandler,
+        source.TYPE_VICTORIA: streamsets.handlers.victoria.VictoriaConfigHandler,
     }
     return handlers[pipeline_.source.type](pipeline_, is_preview)
 
@@ -257,7 +256,7 @@ def reset(pipeline_: Pipeline):
         if pipeline_.offset:
             pipeline.repository.delete_offset(pipeline_.offset)
             pipeline_.offset = None
-    except (config_handlers.base.ConfigHandlerException, streamsets.ApiClientException) as e:
+    except (streamsets.handlers.base.ConfigHandlerException, streamsets.ApiClientException) as e:
         raise pipeline.PipelineException(str(e))
 
 
