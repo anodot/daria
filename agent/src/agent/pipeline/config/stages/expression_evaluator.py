@@ -54,21 +54,21 @@ class AddProperties(Stage):
 
 
 class Filtering(Stage):
-    def get_transformations(self):
+    def _get_transformations(self) -> list:
         transformations = []
         if not self.pipeline.transformations_file_path:
             return transformations
 
         with open(self.pipeline.transformations_file_path) as f:
             for row in csv.DictReader(f, fieldnames=['result', 'value', 'condition']):
-                exp = f"'{row['value']}'"
+                exp = condition.process_value(row['value'])
                 if row['condition']:
-                    exp = f"{condition.get_expression(row['condition'])} ? {exp} : record:value('/{row['result']}')"
+                    exp = f"{condition.process_expression(row['condition'])} ? {exp} : record:value('/{row['result']}')"
 
                 transformations.append(get_value('/' + row['result'], exp))
         return transformations
 
-    def check_dimensions(self):
+    def _check_dimensions(self) -> list:
         check_dims = []
         for d_path in self.pipeline.dimensions_paths:
             keys = d_path.split('/')
@@ -82,8 +82,7 @@ record:value('{path}') : emptyMap()"""))
         return check_dims
 
     def get_config(self) -> dict:
-        required_fields = [*self.pipeline.required_dimensions_paths,
-                           self.pipeline.timestamp_path]
+        required_fields = [*self.pipeline.required_dimensions_paths, self.pipeline.timestamp_path]
         if self.pipeline.values_array_path:
             required_fields.append(self.pipeline.values_array_path)
         else:
@@ -97,10 +96,10 @@ record:value('{path}') : emptyMap()"""))
 
         preconditions = []
         if self.pipeline.filter_condition:
-            preconditions.append(condition.get_expression(self.pipeline.filter_condition))
+            preconditions.append(condition.process_expression(self.pipeline.filter_condition))
 
         return {
-            'expressionProcessorConfigs': self.check_dimensions() + self.get_transformations(),
+            'expressionProcessorConfigs': self._check_dimensions() + self._get_transformations(),
             'stageRequiredFields': [f'/{f}' for f in required_fields],
             'stageRecordPreconditions': ['${' + p + '}' for p in preconditions]
         }

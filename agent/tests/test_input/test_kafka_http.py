@@ -98,3 +98,29 @@ class TestKafka:
         result = cli_runner.invoke(cli.pipeline.edit, options, catch_exceptions=False,
                                    input=f"\n{value}\n\n\n\n\n\n\n\n\n\n\n\n")
         assert result.exit_code == 0
+
+    def test_create_transform_value(self, cli_runner):
+        pipeline_id = 'test_transform_value'
+        input_ = {
+            'source name': 'test_kfk',
+            'pipeline id': pipeline_id,
+            'preview': 'n',
+            'count': 'n',
+            'static': 'y',
+            'value array': ' ',
+            'value properties': 'Clicks:gauge',
+            'measurement names': 'Clicks:clicks',
+            'timestamp': 'timestamp_unix',
+            'timestamp type': 'unix',
+            'required dimensions': ' ',
+            'optional dimensions': 'title subtitle',
+            'consumer group': '',
+            'additional props': ' ',
+            'tags': ' ',
+            'filter condition': ' ',
+            'transformation file': '/home/kafka_transform_value.csv',
+        }
+        result = cli_runner.invoke(cli.pipeline.create, ["-a"], catch_exceptions=False, input='\n'.join(input_.values()))
+        traceback.print_exception(*result.exc_info)
+        assert result.exit_code == 0
+        assert streamsets.manager.get_pipeline(pipeline_id)

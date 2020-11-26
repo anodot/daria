@@ -171,9 +171,10 @@ run-influx:
 run-victoria:
 	$(DOCKER_COMPOSE_DEV) up -d victoriametrics
 
-run-kafka: run-zookeeper
+run-kafka: run-zookeeper sleep _run-kafka setup-kafka
+
+_run-kafka:
 	$(DOCKER_COMPOSE_DEV) up -d kafka
-	sleep $(SLEEP)
 
 run-zookeeper:
 	$(DOCKER_COMPOSE_DEV) up -d zookeeper
