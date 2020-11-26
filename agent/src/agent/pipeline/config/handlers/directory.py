@@ -20,7 +20,7 @@ class DirectoryConfigHandler(BaseConfigHandler):
     def _get_pipeline_config(self) -> dict:
         if not self.is_preview:
             schema_definition = schema.update(self.pipeline)
-            self.pipeline.config['schema'] = schema_definition
+            self.pipeline.schema = schema_definition
             schema_id = schema_definition['id']
         else:
             schema_id = 'preview'

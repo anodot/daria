@@ -11,6 +11,25 @@ from agent.modules.constants import STREAMSETS_PREVIEW_TIMEOUT
 logger = get_logger(__name__)
 
 
+def _parse_error_response(result):
+    try:
+        response = result.json()
+    except json.decoder.JSONDecodeError:
+        raise ApiClientException(result.text)
+
+    logger.exception(response['RemoteException'])
+    if result.status_code == 401:
+        raise UnauthorizedException('Unauthorized')
+
+    raise ApiClientException(
+        response['RemoteException']['message'],
+        response['RemoteException']['exception'],
+    )
+
+
+MAX_TRIES = 3
+
+
 def endpoint(func):
     """
     Decorator for api endpoints. Logs errors and returns json response
@@ -20,27 +39,20 @@ def endpoint(func):
     """
 
     def wrapper(*args, **kwargs):
-        res = func(*args, **kwargs)
-        try:
-            res.raise_for_status()
-            if res.text:
-                return res.json()
-            return
-        except requests.exceptions.HTTPError:
-            if res.text:
-                try:
-                    response = res.json()
-                    logger.exception(response['RemoteException'])
-                    if res.status_code == 401:
-                        raise UnauthorizedException('Unauthorized')
-                    else:
-                        raise ApiClientException(
-                            response['RemoteException']['message'],
-                            response['RemoteException']['exception'],
-                        )
-                except json.decoder.JSONDecodeError:
-                    raise ApiClientException(res.text)
-            raise
+        for i in range(MAX_TRIES):
+            try:
+                res = func(*args, **kwargs)
+                res.raise_for_status()
+                if res.text:
+                    return res.json()
+                return
+            except requests.ConnectionError:
+                continue
+            except requests.exceptions.HTTPError:
+                if res.text:
+                    _parse_error_response(res)
+
+                raise
 
     return wrapper
 
