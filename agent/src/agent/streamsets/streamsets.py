@@ -173,7 +173,7 @@ class StreamSetsApiClient:
 
     @endpoint
     def get_pipeline_offset(self, pipeline_id: str):
-        logger.info(f'Get `{pipeline_id}` offset')
+        logger.debug(f'Get `{pipeline_id}` offset')
         return self.session.get(self._build_url('pipeline', pipeline_id, 'committedOffsets'))
 
     @endpoint
