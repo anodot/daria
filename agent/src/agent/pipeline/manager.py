@@ -222,6 +222,7 @@ def edit_pipeline_using_json(config: dict) -> Pipeline:
     pipeline_builder = PipelineBuilder(pipeline.repository.get_by_name(config['pipeline_id']))
     pipeline_builder.load_config(config, edit=True)
     streamsets.manager.update(pipeline_builder.pipeline)
+    pipeline.repository.save(pipeline_builder.pipeline)
     return pipeline_builder.pipeline
 
 
