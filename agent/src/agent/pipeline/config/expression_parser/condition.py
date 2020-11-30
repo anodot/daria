@@ -12,6 +12,39 @@ FUNCTIONS = {
 }
 
 
+def process_expression(condition: str) -> str:
+    validate(condition)
+    expressions = split_to_expressions(condition)
+
+    condition = []
+    for expression in expressions:
+        literals = split_to_literals(expression)
+
+        start_quote_idx = get_start_quote_idx(literals[0])
+        exp_start = literals[0][:start_quote_idx]
+        operand = f"record:value('/{literals[0][start_quote_idx + 1:-1]}')"
+
+        if literals[1] in COMPARISON_LITERALS:
+            literals[0] = exp_start + operand
+            condition.append(' '.join(literals))
+            continue
+
+        end_quote_idx = get_end_quote_idx(literals[2])
+        exp_end = literals[2][end_quote_idx + 1:]
+        sdc_function = f'str:{literals[1]}({operand}, {literals[2][:end_quote_idx + 1]})'
+        condition.append(exp_start + sdc_function + exp_end)
+
+    return ' '.join(condition)
+
+
+def process_value(value: str) -> str:
+    value = value.strip()
+    if is_function(value):
+        validate_function(value)
+        return replace_first_argument(value)
+    return f"'{value}'"
+
+
 def count_opened_parenthesis(literal: str) -> int:
     return len(re.findall(r'^\!?(\(+)|$', literal)[0])
 
@@ -116,40 +149,6 @@ def get_end_quote_idx(literal: str) -> int:
         return literal.rindex('"')
     except ValueError:
         return literal.rindex("'")
-
-
-# todo move up
-def process_expression(condition: str) -> str:
-    validate(condition)
-    expressions = split_to_expressions(condition)
-
-    condition = []
-    for expression in expressions:
-        literals = split_to_literals(expression)
-
-        start_quote_idx = get_start_quote_idx(literals[0])
-        exp_start = literals[0][:start_quote_idx]
-        operand = f"record:value('/{literals[0][start_quote_idx + 1:-1]}')"
-
-        if literals[1] in COMPARISON_LITERALS:
-            literals[0] = exp_start + operand
-            condition.append(' '.join(literals))
-            continue
-
-        end_quote_idx = get_end_quote_idx(literals[2])
-        exp_end = literals[2][end_quote_idx + 1:]
-        sdc_function = f'str:{literals[1]}({operand}, {literals[2][:end_quote_idx + 1]})'
-        condition.append(exp_start + sdc_function + exp_end)
-
-    return ' '.join(condition)
-
-
-def process_value(value: str) -> str:
-    value = value.strip()
-    if is_function(value):
-        validate_function(value)
-        return replace_first_argument(value)
-    return f"'{value}'"
 
 
 def is_function(expression: str) -> bool:

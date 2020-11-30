@@ -112,7 +112,7 @@ def test_get_filtering_expression(condition, expected_result):
 @pytest.mark.parametrize("value, expected_result", [
     ('test', '\'test\''),
     ('(some == thing)', '\'(some == thing)\''),
-    ('str:regExCapture("test", "regex", 3)', 'str:regExCapture(record:value("test"), "regex", 3)'),
+    ('str:regExCapture(test, regex, 3)', 'str:regExCapture(record:value(\'/test\'), regex, 3)'),
 ])
 def test_process_value(value, expected_result):
     assert expression_parser.condition.process_value(value) == expected_result
@@ -130,9 +130,9 @@ def test_is_function(value, expected_result):
 
 
 @pytest.mark.parametrize("value, expected_result", [
-    ('str:myFunc("test")', 'str:myFunc(record:value("test"))'),
-    ('func_tion("testThis")', 'func_tion(record:value("testThis"))'),
-    ('str:myFunc("test", 3)', 'str:myFunc(record:value("test"), 3)'),
+    ('str:myFunc(test)', 'str:myFunc(record:value(\'/test\'))'),
+    ('func_tion(testThis)', 'func_tion(record:value(\'/testThis\'))'),
+    ('str:myFunc(test, 3)', 'str:myFunc(record:value(\'/test\'), 3)'),
 ])
 def test_replace_first_argument(value, expected_result):
     assert expression_parser.condition.replace_first_argument(value) == expected_result

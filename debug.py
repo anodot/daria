@@ -5,5 +5,5 @@ from agent.modules import db
 
 # cli.source.edit(["test_mongo"])
 # cli.destination()
-cli.pipeline.edit(["-a", "test_transform_value"])
+# cli.pipeline.create()
 # cli.streamsets.delete(["asdfa"])
