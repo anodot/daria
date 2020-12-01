@@ -15,6 +15,7 @@ class TestKafka(TestPipelineBase):
                        {'name': 'test_kfk_running_counter_dynamic_what'},
                        {'name': 'test_kfk_running_counter_static_tt'},
                        {'name': 'test_transform_value'},
+                       {'name': 'test_transform_value_2'},
                        {'name': 'test_kafka_timezone'}],
         'test_info': [{'name': 'test_kfk_value_const'}, {'name': 'test_kfk_running_counter'}],
         'test_stop': [{'name': 'test_kfk_value_const'}, {'name': 'test_kfk_timestamp_ms'},
@@ -24,10 +25,12 @@ class TestKafka(TestPipelineBase):
                       {'name': 'test_kfk_running_counter_dynamic_what'},
                       {'name': 'test_kfk_running_counter_static_tt'},
                       {'name': 'test_transform_value'},
+                      {'name': 'test_transform_value_2'},
                       {'name': 'test_kafka_timezone'}],
         'test_output': [
             {'name': 'test_kfk_value_const', 'output': 'json_value_const_adv.json', 'pipeline_type': 'kafka'},
             {'name': 'test_transform_value', 'output': 'kafka_transform_value.json', 'pipeline_type': 'kafka'},
+            {'name': 'test_transform_value_2', 'output': 'kafka_transform_value_2.json', 'pipeline_type': 'kafka'},
             {'name': 'test_kfk_timestamp_ms', 'output': 'json_value_property.json', 'pipeline_type': 'kafka'},
             {'name': 'test_csv', 'output': 'json_value_property_tags.json', 'pipeline_type': 'kafka'},
             {'name': 'test_kfk_timestamp_string', 'output': 'json_value_property_transformations.json',
@@ -47,6 +50,7 @@ class TestKafka(TestPipelineBase):
                                  {'name': 'test_kfk_running_counter_dynamic_what'},
                                  {'name': 'test_kfk_running_counter_static_tt'},
                                  {'name': 'test_transform_value'},
+                                 {'name': 'test_transform_value_2'},
                                  {'name': 'test_kafka_timezone'}],
         'test_source_delete': [{'name': 'test_kfk'}],
     }

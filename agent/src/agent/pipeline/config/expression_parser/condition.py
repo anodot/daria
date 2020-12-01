@@ -8,7 +8,14 @@ COMPARISON_FUNCTIONS = ['contains', 'startsWith', 'endsWith', 'matches']
 COMPARISON_LITERALS = ['==', '!=']
 # function name: num of arguments
 FUNCTIONS = {
-    'str:regExCapture': 3
+    'str:regExCapture': 3,
+    'str:replace': 3,
+    'str:replaceAll': 3,
+    'str:substring': 3,
+    'str:toLower': 1,
+    'str:toUpper': 1,
+    'str:trim': 1,
+    'str:truncate': 2,
 }
 
 

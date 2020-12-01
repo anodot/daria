@@ -77,6 +77,16 @@ class TestKafka:
             {'options': ['test_kfk_value_const', '-a'], 'value': 'y\nclicks\n\n\n\n'},
             {'options': ['test_kfk_timestamp_string', '-a'], 'value': 'n\nn\n\nClicks:agg_type\nClicks:metric'}
         ],
+        'test_create_transform_value': [
+            {
+                'pipeline_id': 'test_transform_value',
+                'transform_file': '/home/kafka_transform_value.csv'
+            },
+            {
+                'pipeline_id': 'test_transform_value_2',
+                'transform_file': '/home/kafka_transform_value_2.csv'
+            },
+        ]
     }
 
     def test_source_create(self, cli_runner, name):
@@ -99,8 +109,7 @@ class TestKafka:
                                    input=f"\n{value}\n\n\n\n\n\n\n\n\n\n\n\n")
         assert result.exit_code == 0
 
-    def test_create_transform_value(self, cli_runner):
-        pipeline_id = 'test_transform_value'
+    def test_create_transform_value(self, cli_runner, pipeline_id: str, transform_file: dict):
         input_ = {
             'source name': 'test_kfk',
             'pipeline id': pipeline_id,
@@ -118,7 +127,7 @@ class TestKafka:
             'additional props': ' ',
             'tags': ' ',
             'filter condition': ' ',
-            'transformation file': '/home/kafka_transform_value.csv',
+            'transformation file': transform_file,
         }
         result = cli_runner.invoke(cli.pipeline.create, ["-a"], catch_exceptions=False, input='\n'.join(input_.values()))
         traceback.print_exception(*result.exc_info)
