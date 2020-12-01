@@ -3,7 +3,6 @@ from sqlalchemy import func
 from agent import pipeline
 from agent.modules.db import session
 from agent.pipeline import PipelineOffset, Pipeline
-from agent.streamsets import StreamSets
 
 
 class PipelineNotExistsException(Exception):

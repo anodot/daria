@@ -144,7 +144,7 @@ class PromptConfig:
         for i in properties_str.split():
             pair = i.split(':')
             if len(pair) != 2:
-                raise click.UsageError('Wrong format, correct example - key:val key2:val2')
+                raise click.UsageError(f'`{properties_str}` wrong format, correct example - key:val key2:val2')
             result[pair[0]] = pair[1]
         return result
 
