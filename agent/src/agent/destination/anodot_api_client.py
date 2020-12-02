@@ -50,27 +50,37 @@ class AnodotApiClient:
             self.session.headers.update({'Authorization': 'Bearer ' + self.auth_token.authentication_token})
 
     def get_new_token(self):
-        response = requests.post(self._build_url('access-token'), json={'refreshToken': self.access_key},
+        response = requests.post(self._build_url(['access-token']), json={'refreshToken': self.access_key},
                                  proxies=self.proxies)
         response.raise_for_status()
         return response.text.replace('"', '')
 
-    def _build_url(self, *args) -> str:
-        return urllib.parse.urljoin(self.url, '/'.join(['/api/v2', *args]))
+    def _build_url(self, args: list, parameters: dict = None) -> str:
+        url = urllib.parse.urljoin(self.url, '/'.join(['/api/v2', *args]))
+        if parameters:
+            url = f'{url}?' + '&'.join([f'{k}={v}' for k, v in parameters.items()])
+        return url
 
     @endpoint
     def create_schema(self, schema):
-        return self.session.post(self._build_url('stream-schemas'), json=schema, proxies=self.proxies)
+        return self.session.post(self._build_url(['stream-schemas']), json=schema, proxies=self.proxies)
 
     @endpoint
     def delete_schema(self, schema_id):
-        return self.session.delete(self._build_url('stream-schemas', schema_id), proxies=self.proxies)
+        return self.session.delete(self._build_url(['stream-schemas'], schema_id), proxies=self.proxies)
 
     @endpoint
     def send_topology_data(self, data_type, data):
-        return self.session.post(self._build_url('topology', 'data'), proxies=self.proxies,
+        return self.session.post(self._build_url(['topology', 'data']), proxies=self.proxies,
                                  data=data, params={'type': data_type})
 
     @endpoint
     def send_pipeline_data_to_bc(self, pipeline_data: dict):
-        return self.session.post(self._build_url('bc', 'agents'), proxies=self.proxies, json=pipeline_data)
+        return self.session.post(self._build_url(['bc', 'agents']), proxies=self.proxies, json=pipeline_data)
+
+    @endpoint
+    def delete_pipeline_from_bc(self, pipeline_id: str):
+        return self.session.delete(
+            self._build_url(['bc', 'agents'], {'pipeline_id': pipeline_id}),
+            proxies=self.proxies
+        )
