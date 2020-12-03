@@ -81,6 +81,6 @@ class AnodotApiClient:
     @endpoint
     def delete_pipeline_from_bc(self, pipeline_id: str):
         return self.session.delete(
-            self._build_url(['bc', 'agents'], {'pipeline_id': pipeline_id}),
+            self._build_url(['bc', 'agents'], {'pipelineId': pipeline_id}),
             proxies=self.proxies
         )
