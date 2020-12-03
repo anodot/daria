@@ -56,10 +56,12 @@ for deleted_pipeline_id in pipeline.repository.get_deleted_pipeline_ids():
             num_of_errors += 1
             send_error_metric(deleted_pipeline_id)
             logger.error(traceback.format_exc())
+            continue
     except Exception:
         num_of_errors += 1
         send_error_metric(deleted_pipeline_id)
         logger.error(traceback.format_exc())
+        continue
     pipeline.repository.remove_deleted_pipeline_id(deleted_pipeline_id)
 
 exit(num_of_errors)
