@@ -71,7 +71,7 @@ def get_by_streamsets_id(streamsets_id: int) -> List[Pipeline]:
 
 
 def add_deleted_pipeline_id(pipeline_id: str):
-    session().execute(f"INSERT INTO deleted_pipelines VALUES ('{pipeline_id}')")
+    session().execute(f"INSERT INTO deleted_pipelines VALUES ('{pipeline_id}') ON CONFLICT DO NOTHING")
     session().commit()
 
 
