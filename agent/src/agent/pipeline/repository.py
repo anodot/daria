@@ -68,3 +68,17 @@ def count_by_streamsets() -> Dict[int, int]:
 
 def get_by_streamsets_id(streamsets_id: int) -> List[Pipeline]:
     return session().query(Pipeline).filter(Pipeline.streamsets_id == streamsets_id).all()
+
+
+def add_deleted_pipeline_id(pipeline_id: str):
+    session().execute(f"INSERT INTO deleted_pipelines VALUES ('{pipeline_id}') ON CONFLICT DO NOTHING")
+    session().commit()
+
+
+def remove_deleted_pipeline_id(pipeline_id: str):
+    session().execute(f"DELETE FROM deleted_pipelines WHERE pipeline_id = '{pipeline_id}'")
+    session().commit()
+
+
+def get_deleted_pipeline_ids() -> list:
+    return session().execute('SELECT * FROM deleted_pipelines')

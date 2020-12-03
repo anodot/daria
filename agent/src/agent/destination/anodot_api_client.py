@@ -74,3 +74,11 @@ class AnodotApiClient:
     @endpoint
     def send_pipeline_data_to_bc(self, pipeline_data: dict):
         return self.session.post(self._build_url('bc', 'agents'), proxies=self.proxies, json=pipeline_data)
+
+    @endpoint
+    def delete_pipeline_from_bc(self, pipeline_id: str):
+        return self.session.delete(
+            self._build_url('bc', 'agents'),
+            proxies=self.proxies,
+            params={'pipelineId': pipeline_id}
+        )
