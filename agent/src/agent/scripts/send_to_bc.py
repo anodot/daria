@@ -48,8 +48,9 @@ for pipeline_ in pipelines:
 
 
 for deleted_pipeline_id in pipeline.repository.get_deleted_pipeline_ids():
+    deleted_pipeline_id = deleted_pipeline_id[0]
     try:
-        api_client.delete_pipeline_from_bc(deleted_pipeline_id[0])
+        api_client.delete_pipeline_from_bc(deleted_pipeline_id)
     except HTTPError as e:
         if not e.response.status_code == 404:
             num_of_errors += 1
