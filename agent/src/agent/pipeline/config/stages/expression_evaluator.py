@@ -39,7 +39,7 @@ class AddProperties(Stage):
     def _get_dimension_field_path(cls, key):
         return '/properties/' + key
 
-    def get_config(self) -> dict:
+    def _get_config(self) -> dict:
         expressions = []
         for key, val in self.pipeline.constant_dimensions.items():
             expressions.append(get_value(self._get_dimension_field_path(key), f'"{val}"'))
@@ -81,7 +81,7 @@ record:value('{path}') : emptyMap()"""))
 (record:value('/{d_path}') == null) ? 'NULL' : record:value('/{d_path}') : null"""))
         return check_dims
 
-    def get_config(self) -> dict:
+    def _get_config(self) -> dict:
         required_fields = [*self.pipeline.required_dimensions_paths, self.pipeline.timestamp_path]
         if self.pipeline.values_array_path:
             required_fields.append(self.pipeline.values_array_path)
@@ -112,7 +112,7 @@ class AddProperties30(AddProperties):
 
 
 class SendWatermark(Stage):
-    def get_config(self) -> dict:
+    def _get_config(self) -> dict:
         extract_timestamp = "str:regExCapture(record:value('/filepath'), '.*/(.+)_.*', 1)"
         timestamp_to_unix = get_convert_timestamp_to_unix_expression(self.pipeline.timestamp_type,
                                                                      extract_timestamp,
@@ -127,7 +127,7 @@ class SendWatermark(Stage):
 
 
 class AddMetadataTags(Stage):
-    def get_config(self) -> dict:
+    def _get_config(self) -> dict:
         return {
             'expressionProcessorConfigs': get_tags_expressions(self.pipeline.meta_tags())
         }

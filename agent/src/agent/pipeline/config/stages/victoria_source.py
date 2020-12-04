@@ -16,7 +16,7 @@ class VictoriaScript(Stage):
             return str(midnight - int(self.pipeline.days_to_backfill) * 24 * 60 * 60)
         return ''
 
-    def get_config(self) -> dict:
+    def _get_config(self) -> dict:
         with open(self.get_jython_file_path()) as f:
             return {
                 'scriptConf.params': [

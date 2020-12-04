@@ -3,25 +3,27 @@ import os
 from abc import ABC, abstractmethod
 from agent.modules.constants import ROOT_DIR
 from agent.pipeline import Pipeline
+from agent import pipeline
 
 
 class Stage(ABC):
     JYTHON_SCRIPT = ''
     JYTHON_SCRIPTS_PATH = os.path.join('pipeline', 'config', 'jython_scripts')
 
-    def __init__(self, pipeline: Pipeline, sdc_stage: dict):
-        self.pipeline = pipeline
+    def __init__(self, pipeline_: Pipeline, sdc_stage: dict):
+        self.pipeline = pipeline_
         self.sdc_stage = sdc_stage
-        self.config = self.get_config()
+        if isinstance(pipeline_, pipeline.TestPipeline):
+            self.config = self._get_source_config()
+        else:
+            self.config = self._get_config()
+
+    def _get_source_config(self):
+        return {**self.pipeline.source.config, **self.pipeline.override_source}
 
     @abstractmethod
-    def get_config(self) -> dict:
+    def _get_config(self) -> dict:
         pass
-
-    def update_sdc_stage(self):
-        for conf in self.sdc_stage['configuration']:
-            if conf['name'] in self.config:
-                conf['value'] = self.config[conf['name']]
 
     def get_jython_file_path(self):
         return os.path.join(ROOT_DIR, self.JYTHON_SCRIPTS_PATH, self.JYTHON_SCRIPT)
