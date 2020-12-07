@@ -85,7 +85,7 @@ class BaseConfigHandler:
     def _override_stages(self):
         for stage in self.config['stages']:
             if stage['instanceName'] in self.stages_to_override:
-                stage_config = self.stages_to_override[stage['instanceName']](self.pipeline, stage).get_config()
+                stage_config = self.stages_to_override[stage['instanceName']](self.pipeline, stage).config
                 for conf in stage['configuration']:
                     if conf['name'] in stage_config:
                         conf['value'] = stage_config[conf['name']]

@@ -7,7 +7,7 @@ from agent import source
 class JDBCLookupStage(Stage):
     LAST_TIMESTAMP = '${record:value("/last_timestamp")}'
 
-    def get_config(self) -> dict:
+    def _get_config(self) -> dict:
         return {
             'query': self.get_query(),
             ** self.get_connection_configs()

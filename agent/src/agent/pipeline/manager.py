@@ -315,12 +315,6 @@ def disable_destination_logs(pipeline_: Pipeline):
     streamsets.manager.update(pipeline_)
 
 
-def _update_stage_config(source_: Source, stage):
-    for conf in stage['configuration']:
-        if conf['name'] in source_.config:
-            conf['value'] = source_.config[conf['name']]
-
-
 def build_test_pipeline(source_: Source) -> TestPipeline:
     # creating a new source because otherwise it will mess with the db session
     test_source = Source(source_.name, source_.type, source_.config)

@@ -5,7 +5,7 @@ from .base import Stage
 class SageScript(Stage):
     JYTHON_SCRIPT = 'sage.py'
 
-    def get_config(self) -> dict:
+    def _get_config(self) -> dict:
         with open(self.get_jython_file_path()) as f:
             script = f.read()
 

@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 class InfluxScript(Stage):
     JYTHON_SCRIPT = 'influx.py'
 
-    def get_config(self) -> dict:
+    def _get_config(self) -> dict:
         with open(self.get_jython_file_path()) as f:
             return {
                 'scriptConf.params': [
