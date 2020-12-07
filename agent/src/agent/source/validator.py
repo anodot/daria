@@ -3,22 +3,33 @@ import os
 import jsonschema
 import requests
 import sqlalchemy
+import inject
 
+from abc import ABC, abstractmethod
 from datetime import datetime
 from urllib.parse import urlparse, urlunparse
-from agent import source, pipeline, streamsets
+from agent import source
 from agent.modules.tools import if_validation_enabled
 from agent.modules import validator
+from agent.source import Source
 
 
-def validate(source_: source.Source):
+def validate(source_: Source):
     get_validator(source_).validate()
+
+
+class IConnectionValidator(ABC):
+    @staticmethod
+    @abstractmethod
+    def validate(source_: Source):
+        pass
 
 
 class Validator:
     VALIDATION_SCHEMA_FILE = ''
+    connection_validator: inject.attr(IConnectionValidator)
 
-    def __init__(self, source_: source.Source):
+    def __init__(self, source_: Source):
         self.source = source_
 
     def validate(self):
@@ -35,16 +46,7 @@ class Validator:
 
     @if_validation_enabled
     def validate_connection(self):
-        test_pipeline = pipeline.manager.build_test_pipeline(self.source)
-        try:
-            streamsets.manager.create(test_pipeline)
-            validate_status = streamsets.manager.validate(test_pipeline)
-            streamsets.manager.wait_for_preview(test_pipeline, validate_status['previewerId'])
-        except streamsets.ApiClientException as e:
-            raise ValidationException(str(e))
-        finally:
-            streamsets.manager.delete(test_pipeline)
-        return True
+        self.connection_validator.validate()
 
 
 class InfluxValidator(Validator):
@@ -97,7 +99,7 @@ class ElasticValidator(Validator):
     def validate_connection(self):
         # todo
         self.source.config[source.ElasticSource.CONFIG_IS_INCREMENTAL] = False
-        super().validate_connection()
+        super().connection_validator.validate()
 
 
 class JDBCValidator(Validator):
@@ -263,7 +265,7 @@ class ValidationException(Exception):
     pass
 
 
-def get_validator(source_: source.Source) -> Validator:
+def get_validator(source_: Source) -> Validator:
     types = {
         source.TYPE_INFLUX: InfluxValidator,
         source.TYPE_KAFKA: KafkaValidator,
