@@ -1,5 +1,5 @@
-from agent.pipeline.validators.source import SourceConnectionValidator
+from agent import source, pipeline
 
 
 def config(binder):
-    binder.bind(SourceConnectionValidator, SourceConnectionValidator())
+    binder.bind(source.validator.IConnectionValidator, pipeline.validators.source.SourceConnectionValidator())

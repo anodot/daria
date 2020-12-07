@@ -1,14 +1,11 @@
 import json
 import traceback
-
 import jsonschema
 
 from typing import List
 from agent import pipeline
 from agent import source
 from agent.source import SourceException, Source
-
-MAX_SAMPLE_RECORDS = 3
 
 
 def create_source_obj(source_name: str, source_type: str) -> Source:

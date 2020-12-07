@@ -1,8 +1,8 @@
 import click
 
 from .abstract_builder import Builder
-from agent.modules.tools import infinite_retry, print_dicts, map_keys, if_validation_enabled
-from agent import source, pipeline
+from agent.modules.tools import infinite_retry
+from agent import source
 
 
 class InfluxSourceBuilder(Builder):
@@ -46,13 +46,3 @@ class InfluxSourceBuilder(Builder):
             self.validator.validate_offset()
         except source.validator.ValidationException as e:
             raise click.UsageError(e)
-
-    @if_validation_enabled
-    def print_sample_data(self, pipeline_: pipeline.Pipeline):
-        records, errors = self._get_sample_records(pipeline_)
-        if records and 'series' in records[0]['results'][0]:
-            series = records[0]['results'][0]['series'][0]
-            print_dicts(map_keys(series['values'], series['columns']))
-        else:
-            print('No preview data available')
-        print(*errors, sep='\n')

@@ -33,9 +33,9 @@ class PipelineBuilder:
 
     def load_config(self, config, edit=False):
         self.pipeline.set_config(self.file_loader.load(config, edit))
-        self.validate_config()
+        self._validate_config()
 
-    def validate_config(self):
+    def _validate_config(self):
         get_config_validator(self.pipeline).validate(self.pipeline)
 
 
@@ -50,7 +50,7 @@ def show_preview(pipeline_: Pipeline):
     if preview_data['batchesOutput']:
         for output in preview_data['batchesOutput'][0]:
             if 'destination_OutputLane' in output['output']:
-                data = output['output']['destination_OutputLane'][:source.manager.MAX_SAMPLE_RECORDS]
+                data = output['output']['destination_OutputLane'][:pipeline.preview.MAX_SAMPLE_RECORDS]
                 if data:
                     print_json([sdc_record_map_to_dict(record['value']) for record in data])
                 else:

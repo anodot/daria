@@ -27,7 +27,7 @@ class IConnectionValidator(ABC):
 
 class Validator:
     VALIDATION_SCHEMA_FILE = ''
-    connection_validator: inject.attr(IConnectionValidator)
+    connection_validator = inject.attr(IConnectionValidator)
 
     def __init__(self, source_: Source):
         self.source = source_
@@ -46,7 +46,7 @@ class Validator:
 
     @if_validation_enabled
     def validate_connection(self):
-        self.connection_validator.validate()
+        self.connection_validator.validate(self.source)
 
 
 class InfluxValidator(Validator):
@@ -99,7 +99,7 @@ class ElasticValidator(Validator):
     def validate_connection(self):
         # todo
         self.source.config[source.ElasticSource.CONFIG_IS_INCREMENTAL] = False
-        super().connection_validator.validate()
+        super().validate_connection()
 
 
 class JDBCValidator(Validator):

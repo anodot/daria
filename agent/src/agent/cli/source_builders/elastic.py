@@ -1,8 +1,8 @@
 import click
 
 from .abstract_builder import Builder
-from agent.modules.tools import infinite_retry, print_json, if_validation_enabled
-from agent import source, pipeline
+from agent.modules.tools import infinite_retry
+from agent import source
 
 
 class ElasticSourceBuilder(Builder):
@@ -24,13 +24,6 @@ class ElasticSourceBuilder(Builder):
             click.prompt('Cluster HTTP URIs', type=click.STRING, default=default_uris).strip().split(',')
         self.validator.validate_connection()
         print('Successfully connected to the source')
-
-    @if_validation_enabled
-    def print_sample_data(self, pipeline_: pipeline.Pipeline):
-        records, errors = self._get_sample_records(pipeline_)
-        if records:
-            print_json(records)
-        print(*errors, sep='\n')
 
     def prompt_index(self, default_config):
         self.source.config[source.ElasticSource.CONFIG_INDEX] = \

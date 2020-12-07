@@ -1,7 +1,6 @@
 import click
 import pytz
 
-from agent.cli import source_builders
 from agent.modules.tools import infinite_retry, if_validation_enabled, dict_get_nested
 from agent import pipeline
 from agent.pipeline import Pipeline
@@ -130,11 +129,10 @@ class PromptConfig:
     @if_validation_enabled
     def data_preview(self):
         if click.confirm('Would you like to see the data preview?', default=True):
-            # todo this is a temporary solution, it requires a lot of refactoring
-            builder = source_builders.get(self.pipeline.source)
             test_pipeline = pipeline.manager.build_test_pipeline(self.pipeline.source)
+            # todo why do we set config here?
             test_pipeline.set_config(self.config)
-            builder.print_sample_data(test_pipeline)
+            pipeline.preview.print_sample_data(test_pipeline)
 
     @staticmethod
     @infinite_retry

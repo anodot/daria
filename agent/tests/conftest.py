@@ -2,16 +2,12 @@ import json
 import os
 import pytest
 
-from agent import di
 from agent.api import main
 from click.testing import CliRunner
 from agent.modules import db
 
 DUMMY_DESTINATION_OUTPUT_PATH = '/output'
 TEST_DATASETS_PATH = '/home'
-
-
-di.init()
 
 
 class MyRunner(CliRunner):

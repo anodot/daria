@@ -72,7 +72,9 @@ def _create_from_file(file):
 def _prompt(advanced: bool):
     source_type = _prompt_source_type()
     source_name = _prompt_source_name()
-    builder = source_builders.get_builder(source_name, source_type)
+    builder = source_builders.get(
+        source.manager.create_source_obj(source_name, source_type)
+    )
     source.repository.save(
         builder.prompt(source.manager.get_previous_source_config(source_type), advanced)
     )
