@@ -65,7 +65,7 @@ def create(pipeline_: Pipeline):
     try:
         _update_pipeline(
             pipeline_,
-            _get_new_config(streamsets_pipeline, pipeline_)
+            _create_streamsets_pipeline_config(streamsets_pipeline, pipeline_)
         )
     except (streamsets.handlers.base.ConfigHandlerException, streamsets.ApiClientException) as e:
         delete(pipeline_)
@@ -80,7 +80,7 @@ def update(pipeline_: Pipeline):
             start_pipeline = True
         _update_pipeline(
             pipeline_,
-            _get_new_config(get_pipeline(pipeline_.name), pipeline_)
+            _create_streamsets_pipeline_config(get_pipeline(pipeline_.name), pipeline_)
         )
     except (streamsets.handlers.base.ConfigHandlerException, streamsets.ApiClientException) as e:
         raise StreamsetsException(str(e))
@@ -88,7 +88,7 @@ def update(pipeline_: Pipeline):
         start(pipeline_)
 
 
-def _get_new_config(streamsets_pipeline: dict, pipeline_: Pipeline) -> dict:
+def _create_streamsets_pipeline_config(streamsets_pipeline: dict, pipeline_: Pipeline) -> dict:
     return pipeline.manager.get_sdc_config_handler(pipeline_).override_base_config(
         _get_config_loader(pipeline_).load_base_config(pipeline_),
         new_uuid=streamsets_pipeline['uuid'],

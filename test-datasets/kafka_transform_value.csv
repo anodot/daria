@@ -1,0 +1,2 @@
+title,"str:regExCapture(metric, '(.+)\\.(.+)', 1)"
+subtitle,"str:regExCapture(metric, '(.+)\\.(.+)', 2)"

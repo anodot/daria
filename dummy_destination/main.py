@@ -93,5 +93,10 @@ def bc_pipelines():
     return json.dumps('ok')
 
 
+@app.route('/api/v2/bc/agents', methods=['DELETE'])
+def delete_bc_pipeline():
+    return json.dumps('ok')
+
+
 if __name__ == '__main__':
     app.run()

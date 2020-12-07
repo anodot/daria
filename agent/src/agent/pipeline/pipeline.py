@@ -69,8 +69,9 @@ class Pipeline(Entity):
     name = Column(String)
     source_id = Column(Integer, ForeignKey('sources.id'))
     destination_id = Column(Integer, ForeignKey('destinations.id'))
-    config = Column(MutableDict.as_mutable(JSON))
-    override_source = Column(MutableDict.as_mutable(JSON))
+    config = Column(JSON)
+    schema = Column(JSON)
+    override_source = Column(JSON)
     created_at = Column(TIMESTAMP(timezone=True), default=func.now())
     last_edited = Column(TIMESTAMP(timezone=True), default=func.now(), onupdate=func.now())
     status = Column(String, default=STATUS_EDITED)
@@ -249,7 +250,7 @@ class Pipeline(Entity):
         self.streamsets = None
 
     def get_schema(self):
-        return self.config.get('schema', {})
+        return self.schema if self.schema else {}
 
     def get_schema_id(self):
         return self.get_schema().get('id')

@@ -19,7 +19,7 @@ class TestDirectory:
         assert result.exit_code == 0
         assert streamsets.manager.get_pipeline(pipeline_id)
         pipeline_obj = pipeline.repository.get_by_name(pipeline_id)
-        assert pipeline_obj.config['schema'] == {
+        assert pipeline_obj.schema == {
             'id': '111111-22222-3333-4444',
             'version': '1',
             'name': pipeline_id,

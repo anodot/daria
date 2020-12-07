@@ -221,6 +221,7 @@ def edit_pipeline_using_json(config: dict) -> Pipeline:
     pipeline_builder = PipelineBuilder(pipeline.repository.get_by_name(config['pipeline_id']))
     pipeline_builder.load_config(config, edit=True)
     streamsets.manager.update(pipeline_builder.pipeline)
+    pipeline.repository.save(pipeline_builder.pipeline)
     return pipeline_builder.pipeline
 
 
@@ -272,6 +273,7 @@ def delete(pipeline_: Pipeline):
     except streamsets.ApiClientException as e:
         raise pipeline.PipelineException(str(e))
     pipeline.repository.delete(pipeline_)
+    pipeline.repository.add_deleted_pipeline_id(pipeline_.name)
 
 
 def delete_by_name(pipeline_name: str):
@@ -310,12 +312,6 @@ def disable_destination_logs(pipeline_: Pipeline):
     pipeline_.destination.disable_logs()
     destination.repository.save(pipeline_.destination)
     streamsets.manager.update(pipeline_)
-
-
-def _update_stage_config(source_: Source, stage):
-    for conf in stage['configuration']:
-        if conf['name'] in source_.config:
-            conf['value'] = source_.config[conf['name']]
 
 
 def build_test_pipeline(source_: Source) -> TestPipeline:
