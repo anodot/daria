@@ -3,7 +3,7 @@ import click
 from agent.modules.tools import infinite_retry
 from urllib.parse import urljoin
 from .base import PromptConfig
-from ... import pipeline
+from agent import pipeline
 
 
 class PromptConfigInflux(PromptConfig):

@@ -5,7 +5,7 @@ from agent.modules.logger import get_logger
 from agent.modules.constants import HOSTNAME
 from urllib.parse import urljoin, quote_plus
 from agent.pipeline.config import stages
-from ... import pipeline
+from agent import pipeline
 
 logger = get_logger(__name__)
 
