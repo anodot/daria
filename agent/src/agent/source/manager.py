@@ -70,6 +70,7 @@ def edit_source_using_json(config: dict) -> Source:
     source_.set_config(config['config'])
     source.validator.validate(source_)
     source.repository.save(source_)
+    # todo remove this last dependency on the pipeline, implement observer?
     pipeline.manager.update_source_pipelines(source_)
     return source_
 

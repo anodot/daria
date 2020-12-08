@@ -72,8 +72,10 @@ class SchemalessSourceBuilder(Builder, metaclass=ABCMeta):
             raise click.UsageError(e)
 
     def prompt_log(self, default_config):
-        records, errors = pipeline.preview.get_sample_records(pipeline.manager.build_test_pipeline(self.source))
-        if records:
+        records, errors = pipeline.manager.get_sample_records(pipeline.manager.build_test_pipeline(self.source))
+        if not records and not errors:
+            print('No preview data available')
+        elif records:
             print_json(records)
         print(*errors, sep='\n')
         self.prompt_grok_definition_file(default_config)
@@ -106,8 +108,10 @@ class SchemalessSourceBuilder(Builder, metaclass=ABCMeta):
 
     def change_field_names(self, default_config):
         previous_val = default_config.get(source.SchemalessSource.CONFIG_CSV_MAPPING, {})
-        records, errors = pipeline.preview.get_sample_records(pipeline.manager.build_test_pipeline(self.source))
-        if records:
+        records, errors = pipeline.manager.get_sample_records(pipeline.manager.build_test_pipeline(self.source))
+        if not records and not errors:
+            print('No preview data available')
+        elif records:
             print('Records example:')
             print_dicts(records)
             if previous_val:

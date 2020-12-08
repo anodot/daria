@@ -67,7 +67,7 @@ def create(pipeline_: Pipeline):
             pipeline_,
             _create_streamsets_pipeline_config(streamsets_pipeline, pipeline_)
         )
-    except (streamsets.handlers.base.ConfigHandlerException, streamsets.ApiClientException) as e:
+    except (streamsets.config_handlers.base.ConfigHandlerException, streamsets.ApiClientException) as e:
         delete(pipeline_)
         raise StreamsetsException(str(e))
 
@@ -82,7 +82,7 @@ def update(pipeline_: Pipeline):
             pipeline_,
             _create_streamsets_pipeline_config(get_pipeline(pipeline_.name), pipeline_)
         )
-    except (streamsets.handlers.base.ConfigHandlerException, streamsets.ApiClientException) as e:
+    except (streamsets.config_handlers.base.ConfigHandlerException, streamsets.ApiClientException) as e:
         raise StreamsetsException(str(e))
     if start_pipeline:
         start(pipeline_)
@@ -97,9 +97,9 @@ def _create_streamsets_pipeline_config(streamsets_pipeline: dict, pipeline_: Pip
 
 
 def _get_config_loader(pipeline_: Pipeline):
-    return streamsets.handlers.base.TestPipelineBaseConfigLoader \
+    return streamsets.config_handlers.base.TestPipelineBaseConfigLoader \
         if isinstance(pipeline_, pipeline.TestPipeline) \
-        else streamsets.handlers.base.BaseConfigLoader
+        else streamsets.config_handlers.base.BaseConfigLoader
 
 
 def get_pipeline(pipeline_id: str) -> dict:

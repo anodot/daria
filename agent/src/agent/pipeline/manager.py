@@ -6,6 +6,7 @@ import traceback
 import jsonschema
 
 from agent import source, pipeline, destination, streamsets
+from agent.modules import tools
 from agent.pipeline.config import schema
 from agent.pipeline.config.validators import get_config_validator
 from agent.pipeline import prompt, load_client_data, Pipeline, TestPipeline
@@ -17,9 +18,11 @@ from typing import List
 from agent.source import Source
 from agent.streamsets import StreamSets
 
+
 logger = get_logger(__name__)
 
 LOG_LEVELS = [logging.getLevelName(logging.INFO), logging.getLevelName(logging.ERROR)]
+MAX_SAMPLE_RECORDS = 3
 
 
 class PipelineBuilder:
@@ -50,7 +53,7 @@ def show_preview(pipeline_: Pipeline):
     if preview_data['batchesOutput']:
         for output in preview_data['batchesOutput'][0]:
             if 'destination_OutputLane' in output['output']:
-                data = output['output']['destination_OutputLane'][:pipeline.preview.MAX_SAMPLE_RECORDS]
+                data = output['output']['destination_OutputLane'][:MAX_SAMPLE_RECORDS]
                 if data:
                     print_json([sdc_record_map_to_dict(record['value']) for record in data])
                 else:
@@ -61,19 +64,19 @@ def show_preview(pipeline_: Pipeline):
     print(*errors, sep='\n')
 
 
-def get_sdc_config_handler(pipeline_: Pipeline, is_preview=False) -> streamsets.handlers.base.BaseConfigHandler:
+def get_sdc_config_handler(pipeline_: Pipeline, is_preview=False) -> streamsets.config_handlers.base.BaseConfigHandler:
     handlers = {
-        source.TYPE_MONITORING: streamsets.handlers.monitoring.MonitoringConfigHandler,
-        source.TYPE_INFLUX: streamsets.handlers.influx.InfluxConfigHandler,
-        source.TYPE_MONGO: streamsets.handlers.mongo.MongoConfigHandler,
-        source.TYPE_KAFKA: streamsets.handlers.kafka.KafkaConfigHandler,
-        source.TYPE_MYSQL: streamsets.handlers.jdbc.JDBCConfigHandler,
-        source.TYPE_POSTGRES: streamsets.handlers.jdbc.JDBCConfigHandler,
-        source.TYPE_ELASTIC: streamsets.handlers.elastic.ElasticConfigHandler,
-        source.TYPE_SPLUNK: streamsets.handlers.tcp.TCPConfigHandler,
-        source.TYPE_DIRECTORY: streamsets.handlers.directory.DirectoryConfigHandler,
-        source.TYPE_SAGE: streamsets.handlers.sage.SageConfigHandler,
-        source.TYPE_VICTORIA: streamsets.handlers.victoria.VictoriaConfigHandler,
+        source.TYPE_MONITORING: streamsets.config_handlers.monitoring.MonitoringConfigHandler,
+        source.TYPE_INFLUX: streamsets.config_handlers.influx.InfluxConfigHandler,
+        source.TYPE_MONGO: streamsets.config_handlers.mongo.MongoConfigHandler,
+        source.TYPE_KAFKA: streamsets.config_handlers.kafka.KafkaConfigHandler,
+        source.TYPE_MYSQL: streamsets.config_handlers.jdbc.JDBCConfigHandler,
+        source.TYPE_POSTGRES: streamsets.config_handlers.jdbc.JDBCConfigHandler,
+        source.TYPE_ELASTIC: streamsets.config_handlers.elastic.ElasticConfigHandler,
+        source.TYPE_SPLUNK: streamsets.config_handlers.tcp.TCPConfigHandler,
+        source.TYPE_DIRECTORY: streamsets.config_handlers.directory.DirectoryConfigHandler,
+        source.TYPE_SAGE: streamsets.config_handlers.sage.SageConfigHandler,
+        source.TYPE_VICTORIA: streamsets.config_handlers.victoria.VictoriaConfigHandler,
     }
     return handlers[pipeline_.source.type](pipeline_, is_preview)
 
@@ -257,7 +260,7 @@ def reset(pipeline_: Pipeline):
         if pipeline_.offset:
             pipeline.repository.delete_offset(pipeline_.offset)
             pipeline_.offset = None
-    except (streamsets.handlers.base.ConfigHandlerException, streamsets.ApiClientException) as e:
+    except (streamsets.config_handlers.base.ConfigHandlerException, streamsets.ApiClientException) as e:
         raise pipeline.PipelineException(str(e))
 
 
@@ -387,3 +390,31 @@ def is_monitoring(pipeline_: Pipeline) -> bool:
 
 def get_monitoring_name(streamsets_: StreamSets):
     return f'{pipeline.MONITORING}_{streamsets_.id}'
+
+
+def get_sample_records(pipeline_: Pipeline) -> (list, list):
+    preview_data, errors = _get_preview_data(pipeline_)
+
+    if not preview_data:
+        return [], []
+
+    try:
+        data = preview_data['batchesOutput'][0][0]['output']['source_outputLane']
+    except (ValueError, TypeError, IndexError) as e:
+        logger.exception(str(e))
+        return [], []
+
+    return [tools.sdc_record_map_to_dict(record['value']) for record in data[:MAX_SAMPLE_RECORDS]], errors
+
+
+def _get_preview_data(test_pipeline: Pipeline):
+    streamsets.manager.create(test_pipeline)
+    try:
+        preview = streamsets.manager.create_preview(test_pipeline)
+        preview_data, errors = streamsets.manager.wait_for_preview(test_pipeline, preview['previewerId'])
+    except (Exception, KeyboardInterrupt) as e:
+        logger.exception(str(e))
+        raise
+    finally:
+        streamsets.manager.delete(test_pipeline)
+    return preview_data, errors

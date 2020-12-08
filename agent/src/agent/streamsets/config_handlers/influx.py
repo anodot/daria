@@ -5,7 +5,7 @@ from agent.modules.logger import get_logger
 from agent.modules.constants import HOSTNAME
 from urllib.parse import urljoin, quote_plus
 from agent.pipeline.config import stages
-from agent import pipeline
+from ... import pipeline
 
 logger = get_logger(__name__)
 
@@ -89,7 +89,7 @@ state['TAGS'] = {tags}
 
     def get_query(self):
         if self.is_preview:
-            return f"select+%2A+from+{self.config['measurement_name']}+limit+{pipeline.preview.MAX_SAMPLE_RECORDS}"
+            return f"select+%2A+from+{self.config['measurement_name']}+limit+{pipeline.manager.MAX_SAMPLE_RECORDS}"
 
         dimensions_to_select = [f'"{d}"::tag' for d in self.pipeline.dimensions_names]
         values_to_select = ['*::field' if v == '*' else f'"{v}"::field' for v in

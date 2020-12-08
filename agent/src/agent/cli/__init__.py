@@ -7,6 +7,8 @@ from agent.cli.source import source_group
 from agent.cli.streamsets import streamsets_group
 from agent.modules import db
 from agent.version import __version__, __build_time__, __git_sha1__
+# todo remove
+from . import preview
 
 
 class DefaultHelp(click.Group):

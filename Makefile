@@ -161,14 +161,17 @@ _build-base-services:
 run-dc2:
 	$(DOCKER_COMPOSE_DEV) up -d dc2
 
-run-elastic:
+run-elastic: _run-elastic sleep setup-elastic
+
+_run-elastic:
 	$(DOCKER_COMPOSE_DEV) up -d es
-	sleep $(SLEEP)
 
 run-influx:
 	$(DOCKER_COMPOSE_DEV) up -d influx
 
-run-victoria:
+run-victoria: _run-victoria nap setup-victoria
+
+_run-victoria:
 	$(DOCKER_COMPOSE_DEV) up -d victoriametrics
 
 run-kafka: run-zookeeper sleep _run-kafka setup-kafka

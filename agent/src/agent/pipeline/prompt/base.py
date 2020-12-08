@@ -2,7 +2,7 @@ import click
 import pytz
 
 from agent.modules.tools import infinite_retry, if_validation_enabled, dict_get_nested
-from agent import pipeline
+from agent import pipeline, cli
 from agent.pipeline import Pipeline
 
 
@@ -132,7 +132,7 @@ class PromptConfig:
             test_pipeline = pipeline.manager.build_test_pipeline(self.pipeline.source)
             # todo why do we set config here?
             test_pipeline.set_config(self.config)
-            pipeline.preview.print_sample_data(test_pipeline)
+            cli.preview.print_sample_data(test_pipeline)
 
     @staticmethod
     @infinite_retry
