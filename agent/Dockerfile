@@ -23,3 +23,4 @@ RUN ./install_requirements.sh
 RUN python setup.py install && echo ". /usr/src/app/agent-complete.sh" >> /root/.bashrc
 
 ENTRYPOINT ["/custom_entrypoint.sh"]
+CMD ["/start.sh"]
