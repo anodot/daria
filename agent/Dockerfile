@@ -8,6 +8,8 @@ WORKDIR /usr/src/app
 
 COPY . .
 COPY .bashrc /root/.bashr
+COPY ./custom_entrypoint.sh /
+RUN chmod +x /custom_entrypoint.sh
 
 ENV SDC_CONF_PARSER_LIMIT="20048576" STREAMSETS_USERNAME="admin" STREAMSETS_PASSWORD="admin" \
     STREAMSETS_URL="http://localhost:18630"
@@ -19,3 +21,5 @@ ENV UWSGI_INI="/usr/src/app/uwsgi.ini"
 
 RUN ./install_requirements.sh
 RUN python setup.py install && echo ". /usr/src/app/agent-complete.sh" >> /root/.bashrc
+
+ENTRYPOINT ["/custom_entrypoint.sh"]

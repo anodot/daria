@@ -11,7 +11,7 @@ DOCKER_TEST_PARALLEL = $(DOCKER_TEST) -n $(THREADS) --dist=loadfile
 ##---------
 all: build-all test-all
 
-build-all: get-streamsets-libs build-docker sleep alembic-migrate setup-all
+build-all: get-streamsets-libs build-docker sleep setup-all
 
 test-all: run-unit-tests test-flask-app test-streamsets test-destination test-antomation test-api test-api-scripts test-input test-streamsets-2 test-send-to-bc test-pipelines
 
@@ -20,9 +20,9 @@ test-all: run-unit-tests test-flask-app test-streamsets test-destination test-an
 ##-------------
 all-dev: clean-docker-volumes build-all-dev sleep test-all
 
-build-all-dev: build-dev sleep alembic-migrate setup-all
+build-all-dev: build-dev sleep setup-all
 
-run-all-dev: clean-docker-volumes run-dev sleep alembic-migrate setup-all
+run-all-dev: clean-docker-volumes run-dev sleep setup-all
 
 rerun: bootstrap
 
@@ -146,13 +146,13 @@ clean-docker-volumes:
 	rm -rf sdc-data2
 	$(DOCKER_COMPOSE_DEV) down -v
 
-run-base-services: _run-base-services nap alembic-migrate
+run-base-services: _run-base-services nap
 
 _run-base-services:
 	$(DOCKER_COMPOSE_DEV) up -d agent dc squid dummy_destination
 	docker exec -i anodot-agent python setup.py develop
 
-build-base-services: clean-docker-volumes _build-base-services nap alembic-migrate
+build-base-services: clean-docker-volumes _build-base-services nap
 
 _build-base-services:
 	$(DOCKER_COMPOSE_DEV) up -d --build agent dc squid dummy_destination
@@ -203,8 +203,6 @@ setup-elastic:
 setup-victoria:
 	./scripts/upload-test-data-to-victoria.sh
 
-alembic-migrate:
-	docker exec -i anodot-agent alembic upgrade head
 
 sleep:
 	sleep $(SLEEP)
