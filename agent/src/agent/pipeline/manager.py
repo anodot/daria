@@ -60,23 +60,6 @@ def show_preview(pipeline_: Pipeline):
     print(*errors, sep='\n')
 
 
-def get_sdc_config_handler(pipeline_: Pipeline, is_preview=False) -> streamsets.config_handlers.base.BaseConfigHandler:
-    handlers = {
-        source.TYPE_MONITORING: streamsets.config_handlers.monitoring.MonitoringConfigHandler,
-        source.TYPE_INFLUX: streamsets.config_handlers.influx.InfluxConfigHandler,
-        source.TYPE_MONGO: streamsets.config_handlers.mongo.MongoConfigHandler,
-        source.TYPE_KAFKA: streamsets.config_handlers.kafka.KafkaConfigHandler,
-        source.TYPE_MYSQL: streamsets.config_handlers.jdbc.JDBCConfigHandler,
-        source.TYPE_POSTGRES: streamsets.config_handlers.jdbc.JDBCConfigHandler,
-        source.TYPE_ELASTIC: streamsets.config_handlers.elastic.ElasticConfigHandler,
-        source.TYPE_SPLUNK: streamsets.config_handlers.tcp.TCPConfigHandler,
-        source.TYPE_DIRECTORY: streamsets.config_handlers.directory.DirectoryConfigHandler,
-        source.TYPE_SAGE: streamsets.config_handlers.sage.SageConfigHandler,
-        source.TYPE_VICTORIA: streamsets.config_handlers.victoria.VictoriaConfigHandler,
-    }
-    return handlers[pipeline_.source.type](pipeline_, is_preview)
-
-
 def get_file_loader(source_type: str):
     loaders = {
         source.TYPE_MONITORING: load_client_data.LoadClientData,

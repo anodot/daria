@@ -4,7 +4,7 @@ import time
 
 from datetime import datetime
 from typing import Dict, List, Optional
-from agent import pipeline, streamsets, destination
+from agent import pipeline, streamsets, destination, source
 from agent.modules import db
 from agent.modules.constants import ENV_PROD
 from agent.modules.logger import get_logger
@@ -89,7 +89,7 @@ def update(pipeline_: Pipeline):
 
 
 def _create_streamsets_pipeline_config(streamsets_pipeline: dict, pipeline_: Pipeline) -> dict:
-    return pipeline.manager.get_sdc_config_handler(pipeline_).override_base_config(
+    return get_sdc_config_handler(pipeline_).override_base_config(
         _get_config_loader(pipeline_).load_base_config(pipeline_),
         new_uuid=streamsets_pipeline['uuid'],
         new_title=pipeline_.name
@@ -166,7 +166,7 @@ def get_all_pipeline_statuses() -> dict:
 def get_streamsets_without_monitoring() -> List[StreamSets]:
     pipeline_streamsets_ids = set(map(
         lambda p: p.streamsets_id,
-        pipeline.repository.get_all(),
+        pipeline.repository.get_monitoring_pipelines(),
     ))
     streamsets_ = streamsets.repository.get_all()
     streamsets_ids = set(map(
@@ -415,6 +415,23 @@ class StreamsetsBalancer:
     def _get_busiest_streamsets_id(self) -> int:
         key, _ = max(self.streamsets_pipelines.items(), key=lambda x: len(x))
         return key
+
+
+def get_sdc_config_handler(pipeline_: Pipeline, is_preview=False) -> streamsets.config_handlers.base.BaseConfigHandler:
+    handlers = {
+        source.TYPE_MONITORING: streamsets.config_handlers.monitoring.MonitoringConfigHandler,
+        source.TYPE_INFLUX: streamsets.config_handlers.influx.InfluxConfigHandler,
+        source.TYPE_MONGO: streamsets.config_handlers.mongo.MongoConfigHandler,
+        source.TYPE_KAFKA: streamsets.config_handlers.kafka.KafkaConfigHandler,
+        source.TYPE_MYSQL: streamsets.config_handlers.jdbc.JDBCConfigHandler,
+        source.TYPE_POSTGRES: streamsets.config_handlers.jdbc.JDBCConfigHandler,
+        source.TYPE_ELASTIC: streamsets.config_handlers.elastic.ElasticConfigHandler,
+        source.TYPE_SPLUNK: streamsets.config_handlers.tcp.TCPConfigHandler,
+        source.TYPE_DIRECTORY: streamsets.config_handlers.directory.DirectoryConfigHandler,
+        source.TYPE_SAGE: streamsets.config_handlers.sage.SageConfigHandler,
+        source.TYPE_VICTORIA: streamsets.config_handlers.victoria.VictoriaConfigHandler,
+    }
+    return handlers[pipeline_.source.type](pipeline_, is_preview)
 
 
 class StreamsetsException(Exception):
