@@ -156,6 +156,20 @@ def _extract_all_names(directory, module, type_):
     return names
 
 
+def create_checksums_dir():
+    if not os.path.isdir(CHECKSUMS_DIR):
+        os.mkdir(CHECKSUMS_DIR)
+    if not os.path.exists(SOURCES_CHECKSUMS):
+        with open(SOURCES_CHECKSUMS, 'w'):
+            pass
+    if not os.path.exists(PIPELINES_CHECKSUMS):
+        with open(PIPELINES_CHECKSUMS, 'w'):
+            pass
+
+
+create_checksums_dir()
+
+
 process(SOURCES_DIR, SOURCES_CHECKSUMS, populate_source_from_file)
 process(PIPELINES_DIR, PIPELINES_CHECKSUMS, populate_pipeline_from_file)
 
