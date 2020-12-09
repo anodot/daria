@@ -3,9 +3,8 @@ import os
 import time
 
 from ..conftest import get_output, get_input_file_path
-from agent.cli import source as source_cli, pipeline as pipeline_cli
 from agent.streamsets import StreamSetsApiClient
-from agent import pipeline, source, streamsets
+from agent import pipeline, source, streamsets, cli
 
 
 class TestPipelineBase(object):
@@ -15,7 +14,7 @@ class TestPipelineBase(object):
 
     def test_create_source_with_file(self, cli_runner, file_name):
         input_file_path = get_input_file_path(file_name + '.json')
-        result = cli_runner.invoke(source_cli.create, ['-f', input_file_path], catch_exceptions=False)
+        result = cli_runner.invoke(cli.source.create, ['-f', input_file_path], catch_exceptions=False)
         assert result.exit_code == 0
         with open(input_file_path) as f:
             sources = json.load(f)
@@ -24,7 +23,7 @@ class TestPipelineBase(object):
 
     def test_create_with_file(self, cli_runner, file_name):
         input_file_path = get_input_file_path(file_name + '.json')
-        result = cli_runner.invoke(pipeline_cli.create, ['-f', input_file_path], catch_exceptions=False)
+        result = cli_runner.invoke(cli.pipeline.create, ['-f', input_file_path], catch_exceptions=False)
         assert result.exit_code == 0
         with open(input_file_path) as f:
             for pipeline_config in json.load(f):
@@ -34,31 +33,31 @@ class TestPipelineBase(object):
 
     def test_edit_with_file(self, cli_runner, file_name):
         input_file_path = get_input_file_path(file_name + '.json')
-        result = cli_runner.invoke(pipeline_cli.edit, ['-f', input_file_path], catch_exceptions=False)
+        result = cli_runner.invoke(cli.pipeline.edit, ['-f', input_file_path], catch_exceptions=False)
         assert result.exit_code == 0
 
     def test_start(self, cli_runner, name):
-        result = cli_runner.invoke(pipeline_cli.start, [name], catch_exceptions=False)
+        result = cli_runner.invoke(cli.pipeline.start, [name], catch_exceptions=False)
         assert result.exit_code == 0
         assert streamsets.manager.get_pipeline_status_by_id(name) == 'RUNNING'
         # give pipelines some time to send data
         time.sleep(10)
 
     def test_info(self, cli_runner, name):
-        result = cli_runner.invoke(pipeline_cli.info, [name], catch_exceptions=False)
+        result = cli_runner.invoke(cli.pipeline.info, [name], catch_exceptions=False)
         assert result.exit_code == 0
 
     def test_stop(self, cli_runner, name):
-        result = cli_runner.invoke(pipeline_cli.stop, [name], catch_exceptions=False)
+        result = cli_runner.invoke(cli.pipeline.stop, [name], catch_exceptions=False)
         assert result.exit_code == 0
         assert streamsets.manager.get_pipeline_status_by_id(name) in ['STOPPED']
 
     def test_force_stop(self, cli_runner, name):
-        result = cli_runner.invoke(pipeline_cli.force_stop, [name], catch_exceptions=False)
+        result = cli_runner.invoke(cli.pipeline.force_stop, [name], catch_exceptions=False)
         assert result.exit_code == 0
 
     def test_reset(self, cli_runner, name):
-        result = cli_runner.invoke(pipeline_cli.reset, [name], catch_exceptions=False)
+        result = cli_runner.invoke(cli.pipeline.reset, [name], catch_exceptions=False)
         assert result.exit_code == 0
 
     def test_output(self, name, pipeline_type, output):
@@ -70,11 +69,11 @@ class TestPipelineBase(object):
         assert get_output(f'{name}_{pipeline_type}.json') == expected_output
 
     def test_delete_pipeline(self, cli_runner, name):
-        result = cli_runner.invoke(pipeline_cli.delete, [name], catch_exceptions=False)
+        result = cli_runner.invoke(cli.pipeline.delete, [name], catch_exceptions=False)
         assert result.exit_code == 0
         assert not pipeline.repository.exists(name)
 
     def test_source_delete(self, cli_runner, name):
-        result = cli_runner.invoke(source_cli.delete, [name], catch_exceptions=False)
+        result = cli_runner.invoke(cli.source.delete, [name], catch_exceptions=False)
         assert result.exit_code == 0
         assert not source.repository.exists(name)

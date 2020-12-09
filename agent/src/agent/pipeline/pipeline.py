@@ -5,8 +5,8 @@ from agent.modules.constants import HOSTNAME
 from agent.modules.db import Entity
 from agent.destination import HttpDestination
 from enum import Enum
-from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy import Column, Integer, String, JSON, ForeignKey, func
+from agent import source
 
 
 MONITORING = 'Monitoring'
@@ -81,7 +81,7 @@ class Pipeline(Entity):
     destination = relationship('HttpDestination')
     streamsets = relationship('StreamSets')
 
-    def __init__(self, pipeline_name: str, source_, destination: HttpDestination):
+    def __init__(self, pipeline_name: str, source_: source.Source, destination: HttpDestination):
         self.name = pipeline_name
         self.config = {}
         self.source_ = source_
@@ -151,8 +151,7 @@ class Pipeline(Entity):
 
     @property
     def values(self) -> list:
-        # todo fix circular imports and return source.TYPE_INFLUX
-        if self.source.type == 'influx':
+        if self.source.type == source.TYPE_INFLUX:
             value = self.config.get('value', {})
             return value['values'] if 'values' in value else []
         return list(self.config.get('values', {}).keys())
@@ -163,8 +162,7 @@ class Pipeline(Entity):
 
     @property
     def target_types(self) -> list:
-        # todo fix circular imports and return source.TYPE_INFLUX
-        if self.source.type == 'influx':
+        if self.source.type == source.TYPE_INFLUX:
             return [self.config['target_type']] * len(self.values)
         return list(self.config['values'].values())
 

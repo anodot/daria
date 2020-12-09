@@ -1,14 +1,11 @@
 import json
 import traceback
-
 import jsonschema
 
 from typing import List
 from agent import pipeline
 from agent import source
 from agent.source import SourceException, Source
-
-MAX_SAMPLE_RECORDS = 3
 
 
 def create_source_obj(source_name: str, source_type: str) -> Source:
@@ -73,6 +70,7 @@ def edit_source_using_json(config: dict) -> Source:
     source_.set_config(config['config'])
     source.validator.validate(source_)
     source.repository.save(source_)
+    # todo remove this last dependency on the pipeline, implement observer?
     pipeline.manager.update_source_pipelines(source_)
     return source_
 

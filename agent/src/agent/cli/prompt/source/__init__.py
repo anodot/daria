@@ -11,10 +11,6 @@ from .tcp import TCPSourceBuilder
 from .victoria import VictoriaSourceBuilder
 
 
-def get_builder(source_name: str, source_type: str) -> Builder:
-    return _get_source_builder_type(source_type)(source.manager.create_source_obj(source_name, source_type))
-
-
 def get(source_: source.Source) -> Builder:
     return _get_source_builder_type(source_.type)(source_)
 

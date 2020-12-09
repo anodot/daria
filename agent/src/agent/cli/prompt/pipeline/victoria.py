@@ -1,6 +1,6 @@
 import click
 
-from agent.pipeline.prompt import PromptConfig
+from agent.cli.prompt.pipeline import PromptConfig
 
 
 class PromptConfigVictoria(PromptConfig):

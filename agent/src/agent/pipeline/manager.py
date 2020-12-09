@@ -3,13 +3,13 @@ import logging
 import random
 import string
 import traceback
-import agent.pipeline.config.handlers as config_handlers
 import jsonschema
 
 from agent import source, pipeline, destination, streamsets
+from agent.modules import tools
 from agent.pipeline.config import schema
 from agent.pipeline.config.validators import get_config_validator
-from agent.pipeline import prompt, load_client_data, Pipeline, TestPipeline
+from agent.pipeline import load_client_data, Pipeline, TestPipeline
 from agent.destination import anodot_api_client
 from agent.modules.constants import MONITORING_SOURCE_NAME
 from agent.modules.tools import print_json, sdc_record_map_to_dict
@@ -18,25 +18,23 @@ from typing import List
 from agent.source import Source
 from agent.streamsets import StreamSets
 
+
 logger = get_logger(__name__)
 
 LOG_LEVELS = [logging.getLevelName(logging.INFO), logging.getLevelName(logging.ERROR)]
+MAX_SAMPLE_RECORDS = 3
 
 
 class PipelineBuilder:
     def __init__(self, pipeline_: Pipeline):
         self.pipeline = pipeline_
-        self.prompter = get_prompter(pipeline_.source.type)(self.pipeline)
         self.file_loader = get_file_loader(pipeline_.source.type)()
-
-    def prompt(self, default_config, advanced=False):
-        self.pipeline.set_config(self.prompter.prompt(default_config, advanced))
 
     def load_config(self, config, edit=False):
         self.pipeline.set_config(self.file_loader.load(config, edit))
-        self.validate_config()
+        self._validate_config()
 
-    def validate_config(self):
+    def _validate_config(self):
         get_config_validator(self.pipeline).validate(self.pipeline)
 
 
@@ -51,7 +49,7 @@ def show_preview(pipeline_: Pipeline):
     if preview_data['batchesOutput']:
         for output in preview_data['batchesOutput'][0]:
             if 'destination_OutputLane' in output['output']:
-                data = output['output']['destination_OutputLane'][:source.manager.MAX_SAMPLE_RECORDS]
+                data = output['output']['destination_OutputLane'][:MAX_SAMPLE_RECORDS]
                 if data:
                     print_json([sdc_record_map_to_dict(record['value']) for record in data])
                 else:
@@ -62,19 +60,19 @@ def show_preview(pipeline_: Pipeline):
     print(*errors, sep='\n')
 
 
-def get_sdc_config_handler(pipeline_: Pipeline, is_preview=False) -> config_handlers.base.BaseConfigHandler:
+def get_sdc_config_handler(pipeline_: Pipeline, is_preview=False) -> streamsets.config_handlers.base.BaseConfigHandler:
     handlers = {
-        source.TYPE_MONITORING: config_handlers.monitoring.MonitoringConfigHandler,
-        source.TYPE_INFLUX: config_handlers.influx.InfluxConfigHandler,
-        source.TYPE_MONGO: config_handlers.mongo.MongoConfigHandler,
-        source.TYPE_KAFKA: config_handlers.kafka.KafkaConfigHandler,
-        source.TYPE_MYSQL: config_handlers.jdbc.JDBCConfigHandler,
-        source.TYPE_POSTGRES: config_handlers.jdbc.JDBCConfigHandler,
-        source.TYPE_ELASTIC: config_handlers.elastic.ElasticConfigHandler,
-        source.TYPE_SPLUNK: config_handlers.tcp.TCPConfigHandler,
-        source.TYPE_DIRECTORY: config_handlers.directory.DirectoryConfigHandler,
-        source.TYPE_SAGE: config_handlers.sage.SageConfigHandler,
-        source.TYPE_VICTORIA: config_handlers.victoria.VictoriaConfigHandler,
+        source.TYPE_MONITORING: streamsets.config_handlers.monitoring.MonitoringConfigHandler,
+        source.TYPE_INFLUX: streamsets.config_handlers.influx.InfluxConfigHandler,
+        source.TYPE_MONGO: streamsets.config_handlers.mongo.MongoConfigHandler,
+        source.TYPE_KAFKA: streamsets.config_handlers.kafka.KafkaConfigHandler,
+        source.TYPE_MYSQL: streamsets.config_handlers.jdbc.JDBCConfigHandler,
+        source.TYPE_POSTGRES: streamsets.config_handlers.jdbc.JDBCConfigHandler,
+        source.TYPE_ELASTIC: streamsets.config_handlers.elastic.ElasticConfigHandler,
+        source.TYPE_SPLUNK: streamsets.config_handlers.tcp.TCPConfigHandler,
+        source.TYPE_DIRECTORY: streamsets.config_handlers.directory.DirectoryConfigHandler,
+        source.TYPE_SAGE: streamsets.config_handlers.sage.SageConfigHandler,
+        source.TYPE_VICTORIA: streamsets.config_handlers.victoria.VictoriaConfigHandler,
     }
     return handlers[pipeline_.source.type](pipeline_, is_preview)
 
@@ -94,23 +92,6 @@ def get_file_loader(source_type: str):
         source.TYPE_VICTORIA: load_client_data.VictoriaLoadClientData,
     }
     return loaders[source_type]
-
-
-def get_prompter(source_type: str):
-    prompters = {
-        source.TYPE_MONITORING: prompt.PromptConfig,
-        source.TYPE_INFLUX: prompt.PromptConfigInflux,
-        source.TYPE_KAFKA: prompt.PromptConfigKafka,
-        source.TYPE_MONGO: prompt.PromptConfigMongo,
-        source.TYPE_MYSQL: prompt.PromptConfigJDBC,
-        source.TYPE_POSTGRES: prompt.PromptConfigJDBC,
-        source.TYPE_ELASTIC: prompt.PromptConfigElastic,
-        source.TYPE_SPLUNK: prompt.PromptConfigTCP,
-        source.TYPE_DIRECTORY: prompt.PromptConfigDirectory,
-        source.TYPE_SAGE: prompt.PromptConfigSage,
-        source.TYPE_VICTORIA: prompt.PromptConfigVictoria,
-    }
-    return prompters[source_type]
 
 
 def extract_configs(file):
@@ -258,7 +239,7 @@ def reset(pipeline_: Pipeline):
         if pipeline_.offset:
             pipeline.repository.delete_offset(pipeline_.offset)
             pipeline_.offset = None
-    except (config_handlers.base.ConfigHandlerException, streamsets.ApiClientException) as e:
+    except (streamsets.config_handlers.base.ConfigHandlerException, streamsets.ApiClientException) as e:
         raise pipeline.PipelineException(str(e))
 
 
@@ -388,3 +369,31 @@ def is_monitoring(pipeline_: Pipeline) -> bool:
 
 def get_monitoring_name(streamsets_: StreamSets):
     return f'{pipeline.MONITORING}_{streamsets_.id}'
+
+
+def get_sample_records(pipeline_: Pipeline) -> (list, list):
+    preview_data, errors = _get_preview_data(pipeline_)
+
+    if not preview_data:
+        return [], []
+
+    try:
+        data = preview_data['batchesOutput'][0][0]['output']['source_outputLane']
+    except (ValueError, TypeError, IndexError) as e:
+        logger.exception(str(e))
+        return [], []
+
+    return [tools.sdc_record_map_to_dict(record['value']) for record in data[:MAX_SAMPLE_RECORDS]], errors
+
+
+def _get_preview_data(test_pipeline: Pipeline):
+    streamsets.manager.create(test_pipeline)
+    try:
+        preview = streamsets.manager.create_preview(test_pipeline)
+        preview_data, errors = streamsets.manager.wait_for_preview(test_pipeline, preview['previewerId'])
+    except (Exception, KeyboardInterrupt) as e:
+        logger.exception(str(e))
+        raise
+    finally:
+        streamsets.manager.delete(test_pipeline)
+    return preview_data, errors

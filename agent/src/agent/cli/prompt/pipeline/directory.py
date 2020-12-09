@@ -1,6 +1,6 @@
 import click
 from .schemaless import PromptConfigSchemaless
-from agent.pipeline import pipeline
+from agent import pipeline
 
 
 class PromptConfigDirectory(PromptConfigSchemaless):
