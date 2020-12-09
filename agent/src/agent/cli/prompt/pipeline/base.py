@@ -1,8 +1,9 @@
 import click
 import pytz
 
+from agent.cli import prompt, preview
 from agent.modules.tools import infinite_retry, if_validation_enabled, dict_get_nested
-from agent import pipeline, cli
+from agent import pipeline, source
 from agent.pipeline import Pipeline
 
 
@@ -15,12 +16,13 @@ class PromptConfig:
         self.config = {}
         self.pipeline = pipeline_
 
-    def prompt(self, default_config, advanced=False):
+    def prompt(self, default_config, advanced=False) -> Pipeline:
         self.advanced = advanced
         self.default_config = default_config
         self.config = dict()
         self.prompt_config()
-        return self.config
+        self.pipeline.set_config(self.config)
+        return self.pipeline
 
     def prompt_config(self):
         pass
@@ -130,9 +132,8 @@ class PromptConfig:
     def data_preview(self):
         if click.confirm('Would you like to see the data preview?', default=True):
             test_pipeline = pipeline.manager.build_test_pipeline(self.pipeline.source)
-            # todo why do we set config here?
             test_pipeline.set_config(self.config)
-            cli.preview.print_sample_data(test_pipeline)
+            preview.print_sample_data(test_pipeline)
 
     @staticmethod
     @infinite_retry
@@ -158,3 +159,20 @@ class PromptConfig:
     def prompt_delay(self):
         self.config['delay'] = click.prompt('Delay (in minutes)', type=click.INT,
                                             default=self.default_config.get('delay', 0))
+
+
+def get_prompter(pipeline_: Pipeline) -> PromptConfig:
+    prompters = {
+        source.TYPE_MONITORING: prompt.pipeline.PromptConfig,
+        source.TYPE_INFLUX: prompt.pipeline.PromptConfigInflux,
+        source.TYPE_KAFKA: prompt.pipeline.PromptConfigKafka,
+        source.TYPE_MONGO: prompt.pipeline.PromptConfigMongo,
+        source.TYPE_MYSQL: prompt.pipeline.PromptConfigJDBC,
+        source.TYPE_POSTGRES: prompt.pipeline.PromptConfigJDBC,
+        source.TYPE_ELASTIC: prompt.pipeline.PromptConfigElastic,
+        source.TYPE_SPLUNK: prompt.pipeline.PromptConfigTCP,
+        source.TYPE_DIRECTORY: prompt.pipeline.PromptConfigDirectory,
+        source.TYPE_SAGE: prompt.pipeline.PromptConfigSage,
+        source.TYPE_VICTORIA: prompt.pipeline.PromptConfigVictoria,
+    }
+    return prompters[pipeline_.source.type](pipeline_)

@@ -3,7 +3,7 @@ import click
 from .schemaless import PromptConfigSchemaless
 from agent import source
 from agent.modules.tools import infinite_retry
-from ..validators import elastic_query
+from agent.pipeline.validators import elastic_query
 
 
 class PromptConfigElastic(PromptConfigSchemaless):

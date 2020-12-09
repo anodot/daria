@@ -9,7 +9,7 @@ from agent import source, pipeline, destination, streamsets
 from agent.modules import tools
 from agent.pipeline.config import schema
 from agent.pipeline.config.validators import get_config_validator
-from agent.pipeline import prompt, load_client_data, Pipeline, TestPipeline
+from agent.pipeline import load_client_data, Pipeline, TestPipeline
 from agent.destination import anodot_api_client
 from agent.modules.constants import MONITORING_SOURCE_NAME
 from agent.modules.tools import print_json, sdc_record_map_to_dict
@@ -28,11 +28,7 @@ MAX_SAMPLE_RECORDS = 3
 class PipelineBuilder:
     def __init__(self, pipeline_: Pipeline):
         self.pipeline = pipeline_
-        self.prompter = get_prompter(pipeline_.source.type)(self.pipeline)
         self.file_loader = get_file_loader(pipeline_.source.type)()
-
-    def prompt(self, default_config, advanced=False):
-        self.pipeline.set_config(self.prompter.prompt(default_config, advanced))
 
     def load_config(self, config, edit=False):
         self.pipeline.set_config(self.file_loader.load(config, edit))
@@ -96,23 +92,6 @@ def get_file_loader(source_type: str):
         source.TYPE_VICTORIA: load_client_data.VictoriaLoadClientData,
     }
     return loaders[source_type]
-
-
-def get_prompter(source_type: str):
-    prompters = {
-        source.TYPE_MONITORING: prompt.PromptConfig,
-        source.TYPE_INFLUX: prompt.PromptConfigInflux,
-        source.TYPE_KAFKA: prompt.PromptConfigKafka,
-        source.TYPE_MONGO: prompt.PromptConfigMongo,
-        source.TYPE_MYSQL: prompt.PromptConfigJDBC,
-        source.TYPE_POSTGRES: prompt.PromptConfigJDBC,
-        source.TYPE_ELASTIC: prompt.PromptConfigElastic,
-        source.TYPE_SPLUNK: prompt.PromptConfigTCP,
-        source.TYPE_DIRECTORY: prompt.PromptConfigDirectory,
-        source.TYPE_SAGE: prompt.PromptConfigSage,
-        source.TYPE_VICTORIA: prompt.PromptConfigVictoria,
-    }
-    return prompters[source_type]
 
 
 def extract_configs(file):

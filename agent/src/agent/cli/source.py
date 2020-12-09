@@ -1,11 +1,9 @@
 import click
 
-from agent import pipeline
-from agent import source
-from agent import destination
+from agent import pipeline, source, destination
 from agent.modules.tools import infinite_retry
 from jsonschema import ValidationError, SchemaError
-from . import source_builders
+from agent.cli import prompt
 
 
 def autocomplete(ctx, args, incomplete) -> list:
@@ -72,11 +70,11 @@ def _create_from_file(file):
 def _prompt(advanced: bool):
     source_type = _prompt_source_type()
     source_name = _prompt_source_name()
-    builder = source_builders.get(
+    prompter = prompt.source.get(
         source.manager.create_source_obj(source_name, source_type)
     )
     source.repository.save(
-        builder.prompt(source.manager.get_previous_source_config(source_type), advanced)
+        prompter.prompt(source.manager.get_previous_source_config(source_type), advanced)
     )
     click.secho('Source config created', fg='green')
 
@@ -90,8 +88,7 @@ def _edit_using_file(file):
 
 def _prompt_edit(name: str, advanced: bool) -> source.Source:
     source_ = source.repository.get_by_name(name)
-    builder = source_builders.get(source_)
-    source_ = builder.prompt(source_.config, advanced=advanced)
+    source_ = prompt.source.get(source_).prompt(source_.config, advanced=advanced)
     source.repository.save(source_)
     click.secho('Source config updated', fg='green')
     return source_
