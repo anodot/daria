@@ -82,3 +82,7 @@ def remove_deleted_pipeline_id(pipeline_id: str):
 
 def get_deleted_pipeline_ids() -> list:
     return session().execute('SELECT * FROM deleted_pipelines')
+
+
+def get_monitoring_pipelines() -> List[Pipeline]:
+    return session().query(Pipeline).filter(Pipeline.name.like(f'{pipeline.MONITORING}%')).all()
