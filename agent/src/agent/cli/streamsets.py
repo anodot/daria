@@ -36,8 +36,10 @@ def add(url, username, password, agent_ext_url):
         _validate_streamsets_url(url)
         _validate_agent_external_url(agent_ext_url)
         streamsets_ = StreamSets(url, username, password, agent_ext_url)
+        _validate_streamsets(streamsets_)
     else:
         streamsets_ = _prompt_streamsets(StreamSets(_prompt_url(), '', '', ''))
+        streamsets_.agent_external_url = _prompt_agent_external_url(streamsets_)
     streamsets.manager.create_streamsets(streamsets_)
     click.secho('StreamSets instance added to the agent', fg='green')
 
@@ -79,14 +81,18 @@ def balance():
     click.secho('Done', fg='green')
 
 
-def _prompt_streamsets(streamsets_: StreamSets) -> StreamSets:
-    streamsets_.username = click.prompt('Username', type=click.STRING, default=constants.DEFAULT_STREAMSETS_USERNAME)
-    streamsets_.password = click.prompt('Password', type=click.STRING, default=constants.DEFAULT_STREAMSETS_PASSWORD)
+def _validate_streamsets(streamsets_: StreamSets):
     try:
         streamsets.validator.validate(streamsets_)
     except streamsets.validator.ValidationException as e:
         raise click.ClickException(str(e))
-    streamsets_.agent_external_url = _prompt_agent_external_url(streamsets_)
+
+
+@infinite_retry
+def _prompt_streamsets(streamsets_: StreamSets) -> StreamSets:
+    streamsets_.username = click.prompt('Username', type=click.STRING, default=constants.DEFAULT_STREAMSETS_USERNAME)
+    streamsets_.password = click.prompt('Password', type=click.STRING, default=constants.DEFAULT_STREAMSETS_PASSWORD)
+    _validate_streamsets(streamsets_)
     return streamsets_
 
 
@@ -106,17 +112,20 @@ def _validate_streamsets_url(url):
         logger.debug(traceback.format_exc())
         raise click.ClickException(f'ERROR: {str(e)}')
 
+
 @infinite_retry
 def _prompt_url() -> str:
     url = click.prompt('Enter streamsets url', type=click.STRING)
     _validate_streamsets_url(url)
     return url
 
+
 def _validate_agent_external_url(url):
     try:
         validator.validate_url_format(url)
     except (validator.ValidationException, streamsets.validator.ValidationException) as e:
         raise click.ClickException(str(e))
+
 
 @infinite_retry
 def _prompt_agent_external_url(streamsets_: StreamSets) -> str:
