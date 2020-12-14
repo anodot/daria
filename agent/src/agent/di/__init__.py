@@ -4,4 +4,4 @@ from . import source
 
 
 def init():
-    inject.configure(source.config)
+    inject.configure_once(source.config)

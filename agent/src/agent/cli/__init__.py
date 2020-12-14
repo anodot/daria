@@ -1,5 +1,6 @@
 import click
 
+from agent import di
 from agent.cli.backup import backup, restore
 from agent.cli.destination import destination
 from agent.cli.pipeline import pipeline_group
@@ -7,6 +8,8 @@ from agent.cli.source import source_group
 from agent.cli.streamsets import streamsets_group
 from agent.modules import db
 from agent.version import __version__, __build_time__, __git_sha1__
+
+di.init()
 
 
 class DefaultHelp(click.Group):
