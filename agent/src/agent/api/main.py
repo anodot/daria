@@ -23,7 +23,6 @@ app.register_blueprint(scripts.scripts)
 app.config['WTF_CSRF_ENABLED'] = False
 app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = False
 
-# WARNING, it initializes di for tests and cli as well
 di.init()
 
 
