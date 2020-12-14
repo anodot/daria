@@ -1,5 +1,6 @@
 import click
 
+from agent import di
 from agent.cli.backup import backup, restore
 from agent.cli.destination import destination
 from agent.cli.pipeline import pipeline_group
@@ -34,6 +35,7 @@ def agent(version):
 
 def agent_entry_point():
     try:
+        di.init()
         agent(standalone_mode=False)
         db.session().commit()
     except click.exceptions.Abort:

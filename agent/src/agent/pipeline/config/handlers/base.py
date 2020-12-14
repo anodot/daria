@@ -10,7 +10,7 @@ logger = get_logger(__name__)
 
 
 class BaseConfigLoader:
-    BASE_PIPELINE_CONFIGS_PATH = os.path.join('pipeline', 'config', 'base_pipelines')
+    BASE_PIPELINE_CONFIGS_PATH = 'base_pipelines'
 
     @classmethod
     def load_base_config(cls, pipeline: Pipeline):
@@ -20,7 +20,7 @@ class BaseConfigLoader:
 
     @classmethod
     def _get_config_path(cls, pipeline: Pipeline):
-        return os.path.join(ROOT_DIR, cls.BASE_PIPELINE_CONFIGS_PATH, cls._get_configs()[pipeline.source.type])
+        return os.path.join(ROOT_DIR, 'pipeline', 'config', 'handlers', cls.BASE_PIPELINE_CONFIGS_PATH, cls._get_configs()[pipeline.source.type])
 
     @classmethod
     def _get_configs(cls) -> dict:
@@ -40,7 +40,7 @@ class BaseConfigLoader:
 
 
 class TestPipelineBaseConfigLoader(BaseConfigLoader):
-    BASE_PIPELINE_CONFIGS_PATH = os.path.join('pipeline', 'test_pipelines')
+    BASE_PIPELINE_CONFIGS_PATH = 'test_pipelines'
 
     @classmethod
     def _get_configs(cls) -> dict:
@@ -65,17 +65,11 @@ class BaseConfigHandler:
         self.pipeline = pipeline
         self.is_preview = is_preview
 
-    def override_base_config(self, base_config, new_uuid=None, new_title=None):
+    def override_base_config(self, base_config):
         self.config = base_config
-        if new_uuid:
-            self.config['uuid'] = new_uuid
-        if new_title:
-            self.config['title'] = new_title
-
         self._override_pipeline_config()
         self._override_stages()
         self._set_labels()
-
         return self.config
 
     def _set_labels(self):
@@ -102,7 +96,3 @@ class BaseConfigHandler:
         for config in self.config['configuration']:
             if config['name'] == 'constants':
                 config['value'] = [{'key': key, 'value': val} for key, val in self._get_pipeline_config().items()]
-
-
-class ConfigHandlerException(Exception):
-    pass

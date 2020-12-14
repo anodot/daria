@@ -1,0 +1,2 @@
+requests==2.25.0
+inject==4.3.1

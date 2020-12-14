@@ -1,5 +1,6 @@
 import json
 import click
+import sdc_client
 
 from agent import pipeline, source, streamsets
 from agent import destination
@@ -16,7 +17,7 @@ def get_pipelines_ids_complete(ctx, args, incomplete):
 @click.command(name='list')
 def list_pipelines():
     pipelines = pipeline.repository.get_all()
-    statuses = streamsets.manager.get_all_pipeline_statuses()
+    statuses = sdc_client.get_all_pipeline_statuses()
     table = _build_table(['Name', 'Type', 'Status', 'Streamsets URL'],
                          [[p.name, p.source.type, statuses[p.name]['status'], p.streamsets.url] for p in pipelines])
     click.echo(table.draw())
@@ -55,8 +56,8 @@ def start(pipeline_id, file):
     for pipeline_id in pipeline_ids:
         try:
             click.echo(f'Pipeline {pipeline_id} is starting...')
-            streamsets.manager.start(pipeline.repository.get_by_name(pipeline_id))
-        except (streamsets.ApiClientException, pipeline.PipelineException) as e:
+            sdc_client.start(pipeline.repository.get_by_name(pipeline_id))
+        except (sdc_client.ApiClientException, pipeline.PipelineException) as e:
             click.secho(str(e), err=True, fg='red')
             continue
 
@@ -72,9 +73,9 @@ def stop(pipeline_id, file):
 
     for pipeline_id in pipeline_ids:
         try:
-            streamsets.manager.stop(pipeline_id)
+            sdc_client.stop(pipeline_id)
             click.secho(f'Pipeline {pipeline_id} is stopped', fg='green')
-        except (streamsets.ApiClientException, pipeline.PipelineException) as e:
+        except (sdc_client.ApiClientException, pipeline.PipelineException) as e:
             click.secho(str(e), err=True, fg='red')
             continue
 
@@ -84,9 +85,9 @@ def stop(pipeline_id, file):
 def force_stop(pipeline_id):
     try:
         click.echo('Force pipeline stopping...')
-        streamsets.manager.force_stop(pipeline_id)
+        sdc_client.force_stop(pipeline_id)
         click.secho('Pipeline is stopped', fg='green')
-    except (streamsets.ApiClientException, streamsets.PipelineException) as e:
+    except sdc_client.ApiClientException as e:
         click.secho(str(e), err=True, fg='red')
         return
 
@@ -105,7 +106,7 @@ def delete(pipeline_id, file):
             pipeline.manager.delete_by_name(pipeline_name)
             click.echo(f'Pipeline {pipeline_name} deleted')
         except (
-                streamsets.ApiClientException, pipeline.PipelineException, pipeline.repository.PipelineNotExistsException
+            sdc_client.ApiClientException, pipeline.PipelineException, pipeline.repository.PipelineNotExistsException
         ) as e:
             click.secho(str(e), err=True, fg='red')
             continue
@@ -129,8 +130,8 @@ def logs(pipeline_id, lines, severity):
     Show pipeline logs
     """
     try:
-        logs_ = streamsets.manager.get_pipeline_logs(pipeline_id, severity, lines)
-    except streamsets.ApiClientException as e:
+        logs_ = sdc_client.get_pipeline_logs(pipeline_id, severity, lines)
+    except sdc_client.ApiClientException as e:
         raise click.ClickException(str(e))
     table = _build_table(['Timestamp', 'Severity', 'Category', 'Message'], logs_)
     click.echo(table.draw())
@@ -144,7 +145,10 @@ def destination_logs(pipeline_id, enable):
     Enable destination response logs for a pipeline (for debugging purposes only)
     """
     pipeline_object = pipeline.repository.get_by_name(pipeline_id)
-    pipeline.manager.enable_destination_logs(pipeline_object) if enable else pipeline.manager.disable_destination_logs(pipeline_object)
+    if enable:
+        pipeline.manager.enable_destination_logs(pipeline_object)
+    else:
+        pipeline.manager.disable_destination_logs(pipeline_object)
     click.secho('Updated pipeline {}'.format(pipeline_id), fg='green')
 
 
@@ -156,8 +160,8 @@ def info(pipeline_id, lines):
     Show pipeline status, errors if any, statistics about amount of records sent
     """
     try:
-        info_ = streamsets.manager.get_pipeline_info(pipeline_id, lines)
-    except streamsets.ApiClientException as e:
+        info_ = sdc_client.get_pipeline_info(pipeline_id, lines)
+    except sdc_client.ApiClientException as e:
         raise click.ClickException(str(e))
     click.secho('=== STATUS ===', fg='green')
     click.echo(info_['status'])
@@ -200,7 +204,7 @@ def reset(pipeline_id):
     """
     try:
         pipeline.manager.reset(pipeline.repository.get_by_name(pipeline_id))
-    except streamsets.ApiClientException as e:
+    except sdc_client.ApiClientException as e:
         click.secho(str(e), err=True, fg='red')
         return
     click.echo('Pipeline offset reset')
@@ -215,7 +219,7 @@ def update(pipeline_id):
     pipelines = [pipeline.repository.get_by_name(pipeline_id)] if pipeline_id else pipeline.repository.get_all()
     for p in pipelines:
         try:
-            streamsets.manager.update(p)
+            sdc_client.update(p)
             click.secho(f'Pipeline {p.name} updated', fg='green')
         except streamsets.manager.StreamsetsException as e:
             print(str(e))
@@ -230,7 +234,7 @@ def pipeline_group():
 def _create_from_file(file):
     try:
         pipeline.manager.create_from_json(json.load(file))
-    except (streamsets.ApiClientException, ValidationError, pipeline.PipelineException) as e:
+    except (sdc_client.ApiClientException, ValidationError, pipeline.PipelineException) as e:
         raise click.ClickException(str(e))
 
 
@@ -265,7 +269,7 @@ def _prompt_edit(advanced, pipeline_id):
     try:
         pipeline_prompter = prompt.pipeline.get_prompter(pipeline.repository.get_by_name(pipeline_id))
         pipeline_prompter.prompt(pipeline_prompter.pipeline.to_dict(), advanced=advanced)
-        streamsets.manager.update(pipeline_prompter.pipeline)
+        sdc_client.update(pipeline_prompter.pipeline)
         pipeline.repository.save(pipeline_prompter.pipeline)
 
         click.secho('Updated pipeline {}'.format(pipeline_id), fg='green')

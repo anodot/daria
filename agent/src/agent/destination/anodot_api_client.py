@@ -1,9 +1,8 @@
-from typing import Optional
-
 import requests
 import urllib.parse
 import click
 
+from typing import Optional
 from agent.destination import HttpDestination, AuthenticationToken
 from agent.modules import proxy
 from agent.modules.logger import get_logger

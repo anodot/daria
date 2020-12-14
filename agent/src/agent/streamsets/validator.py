@@ -1,13 +1,14 @@
-from agent import streamsets
+import sdc_client
+
 from agent.streamsets import StreamSets
 
 
 def validate(streamsets_: StreamSets):
     try:
-        streamsets.StreamSetsApiClient(streamsets_).get_pipelines()
-    except streamsets.UnauthorizedException:
+        sdc_client.check_connection(streamsets_)
+    except sdc_client.UnauthorizedException:
         raise ValidationException('Wrong username or password provided')
-    except streamsets.ApiClientException as e:
+    except sdc_client.ApiClientException as e:
         raise ValidationException(str(e))
 
 

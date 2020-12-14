@@ -4,9 +4,10 @@ import json
 import os
 import csv
 import shutil
+import sdc_client
 
 from tempfile import NamedTemporaryFile
-from agent import pipeline, source, streamsets
+from agent import pipeline, source
 from agent.modules import logger, constants, db
 
 logger_ = logger.get_logger('scripts.antomation.run', stdout=True)
@@ -46,7 +47,7 @@ def populate_pipeline_from_file(file):
             if pipeline.repository.exists(config['pipeline_id']):
                 pipeline.manager.edit_pipeline_using_json(config)
             else:
-                streamsets.manager.start(
+                sdc_client.start(
                     pipeline.manager.create_pipeline_from_json(config)
                 )
         except Exception as e:

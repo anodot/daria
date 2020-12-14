@@ -1,6 +1,7 @@
 import logging
 import time
 import requests
+import sdc_client
 
 from jsonschema import ValidationError
 from agent.api.routes import needs_pipeline
@@ -64,8 +65,8 @@ def force_delete(pipeline_name):
 @needs_pipeline
 def start(pipeline_name):
     try:
-        streamsets.manager.start(pipeline.repository.get_by_name(pipeline_name))
-    except (streamsets.PipelineFreezeException, pipeline.PipelineException) as e:
+        sdc_client.start(pipeline.repository.get_by_name(pipeline_name))
+    except sdc_client.PipelineFreezeException as e:
         return jsonify(str(e)), 400
     return jsonify('')
 
@@ -74,10 +75,10 @@ def start(pipeline_name):
 @needs_pipeline
 def stop(pipeline_name):
     try:
-        streamsets.manager.stop(pipeline_name)
-    except streamsets.ApiClientException as e:
+        sdc_client.stop(pipeline_name)
+    except sdc_client.ApiClientException as e:
         return jsonify(str(e)), 400
-    except streamsets.PipelineFreezeException as e:
+    except sdc_client.PipelineFreezeException as e:
         return jsonify(str(e)), 400
     return jsonify('')
 
@@ -86,8 +87,8 @@ def stop(pipeline_name):
 @needs_pipeline
 def force_stop(pipeline_name):
     try:
-        streamsets.manager.force_stop(pipeline_name)
-    except streamsets.PipelineFreezeException as e:
+        sdc_client.force_stop(pipeline_name)
+    except sdc_client.PipelineFreezeException as e:
         return jsonify(str(e)), 400
     return jsonify('')
 
@@ -97,8 +98,8 @@ def force_stop(pipeline_name):
 def info(pipeline_name):
     number_of_history_records = int(request.args.get('number_of_history_records', 10))
     try:
-        return jsonify(streamsets.manager.get_pipeline_info(pipeline_name, number_of_history_records))
-    except streamsets.ApiClientException as e:
+        return jsonify(sdc_client.get_pipeline_info(pipeline_name, number_of_history_records))
+    except sdc_client.ApiClientException as e:
         return jsonify(str(e)), 500
 
 
@@ -110,8 +111,8 @@ def logs(pipeline_name):
     severity = request.args.get('severity', logging.getLevelName(logging.INFO))
     number_of_records = int(request.args.get('number_of_records', 10))
     try:
-        return jsonify(streamsets.manager.get_pipeline_logs(pipeline_name, severity, number_of_records))
-    except streamsets.ApiClientException as e:
+        return jsonify(sdc_client.get_pipeline_logs(pipeline_name, severity, number_of_records))
+    except sdc_client.ApiClientException as e:
         return jsonify(str(e)), 500
 
 
@@ -134,7 +135,7 @@ def disable_destination_logs(pipeline_name):
 def reset(pipeline_name):
     try:
         pipeline.manager.reset(pipeline.repository.get_by_name(pipeline_name))
-    except streamsets.ApiClientException as e:
+    except sdc_client.ApiClientException as e:
         return jsonify(str(e)), 500
     return jsonify('')
 
