@@ -1,5 +1,4 @@
 import traceback
-
 import inject
 import wtforms_json
 
@@ -51,4 +50,5 @@ def version():
 
 @app.route('/test-di', methods=['GET'])
 def test_di():
-    return inject.attr(validator.IConnectionValidator)
+    inject.attr(validator.IConnectionValidator)
+    return jsonify('')

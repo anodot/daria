@@ -1,7 +1,8 @@
 import click
 import inject
 
-from agent import di, source
+from agent.source.validator import IConnectionValidator
+from agent import di
 from agent.cli.backup import backup, restore
 from agent.cli.destination import destination
 from agent.cli.pipeline import pipeline_group
@@ -36,7 +37,7 @@ def agent(version):
 
 @click.command(name='test_di')
 def test_di():
-    inject.attr(source.validator.IConnectionValidator)
+    inject.attr(IConnectionValidator)
 
 
 def agent_entry_point():
