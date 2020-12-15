@@ -1,6 +1,7 @@
 import click
+import inject
 
-from agent import di
+from agent import di, source
 from agent.cli.backup import backup, restore
 from agent.cli.destination import destination
 from agent.cli.pipeline import pipeline_group
@@ -8,8 +9,6 @@ from agent.cli.source import source_group
 from agent.cli.streamsets import streamsets_group
 from agent.modules import db
 from agent.version import __version__, __build_time__, __git_sha1__
-
-di.init()
 
 
 class DefaultHelp(click.Group):
@@ -35,8 +34,14 @@ def agent(version):
         click.echo('Git commit: ' + __git_sha1__)
 
 
+@click.command(name='test_di')
+def test_di():
+    inject.attr(source.validator.IConnectionValidator)
+
+
 def agent_entry_point():
     try:
+        di.init()
         agent(standalone_mode=False)
         db.session().commit()
     except click.exceptions.Abort:
@@ -59,6 +64,7 @@ agent.add_command(backup)
 agent.add_command(restore)
 agent.add_command(destination)
 agent.add_command(streamsets_group)
+agent.add_command(test_di)
 
 if __name__ == '__main__':
     agent_entry_point()

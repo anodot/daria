@@ -6,7 +6,7 @@ import csv
 import shutil
 
 from tempfile import NamedTemporaryFile
-from agent import pipeline, source, streamsets
+from agent import pipeline, source, streamsets, di
 from agent.modules import logger, constants, db
 
 logger_ = logger.get_logger('scripts.antomation.run', stdout=True)
@@ -167,6 +167,7 @@ def create_checksums_dir():
             pass
 
 
+di.init()
 create_checksums_dir()
 
 
