@@ -1,7 +1,5 @@
 import click
-import inject
 
-from agent.source.validator import IConnectionValidator
 from agent import di
 from agent.cli.backup import backup, restore
 from agent.cli.destination import destination
@@ -35,11 +33,6 @@ def agent(version):
         click.echo('Git commit: ' + __git_sha1__)
 
 
-@click.command(name='test_di')
-def test_di():
-    inject.attr(IConnectionValidator)
-
-
 def agent_entry_point():
     try:
         di.init()
@@ -65,7 +58,6 @@ agent.add_command(backup)
 agent.add_command(restore)
 agent.add_command(destination)
 agent.add_command(streamsets_group)
-agent.add_command(test_di)
 
 if __name__ == '__main__':
     agent_entry_point()

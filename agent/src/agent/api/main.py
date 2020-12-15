@@ -1,5 +1,4 @@
 import traceback
-import inject
 import wtforms_json
 
 from flask import Flask, jsonify
@@ -10,7 +9,6 @@ from agent.api.routes.destination import destination_
 from agent.api.routes import source, pipeline, scripts
 from agent.modules.logger import get_logger
 from agent.version import __version__
-from agent.source import validator
 
 logger = get_logger(__name__)
 
@@ -46,9 +44,3 @@ def teardown_request_func(exception):
 @app.route('/version', methods=['GET'])
 def version():
     return jsonify('Daria Agent version ' + __version__)
-
-
-@app.route('/test-di', methods=['GET'])
-def test_di():
-    inject.attr(validator.IConnectionValidator)
-    return jsonify('')

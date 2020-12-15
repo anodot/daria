@@ -1,4 +1,3 @@
-import subprocess
 import pytest
 
 from agent import cli, streamsets
@@ -38,11 +37,3 @@ def test_edit_destination(cli_runner):
 def test_update(cli_runner):
     result = cli_runner.invoke(cli.pipeline.update, catch_exceptions=False)
     assert result.exit_code == 0
-
-
-def test_di():
-    try:
-        subprocess.check_output(['agent', 'test_di'], stderr=subprocess.STDOUT)
-    except subprocess.CalledProcessError as exc:
-        print("Status: FAIL", exc.returncode, exc.output)
-        raise
