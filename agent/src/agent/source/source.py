@@ -23,6 +23,11 @@ class Source(Entity):
         self.name = name
         self.sample_data = None
 
+    def equals(self, other):
+        if type(other) != type(self):
+            return False
+        return self.config == other.config
+
     # todo refactor
     def __getattr__(self, attr):
         if attr == 'sample_data':

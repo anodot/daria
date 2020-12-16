@@ -6,6 +6,11 @@ from typing import List
 from agent import pipeline
 from agent import source
 from agent.source import SourceException, Source
+from agent.modules.logger import get_logger
+from copy import deepcopy
+
+
+logger_ = get_logger(__name__, stdout=True)
 
 
 def create_source_obj(source_name: str, source_type: str) -> Source:
@@ -67,11 +72,19 @@ def edit_using_json(configs: list) -> List[Source]:
 def edit_source_using_json(config: dict) -> Source:
     validate_config_for_edit(config)
     source_ = source.repository.get_by_name(config['name'])
+
+    # TODO move to set_config and create edit function?
+    old_source = deepcopy(source_)
     source_.set_config(config['config'])
-    source.validator.validate(source_)
-    source.repository.save(source_)
-    # todo remove this last dependency on the pipeline, implement observer?
-    pipeline.manager.update_source_pipelines(source_)
+
+    if not source_.equals(old_source):
+        source.validator.validate(source_)
+        source.repository.save(source_)
+        # todo remove this last dependency on the pipeline, implement observer?
+        pipeline.manager.update_source_pipelines(source_)
+        logger_.info(f'Saved source {source_.name}')
+    else:
+        logger_.info(f'No need to update source {source_.name}')
     return source_
 
 

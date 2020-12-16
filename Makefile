@@ -13,7 +13,7 @@ all: build-all test-all
 
 build-all: get-streamsets-libs build-docker sleep setup-all
 
-test-all: run-unit-tests test-flask-app test-streamsets test-destination test-antomation test-api test-api-scripts test-input test-streamsets-2 test-send-to-bc test-pipelines
+test-all: run-unit-tests test-flask-app test-streamsets test-destination test-apply test-api test-api-scripts test-input test-streamsets-2 test-send-to-bc test-pipelines
 
 ##-------------
 ## DEVELOPMENT
@@ -83,8 +83,8 @@ build-docker:
 	docker-compose build --build-arg GIT_SHA1="$(shell git describe --dirty --always)"
 	docker-compose up -d
 
-test-antomation:
-	$(DOCKER_TEST) tests/test_antomation.py
+test-apply:
+	$(DOCKER_TEST) tests/test_apply.py
 
 test-send-to-bc:
 	$(DOCKER_TEST) tests/test_send_to_bc.py

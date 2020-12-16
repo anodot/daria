@@ -92,6 +92,11 @@ class Pipeline(Entity):
         self.streamsets_id = None
         self.streamsets = None
 
+    def equals(self, other):
+        if type(other) != type(self):
+            return False
+        return self.config == other.config
+
     @property
     def source(self):
         return self.source_
