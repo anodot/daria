@@ -1,4 +1,5 @@
 import argparse
+import click
 import hashlib
 import json
 import os
@@ -14,8 +15,6 @@ logger_ = logger.get_logger('scripts.antomation.run', stdout=True)
 FAIL = '\033[91m'
 ENDC = '\033[0m'
 ANTOMATION_WORKDIR = os.environ.get('ANTOMATION_WORKDIR', os.path.dirname(os.path.abspath(__file__)))
-SOURCES_DIR = os.path.join(ANTOMATION_WORKDIR, 'sources')
-PIPELINES_DIR = os.path.join(ANTOMATION_WORKDIR, 'pipelines')
 CHECKSUMS_DIR = os.environ.get('CHECKSUMS_DIR', os.path.join(ANTOMATION_WORKDIR, 'checksums'))
 SOURCES_CHECKSUMS = os.path.join(CHECKSUMS_DIR, 'sources.csv')
 PIPELINES_CHECKSUMS = os.path.join(CHECKSUMS_DIR, 'pipelines.csv')
@@ -123,17 +122,14 @@ def process(directory, checksum_file, create):
 
 
 def delete_not_existing(directory, module, type_):
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--keep-not-existing', action='store_true', help="shows output")
-    if not parser.parse_args().keep_not_existing:
-        logger_.info('Looking for removed pipelines')
-        all_names = _extract_all_names(directory, module, type_)
-        for obj in module.repository.get_all():
-            if obj.name not in all_names and not is_monitoring(obj):
-                logger_.info(f'{type_} {obj.name} not found in configs, deleting')
-                module.manager.delete(obj)
-                logger_.info('Success')
-        logger_.info('Done')
+    logger_.info('Looking for removed pipelines')
+    all_names = _extract_all_names(directory, module, type_)
+    for obj in module.repository.get_all():
+        if obj.name not in all_names and not is_monitoring(obj):
+            logger_.info(f'{type_} {obj.name} not found in configs, deleting')
+            module.manager.delete(obj)
+            logger_.info('Success')
+    logger_.info('Done')
 
 
 def is_monitoring(obj) -> bool:
@@ -167,16 +163,21 @@ def create_checksums_dir():
             pass
 
 
-di.init()
-create_checksums_dir()
+@click.command()
+@click.option('-d', '--work-dir', type=click.Path(exists=True))
+@click.option('--keep-not-existing/--remove-not-existing', default=True)
+def apply(work_dir, keep_not_existing):
+    create_checksums_dir()
 
+    if not work_dir:
+        work_dir = ANTOMATION_WORKDIR
 
-process(SOURCES_DIR, SOURCES_CHECKSUMS, populate_source_from_file)
-process(PIPELINES_DIR, PIPELINES_CHECKSUMS, populate_pipeline_from_file)
+    sources_dir = os.path.join(work_dir, 'sources')
+    pipelines_dir = os.path.join(work_dir, 'pipelines')
 
-delete_not_existing(PIPELINES_DIR, pipeline, 'Pipeline')
-delete_not_existing(SOURCES_DIR, source, 'Source')
+    process(sources_dir, SOURCES_CHECKSUMS, populate_source_from_file)
+    process(pipelines_dir, PIPELINES_CHECKSUMS, populate_pipeline_from_file)
 
-# todo this is temporary
-db.session().commit()
-db.session().close()
+    if not keep_not_existing:
+        delete_not_existing(pipelines_dir, pipeline, 'Pipeline')
+        delete_not_existing(sources_dir, source, 'Source')
