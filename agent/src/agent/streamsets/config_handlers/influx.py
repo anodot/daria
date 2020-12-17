@@ -12,8 +12,8 @@ logger = get_logger(__name__)
 
 class InfluxConfigHandler(base.BaseConfigHandler):
     stages_to_override = {
-        'source': stages.influx_source.InfluxScript,
-        'get_interval_records': stages.influx_get_records.InfluxGetRecords,
+        'offset': stages.influx_offset.InfluxScript,
+        'source': stages.influx_source.InfluxSource,
         'destination': stages.destination.Destination
     }
 

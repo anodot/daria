@@ -10,11 +10,11 @@ class PromptConfigJDBC(PromptConfig):
 
     def prompt_config(self):
         self.set_query()
+        self.data_preview()
         self.prompt_interval()
         self.prompt_days_to_backfill()
         self.prompt_delay()
         self.set_timestamp()
-        self.data_preview()
         self.set_values()
         self.set_dimensions()
         self.set_static_properties()

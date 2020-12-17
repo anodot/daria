@@ -177,7 +177,7 @@
       "stageVersion" : "10",
       "configuration" : [ {
         "name" : "isIncrementalMode",
-        "value" : true
+        "value" : false
       }, {
         "name" : "query",
         "value" : "SELECT * FROM test  WHERE id > ${OFFSET} LIMIT 3"
@@ -225,10 +225,10 @@
         "value" : 10000
       }, {
         "name" : "hikariConfigBean.connectionString",
-        "value" : "jdbc:mysql://root@mysql/test"
+        "value" : "test"
       }, {
         "name" : "hikariConfigBean.useCredentials",
-        "value" : true
+        "value" : false
       }, {
         "name" : "hikariConfigBean.username",
         "value" : ""
