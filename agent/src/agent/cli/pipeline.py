@@ -265,10 +265,7 @@ def _prompt_edit(advanced, pipeline_id):
     try:
         pipeline_prompter = prompt.pipeline.get_prompter(pipeline.repository.get_by_name(pipeline_id))
         pipeline_prompter.prompt(pipeline_prompter.pipeline.to_dict(), advanced=advanced)
-        streamsets.manager.update(pipeline_prompter.pipeline)
-        pipeline.repository.save(pipeline_prompter.pipeline)
-
-        click.secho('Updated pipeline {}'.format(pipeline_id), fg='green')
+        pipeline.manager.update(pipeline_prompter.pipeline)
         if _should_prompt_preview(pipeline_prompter.pipeline):
             if click.confirm('Would you like to see the result data preview?', default=True):
                 pipeline.manager.show_preview(pipeline_prompter.pipeline)

@@ -7,6 +7,7 @@ from agent.destination import HttpDestination
 from enum import Enum
 from sqlalchemy import Column, Integer, String, JSON, ForeignKey, func
 from agent import source
+from copy import deepcopy
 
 
 MONITORING = 'Monitoring'
@@ -83,6 +84,8 @@ class Pipeline(Entity):
 
     def __init__(self, pipeline_name: str, source_: source.Source, destination: HttpDestination):
         self.name = pipeline_name
+        self._previous_config = {}
+        self._previous_override_source = {}
         self.config = {}
         self.source_ = source_
         self.source_id = source_.id
@@ -91,6 +94,15 @@ class Pipeline(Entity):
         self.override_source = {}
         self.streamsets_id = None
         self.streamsets = None
+
+    def config_changed(self) -> bool:
+        return self.config != self._previous_config or self.override_source != self._previous_override_source
+
+    def set_config(self, config: dict):
+        self._previous_config = deepcopy(self.config)
+        self._previous_override_source = deepcopy(self.override_source)
+        self.override_source = config.pop(self.OVERRIDE_SOURCE, {})
+        self.config = config
 
     @property
     def source(self):
@@ -259,10 +271,6 @@ class Pipeline(Entity):
             'pipeline_id': self.name,
             'source': {'name': self.source.name},
         }
-
-    def set_config(self, config: dict):
-        self.override_source = config.pop(self.OVERRIDE_SOURCE, {})
-        self.config = config
 
     def get_property_path(self, property_value: str) -> str:
         mapping = self.source.config.get('csv_mapping', {})

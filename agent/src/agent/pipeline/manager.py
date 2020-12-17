@@ -17,9 +17,10 @@ from agent.modules.logger import get_logger
 from typing import List
 from agent.source import Source
 from agent.streamsets import StreamSets
+from copy import deepcopy
 
 
-logger = get_logger(__name__)
+logger_ = get_logger(__name__, stdout=True)
 
 LOG_LEVELS = [logging.getLevelName(logging.INFO), logging.getLevelName(logging.ERROR)]
 MAX_SAMPLE_RECORDS = 3
@@ -183,11 +184,21 @@ def edit_using_json(configs: list) -> List[Pipeline]:
 
 
 def edit_pipeline_using_json(config: dict) -> Pipeline:
-    pipeline_builder = PipelineBuilder(pipeline.repository.get_by_name(config['pipeline_id']))
+    pipeline_ = pipeline.repository.get_by_name(config['pipeline_id'])
+    pipeline_builder = PipelineBuilder(pipeline_)
     pipeline_builder.load_config(config, edit=True)
-    streamsets.manager.update(pipeline_builder.pipeline)
-    pipeline.repository.save(pipeline_builder.pipeline)
+    update(pipeline_builder.pipeline)
     return pipeline_builder.pipeline
+
+
+def update(pipeline_: Pipeline):
+    if not pipeline_.config_changed():
+        logger_.info(f'No need to update pipeline {pipeline_}')
+        return
+
+    streamsets.manager.update(pipeline_)
+    pipeline.repository.save(pipeline_)
+    logger_.info(f'Updated pipeline {pipeline_}')
 
 
 def create(pipeline_: Pipeline):
@@ -363,7 +374,7 @@ def get_sample_records(pipeline_: Pipeline) -> (list, list):
     try:
         data = preview_data['batchesOutput'][0][0]['output']['source_outputLane']
     except (ValueError, TypeError, IndexError) as e:
-        logger.exception(str(e))
+        logger_.exception(str(e))
         return [], []
 
     return [tools.sdc_record_map_to_dict(record['value']) for record in data[:MAX_SAMPLE_RECORDS]], errors
@@ -375,7 +386,7 @@ def _get_preview_data(test_pipeline: Pipeline):
         preview = streamsets.manager.create_preview(test_pipeline)
         preview_data, errors = streamsets.manager.wait_for_preview(test_pipeline, preview['previewerId'])
     except (Exception, KeyboardInterrupt) as e:
-        logger.exception(str(e))
+        logger_.exception(str(e))
         raise
     finally:
         streamsets.manager.delete(test_pipeline)

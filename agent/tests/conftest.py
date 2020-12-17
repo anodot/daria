@@ -10,6 +10,8 @@ from agent.modules import db
 DUMMY_DESTINATION_OUTPUT_PATH = '/output'
 TEST_DATASETS_PATH = '/home'
 
+INPUT_FILES_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'test_pipelines', 'input_files')
+
 
 class MyRunner(CliRunner):
     def invoke(self, *args, **kwargs):
@@ -46,7 +48,7 @@ def get_output(file_name):
 
 
 def get_input_file_path(name):
-    return os.path.join(os.path.dirname(os.path.realpath(__file__)), 'test_pipelines', 'input_files', f'{name}')
+    return os.path.join(INPUT_FILES_DIR, f'{name}')
 
 
 def pytest_generate_tests(metafunc):
