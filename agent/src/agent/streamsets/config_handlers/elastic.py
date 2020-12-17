@@ -1,7 +1,6 @@
 from .base import BaseConfigHandler
 from agent.modules.logger import get_logger
 from agent.pipeline.config import stages
-from agent.source import ElasticSource
 
 logger = get_logger(__name__)
 
@@ -16,5 +15,4 @@ class ElasticConfigHandler(BaseConfigHandler):
     }
 
     def _override_stages(self):
-        self.pipeline.source.config[ElasticSource.CONFIG_QUERY] = self.pipeline.query
         super()._override_stages()

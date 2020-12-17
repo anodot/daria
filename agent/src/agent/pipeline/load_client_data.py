@@ -2,6 +2,7 @@ import os
 import json
 
 from jsonschema import validate
+from agent.source import ElasticSource
 from agent.pipeline.config import expression_parser
 
 definitions_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'json_schema_definitions')
@@ -91,7 +92,10 @@ class ElasticLoadClientData(LoadClientData):
         self.load_dimensions()
         if 'query_file' in self.client_config:
             with open(self.client_config['query_file']) as f:
-                self.client_config['query'] = f.read()
+                if 'override_source' not in self.client_config:
+                    self.client_config['override_source'] = {}
+                self.client_config['override_source'][ElasticSource.CONFIG_QUERY] = f.read()
+
         return self.client_config
 
 
