@@ -185,17 +185,20 @@ def edit_using_json(configs: list) -> List[Pipeline]:
 
 def edit_pipeline_using_json(config: dict) -> Pipeline:
     pipeline_ = pipeline.repository.get_by_name(config['pipeline_id'])
-    # TODO move to set_config and create edit function?
-    old_pipeline = deepcopy(pipeline_)
     pipeline_builder = PipelineBuilder(pipeline_)
     pipeline_builder.load_config(config, edit=True)
-    if not pipeline_builder.pipeline.equals(old_pipeline):
-        streamsets.manager.update(pipeline_builder.pipeline)
-        pipeline.repository.save(pipeline_builder.pipeline)
-        logger_.info(f'Saved pipeline {pipeline_builder.pipeline.name}')
-    else:
-        logger_.info(f'No need to update pipeline {pipeline_builder.pipeline.name}')
+    update(pipeline_builder.pipeline)
     return pipeline_builder.pipeline
+
+
+def update(pipeline_: Pipeline):
+    if not pipeline_.config_changed():
+        logger_.info(f'No need to update pipeline {pipeline_}')
+        return
+
+    streamsets.manager.update(pipeline_)
+    pipeline.repository.save(pipeline_)
+    logger_.info(f'Updated pipeline {pipeline_}')
 
 
 def create(pipeline_: Pipeline):
