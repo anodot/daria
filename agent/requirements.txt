@@ -57,3 +57,4 @@ wtforms-json==0.3.3
 alembic==1.4.2
 regex==2020.11.13
 inject==4.3.1
+git+https://github.com/anodot/sdc-client

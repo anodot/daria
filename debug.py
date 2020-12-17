@@ -1,7 +1,7 @@
-import re
-
-from agent import cli, source, destination, pipeline, streamsets
+from agent import cli, source, destination, pipeline, streamsets, di
 from agent.modules import db
+
+di.init()
 
 # cli.source.edit(["test_mongo"])
 # cli.destination()
