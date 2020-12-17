@@ -13,4 +13,4 @@ def config(binder):
 
 
 def init():
-    inject.configure(config)
+    inject.configure_once(config)

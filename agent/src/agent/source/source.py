@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy import Column, Integer, String, JSON, func
 from agent.modules.db import Entity
+from copy import deepcopy
 
 
 class Source(Entity):
@@ -18,10 +19,14 @@ class Source(Entity):
     pipelines = relationship('Pipeline', back_populates='source_')
 
     def __init__(self, name: str, source_type: str, config: dict):
+        self._previous_config = {}
         self.config = config
         self.type = source_type
         self.name = name
         self.sample_data = None
+
+    def config_changed(self) -> bool:
+        return self.config != self._previous_config
 
     # todo refactor
     def __getattr__(self, attr):
@@ -34,6 +39,7 @@ class Source(Entity):
 
     # todo refactor children
     def set_config(self, config):
+        self._previous_config = deepcopy(self.config)
         self.config = config
 
 

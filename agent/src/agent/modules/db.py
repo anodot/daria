@@ -11,7 +11,7 @@ class DeclarativeABCMeta(DeclarativeMeta, ABCMeta):
 
 Entity = declarative_base(metaclass=DeclarativeABCMeta)
 Session = sessionmaker(
-    bind=create_engine(f'postgresql://{AGENT_DB_USER}:{AGENT_DB_PASSWORD}@{AGENT_DB_HOST}/agent')
+    bind=create_engine(f'postgresql://{AGENT_DB_USER}:{AGENT_DB_PASSWORD}@{AGENT_DB_HOST}/{AGENT_DB}')
 )
 _session = None
 

@@ -1,6 +1,10 @@
+import json
+import subprocess
 import pytest
 
 from .test_zpipeline_base import TestPipelineBase
+from ..conftest import get_input_file_path
+from agent import source
 
 
 class TestKafka(TestPipelineBase):
@@ -54,6 +58,17 @@ class TestKafka(TestPipelineBase):
                                  {'name': 'test_kafka_timezone'}],
         'test_source_delete': [{'name': 'test_kfk'}],
     }
+
+    def test_create_subprocess(self):
+        input_file_path = get_input_file_path('kafka_sources_2.json')
+        try:
+            subprocess.check_output(['agent', 'source', 'create', '-f', input_file_path], stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as exc:
+            raise Exception(f'Status: FAIL\nexit code {exc.returncode}\n{exc.output}')
+        with open(input_file_path) as f:
+            sources = json.load(f)
+            for source_ in sources:
+                assert source.repository.exists(f"{source_['name']}")
 
     def test_edit_with_file(self, cli_runner, file_name=None):
         pytest.skip()

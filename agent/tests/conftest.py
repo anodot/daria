@@ -2,17 +2,21 @@ import json
 import os
 import pytest
 
-from agent.api import main
 from click.testing import CliRunner
+from agent import di
+from agent.api import main
 from agent.modules import db
 
 DUMMY_DESTINATION_OUTPUT_PATH = '/output'
 TEST_DATASETS_PATH = '/home'
 
+INPUT_FILES_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'test_pipelines', 'input_files')
+
 
 class MyRunner(CliRunner):
     def invoke(self, *args, **kwargs):
         try:
+            di.init()
             result = super(MyRunner, self).invoke(*args, **kwargs)
             db.session().commit()
             return result
@@ -32,6 +36,7 @@ def cli_runner():
 def api_client():
     main.app.testing = True
     with main.app.test_client() as client:
+        di.init()
         yield client
 
 
@@ -43,7 +48,7 @@ def get_output(file_name):
 
 
 def get_input_file_path(name):
-    return os.path.join(os.path.dirname(os.path.realpath(__file__)), 'test_pipelines', 'input_files', f'{name}')
+    return os.path.join(INPUT_FILES_DIR, f'{name}')
 
 
 def pytest_generate_tests(metafunc):
