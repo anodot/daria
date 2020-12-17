@@ -104,7 +104,7 @@ def _extract_all_names(directory, module, type_):
 
 
 @click.command()
-@click.option('-d', '--work-dir', type=click.Path(exists=True))
+@click.option('-d', '--work-dir', type=click.Path(exists=True), required=True)
 @click.option('--keep-not-existing/--remove-not-existing', default=True)
 def apply(work_dir, keep_not_existing):
     logger_.info('Run in ' + work_dir)
