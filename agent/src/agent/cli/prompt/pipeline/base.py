@@ -19,7 +19,6 @@ class PromptConfig:
     def prompt(self, default_config, advanced=False) -> Pipeline:
         self.advanced = advanced
         self.default_config = default_config
-        # self.config = dict()
         self.prompt_config()
         self.pipeline.set_config(self.config)
         return self.pipeline
