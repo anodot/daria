@@ -388,6 +388,6 @@ def _get_preview_data(test_pipeline: Pipeline):
     except (Exception, KeyboardInterrupt) as e:
         logger_.exception(str(e))
         raise
-    # finally:
-    #     streamsets.manager.delete(test_pipeline)
+    finally:
+        streamsets.manager.delete(test_pipeline)
     return preview_data, errors
