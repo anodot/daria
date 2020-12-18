@@ -29,4 +29,5 @@ class PromptConfigElastic(PromptConfigSchemaless):
             errors = elastic_query.get_errors(query, offset_field)
             if errors:
                 raise click.ClickException(errors)
-            self.config['query'] = query
+
+            self.config['override_source'][source.ElasticSource.CONFIG_QUERY] = query

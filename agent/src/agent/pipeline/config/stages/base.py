@@ -3,7 +3,6 @@ import os
 from abc import ABC, abstractmethod
 from agent.modules.constants import ROOT_DIR
 from agent.pipeline import Pipeline
-from agent import pipeline
 
 
 class Stage(ABC):
@@ -13,13 +12,7 @@ class Stage(ABC):
     def __init__(self, pipeline_: Pipeline, sdc_stage: dict):
         self.pipeline = pipeline_
         self.sdc_stage = sdc_stage
-        if isinstance(pipeline_, pipeline.TestPipeline):
-            self.config = self._get_source_config()
-        else:
-            self.config = self._get_config()
-
-    def _get_source_config(self):
-        return {**self.pipeline.source.config, **self.pipeline.override_source}
+        self.config = self._get_config()
 
     @abstractmethod
     def _get_config(self) -> dict:

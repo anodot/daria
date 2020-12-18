@@ -101,8 +101,8 @@ class Pipeline(Entity):
     def set_config(self, config: dict):
         self._previous_config = deepcopy(self.config)
         self._previous_override_source = deepcopy(self.override_source)
-        self.override_source = config.pop(self.OVERRIDE_SOURCE, {})
-        self.config = config
+        self.config = deepcopy(config)
+        self.override_source = self.config.pop(self.OVERRIDE_SOURCE, {})
 
     @property
     def source(self):

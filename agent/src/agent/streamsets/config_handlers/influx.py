@@ -12,7 +12,8 @@ logger = get_logger(__name__)
 
 class InfluxConfigHandler(base.BaseConfigHandler):
     stages_to_override = {
-        'source': stages.influx_source.InfluxScript,
+        'offset': stages.influx_offset.InfluxScript,
+        'source': stages.influx_source.InfluxSource,
         'destination': stages.destination.Destination
     }
 
@@ -36,11 +37,9 @@ state['HOST_NAME'] = '{host_name}'
 state['PIPELINE_ID'] = '{pipeline_id}'
 state['TAGS'] = {tags}
 """
-    QUERY_GET_DATA = "SELECT+{dimensions}+FROM+{metric}+WHERE+%28%22time%22+%3E%3D+${{record:value('/last_timestamp')}}+AND+%22time%22+%3C+${{record:value('/last_timestamp')}}%2B{interval}+AND+%22time%22+%3C+now%28%29+-+{delay}%29+{where}"
 
     def _override_stages(self):
         super()._override_stages()
-        self.update_source_configs()
 
         for stage in self.config['stages']:
             if stage['instanceName'] == 'transform_records':
@@ -66,51 +65,6 @@ state['TAGS'] = {tags}
 
     def get_optional_dimensions(self):
         return [self.replace_illegal_chars(d) for d in self.pipeline.config['dimensions'].get('optional', [])]
-
-    def update_source_configs(self):
-        source_config = self.pipeline.source.config
-        username = source_config.get('username', '')
-        password = source_config.get('password', '')
-        if username != '':
-            self.pipeline.source.config['conf.client.authType'] = 'BASIC'
-            self.pipeline.source.config['conf.client.basicAuth.username'] = username
-            self.pipeline.source.config['conf.client.basicAuth.password'] = password
-
-        for stage in self.config['stages']:
-            if stage['instanceName'] == 'get_interval_records':
-                for conf in stage['configuration']:
-                    if conf['name'] == 'conf.resourceUrl':
-                        params = f"/query?db={source_config['db']}&epoch=ms&q="
-                        conf['value'] = urljoin(source_config['host'], params + self.get_query())
-                        continue
-
-                    if conf['name'] in source_config:
-                        conf['value'] = source_config[conf['name']]
-
-    def get_query(self):
-        if self.is_preview:
-            return f"select+%2A+from+{self.config['measurement_name']}+limit+{pipeline.manager.MAX_SAMPLE_RECORDS}"
-
-        dimensions_to_select = [f'"{d}"::tag' for d in self.pipeline.dimensions_names]
-        values_to_select = ['*::field' if v == '*' else f'"{v}"::field' for v in
-                            self.pipeline.config['value']['values']]
-        delay = self.pipeline.config.get('delay', '0s')
-        columns = quote_plus(','.join(dimensions_to_select + values_to_select))
-
-        where = self.pipeline.config.get('filtering')
-        where = f'AND+%28{quote_plus(where)}%29' if where else ''
-
-        measurement_name = self.pipeline.config['measurement_name']
-        if '.' not in measurement_name and ' ' not in measurement_name:
-            measurement_name = f'%22{measurement_name}%22'
-
-        return self.QUERY_GET_DATA.format(**{
-            'dimensions': columns,
-            'metric': measurement_name,
-            'delay': delay,
-            'interval': str(self.pipeline.config.get('interval', 60)) + 's',
-            'where': where
-        })
 
     @staticmethod
     def replace_illegal_chars(string: str) -> str:
