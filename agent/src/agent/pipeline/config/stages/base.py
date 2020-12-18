@@ -3,7 +3,6 @@ import os
 from abc import ABC, abstractmethod
 from agent.modules.constants import ROOT_DIR
 from agent.pipeline import Pipeline
-from agent import pipeline
 
 
 class Stage(ABC):

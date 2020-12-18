@@ -12,7 +12,7 @@ class LoadClientData:
     VALIDATION_SCHEMA_FILE_NAME = ''
 
     def __init__(self):
-        self.client_config = {}
+        self.client_config = {'override_source': {}}
         self.edit = False
 
     def load_dimensions(self):
@@ -92,8 +92,6 @@ class ElasticLoadClientData(LoadClientData):
         self.load_dimensions()
         if 'query_file' in self.client_config:
             with open(self.client_config['query_file']) as f:
-                if 'override_source' not in self.client_config:
-                    self.client_config['override_source'] = {}
                 self.client_config['override_source'][ElasticSource.CONFIG_QUERY] = f.read()
 
         return self.client_config

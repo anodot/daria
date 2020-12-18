@@ -30,7 +30,4 @@ class PromptConfigElastic(PromptConfigSchemaless):
             if errors:
                 raise click.ClickException(errors)
 
-            # todo duplicate
-            if 'override_source' not in self.config:
-                self.config['override_source'] = {}
             self.config['override_source'][source.ElasticSource.CONFIG_QUERY] = query

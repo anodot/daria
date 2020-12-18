@@ -13,13 +13,13 @@ class PromptConfig:
     def __init__(self, pipeline_: Pipeline):
         self.advanced = False
         self.default_config = {}
-        self.config = {}
+        self.config = {'override_source': {}}
         self.pipeline = pipeline_
 
     def prompt(self, default_config, advanced=False) -> Pipeline:
         self.advanced = advanced
         self.default_config = default_config
-        self.config = dict()
+        # self.config = dict()
         self.prompt_config()
         self.pipeline.set_config(self.config)
         return self.pipeline
