@@ -94,10 +94,7 @@ def _prompt_edit(name: str, advanced: bool) -> source.Source:
 
 
 def _prompt_source_type():
-    return click.prompt(
-        'Choose source',
-        type=click.Choice([source.types.keys()])
-    ).strip()
+    return click.prompt('Choose source', type=click.Choice(source.types.keys())).strip()
 
 
 source_group.add_command(create)

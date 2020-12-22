@@ -9,7 +9,7 @@ class TestDirectory:
                     'conf.dataFormat': 'JSON',
                 }
             }],
-            'er': b'[{"config":{"conf.dataFormat":"JSON","conf.ports":["9999"]},"name":"splunk","type":"splunk"}]\n'
+            'er': [{"config": {"conf.dataFormat": "JSON", "conf.ports": ["9999"]}, "name": "splunk", "type": "splunk"}]
         }],
         'test_edit': [{
             'data': [{
@@ -20,22 +20,22 @@ class TestDirectory:
                     'conf.dataFormat': 'JSON',
                 }
             }],
-            'er': b'[{"config":{"conf.dataFormat":"JSON","conf.ports":["19999"]},"name":"splunk","type":"splunk"}]\n'
+            'er': [{"config": {"conf.dataFormat": "JSON", "conf.ports": ["19999"]}, "name": "splunk", "type": "splunk"}]
         }]
     }
 
     def test_create(self, api_client, data, er):
         result = api_client.post('/sources', json=list(data))
-        assert result.data == er
+        assert result.json == er
 
     def test_edit(self, api_client, data, er):
         result = api_client.put('/sources', json=list(data))
-        assert result.data == er
+        assert result.json == er
 
     def test_get(self, api_client):
         result = api_client.get('/sources')
-        assert result.data == b'["splunk"]\n'
+        assert result.json == ["splunk"]
 
     def test_delete(self, api_client):
         api_client.delete('sources/splunk')
-        assert api_client.get('/sources').data ==b'[]\n'
+        assert api_client.get('/sources').json == []
