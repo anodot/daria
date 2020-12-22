@@ -4,7 +4,7 @@ import time
 
 from datetime import datetime
 from typing import Dict, List, Optional
-from agent import pipeline, streamsets, destination, source
+from agent import pipeline, streamsets, source
 from agent.modules import db
 from agent.modules.constants import ENV_PROD
 from agent.modules.logger import get_logger
@@ -131,7 +131,8 @@ def _choose_streamsets(*, exclude: int = None) -> StreamSets:
         if s.id not in pipeline_streamsets:
             pipeline_streamsets[s.id] = 0
     # choose streamsets with the lowest number of pipelines
-    pipeline_streamsets = pipeline.repository.count_by_streamsets()
+    pipeline_streamsets = streamsets.repository.count_pipelines_by_streamsets()
+    logger.info(pipeline_streamsets)
     map(add_empty, streamsets.repository.get_all())
     if exclude:
         del pipeline_streamsets[exclude]

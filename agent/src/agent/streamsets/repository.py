@@ -1,6 +1,8 @@
-from typing import List
+from typing import List, Dict
 from agent.modules.db import session
 from agent.streamsets import StreamSets
+from agent.pipeline import Pipeline
+from sqlalchemy import func
 
 
 def get(id_: int) -> StreamSets:
@@ -43,6 +45,13 @@ def exists(url: str) -> bool:
     return bool(session().query(
         session().query(StreamSets).filter(StreamSets.url == url).exists()
     ).scalar())
+
+
+def count_pipelines_by_streamsets() -> Dict[int, int]:
+    """ Returns { streamsets_id: number_of_pipelines } """
+    res = session().query(StreamSets.id, func.count(Pipeline.id)).outerjoin(StreamSets.pipelines).\
+        group_by(StreamSets.id).all()
+    return {streamsets_id: number for (streamsets_id, number) in res if streamsets_id is not None}
 
 
 class StreamsetsNotExistsException(Exception):
