@@ -5,6 +5,7 @@ from flask import Flask, jsonify
 from agent import di
 from agent.modules import db
 from agent.api.routes.streamsets import streamsets
+from agent.api.routes.monitoring import monitoring
 from agent.api.routes.destination import destination_
 from agent.api.routes import source, pipeline, scripts
 from agent.modules.logger import get_logger
@@ -20,6 +21,7 @@ app.register_blueprint(destination_)
 app.register_blueprint(source.sources)
 app.register_blueprint(pipeline.pipelines)
 app.register_blueprint(scripts.scripts)
+app.register_blueprint(monitoring)
 app.config['WTF_CSRF_ENABLED'] = False
 app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = False
 
