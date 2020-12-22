@@ -6,6 +6,7 @@ from agent import destination
 from agent.modules.tools import infinite_retry
 from jsonschema import ValidationError
 from texttable import Texttable
+from agent.cli import prompt
 
 
 def get_pipelines_ids_complete(ctx, args, incomplete):
@@ -237,15 +238,15 @@ def _prompt(advanced: bool, sources: list):
     source_name = click.prompt('Choose source config', type=click.Choice(sources), default=_get_default_source(sources))
     pipeline_id = _prompt_pipeline_id()
 
-    pipeline_builder = pipeline.manager.PipelineBuilder(pipeline.manager.create_object(pipeline_id, source_name))
-    previous_config = _get_previous_pipeline_config(pipeline_builder.pipeline.source.type)
-    pipeline_builder.prompt(previous_config, advanced)
-    pipeline.manager.create(pipeline_builder.pipeline)
+    pipeline_prompter = prompt.pipeline.get_prompter(pipeline.manager.create_object(pipeline_id, source_name))
+    previous_config = _get_previous_pipeline_config(pipeline_prompter.pipeline.source.type)
+    pipeline_prompter.prompt(previous_config, advanced)
+    pipeline.manager.create(pipeline_prompter.pipeline)
 
     click.secho('Created pipeline {}'.format(pipeline_id), fg='green')
-    if _should_prompt_preview(pipeline_builder.pipeline):
+    if _should_prompt_preview(pipeline_prompter.pipeline):
         if click.confirm('Would you like to see the result data preview?', default=True):
-            pipeline.manager.show_preview(pipeline_builder.pipeline)
+            pipeline.manager.show_preview(pipeline_prompter.pipeline)
             print('To change the config use `agent pipeline edit`')
 
 
@@ -262,15 +263,12 @@ def _edit_using_file(file):
 
 def _prompt_edit(advanced, pipeline_id):
     try:
-        pipeline_builder = pipeline.manager.PipelineBuilder(pipeline.repository.get_by_name(pipeline_id))
-        pipeline_builder.prompt(pipeline_builder.pipeline.to_dict(), advanced=advanced)
-        streamsets.manager.update(pipeline_builder.pipeline)
-        pipeline.repository.save(pipeline_builder.pipeline)
-
-        click.secho('Updated pipeline {}'.format(pipeline_id), fg='green')
-        if _should_prompt_preview(pipeline_builder.pipeline):
+        pipeline_prompter = prompt.pipeline.get_prompter(pipeline.repository.get_by_name(pipeline_id))
+        pipeline_prompter.prompt(pipeline_prompter.pipeline.to_dict(), advanced=advanced)
+        pipeline.manager.update(pipeline_prompter.pipeline)
+        if _should_prompt_preview(pipeline_prompter.pipeline):
             if click.confirm('Would you like to see the result data preview?', default=True):
-                pipeline.manager.show_preview(pipeline_builder.pipeline)
+                pipeline.manager.show_preview(pipeline_prompter.pipeline)
                 print('To change the config use `agent pipeline edit`')
     except pipeline.repository.PipelineNotExistsException:
         raise click.UsageError(f'{pipeline_id} does not exist')

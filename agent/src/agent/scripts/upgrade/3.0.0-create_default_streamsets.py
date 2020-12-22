@@ -4,23 +4,31 @@ from agent.streamsets import StreamSets, get_logger
 
 logger = get_logger(__name__, stdout=True)
 
-if len(streamsets.repository.get_all()) > 0:
-    logger.info('You already have a streamsets instance in the db')
-    exit(1)
 
-streamsets.repository.save(StreamSets(
-    constants.DEFAULT_STREAMSETS_URL,
-    constants.DEFAULT_STREAMSETS_USERNAME,
-    constants.DEFAULT_STREAMSETS_PASSWORD,
-    constants.AGENT_DEFAULT_URL,
-))
-logger.info(f'Created streamsets `{constants.DEFAULT_STREAMSETS_URL}`')
+def create_streamsets():
+    if len(streamsets.repository.get_all()) > 0:
+        logger.info('You already have a streamsets instance in the db')
+        exit(1)
 
-streamsets_ = streamsets.repository.get_all()[0]
-for p in pipeline.repository.get_all():
-    p.set_streamsets(streamsets_)
-    pipeline.repository.save(p)
-    logger.info(f'Set streamsets for pipeline ID = {p.id}')
+    streamsets.repository.save(StreamSets(
+        constants.DEFAULT_STREAMSETS_URL,
+        constants.DEFAULT_STREAMSETS_USERNAME,
+        constants.DEFAULT_STREAMSETS_PASSWORD,
+        constants.AGENT_DEFAULT_URL,
+    ))
+    logger.info(f'Created streamsets `{constants.DEFAULT_STREAMSETS_URL}`')
+
+
+def set_pipeline_streamsets():
+    streamsets_ = streamsets.repository.get_all()[0]
+    for p in pipeline.repository.get_all():
+        p.set_streamsets(streamsets_)
+        pipeline.repository.save(p)
+        logger.info(f'Set streamsets for pipeline ID = {p.id}')
+
+
+create_streamsets()
+set_pipeline_streamsets()
 
 # todo this is temporary
 db.session().commit()

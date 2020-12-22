@@ -11,18 +11,18 @@ DOCKER_TEST_PARALLEL = $(DOCKER_TEST) -n $(THREADS) --dist=loadfile
 ##---------
 all: build-all test-all
 
-build-all: get-streamsets-libs build-docker sleep alembic-migrate setup-all
+build-all: get-streamsets-libs build-docker sleep setup-all
 
-test-all: run-unit-tests test-flask-app test-streamsets test-destination test-antomation test-api test-api-scripts test-input test-streamsets-2 test-send-to-bc test-pipelines
+test-all: run-unit-tests test-flask-app test-streamsets test-destination test-apply test-api test-api-scripts test-input test-streamsets-2 test-send-to-bc test-pipelines
 
 ##-------------
 ## DEVELOPMENT
 ##-------------
 all-dev: clean-docker-volumes build-all-dev sleep test-all
 
-build-all-dev: build-dev sleep alembic-migrate setup-all
+build-all-dev: build-dev sleep setup-all
 
-run-all-dev: clean-docker-volumes run-dev sleep alembic-migrate setup-all
+run-all-dev: clean-docker-volumes run-dev sleep setup-all
 
 rerun: bootstrap
 
@@ -83,8 +83,8 @@ build-docker:
 	docker-compose build --build-arg GIT_SHA1="$(shell git describe --dirty --always)"
 	docker-compose up -d
 
-test-antomation:
-	$(DOCKER_TEST) tests/test_antomation.py
+test-apply:
+	$(DOCKER_TEST) tests/test_apply.py
 
 test-send-to-bc:
 	$(DOCKER_TEST) tests/test_send_to_bc.py
@@ -121,7 +121,7 @@ run-unit-tests:
 
 get-streamsets-libs: install-streamsets-requirements
 	rm -rf streamsets/lib/*
-	curl -L https://github.com/anodot/anodot-sdc-stage/releases/download/v1.1.1/anodot-1.1.1.tar.gz -o /tmp/sdc.tar.gz && tar xvfz /tmp/sdc.tar.gz -C streamsets/lib
+	curl -L https://github.com/anodot/anodot-sdc-stage/releases/download/v1.1.2/anodot-1.1.2.tar.gz -o /tmp/sdc.tar.gz && tar xvfz /tmp/sdc.tar.gz -C streamsets/lib
 
 install-streamsets-requirements:
 	pip install --upgrade pip && pip install --target streamsets/python-libs -r streamsets/python_requirements.txt
@@ -146,13 +146,13 @@ clean-docker-volumes:
 	rm -rf sdc-data2
 	$(DOCKER_COMPOSE_DEV) down -v
 
-run-base-services: _run-base-services nap alembic-migrate
+run-base-services: _run-base-services nap
 
 _run-base-services:
 	$(DOCKER_COMPOSE_DEV) up -d agent dc squid dummy_destination
 	docker exec -i anodot-agent python setup.py develop
 
-build-base-services: clean-docker-volumes _build-base-services nap alembic-migrate
+build-base-services: clean-docker-volumes _build-base-services nap
 
 _build-base-services:
 	$(DOCKER_COMPOSE_DEV) up -d --build agent dc squid dummy_destination
@@ -161,19 +161,23 @@ _build-base-services:
 run-dc2:
 	$(DOCKER_COMPOSE_DEV) up -d dc2
 
-run-elastic:
+run-elastic: _run-elastic sleep setup-elastic
+
+_run-elastic:
 	$(DOCKER_COMPOSE_DEV) up -d es
-	sleep $(SLEEP)
 
 run-influx:
 	$(DOCKER_COMPOSE_DEV) up -d influx
 
-run-victoria:
+run-victoria: _run-victoria nap setup-victoria
+
+_run-victoria:
 	$(DOCKER_COMPOSE_DEV) up -d victoriametrics
 
-run-kafka: run-zookeeper
+run-kafka: run-zookeeper sleep _run-kafka setup-kafka
+
+_run-kafka:
 	$(DOCKER_COMPOSE_DEV) up -d kafka
-	sleep $(SLEEP)
 
 run-zookeeper:
 	$(DOCKER_COMPOSE_DEV) up -d zookeeper
@@ -202,8 +206,6 @@ setup-elastic:
 setup-victoria:
 	./scripts/upload-test-data-to-victoria.sh
 
-alembic-migrate:
-	docker exec -i anodot-agent alembic upgrade head
 
 sleep:
 	sleep $(SLEEP)

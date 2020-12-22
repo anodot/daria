@@ -18,7 +18,7 @@ state['VALUES_ARRAY_FILTER'] = {self.pipeline.values_array_filter_metrics};
 state['metrics'] = {{}}
     """
 
-    def get_config(self) -> dict:
+    def _get_config(self) -> dict:
         return {
             'initScript': self.get_js_vars()
         }

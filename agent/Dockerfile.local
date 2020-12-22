@@ -4,6 +4,8 @@ WORKDIR /usr/src/app
 
 COPY . .
 ADD .bashrc /root/.bashrc
+COPY ./custom_entrypoint.sh /
+RUN chmod +x /custom_entrypoint.sh
 
 ENV STREAMSETS_USERNAME="admin" STREAMSETS_PASSWORD="admin" STREAMSETS_URL="http://localhost:18630" \
     LOG_FILE_PATH="/var/log/agent.log" ANODOT_API_URL="http://api.anodot.com" ENV_PROD='true' \
@@ -12,4 +14,5 @@ ENV STREAMSETS_USERNAME="admin" STREAMSETS_PASSWORD="admin" STREAMSETS_URL="http
 RUN ./install_requirements.sh
 RUN python setup.py develop
 
+ENTRYPOINT ["/custom_entrypoint.sh"]
 CMD flask run --host=0.0.0.0 --port=80

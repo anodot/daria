@@ -1,29 +1,50 @@
 from .base import Stage
-from datetime import datetime, timedelta
+from agent import pipeline
+from urllib.parse import urljoin, quote_plus
 
 
-class InfluxScript(Stage):
-    JYTHON_SCRIPT = 'influx.py'
+class InfluxSource(Stage):
+    QUERY_GET_DATA = "SELECT+{dimensions}+FROM+{metric}+WHERE+%28%22time%22+%3E%3D+${{record:value('/last_timestamp')}}+AND+%22time%22+%3C+${{record:value('/last_timestamp')}}%2B{interval}+AND+%22time%22+%3C+now%28%29+-+{delay}%29+{where}"
 
-    def get_config(self) -> dict:
-        with open(self.get_jython_file_path()) as f:
-            return {
-                'scriptConf.params': [
-                    {'key': 'INITIAL_OFFSET', 'value': self._get_offset()},
-                    {'key': 'INTERVAL_IN_SECONDS', 'value': str(self.pipeline.config.get('interval', ''))},
-                    {'key': 'DELAY_IN_SECONDS', 'value': str(_convert_to_seconds(self.pipeline.config.get('delay', '0s')))},
-                ],
-                'script': f.read(),
-            }
+    def _get_config(self) -> dict:
+        source_config = self.pipeline.source.config
+        params = f"/query?db={source_config['db']}&epoch=ms&q="
+        return {
+            'conf.resourceUrl': urljoin(source_config['host'], params + self.get_query()),
+            **self.get_auth_config()
+        }
 
-    def _get_offset(self) -> str:
-        offset = self.pipeline.source.config.get('offset', '')
-        # if it's a digit - then offset is in number of days
-        if offset.isdigit():
-            offset = (datetime.now() - timedelta(days=int(offset))).strftime('%d/%m/%Y %H:%M')
-        return offset
+    def get_auth_config(self):
+        if 'username' not in self.pipeline.source.config:
+            return {}
 
+        return {
+            'conf.client.authType': 'BASIC',
+            'conf.client.basicAuth.username': self.pipeline.source.config['username'],
+            'conf.client.basicAuth.password': self.pipeline.source.config.get('password', '')
+        }
 
-def _convert_to_seconds(string):
-    seconds_per_unit = {"s": 1, "m": 60, "h": 3600, "d": 86400, "w": 604800}
-    return int(string[:-1]) * seconds_per_unit[string[-1]]
+    def get_query(self):
+        if isinstance(self.pipeline, pipeline.TestPipeline):
+            return f"select+%2A+from+{self.pipeline.config['measurement_name']}+limit+{pipeline.manager.MAX_SAMPLE_RECORDS}"
+
+        dimensions_to_select = [f'"{d}"::tag' for d in self.pipeline.dimensions_names]
+        values_to_select = ['*::field' if v == '*' else f'"{v}"::field' for v in
+                            self.pipeline.config['value']['values']]
+        delay = self.pipeline.config.get('delay', '0s')
+        columns = quote_plus(','.join(dimensions_to_select + values_to_select))
+
+        where = self.pipeline.config.get('filtering')
+        where = f'AND+%28{quote_plus(where)}%29' if where else ''
+
+        measurement_name = self.pipeline.config['measurement_name']
+        if '.' not in measurement_name and ' ' not in measurement_name:
+            measurement_name = f'%22{measurement_name}%22'
+
+        return self.QUERY_GET_DATA.format(**{
+            'dimensions': columns,
+            'metric': measurement_name,
+            'delay': delay,
+            'interval': str(self.pipeline.config.get('interval', 60)) + 's',
+            'where': where
+        })

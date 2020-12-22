@@ -1,14 +1,16 @@
 import json
 import traceback
-
 import jsonschema
 
 from typing import List
 from agent import pipeline
 from agent import source
 from agent.source import SourceException, Source
+from agent.modules.logger import get_logger
+from copy import deepcopy
 
-MAX_SAMPLE_RECORDS = 3
+
+logger_ = get_logger(__name__, stdout=True)
 
 
 def create_source_obj(source_name: str, source_type: str) -> Source:
@@ -71,10 +73,20 @@ def edit_source_using_json(config: dict) -> Source:
     validate_config_for_edit(config)
     source_ = source.repository.get_by_name(config['name'])
     source_.set_config(config['config'])
+    update(source_)
+    return source_
+
+
+def update(source_: Source):
+    if not source_.config_changed():
+        logger_.info(f'No need to update source {source_.name}')
+        return
+
     source.validator.validate(source_)
     source.repository.save(source_)
+    # todo remove this last dependency on the pipeline, implement observer?
     pipeline.manager.update_source_pipelines(source_)
-    return source_
+    logger_.info(f'Saved source {source_.name}')
 
 
 def validate_configs_for_create(json_data: list):

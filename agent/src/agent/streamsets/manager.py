@@ -1,11 +1,10 @@
 import json
 import re
 import time
-import agent.pipeline.config.handlers as config_handlers
 
 from datetime import datetime
 from typing import Dict, List, Optional
-from agent import pipeline, streamsets, destination
+from agent import pipeline, streamsets, destination, source
 from agent.modules import db
 from agent.modules.constants import ENV_PROD
 from agent.modules.logger import get_logger
@@ -58,9 +57,9 @@ def create(pipeline_: Pipeline):
     try:
         _update_pipeline(
             pipeline_,
-            _get_new_config(streamsets_pipeline, pipeline_)
+            _create_streamsets_pipeline_config(streamsets_pipeline, pipeline_)
         )
-    except (config_handlers.base.ConfigHandlerException, streamsets.ApiClientException) as e:
+    except (streamsets.config_handlers.base.ConfigHandlerException, streamsets.ApiClientException) as e:
         delete(pipeline_)
         raise StreamsetsException(str(e))
 
@@ -73,16 +72,16 @@ def update(pipeline_: Pipeline):
             start_pipeline = True
         _update_pipeline(
             pipeline_,
-            _get_new_config(get_pipeline(pipeline_.name), pipeline_)
+            _create_streamsets_pipeline_config(get_pipeline(pipeline_.name), pipeline_)
         )
-    except (config_handlers.base.ConfigHandlerException, streamsets.ApiClientException) as e:
+    except (streamsets.config_handlers.base.ConfigHandlerException, streamsets.ApiClientException) as e:
         raise StreamsetsException(str(e))
     if start_pipeline:
         start(pipeline_)
 
 
-def _get_new_config(streamsets_pipeline: dict, pipeline_: Pipeline) -> dict:
-    return pipeline.manager.get_sdc_config_handler(pipeline_).override_base_config(
+def _create_streamsets_pipeline_config(streamsets_pipeline: dict, pipeline_: Pipeline) -> dict:
+    return get_sdc_config_handler(pipeline_).override_base_config(
         _get_config_loader(pipeline_).load_base_config(pipeline_),
         new_uuid=streamsets_pipeline['uuid'],
         new_title=pipeline_.name
@@ -90,9 +89,9 @@ def _get_new_config(streamsets_pipeline: dict, pipeline_: Pipeline) -> dict:
 
 
 def _get_config_loader(pipeline_: Pipeline):
-    return config_handlers.base.TestPipelineBaseConfigLoader \
+    return streamsets.config_handlers.base.TestPipelineBaseConfigLoader \
         if isinstance(pipeline_, pipeline.TestPipeline) \
-        else config_handlers.base.BaseConfigLoader
+        else streamsets.config_handlers.base.BaseConfigLoader
 
 
 def get_pipeline(pipeline_id: str) -> dict:
@@ -388,6 +387,22 @@ class StreamsetsBalancer:
     def _get_busiest_streamsets_id(self) -> int:
         key, _ = max(self.streamsets_pipelines.items(), key=lambda x: len(x))
         return key
+
+
+def get_sdc_config_handler(pipeline_: Pipeline, is_preview=False) -> streamsets.config_handlers.base.BaseConfigHandler:
+    handlers = {
+        source.TYPE_INFLUX: streamsets.config_handlers.influx.InfluxConfigHandler,
+        source.TYPE_MONGO: streamsets.config_handlers.mongo.MongoConfigHandler,
+        source.TYPE_KAFKA: streamsets.config_handlers.kafka.KafkaConfigHandler,
+        source.TYPE_MYSQL: streamsets.config_handlers.jdbc.JDBCConfigHandler,
+        source.TYPE_POSTGRES: streamsets.config_handlers.jdbc.JDBCConfigHandler,
+        source.TYPE_ELASTIC: streamsets.config_handlers.elastic.ElasticConfigHandler,
+        source.TYPE_SPLUNK: streamsets.config_handlers.tcp.TCPConfigHandler,
+        source.TYPE_DIRECTORY: streamsets.config_handlers.directory.DirectoryConfigHandler,
+        source.TYPE_SAGE: streamsets.config_handlers.sage.SageConfigHandler,
+        source.TYPE_VICTORIA: streamsets.config_handlers.victoria.VictoriaConfigHandler,
+    }
+    return handlers[pipeline_.source.type](pipeline_, is_preview)
 
 
 class StreamsetsException(Exception):

@@ -1,20 +1,46 @@
 from .base import Stage
-from datetime import datetime, timedelta
+from agent import pipeline, source
 
 
-class JDBCScript(Stage):
-    JYTHON_SCRIPT = 'jdbc.py'
+class JDBCSource(Stage):
+    LAST_TIMESTAMP = '${record:value("/last_timestamp")}'
 
-    def get_config(self) -> dict:
-        with open(self.get_jython_file_path()) as f:
-            return {
-                'scriptConf.params': [
-                    {'key': 'INITIAL_OFFSET', 'value': self._get_initial_offset()},
-                    {'key': 'INTERVAL_IN_SECONDS', 'value': str(self.pipeline.interval)},
-                    {'key': 'DELAY_IN_SECONDS', 'value': str(self.pipeline.delay)},
-                ],
-                'script': f.read(),
-            }
+    def _get_config(self) -> dict:
+        return {
+            'query': self.get_query(),
+            ** self.get_connection_configs()
+        }
 
-    def _get_initial_offset(self) -> str:
-        return (datetime.now() - timedelta(days=int(self.pipeline.days_to_backfill))).strftime('%d/%m/%Y %H:%M')
+    def get_query(self):
+        if isinstance(self.pipeline, pipeline.TestPipeline):
+            query = self.pipeline.query.replace(f'{source.JDBCSource.TIMESTAMP_CONDITION}', '1')
+            return query + f' LIMIT {pipeline.manager.MAX_SAMPLE_RECORDS}'
+
+        timestamp_condition = f'''{self._timestamp_to_unix} > {self.LAST_TIMESTAMP} 
+AND {self._timestamp_to_unix} <= {self.LAST_TIMESTAMP} + {self.pipeline.interval}'''
+
+        query = self.pipeline.query.replace(f'{source.JDBCSource.TIMESTAMP_CONDITION}', timestamp_condition)
+        return query + ' ORDER BY ' + self.pipeline.timestamp_path
+
+    @property
+    def _timestamp_to_unix(self):
+        if self.pipeline.timestamp_type == pipeline.TimestampType.DATETIME:
+            if self.pipeline.source.type == source.TYPE_POSTGRES:
+                return f"extract(epoch from {self.pipeline.timestamp_path})"
+            if self.pipeline.source.type == source.TYPE_MYSQL:
+                return f"UNIX_TIMESTAMP({self.pipeline.timestamp_path})"
+
+        if self.pipeline.timestamp_type == pipeline.TimestampType.UNIX_MS:
+            return self.pipeline.timestamp_path + '/1000'
+
+        return self.pipeline.timestamp_path
+
+    def get_connection_configs(self):
+        conf = {'hikariConfigBean.connectionString': 'jdbc:' + self.pipeline.source.config[
+            source.JDBCSource.CONFIG_CONNECTION_STRING]}
+        if self.pipeline.source.config[source.JDBCSource.CONFIG_USERNAME]:
+            conf['hikariConfigBean.useCredentials'] = True
+            conf['hikariConfigBean.username'] = self.pipeline.source.config[source.JDBCSource.CONFIG_USERNAME]
+            conf['hikariConfigBean.password'] = self.pipeline.source.config[source.JDBCSource.CONFIG_PASSWORD]
+
+        return conf

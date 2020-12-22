@@ -2,7 +2,7 @@ import traceback
 import wtforms_json
 
 from flask import Flask, jsonify
-
+from agent import di
 from agent.modules import db
 from agent.api.routes.streamsets import streamsets
 from agent.api.routes.destination import destination_
@@ -22,6 +22,11 @@ app.register_blueprint(pipeline.pipelines)
 app.register_blueprint(scripts.scripts)
 app.config['WTF_CSRF_ENABLED'] = False
 app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = False
+
+
+@app.before_request
+def before_request_func():
+    di.init()
 
 
 @app.teardown_request

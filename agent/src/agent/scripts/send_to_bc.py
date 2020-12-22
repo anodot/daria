@@ -45,4 +45,22 @@ for pipeline_ in pipelines:
         send_error_metric(pipeline_.name)
         logger.error(traceback.format_exc())
 
+
+for deleted_pipeline_id in pipeline.repository.get_deleted_pipeline_ids():
+    deleted_pipeline_id = deleted_pipeline_id[0]
+    try:
+        api_client.delete_pipeline_from_bc(deleted_pipeline_id)
+    except HTTPError as e:
+        if not e.response.status_code == 404:
+            num_of_errors += 1
+            send_error_metric(deleted_pipeline_id)
+            logger.error(traceback.format_exc())
+            continue
+    except Exception:
+        num_of_errors += 1
+        send_error_metric(deleted_pipeline_id)
+        logger.error(traceback.format_exc())
+        continue
+    pipeline.repository.remove_deleted_pipeline_id(deleted_pipeline_id)
+
 exit(num_of_errors)

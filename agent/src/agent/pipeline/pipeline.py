@@ -5,8 +5,9 @@ from agent.modules.constants import HOSTNAME
 from agent.modules.db import Entity
 from agent.destination import HttpDestination
 from enum import Enum
-from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy import Column, Integer, String, JSON, ForeignKey, func
+from agent import source
+from copy import deepcopy
 
 
 class PipelineException(Exception):
@@ -65,8 +66,9 @@ class Pipeline(Entity):
     name = Column(String)
     source_id = Column(Integer, ForeignKey('sources.id'))
     destination_id = Column(Integer, ForeignKey('destinations.id'))
-    config = Column(MutableDict.as_mutable(JSON))
-    override_source = Column(MutableDict.as_mutable(JSON))
+    config = Column(JSON)
+    schema = Column(JSON)
+    override_source = Column(JSON)
     created_at = Column(TIMESTAMP(timezone=True), default=func.now())
     last_edited = Column(TIMESTAMP(timezone=True), default=func.now(), onupdate=func.now())
     status = Column(String, default=STATUS_EDITED)
@@ -77,8 +79,10 @@ class Pipeline(Entity):
     destination = relationship('HttpDestination')
     streamsets = relationship('StreamSets')
 
-    def __init__(self, pipeline_name: str, source_, destination: HttpDestination):
+    def __init__(self, pipeline_name: str, source_: source.Source, destination: HttpDestination):
         self.name = pipeline_name
+        self._previous_config = {}
+        self._previous_override_source = {}
         self.config = {}
         self.source_ = source_
         self.source_id = source_.id
@@ -87,6 +91,15 @@ class Pipeline(Entity):
         self.override_source = {}
         self.streamsets_id = None
         self.streamsets = None
+
+    def config_changed(self) -> bool:
+        return self.config != self._previous_config or self.override_source != self._previous_override_source
+
+    def set_config(self, config: dict):
+        self._previous_config = deepcopy(self.config)
+        self._previous_override_source = deepcopy(self.override_source)
+        self.config = deepcopy(config)
+        self.override_source = self.config.pop(self.OVERRIDE_SOURCE, {})
 
     @property
     def source(self):
@@ -147,8 +160,7 @@ class Pipeline(Entity):
 
     @property
     def values(self) -> list:
-        # todo fix circular imports and return source.TYPE_INFLUX
-        if self.source.type == 'influx':
+        if self.source.type == source.TYPE_INFLUX:
             value = self.config.get('value', {})
             return value['values'] if 'values' in value else []
         return list(self.config.get('values', {}).keys())
@@ -159,8 +171,7 @@ class Pipeline(Entity):
 
     @property
     def target_types(self) -> list:
-        # todo fix circular imports and return source.TYPE_INFLUX
-        if self.source.type == 'influx':
+        if self.source.type == source.TYPE_INFLUX:
             return [self.config['target_type']] * len(self.values)
         return list(self.config['values'].values())
 
@@ -245,7 +256,7 @@ class Pipeline(Entity):
         self.streamsets = None
 
     def get_schema(self):
-        return self.config.get('schema', {})
+        return self.schema if self.schema else {}
 
     def get_schema_id(self):
         return self.get_schema().get('id')
@@ -257,10 +268,6 @@ class Pipeline(Entity):
             'pipeline_id': self.name,
             'source': {'name': self.source.name},
         }
-
-    def set_config(self, config: dict):
-        self.override_source = config.pop(self.OVERRIDE_SOURCE, {})
-        self.config = config
 
     def get_property_path(self, property_value: str) -> str:
         mapping = self.source.config.get('csv_mapping', {})

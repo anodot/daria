@@ -1,6 +1,5 @@
 from datetime import datetime
-from agent.cli import source as source_cli, pipeline as pipeline_cli
-from agent import source, streamsets
+from agent import source, streamsets, cli
 
 
 class TestPostgreSQL:
@@ -17,21 +16,21 @@ class TestPostgreSQL:
     }
 
     def test_source_create(self, cli_runner, name, type, conn):
-        result = cli_runner.invoke(source_cli.create, catch_exceptions=False,
+        result = cli_runner.invoke(cli.source.create, catch_exceptions=False,
                                    input=f"{type}\n{name}\n{conn}\npostgres\npassword\n\n")
         assert result.exit_code == 0
         assert source.repository.exists(name)
 
     def test_create(self, cli_runner, name, source, timestamp_type, timestamp_name):
         days_to_backfill = (datetime.now() - datetime(year=2017, month=12, day=10)).days + 1
-        result = cli_runner.invoke(pipeline_cli.create, catch_exceptions=False,
-                                   input=f'{source}\n{name}\nSELECT * FROM test WHERE {{TIMESTAMP_CONDITION}}\n86400\n{days_to_backfill}\n1\n{timestamp_name}\n{timestamp_type}\n\n\nclicks:gauge impressions:gauge\nadsize country\n\n\n\n')
+        result = cli_runner.invoke(cli.pipeline.create, catch_exceptions=False,
+                                   input=f'{source}\n{name}\nSELECT * FROM test WHERE {{TIMESTAMP_CONDITION}}\n\n86400\n{days_to_backfill}\n1\n{timestamp_name}\n{timestamp_type}\n\nclicks:gauge impressions:gauge\nadsize country\n\n\n\n')
         assert result.exit_code == 0
         assert streamsets.manager.get_pipeline(name)
 
     def test_create_advanced(self, cli_runner, name, source):
         days_to_backfill = (datetime.now() - datetime(year=2017, month=12, day=10)).days + 1
-        result = cli_runner.invoke(pipeline_cli.create, ['-a'], catch_exceptions=False,
-                                   input=f'{source}\n{name}\nSELECT * FROM test WHERE {{TIMESTAMP_CONDITION}} AND country = \'USA\'\n86400\n{days_to_backfill}\n1\ntimestamp_unix\nunix\n\ny\ntest\nclicks:gauge impressions:gauge\nadsize country\nkey1:val1 key2:val2\n\n\n\n')
+        result = cli_runner.invoke(cli.pipeline.create, ['-a'], catch_exceptions=False,
+                                   input=f'{source}\n{name}\nSELECT * FROM test WHERE {{TIMESTAMP_CONDITION}} AND country = \'USA\'\n\n86400\n{days_to_backfill}\n1\ntimestamp_unix\nunix\ny\ntest\nclicks:gauge impressions:gauge\nadsize country\nkey1:val1 key2:val2\n\n\n\n')
         assert result.exit_code == 0
         assert streamsets.manager.get_pipeline(name)
