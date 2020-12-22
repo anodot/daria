@@ -38,7 +38,7 @@ class TestJdbc:
 
     def test_edit(self, api_client, data, er):
         result = api_client.put('/sources', json=list(data))
-        assert result.data == er
+        assert result.json == er
 
     def test_get(self, api_client):
         result = api_client.get('/sources')
