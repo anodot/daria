@@ -50,7 +50,7 @@ def edit(name, advanced, file):
 def _check_prerequisites():
     errors = check_prerequisites()
     if errors:
-        raise click.ClickException(errors)
+        raise click.ClickException("\n".join(errors))
 
 
 @click.command()
