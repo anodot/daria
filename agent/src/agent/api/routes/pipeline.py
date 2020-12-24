@@ -6,7 +6,7 @@ from jsonschema import ValidationError
 from agent.api.routes import needs_pipeline
 from flask import jsonify, Blueprint, request
 from agent.api import routes
-from agent import pipeline, source, streamsets, check_prerequisites
+from agent import pipeline, source, streamsets
 from agent.modules import proxy, logger
 from agent.pipeline import Pipeline
 
@@ -23,11 +23,8 @@ def list_pipelines():
 
 
 @pipelines.route('/pipelines', methods=['POST'])
-@routes.needs_destination
+@routes.check_prerequisites
 def create():
-    errors = check_prerequisites()
-    if errors:
-        return jsonify(errors), 400
     try:
         pipelines_ = pipeline.manager.create_from_json(request.get_json())
     except (
@@ -40,10 +37,8 @@ def create():
 
 
 @pipelines.route('/pipelines', methods=['PUT'])
+@routes.check_prerequisites
 def edit():
-    errors = check_prerequisites()
-    if errors:
-        return jsonify(errors), 400
     try:
         pipelines_ = pipeline.manager.edit_using_json(request.get_json())
     except ValueError as e:
