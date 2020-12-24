@@ -1,6 +1,6 @@
 import click
 
-from agent import pipeline, source, destination
+from agent import pipeline, source, check_prerequisites
 from agent.modules.tools import infinite_retry
 from jsonschema import ValidationError, SchemaError
 from agent.cli import prompt
@@ -28,8 +28,7 @@ def list_sources():
 @click.option('-a', '--advanced', is_flag=True)
 @click.option('-f', '--file', type=click.File())
 def create(advanced, file):
-    if not destination.repository.exists():
-        raise click.ClickException('Destination is not configured. Please use `agent destination` command')
+    _check_prerequisites()
     _create_from_file(file) if file else _prompt(advanced)
 
 
@@ -38,6 +37,7 @@ def create(advanced, file):
 @click.option('-a', '--advanced', is_flag=True)
 @click.option('-f', '--file', type=click.File())
 def edit(name, advanced, file):
+    _check_prerequisites()
     if not file and not name:
         raise click.UsageError('Specify source name or file path')
     if file:
@@ -45,6 +45,12 @@ def edit(name, advanced, file):
     else:
         source_ = _prompt_edit(name, advanced)
         pipeline.manager.update_source_pipelines(source_)
+
+
+def _check_prerequisites():
+    errors = check_prerequisites()
+    if errors:
+        raise click.ClickException(errors)
 
 
 @click.command()
