@@ -1,7 +1,7 @@
 from abc import ABCMeta
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from agent.modules.constants import AGENT_DB_HOST, AGENT_DB_USER, AGENT_DB_PASSWORD
+from agent.modules.constants import AGENT_DB_HOST, AGENT_DB_USER, AGENT_DB_PASSWORD, AGENT_DB
 from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
 
 
