@@ -2,7 +2,7 @@ import traceback
 import wtforms_json
 
 from flask import Flask, jsonify
-from agent import di
+from agent import di, monitoring
 from agent.modules import db
 from agent.api.routes.streamsets import streamsets
 from agent.api.routes.monitoring import monitoring
@@ -46,3 +46,8 @@ def teardown_request_func(exception):
 @app.route('/version', methods=['GET'])
 def version():
     return jsonify('Daria Agent version ' + __version__)
+
+
+@app.route('/metrics', methods=['GET'])
+def metrics():
+    return jsonify(monitoring.get_latest())
