@@ -174,7 +174,7 @@ run-victoria: _run-victoria nap setup-victoria
 _run-victoria:
 	$(DOCKER_COMPOSE_DEV) up -d victoriametrics
 
-run-kafka: run-zookeeper sleep _run-kafka setup-kafka
+run-kafka: run-zookeeper _run-kafka sleep setup-kafka
 
 _run-kafka:
 	$(DOCKER_COMPOSE_DEV) up -d kafka
