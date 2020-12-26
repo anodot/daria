@@ -59,6 +59,9 @@ class Pipeline(Entity):
     FLUSH_BUCKET_SIZE = 'flush_bucket_size'
 
     error_statuses = [STATUS_RUN_ERROR, STATUS_START_ERROR, STATUS_STOP_ERROR, STATUS_RUNNING_ERROR]
+    # TODO make it enum
+    statuses = [STATUS_RUNNING, STATUS_STOPPED, STATUS_EDITED, STATUS_RETRY, STATUS_STOPPING, STATUS_STARTING,
+                STATUS_RUN_ERROR, STATUS_START_ERROR, STATUS_STOP_ERROR, STATUS_RUNNING_ERROR]
 
     TARGET_TYPES = ['counter', 'gauge', 'running_counter']
 
