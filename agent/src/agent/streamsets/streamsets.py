@@ -261,6 +261,10 @@ class StreamSetsApiClient:
             print(f"Pipeline {pipeline_id} is {response['status']}. Check again after {delay} seconds...")
             time.sleep(delay)
 
+    @endpoint
+    def get_jmx(self, query):
+        return self.session.get(self._build_url('system', 'jmx'), params={'qry': query})
+
 
 class ApiClientException(Exception):
     def __init__(self, message: str, exception_type: str = ''):

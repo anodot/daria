@@ -334,6 +334,11 @@ def get_pipeline_offset(pipeline_: Pipeline) -> Optional[str]:
     return None
 
 
+def get_clients() -> Dict[int, StreamSetsApiClient]:
+    global _clients
+    return _clients
+
+
 class StreamsetsBalancer:
     def __init__(self):
         self.streamsets_pipelines: Dict[int, List[Pipeline]] = self._get_streamsets_pipelines()

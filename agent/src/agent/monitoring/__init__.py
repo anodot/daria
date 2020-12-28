@@ -1,3 +1,5 @@
+from . import metrics
+
 from prometheus_client import generate_latest
 
 
