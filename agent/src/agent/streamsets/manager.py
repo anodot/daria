@@ -37,7 +37,7 @@ def _has_pipelines(streamsets_: StreamSets) -> bool:
 def _can_move_pipelines():
     return len(streamsets.repository.get_all()) > 1
 
-
+# TODO: pass StreamSets instance as an argument
 def _client(pipeline_: Pipeline) -> StreamSetsApiClient:
     global _clients
     if not pipeline_.streamsets:
@@ -334,9 +334,12 @@ def get_pipeline_offset(pipeline_: Pipeline) -> Optional[str]:
     return None
 
 
-def get_clients() -> Dict[int, StreamSetsApiClient]:
+# TODO use _client method ?
+def get_client(streamsets_: StreamSets) -> StreamSetsApiClient:
     global _clients
-    return _clients
+    if streamsets_.id not in _clients:
+        _clients[streamsets_.id] = StreamSetsApiClient(streamsets_)
+    return _clients[streamsets_.id]
 
 
 class StreamsetsBalancer:
