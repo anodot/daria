@@ -20,6 +20,8 @@ PIPELINE_ERROR_RECORDS = Counter('pipeline_error_records', 'Pipeline error recor
                                     ['streamsets_url', 'pipeline_id', 'pipeline_type'])
 PIPELINE_DESTINATION_LATENCY = Gauge('pipeline_destination_latency_seconds', 'Pipeline destination latency',
                                     ['streamsets_url', 'pipeline_id', 'pipeline_type'])
+PIPELINE_SOURCE_LATENCY = Gauge('pipeline_source_latency_seconds', 'Pipeline source latency',
+                                    ['streamsets_url', 'pipeline_id', 'pipeline_type'])
 
 PIPELINE_STATUS = Enum('pipeline_status', 'Pipeline status', ['streamsets_url', 'pipeline_id', 'pipeline_type'],
                        states=Pipeline.statuses)
