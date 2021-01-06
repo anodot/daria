@@ -70,7 +70,7 @@ class HttpDestination(Entity):
         self.config['token'] = value
 
     @property
-    def resource_url(self) -> Optional[str]:
+    def metrics_url(self) -> Optional[str]:
         return \
             urllib.parse.urljoin(self.url, f'api/v1/metrics?token={self.token}&protocol={HttpDestination.PROTOCOL_20}')
 

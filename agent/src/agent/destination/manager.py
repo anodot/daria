@@ -59,7 +59,7 @@ def _build(
         destination_.url = url
     if token:
         destination_.token = token
-        if not destination.validator.is_valid_resource_url(destination_.resource_url):
+        if not destination.validator.is_valid_resource_url(destination_.metrics_url):
             return Err('Data collection token is invalid')
     if access_key:
         destination_.access_key = access_key

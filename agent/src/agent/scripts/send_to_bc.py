@@ -1,9 +1,7 @@
-import time
 import traceback
-import requests
 from requests import HTTPError
 
-from agent import pipeline, destination
+from agent import pipeline, destination, monitoring
 from agent.destination.anodot_api_client import AnodotApiClient
 from agent.modules.logger import get_logger
 
@@ -11,24 +9,17 @@ destination_ = destination.repository.get()
 logger = get_logger(__name__)
 
 
-def send_error_metric(pipeline_id=None):
-    metric = {
-        'properties': {
-            'what': 'agent_to_bc_error',
-        },
-        'value': 1,
-        'timestamp': int(time.time())
-    }
-    if pipeline_id:
-        metric['properties']['pipeline_id'] = pipeline_id
-    requests.post(destination_.resource_url, json=metric)
+def update_errors_count():
+    global num_of_errors
+    num_of_errors += 1
+    monitoring.metrics.SCHEDULED_SCRIPTS_ERRORS.labels('agent-to-bc').inc(1)
 
 
 try:
     api_client = AnodotApiClient(destination_)
     pipelines = pipeline.repository.get_all()
 except Exception:
-    send_error_metric()
+    update_errors_count()
     raise
 
 num_of_errors = 0
@@ -37,12 +28,10 @@ for pipeline_ in pipelines:
         api_client.send_pipeline_data_to_bc(pipeline.manager.transform_for_bc(pipeline_))
     except HTTPError as e:
         if not e.response.status_code == 404:
-            num_of_errors += 1
-            send_error_metric(pipeline_.name)
+            update_errors_count()
             logger.error(traceback.format_exc())
     except Exception:
-        num_of_errors += 1
-        send_error_metric(pipeline_.name)
+        update_errors_count()
         logger.error(traceback.format_exc())
 
 
@@ -52,15 +41,11 @@ for deleted_pipeline_id in pipeline.repository.get_deleted_pipeline_ids():
         api_client.delete_pipeline_from_bc(deleted_pipeline_id)
     except HTTPError as e:
         if not e.response.status_code == 404:
-            num_of_errors += 1
-            send_error_metric(deleted_pipeline_id)
+            update_errors_count()
             logger.error(traceback.format_exc())
-            continue
     except Exception:
-        num_of_errors += 1
-        send_error_metric(deleted_pipeline_id)
+        update_errors_count()
         logger.error(traceback.format_exc())
-        continue
     pipeline.repository.remove_deleted_pipeline_id(deleted_pipeline_id)
 
 exit(num_of_errors)

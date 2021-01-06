@@ -1,22 +1,23 @@
+import requests
 import traceback
+import urllib.parse
 import wtforms_json
 
 from flask import Flask, jsonify
-from agent import di, monitoring
-from agent.modules import db
+from agent import di, monitoring, destination
+from agent.modules import db, logger, constants
 from agent.api.routes.streamsets import streamsets
-from agent.api.routes.destination import destination_
+from agent.api.routes.destination import destination_ as destination_route
 from agent.api.routes import source, pipeline, scripts
-from agent.modules.logger import get_logger
 from agent.version import __version__
 
-logger = get_logger(__name__)
+logger_ = logger.get_logger(__name__)
 
 wtforms_json.init()
 
 app = Flask(__name__)
 app.register_blueprint(streamsets)
-app.register_blueprint(destination_)
+app.register_blueprint(destination_route)
 app.register_blueprint(source.sources)
 app.register_blueprint(pipeline.pipelines)
 app.register_blueprint(scripts.scripts)
@@ -38,14 +39,9 @@ def teardown_request_func(exception):
             db.session().commit()
         db.close_session()
     except Exception:
-        logger.error(traceback.format_exc())
+        logger_.error(traceback.format_exc())
 
 
 @app.route('/version', methods=['GET'])
 def version():
     return jsonify('Daria Agent version ' + __version__)
-
-
-@app.route('/metrics', methods=['GET'])
-def metrics():
-    return jsonify(monitoring.get_latest())

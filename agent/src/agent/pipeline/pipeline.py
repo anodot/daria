@@ -60,7 +60,8 @@ class Pipeline(Entity):
 
     error_statuses = [STATUS_RUN_ERROR, STATUS_START_ERROR, STATUS_STOP_ERROR, STATUS_RUNNING_ERROR]
     # TODO make it enum
-    statuses = [STATUS_RUNNING, STATUS_STOPPED, STATUS_EDITED, STATUS_RETRY, STATUS_STOPPING, STATUS_STARTING,
+    # Statuses indexes matter for monitoring! Error statuses have index > 4
+    statuses = [STATUS_EDITED, STATUS_STARTING, STATUS_RUNNING, STATUS_STOPPING, STATUS_STOPPED, STATUS_RETRY,
                 STATUS_RUN_ERROR, STATUS_START_ERROR, STATUS_STOP_ERROR, STATUS_RUNNING_ERROR]
 
     TARGET_TYPES = ['counter', 'gauge', 'running_counter']

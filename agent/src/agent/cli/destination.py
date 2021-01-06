@@ -96,7 +96,7 @@ def _prompt_url(dest: HttpDestination):
 def _prompt_token(dest: HttpDestination):
     token = click.prompt('Anodot api data collection token', type=click.STRING, default=dest.token)
     dest.token = token
-    if not agent.destination.validator.is_valid_resource_url(dest.resource_url):
+    if not agent.destination.validator.is_valid_resource_url(dest.metrics_url):
         raise click.ClickException('Data collection token is invalid')
 
 
