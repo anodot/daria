@@ -1,5 +1,4 @@
-from typing import List, Dict
-from sqlalchemy import func
+from typing import List
 from agent import pipeline
 from agent.modules.db import session
 from agent.pipeline import PipelineOffset, Pipeline
@@ -58,12 +57,6 @@ def save_offset(pipeline_offset: PipelineOffset):
 def delete_offset(pipeline_offset: PipelineOffset):
     session().delete(pipeline_offset)
     session().commit()
-
-
-def count_by_streamsets() -> Dict[int, int]:
-    """ Returns { streamsets_id: number_of_pipelines } """
-    res = session().query(Pipeline.streamsets_id, func.count(Pipeline.streamsets_id)).group_by(Pipeline.streamsets_id).all()
-    return {streamsets_id: number for (streamsets_id, number) in res if streamsets_id is not None}
 
 
 def get_by_streamsets_id(streamsets_id: int) -> List[Pipeline]:

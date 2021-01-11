@@ -27,8 +27,7 @@ class TestPipelineBase(object):
         assert result.exit_code == 0
         with open(input_file_path) as f:
             for pipeline_config in json.load(f):
-                pipeline_ = pipeline.repository.get_by_name(pipeline_config['pipeline_id'])
-                assert sdc_client.get_pipeline(pipeline_)
+                assert sdc_client.exists(pipeline_config['pipeline_id'])
 
     def test_edit_with_file(self, cli_runner, file_name):
         input_file_path = get_input_file_path(file_name + '.json')
@@ -70,6 +69,7 @@ class TestPipelineBase(object):
     def test_delete_pipeline(self, cli_runner, name):
         result = cli_runner.invoke(cli.pipeline.delete, [name], catch_exceptions=False)
         assert result.exit_code == 0
+        assert not sdc_client.exists(name)
         assert not pipeline.repository.exists(name)
 
     def test_source_delete(self, cli_runner, name):

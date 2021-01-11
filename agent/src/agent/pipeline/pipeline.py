@@ -1,6 +1,6 @@
 import sdc_client
 
-from typing import Optional, List, Dict
+from typing import Optional, List
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import relationship
 from agent.modules.constants import HOSTNAME
@@ -334,13 +334,8 @@ class PipelineOffset(Entity):
 
 
 class Provider(sdc_client.IPipelineProvider):
-    def get_pipelines(self) -> List[Pipeline]:
+    def get_all(self) -> List[Pipeline]:
         return pipeline.repository.get_all()
 
     def save(self, pipeline_: Pipeline):
         pipeline.repository.save(pipeline_)
-
-    # todo bad method
-    def count_by_streamsets(self) -> Dict[int, int]:
-        """ Returns { streamsets_id: number_of_pipelines } """
-        return pipeline.repository.count_by_streamsets()
