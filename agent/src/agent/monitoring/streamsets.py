@@ -1,3 +1,5 @@
+import prometheus_client
+
 from agent import streamsets, pipeline
 from agent.monitoring import metrics
 
@@ -13,6 +15,12 @@ def _get_system_metrics(streamsets_: streamsets.StreamSets):
             metrics.STREAMSETS_CPU.labels(streamsets_.url).set(bean['ProcessCpuLoad'])
 
 
+def _increase_counter(total: int, metric: prometheus_client.Counter):
+    val = total - metric._value.get()
+    if val:
+        metric.inc(val)
+
+
 def _get_pipeline_metrics(pipeline_: pipeline.Pipeline):
     client = streamsets.manager.get_client(pipeline_.streamsets)
     jmx = client.get_jmx(f'metrics:name=sdc.pipeline.{pipeline_.name}.*')
@@ -21,15 +29,12 @@ def _get_pipeline_metrics(pipeline_: pipeline.Pipeline):
         # TODO: do not access private property
         if bean['name'].endswith('source.batchProcessing.timer'):
             metrics.PIPELINE_SOURCE_LATENCY.labels(*labels).set(bean['Mean'] / 1000)
-            metric = metrics.PIPELINE_INCOMING_RECORDS.labels(*labels)
-            metric.inc(bean['Count'] - metric._value.get())
+            _increase_counter(bean['Count'], metrics.PIPELINE_INCOMING_RECORDS.labels(*labels))
         elif bean['name'].endswith('destination.batchProcessing.timer'):
             metrics.PIPELINE_DESTINATION_LATENCY.labels(*labels).set(bean['Mean'] / 1000)
-            metric = metrics.PIPELINE_OUTGOING_RECORDS.labels(*labels)
-            metric.inc(bean['Count'] - metric._value.get())
+            _increase_counter(bean['Count'], metrics.PIPELINE_OUTGOING_RECORDS.labels(*labels))
         elif bean['name'].endswith('pipeline.batchErrorRecords.counter'):
-            metric = metrics.PIPELINE_ERROR_RECORDS.labels(*labels)
-            metric.inc(bean['Count'] - metric._value.get())
+            _increase_counter(bean['Count'], metrics.PIPELINE_ERROR_RECORDS.labels(*labels))
 
 
 def _get_kafka_metrics(streamsets_: streamsets.StreamSets):
