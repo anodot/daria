@@ -2,10 +2,12 @@ import anodot
 import argparse
 import gzip
 import traceback
+import requests
 
-from agent import destination, monitoring
-from agent.modules import proxy, logger
+from agent import destination
+from agent.modules import proxy, logger, constants
 from kafka import KafkaConsumer
+from urllib.parse import urljoin
 
 logger_ = logger.get_logger('scripts.kafka_topology.run', stdout=True)
 
@@ -49,7 +51,8 @@ def run(topic, file_type, brokers: list):
             result = api_client.send_topology_data(file_type, gzip.compress(f_in.read()))
             logger_.info('File sent: ' + str(result))
     except:
-        monitoring.metrics.SCHEDULED_SCRIPTS_ERRORS.labels('kafka-to-topology').inc(1)
+        requests.post(
+            urljoin(constants.AGENT_MONITORING_ENDPOINT, 'scheduled_script_error/kafka-to-topology')).raise_for_status()
         logger_.exception(traceback.format_exc())
 
 

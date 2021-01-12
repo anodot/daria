@@ -2,7 +2,7 @@ import requests
 import urllib.parse
 
 from flask import jsonify, Blueprint
-from agent import monitoring as monitoring_, destination
+from agent import monitoring as monitoring_, destination, pipeline
 from agent.modules import constants
 
 
@@ -54,4 +54,19 @@ def monitoring():
     if errors:
         raise Exception('Errors from anodot: ' + str(errors))
 
+    # return jsonify('')
+    return jsonify(data)
+
+
+@monitoring_bp.route('/monitoring/source_http_error/<pipeline_name>/<code>', methods=['POST'])
+def source_http_error(pipeline_name, code):
+    pipeline_ = pipeline.repository.get_by_name(pipeline_name)
+    monitoring_.metrics.SOURCE_HTTP_ERRORS.labels(pipeline_.streamsets.url,
+                                                  pipeline_name, pipeline_.source.type, code).inc(1)
+    return jsonify('')
+
+
+@monitoring_bp.route('/monitoring/scheduled_script_error/<script_name>', methods=['POST'])
+def scheduled_script_error(script_name):
+    monitoring_.metrics.SCHEDULED_SCRIPTS_ERRORS.labels(script_name).inc(1)
     return jsonify('')

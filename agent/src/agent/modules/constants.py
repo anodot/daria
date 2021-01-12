@@ -27,3 +27,5 @@ DEFAULT_STREAMSETS_PASSWORD = os.environ.get('STREAMSETS_PASSWORD', 'admin')
 MONITORING_URL = os.environ.get('MONITORING_URL')
 MONITORING_SEND_TO_CLIENT = True if os.environ.get('MONITORING_SEND_TO_CLIENT', 'true') == 'true' else False
 MONITORING_SEND_TO_ANODOT = True if os.environ.get('MONITORING_SEND_TO_ANODOT', 'true') == 'true' else False
+
+AGENT_MONITORING_ENDPOINT = os.environ.get('AGENT_MONITORING_ENDPOINT', 'http://localhost/monitoring')
