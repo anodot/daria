@@ -51,20 +51,20 @@ def edit():
 
 @pipelines.route('/pipelines/<pipeline_name>', methods=['DELETE'])
 @needs_pipeline
-def delete(pipeline_name):
+def delete(pipeline_name: str):
     pipeline.manager.delete_by_name(pipeline_name)
     return jsonify('')
 
 
 @pipelines.route('/pipelines/force-delete/<pipeline_name>', methods=['DELETE'])
 @needs_pipeline
-def force_delete(pipeline_name):
+def force_delete(pipeline_name: str):
     return jsonify(pipeline.manager.force_delete(pipeline_name))
 
 
 @pipelines.route('/pipelines/<pipeline_name>/start', methods=['POST'])
 @needs_pipeline
-def start(pipeline_name):
+def start(pipeline_name: str):
     try:
         sdc_client.start(pipeline.repository.get_by_name(pipeline_name))
     except sdc_client.PipelineFreezeException as e:
@@ -74,9 +74,9 @@ def start(pipeline_name):
 
 @pipelines.route('/pipelines/<pipeline_name>/stop', methods=['POST'])
 @needs_pipeline
-def stop(pipeline_name):
+def stop(pipeline_name: str):
     try:
-        sdc_client.stop(pipeline_name)
+        sdc_client.stop(pipeline.repository.get_by_name(pipeline_name))
     except sdc_client.ApiClientException as e:
         return jsonify(str(e)), 400
     except sdc_client.PipelineFreezeException as e:
@@ -86,9 +86,9 @@ def stop(pipeline_name):
 
 @pipelines.route('/pipelines/<pipeline_name>/force-stop', methods=['POST'])
 @needs_pipeline
-def force_stop(pipeline_name):
+def force_stop(pipeline_name: str):
     try:
-        sdc_client.force_stop(pipeline_name)
+        sdc_client.force_stop(pipeline.repository.get_by_name(pipeline_name))
     except sdc_client.PipelineFreezeException as e:
         return jsonify(str(e)), 400
     return jsonify('')
@@ -96,44 +96,48 @@ def force_stop(pipeline_name):
 
 @pipelines.route('/pipelines/<pipeline_name>/info', methods=['GET'])
 @needs_pipeline
-def info(pipeline_name):
+def info(pipeline_name: str):
     number_of_history_records = int(request.args.get('number_of_history_records', 10))
     try:
-        return jsonify(sdc_client.get_pipeline_info(pipeline_name, number_of_history_records))
+        return jsonify(
+            sdc_client.get_pipeline_info(pipeline.repository.get_by_name(pipeline_name), number_of_history_records)
+        )
     except sdc_client.ApiClientException as e:
         return jsonify(str(e)), 500
 
 
 @pipelines.route('/pipelines/<pipeline_name>/logs', methods=['GET'])
 @needs_pipeline
-def logs(pipeline_name):
+def logs(pipeline_name: str):
     if 'severity' in request.args and request.args['severity'] not in pipeline.manager.LOG_LEVELS:
         return f'{request.args["severity"]} logging level is not one of {", ".join(pipeline.manager.LOG_LEVELS)}', 400
     severity = request.args.get('severity', logging.getLevelName(logging.INFO))
     number_of_records = int(request.args.get('number_of_records', 10))
     try:
-        return jsonify(sdc_client.get_pipeline_logs(pipeline_name, severity, number_of_records))
+        return jsonify(
+            sdc_client.get_pipeline_logs(pipeline.repository.get_by_name(pipeline_name), severity, number_of_records)
+        )
     except sdc_client.ApiClientException as e:
         return jsonify(str(e)), 500
 
 
 @pipelines.route('/pipelines/<pipeline_name>/enable-destination-logs', methods=['POST'])
 @needs_pipeline
-def enable_destination_logs(pipeline_name):
+def enable_destination_logs(pipeline_name: str):
     pipeline.manager.enable_destination_logs(pipeline.repository.get_by_name(pipeline_name))
     return jsonify('')
 
 
 @pipelines.route('/pipelines/<pipeline_name>/disable-destination-logs', methods=['POST'])
 @needs_pipeline
-def disable_destination_logs(pipeline_name):
+def disable_destination_logs(pipeline_name: str):
     pipeline.manager.disable_destination_logs(pipeline.repository.get_by_name(pipeline_name))
     return jsonify('')
 
 
 @pipelines.route('/pipelines/<pipeline_name>/reset', methods=['POST'])
 @needs_pipeline
-def reset(pipeline_name):
+def reset(pipeline_name: str):
     try:
         pipeline.manager.reset(pipeline.repository.get_by_name(pipeline_name))
     except sdc_client.ApiClientException as e:
@@ -176,6 +180,6 @@ def _send_error_status_to_anodot(pipeline_: Pipeline):
 
 @pipelines.route('/pipeline-offset/<pipeline_name>', methods=['POST'])
 @needs_pipeline
-def pipeline_offset_changed(pipeline_name):
+def pipeline_offset_changed(pipeline_name: str):
     pipeline.manager.update_pipeline_offset(pipeline.repository.get_by_name(pipeline_name))
     return jsonify('')
