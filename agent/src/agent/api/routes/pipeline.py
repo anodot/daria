@@ -1,4 +1,3 @@
-import logging
 import time
 import requests
 import sdc_client
@@ -10,6 +9,7 @@ from agent.api import routes
 from agent import pipeline, source, streamsets
 from agent.modules import proxy, logger
 from agent.pipeline import Pipeline
+from sdc_client import Severity
 
 pipelines = Blueprint('pipelines', __name__)
 logger = logger.get_logger(__name__)
@@ -111,7 +111,7 @@ def info(pipeline_name: str):
 def logs(pipeline_name: str):
     if 'severity' in request.args and request.args['severity'] not in pipeline.manager.LOG_LEVELS:
         return f'{request.args["severity"]} logging level is not one of {", ".join(pipeline.manager.LOG_LEVELS)}', 400
-    severity = request.args.get('severity', logging.getLevelName(logging.INFO))
+    severity = Severity[request.args.get('severity', Severity.INFO.value)]
     number_of_records = int(request.args.get('number_of_records', 10))
     try:
         return jsonify(
