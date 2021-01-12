@@ -1,3 +1,4 @@
+import agent
 import agent.destination
 import agent.pipeline
 
@@ -5,11 +6,12 @@ from functools import wraps
 from flask import jsonify
 
 
-def needs_destination(func):
+def check_prerequisites(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        if not agent.destination.repository.exists():
-            return jsonify('Destination is not configured. Please create agent destination first'), 400
+        errors = agent.check_prerequisites()
+        if errors:
+            return jsonify(errors), 400
         return func(*args, **kwargs)
     return wrapper
 

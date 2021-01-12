@@ -24,7 +24,7 @@ def list_pipelines():
 
 
 @pipelines.route('/pipelines', methods=['POST'])
-@routes.needs_destination
+@routes.check_prerequisites
 def create():
     try:
         pipelines_ = pipeline.manager.create_from_json(request.get_json())
@@ -38,6 +38,7 @@ def create():
 
 
 @pipelines.route('/pipelines', methods=['PUT'])
+@routes.check_prerequisites
 def edit():
     try:
         pipelines_ = pipeline.manager.edit_using_json(request.get_json())

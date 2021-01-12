@@ -80,7 +80,7 @@ test-sage: bootstrap run-sage
 ## RELEASE DEPENDENCY TARGETS
 ##---------------------------
 build-docker:
-	docker-compose build --build-arg GIT_SHA1="$(shell git describe --dirty --always)"
+	docker-compose build --build-arg GIT_SHA1="$(git describe --tags --dirty --always)"
 	docker-compose up -d
 
 test-apply:

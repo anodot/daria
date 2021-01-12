@@ -4,6 +4,7 @@ from . import expression_evaluator
 from . import destination
 from . import sage_source
 from . import victoria_source
-from . import influx_source
-from . import jdbc_lookup
+from . import influx_offset
 from . import jdbc_source
+from . import jdbc_offset
+from . import influx_source

@@ -2,8 +2,7 @@ import json
 import click
 import sdc_client
 
-from agent import pipeline, source, streamsets
-from agent import destination
+from agent import pipeline, source, streamsets, check_prerequisites
 from agent.modules.tools import infinite_retry
 from jsonschema import ValidationError
 from texttable import Texttable
@@ -27,7 +26,7 @@ def list_pipelines():
 @click.option('-a', '--advanced', is_flag=True)
 @click.option('-f', '--file', type=click.File())
 def create(advanced, file):
-    _check_destination()
+    _check_prerequisites()
     sources = source.repository.get_all_names()
     _check_sources(sources)
 
@@ -39,9 +38,16 @@ def create(advanced, file):
 @click.option('-a', '--advanced', is_flag=True)
 @click.option('-f', '--file', type=click.File())
 def edit(pipeline_id, advanced, file):
+    _check_prerequisites()
     if not file and not pipeline_id:
         raise click.UsageError('Specify pipeline id or file')
     _edit_using_file(file) if file else _prompt_edit(advanced, pipeline_id)
+
+
+def _check_prerequisites():
+    errors = check_prerequisites()
+    if errors:
+        click.ClickException("\n".join(errors))
 
 
 @click.command()
@@ -144,11 +150,11 @@ def destination_logs(pipeline_id, enable):
     """
     Enable destination response logs for a pipeline (for debugging purposes only)
     """
-    pipeline_object = pipeline.repository.get_by_name(pipeline_id)
+    pipeline_ = pipeline.repository.get_by_name(pipeline_id)
     if enable:
-        pipeline.manager.enable_destination_logs(pipeline_object)
+        pipeline.manager.enable_destination_logs(pipeline_)
     else:
-        pipeline.manager.disable_destination_logs(pipeline_object)
+        pipeline.manager.disable_destination_logs(pipeline_)
     click.secho('Updated pipeline {}'.format(pipeline_id), fg='green')
 
 
@@ -295,11 +301,6 @@ def _prompt_pipeline_id():
 def _check_sources(sources):
     if len(sources) == 0:
         raise click.ClickException('No sources configs found. Use "agent source create"')
-
-
-def _check_destination():
-    if not destination.repository.exists():
-        raise click.ClickException('Destination is not configured. Use "agent destination"')
 
 
 def _get_default_source(sources):
