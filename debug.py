@@ -7,3 +7,6 @@ di.init()
 # cli.destination()
 # cli.pipeline.create()
 # cli.streamsets.delete(["asdfa"])
+
+
+# todo depend on tag
