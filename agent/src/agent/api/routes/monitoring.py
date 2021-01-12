@@ -3,7 +3,7 @@ import urllib.parse
 
 from flask import jsonify, Blueprint
 from agent import monitoring as monitoring_, destination, pipeline
-from agent.modules import constants
+from agent.modules import constants, proxy
 
 
 monitoring_bp = Blueprint('monitoring', __name__)
@@ -14,9 +14,9 @@ def metrics():
     return monitoring_.get_latest()
 
 
-def _send_to_anodot(data, url):
+def _send_to_anodot(data: list, url: str, proxy_obj: proxy.Proxy):
     errors = []
-    res = requests.post(url, json=data)
+    res = requests.post(url, json=data, proxies=proxy.get_config(proxy_obj))
     if res.status_code != 200:
         errors.append(f'Error {res.status_code} from {url}')
 
@@ -40,22 +40,19 @@ def monitoring():
 
     errors = []
     if constants.MONITORING_SEND_TO_CLIENT:
-        # add proxy
         url = urllib.parse.urljoin(monitoring_url,
                                    f'api/v1/metrics?token={destination_.token}&protocol={destination_.PROTOCOL_20}')
-        errors += _send_to_anodot(data, url)
+        errors += _send_to_anodot(data, url, destination_.proxy)
 
     if constants.MONITORING_SEND_TO_ANODOT:
-        # add proxy
         url = urllib.parse.urljoin(monitoring_url,
                                    f'api/v1/agents?token={destination_.token}&protocol={destination_.PROTOCOL_20}')
-        errors += _send_to_anodot(data, url)
+        errors += _send_to_anodot(data, url, destination_.proxy)
 
     if errors:
         raise Exception('Errors from anodot: ' + str(errors))
 
-    # return jsonify('')
-    return jsonify(data)
+    return jsonify('')
 
 
 @monitoring_bp.route('/monitoring/source_http_error/<pipeline_name>/<code>', methods=['POST'])
