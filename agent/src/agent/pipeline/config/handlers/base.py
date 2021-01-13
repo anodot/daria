@@ -73,8 +73,7 @@ class BaseConfigHandler:
         return self.config
 
     def _set_labels(self):
-        self.config['metadata']['labels'] = [self.pipeline.source.type,
-                                             self.pipeline.destination.TYPE]
+        self.config['metadata']['labels'] = [self.pipeline.source.type, self.pipeline.destination.TYPE]
 
     def _override_stages(self):
         for stage in self.config['stages']:
@@ -93,6 +92,8 @@ class BaseConfigHandler:
         }
 
     def _override_pipeline_config(self):
+        self.config['uuid'] = self.pipeline.name
+        self.config['title'] = self.pipeline.name
         for config in self.config['configuration']:
             if config['name'] == 'constants':
                 config['value'] = [{'key': key, 'value': val} for key, val in self._get_pipeline_config().items()]
