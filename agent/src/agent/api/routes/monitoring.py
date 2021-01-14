@@ -4,6 +4,7 @@ import urllib.parse
 from flask import jsonify, Blueprint
 from agent import monitoring as monitoring_, destination, pipeline
 from agent.modules import constants, proxy
+from prometheus_client import generate_latest
 
 
 monitoring_bp = Blueprint('monitoring', __name__)
@@ -11,7 +12,8 @@ monitoring_bp = Blueprint('monitoring', __name__)
 
 @monitoring_bp.route('/metrics', methods=['GET'])
 def metrics():
-    return monitoring_.get_latest()
+    monitoring_.pull_latest()
+    return generate_latest(registry=metrics.registry)
 
 
 def _send_to_anodot(data: list, url: str, proxy_obj: proxy.Proxy):

@@ -4,7 +4,7 @@ from agent import streamsets, pipeline
 from agent.monitoring import metrics
 
 
-def _get_system_metrics(streamsets_: streamsets.StreamSets):
+def _pull_system_metrics(streamsets_: streamsets.StreamSets):
     client = streamsets.manager.get_client(streamsets_)
     jmx = client.get_jmx('java.lang:type=*')
     for bean in jmx['beans']:
@@ -21,7 +21,7 @@ def _increase_counter(total: int, metric: prometheus_client.Counter):
         metric.inc(val)
 
 
-def _get_pipeline_metrics(pipeline_: pipeline.Pipeline):
+def _pull_pipeline_metrics(pipeline_: pipeline.Pipeline):
     client = streamsets.manager.get_client(pipeline_.streamsets)
     jmx = client.get_jmx(f'metrics:name=sdc.pipeline.{pipeline_.name}.*')
     labels = (pipeline_.streamsets.url, pipeline_.name, pipeline_.source.type)
@@ -37,7 +37,7 @@ def _get_pipeline_metrics(pipeline_: pipeline.Pipeline):
             _increase_counter(bean['Count'], metrics.PIPELINE_ERROR_RECORDS.labels(*labels))
 
 
-def _get_kafka_metrics(streamsets_: streamsets.StreamSets):
+def _pull_kafka_metrics(streamsets_: streamsets.StreamSets):
     client = streamsets.manager.get_client(streamsets_)
     jmx = client.get_jmx('kafka.consumer:type=consumer-fetch-manager-metrics,client-id=*,topic=*,partition=*')
     for bean in jmx['beans']:
@@ -45,9 +45,9 @@ def _get_kafka_metrics(streamsets_: streamsets.StreamSets):
         metrics.KAFKA_CONSUMER_LAG.labels(name['topic']).set(bean['records-lag-avg'])
 
 
-def get_metrics():
+def pull_metrics():
     for streamsets_ in streamsets.repository.get_all():
-        _get_system_metrics(streamsets_)
-        _get_kafka_metrics(streamsets_)
+        _pull_system_metrics(streamsets_)
+        _pull_kafka_metrics(streamsets_)
     for pipeline_ in pipeline.repository.get_all():
-        _get_pipeline_metrics(pipeline_)
+        _pull_pipeline_metrics(pipeline_)

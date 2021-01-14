@@ -31,11 +31,12 @@ def delete_streamsets(streamsets_: StreamSets):
 
 
 def _has_pipelines(streamsets_: StreamSets) -> bool:
-    return True if len(pipeline.repository.get_by_streamsets_id(streamsets_.id)) >= 1 else False
+    return len(pipeline.repository.get_by_streamsets_id(streamsets_.id)) > 0
 
 
 def _can_move_pipelines():
     return len(streamsets.repository.get_all()) > 1
+
 
 # TODO: pass StreamSets instance as an argument
 def _client(pipeline_: Pipeline) -> StreamSetsApiClient:
@@ -132,7 +133,6 @@ def _choose_streamsets(*, exclude: int = None) -> StreamSets:
             pipeline_streamsets[s.id] = 0
     # choose streamsets with the lowest number of pipelines
     pipeline_streamsets = streamsets.repository.count_pipelines_by_streamsets()
-    logger.info(pipeline_streamsets)
     map(add_empty, streamsets.repository.get_all())
     if exclude:
         del pipeline_streamsets[exclude]

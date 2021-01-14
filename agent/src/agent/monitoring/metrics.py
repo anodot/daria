@@ -5,7 +5,7 @@ from agent.pipeline import Pipeline
 registry = CollectorRegistry()
 
 VERSION = Info('version', 'Agent version', registry=registry)
-VERSION.info({'version': version.__version__, 'git_sha1': version.__git_sha1__})
+VERSION.info({'version': version.__version__})
 
 STREAMSETS_CPU = Gauge('streamsets_cpu', 'Streamsets CPU utilization', ['streamsets_url'], registry=registry)
 STREAMSETS_HEAP_MEMORY = Gauge('streamsets_heap_memory_used_bytes', 'Streamsets Heap memory utilization',

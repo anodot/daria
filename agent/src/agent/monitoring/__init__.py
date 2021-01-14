@@ -3,18 +3,16 @@ import anodot
 from . import metrics, streamsets
 from agent.modules import constants, logger
 from datetime import datetime
-from prometheus_client import generate_latest
 
 logger_ = logger.get_logger(__name__)
 
 
-def get_latest():
-    streamsets.get_metrics()
-    return generate_latest(registry=metrics.registry)
+def pull_latest():
+    streamsets.pull_metrics()
 
 
 def latest_to_anodot():
-    get_latest()
+    pull_latest()
 
     data = []
     for metric in metrics.registry.collect():
