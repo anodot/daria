@@ -1,4 +1,5 @@
 import anodot
+import requests
 
 from . import metrics, streamsets
 from agent.modules import constants, logger
@@ -26,3 +27,8 @@ def latest_to_anodot():
                                         dimensions=dims).to_dict())
 
     return data
+
+
+def increase_scheduled_script_error_counter(script_name):
+    url = constants.AGENT_MONITORING_ENDPOINT + 'scheduled_script_error/' + script_name
+    requests.post(url).raise_for_status()

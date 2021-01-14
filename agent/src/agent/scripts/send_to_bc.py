@@ -4,8 +4,6 @@ import requests
 from agent import pipeline, destination, monitoring
 from agent.destination.anodot_api_client import AnodotApiClient
 from agent.modules.logger import get_logger
-from agent.modules import constants
-from urllib.parse import urljoin
 
 destination_ = destination.repository.get()
 logger = get_logger(__name__)
@@ -14,7 +12,7 @@ logger = get_logger(__name__)
 def _update_errors_count():
     global num_of_errors
     num_of_errors += 1
-    requests.post(urljoin(constants.AGENT_MONITORING_ENDPOINT, 'scheduled_script_error/agent-to-bc')).raise_for_status()
+    monitoring.increase_scheduled_script_error_counter('agent-to-bc')
 
 
 try:
