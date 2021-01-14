@@ -33,7 +33,7 @@ def _pull_pipeline_metrics(pipeline_: pipeline.Pipeline):
     for bean in jmx['beans']:
         if bean['name'].endswith('source.batchProcessing.timer'):
             metrics.PIPELINE_SOURCE_LATENCY.labels(*labels).set(bean['Mean'] / 1000)
-        elif bean['name'].endswith('source.outputRecords.timer') and not _is_influx(pipeline_):
+        elif bean['name'].endswith('source.outputRecords.counter') and not _is_influx(pipeline_):
             _increase_counter(bean['Count'], metrics.PIPELINE_INCOMING_RECORDS.labels(*labels))
         elif bean['name'].endswith('transform_records.outputRecords.counter') and _is_influx(pipeline_):
             _increase_counter(bean['Count'], metrics.PIPELINE_INCOMING_RECORDS.labels(*labels))
