@@ -9,7 +9,7 @@ def config(binder):
     binder.install(source.config)
     binder.install(pipeline.config)
     binder.install(streamsets.config)
-    binder.bind(sdc_client.ILogger, get_logger('sdc_client'))
+    binder.bind(sdc_client.ILogger, get_logger('sdc_client', stdout=True))
 
 
 def init():
