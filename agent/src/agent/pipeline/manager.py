@@ -43,8 +43,9 @@ class PipelineBuilder:
 def show_preview(pipeline_: Pipeline):
     try:
         preview = sdc_client.create_preview(pipeline_)
+        # todo preview slows down tests a lot as 'No data' exception is risen
         preview_data, errors = sdc_client.wait_for_preview(pipeline_, preview['previewerId'])
-    except sdc_client.StreamsetsException as e:
+    except sdc_client.ApiClientException as e:
         print(str(e))
         return
 
