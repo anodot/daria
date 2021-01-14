@@ -8,7 +8,7 @@ for pipeline_ in pipeline.repository.get_by_source(SOURCE_NAME):
     pipeline.manager.delete(pipeline_)
     logger_.info(f'Pipeline {pipeline_.name} deleted')
 
-source.manager.delete(source.repository.get_by_name(SOURCE_NAME))
+source.repository.delete_by_name(SOURCE_NAME)
 logger_.info(f'{SOURCE_NAME} source deleted')
 
 # todo this is temporary
