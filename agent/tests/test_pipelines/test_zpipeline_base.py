@@ -37,7 +37,7 @@ class TestPipelineBase(object):
     def test_start(self, cli_runner, name):
         result = cli_runner.invoke(cli.pipeline.start, [name], catch_exceptions=False)
         assert result.exit_code == 0
-        # assert streamsets.manager.get_pipeline_status_by_id(name) == 'RUNNING'
+        assert sdc_client.get_pipeline_status_by_id(name) == pipeline.Pipeline.STATUS_RUNNING
         # give pipelines some time to send data
         time.sleep(10)
 
@@ -48,7 +48,7 @@ class TestPipelineBase(object):
     def test_stop(self, cli_runner, name):
         result = cli_runner.invoke(cli.pipeline.stop, [name], catch_exceptions=False)
         assert result.exit_code == 0
-        # assert streamsets.manager.get_pipeline_status_by_id(name) in ['STOPPED']
+        assert sdc_client.get_pipeline_status_by_id(name) == pipeline.Pipeline.STATUS_STOPPED
 
     def test_force_stop(self, cli_runner, name):
         result = cli_runner.invoke(cli.pipeline.force_stop, [name], catch_exceptions=False)
