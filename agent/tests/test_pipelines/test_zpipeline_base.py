@@ -34,10 +34,10 @@ class TestPipelineBase(object):
         result = cli_runner.invoke(cli.pipeline.edit, ['-f', input_file_path], catch_exceptions=False)
         assert result.exit_code == 0
 
-    def test_start(self, cli_runner, name):
+    def test_start(self, cli_runner, name: str):
         result = cli_runner.invoke(cli.pipeline.start, [name], catch_exceptions=False)
         assert result.exit_code == 0
-        assert sdc_client.get_pipeline_status_by_id(name) == pipeline.Pipeline.STATUS_RUNNING
+        assert sdc_client.get_pipeline_status(pipeline.repository.get_by_name(name)) == pipeline.Pipeline.STATUS_RUNNING
         # give pipelines some time to send data
         time.sleep(10)
 
@@ -48,7 +48,7 @@ class TestPipelineBase(object):
     def test_stop(self, cli_runner, name):
         result = cli_runner.invoke(cli.pipeline.stop, [name], catch_exceptions=False)
         assert result.exit_code == 0
-        assert sdc_client.get_pipeline_status_by_id(name) == pipeline.Pipeline.STATUS_STOPPED
+        assert sdc_client.get_pipeline_status(pipeline.repository.get_by_name(name)) == pipeline.Pipeline.STATUS_STOPPED
 
     def test_force_stop(self, cli_runner, name):
         result = cli_runner.invoke(cli.pipeline.force_stop, [name], catch_exceptions=False)
