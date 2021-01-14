@@ -194,6 +194,9 @@ run-postgres:
 run-sage:
 	docker-compose up -d --build sage
 
+run-zabbix:
+	$(DOCKER_COMPOSE_DEV) up -d mysql zabbix-server zabbix-web zabbix-agent
+
 ##--------------------------
 ## COMMON DEPENDENCY TARGETS
 ##--------------------------
