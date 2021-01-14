@@ -17,7 +17,7 @@ def _pull_system_metrics(streamsets_: streamsets.StreamSets):
 
 def _increase_counter(total: int, metric: prometheus_client.Counter):
     val = total - metric._value.get()
-    if val:
+    if val > 0:
         metric.inc(val)
 
 
