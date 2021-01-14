@@ -1,6 +1,6 @@
 import prometheus_client
 
-from agent import streamsets, pipeline
+from agent import streamsets, pipeline, source
 from agent.monitoring import metrics
 
 
@@ -16,9 +16,14 @@ def _pull_system_metrics(streamsets_: streamsets.StreamSets):
 
 
 def _increase_counter(total: int, metric: prometheus_client.Counter):
+    # TODO: do not access private property
     val = total - metric._value.get()
     if val > 0:
         metric.inc(val)
+
+
+def _is_influx(pipeline_: pipeline.Pipeline):
+    return pipeline_.source.type == source.TYPE_INFLUX
 
 
 def _pull_pipeline_metrics(pipeline_: pipeline.Pipeline):
@@ -26,12 +31,15 @@ def _pull_pipeline_metrics(pipeline_: pipeline.Pipeline):
     jmx = client.get_jmx(f'metrics:name=sdc.pipeline.{pipeline_.name}.*')
     labels = (pipeline_.streamsets.url, pipeline_.name, pipeline_.source.type)
     for bean in jmx['beans']:
-        # TODO: do not access private property
         if bean['name'].endswith('source.batchProcessing.timer'):
             metrics.PIPELINE_SOURCE_LATENCY.labels(*labels).set(bean['Mean'] / 1000)
+        elif bean['name'].endswith('source.outputRecords.timer') and not _is_influx(pipeline_):
+            _increase_counter(bean['Count'], metrics.PIPELINE_INCOMING_RECORDS.labels(*labels))
+        elif bean['name'].endswith('transform_records.outputRecords.counter') and _is_influx(pipeline_):
             _increase_counter(bean['Count'], metrics.PIPELINE_INCOMING_RECORDS.labels(*labels))
         elif bean['name'].endswith('destination.batchProcessing.timer'):
             metrics.PIPELINE_DESTINATION_LATENCY.labels(*labels).set(bean['Mean'] / 1000)
+        elif bean['name'].endswith('destination.outputRecords.counter'):
             _increase_counter(bean['Count'], metrics.PIPELINE_OUTGOING_RECORDS.labels(*labels))
         elif bean['name'].endswith('pipeline.batchErrorRecords.counter'):
             _increase_counter(bean['Count'], metrics.PIPELINE_ERROR_RECORDS.labels(*labels))
