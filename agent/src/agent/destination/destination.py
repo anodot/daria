@@ -33,8 +33,6 @@ class HttpDestination(Entity):
     CONFIG_PROXY_URI = 'conf.client.proxy.uri'
     CONFIG_ENABLE_REQUEST_LOGGING = 'conf.client.requestLoggingConfig.enableRequestLogging'
 
-    CONFIG_MONITORING_URL = 'monitoring_url'
-
     PROTOCOL_20 = 'anodot20'
     PROTOCOL_30 = 'anodot30'
 
@@ -72,13 +70,9 @@ class HttpDestination(Entity):
         self.config['token'] = value
 
     @property
-    def resource_url(self) -> Optional[str]:
+    def metrics_url(self) -> Optional[str]:
         return \
             urllib.parse.urljoin(self.url, f'api/v1/metrics?token={self.token}&protocol={HttpDestination.PROTOCOL_20}')
-
-    @property
-    def monitoring_url(self) -> Optional[str]:
-        return urllib.parse.urljoin(self.url, f'api/v1/agents?token={self.token}')
 
     def enable_logs(self):
         self.config[self.CONFIG_ENABLE_REQUEST_LOGGING] = True

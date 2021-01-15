@@ -27,16 +27,8 @@ def set_pipeline_streamsets():
         logger.info(f'Set streamsets for pipeline ID = {p.id}')
 
 
-def update_monitoring():
-    pipeline.manager.delete(
-        pipeline.repository.get_by_name(pipeline.MONITORING)
-    )
-    pipeline.manager.create_monitoring_pipelines()
-
-
 create_streamsets()
 set_pipeline_streamsets()
-update_monitoring()
 
 # todo this is temporary
 db.session().commit()

@@ -4,6 +4,7 @@ import time
 import urllib.parse
 
 from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import relationship
 from agent.modules.db import Entity
 from agent.modules.logger import get_logger
 from agent.modules.constants import STREAMSETS_PREVIEW_TIMEOUT
@@ -65,6 +66,8 @@ class StreamSets(Entity):
     username = Column(String)
     password = Column(String)
     agent_external_url = Column(String)
+
+    pipelines = relationship('Pipeline', back_populates='streamsets')
 
     def __init__(self, url: str, username: str, password: str, agent_external_url: str):
         self.url = url
@@ -257,6 +260,10 @@ class StreamSetsApiClient:
                     f"Pipeline {pipeline_id} is still {response['status']} after {tries} tries")
             print(f"Pipeline {pipeline_id} is {response['status']}. Check again after {delay} seconds...")
             time.sleep(delay)
+
+    @endpoint
+    def get_jmx(self, query):
+        return self.session.get(self._build_url('system', 'jmx'), params={'qry': query})
 
 
 class ApiClientException(Exception):

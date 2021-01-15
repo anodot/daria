@@ -10,9 +10,6 @@ from agent import source
 from copy import deepcopy
 
 
-MONITORING = 'Monitoring'
-
-
 class PipelineException(Exception):
     pass
 
@@ -62,6 +59,9 @@ class Pipeline(Entity):
     FLUSH_BUCKET_SIZE = 'flush_bucket_size'
 
     error_statuses = [STATUS_RUN_ERROR, STATUS_START_ERROR, STATUS_STOP_ERROR, STATUS_RUNNING_ERROR]
+    # TODO make it enum
+    statuses = [STATUS_EDITED, STATUS_STARTING, STATUS_RUNNING, STATUS_STOPPING, STATUS_STOPPED, STATUS_RETRY,
+                STATUS_RUN_ERROR, STATUS_START_ERROR, STATUS_STOP_ERROR, STATUS_RUNNING_ERROR]
 
     TARGET_TYPES = ['counter', 'gauge', 'running_counter']
 

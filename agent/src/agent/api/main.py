@@ -3,14 +3,14 @@ import wtforms_json
 
 from flask import Flask, jsonify
 from agent import di
-from agent.modules import db
+from agent.modules import db, logger
+from agent.api.routes.monitoring import monitoring_bp
 from agent.api.routes.streamsets import streamsets
 from agent.api.routes.destination import destination_
 from agent.api.routes import source, pipeline, scripts
-from agent.modules.logger import get_logger
 from agent.version import __version__
 
-logger = get_logger(__name__)
+logger_ = logger.get_logger(__name__)
 
 wtforms_json.init()
 
@@ -20,6 +20,7 @@ app.register_blueprint(destination_)
 app.register_blueprint(source.sources)
 app.register_blueprint(pipeline.pipelines)
 app.register_blueprint(scripts.scripts)
+app.register_blueprint(monitoring_bp)
 app.config['WTF_CSRF_ENABLED'] = False
 app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = False
 
@@ -38,7 +39,7 @@ def teardown_request_func(exception):
             db.session().commit()
         db.close_session()
     except Exception:
-        logger.error(traceback.format_exc())
+        logger_.error(traceback.format_exc())
 
 
 @app.route('/version', methods=['GET'])

@@ -49,8 +49,8 @@ class TestElastic:
 
     def test_get(self, api_client):
         result = api_client.get('/sources')
-        assert result.json == ["monitoring","elastic"]
+        assert result.json == ["elastic"]
 
     def test_delete(self, api_client):
         api_client.delete('sources/elastic')
-        assert api_client.get('/sources').json == ["monitoring"]
+        assert api_client.get('/sources').json == []

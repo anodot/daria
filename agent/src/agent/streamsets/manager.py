@@ -4,7 +4,7 @@ import time
 
 from datetime import datetime
 from typing import Dict, List, Optional
-from agent import pipeline, streamsets, destination, source
+from agent import pipeline, streamsets, source
 from agent.modules import db
 from agent.modules.constants import ENV_PROD
 from agent.modules.logger import get_logger
@@ -18,8 +18,6 @@ _clients: Dict[int, StreamSetsApiClient] = {}
 
 def create_streamsets(streamsets_: StreamSets):
     streamsets.repository.save(streamsets_)
-    if destination.repository.exists():
-        pipeline.manager.create_monitoring_pipelines()
 
 
 def delete_streamsets(streamsets_: StreamSets):
@@ -29,23 +27,18 @@ def delete_streamsets(streamsets_: StreamSets):
                 'Cannot move pipelines to a different streamsets as only one streamsets instance exists, cannot delete streamsets that has pipelines'
             )
         streamsets.manager.StreamsetsBalancer().unload_streamsets(streamsets_)
-    pipeline.manager.delete_monitoring_pipeline(streamsets_)
     streamsets.repository.delete(streamsets_)
 
 
 def _has_pipelines(streamsets_: StreamSets) -> bool:
-    pipelines = pipeline.repository.get_by_streamsets_id(streamsets_.id)
-    if len(pipelines) > 1:
-        return True
-    if len(pipelines) == 1 and not pipeline.manager.is_monitoring(pipelines[0]):
-        return True
-    return False
+    return len(pipeline.repository.get_by_streamsets_id(streamsets_.id)) > 0
 
 
 def _can_move_pipelines():
     return len(streamsets.repository.get_all()) > 1
 
 
+# TODO: pass StreamSets instance as an argument
 def _client(pipeline_: Pipeline) -> StreamSetsApiClient:
     global _clients
     if not pipeline_.streamsets:
@@ -139,7 +132,7 @@ def _choose_streamsets(*, exclude: int = None) -> StreamSets:
         if s.id not in pipeline_streamsets:
             pipeline_streamsets[s.id] = 0
     # choose streamsets with the lowest number of pipelines
-    pipeline_streamsets = pipeline.repository.count_by_streamsets()
+    pipeline_streamsets = streamsets.repository.count_pipelines_by_streamsets()
     map(add_empty, streamsets.repository.get_all())
     if exclude:
         del pipeline_streamsets[exclude]
@@ -161,23 +154,6 @@ def get_all_pipeline_statuses() -> dict:
         client = StreamSetsApiClient(streamsets_)
         statuses = {**statuses, **client.get_pipeline_statuses()}
     return statuses
-
-
-def get_streamsets_without_monitoring() -> List[StreamSets]:
-    pipeline_streamsets_ids = set(map(
-        lambda p: p.streamsets_id,
-        pipeline.repository.get_monitoring_pipelines(),
-    ))
-    streamsets_ = streamsets.repository.get_all()
-    streamsets_ids = set(map(
-        lambda s: s.id,
-        streamsets_,
-    ))
-    without_monitoring = streamsets_ids - pipeline_streamsets_ids
-    return list(filter(
-        lambda s: s.id in without_monitoring,
-        streamsets_
-    ))
 
 
 def get_pipeline_info(pipeline_id: str, number_of_history_records: int) -> dict:
@@ -358,6 +334,14 @@ def get_pipeline_offset(pipeline_: Pipeline) -> Optional[str]:
     return None
 
 
+# TODO use _client method ?
+def get_client(streamsets_: StreamSets) -> StreamSetsApiClient:
+    global _clients
+    if streamsets_.id not in _clients:
+        _clients[streamsets_.id] = StreamSetsApiClient(streamsets_)
+    return _clients[streamsets_.id]
+
+
 class StreamsetsBalancer:
     def __init__(self):
         self.streamsets_pipelines: Dict[int, List[Pipeline]] = self._get_streamsets_pipelines()
@@ -391,10 +375,7 @@ class StreamsetsBalancer:
 
     @staticmethod
     def _get_streamsets_pipelines() -> dict:
-        pipelines = filter(
-            lambda p: not pipeline.manager.is_monitoring(p),
-            pipeline.repository.get_all()
-        )
+        pipelines = pipeline.repository.get_all()
         sp = {}
         for pipeline_ in pipelines:
             if pipeline_.streamsets_id not in sp:
@@ -419,7 +400,6 @@ class StreamsetsBalancer:
 
 def get_sdc_config_handler(pipeline_: Pipeline, is_preview=False) -> streamsets.config_handlers.base.BaseConfigHandler:
     handlers = {
-        source.TYPE_MONITORING: streamsets.config_handlers.monitoring.MonitoringConfigHandler,
         source.TYPE_INFLUX: streamsets.config_handlers.influx.InfluxConfigHandler,
         source.TYPE_MONGO: streamsets.config_handlers.mongo.MongoConfigHandler,
         source.TYPE_KAFKA: streamsets.config_handlers.kafka.KafkaConfigHandler,
