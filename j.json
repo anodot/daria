@@ -1,0 +1,29 @@
+{
+  "version": "1",
+  "name": "test_mysql_advanced",
+  "dimensions": [
+    "adsize",
+    "country",
+    "key1",
+    "key2"
+  ],
+  "measurements": {
+    "clicks": {
+      "aggregation": "average",
+      "countBy": "none"
+    },
+    "impressions": {
+      "aggregation": "average",
+      "countBy": "none"
+    },
+    "test": {
+      "aggregation": "sum",
+      "countBy": "none"
+    }
+  },
+  "missingDimPolicy": {
+    "action": "fill",
+    "fill": "NULL"
+  },
+  "id": "111111-22222-3333-4444"
+}

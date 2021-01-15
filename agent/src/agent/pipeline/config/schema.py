@@ -3,6 +3,8 @@ from agent.pipeline import Pipeline
 
 
 def build(pipeline: Pipeline) -> dict:
+    # if pipeline has count records we should add
+    # self.pipeline.count_records_measurement_name to schema with type counter
     measurements = {}
     for idx, value in enumerate(pipeline.values):
         measurements[pipeline.measurement_names[idx]] = {
