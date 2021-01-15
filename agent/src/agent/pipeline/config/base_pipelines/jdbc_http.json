@@ -29,7 +29,22 @@
       "value" : [ ]
     }, {
       "name" : "constants",
-      "value" : [ ]
+      "value" : [ {
+        "key" : "TOKEN",
+        "value" : "correct_token"
+      }, {
+        "key" : "PROTOCOL",
+        "value" : "anodot30"
+      }, {
+        "key" : "ANODOT_BASE_URL",
+        "value" : "http://dummy_destination"
+      }, {
+        "key" : "AGENT_URL",
+        "value" : "http://anodot-agent"
+      }, {
+        "key" : "SCHEMA_ID",
+        "value" : "111111-22222-3333-4444"
+      } ]
     }, {
       "name" : "errorRecordPolicy",
       "value" : "ORIGINAL_RECORD"
@@ -340,7 +355,7 @@
       "stageVersion" : "1",
       "configuration" : [ {
         "name" : "script",
-        "value" : "# Sample Jython code - Data Generator\n#\n# Available constants:\n#   sdc.lastOffsets: Dictionary representing the (string) offset previously reached\n#       for each (string) entityName. Offsets are committed by the pipeline.\n#   sdc.batchSize: Requested record batch size (from UI).\n#   sdc.nThreads: Number of threads to run (from UI).\n#   sdc.userParams: Dictionary of user-specified keys and values (from UI).\n#\n#   These can be used to assign a type to a field with a value null:\n#       sdc.NULL_BOOLEAN, sdc.NULL_CHAR, sdc.NULL_BYTE, sdc.NULL_SHORT, sdc.NULL_INTEGER,\n#       sdc.NULL_LONG, sdc.NULL_FLOAT, sdc.NULL_DOUBLE, sdc.NULL_DATE, sdc.NULL_DATETIME,\n#       sdc.NULL_TIME, sdc.NULL_DECIMAL, sdc.NULL_BYTE_ARRAY, sdc.NULL_STRING, sdc.NULL_LIST,\n#       sdc.NULL_MAP\n#\n# Available functions:\n#   sdc.createBatch(): Return a new batch.\n#   sdc.createRecord(String recordId): Return a new record. Pass a recordId to uniquely identify\n#       the record and include enough information to track down the record source.\n#   sdc.createEvent(String type, int version): Return a new empty event with standard headers.\n#   Batch.add(record): Append a record to the batch.\n#   Batch.add(record[]): Append a list of records to the batch.\n#   Batch.addError(record, msg): Add an error record to the batch with the associated error message.\n#   Batch.addEvent(event): Append an event to the batch.\n#       Only events created with sdc.createEvent() are supported.\n#   Batch.size(): Return the number of records in the batch.\n#   Batch.errorCount(): Return the number of error records in the batch.\n#   Batch.eventCount(): Return the number of events in the batch.\n#   Batch.process(entityName, entityOffSet): Process the batch through the rest of\n#       the pipeline and commit the offset in accordance with the pipeline's\n#       delivery guarantee.\n#   Batch.getSourceResponseRecords(): After a batch is processed, retrieve any\n#       response records returned by downstream stages.\n#   sdc.isStopped(): Return whether or not the pipeline has been stopped.\n#   sdc.isPreview(): Return whether or not the pipeline is in preview mode.\n#   sdc.importLock() and sdc.importUnlock(): Acquire or release a systemwide lock which can be\n#       used to circumvent a known bug with the thread-safety of Jython imports. (https://bugs.jython.org/issue2642)\n#   sdc.log.<loglevel>(msg, obj...): Use instead of print to send log messages to the log4j log instead of stdout.\n#       loglevel is any log4j level: e.g. info, error, warn, trace.\n#   sdc.getFieldNull(Record, 'field path'): Receive a constant defined above\n#       to check if the field is a typed field with value null.\n#   sdc.createMap(boolean listMap): Create a map for use as a field in a record.\n#       Pass true to this function to create a list map (ordered map).\n#\n# Available Record Header Variables:\n#   record.attributes: A map of record header attributes.\n#   record.<header name>: Get the value of 'header name'.\n#\n# Add additional module search paths:\n#   try:\n#       sdc.importLock()\n#       import sys\n#       sys.path.append('/some/other/dir/to/search')\n#       import something\n#   finally:\n#       sdc.importUnlock()\n#\n\ntry:\n    sdc.importLock()\n    import datetime\nfinally:\n    sdc.importUnlock()\n\n# single threaded - no entityName because we need only one offset\nentityName = ''\n\n# get previously committed offset or use 0\nif sdc.lastOffsets.containsKey(entityName):\n    offset = int(sdc.lastOffsets.get(entityName))\nelse:\n    offset = 0\n\n# get record prefix from user parameters or default to empty string\nif sdc.userParams.containsKey('recordPrefix'):\n    prefix = sdc.userParams.get('recordPrefix')\nelse:\n    prefix = ''\n\ncur_batch = sdc.createBatch()\n\nrecord = sdc.createRecord('record created ' + str(datetime.datetime.now()))\nhasNext = True\nwhile hasNext:\n\n    try:\n        offset = offset + 1\n        record = sdc.createRecord('record created ' + str(datetime.datetime.now()))\n        value = prefix + entityName + ':' + str(offset)\n        record.value = value\n        cur_batch.add(record)\n\n        # if the batch is full, process it and start a new one\n        if cur_batch.size() >= sdc.batchSize:\n            # blocks until all records are written to all destinations\n            # (or failure) and updates offset\n            # in accordance with delivery guarantee\n            cur_batch.process(entityName, str(offset))\n            cur_batch = sdc.createBatch()\n            # if the pipeline has been stopped, we should end the script\n            if sdc.isStopped():\n                hasNext = False\n\n    except Exception as e:\n        cur_batch.addError(record, str(e))\n        cur_batch.process(entityName, str(offset))\n        hasNext = False\n\nif cur_batch.size() + cur_batch.errorCount() + cur_batch.eventCount() > 0:\n    cur_batch.process(entityName, str(offset))"
+        "value" : "global sdc\n\ntry:\n    sdc.importLock()\n    import time\n    from datetime import datetime, timedelta\nfinally:\n    sdc.importUnlock()\n\n\ndef get_interval():\n    return int(sdc.userParams['INTERVAL_IN_SECONDS'])\n\n\ndef get_now_with_delay():\n    return int(time.time()) - int(sdc.userParams['DELAY_IN_SECONDS'])\n\n\ndef to_timestamp(date):\n    epoch = datetime(1970, 1, 1)\n    return int((date - epoch).total_seconds())\n\n\nentityName = ''\ninterval = timedelta(seconds=get_interval())\n\nif sdc.lastOffsets.containsKey(entityName):\n    offset = int(float(sdc.lastOffsets.get(entityName)))\nelif sdc.userParams['INITIAL_OFFSET']:\n    offset = to_timestamp(datetime.strptime(sdc.userParams['INITIAL_OFFSET'], '%d/%m/%Y %H:%M'))\nelse:\n    offset = to_timestamp(datetime.utcnow().replace(second=0, microsecond=0) - interval)\n\nsdc.log.info('OFFSET: ' + str(offset))\n\nwhile True:\n    if sdc.isStopped():\n        break\n    now_with_delay = get_now_with_delay() - interval.total_seconds()\n    if offset > now_with_delay:\n        time.sleep(offset - now_with_delay)\n    cur_batch = sdc.createBatch()\n    record = sdc.createRecord('record created ' + str(datetime.now()))\n    record.value = {'last_timestamp': int(offset)}\n    offset += interval.total_seconds()\n    cur_batch.add(record)\n    cur_batch.process(entityName, str(offset))"
       }, {
         "name" : "scriptConf.batchSize",
         "value" : 1000
@@ -358,12 +373,12 @@
         "value" : "TO_ERROR"
       } ],
       "uiInfo" : {
-        "yPos" : 136.69508361816406,
+        "yPos" : 147.69508361816406,
         "stageType" : "SOURCE",
         "icon" : "jython.png",
         "description" : "",
         "label" : "Jython Scripting 1",
-        "xPos" : 530.1574096679688
+        "xPos" : 484.15740966796875
       },
       "inputLanes" : [ ],
       "outputLanes" : [ "JythonScripting_01OutputLane16056311723920" ],
@@ -471,12 +486,12 @@
         "value" : [ ]
       } ],
       "uiInfo" : {
-        "yPos" : 133.36065673828125,
+        "yPos" : 147.36065673828125,
         "stageType" : "PROCESSOR",
         "icon" : "rdbms.png",
         "description" : "",
         "label" : "JDBC Lookup 1",
-        "xPos" : 690.1377563476562
+        "xPos" : 677.1377563476562
       },
       "inputLanes" : [ "JythonScripting_01OutputLane16056311723920" ],
       "outputLanes" : [ "JDBCLookup_01OutputLane16056312277720" ],
@@ -492,13 +507,13 @@
         "value" : "BATCH"
       }, {
         "name" : "initScript",
-        "value" : "/*\nstate['TABLE_NAME'] = 'test';\nstate['TIMESTAMP_COLUMN'] = 'timestamp_unix';\nstate['DIMENSIONS'] = ['ver', 'AdSize', 'Country', 'AdType', 'Exchange'];\nstate['VALUES_COLUMNS'] = ['Clicks', 'Impressions'];\nstate['TARGET_TYPES'] = ['gauge', 'counter']\nstate['COUNT_RECORDS'] = 1\n*/\n\nstate['TABLE_NAME'] = 'test';\nstate['TIMESTAMP_COLUMN'] = 'timestamp_unix';\nstate['DIMENSIONS'] = ['ver', 'AdSize', 'Country', 'AdType', 'Exchange'];\nstate['VALUES_COLUMNS'] = ['Clicks', 'Impressions'];\nstate['TARGET_TYPES'] = ['gauge', 'counter']\nstate['COUNT_RECORDS'] = 1"
+        "value" : "state['TIMESTAMP_COLUMN'] = 'timestamp_unix_ms';\nstate['DIMENSIONS'] = ['adsize', 'country'];\nstate['DIMENSIONS_NAMES'] = ['adsize', 'country'];\nstate['VALUES_COLUMNS'] = ['clicks', 'impressions'];\nstate['MEASUREMENT_NAMES'] = ['clicks', 'impressions'];\nstate['TARGET_TYPES'] = ['gauge', 'gauge'];\nstate['COUNT_RECORDS'] = 0;\nstate['COUNT_RECORDS_MEASUREMENT_NAME'] = 'count';\nstate['STATIC_WHAT'] = 1;\nstate['VALUES_ARRAY_PATH'] = '';\nstate['VALUES_ARRAY_FILTER'] = [];\nstate['metrics'] = {}"
       }, {
         "name" : "script",
-        "value": "TARGET_TYPES = ['counter', 'gauge', 'running_counter']\n\nfunction metric_to_string(dimensions) {\n  var str = '';\n    for (var p in dimensions) {\n        if (dimensions.hasOwnProperty(p)) {\n            str += p + ':' + dimensions[p] + ',';\n        }\n    }\n    return str;\n}\n\nfunction get_running_counter_value(metric_properties, curr_value, time) {\n  metric = metric_to_string(metric_properties)\n  if (state['metrics'][metric] == null) {\n    state['metrics'][metric] = {'val': curr_value, 'time': time}\n    return null;\n  }\n  counter_val = curr_value - state['metrics'][metric]['val']\n  if (counter_val < 0) {\n    return null;\n  }\n  state['metrics'][metric]['val'] = curr_value\n  prev_time = state['metrics'][metric]['time']\n  state['metrics'][metric]['time'] = time\n  return counter_val / (time - prev_time)\n}\n\nfunction get_target_type_value(target_type_property, record) {\n\n  if (TARGET_TYPES.indexOf(target_type_property) < 0) {\n    if (TARGET_TYPES.indexOf(record[target_type_property]) < 0) {\n      throw 'Target type property ' + target_type_property + ' should be counter, gauge or running_counter'\n    }\n    return record[target_type_property]\n  } \n  return target_type_property\n}\n\nfor(var i = 0; i < records.length; i++) {\n  try {\n\n    // Create a new record with map field \n    var properties = {}\n    for (var j = 0; j < state['DIMENSIONS'].length; j++) {\n      if (records[i].value[state['DIMENSIONS'][j]] !== null && records[i].value[state['DIMENSIONS'][j]] !== '') {\n        properties[state['DIMENSIONS_NAMES'][j].replace(/[\\. \\/]+/g, '_')] = String(records[i].value[state['DIMENSIONS'][j]]).replace(/[\\. ]+/g, '_')\n      }\n    }\n    \n    for (var j = 0; j < state['VALUES_COLUMNS'].length; j++) {\n      var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + i);\n      if (state['STATIC_WHAT']) {\n        properties['what'] = state['MEASUREMENT_NAMES'][j].replace(/[\\. ]+/g, '_');\n        properties['target_type'] = state['TARGET_TYPES'][j];\n      } else {\n        meas_name = records[i].value[state['MEASUREMENT_NAMES'][j]]\n        if (typeof meas_name !== 'string') {\n          throw state['MEASUREMENT_NAMES'][j] + ' property should be string instead of ' + (typeof meas_name)\n        }\n        properties['what'] = meas_name.replace(/[\\. ]+/g, '_');\n        properties['target_type'] = get_target_type_value(state['TARGET_TYPES'][j], records[i].value);\n\t  }\n      \n      value = records[i].value[state['VALUES_COLUMNS'][j]]\n      if (properties['target_type'] == 'running_counter') {\n        properties['target_type'] = 'gauge';\n        value = get_running_counter_value(properties, value, records[i].value[state['TIMESTAMP_COLUMN']]);\n        \n      }\n      if (value === null) {\n        continue;\n      }\n      newRecord.value = {'timestamp' : records[i].value[state['TIMESTAMP_COLUMN']],\n                         'properties' : properties,\n                         'value': value};\n      output.write(newRecord);\n    }\n    if (state['COUNT_RECORDS']) {\n      if (records[i].value[state['TIMESTAMP_COLUMN']] === null) {\n        continue;\n      }\n      var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + i);\n      properties['what'] = state['COUNT_RECORDS_MEASUREMENT_NAME'];\n      properties['target_type'] = 'counter';\n      newRecord.value = {'timestamp' : records[i].value[state['TIMESTAMP_COLUMN']],\n                         'properties' : properties,\n                         'value': 1};\n      output.write(newRecord);\n    }\n\n    // output.write(records[i]);\n  } catch (e) {\n    // Send record to error\n    error.write(records[i], e);\n  }\n}"
+        "value" : "for (var i = 0; i < records.length; i++) {\n    var dimensions = {};\n    for (var j = 0; j < state['DIMENSIONS'].length; j++) {\n        var dimension = records[i].value[state['DIMENSIONS'][j]]\n        var dimension_name = state['DIMENSIONS_NAMES'][j].replace(/[\\. \\/]+/g, '_')\n        if (dimension !== null && dimension !== '') {\n            dimensions[dimension_name] = String(dimension).replace(/[\\. ]+/g, '_')\n        }\n    }\n\n    try {\n        if (records[i].value[state['TIMESTAMP_COLUMN']] === null) {\n            continue;\n        }\n        var measurements = {}\n        for (var j = 0; j < state['VALUES_COLUMNS'].length; j++) {\n            var value = parseFloat(records[i].value[state['VALUES_COLUMNS'][j]]);\n            if (isNaN(value)) {\n              continue;\n            }\n            var measurement = '';\n            if (state['STATIC_WHAT']) {\n                measurement = state['MEASUREMENT_NAMES'][j].replace(/[\\. ]+/g, '_');\n            } else {\n                var meas_name = records[i].value[state['MEASUREMENT_NAMES'][j]]\n                if (typeof meas_name !== 'string') {\n                    throw state['MEASUREMENT_NAMES'][j] + ' property should be string instead of ' + (typeof meas_name)\n                }\n                measurement = meas_name.replace(/[\\. ]+/g, '_');\n            }\n            measurements[measurement] = value;\n        }\n        if (state['COUNT_RECORDS']) {\n            if (records[i].value[state['TIMESTAMP_COLUMN']] !== null) {\n                measurements[state['COUNT_RECORDS_MEASUREMENT_NAME']] = 1;\n            }\n        }\n        var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + i);\n        newRecord.value = {\n             'timestamp': records[i].value[state['TIMESTAMP_COLUMN']],\n             'dimensions': dimensions,\n             'measurements': measurements,\n             'schemaId': \"${SCHEMA_ID}\"\n         };\n         output.write(newRecord);\n    } catch (e) {\n        error.write(records[i], e);\n    }\n}\n\n// get latest batch timestamp\nfor (var i = records.length - 1; i >= 0; i--) {\n  timestamp = records[i].value[state['TIMESTAMP_COLUMN']]\n  if (timestamp !== null) {\n    event = sdc.createEvent('interval processed', 1);\n    event.value = {\n      'watermark': timestamp / 1000,\n    };\n    sdc.toEvent(event);\n    break;\n  }\n}"
       }, {
         "name" : "destroyScript",
-        "value" : "/**\n * Available Objects:\n * \n *  state: a dict that is preserved between invocations of this script. \n *        Useful for caching bits of data e.g. counters and long-lived resources.\n *\n *  log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n *                               loglevel is any log4j level: e.g. info, error, warn, trace.\n *   sdcFunctions.getFieldNull(Record, 'field path'): Receive a constant defined above \n *                          to check if the field is typed field with value null\n *   sdcFunctions.createMap(boolean listMap): Create a map for use as a field in a record. \n *                          Pass true to this function to create a list map (ordered map)\n *   sdcFunctions.createEvent(String type, int version): Creates a new event.\n *                          Create new empty event with standard headers.\n *   sdcFunctions.toEvent(Record): Send event to event stream\n *                          Only events created with sdcFunctions.createEvent are supported.\n */\n\n// state['connection'].close();"
+        "value" : ""
       }, {
         "name" : "stageOnRecordError",
         "value" : "TO_ERROR"
@@ -518,13 +533,13 @@
       "uiInfo" : {
         "description" : "",
         "label" : "JavaScript Evaluator 1",
-        "xPos" : 870.213134765625,
-        "yPos" : 145,
+        "xPos" : 872.213134765625,
+        "yPos" : 146,
         "stageType" : "PROCESSOR"
       },
       "inputLanes" : [ "JDBCLookup_01OutputLane16056312277720" ],
       "outputLanes" : [ "JavaScriptEvaluator_01OutputLane15631799146000" ],
-      "eventLanes" : [ ],
+      "eventLanes" : [ "JavaScriptEvaluator_01_EventLane" ],
       "services" : [ ]
     }, {
       "instanceName" : "ExpressionEvaluator_02",
@@ -558,8 +573,8 @@
       "uiInfo" : {
         "description" : "",
         "label" : "Convert timestamp to long",
-        "xPos" : 1092.44970703125,
-        "yPos" : 144.4492950439453,
+        "xPos" : 1077.44970703125,
+        "yPos" : 147.4492950439453,
         "stageType" : "PROCESSOR"
       },
       "inputLanes" : [ "JavaScriptEvaluator_01OutputLane15631799146000" ],
@@ -623,8 +638,8 @@
       "uiInfo" : {
         "description" : "Convert value to float and timestamp to int",
         "label" : "Convert value and timestamp",
-        "xPos" : 1296.6387939453125,
-        "yPos" : 144.55711364746094,
+        "xPos" : 1275.6387939453125,
+        "yPos" : 148.55711364746094,
         "stageType" : "PROCESSOR"
       },
       "inputLanes" : [ "ExpressionEvaluator_02OutputLane15480856372920" ],
@@ -934,11 +949,397 @@
       "uiInfo" : {
         "description" : "",
         "label" : "HTTP Client 1",
-        "xPos" : 1497.213134765625,
-        "yPos" : 142.5673370361328,
+        "xPos" : 1473.213134765625,
+        "yPos" : 149.5673370361328,
         "stageType" : "TARGET"
       },
       "inputLanes" : [ "destination_OutputLane" ],
+      "outputLanes" : [ ],
+      "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
+      "instanceName" : "ExpressionEvaluator_03",
+      "library" : "streamsets-datacollector-basic-lib",
+      "stageName" : "com_streamsets_pipeline_stage_processor_expression_ExpressionDProcessor",
+      "stageVersion" : "2",
+      "configuration" : [ {
+        "name" : "expressionProcessorConfigs",
+        "value" : [ {
+          "fieldToSet" : "/schemaId",
+          "expression" : "${SCHEMA_ID}"
+        } ]
+      }, {
+        "name" : "headerAttributeConfigs",
+        "value" : [ { } ]
+      }, {
+        "name" : "fieldAttributeConfigs",
+        "value" : [ {
+          "fieldToSet" : "/"
+        } ]
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "yPos" : 266.69508361816406,
+        "stageType" : "PROCESSOR",
+        "icon" : "expression.png",
+        "description" : "",
+        "label" : "Expression Evaluator 1",
+        "xPos" : 1082.1574096679688
+      },
+      "inputLanes" : [ "JavaScriptEvaluator_01_EventLane" ],
+      "outputLanes" : [ "ExpressionEvaluator_03OutputLane16107257160010" ],
+      "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
+      "instanceName" : "FieldRemover_01",
+      "library" : "streamsets-datacollector-basic-lib",
+      "stageName" : "com_streamsets_pipeline_stage_processor_fieldfilter_FieldFilterDProcessor",
+      "stageVersion" : "1",
+      "configuration" : [ {
+        "name" : "filterOperation",
+        "value" : "KEEP"
+      }, {
+        "name" : "fields",
+        "value" : [ "/watermark", "/schemaId" ]
+      }, {
+        "name" : "constant",
+        "value" : null
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "yPos" : 267.69508361816406,
+        "stageType" : "PROCESSOR",
+        "icon" : "filter.png",
+        "description" : "",
+        "label" : "Field Remover 1",
+        "xPos" : 1282.1574096679688
+      },
+      "inputLanes" : [ "ExpressionEvaluator_03OutputLane16107257160010" ],
+      "outputLanes" : [ "FieldRemover_01OutputLane16107187580290" ],
+      "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
+      "instanceName" : "AnodotDestination_01",
+      "library" : "anodot",
+      "stageName" : "anodot_stage_destination_AnodotDTarget",
+      "stageVersion" : "1",
+      "configuration" : [ {
+        "name" : "conf.resourceUrl",
+        "value" : "${ANODOT_BASE_URL}/api/v1/metrics/watermark?token=${TOKEN}&protocol=${PROTOCOL}"
+      }, {
+        "name" : "conf.dataFormat",
+        "value" : "JSON"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.charset",
+        "value" : "UTF-8"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.csvFileFormat",
+        "value" : "CSV"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.csvHeader",
+        "value" : "NO_HEADER"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.csvReplaceNewLines",
+        "value" : true
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.csvReplaceNewLinesString",
+        "value" : " "
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.csvCustomDelimiter",
+        "value" : "|"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.csvCustomEscape",
+        "value" : "\\"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.csvCustomQuote",
+        "value" : "\""
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.csvQuoteMode",
+        "value" : "MINIMAL"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.jsonMode",
+        "value" : "MULTIPLE_OBJECTS"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.textFieldPath",
+        "value" : "/text"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.textRecordSeparator",
+        "value" : "\\n"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.textFieldMissingAction",
+        "value" : "ERROR"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.textEmptyLineIfNull",
+        "value" : false
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.avroSchemaSource",
+        "value" : null
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.avroSchema",
+        "value" : null
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.registerSchema",
+        "value" : false
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.schemaRegistryUrlsForRegistration",
+        "value" : [ ]
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.schemaRegistryUrls",
+        "value" : [ ]
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.basicAuthUserInfo",
+        "value" : ""
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.schemaLookupMode",
+        "value" : "SUBJECT"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.subject",
+        "value" : null
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.subjectToRegister",
+        "value" : null
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.basicAuthUserInfoForRegistration",
+        "value" : ""
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.schemaId",
+        "value" : null
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.includeSchema",
+        "value" : true
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.avroCompression",
+        "value" : "NULL"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.binaryFieldPath",
+        "value" : "/"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.protoDescriptorFile",
+        "value" : null
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.messageType",
+        "value" : null
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.fileNameEL",
+        "value" : null
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.wholeFileExistsAction",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.includeChecksumInTheEvents",
+        "value" : false
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.checksumAlgorithm",
+        "value" : "MD5"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.xmlPrettyPrint",
+        "value" : true
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.xmlValidateSchema",
+        "value" : false
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.xmlSchema",
+        "value" : null
+      }, {
+        "name" : "conf.client.transferEncoding",
+        "value" : "BUFFERED"
+      }, {
+        "name" : "conf.client.httpCompression",
+        "value" : "NONE"
+      }, {
+        "name" : "conf.client.connectTimeoutMillis",
+        "value" : 0
+      }, {
+        "name" : "conf.client.readTimeoutMillis",
+        "value" : 0
+      }, {
+        "name" : "conf.client.numThreads",
+        "value" : 1
+      }, {
+        "name" : "conf.client.authType",
+        "value" : "NONE"
+      }, {
+        "name" : "conf.client.useOAuth2",
+        "value" : false
+      }, {
+        "name" : "conf.client.oauth.consumerKey",
+        "value" : ""
+      }, {
+        "name" : "conf.client.oauth.consumerSecret",
+        "value" : ""
+      }, {
+        "name" : "conf.client.oauth.token",
+        "value" : ""
+      }, {
+        "name" : "conf.client.oauth.tokenSecret",
+        "value" : ""
+      }, {
+        "name" : "conf.client.oauth2.credentialsGrantType",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth2.tokenUrl",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth2.clientId",
+        "value" : ""
+      }, {
+        "name" : "conf.client.oauth2.clientSecret",
+        "value" : ""
+      }, {
+        "name" : "conf.client.oauth2.username",
+        "value" : ""
+      }, {
+        "name" : "conf.client.oauth2.password",
+        "value" : ""
+      }, {
+        "name" : "conf.client.oauth2.resourceOwnerClientId",
+        "value" : ""
+      }, {
+        "name" : "conf.client.oauth2.resourceOwnerClientSecret",
+        "value" : ""
+      }, {
+        "name" : "conf.client.oauth2.algorithm",
+        "value" : "NONE"
+      }, {
+        "name" : "conf.client.oauth2.key",
+        "value" : ""
+      }, {
+        "name" : "conf.client.oauth2.jwtClaims",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth2.transferEncoding",
+        "value" : "BUFFERED"
+      }, {
+        "name" : "conf.client.oauth2.additionalValues",
+        "value" : [ { } ]
+      }, {
+        "name" : "conf.client.basicAuth.username",
+        "value" : ""
+      }, {
+        "name" : "conf.client.basicAuth.password",
+        "value" : ""
+      }, {
+        "name" : "conf.client.useProxy",
+        "value" : false
+      }, {
+        "name" : "conf.client.proxy.uri",
+        "value" : null
+      }, {
+        "name" : "conf.client.proxy.username",
+        "value" : ""
+      }, {
+        "name" : "conf.client.proxy.password",
+        "value" : ""
+      }, {
+        "name" : "conf.client.tlsConfig.tlsEnabled",
+        "value" : false
+      }, {
+        "name" : "conf.client.tlsConfig.keyStoreFilePath",
+        "value" : null
+      }, {
+        "name" : "conf.client.tlsConfig.keyStoreType",
+        "value" : "JKS"
+      }, {
+        "name" : "conf.client.tlsConfig.keyStorePassword",
+        "value" : ""
+      }, {
+        "name" : "conf.client.tlsConfig.keyStoreAlgorithm",
+        "value" : "SunX509"
+      }, {
+        "name" : "conf.client.tlsConfig.trustStoreFilePath",
+        "value" : null
+      }, {
+        "name" : "conf.client.tlsConfig.trustStoreType",
+        "value" : "JKS"
+      }, {
+        "name" : "conf.client.tlsConfig.trustStorePassword",
+        "value" : ""
+      }, {
+        "name" : "conf.client.tlsConfig.trustStoreAlgorithm",
+        "value" : "SunX509"
+      }, {
+        "name" : "conf.client.tlsConfig.useDefaultProtocols",
+        "value" : true
+      }, {
+        "name" : "conf.client.tlsConfig.protocols",
+        "value" : [ ]
+      }, {
+        "name" : "conf.client.tlsConfig.useDefaultCiperSuites",
+        "value" : true
+      }, {
+        "name" : "conf.client.tlsConfig.cipherSuites",
+        "value" : [ ]
+      }, {
+        "name" : "conf.client.requestLoggingConfig.enableRequestLogging",
+        "value" : false
+      }, {
+        "name" : "conf.client.requestLoggingConfig.logLevel",
+        "value" : "FINE"
+      }, {
+        "name" : "conf.client.requestLoggingConfig.verbosity",
+        "value" : "HEADERS_ONLY"
+      }, {
+        "name" : "conf.client.requestLoggingConfig.maxEntitySize",
+        "value" : 0
+      }, {
+        "name" : "conf.headers",
+        "value" : [ ]
+      }, {
+        "name" : "conf.httpMethod",
+        "value" : "POST"
+      }, {
+        "name" : "conf.methodExpression",
+        "value" : null
+      }, {
+        "name" : "conf.singleRequestPerBatch",
+        "value" : true
+      }, {
+        "name" : "conf.rateLimit",
+        "value" : 0
+      }, {
+        "name" : "conf.maxRequestCompletionSecs",
+        "value" : 60
+      }, {
+        "name" : "conf.responseConf.sendResponseToOrigin",
+        "value" : false
+      }, {
+        "name" : "conf.responseConf.responseType",
+        "value" : "SUCCESS_RECORDS"
+      }, {
+        "name" : "conf.agentOffsetUrl",
+        "value" : null
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "yPos" : 269.69508361816406,
+        "stageType" : "TARGET",
+        "icon" : "anodot_logo.png",
+        "description" : "",
+        "label" : "Anodot Destination Watermark",
+        "xPos" : 1473.1574096679688
+      },
+      "inputLanes" : [ "FieldRemover_01OutputLane16107187580290" ],
       "outputLanes" : [ ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -1300,43 +1701,11 @@
     },
     "valid" : false,
     "issues" : {
-      "pipelineIssues" : [ {
-        "instanceName" : null,
-        "serviceName" : null,
-        "level" : "PIPELINE_CONFIG",
-        "configGroup" : "",
-        "configName" : "webhookUrl",
-        "message" : "CREATION_005 - Could not resolve implicit EL expression '${AGENT_URL}/pipeline-status-change': com.streamsets.pipeline.api.el.ELEvalException: CTRCMN_0100 - Error evaluating expression ${AGENT_URL}/pipeline-status-change: javax.servlet.jsp.el.ELException: Constants/Variable 'AGENT_URL' cannot be resolved",
-        "count" : 1,
-        "additionalInfo" : null,
-        "antennaDoctorMessages" : null
-      } ],
-      "stageIssues" : {
-        "JDBCLookup_01" : [ {
-          "instanceName" : "JDBCLookup_01",
-          "serviceName" : null,
-          "level" : "STAGE_CONFIG",
-          "configGroup" : "JDBC",
-          "configName" : "query",
-          "message" : "VALIDATION_0007 - Configuration value is required",
-          "count" : 1,
-          "additionalInfo" : null,
-          "antennaDoctorMessages" : null
-        }, {
-          "instanceName" : "JDBCLookup_01",
-          "serviceName" : null,
-          "level" : "STAGE_CONFIG",
-          "configGroup" : "JDBC",
-          "configName" : "hikariConfigBean.connectionString",
-          "message" : "VALIDATION_0007 - Configuration value is required",
-          "count" : 1,
-          "additionalInfo" : null,
-          "antennaDoctorMessages" : null
-        } ]
-      },
-      "issueCount" : 3
+      "pipelineIssues" : [ ],
+      "stageIssues" : { },
+      "issueCount" : 0
     },
-    "previewable" : false
+    "previewable" : true
   },
   "pipelineRules" : {
     "schemaVersion" : 3,
