@@ -4,7 +4,6 @@ import os
 
 from agent.modules import logger, db
 from agent import source, pipeline, destination, streamsets
-from agent.modules.constants import MONITORING_SOURCE_NAME
 
 logger_ = logger.get_logger('scripts.migrate-to-db.run', stdout=True)
 
@@ -38,11 +37,6 @@ def migrate_destination(data_dir):
 
 
 def migrate_sources(data_dir):
-    if not source.repository.exists(MONITORING_SOURCE_NAME):
-        source.repository.save(source.Source(MONITORING_SOURCE_NAME, source.TYPE_MONITORING, {}))
-        logger_.info('Created monitoring source')
-    else:
-        logger_.info('Monitoring source already exists')
     try:
         source_dir = os.path.join(data_dir, 'sources')
         for filename in os.listdir(source_dir):

@@ -1,7 +1,7 @@
 import pytest
 
-from agent import cli, streamsets
-from agent import destination, pipeline
+from agent import cli
+from agent import destination
 
 
 @pytest.fixture(autouse=True)
@@ -16,9 +16,6 @@ def test_destination(cli_runner):
                                input='y\nhttp://squid:3128\n\n\nhttp://dummy_destination\ncorrect_token\ncorrect_key\n')
     assert result.exit_code == 0
     assert destination.repository.exists()
-    for streamsets_ in streamsets.repository.get_all():
-        status = streamsets.manager.get_pipeline_status_by_id(pipeline.manager.get_monitoring_name(streamsets_))
-        assert status == 'RUNNING'
 
 
 def test_edit_destination(cli_runner):
@@ -29,9 +26,6 @@ def test_edit_destination(cli_runner):
     curr_dest = destination.repository.get()
     assert result.exit_code == 0
     assert curr_dest.host_id == prev_dest_host_id
-    for streamsets_ in streamsets.repository.get_all():
-        status = streamsets.manager.get_pipeline_status_by_id(pipeline.manager.get_monitoring_name(streamsets_))
-        assert status == 'RUNNING'
 
 
 def test_update(cli_runner):

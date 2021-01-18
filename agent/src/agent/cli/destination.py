@@ -46,14 +46,6 @@ def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, a
             agent.destination.repository.save(destination_)
 
         click.secho('Connection to Anodot established')
-        try:
-            if pipeline.repository.monitoring_exists():
-                click.secho('Updating Monitoring pipelines...')
-                pipeline.manager.update_monitoring_pipelines()
-            else:
-                pipeline.manager.create_monitoring_pipelines()
-        except pipeline.pipeline.PipelineException as e:
-            raise click.ClickException(str(e))
     click.secho('Destination configured', fg='green')
 
 
@@ -104,7 +96,7 @@ def _prompt_url(dest: HttpDestination):
 def _prompt_token(dest: HttpDestination):
     token = click.prompt('Anodot api data collection token', type=click.STRING, default=dest.token)
     dest.token = token
-    if not agent.destination.validator.is_valid_resource_url(dest.resource_url):
+    if not agent.destination.validator.is_valid_resource_url(dest.metrics_url):
         raise click.ClickException('Data collection token is invalid')
 
 

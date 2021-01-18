@@ -11,13 +11,10 @@ from agent.pipeline.config import schema
 from agent.pipeline.config.validators import get_config_validator
 from agent.pipeline import load_client_data, Pipeline, TestPipeline
 from agent.destination import anodot_api_client
-from agent.modules.constants import MONITORING_SOURCE_NAME
 from agent.modules.tools import print_json, sdc_record_map_to_dict
 from agent.modules.logger import get_logger
 from typing import List
 from agent.source import Source
-from agent.streamsets import StreamSets
-from copy import deepcopy
 
 
 logger_ = get_logger(__name__, stdout=True)
@@ -63,7 +60,6 @@ def show_preview(pipeline_: Pipeline):
 
 def get_file_loader(source_type: str):
     loaders = {
-        source.TYPE_MONITORING: load_client_data.LoadClientData,
         source.TYPE_INFLUX: load_client_data.InfluxLoadClientData,
         source.TYPE_MONGO: load_client_data.MongoLoadClientData,
         source.TYPE_KAFKA: load_client_data.KafkaLoadClientData,
@@ -304,33 +300,6 @@ def _generate_random_string(size: int = 6):
     return ''.join(random.SystemRandom().choice(string.ascii_lowercase + string.digits) for _ in range(size))
 
 
-def create_monitoring_pipelines():
-    if not source.repository.exists(MONITORING_SOURCE_NAME):
-        source.repository.save(Source(MONITORING_SOURCE_NAME, source.TYPE_MONITORING, {}))
-    for streamsets_ in streamsets.manager.get_streamsets_without_monitoring():
-        pipeline_ = create_object(get_monitoring_name(streamsets_), MONITORING_SOURCE_NAME)
-        pipeline_.set_streamsets(streamsets_)
-        streamsets.manager.create(pipeline_)
-        pipeline.repository.save(pipeline_)
-        streamsets.manager.start(pipeline_)
-
-
-def update_monitoring_pipelines():
-    for streamsets_ in streamsets.repository.get_all():
-        streamsets.manager.update(
-            pipeline.repository.get_by_name(get_monitoring_name(streamsets_))
-        )
-
-
-def delete_all_monitoring_pipelines():
-    for streamsets_ in streamsets.repository.get_all():
-        delete_monitoring_pipeline(streamsets_)
-
-
-def delete_monitoring_pipeline(streamsets_: StreamSets):
-    pipeline.manager.delete_by_name(get_monitoring_name(streamsets_))
-
-
 def transform_for_bc(pipeline_: Pipeline) -> dict:
     data = {
         'pipeline_id': pipeline_.name,
@@ -355,14 +324,6 @@ def transform_for_bc(pipeline_: Pipeline) -> dict:
     data['config'].pop('interval', 0)
     data['config'].pop('delay', 0)
     return data
-
-
-def is_monitoring(pipeline_: Pipeline) -> bool:
-    return pipeline_.name.startswith(pipeline.MONITORING)
-
-
-def get_monitoring_name(streamsets_: StreamSets):
-    return f'{pipeline.MONITORING}_{streamsets_.id}'
 
 
 def get_sample_records(pipeline_: Pipeline) -> (list, list):

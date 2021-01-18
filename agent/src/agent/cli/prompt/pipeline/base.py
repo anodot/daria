@@ -162,7 +162,6 @@ class PromptConfig:
 
 def get_prompter(pipeline_: Pipeline) -> PromptConfig:
     prompters = {
-        source.TYPE_MONITORING: prompt.pipeline.PromptConfig,
         source.TYPE_INFLUX: prompt.pipeline.PromptConfigInflux,
         source.TYPE_KAFKA: prompt.pipeline.PromptConfigKafka,
         source.TYPE_MONGO: prompt.pipeline.PromptConfigMongo,

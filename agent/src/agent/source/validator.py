@@ -250,17 +250,6 @@ class DirectoryValidator(SchemalessValidator):
     VALIDATION_SCHEMA_FILE = 'directory.json'
 
 
-class MonitoringValidator(Validator):
-    def validate(self):
-        pass
-
-    def validate_json(self):
-        pass
-
-    def validate_connection(self):
-        pass
-
-
 class ValidationException(Exception):
     pass
 
@@ -276,7 +265,6 @@ def get_validator(source_: Source) -> Validator:
         source.TYPE_SPLUNK: SplunkValidator,
         source.TYPE_DIRECTORY: DirectoryValidator,
         source.TYPE_SAGE: SageValidator,
-        source.TYPE_MONITORING: MonitoringValidator,
         source.TYPE_VICTORIA: VictoriaMetricsValidator,
     }
     return types[source_.type](source_)
