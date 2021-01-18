@@ -398,7 +398,7 @@ class StreamsetsBalancer:
         return key
 
 
-def get_sdc_config_handler(pipeline_: Pipeline, is_preview=False) -> streamsets.config_handlers.base.BaseConfigHandler:
+def get_sdc_config_handler(pipeline_: Pipeline) -> streamsets.config_handlers.base.BaseConfigHandler:
     handlers = {
         source.TYPE_INFLUX: streamsets.config_handlers.influx.InfluxConfigHandler,
         source.TYPE_MONGO: streamsets.config_handlers.mongo.MongoConfigHandler,
@@ -411,7 +411,7 @@ def get_sdc_config_handler(pipeline_: Pipeline, is_preview=False) -> streamsets.
         source.TYPE_SAGE: streamsets.config_handlers.sage.SageConfigHandler,
         source.TYPE_VICTORIA: streamsets.config_handlers.victoria.VictoriaConfigHandler,
     }
-    return handlers[pipeline_.source.type](pipeline_, is_preview)
+    return handlers[pipeline_.source.type](pipeline_)
 
 
 class StreamsetsException(Exception):
