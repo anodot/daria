@@ -1,13 +1,15 @@
 [
   {
     "timestamp": 1512864000,
-    "properties": {
+    "dimensions": {
       "adsize": "Sma_ll",
-      "country": "USA",
-      "what": "clicks",
-      "target_type": "gauge"
+      "country": "USA"
     },
-    "value": 6784.69,
+    "measurements": {
+      "clicks": 6784.69,
+      "impressions": 123
+    },
+    "schemaId": "111111-22222-3333-4444",
     "tags": {
       "source": [
         "anodot-agent"
@@ -19,34 +21,7 @@
         "agent"
       ],
       "pipeline_id": [
-        "test_mysql_timestamp_datetime"
-      ],
-      "pipeline_type": [
-        "mysql"
-      ]
-    }
-  },
-  {
-    "timestamp": 1512864000,
-    "properties": {
-      "adsize": "Sma_ll",
-      "country": "USA",
-      "what": "impressions",
-      "target_type": "gauge"
-    },
-    "value": 123.0,
-    "tags": {
-      "source": [
-        "anodot-agent"
-      ],
-      "source_host_id": [
-        "ABCDEF"
-      ],
-      "source_host_name": [
-        "agent"
-      ],
-      "pipeline_id": [
-        "test_mysql_timestamp_datetime"
+        "test_mysql_timezone_datetime"
       ],
       "pipeline_type": [
         "mysql"
@@ -55,13 +30,15 @@
   },
   {
     "timestamp": 1512867600,
-    "properties": {
+    "dimensions": {
       "adsize": "Sma_ll",
-      "country": "USA",
-      "what": "clicks",
-      "target_type": "gauge"
+      "country": "USA"
     },
-    "value": 6839.0,
+    "measurements": {
+      "clicks": 6839.0,
+      "impressions": 22
+    },
+    "schemaId": "111111-22222-3333-4444",
     "tags": {
       "source": [
         "anodot-agent"
@@ -73,34 +50,7 @@
         "agent"
       ],
       "pipeline_id": [
-        "test_mysql_timestamp_datetime"
-      ],
-      "pipeline_type": [
-        "mysql"
-      ]
-    }
-  },
-  {
-    "timestamp": 1512867600,
-    "properties": {
-      "adsize": "Sma_ll",
-      "country": "USA",
-      "what": "impressions",
-      "target_type": "gauge"
-    },
-    "value": 22.0,
-    "tags": {
-      "source": [
-        "anodot-agent"
-      ],
-      "source_host_id": [
-        "ABCDEF"
-      ],
-      "source_host_name": [
-        "agent"
-      ],
-      "pipeline_id": [
-        "test_mysql_timestamp_datetime"
+        "test_mysql_timezone_datetime"
       ],
       "pipeline_type": [
         "mysql"
@@ -109,13 +59,15 @@
   },
   {
     "timestamp": 1512871200,
-    "properties": {
+    "dimensions": {
       "adsize": "Sma_ll",
-      "country": "USA",
-      "what": "clicks",
-      "target_type": "gauge"
+      "country": "USA"
     },
-    "value": 690999.0,
+    "measurements": {
+      "clicks": 690999.0,
+      "impressions": 15
+    },
+    "schemaId": "111111-22222-3333-4444",
     "tags": {
       "source": [
         "anodot-agent"
@@ -127,34 +79,7 @@
         "agent"
       ],
       "pipeline_id": [
-        "test_mysql_timestamp_datetime"
-      ],
-      "pipeline_type": [
-        "mysql"
-      ]
-    }
-  },
-  {
-    "timestamp": 1512871200,
-    "properties": {
-      "adsize": "Sma_ll",
-      "country": "USA",
-      "what": "impressions",
-      "target_type": "gauge"
-    },
-    "value": 15.0,
-    "tags": {
-      "source": [
-        "anodot-agent"
-      ],
-      "source_host_id": [
-        "ABCDEF"
-      ],
-      "source_host_name": [
-        "agent"
-      ],
-      "pipeline_id": [
-        "test_mysql_timestamp_datetime"
+        "test_mysql_timezone_datetime"
       ],
       "pipeline_type": [
         "mysql"
@@ -163,13 +88,15 @@
   },
   {
     "timestamp": 1512874800,
-    "properties": {
+    "dimensions": {
       "adsize": "Sma_ll",
-      "country": "USA",
-      "what": "clicks",
-      "target_type": "gauge"
+      "country": "USA"
     },
-    "value": 7158.97,
+    "measurements": {
+      "clicks": 7158.97,
+      "impressions": 3
+    },
+    "schemaId": "111111-22222-3333-4444",
     "tags": {
       "source": [
         "anodot-agent"
@@ -181,34 +108,7 @@
         "agent"
       ],
       "pipeline_id": [
-        "test_mysql_timestamp_datetime"
-      ],
-      "pipeline_type": [
-        "mysql"
-      ]
-    }
-  },
-  {
-    "timestamp": 1512874800,
-    "properties": {
-      "adsize": "Sma_ll",
-      "country": "USA",
-      "what": "impressions",
-      "target_type": "gauge"
-    },
-    "value": 3.0,
-    "tags": {
-      "source": [
-        "anodot-agent"
-      ],
-      "source_host_id": [
-        "ABCDEF"
-      ],
-      "source_host_name": [
-        "agent"
-      ],
-      "pipeline_id": [
-        "test_mysql_timestamp_datetime"
+        "test_mysql_timezone_datetime"
       ],
       "pipeline_type": [
         "mysql"
@@ -217,13 +117,15 @@
   },
   {
     "timestamp": 1512882000,
-    "properties": {
+    "dimensions": {
       "adsize": "Sma_ll",
-      "country": "USA",
-      "what": "impressions",
-      "target_type": "gauge"
+      "country": "USA"
     },
-    "value": 4.0,
+    "measurements": {
+      "clicks": null,
+      "impressions": 4
+    },
+    "schemaId": "111111-22222-3333-4444",
     "tags": {
       "source": [
         "anodot-agent"
@@ -235,7 +137,7 @@
         "agent"
       ],
       "pipeline_id": [
-        "test_mysql_timestamp_datetime"
+        "test_mysql_timezone_datetime"
       ],
       "pipeline_type": [
         "mysql"
@@ -244,12 +146,14 @@
   },
   {
     "timestamp": 1512885600,
-    "properties": {
-      "adsize": "Sma_ll",
-      "what": "clicks",
-      "target_type": "gauge"
+    "dimensions": {
+      "adsize": "Sma_ll"
     },
-    "value": 7427.77,
+    "measurements": {
+      "clicks": 7427.77,
+      "impressions": 0
+    },
+    "schemaId": "111111-22222-3333-4444",
     "tags": {
       "source": [
         "anodot-agent"
@@ -261,33 +165,7 @@
         "agent"
       ],
       "pipeline_id": [
-        "test_mysql_timestamp_datetime"
-      ],
-      "pipeline_type": [
-        "mysql"
-      ]
-    }
-  },
-  {
-    "timestamp": 1512885600,
-    "properties": {
-      "adsize": "Sma_ll",
-      "what": "impressions",
-      "target_type": "gauge"
-    },
-    "value": 0.0,
-    "tags": {
-      "source": [
-        "anodot-agent"
-      ],
-      "source_host_id": [
-        "ABCDEF"
-      ],
-      "source_host_name": [
-        "agent"
-      ],
-      "pipeline_id": [
-        "test_mysql_timestamp_datetime"
+        "test_mysql_timezone_datetime"
       ],
       "pipeline_type": [
         "mysql"

@@ -1,22 +1,19 @@
 {
   "version": "1",
-  "name": "test_mysql_advanced",
+  "name": "test_dir_csv",
   "dimensions": [
-    "adsize",
-    "country",
-    "key1",
-    "key2"
+    "ver",
+    "Country",
+    "Exchange",
+    "optional_dim",
+    "version"
   ],
   "measurements": {
     "clicks": {
       "aggregation": "average",
       "countBy": "none"
     },
-    "impressions": {
-      "aggregation": "average",
-      "countBy": "none"
-    },
-    "test": {
+    "count_records": {
       "aggregation": "sum",
       "countBy": "none"
     }

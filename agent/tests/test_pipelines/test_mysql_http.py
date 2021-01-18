@@ -3,6 +3,9 @@ import pytest
 from .test_zpipeline_base import TestPipelineBase
 
 
+# todo test schema
+# todo why clicks so precise?
+# todo is it ok that it used to be tags: {pipeline_id: pipeline_id} and now tags: {pipeline_id: test_mysql_advanced}
 class TestMySQL(TestPipelineBase):
     __test__ = True
     params = {

@@ -144,6 +144,7 @@ bootstrap: clean-docker-volumes run-base-services test-streamsets test-destinati
 clean-docker-volumes:
 	rm -rf sdc-data
 	rm -rf sdc-data2
+	rm agent/output/*
 	$(DOCKER_COMPOSE_DEV) down -v
 
 run-base-services: _run-base-services nap
