@@ -1,6 +1,5 @@
 from agent import source, pipeline
 from agent.modules import tools
-from agent.modules.tools import if_validation_enabled
 from agent.pipeline import Pipeline
 
 
@@ -9,7 +8,6 @@ def print_sample_data(pipeline_: Pipeline):
 
 
 class Preview:
-    @tools.if_validation_enabled
     def print_sample_data(self, pipeline_: Pipeline):
         records, errors = pipeline.manager.get_sample_records(pipeline_)
         if not records and not errors:
@@ -41,7 +39,6 @@ class InfluxPreview(Preview):
 
 
 class SchemalessPreview(Preview):
-    @if_validation_enabled
     def print_sample_data(self, pipeline_: Pipeline):
         records, errors = pipeline.manager.get_sample_records(pipeline_)
         if records:

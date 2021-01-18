@@ -59,10 +59,9 @@ class TestPipelineBaseConfigLoader(BaseConfigLoader):
 class BaseConfigHandler:
     stages_to_override = {}
 
-    def __init__(self, pipeline: Pipeline, is_preview=False):
+    def __init__(self, pipeline: Pipeline):
         self.config = {}
         self.pipeline = pipeline
-        self.is_preview = is_preview
 
     def override_base_config(self, base_config, new_uuid=None, new_title=None):
         self.config = base_config

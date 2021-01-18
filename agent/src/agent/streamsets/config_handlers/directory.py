@@ -19,8 +19,7 @@ class DirectoryConfigHandler(BaseConfigHandler):
     }
 
     def _get_pipeline_config(self) -> dict:
-        # todo improve?
-        if not self.is_preview and not isinstance(self.pipeline, pipeline.TestPipeline):
+        if isinstance(self.pipeline, pipeline.TestPipeline):
             schema_definition = schema.update(self.pipeline)
             self.pipeline.schema = schema_definition
             schema_id = schema_definition['id']
