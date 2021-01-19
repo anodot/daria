@@ -1,6 +1,6 @@
 import pytest
 
-from .test_zpipeline_base import TestPipelineBase, get_expected_output, get_schema_id
+from .test_zpipeline_base import TestPipelineBase, get_schema_id, get_expected_schema_output
 from ..conftest import get_output
 
 
@@ -50,12 +50,10 @@ class TestMySQL(TestPipelineBase):
         super().test_start(cli_runner, name)
 
     def test_force_stop(self, cli_runner, name):
-        super(TestMySQL, self).test_force_stop(cli_runner, name)
+        super().test_force_stop(cli_runner, name)
 
     def test_output(self, name, pipeline_type, output):
-        expected_output = get_expected_output(name, output, pipeline_type)
-        for record in expected_output:
-            record['schemaId'] = get_schema_id(name)
+        expected_output = get_expected_schema_output(name, output, pipeline_type)
         assert get_output(f'{name}_{pipeline_type}.json') == expected_output
 
     def test_watermark(self):
