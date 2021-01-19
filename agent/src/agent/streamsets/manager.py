@@ -31,5 +31,3 @@ def _can_move_pipelines():
 
 class StreamsetsException(Exception):
     pass
-
-# TODO: pass StreamSets instance as an argument

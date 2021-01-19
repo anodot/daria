@@ -1,12 +1,12 @@
 import prometheus_client
+import sdc_client
 
 from agent import streamsets, pipeline, source
 from agent.monitoring import metrics
 
 
 def _pull_system_metrics(streamsets_: streamsets.StreamSets):
-    client = streamsets.manager.get_client(streamsets_)
-    jmx = client.get_jmx('java.lang:type=*')
+    jmx = sdc_client.get_jmx(streamsets_, 'java.lang:type=*')
     for bean in jmx['beans']:
         if bean['name'] == 'java.lang:type=Memory':
             metrics.STREAMSETS_HEAP_MEMORY.labels(streamsets_.url).set(bean['HeapMemoryUsage']['used'])
@@ -27,8 +27,7 @@ def _is_influx(pipeline_: pipeline.Pipeline):
 
 
 def _pull_pipeline_metrics(pipeline_: pipeline.Pipeline):
-    client = streamsets.manager.get_client(pipeline_.streamsets)
-    jmx = client.get_jmx(f'metrics:name=sdc.pipeline.{pipeline_.name}.*')
+    jmx = sdc_client.get_jmx(pipeline_.streamsets, f'metrics:name=sdc.pipeline.{pipeline_.name}.*')
     labels = (pipeline_.streamsets.url, pipeline_.name, pipeline_.source.type)
     for bean in jmx['beans']:
         if bean['name'].endswith('source.batchProcessing.timer'):
@@ -46,8 +45,10 @@ def _pull_pipeline_metrics(pipeline_: pipeline.Pipeline):
 
 
 def _pull_kafka_metrics(streamsets_: streamsets.StreamSets):
-    client = streamsets.manager.get_client(streamsets_)
-    jmx = client.get_jmx('kafka.consumer:type=consumer-fetch-manager-metrics,client-id=*,topic=*,partition=*')
+    jmx = sdc_client.get_jmx(
+        streamsets_,
+        'kafka.consumer:type=consumer-fetch-manager-metrics,client-id=*,topic=*,partition=*'
+    )
     for bean in jmx['beans']:
         name = dict(item.split('=') for item in bean['name'].split(','))
         metrics.KAFKA_CONSUMER_LAG.labels(name['topic']).set(bean['records-lag-avg'])
