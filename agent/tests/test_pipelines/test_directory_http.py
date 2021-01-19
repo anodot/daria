@@ -3,7 +3,7 @@ import pytest
 
 from ..conftest import get_output
 from agent import source
-from .test_zpipeline_base import TestPipelineBase
+from .test_zpipeline_base import TestPipelineBase, get_expected_output, get_schema_id
 from agent import pipeline
 
 
@@ -47,11 +47,17 @@ class TestDirectory(TestPipelineBase):
         super().test_stop(cli_runner, name)
 
     def test_watermark(self):
-        schema_id = '111111-22222-3333-4444'
-        assert get_output(f'{schema_id}_watermark.json') == {'watermark': 1512892800.0, 'schemaId': schema_id}
+        schema_id = get_schema_id('test_dir_json')
+        assert get_output(f'{schema_id}_watermark.json') == {'watermark':   1512892800.0, 'schemaId': schema_id}
 
     def test_force_stop(self, cli_runner, name=None):
         pytest.skip()
+
+    def test_output(self, name, pipeline_type, output):
+        expected_output = get_expected_output(name, output, pipeline_type)
+        for record in expected_output:
+            record['schemaId'] = get_schema_id(name)
+        assert get_output(f'{name}_{pipeline_type}.json') == expected_output
 
     def test_offset(self):
         pipeline_ = pipeline.repository.get_by_name('test_dir_csv')

@@ -57,14 +57,15 @@ def access_token_mock():
 
 @app.route('/api/v2/stream-schemas', methods=['POST'])
 def create_schema_mock():
+    schema = request.json
     response = {
-        'schema': request.json,
+        'schema': schema,
         'meta': {
             "createdTime": time.time(),
             "modifiedTime": time.time()
         }
     }
-    response['schema']['id'] = "111111-22222-3333-4444"
+    response['schema']['id'] = f'{schema["name"]}-1234'
     return json.dumps(response)
 
 

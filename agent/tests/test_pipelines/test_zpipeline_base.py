@@ -61,11 +61,7 @@ class TestPipelineBase(object):
         assert result.exit_code == 0
 
     def test_output(self, name, pipeline_type, output):
-        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), f'expected_output/{output}')) as f:
-            expected_output = json.load(f)
-            for item in expected_output:
-                item['tags']['pipeline_id'] = [name]
-                item['tags']['pipeline_type'] = [pipeline_type]
+        expected_output = get_expected_output(name, output, pipeline_type)
         assert get_output(f'{name}_{pipeline_type}.json') == expected_output
 
     def test_delete_pipeline(self, cli_runner, name):
@@ -77,3 +73,16 @@ class TestPipelineBase(object):
         result = cli_runner.invoke(cli.source.delete, [name], catch_exceptions=False)
         assert result.exit_code == 0
         assert not source.repository.exists(name)
+
+
+def get_expected_output(name: str, expected_output_file: str, pipeline_type: str) -> list:
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), f'expected_output/{expected_output_file}')) as f:
+        expected_output = json.load(f)
+        for item in expected_output:
+            item['tags']['pipeline_id'] = [name]
+            item['tags']['pipeline_type'] = [pipeline_type]
+    return expected_output
+
+
+def get_schema_id(pipeline_id: str) -> str:
+    return f'{pipeline_id}-1234'
