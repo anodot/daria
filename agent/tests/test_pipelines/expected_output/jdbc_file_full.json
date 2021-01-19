@@ -136,7 +136,6 @@
       "key2": "val2"
     },
     "measurements": {
-      "clicks": null,
       "impressions": 4,
       "test": 1
     },

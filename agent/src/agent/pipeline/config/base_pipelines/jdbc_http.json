@@ -373,12 +373,12 @@
         "value" : "TO_ERROR"
       } ],
       "uiInfo" : {
-        "yPos" : 147.69508361816406,
+        "yPos" : 103.77056884765625,
         "stageType" : "SOURCE",
         "icon" : "jython.png",
         "description" : "",
-        "label" : "Jython Scripting 1",
-        "xPos" : 484.15740966796875
+        "label" : "Get interval",
+        "xPos" : 115.45761108398438
       },
       "inputLanes" : [ ],
       "outputLanes" : [ "JythonScripting_01OutputLane16056311723920" ],
@@ -486,12 +486,12 @@
         "value" : [ ]
       } ],
       "uiInfo" : {
-        "yPos" : 147.36065673828125,
+        "yPos" : 104.76719665527344,
         "stageType" : "PROCESSOR",
         "icon" : "rdbms.png",
         "description" : "",
-        "label" : "JDBC Lookup 1",
-        "xPos" : 677.1377563476562
+        "label" : "Get interval records",
+        "xPos" : 316.27215576171875
       },
       "inputLanes" : [ "JythonScripting_01OutputLane16056311723920" ],
       "outputLanes" : [ "JDBCLookup_01OutputLane16056312277720" ],
@@ -507,10 +507,10 @@
         "value" : "BATCH"
       }, {
         "name" : "initScript",
-        "value" : "state['TIMESTAMP_COLUMN'] = 'timestamp_unix_ms';\nstate['DIMENSIONS'] = ['adsize', 'country'];\nstate['DIMENSIONS_NAMES'] = ['adsize', 'country'];\nstate['VALUES_COLUMNS'] = ['clicks', 'impressions'];\nstate['MEASUREMENT_NAMES'] = ['clicks', 'impressions'];\nstate['TARGET_TYPES'] = ['gauge', 'gauge'];\nstate['COUNT_RECORDS'] = 0;\nstate['COUNT_RECORDS_MEASUREMENT_NAME'] = 'count';\nstate['STATIC_WHAT'] = 1;\nstate['VALUES_ARRAY_PATH'] = '';\nstate['VALUES_ARRAY_FILTER'] = [];\nstate['metrics'] = {}"
+        "value" : "state['TIMESTAMP_COLUMN'] = 'timestamp_datetime';\nstate['DIMENSIONS'] = ['adsize', 'country'];\nstate['DIMENSIONS_NAMES'] = ['adsize', 'country'];\nstate['VALUES_COLUMNS'] = ['clicks', 'impressions'];\nstate['MEASUREMENT_NAMES'] = ['clicks', 'impressions'];\nstate['TARGET_TYPES'] = ['gauge', 'gauge'];\nstate['COUNT_RECORDS'] = 0;\nstate['COUNT_RECORDS_MEASUREMENT_NAME'] = 'count';\nstate['STATIC_WHAT'] = 1;\nstate['VALUES_ARRAY_PATH'] = '';\nstate['VALUES_ARRAY_FILTER'] = [];\nstate['metrics'] = {}"
       }, {
         "name" : "script",
-        "value" : "for (var i = 0; i < records.length; i++) {\n    var dimensions = {};\n    for (var j = 0; j < state['DIMENSIONS'].length; j++) {\n        var dimension = records[i].value[state['DIMENSIONS'][j]]\n        var dimension_name = state['DIMENSIONS_NAMES'][j].replace(/[\\. \\/]+/g, '_')\n        if (dimension !== null && dimension !== '') {\n            dimensions[dimension_name] = String(dimension).replace(/[\\. ]+/g, '_')\n        }\n    }\n\n    try {\n        if (records[i].value[state['TIMESTAMP_COLUMN']] === null) {\n            continue;\n        }\n        var measurements = {}\n        for (var j = 0; j < state['VALUES_COLUMNS'].length; j++) {\n            var value = records[i].value[state['VALUES_COLUMNS'][j]];\n            if (isNaN(value)) {\n              continue;\n            }\n            var measurement = '';\n            if (state['STATIC_WHAT']) {\n                measurement = state['MEASUREMENT_NAMES'][j].replace(/[\\. ]+/g, '_');\n            } else {\n                var meas_name = records[i].value[state['MEASUREMENT_NAMES'][j]]\n                if (typeof meas_name !== 'string') {\n                    throw state['MEASUREMENT_NAMES'][j] + ' property should be string instead of ' + (typeof meas_name)\n                }\n                measurement = meas_name.replace(/[\\. ]+/g, '_');\n            }\n            measurements[measurement] = value;\n        }\n        if (state['COUNT_RECORDS']) {\n            if (records[i].value[state['TIMESTAMP_COLUMN']] !== null) {\n                measurements[state['COUNT_RECORDS_MEASUREMENT_NAME']] = 1;\n            }\n        }\n        var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + i);\n        newRecord.value = {\n             'timestamp': records[i].value[state['TIMESTAMP_COLUMN']],\n             'dimensions': dimensions,\n             'measurements': measurements,\n             'schemaId': \"${SCHEMA_ID}\"\n         };\n         output.write(newRecord);\n    } catch (e) {\n        error.write(records[i], e);\n    }\n}\n\n// get latest batch timestamp\nfor (var i = records.length - 1; i >= 0; i--) {\n  timestamp = records[i].value[state['TIMESTAMP_COLUMN']]\n  if (timestamp !== null) {\n    event = sdc.createEvent('interval processed', 1);\n    event.value = {\n      'watermark': timestamp / 1000,\n    };\n    sdc.toEvent(event);\n    break;\n  }\n}"
+        "value" : "for (var i = 0; i < records.length; i++) {\n    var dimensions = {};\n    for (var j = 0; j < state['DIMENSIONS'].length; j++) {\n        var dimension = records[i].value[state['DIMENSIONS'][j]]\n        var dimension_name = state['DIMENSIONS_NAMES'][j].replace(/[\\. \\/]+/g, '_')\n        if (dimension !== null && dimension !== '') {\n            dimensions[dimension_name] = String(dimension).replace(/[\\. ]+/g, '_')\n        }\n    }\n\n    try {\n        if (records[i].value[state['TIMESTAMP_COLUMN']] === null) {\n            continue;\n        }\n        var measurements = {}\n        for (var j = 0; j < state['VALUES_COLUMNS'].length; j++) {\n            var value = records[i].value[state['VALUES_COLUMNS'][j]];\n            if (value === null) {\n              continue;\n            }\n            var measurement = '';\n            if (state['STATIC_WHAT']) {\n                measurement = state['MEASUREMENT_NAMES'][j].replace(/[\\. ]+/g, '_');\n            } else {\n                var meas_name = records[i].value[state['MEASUREMENT_NAMES'][j]]\n                if (typeof meas_name !== 'string') {\n                    throw state['MEASUREMENT_NAMES'][j] + ' property should be string instead of ' + (typeof meas_name)\n                }\n                measurement = meas_name.replace(/[\\. ]+/g, '_');\n            }\n            measurements[measurement] = value;\n        }\n        if (state['COUNT_RECORDS']) {\n            if (records[i].value[state['TIMESTAMP_COLUMN']] !== null) {\n                measurements[state['COUNT_RECORDS_MEASUREMENT_NAME']] = 1;\n            }\n        }\n        var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + i);\n        newRecord.value = {\n             'timestamp': records[i].value[state['TIMESTAMP_COLUMN']],\n             'dimensions': dimensions,\n             'measurements': measurements,\n             'schemaId': \"${SCHEMA_ID}\"\n         };\n         output.write(newRecord);\n    } catch (e) {\n        error.write(records[i], e);\n    }\n}"
       }, {
         "name" : "destroyScript",
         "value" : ""
@@ -532,14 +532,14 @@
       } ],
       "uiInfo" : {
         "description" : "",
-        "label" : "JavaScript Evaluator 1",
-        "xPos" : 872.213134765625,
-        "yPos" : 146,
+        "label" : "Transofrm to metric",
+        "xPos" : 528.4627075195312,
+        "yPos" : 104.73756408691406,
         "stageType" : "PROCESSOR"
       },
       "inputLanes" : [ "JDBCLookup_01OutputLane16056312277720" ],
       "outputLanes" : [ "JavaScriptEvaluator_01OutputLane15631799146000" ],
-      "eventLanes" : [ "JavaScriptEvaluator_01_EventLane" ],
+      "eventLanes" : [ ],
       "services" : [ ]
     }, {
       "instanceName" : "ExpressionEvaluator_02",
@@ -549,8 +549,41 @@
       "configuration" : [ {
         "name" : "expressionProcessorConfigs",
         "value" : [ {
+          "fieldToSet" : "/tags",
+          "expression" : "${emptyMap()}"
+        }, {
+          "fieldToSet" : "/tags/source",
+          "expression" : "${emptyList()}"
+        }, {
+          "fieldToSet" : "/tags/source[0]",
+          "expression" : "${\"anodot-agent\"}"
+        }, {
+          "fieldToSet" : "/tags/source_host_id",
+          "expression" : "${emptyList()}"
+        }, {
+          "fieldToSet" : "/tags/source_host_id[0]",
+          "expression" : "${\"00194E323A\"}"
+        }, {
+          "fieldToSet" : "/tags/source_host_name",
+          "expression" : "${emptyList()}"
+        }, {
+          "fieldToSet" : "/tags/source_host_name[0]",
+          "expression" : "${\"agent\"}"
+        }, {
+          "fieldToSet" : "/tags/pipeline_id",
+          "expression" : "${emptyList()}"
+        }, {
+          "fieldToSet" : "/tags/pipeline_id[0]",
+          "expression" : "${\"test_mysql_timestamp_datetime\"}"
+        }, {
+          "fieldToSet" : "/tags/pipeline_type",
+          "expression" : "${emptyList()}"
+        }, {
+          "fieldToSet" : "/tags/pipeline_type[0]",
+          "expression" : "${\"mysql\"}"
+        }, {
           "fieldToSet" : "/timestamp",
-          "expression" : "${record:value('/timestamp')}"
+          "expression" : "${(time:dateTimeToMilliseconds(record:value('/timestamp')) - time:dateTimeZoneOffset(record:value('/timestamp'), 'UTC'))/1000}"
         } ]
       }, {
         "name" : "headerAttributeConfigs",
@@ -572,9 +605,9 @@
       } ],
       "uiInfo" : {
         "description" : "",
-        "label" : "Convert timestamp to long",
-        "xPos" : 1077.44970703125,
-        "yPos" : 147.4492950439453,
+        "label" : "Add tags, convert timestamp to long",
+        "xPos" : 741.2574462890625,
+        "yPos" : 105.85581970214844,
         "stageType" : "PROCESSOR"
       },
       "inputLanes" : [ "JavaScriptEvaluator_01OutputLane15631799146000" ],
@@ -592,16 +625,6 @@
       }, {
         "name" : "fieldTypeConverterConfigs",
         "value" : [ {
-          "fields" : [ "/value" ],
-          "targetType" : "FLOAT",
-          "treatInputFieldAsDate" : false,
-          "dataLocale" : "en,US",
-          "scale" : -1,
-          "decimalScaleRoundingStrategy" : "ROUND_UNNECESSARY",
-          "dateFormat" : "OTHER",
-          "zonedDateTimeFormat" : "ISO_ZONED_DATE_TIME",
-          "encoding" : "UTF-8"
-        }, {
           "fields" : [ "/timestamp" ],
           "targetType" : "INTEGER",
           "treatInputFieldAsDate" : false,
@@ -636,15 +659,60 @@
         "value" : [ ]
       } ],
       "uiInfo" : {
-        "description" : "Convert value to float and timestamp to int",
-        "label" : "Convert value and timestamp",
-        "xPos" : 1275.6387939453125,
-        "yPos" : 148.55711364746094,
+        "description" : "",
+        "label" : "Convert timestamp to int",
+        "xPos" : 944.0671997070312,
+        "yPos" : 106.06187438964844,
         "stageType" : "PROCESSOR"
       },
       "inputLanes" : [ "ExpressionEvaluator_02OutputLane15480856372920" ],
       "outputLanes" : [ "destination_OutputLane" ],
       "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
+      "instanceName" : "JavaScriptEvaluator_02",
+      "library" : "streamsets-datacollector-basic-lib",
+      "stageName" : "com_streamsets_pipeline_stage_processor_javascript_JavaScriptDProcessor",
+      "stageVersion" : "3",
+      "configuration" : [ {
+        "name" : "processingMode",
+        "value" : "BATCH"
+      }, {
+        "name" : "initScript",
+        "value" : ""
+      }, {
+        "name" : "script",
+        "value" : "// get latest batch timestamp\nfor (var i = 0; i < records.length; i++) {\n  output.write(records[i]);\n}\n\nif (records.length > 0) {\n  last_record = records[records.length - 1];\n  timestamp = last_record.value['timestamp'];\n  event = sdc.createEvent('interval processed', 1);\n  event.value = {\n    'watermark': timestamp ,\n  };\n  sdc.toEvent(event);\n}"
+      }, {
+        "name" : "destroyScript",
+        "value" : ""
+      }, {
+        "name" : "scriptRecordType",
+        "value" : "NATIVE_OBJECTS"
+      }, {
+        "name" : "userParams",
+        "value" : [ ]
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "yPos" : 104.99555969238281,
+        "stageType" : "PROCESSOR",
+        "icon" : "javascript.png",
+        "description" : "",
+        "label" : "Produce event for watermark",
+        "xPos" : 1149.9013671875
+      },
+      "inputLanes" : [ "destination_OutputLane" ],
+      "outputLanes" : [ "JavaScriptEvaluator_02OutputLane16110504708270" ],
+      "eventLanes" : [ "JavaScriptEvaluator_02_EventLane" ],
       "services" : [ ]
     }, {
       "instanceName" : "destination",
@@ -656,7 +724,7 @@
         "value" : "UTF-8"
       }, {
         "name" : "conf.agentOffsetUrl",
-        "value" : ""
+        "value" : "http://anodot-agent/pipeline-offset/${pipeline:id()}"
       }, {
         "name" : "conf.dataGeneratorFormatConfig.csvFileFormat",
         "value" : "CSV"
@@ -949,11 +1017,11 @@
       "uiInfo" : {
         "description" : "",
         "label" : "HTTP Client 1",
-        "xPos" : 1473.213134765625,
-        "yPos" : 149.5673370361328,
+        "xPos" : 1362.259033203125,
+        "yPos" : 105.27545166015625,
         "stageType" : "TARGET"
       },
-      "inputLanes" : [ "destination_OutputLane" ],
+      "inputLanes" : [ "JavaScriptEvaluator_02OutputLane16110504708270" ],
       "outputLanes" : [ ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -987,48 +1055,15 @@
         "value" : [ ]
       } ],
       "uiInfo" : {
-        "yPos" : 266.69508361816406,
+        "yPos" : 236.2410125732422,
         "stageType" : "PROCESSOR",
         "icon" : "expression.png",
         "description" : "",
-        "label" : "Expression Evaluator 1",
-        "xPos" : 1082.1574096679688
+        "label" : "Add schema id",
+        "xPos" : 1363.7970581054688
       },
-      "inputLanes" : [ "JavaScriptEvaluator_01_EventLane" ],
+      "inputLanes" : [ "JavaScriptEvaluator_02_EventLane" ],
       "outputLanes" : [ "ExpressionEvaluator_03OutputLane16107257160010" ],
-      "eventLanes" : [ ],
-      "services" : [ ]
-    }, {
-      "instanceName" : "FieldRemover_01",
-      "library" : "streamsets-datacollector-basic-lib",
-      "stageName" : "com_streamsets_pipeline_stage_processor_fieldfilter_FieldFilterDProcessor",
-      "stageVersion" : "1",
-      "configuration" : [ {
-        "name" : "filterOperation",
-        "value" : "KEEP"
-      }, {
-        "name" : "fields",
-        "value" : [ "/watermark", "/schemaId" ]
-      }, {
-        "name" : "constant",
-        "value" : null
-      }, {
-        "name" : "stageRequiredFields",
-        "value" : [ ]
-      }, {
-        "name" : "stageRecordPreconditions",
-        "value" : [ ]
-      } ],
-      "uiInfo" : {
-        "yPos" : 267.69508361816406,
-        "stageType" : "PROCESSOR",
-        "icon" : "filter.png",
-        "description" : "",
-        "label" : "Field Remover 1",
-        "xPos" : 1282.1574096679688
-      },
-      "inputLanes" : [ "ExpressionEvaluator_03OutputLane16107257160010" ],
-      "outputLanes" : [ "FieldRemover_01OutputLane16107187580290" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -1332,14 +1367,14 @@
         "value" : [ ]
       } ],
       "uiInfo" : {
-        "yPos" : 269.69508361816406,
+        "yPos" : 237.20240783691406,
         "stageType" : "TARGET",
         "icon" : "anodot_logo.png",
         "description" : "",
         "label" : "Anodot Destination Watermark",
-        "xPos" : 1473.1574096679688
+        "xPos" : 1567.5202026367188
       },
-      "inputLanes" : [ "FieldRemover_01OutputLane16107187580290" ],
+      "inputLanes" : [ "ExpressionEvaluator_03OutputLane16107257160010" ],
       "outputLanes" : [ ],
       "eventLanes" : [ ],
       "services" : [ ]
