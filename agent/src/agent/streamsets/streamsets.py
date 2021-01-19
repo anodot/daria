@@ -3,6 +3,7 @@ import sdc_client
 from typing import List
 from sqlalchemy import Column, Integer, String
 from agent import streamsets
+from sqlalchemy.orm import relationship
 from agent.modules.db import Entity
 
 
@@ -14,6 +15,8 @@ class StreamSets(Entity, sdc_client.IStreamSets):
     username = Column(String)
     password = Column(String)
     agent_external_url = Column(String)
+
+    pipelines = relationship('Pipeline', back_populates='streamsets')
 
     def __init__(self, url: str, username: str, password: str, agent_external_url: str):
         self.url = url

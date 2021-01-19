@@ -199,10 +199,6 @@ class TCPSource(SchemalessSource):
     pass
 
 
-class MonitoringSource(Source):
-    pass
-
-
 class InfluxSource(Source):
     pass
 

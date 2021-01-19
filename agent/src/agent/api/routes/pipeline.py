@@ -1,4 +1,3 @@
-import time
 import requests
 import sdc_client
 
@@ -6,9 +5,8 @@ from jsonschema import ValidationError
 from agent.api.routes import needs_pipeline
 from flask import jsonify, Blueprint, request
 from agent.api import routes
-from agent import pipeline, source, streamsets
-from agent.modules import proxy, logger
-from agent.pipeline import Pipeline
+from agent import pipeline, source, streamsets, monitoring
+from agent.modules import logger
 from sdc_client import Severity
 
 pipelines = Blueprint('pipelines', __name__)
@@ -151,31 +149,9 @@ def pipeline_status_change(pipeline_id: str):
     pipeline_ = pipeline.repository.get_by_name(pipeline_id)
     pipeline_.status = data['pipeline_status']
     pipeline.repository.save(pipeline_)
-    if pipeline_.status in pipeline_.error_statuses:
-        _send_error_status_to_anodot(pipeline_)
-    return ''
-
-
-def _send_error_status_to_anodot(pipeline_: Pipeline):
-    metric = [{
-        "properties": {
-            "what": "pipeline_error_status_count",
-            "pipeline_name": pipeline_.name,
-            "pipeline_status": pipeline_.status,
-            "target_type": "counter",
-        },
-        "tags": pipeline_.meta_tags(),
-        "timestamp": int(time.time()),
-        "value": 1
-    }]
-    res = requests.post(
-        pipeline_.destination.resource_url, json=metric, proxies=proxy.get_config(pipeline_.destination.proxy)
-    )
-    res.raise_for_status()
-    data = res.json()
-    if 'errors' in data and data['errors']:
-        for error in data['errors']:
-            logger.error(error['description'])
+    labels = (pipeline_.streamsets.url, pipeline_.name, pipeline_.source.type)
+    monitoring.metrics.PIPELINE_STATUS.labels(*labels).state(pipeline_.status)
+    return jsonify('')
 
 
 @pipelines.route('/pipeline-offset/<pipeline_name>', methods=['POST'])

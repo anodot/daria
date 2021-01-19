@@ -1,5 +1,4 @@
 from typing import List
-from agent import pipeline
 from agent.modules.db import session
 from agent.pipeline import PipelineOffset, Pipeline
 
@@ -11,12 +10,6 @@ class PipelineNotExistsException(Exception):
 def exists(pipeline_name: str) -> bool:
     return bool(session().query(
         session().query(Pipeline).filter(Pipeline.name == pipeline_name).exists()
-    ).scalar())
-
-
-def monitoring_exists() -> bool:
-    return bool(session().query(
-        session().query(Pipeline).filter(Pipeline.name.like(f'{pipeline.MONITORING}%')).exists()
     ).scalar())
 
 
@@ -75,7 +68,3 @@ def remove_deleted_pipeline_id(pipeline_id: str):
 
 def get_deleted_pipeline_ids() -> list:
     return session().execute('SELECT * FROM deleted_pipelines')
-
-
-def get_monitoring_pipelines() -> List[Pipeline]:
-    return session().query(Pipeline).filter(Pipeline.name.like(f'{pipeline.MONITORING}%')).all()

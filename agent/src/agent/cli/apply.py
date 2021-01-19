@@ -77,16 +77,11 @@ def delete_not_existing(directory, module, type_):
     logger_.info('Looking for removed pipelines')
     all_names = _extract_all_names(directory, module, type_)
     for obj in module.repository.get_all():
-        if obj.name not in all_names and not is_monitoring(obj):
+        if obj.name not in all_names:
             logger_.info(f'{type_} {obj.name} not found in configs, deleting')
             module.manager.delete(obj)
             logger_.info('Success')
     logger_.info('Done')
-
-
-def is_monitoring(obj) -> bool:
-    return (isinstance(obj, pipeline.Pipeline) and pipeline.manager.is_monitoring(obj)) or \
-           (isinstance(obj, source.Source) and obj.name == constants.MONITORING_SOURCE_NAME)
 
 
 def _extract_all_names(directory, module, type_):

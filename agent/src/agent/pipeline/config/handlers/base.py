@@ -25,7 +25,6 @@ class BaseConfigLoader:
     @classmethod
     def _get_configs(cls) -> dict:
         return {
-            source.TYPE_MONITORING: 'Monitoring.json',
             source.TYPE_INFLUX: 'influx_http.json',
             source.TYPE_MONGO: 'mongo_http.json',
             source.TYPE_KAFKA: 'kafka_http.json',
@@ -60,10 +59,9 @@ class TestPipelineBaseConfigLoader(BaseConfigLoader):
 class BaseConfigHandler:
     stages_to_override = {}
 
-    def __init__(self, pipeline: Pipeline, is_preview=False):
+    def __init__(self, pipeline: Pipeline):
         self.config = {}
         self.pipeline = pipeline
-        self.is_preview = is_preview
 
     def override_base_config(self, base_config):
         self.config = base_config
