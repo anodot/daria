@@ -64,6 +64,7 @@ class Pipeline(Entity):
                 STATUS_RUN_ERROR, STATUS_START_ERROR, STATUS_STOP_ERROR, STATUS_RUNNING_ERROR]
 
     TARGET_TYPES = ['counter', 'gauge', 'running_counter']
+    USE_PROTOCOL_3 = 'use_protocol_3'
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
@@ -81,6 +82,7 @@ class Pipeline(Entity):
     source_ = relationship('Source', back_populates='pipelines')
     destination = relationship('HttpDestination')
     streamsets = relationship('StreamSets')
+    protocol = Column(String)
 
     def __init__(self, pipeline_name: str, source_: source.Source, destination: HttpDestination):
         self.name = pipeline_name
@@ -94,6 +96,7 @@ class Pipeline(Entity):
         self.override_source = {}
         self.streamsets_id = None
         self.streamsets = None
+        # todo check if it's correct
 
     def config_changed(self) -> bool:
         return self.config != self._previous_config or self.override_source != self._previous_override_source
@@ -258,8 +261,11 @@ class Pipeline(Entity):
         self.streamsets_id = None
         self.streamsets = None
 
-    def get_schema(self):
+    def get_schema(self) -> dict:
         return self.schema if self.schema else {}
+
+    def has_schema(self) -> bool:
+        return bool(self.schema)
 
     def get_schema_id(self):
         return self.get_schema().get('id')
@@ -298,6 +304,9 @@ class Pipeline(Entity):
             **self.meta_tags(),
             **self.tags
         }
+
+    def uses_protocol_3(self) -> bool:
+        return self.protocol == HttpDestination.PROTOCOL_30
 
 
 class TestPipeline(Pipeline):

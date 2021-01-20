@@ -191,13 +191,19 @@ def update(pipeline_: Pipeline):
     if not pipeline_.config_changed():
         logger_.info(f'No need to update pipeline {pipeline_}')
         return
-
+    if pipeline_.uses_protocol_3():
+        if pipeline_.has_schema():
+            pipeline_.schema = schema.update(pipeline_)
+        else:
+            pipeline_.schema = schema.create(pipeline_)
     streamsets.manager.update(pipeline_)
     pipeline.repository.save(pipeline_)
     logger_.info(f'Updated pipeline {pipeline_}')
 
 
 def create(pipeline_: Pipeline):
+    if pipeline_.uses_protocol_3():
+        pipeline_.schema = schema.create(pipeline_)
     streamsets.manager.create(pipeline_)
     pipeline.repository.save(pipeline_)
 
@@ -234,8 +240,8 @@ def reset(pipeline_: Pipeline):
 
 
 def _delete_schema(pipeline_: Pipeline):
-    if 'schema' in pipeline_.config:
-        anodot_api_client.AnodotApiClient(pipeline_.destination).delete_schema(pipeline_.config['schema']['id'])
+    if pipeline_.has_schema():
+        anodot_api_client.AnodotApiClient(pipeline_.destination).delete_schema(pipeline_.get_schema_id())
 
 
 def delete(pipeline_: Pipeline):
@@ -318,7 +324,7 @@ def transform_for_bc(pipeline_: Pipeline) -> dict:
         'progress': {
             'last_offset': pipeline_.offset.offset if pipeline_.offset else '',
         },
-        'schema': pipeline_.get_schema() if pipeline_.get_schema_id() else schema.build(pipeline_),
+        'schema': pipeline_.get_schema(),
         'config': pipeline_.config,
     }
     data['config'].pop('interval', 0)

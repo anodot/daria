@@ -9,6 +9,7 @@ class PromptConfigDirectory(PromptConfigSchemaless):
             raise click.UsageError('No api key configured. Please configure api key using `agent destination` command')
         super().prompt_config()
         self.prompt_flush_bucket_size()
+        self.pipeline.protocol = self.pipeline.destination.PROTOCOL_30
 
     def prompt_flush_bucket_size(self):
         self.pipeline.flush_bucket_size = click.prompt('Flush bucket size',

@@ -399,12 +399,15 @@ class StreamsetsBalancer:
 
 
 def get_sdc_config_handler(pipeline_: Pipeline) -> streamsets.config_handlers.base.BaseConfigHandler:
+    if pipeline_.source.type in [source.TYPE_POSTGRES, source.TYPE_MYSQL]:
+        if pipeline_.uses_protocol_3():
+            return streamsets.config_handlers.jdbc.JDBCConfigHandler(pipeline_)
+        return streamsets.config_handlers.jdbc.JDBCSchemalessConfigHandler(pipeline_)
+
     handlers = {
         source.TYPE_INFLUX: streamsets.config_handlers.influx.InfluxConfigHandler,
         source.TYPE_MONGO: streamsets.config_handlers.mongo.MongoConfigHandler,
         source.TYPE_KAFKA: streamsets.config_handlers.kafka.KafkaConfigHandler,
-        source.TYPE_MYSQL: streamsets.config_handlers.jdbc.JDBCConfigHandler,
-        source.TYPE_POSTGRES: streamsets.config_handlers.jdbc.JDBCConfigHandler,
         source.TYPE_ELASTIC: streamsets.config_handlers.elastic.ElasticConfigHandler,
         source.TYPE_SPLUNK: streamsets.config_handlers.tcp.TCPConfigHandler,
         source.TYPE_DIRECTORY: streamsets.config_handlers.directory.DirectoryConfigHandler,

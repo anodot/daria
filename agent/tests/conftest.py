@@ -58,3 +58,10 @@ def pytest_generate_tests(metafunc):
     funcarglist = metafunc.cls.params[metafunc.function.__name__]
     argnames = sorted(funcarglist[0])
     metafunc.parametrize(argnames, [[funcargs[name] for name in argnames] for funcargs in funcarglist])
+
+
+def generate_input(input_: dict) -> str:
+    return '\n'.join(map(
+        lambda x: str(x),
+        input_.values()
+    ))

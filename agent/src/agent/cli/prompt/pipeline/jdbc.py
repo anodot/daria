@@ -19,6 +19,7 @@ class PromptConfigJDBC(PromptConfig):
         self.set_dimensions()
         self.set_static_properties()
         self.set_tags()
+        self.set_protocol()
 
     @infinite_retry
     def prompt_values(self):
@@ -52,3 +53,21 @@ class PromptConfigJDBC(PromptConfig):
 
     def set_dimensions(self):
         self.config['dimensions'] = self.prompt_dimensions('Dimensions', self.default_config.get('dimensions', []))
+
+    def set_protocol(self):
+        protocol = self._get_default_protocol()
+        if self.advanced:
+            use_3 = protocol == self.pipeline.destination.PROTOCOL_30
+            if click.confirm('Use anodot protocol 3.0?', default=use_3):
+                protocol = self.pipeline.destination.PROTOCOL_30
+            else:
+                protocol = self.pipeline.destination.PROTOCOL_20
+
+        self.pipeline.protocol = protocol
+
+    def _get_default_protocol(self):
+        if self.pipeline.protocol:
+            return self.pipeline.protocol
+        else:
+            # use protocol 3 for all new pipelines
+            return self.pipeline.destination.PROTOCOL_30

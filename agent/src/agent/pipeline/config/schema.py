@@ -2,7 +2,26 @@ from agent.destination import anodot_api_client
 from agent.pipeline import Pipeline
 
 
-def build(pipeline: Pipeline) -> dict:
+# todo update API routes
+
+def create(pipeline: Pipeline):
+    api_client = anodot_api_client.AnodotApiClient(pipeline.destination)
+    created_schema = api_client.create_schema(_build(pipeline))
+    return created_schema['schema']
+
+
+def update(pipeline: Pipeline) -> dict:
+    if pipeline.has_schema():
+        schema = _build(pipeline)
+        api_client = anodot_api_client.AnodotApiClient(pipeline.destination)
+        if _equal(pipeline.get_schema(), schema):
+            return pipeline.get_schema()
+        api_client.delete_schema(pipeline.get_schema_id())
+        created_schema = api_client.create_schema(schema)
+        return created_schema['schema']
+
+
+def _build(pipeline: Pipeline) -> dict:
     measurements = {}
     for idx, value in enumerate(pipeline.values):
         measurements[pipeline.measurement_names[idx]] = {
@@ -27,18 +46,5 @@ def build(pipeline: Pipeline) -> dict:
     }
 
 
-def equal(old_schema, new_schema) -> bool:
+def _equal(old_schema, new_schema) -> bool:
     return {key: val for key, val in old_schema.items() if key != 'id'} == new_schema
-
-
-def update(pipeline: Pipeline) -> dict:
-    new_schema = build(pipeline)
-    api_client = anodot_api_client.AnodotApiClient(pipeline.destination)
-    old_schema = pipeline.get_schema()
-    if old_schema:
-        if equal(old_schema, new_schema):
-            return old_schema
-        api_client.delete_schema(pipeline.get_schema_id())
-
-    created_schema = api_client.create_schema(new_schema)
-    return created_schema['schema']

@@ -23,7 +23,7 @@ class LoadClientData:
         if type(self.client_config.get('value')) == str:
             self.client_config['value'] = {'type': 'property', 'value': self.client_config['value']}
 
-    def load(self, client_config, edit=False):
+    def load(self, client_config, edit=False) -> dict:
         self.client_config = client_config
         if 'override_source' not in self.client_config:
             self.client_config['override_source'] = {}
