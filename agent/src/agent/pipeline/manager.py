@@ -5,6 +5,7 @@ import string
 import traceback
 import jsonschema
 
+from copy import deepcopy
 from agent import source, pipeline, destination, streamsets
 from agent.modules import tools
 from agent.pipeline.config import schema
@@ -162,17 +163,31 @@ def edit_using_json(configs: list) -> List[Pipeline]:
     return pipelines
 
 
+class PipelineWatcher:
+    def __init__(self, pipeline_: Pipeline):
+        self.config = deepcopy(pipeline_.config)
+        self.override_source = deepcopy(pipeline_.override_source)
+        self.protocol = pipeline_.protocol
+
+    def pipeline_changed(self, pipeline_: Pipeline):
+        return \
+            self.config != pipeline_.config \
+            or self.override_source != pipeline_.override_source \
+            or self.protocol != pipeline_.protocol
+
+
 def edit_pipeline_using_json(config: dict) -> Pipeline:
     pipeline_ = pipeline.repository.get_by_name(config['pipeline_id'])
+    watcher = PipelineWatcher(pipeline_)
     client_data.load_config(pipeline_, config, edit=True)
-    update(pipeline_)
+    if watcher.pipeline_changed(pipeline_):
+        update(pipeline_)
+    else:
+        logger_.info(f'No need to update pipeline {pipeline_.name}')
     return pipeline_
 
 
 def update(pipeline_: Pipeline):
-    if not pipeline_.config_changed():
-        logger_.info(f'No need to update pipeline {pipeline_}')
-        return
     if pipeline_.uses_protocol_3():
         if pipeline_.has_schema():
             pipeline_.schema = schema.update(pipeline_)

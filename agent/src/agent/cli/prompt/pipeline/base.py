@@ -20,7 +20,7 @@ class PromptConfig:
         self.advanced = advanced
         self.default_config = default_config
         self.prompt_config()
-        self.pipeline.set_config(self.config)
+        self.pipeline.config = self.config
         return self.pipeline
 
     def prompt_config(self):
@@ -131,7 +131,7 @@ class PromptConfig:
     def data_preview(self):
         if click.confirm('Would you like to see the data preview?', default=True):
             test_pipeline = pipeline.manager.build_test_pipeline(self.pipeline.source)
-            test_pipeline.set_config(self.config)
+            test_pipeline.config = self.config
             preview.print_sample_data(test_pipeline)
 
     @staticmethod

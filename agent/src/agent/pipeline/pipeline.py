@@ -7,7 +7,6 @@ from agent.destination import HttpDestination
 from enum import Enum
 from sqlalchemy import Column, Integer, String, JSON, ForeignKey, func
 from agent import source
-from copy import deepcopy
 
 
 class PipelineException(Exception):
@@ -86,9 +85,6 @@ class Pipeline(Entity):
 
     def __init__(self, pipeline_name: str, source_: source.Source, destination: HttpDestination):
         self.name = pipeline_name
-        self._previous_config = {}
-        self._previous_override_source = {}
-        self._previous_protocol = None
         self.config = {}
         self.source_ = source_
         self.source_id = source_.id
@@ -97,25 +93,6 @@ class Pipeline(Entity):
         self.override_source = {}
         self.streamsets_id = None
         self.streamsets = None
-
-    # todo move this check out of pipeline
-    def config_changed(self) -> bool:
-        return \
-            self.config != self._previous_config \
-            or self.override_source != self._previous_override_source \
-            or self.protocol != self._previous_protocol
-
-    def set_config(self, config: dict):
-        self._previous_config = deepcopy(self.config)
-        self.config = deepcopy(config)
-
-    def set_override_source(self, override_source: dict):
-        self._previous_override_source = deepcopy(self.override_source)
-        self.override_source = deepcopy(override_source)
-
-    def set_protocol(self, protocol: str):
-        self._previous_protocol = self.protocol
-        self.protocol = protocol
 
     @property
     def source(self):

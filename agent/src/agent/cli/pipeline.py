@@ -269,12 +269,14 @@ def _edit_using_file(file):
 
 def _prompt_edit(advanced, pipeline_id):
     try:
-        pipeline_prompter = prompt.pipeline.get_prompter(pipeline.repository.get_by_name(pipeline_id))
-        pipeline_prompter.prompt(pipeline_prompter.pipeline.to_dict(), advanced=advanced)
-        pipeline.manager.update(pipeline_prompter.pipeline)
-        if _should_prompt_preview(pipeline_prompter.pipeline):
+        pipeline_ = pipeline.repository.get_by_name(pipeline_id)
+        watcher = pipeline.manager.PipelineWatcher(pipeline_)
+        pipeline_ = prompt.pipeline.get_prompter(pipeline_).prompt(pipeline_.to_dict(), advanced=advanced)
+        if watcher.pipeline_changed(pipeline_):
+            pipeline.manager.update(pipeline_)
+        if _should_prompt_preview(pipeline_):
             if click.confirm('Would you like to see the result data preview?', default=True):
-                pipeline.manager.show_preview(pipeline_prompter.pipeline)
+                pipeline.manager.show_preview(pipeline_)
                 print('To change the config use `agent pipeline edit`')
     except pipeline.repository.PipelineNotExistsException:
         raise click.UsageError(f'{pipeline_id} does not exist')
