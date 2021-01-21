@@ -26,8 +26,15 @@ def get_default_protocol(pipeline_: Pipeline):
     if pipeline_.protocol:
         return pipeline_.protocol
     else:
-        # use protocol 3 for all new pipelines
-        return destination.HttpDestination.PROTOCOL_30
+        # use protocol 3 for all new pipelines that support it
+        supported = [
+            source.TYPE_MYSQL,
+            source.TYPE_DIRECTORY,
+        ]
+        if pipeline_.source.type in supported:
+            return destination.HttpDestination.PROTOCOL_30
+        else:
+            return destination.HttpDestination.PROTOCOL_20
 
 
 def show_preview(pipeline_: Pipeline):
@@ -157,7 +164,6 @@ def edit_using_json(configs: list) -> List[Pipeline]:
 
 def edit_pipeline_using_json(config: dict) -> Pipeline:
     pipeline_ = pipeline.repository.get_by_name(config['pipeline_id'])
-    # todo add return o load_config and unit tests?
     client_data.load_config(pipeline_, config, edit=True)
     update(pipeline_)
     return pipeline_
