@@ -29,8 +29,9 @@ def get_default_protocol(pipeline_: Pipeline):
     else:
         # use protocol 3 for all new pipelines that support it
         supported = [
-            source.TYPE_MYSQL,
             source.TYPE_DIRECTORY,
+            source.TYPE_MYSQL,
+            source.TYPE_POSTGRES,
         ]
         if pipeline_.source.type in supported:
             return destination.HttpDestination.PROTOCOL_30
