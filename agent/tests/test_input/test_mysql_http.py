@@ -57,7 +57,7 @@ class TestMySQL:
             'dimensions': 'adsize country',
             'additional properties': 'key1:val1 key2:val2',
             'tags': '',
-            'use protocol 3': 'n',
+            'use schema': 'n',
             'show preview': 'n',
         }
         result = cli_runner.invoke(cli.pipeline.create, ['-a'], catch_exceptions=False, input=generate_input(input_))
@@ -78,7 +78,7 @@ class TestMySQL:
             'measurement name': '',
             'value columns': '',
             'dimensions': '',
-            'use protocol 3': '',
+            'use schema': '',
             'show preview': 'n'
         }
         result = cli_runner.invoke(cli.pipeline.edit, [pipeline_id], catch_exceptions=False, input=generate_input(input_))

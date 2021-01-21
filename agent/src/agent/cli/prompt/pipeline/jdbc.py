@@ -1,5 +1,6 @@
 import click
 
+from agent import pipeline
 from agent.modules.tools import infinite_retry
 from agent.pipeline.validators import jdbc_query
 from .base import PromptConfig
@@ -55,19 +56,11 @@ class PromptConfigJDBC(PromptConfig):
         self.config['dimensions'] = self.prompt_dimensions('Dimensions', self.default_config.get('dimensions', []))
 
     def set_protocol(self):
-        protocol = self._get_default_protocol()
+        protocol = pipeline.manager.get_default_protocol(self.pipeline)
         if self.advanced:
             use_3 = protocol == self.pipeline.destination.PROTOCOL_30
-            if click.confirm('Use anodot protocol 3.0?', default=use_3):
+            if click.confirm('Use schema?', default=use_3):
                 protocol = self.pipeline.destination.PROTOCOL_30
             else:
                 protocol = self.pipeline.destination.PROTOCOL_20
-
-        self.pipeline.protocol = protocol
-
-    def _get_default_protocol(self):
-        if self.pipeline.protocol:
-            return self.pipeline.protocol
-        else:
-            # use protocol 3 for all new pipelines
-            return self.pipeline.destination.PROTOCOL_30
+        self.pipeline.set_protocol(protocol)

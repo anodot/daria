@@ -30,4 +30,4 @@ class PromptConfigElastic(PromptConfigSchemaless):
             if errors:
                 raise click.ClickException(errors)
 
-            self.config['override_source'][source.ElasticSource.CONFIG_QUERY] = query
+            self.pipeline.set_override_source({source.ElasticSource.CONFIG_QUERY: query})

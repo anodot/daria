@@ -8,8 +8,7 @@ import jsonschema
 from agent import source, pipeline, destination, streamsets
 from agent.modules import tools
 from agent.pipeline.config import schema
-from agent.pipeline.config.validators import get_config_validator
-from agent.pipeline import load_client_data, Pipeline, TestPipeline
+from agent.pipeline import Pipeline, TestPipeline, client_data
 from agent.destination import anodot_api_client
 from agent.modules.tools import print_json, sdc_record_map_to_dict
 from agent.modules.logger import get_logger
@@ -23,17 +22,12 @@ LOG_LEVELS = [logging.getLevelName(logging.INFO), logging.getLevelName(logging.E
 MAX_SAMPLE_RECORDS = 3
 
 
-class PipelineBuilder:
-    def __init__(self, pipeline_: Pipeline):
-        self.pipeline = pipeline_
-        self.file_loader = get_file_loader(pipeline_.source.type)()
-
-    def load_config(self, config, edit=False):
-        self.pipeline.set_config(self.file_loader.load(config, edit))
-        self._validate_config()
-
-    def _validate_config(self):
-        get_config_validator(self.pipeline).validate(self.pipeline)
+def get_default_protocol(pipeline_: Pipeline):
+    if pipeline_.protocol:
+        return pipeline_.protocol
+    else:
+        # use protocol 3 for all new pipelines
+        return destination.HttpDestination.PROTOCOL_30
 
 
 def show_preview(pipeline_: Pipeline):
@@ -56,22 +50,6 @@ def show_preview(pipeline_: Pipeline):
     else:
         print('Could not fetch any data matching the provided config')
     print(*errors, sep='\n')
-
-
-def get_file_loader(source_type: str):
-    loaders = {
-        source.TYPE_INFLUX: load_client_data.InfluxLoadClientData,
-        source.TYPE_MONGO: load_client_data.MongoLoadClientData,
-        source.TYPE_KAFKA: load_client_data.KafkaLoadClientData,
-        source.TYPE_MYSQL: load_client_data.JDBCLoadClientData,
-        source.TYPE_POSTGRES: load_client_data.JDBCLoadClientData,
-        source.TYPE_ELASTIC: load_client_data.ElasticLoadClientData,
-        source.TYPE_SPLUNK: load_client_data.TcpLoadClientData,
-        source.TYPE_DIRECTORY: load_client_data.DirectoryLoadClientData,
-        source.TYPE_SAGE: load_client_data.SageLoadClientData,
-        source.TYPE_VICTORIA: load_client_data.VictoriaLoadClientData,
-    }
-    return loaders[source_type]
 
 
 def extract_configs(file):
@@ -155,11 +133,11 @@ def create_from_json(configs: list) -> List[Pipeline]:
 
 def create_pipeline_from_json(config: dict) -> Pipeline:
     validate_config_for_create(config)
-    pipeline_builder = PipelineBuilder(create_object(config['pipeline_id'], config['source']))
-    pipeline_builder.load_config(config)
-    create(pipeline_builder.pipeline)
-    print(f'Pipeline {pipeline_builder.pipeline.name} created')
-    return pipeline_builder.pipeline
+    pipeline_ = create_object(config['pipeline_id'], config['source'])
+    client_data.load_config(pipeline_, config)
+    create(pipeline_)
+    print(f'Pipeline {pipeline_.name} created')
+    return pipeline_
 
 
 def edit_using_json(configs: list) -> List[Pipeline]:
@@ -169,9 +147,7 @@ def edit_using_json(configs: list) -> List[Pipeline]:
     pipelines = []
     for config in configs:
         try:
-            pipelines.append(
-                edit_pipeline_using_json(config)
-            )
+            pipelines.append(edit_pipeline_using_json(config))
         except Exception as e:
             exceptions[config['pipeline_id']] = f'{type(e).__name__}: {str(e)}'
         if exceptions:
@@ -181,10 +157,10 @@ def edit_using_json(configs: list) -> List[Pipeline]:
 
 def edit_pipeline_using_json(config: dict) -> Pipeline:
     pipeline_ = pipeline.repository.get_by_name(config['pipeline_id'])
-    pipeline_builder = PipelineBuilder(pipeline_)
-    pipeline_builder.load_config(config, edit=True)
-    update(pipeline_builder.pipeline)
-    return pipeline_builder.pipeline
+    # todo add return o load_config and unit tests?
+    client_data.load_config(pipeline_, config, edit=True)
+    update(pipeline_)
+    return pipeline_
 
 
 def update(pipeline_: Pipeline):

@@ -2,8 +2,6 @@ from agent.destination import anodot_api_client
 from agent.pipeline import Pipeline
 
 
-# todo update API routes
-
 def create(pipeline: Pipeline):
     api_client = anodot_api_client.AnodotApiClient(pipeline.destination)
     created_schema = api_client.create_schema(_build(pipeline))

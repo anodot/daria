@@ -64,7 +64,7 @@ class Pipeline(Entity):
                 STATUS_RUN_ERROR, STATUS_START_ERROR, STATUS_STOP_ERROR, STATUS_RUNNING_ERROR]
 
     TARGET_TYPES = ['counter', 'gauge', 'running_counter']
-    USE_PROTOCOL_3 = 'use_protocol_3'
+    PROTOCOL = 'protocol'
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
@@ -88,6 +88,7 @@ class Pipeline(Entity):
         self.name = pipeline_name
         self._previous_config = {}
         self._previous_override_source = {}
+        self._previous_protocol = None
         self.config = {}
         self.source_ = source_
         self.source_id = source_.id
@@ -96,16 +97,25 @@ class Pipeline(Entity):
         self.override_source = {}
         self.streamsets_id = None
         self.streamsets = None
-        # todo check if it's correct
 
+    # todo move this check out of pipeline
     def config_changed(self) -> bool:
-        return self.config != self._previous_config or self.override_source != self._previous_override_source
+        return \
+            self.config != self._previous_config \
+            or self.override_source != self._previous_override_source \
+            or self.protocol != self._previous_protocol
 
     def set_config(self, config: dict):
         self._previous_config = deepcopy(self.config)
-        self._previous_override_source = deepcopy(self.override_source)
         self.config = deepcopy(config)
-        self.override_source = self.config.pop(self.OVERRIDE_SOURCE, {})
+
+    def set_override_source(self, override_source: dict):
+        self._previous_override_source = deepcopy(self.override_source)
+        self.override_source = deepcopy(override_source)
+
+    def set_protocol(self, protocol: str):
+        self._previous_protocol = self.protocol
+        self.protocol = protocol
 
     @property
     def source(self):

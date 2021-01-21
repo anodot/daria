@@ -13,7 +13,7 @@ class PromptConfig:
     def __init__(self, pipeline_: Pipeline):
         self.advanced = False
         self.default_config = {}
-        self.config = {'override_source': {}}
+        self.config = {}
         self.pipeline = pipeline_
 
     def prompt(self, default_config, advanced=False) -> Pipeline:
@@ -130,6 +130,7 @@ class PromptConfig:
     @if_validation_enabled
     def data_preview(self):
         if click.confirm('Would you like to see the data preview?', default=True):
+            # todo do we care about override_source here?
             test_pipeline = pipeline.manager.build_test_pipeline(self.pipeline.source)
             test_pipeline.set_config(self.config)
             preview.print_sample_data(test_pipeline)
