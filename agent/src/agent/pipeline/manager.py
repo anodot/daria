@@ -25,16 +25,15 @@ MAX_SAMPLE_RECORDS = 3
 def get_default_protocol(pipeline_: Pipeline):
     if pipeline_.get_protocol():
         return pipeline_.get_protocol()
-    else:
-        # use protocol 3 for all new pipelines that support it
-        supported = [
-            source.TYPE_DIRECTORY,
-            source.TYPE_MYSQL,
-            source.TYPE_POSTGRES,
-        ]
-        if pipeline_.source.type in supported:
-            return destination.HttpDestination.PROTOCOL_30
-        return destination.HttpDestination.PROTOCOL_20
+    # use protocol 3 for all new pipelines that support it
+    supported = [
+        source.TYPE_DIRECTORY,
+        source.TYPE_MYSQL,
+        source.TYPE_POSTGRES,
+    ]
+    if pipeline_.source.type in supported:
+        return destination.HttpDestination.PROTOCOL_30
+    return destination.HttpDestination.PROTOCOL_20
 
 
 def show_preview(pipeline_: Pipeline):

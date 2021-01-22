@@ -34,7 +34,7 @@ class TestInflux:
             'er': [{"dimensions": {"optional": ["wrong"], "required": []}, "interval": 5,
                     "measurement_name": "wrong", "override_source": {}, "pipeline_id": "test_influx",
                     "properties": {"test": "wrong"}, "source": {"name": "influx"}, "target_type": "gauge",
-                    "value": {"constant": "1", "type": "property", "values": ["wrong"]}}]
+                    "value": {"constant": "1", "type": "property", "values": ["wrong"]}, "protocol": "anodot20"}]
         }],
         'test_edit': [{
             'data': [{
@@ -53,7 +53,7 @@ class TestInflux:
             'er': [{"dimensions": {"optional": ["cpu", "host", "zone"], "required": []}, "interval": 5,
                     "measurement_name": "cpu_test", "override_source": {}, "pipeline_id": "test_influx",
                     "properties": {"test": "val"}, "source": {"name": "influx"}, "target_type": "gauge",
-                    "value": {"constant": "1", "type": "property", "values": ["usage_active"]}}]
+                    "value": {"constant": "1", "type": "property", "values": ["usage_active"]}, "protocol": "anodot20"}]
         }],
     }
 
