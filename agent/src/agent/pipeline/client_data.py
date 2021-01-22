@@ -15,9 +15,8 @@ definitions_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'jso
 def load_config(pipeline_: Pipeline, config: dict, edit=False):
     config = get_file_loader(pipeline_.source.type).load(config, edit)
 
-    pipeline_.protocol = _get_protocol(pipeline_, config.pop('use_schema', None))
-    pipeline_.override_source = config.pop(Pipeline.OVERRIDE_SOURCE, {})
-    pipeline_.config = config
+    config['protocol'] = _get_protocol(pipeline_, config.pop('use_schema', None))
+    pipeline_.set_config(config)
 
     get_config_validator(pipeline_.source.type).validate(pipeline_)
 

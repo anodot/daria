@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import Optional
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import relationship
@@ -63,7 +64,6 @@ class Pipeline(Entity):
                 STATUS_RUN_ERROR, STATUS_START_ERROR, STATUS_STOP_ERROR, STATUS_RUNNING_ERROR]
 
     TARGET_TYPES = ['counter', 'gauge', 'running_counter']
-    PROTOCOL = 'protocol'
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
@@ -81,10 +81,11 @@ class Pipeline(Entity):
     source_ = relationship('Source', back_populates='pipelines')
     destination = relationship('HttpDestination')
     streamsets = relationship('StreamSets')
-    protocol = Column(String)
 
     def __init__(self, pipeline_name: str, source_: source.Source, destination: HttpDestination):
         self.name = pipeline_name
+        self._previous_config = {}
+        self._previous_override_source = {}
         self.config = {}
         self.source_ = source_
         self.source_id = source_.id
@@ -94,9 +95,23 @@ class Pipeline(Entity):
         self.streamsets_id = None
         self.streamsets = None
 
+    def config_changed(self) -> bool:
+        if not hasattr(self, '_previous_config'):
+            return False
+        return self.config != self._previous_config or self.override_source != self._previous_override_source
+
+    def set_config(self, config: dict):
+        self._previous_config = deepcopy(self.config)
+        self._previous_override_source = deepcopy(self.override_source)
+        self.config = deepcopy(config)
+        self.override_source = self.config.pop(self.OVERRIDE_SOURCE, {})
+
     @property
     def source(self):
         return self.source_
+
+    def get_protocol(self):
+        return self.config.get('protocol')
 
     @property
     def constant_dimensions(self) -> dict:
@@ -293,7 +308,7 @@ class Pipeline(Entity):
         }
 
     def uses_protocol_3(self) -> bool:
-        return self.protocol == HttpDestination.PROTOCOL_30
+        return self.get_protocol() == HttpDestination.PROTOCOL_30
 
 
 class TestPipeline(Pipeline):

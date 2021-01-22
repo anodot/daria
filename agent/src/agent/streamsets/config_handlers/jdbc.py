@@ -6,7 +6,7 @@ from agent.streamsets.config_handlers.schema import SchemaConfigHandler
 logger = get_logger(__name__)
 
 
-class JDBCConfigHandler(SchemaConfigHandler):
+class JDBCConfigHandlerProtocol3(SchemaConfigHandler):
     stages_to_override = {
         'offset': stages.jdbc_offset.JDBCScript,
         'source': stages.jdbc_source.JDBCSource,
@@ -16,7 +16,7 @@ class JDBCConfigHandler(SchemaConfigHandler):
     }
 
 
-class JDBCSchemalessConfigHandler(BaseConfigHandler):
+class JDBCConfigHandlerProtocol2(BaseConfigHandler):
     stages_to_override = {
         'offset': stages.jdbc_offset.JDBCScript,
         'source': stages.jdbc_source.JDBCSource,

@@ -63,4 +63,4 @@ class PromptConfigJDBC(PromptConfig):
                 protocol = self.pipeline.destination.PROTOCOL_30
             else:
                 protocol = self.pipeline.destination.PROTOCOL_20
-        self.pipeline.protocol = protocol
+        self.config['protocol'] = protocol

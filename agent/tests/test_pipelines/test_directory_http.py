@@ -3,7 +3,7 @@ import pytest
 
 from ..conftest import get_output
 from agent import source
-from .test_zpipeline_base import TestPipelineBase, get_expected_output, get_schema_id
+from .test_zpipeline_base import TestPipelineBase, get_schema_id, get_expected_schema_output
 from agent import pipeline
 
 
@@ -54,7 +54,7 @@ class TestDirectory(TestPipelineBase):
         pytest.skip()
 
     def test_output(self, name, pipeline_type, output):
-        expected_output = get_expected_output(name, output, pipeline_type)
+        expected_output = get_expected_schema_output(name, output, pipeline_type)
         for record in expected_output:
             record['schemaId'] = get_schema_id(name)
         assert get_output(f'{name}_{pipeline_type}.json') == expected_output

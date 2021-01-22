@@ -401,8 +401,8 @@ class StreamsetsBalancer:
 def get_sdc_config_handler(pipeline_: Pipeline) -> streamsets.config_handlers.base.BaseConfigHandler:
     if pipeline_.source.type in [source.TYPE_POSTGRES, source.TYPE_MYSQL]:
         if pipeline_.uses_protocol_3():
-            return streamsets.config_handlers.jdbc.JDBCConfigHandler(pipeline_)
-        return streamsets.config_handlers.jdbc.JDBCSchemalessConfigHandler(pipeline_)
+            return streamsets.config_handlers.jdbc.JDBCConfigHandlerProtocol3(pipeline_)
+        return streamsets.config_handlers.jdbc.JDBCConfigHandlerProtocol2(pipeline_)
 
     handlers = {
         source.TYPE_INFLUX: streamsets.config_handlers.influx.InfluxConfigHandler,
