@@ -229,7 +229,7 @@ services:
   zabbix-web:
     image: zabbix/zabbix-web-nginx-mysql:alpine-4.4.10
     ports:
-      - 8080:8080
+      - 8888:8080
     depends_on:
       - zabbix-server
     environment:

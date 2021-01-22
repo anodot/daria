@@ -192,7 +192,7 @@ run-postgres:
 	$(DOCKER_COMPOSE_DEV) up -d postgres
 
 run-sage:
-	docker-compose up -d --build sage
+	$(DOCKER_COMPOSE_DEV) up -d --build sage
 
 run-zabbix:
 	$(DOCKER_COMPOSE_DEV) up -d mysql zabbix-server zabbix-web zabbix-agent
@@ -208,6 +208,10 @@ setup-elastic:
 
 setup-victoria:
 	./scripts/upload-test-data-to-victoria.sh
+
+setup-zabbix:
+	docker cp ./scripts/upload-test-data-to-zabbix.py anodot-agent:/tmp/
+	docker exec anodot-agent python /tmp/upload-test-data-to-zabbix.py
 
 
 sleep:
