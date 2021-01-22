@@ -13,7 +13,7 @@ class BaseConfigLoader:
     BASE_PIPELINE_CONFIGS_PATH = os.path.join('pipeline', 'config', 'base_pipelines')
 
     @classmethod
-    def load_base_config(cls, pipeline: Pipeline):
+    def load_base_config(cls, pipeline: Pipeline) -> dict:
         with open(cls._get_config_path(pipeline)) as f:
             data = json.load(f)
         return data['pipelineConfig']
@@ -36,9 +36,18 @@ class BaseConfigLoader:
             source.TYPE_SAGE: 'sage_http',
             source.TYPE_VICTORIA: 'victoria_http',
         }[pipeline.source.type]
-        if pipeline.uses_protocol_3():
-            name += '_schema'
         return name + '.json'
+
+
+class SchemaBaseConfigLoader(BaseConfigLoader):
+    @classmethod
+    def _get_config_file(cls, pipeline: Pipeline) -> str:
+        name = {
+            source.TYPE_MYSQL: 'jdbc_http',
+            source.TYPE_POSTGRES: 'jdbc_http',
+            source.TYPE_DIRECTORY: 'directory_http',
+        }[pipeline.source.type]
+        return name + '_schema.json'
 
 
 class TestPipelineBaseConfigLoader(BaseConfigLoader):
@@ -62,12 +71,11 @@ class TestPipelineBaseConfigLoader(BaseConfigLoader):
 class BaseConfigHandler:
     stages_to_override = {}
 
-    def __init__(self, pipeline: Pipeline):
-        self.config = {}
+    def __init__(self, pipeline: Pipeline, base_config: dict):
+        self.config = base_config
         self.pipeline = pipeline
 
-    def override_base_config(self, base_config, new_uuid=None, new_title=None):
-        self.config = base_config
+    def override_base_config(self, new_uuid=None, new_title=None):
         if new_uuid:
             self.config['uuid'] = new_uuid
         if new_title:

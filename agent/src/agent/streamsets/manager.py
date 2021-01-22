@@ -4,11 +4,11 @@ import time
 
 from datetime import datetime
 from typing import Dict, List, Optional
-from agent import pipeline, streamsets, source
+from agent import pipeline, streamsets
 from agent.modules import db
 from agent.modules.constants import ENV_PROD
 from agent.modules.logger import get_logger
-from agent.streamsets import StreamSetsApiClient, StreamSets
+from agent.streamsets import StreamSetsApiClient, StreamSets, config_handlers
 from agent.pipeline import Pipeline
 
 logger = get_logger(__name__, stdout=True)
@@ -82,17 +82,10 @@ def update(pipeline_: Pipeline):
 
 
 def _create_streamsets_pipeline_config(streamsets_pipeline: dict, pipeline_: Pipeline) -> dict:
-    return get_sdc_config_handler(pipeline_).override_base_config(
-        _get_config_loader(pipeline_).load_base_config(pipeline_),
+    return config_handlers.factory.get_config_handler(pipeline_).override_base_config(
         new_uuid=streamsets_pipeline['uuid'],
         new_title=pipeline_.name
     )
-
-
-def _get_config_loader(pipeline_: Pipeline):
-    return streamsets.config_handlers.base.TestPipelineBaseConfigLoader \
-        if isinstance(pipeline_, pipeline.TestPipeline) \
-        else streamsets.config_handlers.base.BaseConfigLoader
 
 
 def get_pipeline(pipeline_id: str) -> dict:
@@ -396,25 +389,6 @@ class StreamsetsBalancer:
     def _get_busiest_streamsets_id(self) -> int:
         key, _ = max(self.streamsets_pipelines.items(), key=lambda x: len(x))
         return key
-
-
-def get_sdc_config_handler(pipeline_: Pipeline) -> streamsets.config_handlers.base.BaseConfigHandler:
-    if pipeline_.source.type in [source.TYPE_POSTGRES, source.TYPE_MYSQL]:
-        if pipeline_.uses_protocol_3():
-            return streamsets.config_handlers.jdbc.JDBCConfigHandlerProtocol3(pipeline_)
-        return streamsets.config_handlers.jdbc.JDBCConfigHandlerProtocol2(pipeline_)
-
-    handlers = {
-        source.TYPE_INFLUX: streamsets.config_handlers.influx.InfluxConfigHandler,
-        source.TYPE_MONGO: streamsets.config_handlers.mongo.MongoConfigHandler,
-        source.TYPE_KAFKA: streamsets.config_handlers.kafka.KafkaConfigHandler,
-        source.TYPE_ELASTIC: streamsets.config_handlers.elastic.ElasticConfigHandler,
-        source.TYPE_SPLUNK: streamsets.config_handlers.tcp.TCPConfigHandler,
-        source.TYPE_DIRECTORY: streamsets.config_handlers.directory.DirectoryConfigHandler,
-        source.TYPE_SAGE: streamsets.config_handlers.sage.SageConfigHandler,
-        source.TYPE_VICTORIA: streamsets.config_handlers.victoria.VictoriaConfigHandler,
-    }
-    return handlers[pipeline_.source.type](pipeline_)
 
 
 class StreamsetsException(Exception):
