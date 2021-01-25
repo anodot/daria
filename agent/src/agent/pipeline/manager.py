@@ -173,7 +173,7 @@ def update(pipeline_: Pipeline):
         logger_.info(f'No need to update pipeline {pipeline_.name}')
         return
     if pipeline_.uses_protocol_3():
-        schema.update(pipeline_)
+        pipeline_.schema = schema.update(pipeline_)
     streamsets.manager.update(pipeline_)
     pipeline.repository.save(pipeline_)
     logger_.info(f'Updated pipeline {pipeline_}')
