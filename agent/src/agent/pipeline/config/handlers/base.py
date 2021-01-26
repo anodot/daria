@@ -90,7 +90,6 @@ class BaseConfigHandler:
         }
 
     def _override_pipeline_config(self):
-        self.config['uuid'] = self.pipeline.name
         self.config['title'] = self.pipeline.name
         for config in self.config['configuration']:
             if config['name'] == 'constants':
