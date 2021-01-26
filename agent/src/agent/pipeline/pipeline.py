@@ -180,7 +180,7 @@ class Pipeline(Entity):
     @property
     def target_types(self) -> list:
         if self.source.type == source.TYPE_INFLUX:
-            return [self.config['target_type']] * len(self.values)
+            return [self.config.get('target_type', 'gauge')] * len(self.values)
         return list(self.config['values'].values())
 
     @property
