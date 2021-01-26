@@ -1,32 +1,31 @@
 from agent import source, pipeline
 from agent.pipeline import Pipeline
-from agent.streamsets.config_handlers.base import BaseConfigHandler
-from agent.streamsets import config_handlers
+from agent.pipeline.config.handlers.base import BaseConfigHandler
 
 
 def get_config_handler(pipeline_: Pipeline) -> BaseConfigHandler:
     base_config = _get_config_loader(pipeline_).load_base_config(pipeline_)
     if pipeline_.source.type in [source.TYPE_POSTGRES, source.TYPE_MYSQL]:
         if pipeline_.uses_protocol_3():
-            return config_handlers.jdbc.JDBCSchemaConfigHandler(pipeline_, base_config)
-        return config_handlers.jdbc.JDBCConfigHandler(pipeline_, base_config)
+            return pipeline.config.handlers.jdbc.JDBCSchemaConfigHandler(pipeline_, base_config)
+        return pipeline.config.handlers.jdbc.JDBCConfigHandler(pipeline_, base_config)
 
     handlers = {
-        source.TYPE_INFLUX: config_handlers.influx.InfluxConfigHandler,
-        source.TYPE_MONGO: config_handlers.mongo.MongoConfigHandler,
-        source.TYPE_KAFKA: config_handlers.kafka.KafkaConfigHandler,
-        source.TYPE_ELASTIC: config_handlers.elastic.ElasticConfigHandler,
-        source.TYPE_SPLUNK: config_handlers.tcp.TCPConfigHandler,
-        source.TYPE_DIRECTORY: config_handlers.directory.DirectoryConfigHandler,
-        source.TYPE_SAGE: config_handlers.sage.SageConfigHandler,
-        source.TYPE_VICTORIA: config_handlers.victoria.VictoriaConfigHandler,
+        source.TYPE_INFLUX: pipeline.config.handlers.influx.InfluxConfigHandler,
+        source.TYPE_MONGO: pipeline.config.handlers.mongo.MongoConfigHandler,
+        source.TYPE_KAFKA: pipeline.config.handlers.kafka.KafkaConfigHandler,
+        source.TYPE_ELASTIC: pipeline.config.handlers.elastic.ElasticConfigHandler,
+        source.TYPE_SPLUNK: pipeline.config.handlers.tcp.TCPConfigHandler,
+        source.TYPE_DIRECTORY: pipeline.config.handlers.directory.DirectoryConfigHandler,
+        source.TYPE_SAGE: pipeline.config.handlers.sage.SageConfigHandler,
+        source.TYPE_VICTORIA: pipeline.config.handlers.victoria.VictoriaConfigHandler,
     }
     return handlers[pipeline_.source.type](pipeline_, base_config)
 
 
 def _get_config_loader(pipeline_: Pipeline):
     if isinstance(pipeline_, pipeline.TestPipeline):
-        return config_handlers.base.TestPipelineBaseConfigLoader
+        return pipeline.config.handlers.base.TestPipelineBaseConfigLoader
     if pipeline_.uses_protocol_3():
-        return config_handlers.base.SchemaBaseConfigLoader
-    return config_handlers.base.BaseConfigLoader
+        return pipeline.config.handlers.base.SchemaBaseConfigLoader
+    return pipeline.config.handlers.base.BaseConfigLoader

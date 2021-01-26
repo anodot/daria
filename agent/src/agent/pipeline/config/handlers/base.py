@@ -20,7 +20,8 @@ class BaseConfigLoader:
 
     @classmethod
     def _get_config_path(cls, pipeline: Pipeline):
-        return os.path.join(ROOT_DIR, cls.BASE_PIPELINE_CONFIGS_PATH, cls._get_config_file(pipeline))
+        return os.path.join(ROOT_DIR, 'pipeline', 'config', cls.BASE_PIPELINE_CONFIGS_PATH,
+                            cls._get_config_file(pipeline))
 
     @classmethod
     def _get_config_file(cls, pipeline: Pipeline) -> str:
@@ -71,12 +72,11 @@ class TestPipelineBaseConfigLoader(BaseConfigLoader):
 class BaseConfigHandler:
     stages_to_override = {}
 
-    def __init__(self, pipeline: Pipeline):
-        self.config = {}
+    def __init__(self, pipeline: Pipeline, base_config: dict):
+        self.config = base_config
         self.pipeline = pipeline
 
-    def override_base_config(self, base_config):
-        self.config = base_config
+    def override_base_config(self):
         self._override_pipeline_config()
         self._override_stages()
         self._set_labels()

@@ -14,6 +14,7 @@ from agent.destination import anodot_api_client
 from agent.modules.tools import print_json, sdc_record_map_to_dict
 from agent.modules.logger import get_logger
 from typing import List
+from agent.pipeline.config.handlers.factory import get_config_handler
 from agent.source import Source
 
 
@@ -342,28 +343,10 @@ def _get_preview_data(test_pipeline: Pipeline):
 
 
 def create_streamsets_pipeline_config(pipeline_: Pipeline) -> dict:
-    return _get_sdc_config_handler(pipeline_).override_base_config(
-        _get_config_loader(pipeline_).load_base_config(pipeline_)
-    )
+    return get_config_handler(pipeline_).override_base_config()
 
 
 def _get_config_loader(pipeline_: Pipeline):
     return pipeline.config.handlers.base.TestPipelineBaseConfigLoader \
         if isinstance(pipeline_, pipeline.TestPipeline) \
         else pipeline.config.handlers.base.BaseConfigLoader
-
-
-def _get_sdc_config_handler(pipeline_: Pipeline) -> pipeline.config.handlers.base.BaseConfigHandler:
-    handlers = {
-        source.TYPE_INFLUX: pipeline.config.handlers.influx.InfluxConfigHandler,
-        source.TYPE_MONGO: pipeline.config.handlers.mongo.MongoConfigHandler,
-        source.TYPE_KAFKA: pipeline.config.handlers.kafka.KafkaConfigHandler,
-        source.TYPE_MYSQL: pipeline.config.handlers.jdbc.JDBCConfigHandler,
-        source.TYPE_POSTGRES: pipeline.config.handlers.jdbc.JDBCConfigHandler,
-        source.TYPE_ELASTIC: pipeline.config.handlers.elastic.ElasticConfigHandler,
-        source.TYPE_SPLUNK: pipeline.config.handlers.tcp.TCPConfigHandler,
-        source.TYPE_DIRECTORY: pipeline.config.handlers.directory.DirectoryConfigHandler,
-        source.TYPE_SAGE: pipeline.config.handlers.sage.SageConfigHandler,
-        source.TYPE_VICTORIA: pipeline.config.handlers.victoria.VictoriaConfigHandler,
-    }
-    return handlers[pipeline_.source.type](pipeline_)
