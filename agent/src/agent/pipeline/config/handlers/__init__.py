@@ -1,3 +1,4 @@
+from . import factory
 from . import influx
 from . import kafka
 from . import base
@@ -7,4 +8,5 @@ from . import elastic
 from . import tcp
 from . import directory
 from . import victoria
+from . import schema
 from .sage import SageConfigHandler

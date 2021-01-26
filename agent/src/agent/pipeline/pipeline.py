@@ -12,6 +12,7 @@ from copy import deepcopy
 from agent import source, pipeline
 from agent.streamsets import StreamSets
 
+
 class PipelineException(Exception):
     pass
 
@@ -98,6 +99,8 @@ class Pipeline(Entity, sdc_client.IPipeline):
         self.streamsets = None
 
     def config_changed(self) -> bool:
+        if not hasattr(self, '_previous_config'):
+            return False
         return self.config != self._previous_config or self.override_source != self._previous_override_source
 
     def set_config(self, config: dict):
@@ -109,6 +112,9 @@ class Pipeline(Entity, sdc_client.IPipeline):
     @property
     def source(self):
         return self.source_
+
+    def get_protocol(self):
+        return self.config.get('protocol')
 
     @property
     def constant_dimensions(self) -> dict:
@@ -274,8 +280,11 @@ class Pipeline(Entity, sdc_client.IPipeline):
         self.streamsets_id = None
         self.streamsets = None
 
-    def get_schema(self):
+    def get_schema(self) -> dict:
         return self.schema if self.schema else {}
+
+    def has_schema(self) -> bool:
+        return bool(self.schema)
 
     def get_schema_id(self):
         return self.get_schema().get('id')
@@ -314,6 +323,9 @@ class Pipeline(Entity, sdc_client.IPipeline):
             **self.meta_tags(),
             **self.tags
         }
+
+    def uses_protocol_3(self) -> bool:
+        return self.get_protocol() == HttpDestination.PROTOCOL_30
 
 
 class TestPipeline(Pipeline):

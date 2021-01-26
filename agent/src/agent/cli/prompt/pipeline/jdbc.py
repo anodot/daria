@@ -1,5 +1,6 @@
 import click
 
+from agent import pipeline
 from agent.modules.tools import infinite_retry
 from agent.pipeline.validators import jdbc_query
 from .base import PromptConfig
@@ -19,6 +20,7 @@ class PromptConfigJDBC(PromptConfig):
         self.set_dimensions()
         self.set_static_properties()
         self.set_tags()
+        self.set_protocol()
 
     @infinite_retry
     def prompt_values(self):
@@ -52,3 +54,13 @@ class PromptConfigJDBC(PromptConfig):
 
     def set_dimensions(self):
         self.config['dimensions'] = self.prompt_dimensions('Dimensions', self.default_config.get('dimensions', []))
+
+    def set_protocol(self):
+        protocol = pipeline.manager.get_default_protocol(self.pipeline)
+        if self.advanced:
+            use_3 = protocol == self.pipeline.destination.PROTOCOL_30
+            if click.confirm('Use schema?', default=use_3):
+                protocol = self.pipeline.destination.PROTOCOL_30
+            else:
+                protocol = self.pipeline.destination.PROTOCOL_20
+        self.config['protocol'] = protocol

@@ -62,8 +62,6 @@ class PromptConfig:
 
     @infinite_retry
     def prompt_tags(self):
-        self.config['tags'] = self.default_config.get('tags', {})
-
         properties_str = ''
         if self.config['tags']:
             properties_str = ' '.join([key + ':' + ','.join(val) for key, val in self.config['tags'].items()])
@@ -95,6 +93,7 @@ class PromptConfig:
         return default
 
     def set_static_properties(self):
+        self.config['properties'] = self.default_config.get('properties', {})
         if self.advanced:
             self.config['properties'] = {}
             properties = self.prompt_object('Additional properties', self.get_default_object_value('properties'))
@@ -102,6 +101,7 @@ class PromptConfig:
                 self.config['properties'][k.replace(' ', '_').replace('.', '_')] = v.replace(' ', '_').replace('.', '_')
 
     def set_tags(self):
+        self.config['tags'] = self.default_config.get('tags', {})
         if self.advanced:
             self.prompt_tags()
 
@@ -131,7 +131,7 @@ class PromptConfig:
     def data_preview(self):
         if click.confirm('Would you like to see the data preview?', default=True):
             test_pipeline = pipeline.manager.build_test_pipeline(self.pipeline.source)
-            test_pipeline.set_config(self.config)
+            test_pipeline.config = self.config
             preview.print_sample_data(test_pipeline)
 
     @staticmethod
