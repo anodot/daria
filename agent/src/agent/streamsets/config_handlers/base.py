@@ -13,58 +13,69 @@ class BaseConfigLoader:
     BASE_PIPELINE_CONFIGS_PATH = os.path.join('pipeline', 'config', 'base_pipelines')
 
     @classmethod
-    def load_base_config(cls, pipeline: Pipeline):
+    def load_base_config(cls, pipeline: Pipeline) -> dict:
         with open(cls._get_config_path(pipeline)) as f:
             data = json.load(f)
         return data['pipelineConfig']
 
     @classmethod
     def _get_config_path(cls, pipeline: Pipeline):
-        return os.path.join(ROOT_DIR, cls.BASE_PIPELINE_CONFIGS_PATH, cls._get_configs()[pipeline.source.type])
+        return os.path.join(ROOT_DIR, cls.BASE_PIPELINE_CONFIGS_PATH, cls._get_config_file(pipeline))
 
     @classmethod
-    def _get_configs(cls) -> dict:
-        return {
-            source.TYPE_INFLUX: 'influx_http.json',
-            source.TYPE_MONGO: 'mongo_http.json',
-            source.TYPE_KAFKA: 'kafka_http.json',
-            source.TYPE_MYSQL: 'jdbc_http.json',
-            source.TYPE_POSTGRES: 'jdbc_http.json',
-            source.TYPE_ELASTIC: 'elastic_http.json',
-            source.TYPE_SPLUNK: 'tcp_server_http.json',
-            source.TYPE_DIRECTORY: 'directory_http.json',
-            source.TYPE_SAGE: 'sage_http.json',
-            source.TYPE_VICTORIA: 'victoria_http.json',
-        }
+    def _get_config_file(cls, pipeline: Pipeline) -> str:
+        name = {
+            source.TYPE_INFLUX: 'influx_http',
+            source.TYPE_MONGO: 'mongo_http',
+            source.TYPE_KAFKA: 'kafka_http',
+            source.TYPE_MYSQL: 'jdbc_http',
+            source.TYPE_POSTGRES: 'jdbc_http',
+            source.TYPE_ELASTIC: 'elastic_http',
+            source.TYPE_SPLUNK: 'tcp_server_http',
+            source.TYPE_DIRECTORY: 'directory_http',
+            source.TYPE_SAGE: 'sage_http',
+            source.TYPE_VICTORIA: 'victoria_http',
+        }[pipeline.source.type]
+        return name + '.json'
+
+
+class SchemaBaseConfigLoader(BaseConfigLoader):
+    @classmethod
+    def _get_config_file(cls, pipeline: Pipeline) -> str:
+        name = {
+            source.TYPE_MYSQL: 'jdbc_http',
+            source.TYPE_POSTGRES: 'jdbc_http',
+            source.TYPE_DIRECTORY: 'directory_http',
+        }[pipeline.source.type]
+        return name + '_schema.json'
 
 
 class TestPipelineBaseConfigLoader(BaseConfigLoader):
     BASE_PIPELINE_CONFIGS_PATH = os.path.join('pipeline', 'test_pipelines')
 
     @classmethod
-    def _get_configs(cls) -> dict:
+    def _get_config_file(cls, pipeline: Pipeline) -> str:
         return {
-            source.TYPE_INFLUX: 'test_influx_qwe093.json',
-            source.TYPE_MONGO: 'test_mongo_rand847.json',
-            source.TYPE_KAFKA: 'test_kafka_kjeu4334.json',
-            source.TYPE_MYSQL: 'test_jdbc_pdsf4587.json',
-            source.TYPE_POSTGRES: 'test_jdbc_pdsf4587.json',
-            source.TYPE_ELASTIC: 'test_elastic_asdfs3245.json',
-            source.TYPE_SPLUNK: 'test_tcp_server_jksrj322.json',
-            source.TYPE_DIRECTORY: 'test_directory_ksdjfjk21.json',
-            source.TYPE_SAGE: 'test_sage_jfhdkj.json',
-        }
+            source.TYPE_INFLUX: 'test_influx_qwe093',
+            source.TYPE_MONGO: 'test_mongo_rand847',
+            source.TYPE_KAFKA: 'test_kafka_kjeu4334',
+            source.TYPE_MYSQL: 'test_jdbc_pdsf4587',
+            source.TYPE_POSTGRES: 'test_jdbc_pdsf4587',
+            source.TYPE_ELASTIC: 'test_elastic_asdfs3245',
+            source.TYPE_SPLUNK: 'test_tcp_server_jksrj322',
+            source.TYPE_DIRECTORY: 'test_directory_ksdjfjk21',
+            source.TYPE_SAGE: 'test_sage_jfhdkj',
+        }[pipeline.source.type] + '.json'
 
 
 class BaseConfigHandler:
     stages_to_override = {}
 
-    def __init__(self, pipeline: Pipeline):
-        self.config = {}
+    def __init__(self, pipeline: Pipeline, base_config: dict):
+        self.config = base_config
         self.pipeline = pipeline
 
-    def override_base_config(self, base_config, new_uuid=None, new_title=None):
-        self.config = base_config
+    def override_base_config(self, new_uuid=None, new_title=None):
         if new_uuid:
             self.config['uuid'] = new_uuid
         if new_title:

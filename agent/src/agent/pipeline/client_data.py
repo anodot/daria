@@ -1,11 +1,31 @@
 import os
 import json
 
+from typing import Optional
 from jsonschema import validate
+from agent import source, pipeline, destination
+from agent.pipeline import Pipeline
+from agent.pipeline.config.validators import get_config_validator
 from agent.source import ElasticSource
 from agent.pipeline.config import expression_parser
 
 definitions_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'json_schema_definitions')
+
+
+def load_config(pipeline_: Pipeline, config: dict, edit=False):
+    config = get_file_loader(pipeline_.source.type).load(config, edit)
+
+    config['protocol'] = _get_protocol(pipeline_, config.pop('use_schema', None))
+    pipeline_.set_config(config)
+
+    get_config_validator(pipeline_.source.type).validate(pipeline_)
+
+
+def _get_protocol(pipeline_: Pipeline, use_schema: Optional[bool]) -> str:
+    if use_schema is None:
+        return pipeline.manager.get_default_protocol(pipeline_)
+    else:
+        return destination.HttpDestination.PROTOCOL_30 if use_schema else destination.HttpDestination.PROTOCOL_20
 
 
 class LoadClientData:
@@ -23,7 +43,7 @@ class LoadClientData:
         if type(self.client_config.get('value')) == str:
             self.client_config['value'] = {'type': 'property', 'value': self.client_config['value']}
 
-    def load(self, client_config, edit=False):
+    def load(self, client_config, edit=False) -> dict:
         self.client_config = client_config
         if 'override_source' not in self.client_config:
             self.client_config['override_source'] = {}
@@ -130,3 +150,19 @@ class SageLoadClientData(LoadClientData):
 
 class VictoriaLoadClientData(LoadClientData):
     VALIDATION_SCHEMA_FILE_NAME = 'victoria'
+
+
+def get_file_loader(source_type: str) -> LoadClientData:
+    loaders = {
+        source.TYPE_INFLUX: InfluxLoadClientData,
+        source.TYPE_MONGO: MongoLoadClientData,
+        source.TYPE_KAFKA: KafkaLoadClientData,
+        source.TYPE_MYSQL: JDBCLoadClientData,
+        source.TYPE_POSTGRES: JDBCLoadClientData,
+        source.TYPE_ELASTIC: ElasticLoadClientData,
+        source.TYPE_SPLUNK: TcpLoadClientData,
+        source.TYPE_DIRECTORY: DirectoryLoadClientData,
+        source.TYPE_SAGE: SageLoadClientData,
+        source.TYPE_VICTORIA: VictoriaLoadClientData,
+    }
+    return loaders[source_type]()

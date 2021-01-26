@@ -1,6 +1,7 @@
 import pytest
 
-from .test_zpipeline_base import TestPipelineBase
+from .test_zpipeline_base import TestPipelineBase, get_expected_schema_output
+from ..conftest import get_output
 
 
 class TestPostgreSQL(TestPipelineBase):
@@ -38,3 +39,19 @@ class TestPostgreSQL(TestPipelineBase):
 
     def test_stop(self, cli_runner, name=None):
         pytest.skip()
+
+    def test_create_source_with_file(self, cli_runner, file_name):
+        super().test_create_source_with_file(cli_runner, file_name)
+
+    def test_create_with_file(self, cli_runner, file_name):
+        super().test_create_with_file(cli_runner, file_name)
+
+    def test_start(self, cli_runner, name):
+        super().test_start(cli_runner, name)
+
+    def test_force_stop(self, cli_runner, name):
+        super().test_force_stop(cli_runner, name)
+
+    def test_output(self, name, pipeline_type, output):
+        expected_output = get_expected_schema_output(name, output, pipeline_type)
+        assert get_output(f'{name}_{pipeline_type}.json') == expected_output

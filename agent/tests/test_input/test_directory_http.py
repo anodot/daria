@@ -1,5 +1,6 @@
 from agent import pipeline, source, streamsets
 from agent import cli
+from ..test_pipelines.test_zpipeline_base import get_schema_id
 
 
 class TestDirectory:
@@ -20,7 +21,7 @@ class TestDirectory:
         assert streamsets.manager.get_pipeline(pipeline_id)
         pipeline_obj = pipeline.repository.get_by_name(pipeline_id)
         assert pipeline_obj.schema == {
-            'id': '111111-22222-3333-4444',
+            'id': get_schema_id(pipeline_id),
             'version': '1',
             'name': pipeline_id,
             'dimensions': ['ver', 'Country', 'Exchange', 'optional_dim', 'version'],
