@@ -13,7 +13,7 @@ class JDBCSource(Stage):
 
     def get_query(self):
         if isinstance(self.pipeline, pipeline.TestPipeline):
-            query = self.pipeline.query.replace(f'{source.JDBCSource.TIMESTAMP_CONDITION}', '1')
+            query = self.pipeline.query.replace(f'{source.JDBCSource.TIMESTAMP_CONDITION}', 'true')
             return query + f' LIMIT {pipeline.manager.MAX_SAMPLE_RECORDS}'
 
         timestamp_condition = f'''{self._timestamp_to_unix} > {self.LAST_TIMESTAMP} 
