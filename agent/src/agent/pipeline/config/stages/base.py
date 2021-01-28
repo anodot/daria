@@ -1,6 +1,8 @@
 import os
+import pytz
 
 from abc import ABC, abstractmethod
+from datetime import datetime, timedelta
 from agent.modules.constants import ROOT_DIR
 from agent.pipeline import Pipeline
 
@@ -20,3 +22,7 @@ class Stage(ABC):
 
     def get_jython_file_path(self):
         return os.path.join(ROOT_DIR, self.JYTHON_SCRIPTS_PATH, self.JYTHON_SCRIPT)
+
+    def get_initial_timestamp(self) -> datetime:
+        midnight = datetime.now(pytz.timezone('UTC')).replace(hour=0, minute=0, second=0, microsecond=0)
+        return midnight - timedelta(days=int(self.pipeline.days_to_backfill))

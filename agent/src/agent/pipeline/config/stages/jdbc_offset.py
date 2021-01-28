@@ -1,5 +1,4 @@
 from .base import Stage
-from datetime import datetime, timedelta
 
 
 class JDBCScript(Stage):
@@ -9,12 +8,9 @@ class JDBCScript(Stage):
         with open(self.get_jython_file_path()) as f:
             return {
                 'scriptConf.params': [
-                    {'key': 'INITIAL_OFFSET', 'value': self._get_initial_offset()},
+                    {'key': 'INITIAL_OFFSET', 'value': self.get_initial_timestamp().strftime('%d/%m/%Y %H:%M')},
                     {'key': 'INTERVAL_IN_SECONDS', 'value': str(self.pipeline.interval)},
                     {'key': 'DELAY_IN_SECONDS', 'value': str(self.pipeline.delay)},
                 ],
                 'script': f.read(),
             }
-
-    def _get_initial_offset(self) -> str:
-        return (datetime.now() - timedelta(days=int(self.pipeline.days_to_backfill))).strftime('%d/%m/%Y %H:%M')
