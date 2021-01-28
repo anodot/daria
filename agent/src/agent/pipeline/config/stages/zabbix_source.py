@@ -1,0 +1,30 @@
+import pytz
+
+from datetime import datetime
+from agent import source
+from .base import Stage
+
+
+class ZabbixScript(Stage):
+    JYTHON_SCRIPT = 'zabbix.py'
+
+    def _get_config(self) -> dict:
+        with open(self.get_jython_file_path()) as f:
+            return {
+                'scriptConf.params': [
+                    {'key': 'URL', 'value': self.pipeline.source.config[source.ZabbixSource.URL]},
+                    {'key': 'USERNAME',
+                     'value': self.pipeline.source.config.get(source.ZabbixSource.USERNAME, '')},
+                    {'key': 'PASSWORD',
+                     'value': self.pipeline.source.config.get(source.ZabbixSource.PASSWORD, '')},
+                    # todo constant
+                    {'key': 'QUERY', 'value': self.pipeline.config['query']},
+                    {'key': 'INITIAL_TIMESTAMP', 'value': self.get_initial_timestamp()},
+                    {'key': 'INTERVAL', 'value': str(self.pipeline.interval)},
+                    {'key': 'DELAY_IN_MINUTES', 'value': str(self.pipeline.delay)},
+                    {'key': 'VERIFY_SSL', 'value': '1' if self.pipeline.source.config.get('verify_ssl', True) else ''},
+                    {'key': 'QUERY_TIMEOUT', 'value': str(self.pipeline.source.config.get('query_timeout', 15))},
+                    {'key': 'AGGREGATED_METRIC_NAME', 'value': str(self.pipeline.config.get('aggregated_metric_name'))},
+                ],
+                'script': f.read(),
+            }

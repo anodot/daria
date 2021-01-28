@@ -191,6 +191,12 @@ class VictoriaMetricsSource(Source):
     PASSWORD = 'password'
 
 
+class ZabbixSource(Source):
+    URL = 'url'
+    USER = 'user'
+    PASSWORD = 'password'
+
+
 class DirectorySource(SchemalessSource):
     pass
 

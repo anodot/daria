@@ -1,28 +1,13 @@
-import requests
 from sqlalchemy import create_engine
-
-
-def post(method, auth, params):
-    res = requests.post('http://zabbix-web:8080/api_jsonrpc.php', json={
-        'jsonrpc': '2.0',
-        'method': method,
-        'params': params,
-        'id': 1,
-        'auth': auth
-    })
-    res.raise_for_status()
-    result = res.json()
-    if 'error' in result:
-        raise Exception(str(result))
-
-    return result['result']
+from agent.modules import zabbix
 
 
 HOSTNAME = 'zabbixagent'
 
-auth_token = post('user.login', None, {'user': 'Admin', 'password': 'zabbix'})
+client = zabbix.Client('http://zabbix-web:8080', 'Admin', 'zabbix')
 print('Auth successful')
-host = post('host.create', auth_token, {
+
+host = client.post('host.create', {
     'host': HOSTNAME,
     'groups': [{'groupid': 4}],
     'interfaces': [{'type': 1, 'main': 1, 'dns': HOSTNAME, 'useip': 0, 'ip': '', 'port': 10500}]
@@ -30,12 +15,12 @@ host = post('host.create', auth_token, {
 host_id = host['hostids'][0]
 print('Host created')
 
-interface = post('hostinterface.get', auth_token, {
+interface = client.post('hostinterface.get', {
     'hostids': host_id
 })
 interface_id = interface[0]['interfaceid']
 
-cpu_item = post('item.create', auth_token, {
+cpu_item = client.post('item.create', {
     'hostid': host_id,
     'name': 'CPU',
     'key_': 'system.cpu.load',
@@ -47,7 +32,7 @@ cpu_item = post('item.create', auth_token, {
 cpu_item_id = cpu_item['itemids'][0]
 print('CPU item created')
 
-memory_item = post('item.create', auth_token, {
+memory_item = client.post('item.create', {
     'hostid': host_id,
     'name': 'Memory',
     'key_': 'vm.memory.size',

@@ -8,3 +8,4 @@ from .tcp import PromptConfigTCP
 from .directory import PromptConfigDirectory
 from .sage import PromptConfigSage
 from .victoria import PromptConfigVictoria
+from .zabbix import PromptConfigZabbix

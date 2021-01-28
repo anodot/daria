@@ -15,6 +15,7 @@ TYPE_SPLUNK = 'splunk'
 TYPE_DIRECTORY = 'directory'
 TYPE_SAGE = 'sage'
 TYPE_VICTORIA = 'victoria'
+TYPE_ZABBIX = 'zabbix'
 
 types = {
     TYPE_INFLUX: InfluxSource,
@@ -27,6 +28,7 @@ types = {
     TYPE_DIRECTORY: DirectorySource,
     TYPE_SAGE: SageSource,
     TYPE_VICTORIA: VictoriaMetricsSource,
+    TYPE_ZABBIX: ZabbixSource,
 }
 
 json_schema = {

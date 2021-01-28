@@ -1,0 +1,7 @@
+{
+  "output": "extend",
+  "hostids": "10001",
+  "search": {
+    "key_": "ping"
+  }
+}

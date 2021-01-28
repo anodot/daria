@@ -35,6 +35,7 @@ class BaseConfigLoader:
             source.TYPE_DIRECTORY: 'directory_http',
             source.TYPE_SAGE: 'sage_http',
             source.TYPE_VICTORIA: 'victoria_http',
+            source.TYPE_ZABBIX: 'zabbix_http',
         }[pipeline.source.type]
         return name + '.json'
 

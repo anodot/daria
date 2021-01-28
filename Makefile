@@ -195,7 +195,9 @@ run-postgres:
 run-sage:
 	$(DOCKER_COMPOSE_DEV) up -d --build sage
 
-run-zabbix:
+run-zabbix: _run-zabbix sleep setup-zabbix
+
+_run-zabbix:
 	$(DOCKER_COMPOSE_DEV) up -d mysql zabbix-server zabbix-web zabbix-agent
 
 ##--------------------------
