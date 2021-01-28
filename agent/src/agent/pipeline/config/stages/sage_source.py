@@ -17,7 +17,7 @@ class SageScript(Stage):
                 {'key': 'QUERY', 'value': self.pipeline.query},
                 {'key': 'INTERVAL', 'value': str(self.pipeline.interval)},
                 {'key': 'DELAY', 'value': str(self.pipeline.delay)},
-                {'key': 'DAYS_TO_BACKFILL', 'value': str(self.pipeline.days_to_backfill)},
+                {'key': 'DAYS_TO_BACKFILL', 'value': self.pipeline.days_to_backfill},
                 {'key': 'QUERY_SIZE', 'value': str(self.pipeline.batch_size)},
             ],
             'script': script
