@@ -344,9 +344,3 @@ def _get_preview_data(test_pipeline: Pipeline):
 
 def create_streamsets_pipeline_config(pipeline_: Pipeline) -> dict:
     return get_config_handler(pipeline_).override_base_config()
-
-
-def _get_config_loader(pipeline_: Pipeline):
-    return pipeline.config.handlers.base.TestPipelineBaseConfigLoader \
-        if isinstance(pipeline_, pipeline.TestPipeline) \
-        else pipeline.config.handlers.base.BaseConfigLoader
