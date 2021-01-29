@@ -1,5 +1,3 @@
-import pytz
-
 from datetime import datetime
 from agent import source
 from .base import Stage
@@ -7,14 +5,6 @@ from .base import Stage
 
 class VictoriaScript(Stage):
     JYTHON_SCRIPT = 'victoria.py'
-
-    def get_initial_timestamp(self) -> str:
-        if self.pipeline.days_to_backfill:
-            midnight = int(datetime.timestamp(
-                datetime.now(pytz.timezone('UTC')).replace(hour=0, minute=0, second=0, microsecond=0)
-            ))
-            return str(midnight - int(self.pipeline.days_to_backfill) * 24 * 60 * 60)
-        return ''
 
     def _get_config(self) -> dict:
         with open(self.get_jython_file_path()) as f:
@@ -26,7 +16,7 @@ class VictoriaScript(Stage):
                     {'key': 'PASSWORD',
                      'value': self.pipeline.source.config.get(source.VictoriaMetricsSource.PASSWORD, '')},
                     {'key': 'QUERY', 'value': self.pipeline.config['query']},
-                    {'key': 'INITIAL_TIMESTAMP', 'value': self.get_initial_timestamp()},
+                    {'key': 'INITIAL_TIMESTAMP', 'value': int(datetime.timestamp(self.get_initial_timestamp()))},
                     {'key': 'INTERVAL', 'value': str(self.pipeline.interval)},
                     {'key': 'DELAY_IN_MINUTES', 'value': str(self.pipeline.delay)},
                     {'key': 'VERIFY_SSL', 'value': '1' if self.pipeline.source.config.get('verify_ssl', True) else ''},

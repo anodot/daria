@@ -2,7 +2,7 @@ from datetime import datetime
 from agent import source, cli
 from ..conftest import generate_input
 
-days_to_backfill = (datetime.now() - datetime(year=2017, month=12, day=10)).days + 1
+days_to_backfill = (datetime.now() - datetime(year=2017, month=12, day=10)).days
 
 
 class TestMySQL:

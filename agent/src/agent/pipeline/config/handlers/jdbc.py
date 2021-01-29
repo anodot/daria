@@ -10,7 +10,7 @@ class JDBCSchemaConfigHandler(SchemaConfigHandler):
     stages_to_override = {
         'offset': stages.jdbc_offset.JDBCScript,
         'source': stages.jdbc_source.JDBCSource,
-        'JavaScriptEvaluator_01': stages.js_convert_metrics_20.JSConvertMetrics,
+        'JavaScriptEvaluator_01': stages.js_convert_metrics_20.JSConvertMetricsJdbc,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties30,
         'destination': stages.destination.Destination
     }
@@ -20,7 +20,7 @@ class JDBCConfigHandler(BaseConfigHandler):
     stages_to_override = {
         'offset': stages.jdbc_offset.JDBCScript,
         'source': stages.jdbc_source.JDBCSource,
-        'JavaScriptEvaluator_01': stages.js_convert_metrics_20.JSConvertMetrics,
+        'JavaScriptEvaluator_01': stages.js_convert_metrics_20.JSConvertMetricsJdbc,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties,
         'destination': stages.destination.Destination
     }
