@@ -32,6 +32,7 @@ for pipeline_ in pipelines:
             logger.error(traceback.format_exc())
     except Exception:
         _update_errors_count()
+        logger.error(f'Error sending pipeline {pipeline_.name}')
         logger.error(traceback.format_exc())
 
 

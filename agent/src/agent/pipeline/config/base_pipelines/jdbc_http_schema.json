@@ -355,7 +355,7 @@
       "stageVersion" : "1",
       "configuration" : [ {
         "name" : "script",
-        "value" : "global sdc\n\ntry:\n    sdc.importLock()\n    import time\n    from datetime import datetime, timedelta\nfinally:\n    sdc.importUnlock()\n\n\ndef get_interval():\n    return int(sdc.userParams['INTERVAL_IN_SECONDS'])\n\n\ndef get_now_with_delay():\n    return int(time.time()) - int(sdc.userParams['DELAY_IN_SECONDS'])\n\n\ndef to_timestamp(date):\n    epoch = datetime(1970, 1, 1)\n    return int((date - epoch).total_seconds())\n\n\nentityName = ''\ninterval = timedelta(seconds=get_interval())\n\nif sdc.lastOffsets.containsKey(entityName):\n    offset = int(float(sdc.lastOffsets.get(entityName)))\nelif sdc.userParams['INITIAL_OFFSET']:\n    offset = to_timestamp(datetime.strptime(sdc.userParams['INITIAL_OFFSET'], '%d/%m/%Y %H:%M'))\nelse:\n    offset = to_timestamp(datetime.utcnow().replace(second=0, microsecond=0) - interval)\n\nsdc.log.info('OFFSET: ' + str(offset))\n\nwhile True:\n    if sdc.isStopped():\n        break\n    now_with_delay = get_now_with_delay() - interval.total_seconds()\n    if offset > now_with_delay:\n        time.sleep(offset - now_with_delay)\n    cur_batch = sdc.createBatch()\n    record = sdc.createRecord('record created ' + str(datetime.now()))\n    record.value = {'last_timestamp': int(offset)}\n    offset += interval.total_seconds()\n    cur_batch.add(record)\n    cur_batch.process(entityName, str(offset))"
+        "value" : "global sdc\n\ntry:\n    sdc.importLock()\n    import time\n    from datetime import datetime, timedelta\nfinally:\n    sdc.importUnlock()\n\n\ndef get_interval():\n    return int(sdc.userParams['INTERVAL_IN_SECONDS'])\n\n\ndef get_now_with_delay():\n    return int(time.time()) - int(sdc.userParams['DELAY_IN_SECONDS'])\n\n\ndef to_timestamp(date):\n    epoch = datetime(1970, 1, 1)\n    return int((date - epoch).total_seconds())\n\n\nentityName = ''\ninterval = timedelta(seconds=get_interval())\n\nif sdc.lastOffsets.containsKey(entityName):\n    offset = int(float(sdc.lastOffsets.get(entityName)))\nelif sdc.userParams['INITIAL_OFFSET']:\n    offset = to_timestamp(datetime.strptime(sdc.userParams['INITIAL_OFFSET'], '%d/%m/%Y %H:%M'))\nelse:\n    offset = to_timestamp(datetime.utcnow().replace(second=0, microsecond=0) - interval)\n\nsdc.log.info('OFFSET: ' + str(offset))\n\nwhile True:\n    if sdc.isStopped():\n        break\n    now_with_delay = get_now_with_delay() - interval.total_seconds()\n    if offset > now_with_delay:\n        time.sleep(offset - now_with_delay)\n    cur_batch = sdc.createBatch()\n    record = sdc.createRecord('record created ' + str(datetime.now()))\n    record.value = {'last_timestamp': int(offset)}\n    offset += interval.total_seconds()\n    cur_batch.add(record)\n    cur_batch.process(entityName, str(offset))\n"
       }, {
         "name" : "scriptConf.batchSize",
         "value" : 1000
@@ -510,7 +510,7 @@
         "value" : "state['TIMESTAMP_COLUMN'] = 'timestamp_datetime';\nstate['DIMENSIONS'] = ['adsize', 'country'];\nstate['DIMENSIONS_NAMES'] = ['adsize', 'country'];\nstate['VALUES_COLUMNS'] = ['clicks', 'impressions'];\nstate['MEASUREMENT_NAMES'] = ['clicks', 'impressions'];\nstate['TARGET_TYPES'] = ['gauge', 'gauge'];\nstate['COUNT_RECORDS'] = 0;\nstate['COUNT_RECORDS_MEASUREMENT_NAME'] = 'count';\nstate['STATIC_WHAT'] = 1;\nstate['VALUES_ARRAY_PATH'] = '';\nstate['VALUES_ARRAY_FILTER'] = [];\nstate['metrics'] = {}"
       }, {
         "name" : "script",
-        "value" : "for (var i = 0; i < records.length; i++) {\n    var dimensions = {};\n    for (var j = 0; j < state['DIMENSIONS'].length; j++) {\n        var dimension = records[i].value[state['DIMENSIONS'][j]]\n        var dimension_name = state['DIMENSIONS_NAMES'][j].replace(/[\\. \\/]+/g, '_')\n        if (dimension !== null && dimension !== '') {\n            dimensions[dimension_name] = String(dimension).replace(/[\\. ]+/g, '_')\n        }\n    }\n\n    try {\n        if (records[i].value[state['TIMESTAMP_COLUMN']] === null) {\n            continue;\n        }\n        var measurements = {}\n        for (var j = 0; j < state['VALUES_COLUMNS'].length; j++) {\n            var value = records[i].value[state['VALUES_COLUMNS'][j]];\n            if (value === null) {\n              continue;\n            }\n            var measurement = '';\n            if (state['STATIC_WHAT']) {\n                measurement = state['MEASUREMENT_NAMES'][j].replace(/[\\. ]+/g, '_');\n            } else {\n                var meas_name = records[i].value[state['MEASUREMENT_NAMES'][j]]\n                if (typeof meas_name !== 'string') {\n                    throw state['MEASUREMENT_NAMES'][j] + ' property should be string instead of ' + (typeof meas_name)\n                }\n                measurement = meas_name.replace(/[\\. ]+/g, '_');\n            }\n            measurements[measurement] = value;\n        }\n        if (state['COUNT_RECORDS']) {\n            if (records[i].value[state['TIMESTAMP_COLUMN']] !== null) {\n                measurements[state['COUNT_RECORDS_MEASUREMENT_NAME']] = 1;\n            }\n        }\n        var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + i);\n        newRecord.value = {\n             'timestamp': records[i].value[state['TIMESTAMP_COLUMN']],\n             'dimensions': dimensions,\n             'measurements': measurements,\n             'schemaId': \"${SCHEMA_ID}\"\n         };\n         output.write(newRecord);\n    } catch (e) {\n        error.write(records[i], e);\n    }\n}"
+        "value" : "for (var i = 0; i < records.length; i++) {\n    var dimensions = {};\n    for (var j = 0; j < state['DIMENSIONS'].length; j++) {\n        var dimension = records[i].value[state['DIMENSIONS'][j]]\n        var dimension_name = state['DIMENSIONS_NAMES'][j].replace(/[\\. \\/]+/g, '_')\n        if (dimension !== null && dimension !== '') {\n            dimensions[dimension_name] = String(dimension).replace(/[\\. ]+/g, '_')\n        }\n    }\n\n    try {\n        if (records[i].value[state['TIMESTAMP_COLUMN']] === null) {\n            continue;\n        }\n        var measurements = {}\n        for (var j = 0; j < state['VALUES_COLUMNS'].length; j++) {\n            var value = records[i].value[state['VALUES_COLUMNS'][j]];\n            if (value === null) {\n              continue;\n            }\n            var measurement = '';\n            if (state['STATIC_WHAT']) {\n                measurement = state['MEASUREMENT_NAMES'][j].replace(/[\\. ]+/g, '_');\n            } else {\n                var meas_name = records[i].value[state['MEASUREMENT_NAMES'][j]]\n                if (typeof meas_name !== 'string') {\n                    throw state['MEASUREMENT_NAMES'][j] + ' property should be string instead of ' + (typeof meas_name)\n                }\n                measurement = meas_name.replace(/[\\. ]+/g, '_');\n            }\n            measurements[measurement] = value;\n        }\n        if (state['COUNT_RECORDS']) {\n            if (records[i].value[state['TIMESTAMP_COLUMN']] !== null) {\n                measurements[state['COUNT_RECORDS_MEASUREMENT_NAME']] = 1;\n            }\n        }\n        var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + i);\n        newRecord.value = {\n             'timestamp': records[i].value[state['TIMESTAMP_COLUMN']],\n             'dimensions': dimensions,\n             'measurements': measurements,\n             'schemaId': \"${SCHEMA_ID}\",\n         };\n         output.write(newRecord);\n    } catch (e) {\n        error.write(records[i], e);\n    }\n}\n\nif (records.length > 0 && records[0].value[state['TIMESTAMP_COLUMN']] !== null) {\n  event = sdc.createEvent('interval processed', 1);\n  event.value = {\n    'watermark': records[0].value['last_timestamp'] + state['INTERVAL'] ,\n  };\n  sdc.toEvent(event);\n}"
       }, {
         "name" : "destroyScript",
         "value" : ""
@@ -532,14 +532,14 @@
       } ],
       "uiInfo" : {
         "description" : "",
-        "label" : "Transofrm to metric",
+        "label" : "Transform to metric",
         "xPos" : 528.4627075195312,
         "yPos" : 104.73756408691406,
         "stageType" : "PROCESSOR"
       },
       "inputLanes" : [ "JDBCLookup_01OutputLane16056312277720" ],
       "outputLanes" : [ "JavaScriptEvaluator_01OutputLane15631799146000" ],
-      "eventLanes" : [ ],
+      "eventLanes" : [ "JavaScriptEvaluator_01_EventLane" ],
       "services" : [ ]
     }, {
       "instanceName" : "ExpressionEvaluator_02",
@@ -668,51 +668,6 @@
       "inputLanes" : [ "ExpressionEvaluator_02OutputLane15480856372920" ],
       "outputLanes" : [ "destination_OutputLane" ],
       "eventLanes" : [ ],
-      "services" : [ ]
-    }, {
-      "instanceName" : "JavaScriptEvaluator_02",
-      "library" : "streamsets-datacollector-basic-lib",
-      "stageName" : "com_streamsets_pipeline_stage_processor_javascript_JavaScriptDProcessor",
-      "stageVersion" : "3",
-      "configuration" : [ {
-        "name" : "processingMode",
-        "value" : "BATCH"
-      }, {
-        "name" : "initScript",
-        "value" : ""
-      }, {
-        "name" : "script",
-        "value" : "// get latest batch timestamp\nfor (var i = 0; i < records.length; i++) {\n  output.write(records[i]);\n}\n\nif (records.length > 0) {\n  last_record = records[records.length - 1];\n  timestamp = last_record.value['timestamp'];\n  event = sdc.createEvent('interval processed', 1);\n  event.value = {\n    'watermark': timestamp ,\n  };\n  sdc.toEvent(event);\n}"
-      }, {
-        "name" : "destroyScript",
-        "value" : ""
-      }, {
-        "name" : "scriptRecordType",
-        "value" : "NATIVE_OBJECTS"
-      }, {
-        "name" : "userParams",
-        "value" : [ ]
-      }, {
-        "name" : "stageOnRecordError",
-        "value" : "TO_ERROR"
-      }, {
-        "name" : "stageRequiredFields",
-        "value" : [ ]
-      }, {
-        "name" : "stageRecordPreconditions",
-        "value" : [ ]
-      } ],
-      "uiInfo" : {
-        "yPos" : 104.99555969238281,
-        "stageType" : "PROCESSOR",
-        "icon" : "javascript.png",
-        "description" : "",
-        "label" : "Produce event for watermark",
-        "xPos" : 1149.9013671875
-      },
-      "inputLanes" : [ "destination_OutputLane" ],
-      "outputLanes" : [ "JavaScriptEvaluator_02OutputLane16110504708270" ],
-      "eventLanes" : [ "JavaScriptEvaluator_02_EventLane" ],
       "services" : [ ]
     }, {
       "instanceName" : "destination",
@@ -1017,11 +972,11 @@
       "uiInfo" : {
         "description" : "",
         "label" : "HTTP Client 1",
-        "xPos" : 1362.259033203125,
-        "yPos" : 105.27545166015625,
+        "xPos" : 1143.00048828125,
+        "yPos" : 107.34391784667969,
         "stageType" : "TARGET"
       },
-      "inputLanes" : [ "JavaScriptEvaluator_02OutputLane16110504708270" ],
+      "inputLanes" : [ "destination_OutputLane" ],
       "outputLanes" : [ ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -1055,14 +1010,14 @@
         "value" : [ ]
       } ],
       "uiInfo" : {
-        "yPos" : 236.2410125732422,
+        "yPos" : 224.86439514160156,
         "stageType" : "PROCESSOR",
         "icon" : "expression.png",
         "description" : "",
         "label" : "Add schema id",
-        "xPos" : 1363.7970581054688
+        "xPos" : 747.39111328125
       },
-      "inputLanes" : [ "JavaScriptEvaluator_02_EventLane" ],
+      "inputLanes" : [ "JavaScriptEvaluator_01_EventLane" ],
       "outputLanes" : [ "ExpressionEvaluator_03OutputLane16107257160010" ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -1367,12 +1322,12 @@
         "value" : [ ]
       } ],
       "uiInfo" : {
-        "yPos" : 237.20240783691406,
+        "yPos" : 226.8600311279297,
         "stageType" : "TARGET",
         "icon" : "anodot_logo.png",
         "description" : "",
         "label" : "Anodot Destination Watermark",
-        "xPos" : 1567.5202026367188
+        "xPos" : 943.8745727539062
       },
       "inputLanes" : [ "ExpressionEvaluator_03OutputLane16107257160010" ],
       "outputLanes" : [ ],
@@ -1734,7 +1689,7 @@
         } ]
       } ]
     },
-    "valid" : false,
+    "valid" : true,
     "issues" : {
       "pipelineIssues" : [ ],
       "stageIssues" : { },

@@ -180,7 +180,7 @@ class Pipeline(Entity):
     @property
     def target_types(self) -> list:
         if self.source.type == source.TYPE_INFLUX:
-            return [self.config['target_type']] * len(self.values)
+            return [self.config.get('target_type', 'gauge')] * len(self.values)
         return list(self.config['values'].values())
 
     @property
@@ -245,7 +245,7 @@ class Pipeline(Entity):
 
     @property
     def days_to_backfill(self) -> str:
-        return self.config.get('days_to_backfill', '0')
+        return str(self.config.get('days_to_backfill', '0'))
 
     @property
     def delay(self) -> str:
