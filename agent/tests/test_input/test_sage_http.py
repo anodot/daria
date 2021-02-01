@@ -1,6 +1,6 @@
 from ..conftest import get_input_file_path
 from datetime import datetime
-from agent import source, streamsets, cli
+from agent import source, cli
 
 
 class TestSage:
@@ -28,7 +28,6 @@ class TestSage:
         result = cli_runner.invoke(cli.pipeline.create, options, catch_exceptions=False,
                                    input=f"test_sage\n{name}\n{query_file_path}\n\n{interval}\n{days_to_backfill}\n{value}\nver Country Exchange\n{advanced_options}\n")
         assert result.exit_code == 0
-        assert streamsets.manager.get_pipeline(name)
 
     def test_edit(self, cli_runner, options, value):
         result = cli_runner.invoke(cli.pipeline.edit, options, catch_exceptions=False,

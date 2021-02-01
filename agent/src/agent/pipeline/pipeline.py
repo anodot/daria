@@ -1,5 +1,6 @@
-from copy import deepcopy
-from typing import Optional
+import sdc_client
+
+from typing import Optional, List
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import relationship
 from agent.modules.constants import HOSTNAME
@@ -7,7 +8,9 @@ from agent.modules.db import Entity
 from agent.destination import HttpDestination
 from enum import Enum
 from sqlalchemy import Column, Integer, String, JSON, ForeignKey, func
-from agent import source
+from copy import deepcopy
+from agent import source, pipeline
+from agent.streamsets import StreamSets
 
 
 class PipelineException(Exception):
@@ -42,7 +45,7 @@ class FlushBucketSize(Enum):
             return 60 * 60 * 24 * 7
 
 
-class Pipeline(Entity):
+class Pipeline(Entity, sdc_client.IPipeline):
     __tablename__ = 'pipelines'
 
     STATUS_RUNNING = 'RUNNING'
@@ -255,9 +258,23 @@ class Pipeline(Entity):
     def batch_size(self) -> str:
         return self.config.get('batch_size', 1000)
 
-    def set_streamsets(self, streamsets):
-        self.streamsets_id = streamsets.id
-        self.streamsets = streamsets
+    def get_streamsets_config(self) -> dict:
+        return pipeline.manager.create_streamsets_pipeline_config(self)
+
+    def get_id(self) -> str:
+        return self.name
+
+    def get_offset(self) -> Optional[str]:
+        if self.offset:
+            return self.offset.offset
+        return None
+
+    def get_streamsets(self) -> Optional[sdc_client.IStreamSets]:
+        return self.streamsets
+
+    def set_streamsets(self, streamsets_: StreamSets):
+        self.streamsets_id = streamsets_.id
+        self.streamsets = streamsets_
 
     def delete_streamsets(self):
         self.streamsets_id = None
@@ -326,3 +343,11 @@ class PipelineOffset(Entity):
     def __init__(self, pipeline_id: int, offset: str):
         self.pipeline_id = pipeline_id
         self.offset = offset
+
+
+class Provider(sdc_client.IPipelineProvider):
+    def get_all(self) -> List[Pipeline]:
+        return pipeline.repository.get_all()
+
+    def save(self, pipeline_: Pipeline):
+        pipeline.repository.save(pipeline_)

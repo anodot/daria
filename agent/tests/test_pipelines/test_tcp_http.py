@@ -1,7 +1,8 @@
 import pytest
 import socket
+import sdc_client
 
-from agent import cli, streamsets
+from agent import cli
 from .test_zpipeline_base import TestPipelineBase
 from agent import pipeline, source
 
@@ -29,16 +30,13 @@ class TestTCPServer(TestPipelineBase):
     def test_create_with_file(self, cli_runner, file_name):
         super().test_create_with_file(cli_runner, file_name)
 
-    def test_edit(self, cli_runner):
-        pytest.skip()
-
     def test_edit_with_file(self, cli_runner, file_name=None):
         pytest.skip()
 
     def test_start(self, cli_runner, name):
         result = cli_runner.invoke(cli.pipeline.start, [name], catch_exceptions=False)
         assert result.exit_code == 0
-        assert streamsets.manager.get_pipeline_status_by_id(name) == 'RUNNING'
+        assert sdc_client.get_pipeline_status(pipeline.repository.get_by_name(name)) == pipeline.Pipeline.STATUS_RUNNING
 
         # streams data
         pipeline_ = pipeline.repository.get_by_name(name)

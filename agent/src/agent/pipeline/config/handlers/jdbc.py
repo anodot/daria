@@ -1,7 +1,7 @@
 from agent.modules.logger import get_logger
 from agent.pipeline.config import stages
-from agent.streamsets.config_handlers.base import BaseConfigHandler
-from agent.streamsets.config_handlers.schema import SchemaConfigHandler
+from agent.pipeline.config.handlers.base import BaseConfigHandler
+from agent.pipeline.config.handlers.schema import SchemaConfigHandler
 
 logger = get_logger(__name__)
 
