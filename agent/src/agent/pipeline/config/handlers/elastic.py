@@ -8,7 +8,7 @@ logger = get_logger(__name__)
 class ElasticConfigHandler(BaseConfigHandler):
     stages_to_override = {
         'source': stages.source.Source,
-        'JavaScriptEvaluator_01': stages.js_convert_metrics_20.JSConvertMetrics,
+        'JavaScriptEvaluator_01': stages.js_convert_metrics.JSConvertMetrics,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties,
         'ExpressionEvaluator_03': stages.expression_evaluator.Filtering,
         'destination': stages.destination.Destination
