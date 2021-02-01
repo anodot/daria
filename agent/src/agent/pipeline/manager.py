@@ -32,6 +32,7 @@ def get_default_protocol(pipeline_: Pipeline):
         source.TYPE_DIRECTORY,
         source.TYPE_MYSQL,
         source.TYPE_POSTGRES,
+        source.TYPE_KAFKA,
     ]
     if pipeline_.source.type in supported:
         return destination.HttpDestination.PROTOCOL_30
