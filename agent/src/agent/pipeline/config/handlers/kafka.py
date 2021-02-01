@@ -21,3 +21,13 @@ class KafkaConfigHandler(BaseConfigHandler):
             self.pipeline.override_source[KafkaSource.CONFIG_CONSUMER_GROUP] = 'anodot_agent_' + self.pipeline.name
 
         super()._override_stages()
+
+
+class KafkaSchemaConfigHandler(KafkaConfigHandler):
+    stages_to_override = {
+        'source': stages.source.Source,
+        'JavaScriptEvaluator_01': stages.js_convert_metrics.JSConvertMetrics30,
+        'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties30,
+        'ExpressionEvaluator_03': stages.expression_evaluator.Filtering,
+        'destination': stages.destination.Destination
+    }

@@ -15,7 +15,7 @@ for (var i = 0; i < records.length; i++) {
         var measurements = {}
         for (var j = 0; j < state['VALUES_COLUMNS'].length; j++) {
             var value = records[i].value[state['VALUES_COLUMNS'][j]];
-            if (value === null) {
+            if (value === null || value === '') {
               continue;
             }
             var measurement = '';
@@ -28,12 +28,13 @@ for (var i = 0; i < records.length; i++) {
                 }
                 measurement = meas_name.replace(/[\. ]+/g, '_');
             }
+            if (typeof value === 'string' || value instanceof String) {
+                value = parseFloat(value)
+            }
             measurements[measurement] = value;
         }
         if (state['COUNT_RECORDS']) {
-            if (records[i].value[state['TIMESTAMP_COLUMN']] !== null) {
-                measurements[state['COUNT_RECORDS_MEASUREMENT_NAME']] = 1;
-            }
+            measurements[state['COUNT_RECORDS_MEASUREMENT_NAME']] = 1;
         }
         var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + i);
         newRecord.value = {
