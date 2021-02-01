@@ -24,9 +24,7 @@ LOG_LEVELS = [logging.getLevelName(logging.INFO), logging.getLevelName(logging.E
 MAX_SAMPLE_RECORDS = 3
 
 
-def use_schema(pipeline_: Pipeline):
-    if pipeline_.use_schema:
-        return pipeline_.use_schema
+def use_schema(source_type: str):
     # use protocol 3 for all new pipelines that support it
     supported = [
         source.TYPE_DIRECTORY,
@@ -34,7 +32,7 @@ def use_schema(pipeline_: Pipeline):
         source.TYPE_POSTGRES,
         source.TYPE_KAFKA,
     ]
-    if pipeline_.source.type in supported:
+    if source_type in supported:
         return destination.HttpDestination.PROTOCOL_30
     return destination.HttpDestination.PROTOCOL_20
 
@@ -277,7 +275,9 @@ def disable_destination_logs(pipeline_: Pipeline):
 def build_test_pipeline(source_: Source) -> TestPipeline:
     # creating a new source because otherwise it will mess with the db session
     test_source = Source(source_.name, source_.type, source_.config)
-    return TestPipeline(_get_test_pipeline_name(test_source), test_source, destination.repository.get())
+    test_pipeline = TestPipeline(_get_test_pipeline_name(test_source), test_source, destination.repository.get())
+    test_pipeline.config['use_schema'] = use_schema(test_pipeline.source.type)
+    return test_pipeline
 
 
 def _get_test_pipeline_name(source_: Source) -> str:

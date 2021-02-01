@@ -160,7 +160,7 @@ class PromptConfig:
                                             default=self.default_config.get('delay', 0))
 
     def set_use_schema(self):
-        self.config['use_schema'] = pipeline.manager.use_schema(self.pipeline)
+        self.config['use_schema'] = pipeline.manager.use_schema(self.pipeline.source.type)
         if self.advanced:
             self.config['use_schema'] = click.confirm('Use schema?', default=True)
 

@@ -1,9 +1,8 @@
 import os
 import json
 
-from typing import Optional
 from jsonschema import validate
-from agent import source, pipeline, destination
+from agent import source, pipeline
 from agent.pipeline import Pipeline
 from agent.pipeline.config.validators import get_config_validator
 from agent.source import ElasticSource
@@ -16,7 +15,7 @@ def load_config(pipeline_: Pipeline, config: dict, edit=False):
     config = get_file_loader(pipeline_.source.type).load(config, edit)
 
     if 'use_schema' not in config:
-        config['use_schema'] = pipeline.manager.use_schema(pipeline_)
+        config['use_schema'] = pipeline.manager.use_schema(pipeline_.source.type)
 
     pipeline_.set_config(config)
 
