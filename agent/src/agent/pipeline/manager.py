@@ -24,9 +24,9 @@ LOG_LEVELS = [logging.getLevelName(logging.INFO), logging.getLevelName(logging.E
 MAX_SAMPLE_RECORDS = 3
 
 
-def get_default_protocol(pipeline_: Pipeline):
-    if pipeline_.get_protocol():
-        return pipeline_.get_protocol()
+def use_schema(pipeline_: Pipeline):
+    if pipeline_.use_schema:
+        return pipeline_.use_schema
     # use protocol 3 for all new pipelines that support it
     supported = [
         source.TYPE_DIRECTORY,
@@ -176,7 +176,7 @@ def update(pipeline_: Pipeline):
     if not pipeline_.config_changed():
         logger_.info(f'No need to update pipeline {pipeline_.name}')
         return
-    if pipeline_.uses_protocol_3():
+    if pipeline_.use_schema:
         pipeline_.schema = schema.update(pipeline_)
     sdc_client.update(pipeline_)
     pipeline.repository.save(pipeline_)
@@ -184,7 +184,7 @@ def update(pipeline_: Pipeline):
 
 
 def create(pipeline_: Pipeline):
-    if pipeline_.uses_protocol_3():
+    if pipeline_.use_schema:
         pipeline_.schema = schema.update(pipeline_)
     sdc_client.create(pipeline_)
     pipeline.repository.save(pipeline_)

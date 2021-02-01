@@ -15,17 +15,12 @@ definitions_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'jso
 def load_config(pipeline_: Pipeline, config: dict, edit=False):
     config = get_file_loader(pipeline_.source.type).load(config, edit)
 
-    config['protocol'] = _get_protocol(pipeline_, config.pop('use_schema', None))
+    if 'use_schema' not in config:
+        config['use_schema'] = pipeline.manager.use_schema(pipeline_)
+
     pipeline_.set_config(config)
 
     get_config_validator(pipeline_.source.type).validate(pipeline_)
-
-
-def _get_protocol(pipeline_: Pipeline, use_schema: Optional[bool]) -> str:
-    if use_schema is None:
-        return pipeline.manager.get_default_protocol(pipeline_)
-    else:
-        return destination.HttpDestination.PROTOCOL_30 if use_schema else destination.HttpDestination.PROTOCOL_20
 
 
 class LoadClientData:
