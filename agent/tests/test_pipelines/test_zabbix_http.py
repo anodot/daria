@@ -3,9 +3,6 @@ import pytest
 from .test_zpipeline_base import TestPipelineBase
 
 # todo test transform
-# todo test error cases
-# todo check if 3 records is the only data pipeline should send
-# todo value:name
 class TestZabbix(TestPipelineBase):
     __test__ = True
     params = {

@@ -4,10 +4,37 @@
     "properties": {
       "name": "Memory",
       "hostid": "10318",
-      "what": "name",
+      "what": "vm_memory_size",
       "target_type": "gauge"
     },
     "value": 10000567.0,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_zabbix"
+      ],
+      "pipeline_type": [
+        "zabbix"
+      ]
+    }
+  },
+  {
+    "timestamp": 1611322470,
+    "properties": {
+      "name": "Memory",
+      "hostid": "10318",
+      "what": "counter",
+      "target_type": "counter"
+    },
+    "value": 1.0,
     "tags": {
       "source": [
         "anodot-agent"
@@ -31,10 +58,37 @@
     "properties": {
       "name": "Memory",
       "hostid": "10318",
-      "what": "name",
+      "what": "vm_memory_size",
       "target_type": "gauge"
     },
     "value": 9347567.0,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_zabbix"
+      ],
+      "pipeline_type": [
+        "zabbix"
+      ]
+    }
+  },
+  {
+    "timestamp": 1611322520,
+    "properties": {
+      "name": "Memory",
+      "hostid": "10318",
+      "what": "counter",
+      "target_type": "counter"
+    },
+    "value": 1.0,
     "tags": {
       "source": [
         "anodot-agent"
@@ -58,10 +112,37 @@
     "properties": {
       "name": "Memory",
       "hostid": "10318",
-      "what": "name",
+      "what": "vm_memory_size",
       "target_type": "gauge"
     },
     "value": 9347293.0,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_zabbix"
+      ],
+      "pipeline_type": [
+        "zabbix"
+      ]
+    }
+  },
+  {
+    "timestamp": 1611322550,
+    "properties": {
+      "name": "Memory",
+      "hostid": "10318",
+      "what": "counter",
+      "target_type": "counter"
+    },
+    "value": 1.0,
     "tags": {
       "source": [
         "anodot-agent"
