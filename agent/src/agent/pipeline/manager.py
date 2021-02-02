@@ -32,9 +32,7 @@ def use_schema(source_type: str):
         source.TYPE_POSTGRES,
         source.TYPE_KAFKA,
     ]
-    if source_type in supported:
-        return destination.HttpDestination.PROTOCOL_30
-    return destination.HttpDestination.PROTOCOL_20
+    return source_type in supported
 
 
 def show_preview(pipeline_: Pipeline):
