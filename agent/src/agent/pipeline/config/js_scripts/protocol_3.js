@@ -36,6 +36,9 @@ for (var i = 0; i < records.length; i++) {
         if (state['COUNT_RECORDS']) {
             measurements[state['COUNT_RECORDS_MEASUREMENT_NAME']] = 1;
         }
+        if (JSON.stringify(measurements) === JSON.stringify({})) {
+            continue;
+        }
         var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + i);
         newRecord.value = {
              'timestamp': records[i].value[state['TIMESTAMP_COLUMN']],

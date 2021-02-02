@@ -1,4 +1,5 @@
 from .base import BaseConfigHandler
+from .schema import SchemaConfigHandler
 from agent.modules.logger import get_logger
 from agent.source import KafkaSource
 from agent.pipeline.config import stages
@@ -17,13 +18,13 @@ class KafkaConfigHandler(BaseConfigHandler):
 
     def _override_stages(self):
         # using 'anodot_agent_' + self.id as a default value in order not to break old configs
-        if KafkaSource.CONFIG_CONSUMER_GROUP not in self.pipeline.override_source:
-            self.pipeline.override_source[KafkaSource.CONFIG_CONSUMER_GROUP] = 'anodot_agent_' + self.pipeline.name
+        # if KafkaSource.CONFIG_CONSUMER_GROUP not in self.pipeline.override_source:
+        #     self.pipeline.override_source[KafkaSource.CONFIG_CONSUMER_GROUP] = 'anodot_agent_' + self.pipeline.name
 
         super()._override_stages()
 
 
-class KafkaSchemaConfigHandler(KafkaConfigHandler):
+class KafkaSchemaConfigHandler(SchemaConfigHandler):
     stages_to_override = {
         'source': stages.source.Source,
         'JavaScriptEvaluator_01': stages.js_convert_metrics.JSConvertMetrics30,

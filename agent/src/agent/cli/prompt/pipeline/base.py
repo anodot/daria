@@ -160,9 +160,12 @@ class PromptConfig:
                                             default=self.default_config.get('delay', 0))
 
     def set_use_schema(self):
-        self.config['use_schema'] = pipeline.manager.use_schema(self.pipeline.source.type)
-        if self.advanced:
+        static_what = self.config.get('static_what', True)
+        if self.advanced and static_what:
             self.config['use_schema'] = click.confirm('Use schema?', default=True)
+            return
+
+        self.config['use_schema'] = pipeline.manager.use_schema(self.pipeline.source.type) and static_what
 
 
 def get_prompter(pipeline_: Pipeline) -> PromptConfig:

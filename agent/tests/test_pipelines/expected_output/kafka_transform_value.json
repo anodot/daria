@@ -1,13 +1,14 @@
 [
   {
     "timestamp": 1512867600,
-    "properties": {
+    "dimensions": {
       "title": "clicks",
-      "subtitle": "display",
-      "what": "clicks",
-      "target_type": "gauge"
+      "subtitle": "display"
     },
-    "value": 6784.6904,
+    "measurements": {
+      "clicks": 6784.6904
+    },
+    "schemaId": "test_transform_value-1234",
     "tags": {
       "source": [
         "anodot-agent"
@@ -28,13 +29,14 @@
   },
   {
     "timestamp": 1512871200,
-    "properties": {
+    "dimensions": {
       "title": "clicks",
-      "subtitle": "display",
-      "what": "clicks",
-      "target_type": "gauge"
+      "subtitle": "display"
     },
-    "value": 6839.0,
+    "measurements": {
+      "clicks": 6839
+    },
+    "schemaId": "test_transform_value-1234",
     "tags": {
       "source": [
         "anodot-agent"
@@ -55,11 +57,11 @@
   },
   {
     "timestamp": 1512874800,
-    "properties": {
-      "what": "clicks",
-      "target_type": "gauge"
+    "dimensions": {},
+    "measurements": {
+      "clicks": 6909993404034934004
     },
-    "value": 6.9099935e+18,
+    "schemaId": "test_transform_value-1234",
     "tags": {
       "source": [
         "anodot-agent"
@@ -80,13 +82,14 @@
   },
   {
     "timestamp": 1512878400,
-    "properties": {
+    "dimensions": {
       "title": "clicks",
-      "subtitle": "display",
-      "what": "clicks",
-      "target_type": "gauge"
+      "subtitle": "display"
     },
-    "value": 7158.9727,
+    "measurements": {
+      "clicks": 7158.972598273843
+    },
+    "schemaId": "test_transform_value-1234",
     "tags": {
       "source": [
         "anodot-agent"
@@ -107,11 +110,11 @@
   },
   {
     "timestamp": 1512882000,
-    "properties": {
-      "what": "clicks",
-      "target_type": "gauge"
+    "dimensions": {},
+    "measurements": {
+      "clicks": 7235.7574
     },
-    "value": 7235.7573,
+    "schemaId": "test_transform_value-1234",
     "tags": {
       "source": [
         "anodot-agent"
@@ -132,13 +135,14 @@
   },
   {
     "timestamp": 1512889200,
-    "properties": {
+    "dimensions": {
       "title": "clicks",
-      "subtitle": "display",
-      "what": "clicks",
-      "target_type": "gauge"
+      "subtitle": "display"
     },
-    "value": 7427.7744,
+    "measurements": {
+      "clicks": 7427.7744
+    },
+    "schemaId": "test_transform_value-1234",
     "tags": {
       "source": [
         "anodot-agent"

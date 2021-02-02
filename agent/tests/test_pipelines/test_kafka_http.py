@@ -32,11 +32,6 @@ class TestKafka(TestPipelineBase):
                       {'name': 'test_transform_value_2'},
                       {'name': 'test_kafka_timezone'}],
         'test_output': [
-            {'name': 'test_kfk_value_const', 'output': 'json_value_const_adv.json', 'pipeline_type': 'kafka'},
-            {'name': 'test_transform_value', 'output': 'kafka_transform_value.json', 'pipeline_type': 'kafka'},
-            {'name': 'test_transform_value_2', 'output': 'kafka_transform_value_2.json', 'pipeline_type': 'kafka'},
-            {'name': 'test_kfk_timestamp_ms', 'output': 'json_value_property.json', 'pipeline_type': 'kafka'},
-            {'name': 'test_csv', 'output': 'json_value_property_tags.json', 'pipeline_type': 'kafka'},
             {'name': 'test_kfk_timestamp_string', 'output': 'json_value_property_transformations.json',
              'pipeline_type': 'kafka'},
             {'name': 'test_kfk_running_counter', 'output': 'running_counter.json', 'pipeline_type': 'kafka'},
@@ -46,6 +41,13 @@ class TestKafka(TestPipelineBase):
              'pipeline_type': 'kafka'},
             {'name': 'test_kafka_timezone', 'output': 'kafka_timezone.json',
              'pipeline_type': 'kafka'}
+        ],
+        'test_output_schema': [
+            {'name': 'test_kfk_value_const', 'output': 'json_value_const_adv_schema.json', 'pipeline_type': 'kafka'},
+            {'name': 'test_transform_value', 'output': 'kafka_transform_value.json', 'pipeline_type': 'kafka'},
+            {'name': 'test_transform_value_2', 'output': 'kafka_transform_value_2.json', 'pipeline_type': 'kafka'},
+            {'name': 'test_kfk_timestamp_ms', 'output': 'json_value_property_30.json', 'pipeline_type': 'kafka'},
+            {'name': 'test_csv', 'output': 'json_value_property_tags_schema.json', 'pipeline_type': 'kafka'},
         ],
         'test_delete_pipeline': [{'name': 'test_kfk_value_const'}, {'name': 'test_kfk_timestamp_ms'},
                                  {'name': 'test_kfk_timestamp_string'},
