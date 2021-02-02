@@ -3,7 +3,7 @@
   "properties": {
     "source": {"type": "string"},
     "pipeline_id": {"type": "string"},
-    "query": {"type": "string"},
+    "query": {"type": "object"},
     "days_to_backfill": {"type": "integer"},
     "interval": {"type": "integer"},
     "values": {"type": "object"},

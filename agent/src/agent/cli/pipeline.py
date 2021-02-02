@@ -1,11 +1,14 @@
 import json
 import click
+import sdc_client
 
 from agent import pipeline, source, streamsets, check_prerequisites
 from agent.modules.tools import infinite_retry
 from jsonschema import ValidationError
 from texttable import Texttable
 from agent.cli import prompt
+from sdc_client import Severity
+from agent.pipeline import Pipeline
 
 
 def get_pipelines_ids_complete(ctx, args, incomplete):
@@ -15,7 +18,7 @@ def get_pipelines_ids_complete(ctx, args, incomplete):
 @click.command(name='list')
 def list_pipelines():
     pipelines = pipeline.repository.get_all()
-    statuses = streamsets.manager.get_all_pipeline_statuses()
+    statuses = sdc_client.get_all_pipeline_statuses()
     table = _build_table(['Name', 'Type', 'Status', 'Streamsets URL'],
                          [[p.name, p.source.type, statuses[p.name]['status'], p.streamsets.url] for p in pipelines])
     click.echo(table.draw())
@@ -24,7 +27,7 @@ def list_pipelines():
 @click.command()
 @click.option('-a', '--advanced', is_flag=True)
 @click.option('-f', '--file', type=click.File())
-def create(advanced, file):
+def create(advanced: bool, file):
     _check_prerequisites()
     sources = source.repository.get_all_names()
     _check_sources(sources)
@@ -36,7 +39,7 @@ def create(advanced, file):
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, required=False)
 @click.option('-a', '--advanced', is_flag=True)
 @click.option('-f', '--file', type=click.File())
-def edit(pipeline_id, advanced, file):
+def edit(pipeline_id: str, advanced: bool, file):
     _check_prerequisites()
     if not file and not pipeline_id:
         raise click.UsageError('Specify pipeline id or file')
@@ -52,7 +55,7 @@ def _check_prerequisites():
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, required=False)
 @click.option('-f', '--file', type=click.File())
-def start(pipeline_id, file):
+def start(pipeline_id: str, file):
     if not file and not pipeline_id:
         raise click.UsageError('Specify pipeline id or file')
 
@@ -61,8 +64,8 @@ def start(pipeline_id, file):
     for pipeline_id in pipeline_ids:
         try:
             click.echo(f'Pipeline {pipeline_id} is starting...')
-            streamsets.manager.start(pipeline.repository.get_by_name(pipeline_id))
-        except (streamsets.ApiClientException, pipeline.PipelineException) as e:
+            sdc_client.start(pipeline.repository.get_by_name(pipeline_id))
+        except (sdc_client.ApiClientException, pipeline.PipelineException) as e:
             click.secho(str(e), err=True, fg='red')
             continue
 
@@ -70,7 +73,7 @@ def start(pipeline_id, file):
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, required=False)
 @click.option('-f', '--file', type=click.File())
-def stop(pipeline_id, file):
+def stop(pipeline_id: str, file):
     if not file and not pipeline_id:
         raise click.UsageError('Specify pipeline id or file')
 
@@ -78,21 +81,21 @@ def stop(pipeline_id, file):
 
     for pipeline_id in pipeline_ids:
         try:
-            streamsets.manager.stop(pipeline_id)
+            sdc_client.stop(pipeline.repository.get_by_name(pipeline_id))
             click.secho(f'Pipeline {pipeline_id} is stopped', fg='green')
-        except (streamsets.ApiClientException, pipeline.PipelineException) as e:
+        except (sdc_client.ApiClientException, pipeline.PipelineException) as e:
             click.secho(str(e), err=True, fg='red')
             continue
 
 
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
-def force_stop(pipeline_id):
+def force_stop(pipeline_id: str):
     try:
         click.echo('Force pipeline stopping...')
-        streamsets.manager.force_stop(pipeline_id)
+        sdc_client.force_stop(pipeline.repository.get_by_name(pipeline_id))
         click.secho('Pipeline is stopped', fg='green')
-    except (streamsets.ApiClientException, streamsets.PipelineException) as e:
+    except sdc_client.ApiClientException as e:
         click.secho(str(e), err=True, fg='red')
         return
 
@@ -100,7 +103,7 @@ def force_stop(pipeline_id):
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, required=False)
 @click.option('-f', '--file', type=click.File())
-def delete(pipeline_id, file):
+def delete(pipeline_id: str, file):
     if not file and not pipeline_id:
         raise click.UsageError('Specify pipeline id or file')
 
@@ -111,7 +114,7 @@ def delete(pipeline_id, file):
             pipeline.manager.delete_by_name(pipeline_name)
             click.echo(f'Pipeline {pipeline_name} deleted')
         except (
-            streamsets.ApiClientException, pipeline.PipelineException, pipeline.repository.PipelineNotExistsException
+            sdc_client.ApiClientException, pipeline.PipelineException, pipeline.repository.PipelineNotExistsException
         ) as e:
             click.secho(str(e), err=True, fg='red')
             continue
@@ -119,7 +122,7 @@ def delete(pipeline_id, file):
 
 @click.command()
 @click.argument('pipeline_name', autocompletion=get_pipelines_ids_complete)
-def force_delete(pipeline_name):
+def force_delete(pipeline_name: str):
     errors = pipeline.manager.force_delete(pipeline_name)
     for e in errors:
         click.secho(e, err=True, fg='red')
@@ -129,14 +132,14 @@ def force_delete(pipeline_name):
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
 @click.option('-l', '--lines', type=click.INT, default=10)
-@click.option('-s', '--severity', type=click.Choice(['INFO', 'ERROR']), default=None)
-def logs(pipeline_id, lines, severity):
+@click.option('-s', '--severity', type=click.Choice([Severity.INFO, Severity.ERROR]), default=None)
+def logs(pipeline_id: str, lines: int, severity: Severity):
     """
     Show pipeline logs
     """
     try:
-        logs_ = streamsets.manager.get_pipeline_logs(pipeline_id, severity, lines)
-    except streamsets.ApiClientException as e:
+        logs_ = sdc_client.get_pipeline_logs(pipeline.repository.get_by_name(pipeline_id), severity, lines)
+    except sdc_client.ApiClientException as e:
         raise click.ClickException(str(e))
     table = _build_table(['Timestamp', 'Severity', 'Category', 'Message'], logs_)
     click.echo(table.draw())
@@ -145,25 +148,28 @@ def logs(pipeline_id, lines, severity):
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
 @click.option('--enable/--disable', default=False)
-def destination_logs(pipeline_id, enable):
+def destination_logs(pipeline_id: str, enable: bool):
     """
     Enable destination response logs for a pipeline (for debugging purposes only)
     """
     pipeline_ = pipeline.repository.get_by_name(pipeline_id)
-    pipeline.manager.enable_destination_logs(pipeline_) if enable else pipeline.manager.disable_destination_logs(pipeline_)
+    if enable:
+        pipeline.manager.enable_destination_logs(pipeline_)
+    else:
+        pipeline.manager.disable_destination_logs(pipeline_)
     click.secho('Updated pipeline {}'.format(pipeline_id), fg='green')
 
 
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
 @click.option('-l', '--lines', type=click.INT, default=10)
-def info(pipeline_id, lines):
+def info(pipeline_id: str, lines: int):
     """
     Show pipeline status, errors if any, statistics about amount of records sent
     """
     try:
-        info_ = streamsets.manager.get_pipeline_info(pipeline_id, lines)
-    except streamsets.ApiClientException as e:
+        info_ = sdc_client.get_pipeline_info(pipeline.repository.get_by_name(pipeline_id), lines)
+    except sdc_client.ApiClientException as e:
         raise click.ClickException(str(e))
     click.secho('=== STATUS ===', fg='green')
     click.echo(info_['status'])
@@ -200,13 +206,13 @@ def info(pipeline_id, lines):
 
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
-def reset(pipeline_id):
+def reset(pipeline_id: str):
     """
     Reset pipeline's offset
     """
     try:
         pipeline.manager.reset(pipeline.repository.get_by_name(pipeline_id))
-    except streamsets.ApiClientException as e:
+    except sdc_client.ApiClientException as e:
         click.secho(str(e), err=True, fg='red')
         return
     click.echo('Pipeline offset reset')
@@ -214,14 +220,14 @@ def reset(pipeline_id):
 
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, required=False)
-def update(pipeline_id):
+def update(pipeline_id: str):
     """
     Update all pipelines configuration, recreate and restart them
     """
     pipelines = [pipeline.repository.get_by_name(pipeline_id)] if pipeline_id else pipeline.repository.get_all()
     for p in pipelines:
         try:
-            streamsets.manager.update(p)
+            sdc_client.update(p)
             click.secho(f'Pipeline {p.name} updated', fg='green')
         except streamsets.manager.StreamsetsException as e:
             print(str(e))
@@ -236,7 +242,7 @@ def pipeline_group():
 def _create_from_file(file):
     try:
         pipeline.manager.create_from_json(json.load(file))
-    except (streamsets.ApiClientException, ValidationError, pipeline.PipelineException) as e:
+    except (sdc_client.ApiClientException, ValidationError, pipeline.PipelineException) as e:
         raise click.ClickException(str(e))
 
 
@@ -256,7 +262,7 @@ def _prompt(advanced: bool, sources: list):
             print('To change the config use `agent pipeline edit`')
 
 
-def _should_prompt_preview(pipeline_: pipeline.Pipeline) -> bool:
+def _should_prompt_preview(pipeline_: Pipeline) -> bool:
     return pipeline_.source.type not in [source.TYPE_VICTORIA]
 
 
@@ -267,7 +273,7 @@ def _edit_using_file(file):
         raise click.UsageError(str(e))
 
 
-def _prompt_edit(advanced, pipeline_id):
+def _prompt_edit(advanced: bool, pipeline_id: str):
     try:
         pipeline_ = pipeline.repository.get_by_name(pipeline_id)
         pipeline_ = prompt.pipeline.get_prompter(pipeline_).prompt(pipeline_.to_dict(), advanced=advanced)
@@ -294,12 +300,12 @@ def _prompt_pipeline_id():
     return pipeline_id
 
 
-def _check_sources(sources):
+def _check_sources(sources: list):
     if len(sources) == 0:
         raise click.ClickException('No sources configs found. Use "agent source create"')
 
 
-def _get_default_source(sources):
+def _get_default_source(sources: list):
     return sources[0] if len(sources) == 1 else None
 
 

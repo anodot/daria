@@ -4,6 +4,7 @@ import random
 import string
 import traceback
 import jsonschema
+import sdc_client
 
 from agent import source, pipeline, destination, streamsets
 from agent.modules import tools
@@ -13,6 +14,7 @@ from agent.destination import anodot_api_client
 from agent.modules.tools import print_json, sdc_record_map_to_dict
 from agent.modules.logger import get_logger
 from typing import List
+from agent.pipeline.config.handlers.factory import get_config_handler
 from agent.source import Source
 
 
@@ -38,9 +40,10 @@ def get_default_protocol(pipeline_: Pipeline):
 
 def show_preview(pipeline_: Pipeline):
     try:
-        preview = streamsets.manager.create_preview(pipeline_)
-        preview_data, errors = streamsets.manager.wait_for_preview(pipeline_, preview['previewerId'])
-    except streamsets.ApiClientException as e:
+        preview = sdc_client.create_preview(pipeline_)
+        # todo preview slows down tests a lot as 'No data' exception is risen
+        preview_data, errors = sdc_client.wait_for_preview(pipeline_, preview['previewerId'])
+    except sdc_client.ApiClientException as e:
         print(str(e))
         return
 
@@ -104,7 +107,7 @@ def validate_config_for_create(config: dict):
 
 
 def create_object(pipeline_id: str, source_name: str) -> Pipeline:
-    pipeline_ = pipeline.Pipeline(
+    pipeline_ = Pipeline(
         pipeline_id,
         source.repository.get_by_name(source_name),
         destination.repository.get(),
@@ -174,7 +177,7 @@ def update(pipeline_: Pipeline):
         return
     if pipeline_.uses_protocol_3():
         pipeline_.schema = schema.update(pipeline_)
-    streamsets.manager.update(pipeline_)
+    sdc_client.update(pipeline_)
     pipeline.repository.save(pipeline_)
     logger_.info(f'Updated pipeline {pipeline_}')
 
@@ -182,14 +185,14 @@ def update(pipeline_: Pipeline):
 def create(pipeline_: Pipeline):
     if pipeline_.uses_protocol_3():
         pipeline_.schema = schema.update(pipeline_)
-    streamsets.manager.create(pipeline_)
+    sdc_client.create(pipeline_)
     pipeline.repository.save(pipeline_)
 
 
 def update_source_pipelines(source_: Source):
     for pipeline_ in pipeline.repository.get_by_source(source_.name):
         try:
-            streamsets.manager.update(pipeline_)
+            sdc_client.update(pipeline_)
         except streamsets.manager.StreamsetsException as e:
             print(str(e))
             continue
@@ -197,7 +200,7 @@ def update_source_pipelines(source_: Source):
 
 
 def update_pipeline_offset(pipeline_: Pipeline):
-    offset = streamsets.manager.get_pipeline_offset(pipeline_)
+    offset = sdc_client.get_pipeline_offset(pipeline_)
     if not offset:
         return
     if pipeline_.offset:
@@ -209,11 +212,11 @@ def update_pipeline_offset(pipeline_: Pipeline):
 
 def reset(pipeline_: Pipeline):
     try:
-        streamsets.manager.reset_pipeline(pipeline_)
+        sdc_client.reset(pipeline_)
         if pipeline_.offset:
             pipeline.repository.delete_offset(pipeline_.offset)
             pipeline_.offset = None
-    except (streamsets.config_handlers.base.ConfigHandlerException, streamsets.ApiClientException) as e:
+    except sdc_client.ApiClientException as e:
         raise pipeline.PipelineException(str(e))
 
 
@@ -225,8 +228,8 @@ def _delete_schema(pipeline_: Pipeline):
 def delete(pipeline_: Pipeline):
     _delete_schema(pipeline_)
     try:
-        streamsets.manager.delete(pipeline_)
-    except streamsets.ApiClientException as e:
+        sdc_client.delete(pipeline_)
+    except sdc_client.ApiClientException as e:
         raise pipeline.PipelineException(str(e))
     pipeline.repository.delete(pipeline_)
     pipeline.repository.add_deleted_pipeline_id(pipeline_.name)
@@ -245,7 +248,7 @@ def force_delete(pipeline_name: str) -> list:
     exceptions = []
     pipeline_ = pipeline.repository.get_by_name(pipeline_name)
     try:
-        streamsets.manager.delete(pipeline_)
+        sdc_client.delete(pipeline_)
     except Exception as e:
         exceptions.append(str(e))
     if pipeline.repository.exists(pipeline_name):
@@ -261,13 +264,13 @@ def force_delete(pipeline_name: str) -> list:
 def enable_destination_logs(pipeline_: Pipeline):
     pipeline_.destination.enable_logs()
     destination.repository.save(pipeline_.destination)
-    streamsets.manager.update(pipeline_)
+    sdc_client.update(pipeline_)
 
 
 def disable_destination_logs(pipeline_: Pipeline):
     pipeline_.destination.disable_logs()
     destination.repository.save(pipeline_.destination)
-    streamsets.manager.update(pipeline_)
+    sdc_client.update(pipeline_)
 
 
 def build_test_pipeline(source_: Source) -> TestPipeline:
@@ -327,13 +330,17 @@ def get_sample_records(pipeline_: Pipeline) -> (list, list):
 
 
 def _get_preview_data(test_pipeline: Pipeline):
-    streamsets.manager.create(test_pipeline)
+    sdc_client.create(test_pipeline)
     try:
-        preview = streamsets.manager.create_preview(test_pipeline)
-        preview_data, errors = streamsets.manager.wait_for_preview(test_pipeline, preview['previewerId'])
+        preview = sdc_client.create_preview(test_pipeline)
+        preview_data, errors = sdc_client.wait_for_preview(test_pipeline, preview['previewerId'])
     except (Exception, KeyboardInterrupt) as e:
         logger_.exception(str(e))
         raise
     finally:
-        streamsets.manager.delete(test_pipeline)
+        sdc_client.delete(test_pipeline)
     return preview_data, errors
+
+
+def create_streamsets_pipeline_config(pipeline_: Pipeline) -> dict:
+    return get_config_handler(pipeline_).override_base_config()

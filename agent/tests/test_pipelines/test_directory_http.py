@@ -8,7 +8,6 @@ from agent import pipeline
 
 
 class TestDirectory(TestPipelineBase):
-
     __test__ = True
     params = {
         'test_create_source_with_file': [{'file_name': 'directory_sources'}],
@@ -24,9 +23,6 @@ class TestDirectory(TestPipelineBase):
         'test_delete_pipeline': [{'name': 'test_dir_log'}, {'name': 'test_dir_json'}, {'name': 'test_dir_csv'}],
         'test_source_delete': [{'name': 'test_dir_log'}, {'name': 'test_dir_json'}, {'name': 'test_dir_csv'}],
     }
-
-    def test_edit(self, cli_runner):
-        pytest.skip()
 
     def test_edit_with_file(self, cli_runner, file_name=None):
         pytest.skip()
@@ -62,4 +58,10 @@ class TestDirectory(TestPipelineBase):
     def test_offset(self):
         pipeline_ = pipeline.repository.get_by_name('test_dir_csv')
         assert pipeline_.offset
-        assert json.loads(pipeline_.offset.offset) == {"version": 2, "offsets": {"$com.streamsets.pipeline.stage.origin.spooldir.SpoolDirSource.offset.version$": "1", "/home/test-directory-collector/12102017_test.csv": "{\"POS\":\"-1\"}"}}
+        assert json.loads(pipeline_.offset.offset) == {
+            "version": 2,
+            "offsets": {
+                "$com.streamsets.pipeline.stage.origin.spooldir.SpoolDirSource.offset.version$": "1",
+                "/home/test-directory-collector/12102017_test.csv": "{\"POS\":\"-1\"}"
+            }
+        }

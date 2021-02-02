@@ -14,6 +14,7 @@ def list_sources():
 @sources.route('/sources', methods=['POST'])
 @routes.check_prerequisites
 def create():
+    # todo check zabbix
     try:
         sources_ = source.manager.create_from_json(request.get_json())
     except (ValidationError, ValueError, source.SourceException) as e:

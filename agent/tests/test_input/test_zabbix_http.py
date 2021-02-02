@@ -1,5 +1,7 @@
+import sdc_client
+
 from datetime import datetime
-from agent import cli, streamsets
+from agent import cli
 from agent import source
 from ..conftest import generate_input
 
@@ -36,7 +38,7 @@ class TestZabbix:
         }
         result = cli_runner.invoke(cli.pipeline.create, catch_exceptions=False, input=generate_input(input_))
         assert result.exit_code == 0
-        assert streamsets.manager.get_pipeline(name)
+        assert sdc_client.exists(name)
 
     def test_edit(self, cli_runner):
         days_to_backfill = (datetime.now() - datetime(year=2021, month=1, day=22)).days

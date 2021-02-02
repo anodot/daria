@@ -3,6 +3,7 @@ import pytest
 from .test_zpipeline_base import TestPipelineBase
 
 
+# todo headers json-rpc
 class TestZabbix(TestPipelineBase):
     __test__ = True
     params = {

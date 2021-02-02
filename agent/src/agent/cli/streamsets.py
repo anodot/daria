@@ -1,6 +1,7 @@
 import traceback
 import click
 import requests
+import sdc_client
 
 from agent import streamsets
 from agent.modules.logger import get_logger
@@ -77,7 +78,7 @@ def balance():
     elif len(streamsets_) == 0:
         logger.info(f'You don\'t have any streamsets instances, can\'t balance')
         return
-    streamsets.manager.StreamsetsBalancer().balance()
+    sdc_client.StreamsetsBalancer().balance()
     click.secho('Done', fg='green')
 
 

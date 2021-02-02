@@ -1,8 +1,9 @@
 import click
 import json
 import os
+import sdc_client
 
-from agent import pipeline, source, streamsets
+from agent import pipeline, source
 from agent.modules import logger, constants
 
 logger_ = logger.get_logger(__name__, stdout=True)
@@ -38,7 +39,7 @@ def populate_pipeline_from_file(file):
             if pipeline.repository.exists(config['pipeline_id']):
                 pipeline.manager.edit_pipeline_using_json(config)
             else:
-                streamsets.manager.start(
+                sdc_client.start(
                     pipeline.manager.create_pipeline_from_json(config)
                 )
         except Exception as e:
