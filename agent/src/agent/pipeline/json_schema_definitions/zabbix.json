@@ -1,0 +1,20 @@
+{
+  "type": "object",
+  "properties": {
+    "source": {"type": "string"},
+    "pipeline_id": {"type": "string"},
+    "query": {"type": "string"},
+    "days_to_backfill": {"type": "integer"},
+    "interval": {"type": "integer"},
+    "values": {"type": "object"},
+    "measurement_names": {"type": "object"},
+    "tags": {
+      "type": "object",
+      "patternProperties":  {"[^ \\.]+": {"type": "array", "items": {"type": "string"}}}
+    },
+    "dimensions": {"type": "array", "items": {"type": "string"}},
+    "properties": {"type": "object"},
+    "delay": {"type": "integer"}
+  },
+  "required": ["query", "interval"]
+}

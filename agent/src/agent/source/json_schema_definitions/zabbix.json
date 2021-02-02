@@ -1,0 +1,9 @@
+{
+  "type": "object",
+  "properties": {
+    "url": {"type": "string"},
+    "user": {"type":  "string"},
+    "password": {"type": "string"}
+  },
+  "required": ["url", "user", "password"]
+}

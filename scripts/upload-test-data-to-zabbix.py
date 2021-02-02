@@ -55,7 +55,10 @@ memory_values = [
     (memory_item_id, '1611322550', '9347293', '267239977')
 ]
 
-values = ','.join(map(lambda x: '(' + ','.join(x) + ')', cpu_values + memory_values))
+cpu_values = ','.join(map(lambda x: '(' + ','.join(x) + ')', cpu_values))
+memory_values = ','.join(map(lambda x: '(' + ','.join(x) + ')', memory_values))
+
 mysql_conn = create_engine(f'mysql+mysqlconnector://root@mysql/zabbix')
-mysql_conn.execute(f'INSERT INTO history (itemid, clock, value, ns) VALUES {values};')
+mysql_conn.execute(f'INSERT INTO history (itemid, clock, value, ns) VALUES {cpu_values};')
+mysql_conn.execute(f'INSERT INTO history_uint (itemid, clock, value, ns) VALUES {memory_values};')
 print('history inserted')

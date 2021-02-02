@@ -8,3 +8,4 @@ from . import influx_offset
 from . import jdbc_source
 from . import jdbc_offset
 from . import influx_source
+from . import zabbix_source

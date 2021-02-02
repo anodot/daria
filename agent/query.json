@@ -1,7 +1,6 @@
 {
   "output": "extend",
-  "hostids": "10001",
   "search": {
-    "key_": "ping"
+    "key_": "vm.memory.size"
   }
 }

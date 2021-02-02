@@ -346,7 +346,7 @@
     },
     "fragments" : [ ],
     "stages" : [ {
-      "instanceName" : "JythonScripting_01",
+      "instanceName" : "source",
       "library" : "streamsets-datacollector-jython_2_7-lib",
       "stageName" : "com_streamsets_pipeline_stage_origin_jython_JythonDSource",
       "stageVersion" : "1",

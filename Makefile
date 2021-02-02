@@ -124,6 +124,7 @@ get-streamsets-libs: install-streamsets-requirements
 	curl -L https://github.com/anodot/anodot-sdc-stage/releases/download/v1.1.2/anodot-1.1.2.tar.gz -o /tmp/sdc.tar.gz && tar xvfz /tmp/sdc.tar.gz -C streamsets/lib
 
 install-streamsets-requirements:
+	rm -rf streamsets/python-libs/*
 	pip install --upgrade pip && pip install --target streamsets/python-libs -r streamsets/python_requirements.txt
 
 setup-all: setup-victoria setup-kafka setup-elastic

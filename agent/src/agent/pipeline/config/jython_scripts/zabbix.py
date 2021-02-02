@@ -8,6 +8,7 @@ try:
     import requests
     import traceback
     import time
+    import json
 finally:
     sdc.importUnlock()
 
@@ -30,7 +31,9 @@ class Client:
                     'method': method,
                     'params': params,
                     'id': 1,
-                    'auth': self.auth_token,
+                    'auth': self.auth_token
+                }, headers={
+                    'Content-Type': 'application/json-rpc'
                 })
                 res.raise_for_status()
                 result = res.json()
@@ -77,17 +80,37 @@ while True:
         if sdc.isStopped():
             break
         batch = sdc.createBatch()
-        for item in client.post('item.get', sdc.userParams['PARAMS']):
-            history = client.post('history.get', {
-                'history': item['value_type'],
-                'itemids': item['itemid'],
+        # items: { itemid: item }
+        items = {}
+        # itemids: { value_type: [id1, id2 ...] }
+        itemids = {}
+
+        for item in client.post('item.get', json.loads(sdc.userParams['QUERY'])):
+            itemid = item['itemid']
+            value_type = item['value_type']
+
+            if value_type not in itemids:
+                itemids[value_type] = []
+
+            itemids[value_type].append(itemid)
+            items[itemid] = item
+
+        for value_type, ids in itemids.items():
+            histories = client.post('history.get', {
+                'history': value_type,
+                'itemids': ids,
                 'sortfield': 'clock',
                 'sortorder': 'ASC',
                 'time_from': end - interval,
-                'time_till': end,
+                'time_till': end
             })
-            history.update(item)
-            batch.add(history)
+            # add fields from item to every history record
+            for history in histories:
+                history.update(items[history['itemid']])
+                record = sdc.createRecord('record created ' + str(get_now_with_delay()))
+                record.value = history
+                batch.add(record)
+
         batch.process(entityName, str(end))
 
         end += interval
