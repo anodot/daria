@@ -5,5 +5,5 @@ di.init()
 
 # cli.source.edit(["test_mongo"])
 # cli.destination()
-# cli.pipeline.create()
+cli.pipeline.create()
 # cli.streamsets.delete(["asdfa"])

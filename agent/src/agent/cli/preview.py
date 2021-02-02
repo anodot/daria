@@ -69,6 +69,7 @@ def _get_preview_type(source_type: str) -> Preview:
         source.TYPE_DIRECTORY: SchemalessPreview,
         source.TYPE_SAGE: Preview,
         source.TYPE_VICTORIA: Preview,
+        source.TYPE_ZABBIX: SchemalessPreview,
     }
     if source_type not in source.types:
         raise ValueError(f'`{source_type}` source type isn\'t supported')

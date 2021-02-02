@@ -67,6 +67,7 @@ class TestPipelineBaseConfigLoader(BaseConfigLoader):
             source.TYPE_SPLUNK: 'test_tcp_server_jksrj322',
             source.TYPE_DIRECTORY: 'test_directory_ksdjfjk21',
             source.TYPE_SAGE: 'test_sage_jfhdkj',
+            source.TYPE_ZABBIX: 'test_zabbix_jfhdkj',
         }[pipeline.source.type] + '.json'
 
 

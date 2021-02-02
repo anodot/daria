@@ -8,12 +8,12 @@ from agent.modules.tools import infinite_retry
 class PromptConfigZabbix(PromptConfigSchemaless):
     def prompt_config(self):
         self.prompt_query_file()
-        # todo it asks for count props, do we need it?
+        self.prompt_days_to_backfill()
+        self.prompt_interval()
+        self.data_preview()
         self.set_values()
         self.set_measurement_names()
         self.set_dimensions()
-        self.prompt_interval()
-        self.prompt_days_to_backfill()
         self.prompt_delay()
         self.set_transform()
         self.set_tags()
@@ -21,6 +21,20 @@ class PromptConfigZabbix(PromptConfigSchemaless):
         self.config['timestamp'] = {}
         self.config['timestamp']['type'] = 'unix'
         self.config['timestamp']['name'] = 'clock'
+
+    @infinite_retry
+    def set_values(self):
+        self.config['count_records'] = \
+            int(click.confirm('Count records?', default=self.default_config.get('count_records', False)))
+        if self.config['count_records']:
+            self.config['count_records_measurement_name'] = click.prompt(
+                'Measurement name',
+                type=click.STRING,
+                default=self.default_config.get('count_records_measurement_name')
+            )
+        self.prompt_values()
+        if not self.config['count_records'] and not self.config['values']:
+            raise click.UsageError('Set value properties or count records flag')
 
     @infinite_retry
     def prompt_query_file(self):
