@@ -43,6 +43,5 @@ class PromptConfigZabbix(PromptConfigSchemaless):
         with open(self.config['query_file']) as fp:
             self.config['query'] = json.load(fp)
 
-    # todo use mixins for such methods?
     def set_dimensions(self):
         self.config['dimensions'] = self.prompt_dimensions('Dimensions', self.default_config.get('dimensions', []))
