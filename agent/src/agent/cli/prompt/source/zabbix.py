@@ -12,6 +12,7 @@ class ZabbixSourceBuilder(Builder):
         self.prompt_url(default_config)
         self.prompt_username(default_config)
         self.prompt_password(default_config)
+        self.prompt_query_timeout(default_config, advanced)
         self.validator.validate_connection()
         return self.source
 

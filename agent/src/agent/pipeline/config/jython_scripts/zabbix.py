@@ -26,15 +26,20 @@ class Client:
     def post(self, method, params):
         for i in range(1, N_REQUESTS_TRIES + 1):
             try:
-                res = requests.post(self.url, json={
-                    'jsonrpc': '2.0',
-                    'method': method,
-                    'params': params,
-                    'id': 1,
-                    'auth': self.auth_token
-                }, headers={
-                    'Content-Type': 'application/json-rpc'
-                })
+                res = requests.post(
+                    self.url,
+                    json={
+                        'jsonrpc': '2.0',
+                        'method': method,
+                        'params': params,
+                        'id': 1,
+                        'auth': self.auth_token
+                    },
+                    headers={
+                        'Content-Type': 'application/json-rpc'
+                    },
+                    timeout=sdc.userParams['QUERY_TIMEOUT']
+                )
                 res.raise_for_status()
                 result = res.json()
                 if 'error' in result:

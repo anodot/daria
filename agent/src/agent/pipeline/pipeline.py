@@ -240,6 +240,10 @@ class Pipeline(Entity, sdc_client.IPipeline):
     def query(self) -> Optional[str]:
         return self.config.get('query')
 
+    @property
+    def query_timeout(self) -> Optional[int]:
+        return self.source.config.get('query_timeout')
+
     @query.setter
     def query(self, query):
         self.config['query'] = query
