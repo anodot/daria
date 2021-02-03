@@ -32,7 +32,6 @@ class LoadClientData:
     VALIDATION_SCHEMA_FILE_NAME = ''
 
     def __init__(self):
-        # todo check if I can remove attribute and use local variable
         self.client_config = {}
         self.edit = False
 
@@ -50,7 +49,6 @@ class LoadClientData:
             schema = json.load(f)
         if self.edit:
             schema['required'] = []
-        # todo don't validate here
         validate(self.client_config, schema)
         client_config.pop('source', None)
         return self.client_config
@@ -154,11 +152,9 @@ class ZabbixLoadClientData(LoadClientData):
 
     def load(self, client_config, edit=False):
         super().load(client_config, edit)
-        # todo what if there's a wrong value?
-        if 'timestamp' not in self.client_config:
-            self.client_config['timestamp'] = {}
-            self.client_config['timestamp']['type'] = 'unix'
-            self.client_config['timestamp']['name'] = 'clock'
+        self.client_config['timestamp'] = {}
+        self.client_config['timestamp']['type'] = 'unix'
+        self.client_config['timestamp']['name'] = 'clock'
         return self.client_config
 
 

@@ -32,8 +32,8 @@ class TestZabbix:
             'count': 'y',
             'counter name': 'counter',
             'value props': 'value:gauge',
-            'measurement names': 'value:vm.memory.size',
-            'dimensions': 'name hostid',
+            'measurement names': 'value:what',
+            'dimensions': 'hosts/0/host content-provider service-provider',
             'delay': 0,
             'tags': 'test_type:zabbix',
             'preview': 'n',
@@ -55,9 +55,11 @@ class TestZabbix:
             'measurement names': '',
             'dimensions': '',
             'delay': '',
+            'transform file': '/home/zabbix_transform_value.csv',
+            'tags': 'test:zabbix',
             'preview': 'n',
         }
         result = cli_runner.invoke(
-            cli.pipeline.edit, ['test_zabbix'], catch_exceptions=False, input=generate_input(input_)
+            cli.pipeline.edit, ['test_zabbix', '-a'], catch_exceptions=False, input=generate_input(input_)
         )
         assert result.exit_code == 0

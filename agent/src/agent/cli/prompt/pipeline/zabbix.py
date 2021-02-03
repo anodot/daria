@@ -24,6 +24,7 @@ class PromptConfigZabbix(PromptConfigSchemaless):
 
     @infinite_retry
     def set_values(self):
+        self.config['static_what'] = False
         self.config['count_records'] = \
             int(click.confirm('Count records?', default=self.default_config.get('count_records', False)))
         if self.config['count_records']:

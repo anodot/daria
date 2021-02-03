@@ -18,7 +18,6 @@ class ZabbixSourceBuilder(Builder):
     @infinite_retry
     def prompt_url(self, default_config):
         url = click.prompt('Zabbix URL', type=click.STRING, default=default_config.get(source.ZabbixSource.URL)).strip()
-        # todo do I need try except here? or infinite_retry swallows Exceptions nicely
         validator.validate_url_format_with_port(url)
         self.source.config[source.ZabbixSource.URL] = url
 

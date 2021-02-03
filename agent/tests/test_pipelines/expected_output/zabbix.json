@@ -2,9 +2,10 @@
   {
     "timestamp": 1611322470,
     "properties": {
-      "name": "Memory",
-      "hostid": "10318",
-      "what": "vm_memory_size",
+      "hosts_0_host": "zabbixagent",
+      "content-provider": "agent",
+      "service-provider": "anodot",
+      "what": "Memory",
       "target_type": "gauge"
     },
     "value": 10000567.0,
@@ -23,14 +24,18 @@
       ],
       "pipeline_type": [
         "zabbix"
+      ],
+      "test": [
+        "zabbix"
       ]
     }
   },
   {
     "timestamp": 1611322470,
     "properties": {
-      "name": "Memory",
-      "hostid": "10318",
+      "hosts_0_host": "zabbixagent",
+      "content-provider": "agent",
+      "service-provider": "anodot",
       "what": "counter",
       "target_type": "counter"
     },
@@ -50,15 +55,19 @@
       ],
       "pipeline_type": [
         "zabbix"
+      ],
+      "test": [
+        "zabbix"
       ]
     }
   },
   {
     "timestamp": 1611322520,
     "properties": {
-      "name": "Memory",
-      "hostid": "10318",
-      "what": "vm_memory_size",
+      "hosts_0_host": "zabbixagent",
+      "content-provider": "agent",
+      "service-provider": "anodot",
+      "what": "Memory",
       "target_type": "gauge"
     },
     "value": 9347567.0,
@@ -77,14 +86,18 @@
       ],
       "pipeline_type": [
         "zabbix"
+      ],
+      "test": [
+        "zabbix"
       ]
     }
   },
   {
     "timestamp": 1611322520,
     "properties": {
-      "name": "Memory",
-      "hostid": "10318",
+      "hosts_0_host": "zabbixagent",
+      "content-provider": "agent",
+      "service-provider": "anodot",
       "what": "counter",
       "target_type": "counter"
     },
@@ -104,15 +117,19 @@
       ],
       "pipeline_type": [
         "zabbix"
+      ],
+      "test": [
+        "zabbix"
       ]
     }
   },
   {
     "timestamp": 1611322550,
     "properties": {
-      "name": "Memory",
-      "hostid": "10318",
-      "what": "vm_memory_size",
+      "hosts_0_host": "zabbixagent",
+      "content-provider": "agent",
+      "service-provider": "anodot",
+      "what": "Memory",
       "target_type": "gauge"
     },
     "value": 9347293.0,
@@ -131,14 +148,18 @@
       ],
       "pipeline_type": [
         "zabbix"
+      ],
+      "test": [
+        "zabbix"
       ]
     }
   },
   {
     "timestamp": 1611322550,
     "properties": {
-      "name": "Memory",
-      "hostid": "10318",
+      "hosts_0_host": "zabbixagent",
+      "content-provider": "agent",
+      "service-provider": "anodot",
       "what": "counter",
       "target_type": "counter"
     },
@@ -157,6 +178,9 @@
         "test_zabbix"
       ],
       "pipeline_type": [
+        "zabbix"
+      ],
+      "test": [
         "zabbix"
       ]
     }

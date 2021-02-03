@@ -150,7 +150,9 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return [self.get_property_path(value) for value in self.dimensions]
 
     @property
-    def required_dimensions_paths(self):
+    def required_dimensions_paths(self) -> list:
+        if 'dimensions' not in self.config or self.config['dimensions'] is not dict:
+            return []
         return [self.get_property_path(value) for value in self.config['dimensions']['required']]
 
     @property

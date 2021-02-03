@@ -3,9 +3,9 @@
     "schemaVersion" : 6,
     "version" : 17,
     "pipelineId" : "kafkahttp29d65849-9355-4343-80d7-05661188c044",
-    "title" : "s",
+    "title" : "z",
     "description" : "",
-    "uuid" : "11da5b11-c42e-49f2-8145-55935f596c1b",
+    "uuid" : "68338c47-2bfe-442f-955b-458a845287c3",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -352,7 +352,7 @@
       "stageVersion" : "1",
       "configuration" : [ {
         "name" : "script",
-        "value" : "global sdc\n\ntry:\n    sdc.importLock()\n    import sys\n    import os\n    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))\n    import requests\n    import traceback\n    import time\nfinally:\n    sdc.importUnlock()\n\nentityName = ''\nN_REQUESTS_TRIES = 3\nBATCH_SIZE = 1000\n\n\nclass Client:\n    def __init__(self, url, user, password):\n        self.url = url + '/api_jsonrpc.php'\n        self.auth_token = None\n        self._authenticate(user, password)\n\n    def post(self, method, params):\n        for i in range(1, N_REQUESTS_TRIES + 1):\n            try:\n                res = requests.post(self.url, json={\n                    'jsonrpc': '2.0',\n                    'method': method,\n                    'params': params,\n                    'id': 1,\n                    'auth': self.auth_token,\n                })\n                res.raise_for_status()\n                result = res.json()\n                if 'error' in result:\n                    raise Exception(str(result))\n            except Exception as e:\n                if i == N_REQUESTS_TRIES:\n                    raise\n                sdc.log.debug(str(e))\n                time.sleep(i ** 2)\n                continue\n            break\n        return result['result']\n\n    def _authenticate(self, user, password):\n        self.auth_token = self.post('user.login', {'user': user, 'password': password})\n\n\ndef get_now_with_delay():\n    return int(time.time()) - int(sdc.userParams['DELAY_IN_MINUTES']) * 60\n\n\ndef get_backfill_offset():\n    if sdc.lastOffsets.containsKey(entityName):\n        return int(float(sdc.lastOffsets.get(entityName)))\n    if sdc.userParams['INITIAL_TIMESTAMP']:\n        return int(sdc.userParams['INITIAL_TIMESTAMP'])\n    return get_now_with_delay() - get_interval()\n\n\ndef get_interval():\n    return int(sdc.userParams['INTERVAL'])\n\n\ninterval = get_interval()\nend = get_backfill_offset() + interval\n\nclient = Client(sdc.userParams['URL'], sdc.userParams['USER'], sdc.userParams['PASSWORD'])\n\nwhile True:\n    try:\n        if end > get_now_with_delay():\n            time.sleep(end - get_now_with_delay())\n        if sdc.isStopped():\n            break\n        batch = sdc.createBatch()\n        for item in client.post('item.get', sdc.userParams['PARAMS']):\n            history = client.post('history.get', {\n                'history': item['value_type'],\n                'itemids': item['itemid'],\n                'sortfield': 'clock',\n                'sortorder': 'ASC',\n                'time_from': end - interval,\n                'time_till': end,\n            })\n            history.update(item)\n            batch.add(history)\n        batch.process(entityName, str(end))\n\n        end += interval\n    except Exception as e:\n        sdc.log.error(traceback.format_exc())\n        raise"
+        "value" : ""
       }, {
         "name" : "scriptConf.batchSize",
         "value" : 1000
@@ -370,15 +370,56 @@
         "value" : "TO_ERROR"
       } ],
       "uiInfo" : {
-        "yPos" : 50,
+        "yPos" : 165,
         "stageType" : "SOURCE",
         "icon" : "jython.png",
         "description" : "",
         "label" : "Jython Scripting 1",
-        "xPos" : 309
+        "xPos" : 282
       },
       "inputLanes" : [ ],
       "outputLanes" : [ "JythonScripting_01OutputLane16119325849910" ],
+      "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
+      "instanceName" : "ExpressionEvaluator_03",
+      "library" : "streamsets-datacollector-basic-lib",
+      "stageName" : "com_streamsets_pipeline_stage_processor_expression_ExpressionDProcessor",
+      "stageVersion" : "2",
+      "configuration" : [ {
+        "name" : "expressionProcessorConfigs",
+        "value" : [ {
+          "fieldToSet" : "/",
+          "expression" : "${record:value('/')}"
+        } ]
+      }, {
+        "name" : "headerAttributeConfigs",
+        "value" : [ { } ]
+      }, {
+        "name" : "fieldAttributeConfigs",
+        "value" : [ {
+          "fieldToSet" : "/"
+        } ]
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "yPos" : 166,
+        "stageType" : "PROCESSOR",
+        "icon" : "expression.png",
+        "description" : "",
+        "label" : "Transform and filter",
+        "xPos" : 472
+      },
+      "inputLanes" : [ "JythonScripting_01OutputLane16119325849910" ],
+      "outputLanes" : [ "ExpressionEvaluator_03OutputLane16122801067780" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -391,10 +432,10 @@
         "value" : "BATCH"
       }, {
         "name" : "initScript",
-        "value" : "state['TOPIC_NAME'] = 'test';\nstate['TIMESTAMP_COLUMN'] = 'timestamp_unix';\nstate['DIMENSIONS'] = ['ver', 'AdSize', 'Country', 'AdType', 'Exchange'];\nstate['VALUES_COLUMN'] = ['Clicks', 'Impressions'];\nstate['TARGET_TYPES'] = ['gauge', 'counter'];\nstate['MEASUREMENT_NAMES'] = ['clicks', 'impressions'];\nstate['COUNT_RECORDS'] = 1\nstate['COUNT_RECORDS_MEASUREMENT_NAME'] = 'dsf'\nstate['STATIC_WHAT'] = 1"
+        "value" : "\nstate['TIMESTAMP_COLUMN'] = 'clock';\nstate['DIMENSIONS'] = ['hosts/0/host'];\nstate['DIMENSIONS_NAMES'] = ['hosts_0_host'];\nstate['VALUES_COLUMNS'] = ['value'];\nstate['MEASUREMENT_NAMES'] = ['what'];\nstate['TARGET_TYPES'] = ['gauge'];\nstate['COUNT_RECORDS'] = 0;\nstate['COUNT_RECORDS_MEASUREMENT_NAME'] = 'count';\nstate['STATIC_WHAT'] = 0;\nstate['VALUES_ARRAY_PATH'] = '';\nstate['VALUES_ARRAY_FILTER'] = [];\nstate['metrics'] = {}\n    "
       }, {
         "name" : "script",
-        "value" : "TARGET_TYPES = ['counter', 'gauge', 'running_counter']\n\nfunction get_value(path, value) {\n  path_parts = path.split('/')\n  for (var k = 0; k < path_parts.length; k++) {\n    value = value[path_parts[k]]\n  }\n  return value\n}\n\nfunction metric_to_string(dimensions) {\n  var str = '';\n    for (var p in dimensions) {\n        if (dimensions.hasOwnProperty(p)) {\n            str += p + ':' + dimensions[p] + ',';\n        }\n    }\n    return str;\n}\n\nfunction get_running_counter_value(metric_properties, curr_value, time) {\n  metric = metric_to_string(metric_properties)\n  if (state['metrics'][metric] == null) {\n    state['metrics'][metric] = {'val': curr_value, 'time': time}\n    return null;\n  }\n  counter_val = curr_value - state['metrics'][metric]['val']\n  if (counter_val < 0) {\n    state['metrics'][metric] = null\n    return null;\n  }\n  state['metrics'][metric]['val'] = curr_value\n  prev_time = state['metrics'][metric]['time']\n  state['metrics'][metric]['time'] = time\n  return counter_val / (time - prev_time)\n}\n\nfunction get_target_type_value(target_type_property, record) {\n\n  if (TARGET_TYPES.indexOf(target_type_property) < 0) {\n    if (TARGET_TYPES.indexOf(record[target_type_property]) < 0) {\n      throw 'Target type property ' + target_type_property + ' should be counter, gauge or running_counter'\n    }\n    return get_value(target_type_property, record)\n  } \n  return target_type_property\n}\n\nfor(var i = 0; i < records.length; i++) {\n  try {\n\tvar timestamp = get_value(state['TIMESTAMP_COLUMN'], records[i].value)\n    \n    var properties = {}\n    for (var j = 0; j < state['DIMENSIONS'].length; j++) {\n      var dim_val = get_value(state['DIMENSIONS'][j], records[i].value)\n      if (dim_val !== null && dim_val !== '') {\n        properties[state['DIMENSIONS_NAMES'][j].replace(/[\\. \\/]+/g, '_')] = String(dim_val).replace(/[\\. ]+/g, '_')\n      }\n    }\n    \n    for (var j = 0; j < state['VALUES_COLUMNS'].length; j++) {\n      \n      var values_array = [records[i].value]\n      if (state['VALUES_ARRAY_PATH'].length > 0) {\n        values_array = get_value(state['VALUES_ARRAY_PATH'], records[i].value)\n      }\n      for (var l = 0; l < values_array.length; l++) {\n        if (state['STATIC_WHAT']) {\n          properties['what'] = state['MEASUREMENT_NAMES'][j].replace(/[\\. ]+/g, '_');\n          properties['target_type'] = state['TARGET_TYPES'][j];\n        } else {\n          meas_name = get_value(state['MEASUREMENT_NAMES'][j], values_array[l])\n          if (state['VALUES_ARRAY_FILTER'].length > 0 && state['VALUES_ARRAY_FILTER'].indexOf(meas_name) < 0) {\n            continue;\n          }\n          properties['what'] = String(meas_name).replace(/[\\. ]+/g, '_');\n          properties['target_type'] = get_target_type_value(state['TARGET_TYPES'][j], values_array[l]);\n        }\n\n        var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + i);\n        var value = get_value(state['VALUES_COLUMNS'][j], values_array[l])\n        if (properties['target_type'] == 'running_counter') {\n          properties['target_type'] = 'gauge';\n          value = get_running_counter_value(properties, value, timestamp);\n        }\n\t\t\n        if (value === null || value === '') {\n            continue;\n        } \n        newRecord.value = {'timestamp' : timestamp,\n                           'properties' : properties,\n                           'value': value};\n        output.write(newRecord);\n      }\n    }\n    if (state['COUNT_RECORDS']) {\n      var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + i);\n      properties['what'] = state['COUNT_RECORDS_MEASUREMENT_NAME'];\n      properties['target_type'] = 'counter';\n      newRecord.value = {'timestamp' : timestamp,\n                         'properties' : properties,\n                         'value': 1};\n      output.write(newRecord);\n    }\n\n    // output.write(records[i]);\n  } catch (e) {\n    // Send record to error\n    error.write(records[i], e);\n  }\n}"
+        "value" : "TARGET_TYPES = ['counter', 'gauge', 'running_counter']\n\nfunction get_value(path, value) {\n  path_parts = path.split('/')\n  for (var k = 0; k < path_parts.length; k++) {\n    value = value[path_parts[k]]\n    if (value === null) {\n      return null;\n    }\n  }\n  if (value === null) {\n    return 'NULL';\n  }\n  return value\n}\n\nfunction metric_to_string(dimensions) {\n  var str = '';\n    for (var p in dimensions) {\n        if (dimensions.hasOwnProperty(p)) {\n            str += p + ':' + dimensions[p] + ',';\n        }\n    }\n    return str;\n}\n\nfunction get_running_counter_value(metric_properties, curr_value, time) {\n  metric = metric_to_string(metric_properties)\n  if (state['metrics'][metric] == null) {\n    state['metrics'][metric] = {'val': curr_value, 'time': time}\n    return null;\n  }\n  counter_val = curr_value - state['metrics'][metric]['val']\n  if (counter_val < 0) {\n    state['metrics'][metric] = null\n    return null;\n  }\n  state['metrics'][metric]['val'] = curr_value\n  prev_time = state['metrics'][metric]['time']\n  state['metrics'][metric]['time'] = time\n  return counter_val / (time - prev_time)\n}\n\nfunction get_target_type_value(target_type_property, record) {\n\n  if (TARGET_TYPES.indexOf(target_type_property) < 0) {\n    if (TARGET_TYPES.indexOf(record[target_type_property]) < 0) {\n      throw 'Target type property ' + target_type_property + ' should be counter, gauge or running_counter'\n    }\n    return get_value(target_type_property, record)\n  } \n  return target_type_property\n}\n\nfor(var i = 0; i < records.length; i++) {\n  try {\n\tvar timestamp = get_value(state['TIMESTAMP_COLUMN'], records[i].value)\n    \n    var properties = {}\n    for (var j = 0; j < state['DIMENSIONS'].length; j++) {\n      var dim_val = get_value(state['DIMENSIONS'][j], records[i].value)\n      if (dim_val !== null && dim_val !== '') {\n        properties[state['DIMENSIONS_NAMES'][j].replace(/[\\. \\/]+/g, '_')] = String(dim_val).replace(/[\\. ]+/g, '_')\n      }\n    }\n    \n    for (var j = 0; j < state['VALUES_COLUMNS'].length; j++) {\n      \n      var values_array = [records[i].value]\n      if (state['VALUES_ARRAY_PATH'].length > 0) {\n        values_array = get_value(state['VALUES_ARRAY_PATH'], records[i].value)\n      }\n      for (var l = 0; l < values_array.length; l++) {\n        if (state['STATIC_WHAT']) {\n          properties['what'] = state['MEASUREMENT_NAMES'][j].replace(/[\\. ]+/g, '_');\n          properties['target_type'] = state['TARGET_TYPES'][j];\n        } else {\n          meas_name = get_value(state['MEASUREMENT_NAMES'][j], values_array[l])\n          if (state['VALUES_ARRAY_FILTER'].length > 0 && state['VALUES_ARRAY_FILTER'].indexOf(meas_name) < 0) {\n            continue;\n          }\n          properties['what'] = String(meas_name).replace(/[\\. ]+/g, '_');\n          properties['target_type'] = get_target_type_value(state['TARGET_TYPES'][j], values_array[l]);\n        }\n\n        var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + i);\n        var value = get_value(state['VALUES_COLUMNS'][j], values_array[l])\n        if (properties['target_type'] == 'running_counter') {\n          properties['target_type'] = 'gauge';\n          value = get_running_counter_value(properties, value, timestamp);\n        }\n\t\t\n        if (value === null || value === '') {\n            continue;\n        } \n        newRecord.value = {'timestamp' : timestamp,\n                           'properties' : properties,\n                           'value': value};\n        output.write(newRecord);\n      }\n    }\n    if (state['COUNT_RECORDS']) {\n      var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + i);\n      properties['what'] = state['COUNT_RECORDS_MEASUREMENT_NAME'];\n      properties['target_type'] = 'counter';\n      newRecord.value = {'timestamp' : timestamp,\n                         'properties' : properties,\n                         'value': 1};\n      output.write(newRecord);\n    }\n\n    // output.write(records[i]);\n  } catch (e) {\n    // Send record to error\n    error.write(records[i], e);\n  }\n}"
       }, {
         "name" : "destroyScript",
         "value" : "/**\n * Available Objects:\n * \n *  state: a dict that is preserved between invocations of this script. \n *        Useful for caching bits of data e.g. counters and long-lived resources.\n *\n *  log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n *                               loglevel is any log4j level: e.g. info, error, warn, trace.\n *   sdcFunctions.getFieldNull(Record, 'field path'): Receive a constant defined above \n *                          to check if the field is typed field with value null\n *   sdcFunctions.createMap(boolean listMap): Create a map for use as a field in a record. \n *                          Pass true to this function to create a list map (ordered map)\n *   sdcFunctions.createEvent(String type, int version): Creates a new event.\n *                          Create new empty event with standard headers.\n *   sdcFunctions.toEvent(Record): Send event to event stream\n *                          Only events created with sdcFunctions.createEvent are supported.\n */\n\n// state['connection'].close();"
@@ -417,11 +458,11 @@
       "uiInfo" : {
         "description" : "",
         "label" : "transform",
-        "xPos" : 500,
-        "yPos" : 50,
+        "xPos" : 668,
+        "yPos" : 164,
         "stageType" : "PROCESSOR"
       },
-      "inputLanes" : [ "JythonScripting_01OutputLane16119325849910" ],
+      "inputLanes" : [ "ExpressionEvaluator_03OutputLane16122801067780" ],
       "outputLanes" : [ "JavaScriptEvaluator_01OutputLane15620549534460" ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -458,7 +499,7 @@
           "expression" : "${emptyList()}"
         }, {
           "fieldToSet" : "/tags/pipeline_id[0]",
-          "expression" : "${\"s\"}"
+          "expression" : "${\"z\"}"
         }, {
           "fieldToSet" : "/tags/pipeline_type",
           "expression" : "${emptyList()}"
@@ -490,8 +531,8 @@
       "uiInfo" : {
         "description" : "",
         "label" : "Convert timestamp to long",
-        "xPos" : 720,
-        "yPos" : 50,
+        "xPos" : 877,
+        "yPos" : 165,
         "stageType" : "PROCESSOR"
       },
       "inputLanes" : [ "JavaScriptEvaluator_01OutputLane15620549534460" ],
@@ -555,8 +596,8 @@
       "uiInfo" : {
         "description" : "Convert value to float and timestamp to int",
         "label" : "Convert value and timestamp",
-        "xPos" : 940,
-        "yPos" : 50,
+        "xPos" : 1084,
+        "yPos" : 163,
         "stageType" : "PROCESSOR"
       },
       "inputLanes" : [ "ExpressionEvaluator_02OutputLane15480856372920" ],
@@ -866,8 +907,8 @@
       "uiInfo" : {
         "description" : "",
         "label" : "HTTP Client 1",
-        "xPos" : 1160,
-        "yPos" : 50,
+        "xPos" : 1293,
+        "yPos" : 163,
         "stageType" : "TARGET"
       },
       "inputLanes" : [ "destination_OutputLane" ],
@@ -894,22 +935,22 @@
       "services" : [ ]
     },
     "info" : {
-      "pipelineId" : "s",
-      "title" : "s",
+      "pipelineId" : "z",
+      "title" : "z",
       "description" : "",
-      "created" : 1611932555670,
-      "lastModified" : 1611932691666,
+      "created" : 1612279016908,
+      "lastModified" : 1612280143053,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "11da5b11-c42e-49f2-8145-55935f596c1b",
+      "uuid" : "68338c47-2bfe-442f-955b-458a845287c3",
       "valid" : true,
       "metadata" : {
         "labels" : [ "zabbix", "http" ]
       },
-      "name" : "s",
+      "name" : "z",
       "sdcVersion" : "3.15.0",
-      "sdcId" : "ae598247-6241-11eb-ab99-491e0ca56a63"
+      "sdcId" : "d784aa49-6565-11eb-8326-c306149b8c5c"
     },
     "metadata" : {
       "labels" : [ "zabbix", "http" ]
@@ -1250,7 +1291,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1611932555827,
+      "timestamp" : 1612279016963,
       "valid" : true
     }, {
       "id" : "stageErrorAlertID",
@@ -1261,7 +1302,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1611932555827,
+      "timestamp" : 1612279016963,
       "valid" : true
     }, {
       "id" : "idleGaugeID",
@@ -1272,7 +1313,7 @@
       "condition" : "${time:now() - value() > 120000}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1611932555827,
+      "timestamp" : 1612279016963,
       "valid" : true
     }, {
       "id" : "batchTimeAlertID",
@@ -1283,12 +1324,12 @@
       "condition" : "${value() > 200}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1611932555827,
+      "timestamp" : 1612279016963,
       "valid" : true
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "3a234b5c-1733-4e1b-af2b-e39a17584002",
+    "uuid" : "ca3c1b43-c5ab-462c-a51b-2cb1b5a2a748",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : [ ]

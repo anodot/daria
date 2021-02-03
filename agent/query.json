@@ -1,5 +1,6 @@
 {
   "output": "extend",
+  "selectHosts": "extend",
   "search": {
     "key_": "vm.memory.size"
   }
