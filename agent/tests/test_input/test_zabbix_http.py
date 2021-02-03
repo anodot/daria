@@ -25,7 +25,7 @@ class TestZabbix:
         input_ = {
             'source': name,
             'name': name,
-            'query file': 'query.json',
+            'query file': 'tests/test_input/input_files/zabbix_query.json',
             'days to backfill': 0,
             'query interval': 86400,
             'data preview': 'n',

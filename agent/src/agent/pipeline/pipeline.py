@@ -10,6 +10,7 @@ from enum import Enum
 from sqlalchemy import Column, Integer, String, JSON, ForeignKey, func
 from copy import deepcopy
 from agent import source, pipeline
+from agent.source import Source
 from agent.streamsets import StreamSets
 
 
@@ -85,7 +86,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
     destination = relationship('HttpDestination')
     streamsets = relationship('StreamSets')
 
-    def __init__(self, pipeline_name: str, source_: source.Source, destination: HttpDestination):
+    def __init__(self, pipeline_name: str, source_: Source, destination: HttpDestination):
         self.name = pipeline_name
         self._previous_config = {}
         self._previous_override_source = {}
@@ -110,7 +111,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
         self.override_source = self.config.pop(self.OVERRIDE_SOURCE, {})
 
     @property
-    def source(self):
+    def source(self) -> Source:
         return self.source_
 
     def get_protocol(self):
@@ -239,10 +240,6 @@ class Pipeline(Entity, sdc_client.IPipeline):
     @property
     def query(self) -> Optional[str]:
         return self.config.get('query')
-
-    @property
-    def query_timeout(self) -> Optional[int]:
-        return self.source.config.get('query_timeout')
 
     @query.setter
     def query(self, query):

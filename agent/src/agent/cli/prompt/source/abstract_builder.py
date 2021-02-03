@@ -14,7 +14,9 @@ class Builder(ABC):
         pass
 
     def prompt_query_timeout(self, default_config, advanced):
-        timeout = default_config.get('query_timeout', 15)
         if advanced:
-            timeout = click.prompt('Query timeout (in seconds)', type=click.INT, default=timeout).strip()
-        self.source.config['query_timeout'] = timeout
+            self.source.config['query_timeout'] = click.prompt(
+                'Query timeout (in seconds)',
+                type=click.INT,
+                default=default_config.get('query_timeout', 15)
+            ).strip()

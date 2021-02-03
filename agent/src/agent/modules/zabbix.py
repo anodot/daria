@@ -18,8 +18,12 @@ class Client:
         res.raise_for_status()
         result = res.json()
         if 'error' in result:
-            raise Exception(str(result))
+            raise ZabbixClientException(str(result))
         return result['result']
 
     def _authenticate(self, user: str, password: str):
         self.auth_token = self.post('user.login', {'user': user, 'password': password})
+
+
+class ZabbixClientException(Exception):
+    pass
