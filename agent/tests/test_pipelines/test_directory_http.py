@@ -49,8 +49,8 @@ class TestDirectory(TestPipelineBase):
     def test_force_stop(self, cli_runner, name=None):
         pytest.skip()
 
-    def test_output(self, name, pipeline_type, output):
-        pass
+    def test_output(self, name=None, pipeline_type=None, output=None):
+        pytest.skip()
 
     def test_offset(self):
         pipeline_ = pipeline.repository.get_by_name('test_dir_csv')
