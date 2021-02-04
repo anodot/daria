@@ -70,7 +70,7 @@ class TestKafka:
                 'options': ['-a'],
                 'value': 'n\ny\n \nClicks:gauge\n ',
                 'timestamp': 'timestamp_string\nstring\nM/d/yyyy H:mm:ss\nEurope/Berlin',
-                'advanced_options': '\n\n\n\nn'
+                'advanced_options': '\n\n\n\n\nn'
             },
         ],
         'test_edit': [

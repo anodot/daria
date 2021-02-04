@@ -34,15 +34,13 @@ class TestKafka(TestPipelineBase):
         'test_output': [
             {'name': 'test_kfk_timestamp_string', 'output': 'json_value_property_transformations.json',
              'pipeline_type': 'kafka'},
-            {'name': 'test_kfk_running_counter', 'output': 'running_counter.json', 'pipeline_type': 'kafka'},
             {'name': 'test_kfk_running_counter_dynamic_what', 'output': 'running_counter_dynamic_what.json',
              'pipeline_type': 'kafka'},
             {'name': 'test_kfk_running_counter_static_tt', 'output': 'running_counter_static_tt.json',
              'pipeline_type': 'kafka'},
-            {'name': 'test_kafka_timezone', 'output': 'kafka_timezone.json',
-             'pipeline_type': 'kafka'}
         ],
         'test_output_schema': [
+            {'name': 'test_kafka_timezone', 'output': 'kafka_timezone.json', 'pipeline_type': 'kafka'},
             {'name': 'test_kfk_value_const', 'output': 'json_value_const_adv_schema.json', 'pipeline_type': 'kafka'},
             {'name': 'test_transform_value', 'output': 'kafka_transform_value.json', 'pipeline_type': 'kafka'},
             {'name': 'test_transform_value_2', 'output': 'kafka_transform_value_2.json', 'pipeline_type': 'kafka'},
