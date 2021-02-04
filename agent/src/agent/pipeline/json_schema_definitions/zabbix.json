@@ -16,5 +16,5 @@
     "properties": {"type": "object"},
     "delay": {"type": "integer"}
   },
-  "required": ["query", "interval"]
+  "required": ["query", "interval", "values", "measurement_names"]
 }
