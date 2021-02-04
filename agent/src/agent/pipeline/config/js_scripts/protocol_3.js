@@ -59,6 +59,7 @@ function get_measurements(record) {
     return measurements
 }
 
+
 for (var i = 0; i < records.length; i++) {
 
     try {
@@ -70,7 +71,7 @@ for (var i = 0; i < records.length; i++) {
         if (JSON.stringify(measurements) === JSON.stringify({})) {
             continue;
         }
-        var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + i);
+        var newRecord = sdcFunctions.createRecord(i);
         newRecord.value = {
             'timestamp': timestamp,
             'dimensions': get_dimensions(records[i].value),
