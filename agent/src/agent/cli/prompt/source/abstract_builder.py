@@ -18,5 +18,5 @@ class Builder(ABC):
             self.source.config['query_timeout'] = click.prompt(
                 'Query timeout (in seconds)',
                 type=click.INT,
-                default=default_config.get('query_timeout', 15)
-            ).strip()
+                default=default_config.get('query_timeout', self.source.query_timeout)
+            )

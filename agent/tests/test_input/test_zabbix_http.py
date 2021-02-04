@@ -42,7 +42,7 @@ class TestZabbix:
         assert result.exit_code == 0
         assert sdc_client.exists(name)
 
-    def test_edit(self, cli_runner):
+    def test_edit_advanced(self, cli_runner):
         days_to_backfill = (datetime.now() - datetime(year=2021, month=1, day=22)).days
         input_ = {
             'query file': '',
@@ -56,6 +56,7 @@ class TestZabbix:
             'dimensions': '',
             'delay': '',
             'transform file': '/home/zabbix_transform_value.csv',
+            'static props': 'test_type:input',
             'tags': 'test:zabbix',
             'preview': 'n',
         }

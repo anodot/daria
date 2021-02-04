@@ -24,7 +24,7 @@ class ZabbixSourceBuilder(Builder):
 
     def prompt_username(self, default_config):
         self.source.config[source.ZabbixSource.USER] = click.prompt(
-            'Zabbix username',
+            'Zabbix user',
             type=click.STRING,
             default=default_config.get(source.ZabbixSource.USER, '')
         ).strip()
