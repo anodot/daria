@@ -60,9 +60,9 @@ class TestKafka:
                 'source_name': 'test_json_arrays',
                 'name': 'test_json_arrays',
                 'options': ['-a'],
-                'value': 'n\nn\nkpis\nclicks.display,clicks.search\nClicks:gauge\nClicks:metric',
+                'value': 'n\ny\nkpis\n\nClicks:gauge\nClicks:clicks',
                 'timestamp': 'timestamp_unix\nunix',
-                'advanced_options': ' \n \n \n \nn'
+                'advanced_options': ' \n \n \n \n\nn'
             },
             {
                 'source_name': 'test_kfk',

@@ -1,4 +1,5 @@
 from . import js_convert_metrics
+from . import js_pivot_array
 from . import source
 from . import expression_evaluator
 from . import destination

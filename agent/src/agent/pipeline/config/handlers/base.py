@@ -43,12 +43,12 @@ class SchemaBaseConfigLoader(BaseConfigLoader):
     @classmethod
     def _get_config_file(cls, pipeline: Pipeline) -> str:
         name = {
-            source.TYPE_MYSQL: 'jdbc_http_schema',
-            source.TYPE_POSTGRES: 'jdbc_http_schema',
-            source.TYPE_DIRECTORY: 'directory_http_schema',
+            source.TYPE_MYSQL: 'jdbc_http',
+            source.TYPE_POSTGRES: 'jdbc_http',
+            source.TYPE_DIRECTORY: 'directory_http',
             source.TYPE_KAFKA: 'kafka_http',
         }[pipeline.source.type]
-        return name + '.json'
+        return name + '_schema.json'
 
 
 class TestPipelineBaseConfigLoader(BaseConfigLoader):
