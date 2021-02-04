@@ -38,7 +38,7 @@ class TestKafka:
                 'options': ['-a'],
                 'value': 'n\ny\n\nClicks:running_counter\nClicks:clicks',
                 'timestamp': 'timestamp_unix\nunix',
-                'advanced_options': 'key1:val1\n \n \n \nn'
+                'advanced_options': 'key1:val1\n \n \n \n\nn'
             },
             {
                 'source_name': 'test_running_counters',
