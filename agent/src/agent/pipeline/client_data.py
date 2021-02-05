@@ -71,6 +71,9 @@ class KafkaLoadClientData(LoadClientData):
         transformation = self.client_config.get('transform', {}).get('file')
         if transformation:
             expression_parser.transformation.validate_file(transformation)
+
+        self.client_config['override_source'][source.KafkaSource.CONFIG_CONSUMER_GROUP] = \
+            "agent_" + self.client_config['pipeline_id']
         return self.client_config
 
 
