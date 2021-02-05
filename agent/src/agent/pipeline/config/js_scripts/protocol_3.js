@@ -1,10 +1,17 @@
 function get_value(path, value) {
-    path_parts = path.split('/')
-    for (var k = 0; k < path_parts.length; k++) {
-        value = value[path_parts[k]]
+  path_parts = path.split('/')
+  for (var k = 0; k < path_parts.length; k++) {
+    value = value[path_parts[k]]
+    if (value === null) {
+      return null;
     }
-    return value
+  }
+  if (value === null) {
+    return 'NULL';
+  }
+  return value
 }
+
 
 function replace_illegal_chars(str) {
     return str.replace(/[\. ]+/g, '_')
@@ -43,7 +50,7 @@ function get_measurements(record) {
     var measurements = {}
     for (var j = 0; j < state['VALUES_COLUMNS'].length; j++) {
         var value = get_value(state['VALUES_COLUMNS'][j], record);
-        if (value === null || value === '') {
+        if (value === null || value === '' || isNaN(value)) {
             continue;
         }
         if (typeof value === 'string' || value instanceof String) {

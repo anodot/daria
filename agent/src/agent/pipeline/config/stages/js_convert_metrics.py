@@ -45,6 +45,8 @@ class JSConvertMetrics30(JSConvertMetrics):
 
         return {
             'initScript': self.get_js_vars(),
-            'script': script
+            'script': script,
+            'stageRequiredFields': [f'/{f}' for f in [*self.pipeline.required_dimensions_paths,
+                                                      self.pipeline.timestamp_path]]
         }
 

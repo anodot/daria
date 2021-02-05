@@ -2,10 +2,10 @@
   "pipelineConfig" : {
     "schemaVersion" : 6,
     "version" : 17,
-    "pipelineId" : "kafkahttpbcc0d526-a46a-40d6-9663-852358e94979",
-    "title" : "kafka_http",
+    "pipelineId" : "kafkahttp8bc58f6d-4c81-4ffd-b47a-c83a1a54c238",
+    "title" : "kafka_http_schema",
     "description" : "",
-    "uuid" : "de799f98-f096-402f-be4b-396ee21613bc",
+    "uuid" : "4abb41b2-cd6a-491b-a7c1-db771074a7b1",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -811,6 +811,62 @@
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
+      "instanceName" : "FieldTypeConverter_01",
+      "library" : "streamsets-datacollector-basic-lib",
+      "stageName" : "com_streamsets_pipeline_stage_processor_fieldtypeconverter_FieldTypeConverterDProcessor",
+      "stageVersion" : "2",
+      "configuration" : [ {
+        "name" : "convertBy",
+        "value" : "BY_FIELD"
+      }, {
+        "name" : "fieldTypeConverterConfigs",
+        "value" : [ {
+          "fields" : [ "/timestamp" ],
+          "targetType" : "INTEGER",
+          "treatInputFieldAsDate" : false,
+          "dataLocale" : "en,US",
+          "scale" : -1,
+          "decimalScaleRoundingStrategy" : "ROUND_UNNECESSARY",
+          "dateFormat" : "YYYY_MM_DD",
+          "zonedDateTimeFormat" : "ISO_ZONED_DATE_TIME",
+          "encoding" : "UTF-8"
+        } ]
+      }, {
+        "name" : "wholeTypeConverterConfigs",
+        "value" : [ {
+          "sourceType" : "INTEGER",
+          "targetType" : "INTEGER",
+          "treatInputFieldAsDate" : false,
+          "dataLocale" : "en,US",
+          "scale" : -1,
+          "decimalScaleRoundingStrategy" : "ROUND_UNNECESSARY",
+          "dateFormat" : "YYYY_MM_DD",
+          "zonedDateTimeFormat" : "ISO_ZONED_DATE_TIME",
+          "encoding" : "UTF-8"
+        } ]
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "yPos" : 50,
+        "stageType" : "PROCESSOR",
+        "icon" : "converter.png",
+        "description" : "",
+        "label" : "Convert timestamp to int",
+        "xPos" : 1160
+      },
+      "inputLanes" : [ "ExpressionEvaluator_02OutputLane15480856372920" ],
+      "outputLanes" : [ "FieldTypeConverter_01OutputLane16125400797730" ],
+      "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
       "instanceName" : "destination",
       "library" : "anodot",
       "stageName" : "anodot_stage_destination_AnodotDTarget",
@@ -1113,11 +1169,11 @@
       "uiInfo" : {
         "description" : "",
         "label" : "HTTP Client 1",
-        "xPos" : 1160,
+        "xPos" : 1380,
         "yPos" : 50,
         "stageType" : "TARGET"
       },
-      "inputLanes" : [ "ExpressionEvaluator_02OutputLane15480856372920" ],
+      "inputLanes" : [ "FieldTypeConverter_01OutputLane16125400797730" ],
       "outputLanes" : [ ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -1141,22 +1197,22 @@
       "services" : [ ]
     },
     "info" : {
-      "pipelineId" : "kafkahttpbcc0d526-a46a-40d6-9663-852358e94979",
-      "title" : "kafka_http",
+      "pipelineId" : "kafkahttp8bc58f6d-4c81-4ffd-b47a-c83a1a54c238",
+      "title" : "kafka_http_schema",
       "description" : "",
-      "created" : 1612459188856,
-      "lastModified" : 1612459298277,
+      "created" : 1612540069843,
+      "lastModified" : 1612540108983,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "de799f98-f096-402f-be4b-396ee21613bc",
+      "uuid" : "4abb41b2-cd6a-491b-a7c1-db771074a7b1",
       "valid" : false,
       "metadata" : {
         "labels" : [ "mongo", "http" ]
       },
-      "name" : "kafkahttpbcc0d526-a46a-40d6-9663-852358e94979",
+      "name" : "kafkahttp8bc58f6d-4c81-4ffd-b47a-c83a1a54c238",
       "sdcVersion" : "3.15.0",
-      "sdcId" : "7d150927-6705-11eb-bf65-0d420e412367"
+      "sdcId" : "e8367d76-67c7-11eb-81fb-812557876507"
     },
     "metadata" : {
       "labels" : [ "mongo", "http" ]
@@ -1556,7 +1612,7 @@
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "43db1aa6-d9ac-4fac-b077-92d431396cc2",
+    "uuid" : "ca98a478-bbd0-4a23-9f18-383d6413b3b4",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : [ ]
@@ -1564,8 +1620,8 @@
       "name" : "webhookConfigs",
       "value" : [ ]
     } ],
-    "configIssues" : [ ],
-    "ruleIssues" : [ ]
+    "ruleIssues" : [ ],
+    "configIssues" : [ ]
   },
   "libraryDefinitions" : null
 }
