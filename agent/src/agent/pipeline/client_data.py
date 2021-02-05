@@ -33,10 +33,6 @@ class LoadClientData:
         if type(self.client_config.get('dimensions')) == list:
             self.client_config['dimensions'] = {'required': [], 'optional': self.client_config['dimensions']}
 
-    def load_value(self):
-        if type(self.client_config.get('value')) == str:
-            self.client_config['value'] = {'type': 'property', 'value': self.client_config['value']}
-
     def load(self, client_config, edit=False) -> dict:
         self.client_config = client_config
         if 'override_source' not in self.client_config:
@@ -47,7 +43,6 @@ class LoadClientData:
             schema = json.load(f)
         if self.edit:
             schema['required'] = []
-        # todo don't validate here
         validate(self.client_config, schema)
         client_config.pop('source', None)
         return self.client_config
@@ -146,6 +141,17 @@ class VictoriaLoadClientData(LoadClientData):
     VALIDATION_SCHEMA_FILE_NAME = 'victoria'
 
 
+class ZabbixLoadClientData(LoadClientData):
+    VALIDATION_SCHEMA_FILE_NAME = 'zabbix'
+
+    def load(self, client_config, edit=False):
+        super().load(client_config, edit)
+        self.client_config['timestamp'] = {}
+        self.client_config['timestamp']['type'] = 'unix'
+        self.client_config['timestamp']['name'] = 'clock'
+        return self.client_config
+
+
 def get_file_loader(source_type: str) -> LoadClientData:
     loaders = {
         source.TYPE_INFLUX: InfluxLoadClientData,
@@ -158,5 +164,6 @@ def get_file_loader(source_type: str) -> LoadClientData:
         source.TYPE_DIRECTORY: DirectoryLoadClientData,
         source.TYPE_SAGE: SageLoadClientData,
         source.TYPE_VICTORIA: VictoriaLoadClientData,
+        source.TYPE_ZABBIX: ZabbixLoadClientData,
     }
     return loaders[source_type]()

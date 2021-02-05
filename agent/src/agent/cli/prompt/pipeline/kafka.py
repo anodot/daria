@@ -18,7 +18,7 @@ class PromptConfigKafka(PromptConfigSchemaless):
         self.set_static_properties()
         self.set_tags()
         self.filter()
-        self.transform()
+        self.set_transform()
         self.set_use_schema()
 
     def set_consumer_group(self):

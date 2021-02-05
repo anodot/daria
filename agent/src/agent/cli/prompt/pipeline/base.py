@@ -180,5 +180,6 @@ def get_prompter(pipeline_: Pipeline) -> PromptConfig:
         source.TYPE_DIRECTORY: prompt.pipeline.PromptConfigDirectory,
         source.TYPE_SAGE: prompt.pipeline.PromptConfigSage,
         source.TYPE_VICTORIA: prompt.pipeline.PromptConfigVictoria,
+        source.TYPE_ZABBIX: prompt.pipeline.PromptConfigZabbix,
     }
     return prompters[pipeline_.source.type](pipeline_)

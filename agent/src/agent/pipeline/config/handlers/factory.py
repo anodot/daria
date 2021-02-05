@@ -15,7 +15,8 @@ def get_config_handler(pipeline_: Pipeline) -> BaseConfigHandler:
         source.TYPE_SAGE: pipeline.config.handlers.sage.SageConfigHandler,
         source.TYPE_VICTORIA: pipeline.config.handlers.victoria.VictoriaConfigHandler,
         source.TYPE_POSTGRES: pipeline.config.handlers.jdbc.JDBCConfigHandler,
-        source.TYPE_MYSQL: pipeline.config.handlers.jdbc.JDBCConfigHandler
+        source.TYPE_MYSQL: pipeline.config.handlers.jdbc.JDBCConfigHandler,
+        source.TYPE_ZABBIX: pipeline.config.handlers.zabbix.ZabbixConfigHandler
     }
 
     handlers_protocol30 = {

@@ -18,7 +18,7 @@ class PromptConfigSchemaless(PromptConfig):
         self.set_static_properties()
         self.set_tags()
         self.filter()
-        self.transform()
+        self.set_transform()
 
     def static_what(self):
         return self.config.get('static_what', True)
@@ -116,7 +116,7 @@ class PromptConfigSchemaless(PromptConfig):
         self.config['filter'] = self.default_config.get('filter', {})
         self.prompt_condition()
 
-    def transform(self):
+    def set_transform(self):
         if not self.advanced and not self.default_config.get('transform'):
             return
         self.config['transform'] = self.default_config.get('transform', {})
