@@ -161,8 +161,9 @@ class PromptConfig:
 
     def set_use_schema(self):
         static_what = self.config.get('static_what', True)
-        if self.advanced and static_what:
-            self.config['use_schema'] = click.confirm('Use schema?', default=True)
+        if (self.advanced or self.default_config.get('use_schema') is not None) and static_what:
+            self.config['use_schema'] = click.confirm('Use schema?',
+                                                      default=self.default_config.get('use_schema', True))
             return
 
         self.config['use_schema'] = pipeline.manager.use_schema(self.pipeline.source.type) and static_what

@@ -15,6 +15,7 @@ state['COUNT_RECORDS_MEASUREMENT_NAME'] = '{self.pipeline.count_records_measurem
 state['STATIC_WHAT'] = {int(self.pipeline.static_what)};
 state['VALUES_ARRAY_PATH'] = '{self.pipeline.values_array_path}';
 state['VALUES_ARRAY_FILTER'] = {self.pipeline.values_array_filter_metrics};
+state['INTERVAL'] = {self.pipeline.interval};
 state['metrics'] = {{}}
     """
 

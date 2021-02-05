@@ -90,3 +90,11 @@ for (var i = 0; i < records.length; i++) {
         error.write(records[i], e);
     }
 }
+
+if (records.length > 0 && get_value(state['TIMESTAMP_COLUMN'], records[0].value)) {
+  event = sdc.createEvent('interval processed', 1);
+  event.value = {
+    'watermark': records[0].value['last_timestamp'] + state['INTERVAL'] ,
+  };
+  sdc.toEvent(event);
+}
