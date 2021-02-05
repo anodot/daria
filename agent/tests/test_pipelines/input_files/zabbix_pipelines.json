@@ -1,0 +1,20 @@
+[
+  {
+    "source": "test_zabbix_file",
+    "pipeline_id": "test_zabbix_file",
+    "query": {"output": "extend","search": {"key_": "system.cpu.load"}},
+    "days_to_backfill": 10,
+    "interval": 86400,
+    "values": {
+      "value": "gauge"
+    },
+    "measurement_names": {
+      "value": "name"
+    },
+    "dimensions": [
+      "name",
+      "hostid"
+    ],
+    "delay": 0
+  }
+]

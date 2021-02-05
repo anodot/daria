@@ -10,7 +10,7 @@ from datetime import datetime
 from urllib.parse import urlparse, urlunparse
 from agent import source
 from agent.modules.tools import if_validation_enabled
-from agent.modules import validator
+from agent.modules import validator, zabbix
 from agent.source import Source
 
 
@@ -227,6 +227,17 @@ class VictoriaMetricsValidator(Validator):
             )
 
 
+class ZabbixValidator(Validator):
+    VALIDATION_SCHEMA_FILE = 'zabbix.json'
+
+    def validate_connection(self):
+        zabbix.Client(
+            self.source.config[source.ZabbixSource.URL],
+            self.source.config[source.ZabbixSource.USER],
+            self.source.config[source.ZabbixSource.PASSWORD],
+        )
+
+
 class SchemalessValidator(Validator):
     def validate(self):
         super().validate()
@@ -266,5 +277,6 @@ def get_validator(source_: Source) -> Validator:
         source.TYPE_DIRECTORY: DirectoryValidator,
         source.TYPE_SAGE: SageValidator,
         source.TYPE_VICTORIA: VictoriaMetricsValidator,
+        source.TYPE_ZABBIX: ZabbixValidator,
     }
     return types[source_.type](source_)

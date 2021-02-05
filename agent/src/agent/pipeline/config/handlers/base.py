@@ -36,6 +36,7 @@ class BaseConfigLoader:
             source.TYPE_DIRECTORY: 'directory_http',
             source.TYPE_SAGE: 'sage_http',
             source.TYPE_VICTORIA: 'victoria_http',
+            source.TYPE_ZABBIX: 'zabbix_http',
         }[pipeline.source.type]
         return name + '.json'
 
@@ -66,6 +67,7 @@ class TestPipelineBaseConfigLoader(BaseConfigLoader):
             source.TYPE_SPLUNK: 'test_tcp_server_jksrj322',
             source.TYPE_DIRECTORY: 'test_directory_ksdjfjk21',
             source.TYPE_SAGE: 'test_sage_jfhdkj',
+            source.TYPE_ZABBIX: 'test_zabbix_jfhdkj',
         }[pipeline.source.type] + '.json'
 
 

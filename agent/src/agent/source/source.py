@@ -1,3 +1,4 @@
+from typing import Optional
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.mutable import MutableDict
@@ -41,6 +42,10 @@ class Source(Entity):
     def set_config(self, config):
         self._previous_config = deepcopy(self.config)
         self.config = config
+
+    @property
+    def query_timeout(self) -> Optional[int]:
+        return int(self.config.get('query_timeout', 300))
 
 
 class ElasticSource(Source):
@@ -188,6 +193,12 @@ class SageSource(Source):
 class VictoriaMetricsSource(Source):
     URL = 'url'
     USERNAME = 'username'
+    PASSWORD = 'password'
+
+
+class ZabbixSource(Source):
+    URL = 'url'
+    USER = 'user'
     PASSWORD = 'password'
 
 

@@ -18,7 +18,7 @@ class PromptConfigKafka(PromptConfigSchemaless):
         self.set_static_properties()
         self.set_tags()
         self.filter()
-        self.transform()
+        self.set_transform()
 
     def set_consumer_group(self):
         self.config['override_source'][source.KafkaSource.CONFIG_CONSUMER_GROUP] =\

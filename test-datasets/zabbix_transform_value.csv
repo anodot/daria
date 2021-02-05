@@ -1,0 +1,3 @@
+content-provider,"str:regExCapture(name, '(.+)\\s-\\s(.+)\\s-\\s(.+)', 1)"
+what,"str:regExCapture(name, '(.+)\\s-\\s(.+)\\s-\\s(.+)', 2)"
+service-provider,"str:regExCapture(name, '(.+)\\s-\\s(.+)\\s-\\s(.+)', 3)"

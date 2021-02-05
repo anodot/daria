@@ -19,6 +19,7 @@ def get_config_handler(pipeline_: Pipeline) -> BaseConfigHandler:
         source.TYPE_DIRECTORY: pipeline.config.handlers.directory.DirectoryConfigHandler,
         source.TYPE_SAGE: pipeline.config.handlers.sage.SageConfigHandler,
         source.TYPE_VICTORIA: pipeline.config.handlers.victoria.VictoriaConfigHandler,
+        source.TYPE_ZABBIX: pipeline.config.handlers.zabbix.ZabbixConfigHandler,
     }
     return handlers[pipeline_.source.type](pipeline_, base_config)
 

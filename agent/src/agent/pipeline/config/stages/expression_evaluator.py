@@ -68,39 +68,13 @@ class Filtering(Stage):
                 transformations.append(get_value('/' + row['result'], exp))
         return transformations
 
-    def _check_dimensions(self) -> list:
-        check_dims = []
-        for d_path in self.pipeline.dimensions_paths:
-            keys = d_path.split('/')
-            path = '/'
-            for key in keys[:-1]:
-                path += key
-                check_dims.append(get_value(f'{path}', f"""record:exists('{path}') && record:value('{path}') != null ? 
-record:value('{path}') : emptyMap()"""))
-            check_dims.append(get_value(f'/{d_path}', f"""record:exists('/{d_path}') ? 
-(record:value('/{d_path}') == null) ? 'NULL' : record:value('/{d_path}') : null"""))
-        return check_dims
-
     def _get_config(self) -> dict:
-        required_fields = [*self.pipeline.required_dimensions_paths, self.pipeline.timestamp_path]
-        if self.pipeline.values_array_path:
-            required_fields.append(self.pipeline.values_array_path)
-        else:
-            required_fields += self.pipeline.values_paths
-
-        if not self.pipeline.static_what:
-            required_fields += self.pipeline.measurement_names_paths
-            for t_type in self.pipeline.target_types_paths:
-                if t_type not in self.pipeline.TARGET_TYPES:
-                    required_fields.append(t_type)
-
         preconditions = []
         if self.pipeline.filter_condition:
             preconditions.append(condition.process_expression(self.pipeline.filter_condition))
 
         return {
-            'expressionProcessorConfigs': self._check_dimensions() + self._get_transformations(),
-            'stageRequiredFields': [f'/{f}' for f in required_fields],
+            'expressionProcessorConfigs': self._get_transformations(),
             'stageRecordPreconditions': ['${' + p + '}' for p in preconditions]
         }
 
