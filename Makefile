@@ -74,6 +74,10 @@ test-sage: bootstrap run-sage
 	$(DOCKER_TEST) tests/test_input/test_sage_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_sage_http.py
 
+test-zabbix: bootstrap run-zabbix
+	$(DOCKER_TEST) tests/test_input/test_zabbix_http.py
+	$(DOCKER_TEST) tests/test_pipelines/test_zabbix_http.py
+
 
 
 ##---------------------------
