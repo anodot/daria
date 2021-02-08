@@ -52,5 +52,5 @@ class TestPostgreSQL(TestPipelineBase):
     def test_force_stop(self, cli_runner, name):
         super().test_force_stop(cli_runner, name)
 
-    def test_output(self, name, pipeline_type, output):
+    def test_output(self, name=None, pipeline_type=None, output=None):
         pytest.skip()
