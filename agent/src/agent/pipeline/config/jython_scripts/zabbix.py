@@ -76,7 +76,8 @@ def get_interval():
 
 interval = get_interval()
 end = get_backfill_offset() + interval
-
+sdc.log.info('INTERVAL: ' + str(interval))
+sdc.log.info('TIME_TO: ' + str(end))
 client = Client(sdc.userParams['URL'], sdc.userParams['USER'], sdc.userParams['PASSWORD'])
 
 while True:
