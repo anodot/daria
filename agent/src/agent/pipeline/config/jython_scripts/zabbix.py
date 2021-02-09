@@ -47,7 +47,7 @@ class Client:
             except Exception as e:
                 if i == N_REQUESTS_TRIES:
                     raise
-                sdc.log.debug(str(e))
+                sdc.log.info(str(e))
                 time.sleep(i ** 2)
                 continue
             break
@@ -55,6 +55,7 @@ class Client:
 
     def _authenticate(self, user, password):
         self.auth_token = self.post('user.login', {'user': user, 'password': password})
+        sdc.log.info('user.login - success')
 
 
 def get_now_with_delay():
@@ -75,7 +76,8 @@ def get_interval():
 
 interval = get_interval()
 end = get_backfill_offset() + interval
-
+sdc.log.info('INTERVAL: ' + str(interval))
+sdc.log.info('TIME_TO: ' + str(end))
 client = Client(sdc.userParams['URL'], sdc.userParams['USER'], sdc.userParams['PASSWORD'])
 
 while True:
@@ -90,7 +92,10 @@ while True:
         # itemids: { value_type: [id1, id2 ...] }
         itemids = {}
 
-        for item in client.post('item.get', json.loads(sdc.userParams['QUERY'])):
+        data = client.post('item.get', json.loads(sdc.userParams['QUERY']))
+        if len(data) == 0:
+            sdc.log.info('item.get - No data - query: ' + sdc.userParams['QUERY'])
+        for item in data:
             itemid = item['itemid']
             value_type = item['value_type']
 
@@ -101,15 +106,18 @@ while True:
             items[itemid] = item
 
         for value_type, ids in itemids.items():
-            histories = client.post('history.get', {
+            history_params = {
                 'history': value_type,
                 'itemids': ids,
                 'sortfield': 'clock',
                 'sortorder': 'ASC',
                 'time_from': end - interval,
                 'time_till': end
-            })
+            }
+            histories = client.post('history.get', history_params)
             # add fields from item to every history record
+            if len(histories) == 0:
+                sdc.log.info('history.get - No data - query: ' + str(history_params))
             for history in histories:
                 history.update(items[history['itemid']])
                 record = sdc.createRecord('record created ' + str(get_now_with_delay()))
