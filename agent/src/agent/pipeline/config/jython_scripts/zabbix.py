@@ -74,6 +74,28 @@ def get_interval():
     return int(sdc.userParams['INTERVAL'])
 
 
+def query_items_by_host(host_id, zabbix_client):
+    # items: { itemid: item }
+    items = {}
+    # itemids: { value_type: [id1, id2 ...] }
+    itemids_by_value_type = {}
+
+    query = json.loads(sdc.userParams['QUERY'])
+    query['hostids'] = host_id
+    data = zabbix_client.post('item.get', query)
+    if len(data) == 0:
+        sdc.log.info('item.get - No data - query: ' + str(query))
+
+    for item in data:
+        if item['value_type'] not in itemids_by_value_type:
+            itemids_by_value_type[item['value_type']] = []
+
+        itemids_by_value_type[item['value_type']].append(item['itemid'])
+        items[item['itemid']] = item
+
+    return items, itemids_by_value_type
+
+
 interval = get_interval()
 end = get_backfill_offset() + interval
 sdc.log.info('INTERVAL: ' + str(interval))
@@ -87,42 +109,31 @@ while True:
         if sdc.isStopped():
             break
         batch = sdc.createBatch()
-        # items: { itemid: item }
-        items = {}
-        # itemids: { value_type: [id1, id2 ...] }
-        itemids = {}
 
-        data = client.post('item.get', json.loads(sdc.userParams['QUERY']))
-        if len(data) == 0:
-            sdc.log.info('item.get - No data - query: ' + sdc.userParams['QUERY'])
-        for item in data:
-            itemid = item['itemid']
-            value_type = item['value_type']
+        hosts = client.post('host.get', {'output': ['hostid']})
+        if len(hosts) == 0:
+            sdc.log.info('host.get - No data')
 
-            if value_type not in itemids:
-                itemids[value_type] = []
-
-            itemids[value_type].append(itemid)
-            items[itemid] = item
-
-        for value_type, ids in itemids.items():
-            history_params = {
-                'history': value_type,
-                'itemids': ids,
-                'sortfield': 'clock',
-                'sortorder': 'ASC',
-                'time_from': end - interval,
-                'time_till': end
-            }
-            histories = client.post('history.get', history_params)
-            # add fields from item to every history record
-            if len(histories) == 0:
-                sdc.log.info('history.get - No data - query: ' + str(history_params))
-            for history in histories:
-                history.update(items[history['itemid']])
-                record = sdc.createRecord('record created ' + str(get_now_with_delay()))
-                record.value = history
-                batch.add(record)
+        for host in hosts:
+            items, itemids_by_value_type = query_items_by_host(host['hostid'], client)
+            for value_type, ids in itemids_by_value_type.items():
+                history_params = {
+                    'history': value_type,
+                    'itemids': ids,
+                    'sortfield': 'clock',
+                    'sortorder': 'ASC',
+                    'time_from': end - interval,
+                    'time_till': end
+                }
+                histories = client.post('history.get', history_params)
+                # add fields from item to every history record
+                if len(histories) == 0:
+                    sdc.log.info('history.get - No data - query: ' + str(history_params))
+                for history in histories:
+                    history.update(items[history['itemid']])
+                    record = sdc.createRecord('record created ' + str(get_now_with_delay()))
+                    record.value = history
+                    batch.add(record)
 
         batch.process(entityName, str(end))
 
