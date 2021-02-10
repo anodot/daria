@@ -15,12 +15,15 @@ function configure_sql_drivers() {
 
 function install_stage_libs() {
   "${SDC_DIST}/bin/streamsets" stagelibs -install="streamsets-datacollector-mongodb_3-lib,streamsets-datacollector-jdbc-lib,streamsets-datacollector-elasticsearch_5-lib,streamsets-datacollector-jython_2_7-lib,streamsets-datacollector-apache-kafka_2_0-lib"
-  wget https://archives.streamsets.com/datacollector/3.21.0/tarball/streamsets-datacollector-apache-kafka_2_6-lib-3.21.0.tgz -O /tmp/kafka.tgz
-  tar -xzvf  /tmp/kafka.tgz -C /tmp
-  local KAFKA_TMP_DIR=/tmp/streamsets-datacollector-3.21.0/streamsets-libs/streamsets-datacollector-apache-kafka_2_6-lib/lib
+
+  # update kafka libraries
+  local KAFKA_TMP_DIR=/tmp/streamsets-datacollector-3.21.0/streamsets-libs/streamsets-datacollector-apache-kafka_2_2-lib/lib
   local KAFKA_SDC_DIR=${SDC_DIST}/streamsets-libs/streamsets-datacollector-apache-kafka_2_0-lib/lib
-#  cp ${KAFKA_TMP_DIR}/streamsets-datacollector-sdc-kafka-2_0-3.21.0.jar  ${SDC_DIST}/streamsets-libs/streamsets-datacollector-apache-kafka_2_0-lib/lib/streamsets-datacollector-sdc-kafka-2_0-3.18.0.jar
-  cp ${KAFKA_TMP_DIR}/streamsets-datacollector-apache-kafka_2_6-lib-3.21.0.jar  ${KAFKA_SDC_DIR}/streamsets-datacollector-apache-kafka_2_0-lib-3.18.0.jar
+
+  rm ${KAFKA_SDC_DIR}/lz4-java-1.4.1.jar ${KAFKA_SDC_DIR}/snappy-0.4.jar
+  wget https://repo1.maven.org/maven2/org/lz4/lz4-java/1.5.0/lz4-java-1.5.0.jar -O ${KAFKA_SDC_DIR}/lz4-java-1.5.0.jar
+  wget https://repo1.maven.org/maven2/com/github/luben/zstd-jni/1.3.8-1/zstd-jni-1.3.8-1.jar -O ${KAFKA_SDC_DIR}/zstd-jni-1.3.8-1.jar
+  wget https://repo1.maven.org/maven2/org/xerial/snappy/snappy-java/1.1.7.2/snappy-java-1.1.7.2.jar -O ${KAFKA_SDC_DIR}/snappy-java-1.1.7.2.jar
 }
 
 function make_sdc_copy() {
