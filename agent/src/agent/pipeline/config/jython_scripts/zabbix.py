@@ -110,7 +110,7 @@ while True:
             break
         batch = sdc.createBatch()
 
-        hosts = client.post('host.get', {'output': ['hostid']})
+        hosts = client.post('host.get', {'output': ['hostid', 'name']})
         if len(hosts) == 0:
             sdc.log.info('host.get - No data')
 
@@ -131,6 +131,7 @@ while True:
                     sdc.log.info('history.get - No data - query: ' + str(history_params))
                 for history in histories:
                     history.update(items[history['itemid']])
+                    history['host'] = host['name']
                     record = sdc.createRecord('record created ' + str(get_now_with_delay()))
                     record.value = history
                     batch.add(record)
