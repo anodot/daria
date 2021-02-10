@@ -96,6 +96,22 @@ def query_items_by_host(host_id, zabbix_client):
     return items, itemids_by_value_type
 
 
+def query_history(item_ids, value_type, zabbix_client):
+    history_params = {
+        'history': value_type,
+        'itemids': item_ids,
+        'sortfield': 'clock',
+        'sortorder': 'ASC',
+        'time_from': end - interval,
+        'time_till': end
+    }
+    histories = zabbix_client.post('history.get', history_params)
+    # add fields from item to every history record
+    if len(histories) == 0:
+        sdc.log.info('history.get - No data - query: ' + str(history_params))
+    return histories
+
+
 interval = get_interval()
 end = get_backfill_offset() + interval
 sdc.log.info('INTERVAL: ' + str(interval))
@@ -117,24 +133,22 @@ while True:
         for host in hosts:
             items, itemids_by_value_type = query_items_by_host(host['hostid'], client)
             for value_type, ids in itemids_by_value_type.items():
-                history_params = {
-                    'history': value_type,
-                    'itemids': ids,
-                    'sortfield': 'clock',
-                    'sortorder': 'ASC',
-                    'time_from': end - interval,
-                    'time_till': end
-                }
-                histories = client.post('history.get', history_params)
-                # add fields from item to every history record
-                if len(histories) == 0:
-                    sdc.log.info('history.get - No data - query: ' + str(history_params))
-                for history in histories:
+
+                for history in query_history(ids, value_type, client):
                     history.update(items[history['itemid']])
                     history['host'] = host['name']
                     record = sdc.createRecord('record created ' + str(get_now_with_delay()))
                     record.value = history
                     batch.add(record)
+
+                    if batch.size() >= sdc.batchSize and sdc.isPreview():
+                        batch.process(entityName, str(end))
+                        cur_batch = sdc.createBatch()
+                        if sdc.isStopped():
+                            break
+
+                if sdc.isStopped():
+                    break
 
         batch.process(entityName, str(end))
 
