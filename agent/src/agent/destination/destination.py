@@ -81,6 +81,10 @@ class HttpDestination(Entity):
         self.config[self.CONFIG_ENABLE_REQUEST_LOGGING] = False
 
     @property
+    def if_logs_enabled(self) -> bool:
+        return self.config.get(self.CONFIG_ENABLE_REQUEST_LOGGING, False)
+
+    @property
     def proxy(self) -> Optional[Proxy]:
         if self.config[self.CONFIG_PROXY_USE]:
             return Proxy(
