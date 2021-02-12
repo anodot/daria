@@ -1,22 +1,11 @@
-global sdc
-
-try:
-    sdc.importLock()
-    import sys
-    import os
-
-    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))
-    import requests
-    import traceback
-    import time
-    import json
-finally:
-    sdc.importUnlock()
+import requests
+import time
 
 entityName = ''
 N_REQUESTS_TRIES = 3
-ITEMS_BATCH_SIZE = 100
-HISTORIES_BATCH_SIZE = 10
+ITEMS_BATCH_SIZE = 1000
+HISTORIES_BATCH_SIZE = 100
+last_id = None
 
 
 class Client:
@@ -40,7 +29,7 @@ class Client:
                     headers={
                         'Content-Type': 'application/json-rpc'
                     },
-                    timeout=sdc.userParams['QUERY_TIMEOUT']
+                    timeout=300
                 )
                 res.raise_for_status()
                 result = res.json()
@@ -49,7 +38,7 @@ class Client:
             except Exception as e:
                 if i == N_REQUESTS_TRIES:
                     raise
-                sdc.log.info(str(e))
+                print(str(e))
                 time.sleep(i ** 2)
                 continue
             break
@@ -57,32 +46,27 @@ class Client:
 
     def _authenticate(self, user, password):
         self.auth_token = self.post('user.login', {'user': user, 'password': password})
-        sdc.log.info('user.login - success')
+        print('user.login - success')
 
 
-client = Client(sdc.userParams['URL'], sdc.userParams['USER'], sdc.userParams['PASSWORD'])
+client = Client('http://localhost:8888', 'Admin', 'zabbix')
 items = {}
 
 
 def get_now_with_delay():
-    return int(time.time()) - int(sdc.userParams['DELAY_IN_MINUTES']) * 60
+    return int(time.time()) - int(0) * 60
 
 
 def get_backfill_offset():
-    if sdc.lastOffsets.containsKey(entityName):
-        return int(float(sdc.lastOffsets.get(entityName)))
-    if sdc.userParams['INITIAL_TIMESTAMP']:
-        return int(sdc.userParams['INITIAL_TIMESTAMP'])
-    return get_now_with_delay() - get_interval()
+    return 1611322470
 
 
 def get_interval():
-    return int(sdc.userParams['INTERVAL'])
+    return int(300)
 
 
 def get_last_processed_id():
-    if sdc.lastOffsets.containsKey(entityName):
-        return sdc.lastOffsets.get(entityName).split('_')[1]
+    return last_id
 
 
 def query_items_sorted():
@@ -97,7 +81,7 @@ def query_items_sorted():
     }
     data = client.post('item.get', query)
     if len(data) == 0:
-        sdc.log.info('item.get - No data - query: ' + str(query))
+        print('item.get - No data - query: ' + str(query))
     return data
 
 
@@ -105,7 +89,6 @@ def query_history(item_ids, value_type):
     histories = []
     start = time.time()
     for ids_chunk in chunks(item_ids, HISTORIES_BATCH_SIZE):
-        sdc.log.info('fetching history for ' + str(len(ids_chunk)) + ' items')
         history_params = {
             'history': value_type,
             'itemids': ids_chunk,
@@ -115,11 +98,9 @@ def query_history(item_ids, value_type):
             'time_till': end
         }
         histories += client.post('history.get', history_params)
-        sdc.log.info('fetched history')
-        # add fields from item to every history record
         if len(histories) == 0:
-            sdc.log.info('history.get - No data - query: ' + str(history_params))
-    sdc.log.info('query_history() took ' + str(time.time() - start) + ' seconds')
+            print('history.get - No data - query: ' + str(history_params))
+    print('query_history() took ' + str(time.time() - start) + ' seconds')
     return histories
 
 
@@ -131,7 +112,7 @@ def chunks(lst, n):
 def fetch_hosts():
     res = client.post('host.get', {'output': ['hostid', 'name']})
     if len(res) == 0:
-        sdc.log.info('host.get - No data')
+        print('host.get - No data')
     hosts = {}
     for host in res:
         hosts[host['hostid']] = host
@@ -142,12 +123,10 @@ def fetch_itemids_value_types():
     global end
     start = time.time()
     itemids_value_types = query_items_sorted()
-    sdc.log.info('query_items() took ' + str(time.time() - start) + ' seconds')
-    sdc.log.info('we got ' + str(len(itemids_value_types)) + ' items')
+    print('query_items() took ' + str(time.time() - start) + ' seconds')
 
     last_processed_id = get_last_processed_id()
     if last_processed_id and int(last_processed_id) != int(itemids_value_types[-1]['itemid']):
-        sdc.log.info('last id not equal')
         # this means we didn't finish processing the batch last time, because the pipeline
         # stopped or failed or smth else. So we should finish processing the previous interval
         itemids_value_types = list(filter(
@@ -168,7 +147,7 @@ def fetch_items_data(itemids):
     for item in client.post('item.get', {'itemids': itemids}):
         item['hostname'] = hosts[item['hostid']]['name']
         items[item['itemid']] = item
-    sdc.log.info('fetch_items_data() took ' + str(time.time() - start) + ' seconds')
+    print('fetch_items_data() took ' + str(time.time() - start) + ' seconds')
 
 
 def group_ids_by_value_types(itemids_value_types):
@@ -182,47 +161,33 @@ def group_ids_by_value_types(itemids_value_types):
 
 interval = get_interval()
 end = get_backfill_offset() + interval
-sdc.log.info('INTERVAL: ' + str(interval))
-sdc.log.info('TIME_TO: ' + str(end))
 hosts = fetch_hosts()
 
-while True:
-    try:
-        if end > get_now_with_delay():
-            time.sleep(end - get_now_with_delay())
-        if sdc.isStopped():
-            break
 
-        # they are ordered by itemid asc
-        for itemids_value_types in chunks(fetch_itemids_value_types(), ITEMS_BATCH_SIZE):
-            batch = sdc.createBatch()
-            sdc.log.info('starting to fetch items data')
-            itemids = list(map(
-                lambda x: x['itemid'],
-                itemids_value_types
-            ))
-            fetch_items_data(itemids)
-            sdc.log.info('we have ' + str(len(items.keys())) + ' full items')
+def main():
+    global end, interval, last_id
+    while True:
+        try:
+            if end > get_now_with_delay():
+                time.sleep(end - get_now_with_delay())
 
-            for value_type, ids in group_ids_by_value_types(itemids_value_types).items():
-                sdc.log.info('starting to fetch history for ' + str(len(ids)) + ' items')
-                for history in query_history(ids, value_type):
-                    history.update(items[history['itemid']])
-                    record = sdc.createRecord('record created ' + str(get_now_with_delay()))
-                    record.value = history
-                    batch.add(record)
+            # they are ordered by itemid asc
+            for itemids_value_types in chunks(fetch_itemids_value_types(), ITEMS_BATCH_SIZE):
+                itemids = list(map(
+                    lambda x: x['itemid'],
+                    itemids_value_types
+                ))
+                fetch_items_data(itemids)
 
-                    if batch.size() == sdc.batchSize:
-                        batch.process(entityName, str(end) + '_' + itemids[-1])
-                        batch = sdc.createBatch()
+                for value_type, ids in group_ids_by_value_types(itemids_value_types).items():
+                    for history in query_history(ids, value_type):
+                        history.update(items[history['itemid']])
 
-            if batch.size() != 0:
-                batch.process(entityName, str(end) + '_' + itemids[-1])
-                batch = sdc.createBatch()
-            if sdc.isStopped():
-                break
+                last_id = int(itemids[-1])
 
-        end += interval
-    except Exception as e:
-        sdc.log.error(traceback.format_exc())
-        raise
+            end += interval
+        except Exception as e:
+            raise
+
+
+main()
