@@ -329,7 +329,7 @@ def get_sample_records(pipeline_: Pipeline) -> (list, list):
     return [tools.sdc_record_map_to_dict(record['value']) for record in data[:MAX_SAMPLE_RECORDS]], errors
 
 
-def _get_preview_data(test_pipeline: Pipeline):
+def _get_preview_data(test_pipeline: Pipeline) -> (list, list):
     sdc_client.create(test_pipeline)
     try:
         preview = sdc_client.create_preview(test_pipeline)

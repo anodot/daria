@@ -61,7 +61,6 @@ class Client:
 
 
 client = Client(sdc.userParams['URL'], sdc.userParams['USER'], sdc.userParams['PASSWORD'])
-items = {}
 
 
 def get_now_with_delay():
@@ -70,7 +69,8 @@ def get_now_with_delay():
 
 def get_backfill_offset():
     if sdc.lastOffsets.containsKey(entityName):
-        return int(float(sdc.lastOffsets.get(entityName)))
+        offset = sdc.lastOffsets.get(entityName).split('_')[0]
+        return int(float(offset))
     if sdc.userParams['INITIAL_TIMESTAMP']:
         return int(sdc.userParams['INITIAL_TIMESTAMP'])
     return get_now_with_delay() - get_interval()
@@ -87,23 +87,13 @@ def get_last_processed_id():
 
 def query_items_sorted():
     # returns [{itemid: val, value_type: val}, ...]
-    query = {
-        "search": {
-            "key_": "vm.memory.size_"
-        },
-        'sortfield': 'itemid',
-        'sortorder': 'ASC',
-        'output': ['itemid', 'value_type']
-    }
-    data = client.post('item.get', query)
+    data = client.post('item.get', json.loads(sdc.userParams['QUERY']))
     if len(data) == 0:
-        sdc.log.info('item.get - No data - query: ' + str(query))
+        sdc.log.info('item.get - No data - query: ' + str(json.loads(sdc.userParams['QUERY'])))
     return data
 
 
 def query_history(item_ids, value_type):
-    histories = []
-    start = time.time()
     for ids_chunk in chunks(item_ids, HISTORIES_BATCH_SIZE):
         sdc.log.info('fetching history for ' + str(len(ids_chunk)) + ' items')
         history_params = {
@@ -114,13 +104,13 @@ def query_history(item_ids, value_type):
             'time_from': end - interval,
             'time_till': end
         }
-        histories += client.post('history.get', history_params)
+        histories = client.post('history.get', history_params)
         sdc.log.info('fetched history')
         # add fields from item to every history record
         if len(histories) == 0:
             sdc.log.info('history.get - No data - query: ' + str(history_params))
-    sdc.log.info('query_history() took ' + str(time.time() - start) + ' seconds')
-    return histories
+            continue
+        yield histories
 
 
 def chunks(lst, n):
@@ -159,16 +149,17 @@ def fetch_itemids_value_types():
 
 
 def fetch_items_data(itemids):
+    global hosts
     start = time.time()
-    global items, hosts
-    # itemids = list(filter(
-    #     lambda x: x not in items,
-    #     itemids
-    # ))
+    items = {}
     for item in client.post('item.get', {'itemids': itemids}):
-        item['hostname'] = hosts[item['hostid']]['name']
+        # there are some template items that we should skip
+        if item['hostid'] not in hosts:
+            continue
+        item['host'] = hosts[item['hostid']]['name']
         items[item['itemid']] = item
     sdc.log.info('fetch_items_data() took ' + str(time.time() - start) + ' seconds')
+    return items
 
 
 def group_ids_by_value_types(itemids_value_types):
@@ -184,10 +175,11 @@ interval = get_interval()
 end = get_backfill_offset() + interval
 sdc.log.info('INTERVAL: ' + str(interval))
 sdc.log.info('TIME_TO: ' + str(end))
-hosts = fetch_hosts()
+hosts = {}
 
 while True:
     try:
+        hosts = fetch_hosts()
         if end > get_now_with_delay():
             time.sleep(end - get_now_with_delay())
         if sdc.isStopped():
@@ -201,20 +193,21 @@ while True:
                 lambda x: x['itemid'],
                 itemids_value_types
             ))
-            fetch_items_data(itemids)
+            items = fetch_items_data(itemids)
             sdc.log.info('we have ' + str(len(items.keys())) + ' full items')
 
             for value_type, ids in group_ids_by_value_types(itemids_value_types).items():
                 sdc.log.info('starting to fetch history for ' + str(len(ids)) + ' items')
-                for history in query_history(ids, value_type):
-                    history.update(items[history['itemid']])
-                    record = sdc.createRecord('record created ' + str(get_now_with_delay()))
-                    record.value = history
-                    batch.add(record)
+                for histories in query_history(ids, value_type):
+                    for history in histories:
+                        history.update(items[history['itemid']])
+                        record = sdc.createRecord('record created ' + str(get_now_with_delay()))
+                        record.value = history
+                        batch.add(record)
 
-                    if batch.size() == sdc.batchSize:
-                        batch.process(entityName, str(end) + '_' + itemids[-1])
-                        batch = sdc.createBatch()
+                        if batch.size() == sdc.batchSize:
+                            batch.process(entityName, str(end) + '_' + itemids[-1])
+                            batch = sdc.createBatch()
 
             if batch.size() != 0:
                 batch.process(entityName, str(end) + '_' + itemids[-1])
