@@ -1,6 +1,6 @@
 import json
 
-from agent import source, pipeline
+from agent import source
 from .base import Stage
 
 
@@ -22,7 +22,6 @@ class ZabbixScript(Stage):
                     {'key': 'DELAY_IN_MINUTES', 'value': str(self.pipeline.delay)},
                     {'key': 'ITEMS_BATCH_SIZE', 'value': str(self.pipeline.batch_size)},
                     {'key': 'HISTORIES_BATCH_SIZE', 'value': str(self.pipeline.histories_batch_size)},
-                    {'key': 'MAX_SAMPLE_RECORDS', 'value': str(pipeline.manager.MAX_SAMPLE_RECORDS)},
                 ],
                 'script': f.read(),
             }

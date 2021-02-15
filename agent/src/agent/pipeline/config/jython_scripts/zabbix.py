@@ -200,10 +200,7 @@ while True:
                         if batch.size() == sdc.batchSize:
                             batch.process(entityName, str(end) + '_' + itemids[-1])
                             batch = sdc.createBatch()
-                        if batch.size() == int(sdc.userParams['MAX_SAMPLE_RECORDS']) and sdc.isPreview():
-                            batch.process(entityName, str(end))
-                            batch = sdc.createBatch()
-                            if sdc.isStopped():
+                            if sdc.isPreview() and sdc.isStopped():
                                 break
 
                     if sdc.isStopped():
