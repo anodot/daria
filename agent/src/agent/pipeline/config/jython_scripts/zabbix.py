@@ -4,7 +4,6 @@ try:
     sdc.importLock()
     import sys
     import os
-
     sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))
     import requests
     import traceback
@@ -15,7 +14,7 @@ finally:
 
 entityName = ''
 N_REQUESTS_TRIES = 3
-ITEMS_BATCH_SIZE = 100
+ITEMS_BATCH_SIZE = 1000
 HISTORIES_BATCH_SIZE = 10
 
 
