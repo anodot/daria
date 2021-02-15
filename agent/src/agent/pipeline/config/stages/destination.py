@@ -4,7 +4,8 @@ from .base import Stage
 class Destination(Stage):
     def _get_config(self) -> dict:
         return {
-            'conf.agentOffsetUrl': self.pipeline.streamsets.agent_external_url + '/pipeline-offset/${pipeline:id()}'
+            'conf.agentOffsetUrl': self.pipeline.streamsets.agent_external_url + '/pipeline-offset/${pipeline:id()}',
+            self.pipeline.destination.CONFIG_ENABLE_REQUEST_LOGGING: self.pipeline.destination.if_logs_enabled
         }
 
 
