@@ -14,8 +14,6 @@ finally:
 
 entityName = ''
 N_REQUESTS_TRIES = 3
-ITEMS_BATCH_SIZE = 1000
-HISTORIES_BATCH_SIZE = 10
 
 
 class Client:
@@ -93,8 +91,7 @@ def query_items_sorted():
 
 
 def query_history(item_ids, value_type):
-    for ids_chunk in chunks(item_ids, HISTORIES_BATCH_SIZE):
-        sdc.log.info('fetching history for ' + str(len(ids_chunk)) + ' items')
+    for ids_chunk in chunks(item_ids, int(sdc.userParams['HISTORIES_BATCH_SIZE'])):
         history_params = {
             'history': value_type,
             'itemids': ids_chunk,
@@ -104,10 +101,9 @@ def query_history(item_ids, value_type):
             'time_till': end
         }
         histories = client.post('history.get', history_params)
-        sdc.log.info('fetched history')
         # add fields from item to every history record
         if len(histories) == 0:
-            sdc.log.info('history.get - No data - query: ' + str(history_params))
+            sdc.log.info('history.get - No data for chunk - query: ' + str(history_params))
             continue
         yield histories
 
@@ -121,22 +117,18 @@ def fetch_hosts():
     res = client.post('host.get', {'output': ['hostid', 'name']})
     if len(res) == 0:
         sdc.log.info('host.get - No data')
-    hosts = {}
-    for host in res:
-        hosts[host['hostid']] = host
-    return hosts
+    return {host['hostid']: host for host in res}
 
 
 def fetch_itemids_value_types():
     global end
     start = time.time()
     itemids_value_types = query_items_sorted()
-    sdc.log.info('query_items() took ' + str(time.time() - start) + ' seconds')
-    sdc.log.info('we got ' + str(len(itemids_value_types)) + ' items')
+    sdc.log.debug('query_items() took ' + str(time.time() - start) + ' seconds')
+    sdc.log.debug('we got ' + str(len(itemids_value_types)) + ' items')
 
     last_processed_id = get_last_processed_id()
     if last_processed_id and int(last_processed_id) != int(itemids_value_types[-1]['itemid']):
-        sdc.log.info('last id not equal')
         # this means we didn't finish processing the batch last time, because the pipeline
         # stopped or failed or smth else. So we should finish processing the previous interval
         itemids_value_types = list(filter(
@@ -151,13 +143,16 @@ def fetch_items_data(itemids):
     global hosts
     start = time.time()
     items = {}
-    for item in client.post('item.get', {'itemids': itemids}):
+    params = {'itemids': itemids}
+    if 'output' in sdc.userParams['QUERY']:
+        params['output'] = sdc.userParams['QUERY']['output']
+    for item in client.post('item.get', params):
         # there are some template items that we should skip
         if item['hostid'] not in hosts:
             continue
         item['host'] = hosts[item['hostid']]['name']
         items[item['itemid']] = item
-    sdc.log.info('fetch_items_data() took ' + str(time.time() - start) + ' seconds')
+    sdc.log.debug('fetch_items_data() took ' + str(time.time() - start) + ' seconds')
     return items
 
 
@@ -185,18 +180,15 @@ while True:
             break
 
         # they are ordered by itemid asc
-        for itemids_value_types in chunks(fetch_itemids_value_types(), ITEMS_BATCH_SIZE):
+        for itemids_value_types in chunks(fetch_itemids_value_types(), int(sdc.userParams['ITEMS_BATCH_SIZE'])):
             batch = sdc.createBatch()
-            sdc.log.info('starting to fetch items data')
             itemids = list(map(
                 lambda x: x['itemid'],
                 itemids_value_types
             ))
             items = fetch_items_data(itemids)
-            sdc.log.info('we have ' + str(len(items.keys())) + ' full items')
 
             for value_type, ids in group_ids_by_value_types(itemids_value_types).items():
-                sdc.log.info('starting to fetch history for ' + str(len(ids)) + ' items')
                 for histories in query_history(ids, value_type):
                     for history in histories:
                         history.update(items[history['itemid']])
@@ -207,6 +199,14 @@ while True:
                         if batch.size() == sdc.batchSize:
                             batch.process(entityName, str(end) + '_' + itemids[-1])
                             batch = sdc.createBatch()
+                        if batch.size() == int(sdc.userParams['MAX_SAMPLE_RECORDS']) and sdc.isPreview():
+                            batch.process(entityName, str(end))
+                            batch = sdc.createBatch()
+                            if sdc.isStopped():
+                                break
+
+                    if sdc.isStopped():
+                        break
 
             if batch.size() != 0:
                 batch.process(entityName, str(end) + '_' + itemids[-1])
