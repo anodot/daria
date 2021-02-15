@@ -1,5 +1,6 @@
 {
   "search": {
+    "output": ["name", "value_type"],
     "key_": "vm.memory.size"
   }
 }

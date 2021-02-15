@@ -144,8 +144,9 @@ def fetch_items_data(itemids):
     start = time.time()
     items = {}
     params = {'itemids': itemids}
-    if 'output' in sdc.userParams['QUERY']:
-        params['output'] = sdc.userParams['QUERY']['output']
+    query = json.loads(sdc.userParams['QUERY'])
+    if 'output' in query:
+        params['output'] = query['output']
     for item in client.post('item.get', params):
         # there are some template items that we should skip
         if item['hostid'] not in hosts:
