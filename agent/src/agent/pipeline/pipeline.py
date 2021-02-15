@@ -261,6 +261,10 @@ class Pipeline(Entity, sdc_client.IPipeline):
     def batch_size(self) -> str:
         return self.config.get('batch_size', 1000)
 
+    @property
+    def histories_batch_size(self) -> str:
+        return self.config.get('histories_batch_size', 100)
+
     def get_streamsets_config(self) -> dict:
         return pipeline.manager.create_streamsets_pipeline_config(self)
 

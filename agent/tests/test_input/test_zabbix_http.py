@@ -33,7 +33,7 @@ class TestZabbix:
             'counter name': 'counter',
             'value props': 'value:gauge',
             'measurement names': 'value:what',
-            'dimensions': 'hosts/0/host content-provider service-provider',
+            'dimensions': 'host content-provider service-provider',
             'delay': 0,
             'tags': 'test_type:zabbix',
             'preview': 'n',
@@ -46,6 +46,8 @@ class TestZabbix:
         days_to_backfill = (datetime.now() - datetime(year=2021, month=1, day=22)).days
         input_ = {
             'query file': '',
+            'items batch size': '',
+            'histories batch size': 50,
             'days to backfill': days_to_backfill,
             'query interval': '',
             'data preview': 'y',
@@ -58,7 +60,7 @@ class TestZabbix:
             'transform file': '/home/zabbix_transform_value.csv',
             'static props': 'test_type:input',
             'tags': 'test:zabbix',
-            'preview': 'n',
+            'preview': 'y',
         }
         result = cli_runner.invoke(
             cli.pipeline.edit, ['test_zabbix', '-a'], catch_exceptions=False, input=generate_input(input_)

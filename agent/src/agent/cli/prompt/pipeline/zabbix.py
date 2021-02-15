@@ -8,6 +8,7 @@ from agent.modules.tools import infinite_retry
 class PromptConfigZabbix(PromptConfigSchemaless):
     def prompt_config(self):
         self.prompt_query_file()
+        self.prompt_batch_sizes()
         self.prompt_days_to_backfill()
         self.prompt_interval()
         self.data_preview()
@@ -22,6 +23,16 @@ class PromptConfigZabbix(PromptConfigSchemaless):
         self.config['timestamp'] = {}
         self.config['timestamp']['type'] = 'unix'
         self.config['timestamp']['name'] = 'clock'
+
+    @infinite_retry
+    def prompt_batch_sizes(self):
+        items_batch_size = self.default_config.get('batch_size', 1000)
+        histories_batch_size = self.default_config.get('histories_batch_size', 100)
+        if self.advanced:
+            items_batch_size = click.prompt('Items batch size', type=click.INT, default=items_batch_size)
+            histories_batch_size = click.prompt('Histories batch size', type=click.INT, default=histories_batch_size)
+        self.config['batch_size'] = items_batch_size
+        self.config['histories_batch_size'] = histories_batch_size
 
     @infinite_retry
     def set_values(self):
