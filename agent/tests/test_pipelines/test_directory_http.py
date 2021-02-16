@@ -53,7 +53,7 @@ class TestDirectory(TestPipelineBase):
         pytest.skip()
 
     def test_offset(self):
-        pipeline_ = pipeline.repository.get_by_name('test_dir_csv')
+        pipeline_ = pipeline.repository.get_by_id('test_dir_csv')
         assert pipeline_.offset
         assert json.loads(pipeline_.offset.offset) == {
             "version": 2,

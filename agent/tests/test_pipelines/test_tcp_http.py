@@ -36,10 +36,10 @@ class TestTCPServer(TestPipelineBase):
     def test_start(self, cli_runner, name):
         result = cli_runner.invoke(cli.pipeline.start, [name], catch_exceptions=False)
         assert result.exit_code == 0
-        assert sdc_client.get_pipeline_status(pipeline.repository.get_by_name(name)) == pipeline.Pipeline.STATUS_RUNNING
+        assert sdc_client.get_pipeline_status(pipeline.repository.get_by_id(name)) == pipeline.Pipeline.STATUS_RUNNING
 
         # streams data
-        pipeline_ = pipeline.repository.get_by_name(name)
+        pipeline_ = pipeline.repository.get_by_id(name)
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # strip http:// and port from the end
         host = pipeline_.streamsets.url[7:-6]

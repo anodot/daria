@@ -106,7 +106,7 @@ class TestInflux:
             "time": "1970-01-01 00:00:00"
         })
         assert res.status_code == 200
-        assert pipeline.repository.get_by_name(pipeline_name).status == pipeline_status
+        assert pipeline.repository.get_by_id(pipeline_name).status == pipeline_status
 
     def test_delete(self, api_client):
         pipeline_id = 'test_influx'

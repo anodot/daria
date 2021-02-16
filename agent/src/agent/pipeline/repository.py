@@ -13,7 +13,7 @@ def exists(pipeline_name: str) -> bool:
     ).scalar())
 
 
-def get_by_name(pipeline_name: str) -> Pipeline:
+def get_by_id(pipeline_name: str) -> Pipeline:
     pipeline_ = session().query(Pipeline).filter(Pipeline.name == pipeline_name).first()
     if not pipeline_:
         raise PipelineNotExistsException(f"Pipeline {pipeline_name} doesn't exist")
@@ -39,7 +39,7 @@ def delete(pipeline_: Pipeline):
 
 
 def delete_by_name(pipeline_name: str):
-    delete(get_by_name(pipeline_name))
+    delete(get_by_id(pipeline_name))
 
 
 def save_offset(pipeline_offset: PipelineOffset):
