@@ -26,7 +26,7 @@ def get_config_handler(pipeline_: Pipeline) -> BaseConfigHandler:
         source.TYPE_MYSQL: pipeline.config.handlers.jdbc.JDBCSchemaConfigHandler
     }
 
-    if pipeline_.uses_schema or pipeline_.source.type:
+    if pipeline_.uses_schema:
         return handlers_protocol30[pipeline_.source.type](pipeline_, base_config)
 
     return handlers_protocol20[pipeline_.source.type](pipeline_, base_config)
