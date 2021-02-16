@@ -5,7 +5,7 @@ from agent import pipeline
 
 class PromptConfigDirectory(PromptConfigSchemaless):
     def prompt_config(self):
-        self.config['use_schema'] = True
+        self.config['uses_schema'] = True
         super().prompt_config()
         self.prompt_flush_bucket_size()
 

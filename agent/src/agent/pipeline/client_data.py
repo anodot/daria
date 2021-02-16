@@ -14,8 +14,8 @@ definitions_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'jso
 def load_config(pipeline_: Pipeline, config: dict, edit=False):
     config = get_file_loader(pipeline_.source.type).load(config, edit)
 
-    if 'use_schema' not in config:
-        config['use_schema'] = pipeline.manager.supports_schema(pipeline_.source.type)
+    if 'uses_schema' not in config:
+        config['uses_schema'] = pipeline.manager.supports_schema(pipeline_.source.type)
 
     pipeline_.set_config(config)
 

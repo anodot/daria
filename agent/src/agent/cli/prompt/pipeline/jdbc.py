@@ -20,7 +20,7 @@ class PromptConfigJDBC(PromptConfig):
         self.set_dimensions()
         self.set_static_properties()
         self.set_tags()
-        self.set_use_schema()
+        self.set_uses_schema()
 
     @infinite_retry
     def prompt_values(self):

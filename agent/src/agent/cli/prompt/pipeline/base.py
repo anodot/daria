@@ -159,14 +159,14 @@ class PromptConfig:
         self.config['delay'] = click.prompt('Delay (in minutes)', type=click.INT,
                                             default=self.default_config.get('delay', 0))
 
-    def set_use_schema(self):
+    def set_uses_schema(self):
         static_what = self.config.get('static_what', True)
-        if (self.advanced or self.default_config.get('use_schema') is not None) and static_what:
-            self.config['use_schema'] = click.confirm('Use schema?',
-                                                      default=self.default_config.get('use_schema', True))
+        if (self.advanced or self.default_config.get('uses_schema') is not None) and static_what:
+            self.config['uses_schema'] = click.confirm('Use schema?',
+                                                      default=self.default_config.get('uses_schema', True))
             return
 
-        self.config['use_schema'] = pipeline.manager.supports_schema(self.pipeline.source.type) and static_what
+        self.config['uses_schema'] = pipeline.manager.supports_schema(self.pipeline.source.type) and static_what
 
 
 def get_prompter(pipeline_: Pipeline) -> PromptConfig:

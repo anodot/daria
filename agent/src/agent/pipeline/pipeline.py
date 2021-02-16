@@ -259,8 +259,8 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return self.config.get('batch_size', 1000)
 
     @property
-    def use_schema(self) -> bool:
-        return self.config.get('use_schema')
+    def uses_schema(self) -> bool:
+        return self.config.get('uses_schema')
 
     @property
     def histories_batch_size(self) -> str:

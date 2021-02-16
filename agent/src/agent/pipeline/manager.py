@@ -172,7 +172,7 @@ def update(pipeline_: Pipeline):
     if not pipeline_.config_changed():
         logger_.info(f'No need to update pipeline {pipeline_.name}')
         return
-    if pipeline_.use_schema:
+    if pipeline_.uses_schema:
         pipeline_.schema = schema.update(pipeline_)
     sdc_client.update(pipeline_)
     pipeline.repository.save(pipeline_)
@@ -180,7 +180,7 @@ def update(pipeline_: Pipeline):
 
 
 def create(pipeline_: Pipeline):
-    if pipeline_.use_schema:
+    if pipeline_.uses_schema:
         pipeline_.schema = schema.update(pipeline_)
     sdc_client.create(pipeline_)
     pipeline.repository.save(pipeline_)
@@ -274,6 +274,7 @@ def build_test_pipeline(source_: Source) -> TestPipeline:
     # creating a new source because otherwise it will mess with the db session
     test_source = Source(source_.name, source_.type, source_.config)
     test_pipeline = TestPipeline(_get_test_pipeline_name(test_source), test_source, destination.repository.get())
+    test_pipeline.config['uses_schema'] = supports_schema(test_pipeline.source.type)
     return test_pipeline
 
 
