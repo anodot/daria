@@ -26,7 +26,7 @@ def get_config_handler(pipeline_: Pipeline) -> BaseConfigHandler:
         source.TYPE_MYSQL: pipeline.config.handlers.jdbc.JDBCSchemaConfigHandler
     }
 
-    if pipeline_.uses_schema:
+    if pipeline_.use_schema or pipeline_.source.type not in handlers_protocol20:
         return handlers_protocol30[pipeline_.source.type](pipeline_, base_config)
 
     return handlers_protocol20[pipeline_.source.type](pipeline_, base_config)
@@ -35,6 +35,6 @@ def get_config_handler(pipeline_: Pipeline) -> BaseConfigHandler:
 def _get_config_loader(pipeline_: Pipeline):
     if isinstance(pipeline_, pipeline.TestPipeline):
         return pipeline.config.handlers.base.TestPipelineBaseConfigLoader
-    if pipeline_.uses_schema:
+    if pipeline_.use_schema:
         return pipeline.config.handlers.base.SchemaBaseConfigLoader
     return pipeline.config.handlers.base.BaseConfigLoader

@@ -91,7 +91,7 @@ for (var i = 0; i < records.length; i++) {
     }
 }
 
-if (records.length > 0 && get_value(records[0].value, state['TIMESTAMP_COLUMN'])) {
+if (records.length > 0 && extract_value(records[0].value, state['TIMESTAMP_COLUMN'])) {
   event = sdc.createEvent('interval processed', 1);
   event.value = {
     'watermark': records[0].value['last_timestamp'] + state['INTERVAL'] ,
