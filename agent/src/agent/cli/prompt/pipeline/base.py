@@ -166,7 +166,7 @@ class PromptConfig:
                                                       default=self.default_config.get('use_schema', True))
             return
 
-        self.config['use_schema'] = pipeline.manager.use_schema(self.pipeline.source.type) and static_what
+        self.config['use_schema'] = pipeline.manager.supports_schema(self.pipeline.source.type) and static_what
 
 
 def get_prompter(pipeline_: Pipeline) -> PromptConfig:

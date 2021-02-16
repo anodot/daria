@@ -1,15 +1,15 @@
-function get_value(path, value) {
+function extract_value(object, path) {
   path_parts = path.split('/')
   for (var k = 0; k < path_parts.length; k++) {
-    value = value[path_parts[k]]
-    if (value === null) {
+    object = object[path_parts[k]]
+    if (object === null) {
       return null;
     }
   }
-  if (value === null) {
+  if (object === null) {
     return 'NULL';
   }
-  return value
+  return object
 }
 
 
@@ -19,7 +19,7 @@ function replace_illegal_chars(str) {
 
 function get_measurement_name(record, value_idx) {
     // if (!state['STATIC_WHAT']) {
-    //     var meas_name = get_value(state['MEASUREMENT_NAMES'][value_idx], record)
+    //     var meas_name = extract_value(record, state['MEASUREMENT_NAMES'][value_idx])
     //     if (typeof meas_name !== 'string') {
     //         throw state['MEASUREMENT_NAMES'][value_idx] + ' property should be string instead of ' + (typeof meas_name)
     //     }
@@ -31,7 +31,7 @@ function get_measurement_name(record, value_idx) {
 function get_dimensions(record) {
     var dimensions = {};
     for (var j = 0; j < state['DIMENSIONS'].length; j++) {
-        var dimension = get_value(state['DIMENSIONS'][j], record)
+        var dimension = extract_value(record, state['DIMENSIONS'][j])
         if (dimension === null) {
             continue;
         }
@@ -49,7 +49,7 @@ function get_dimensions(record) {
 function get_measurements(record) {
     var measurements = {}
     for (var j = 0; j < state['VALUES_COLUMNS'].length; j++) {
-        var value = get_value(state['VALUES_COLUMNS'][j], record);
+        var value = extract_value(record, state['VALUES_COLUMNS'][j]);
         if (value === null || value === '' || isNaN(value)) {
             continue;
         }
@@ -70,7 +70,7 @@ function get_measurements(record) {
 for (var i = 0; i < records.length; i++) {
 
     try {
-        var timestamp = get_value(state['TIMESTAMP_COLUMN'], records[i].value)
+        var timestamp = extract_value(records[i].value, state['TIMESTAMP_COLUMN'])
         if (timestamp === null) {
             continue;
         }
@@ -91,7 +91,7 @@ for (var i = 0; i < records.length; i++) {
     }
 }
 
-if (records.length > 0 && get_value(state['TIMESTAMP_COLUMN'], records[0].value)) {
+if (records.length > 0 && get_value(records[0].value, state['TIMESTAMP_COLUMN'])) {
   event = sdc.createEvent('interval processed', 1);
   event.value = {
     'watermark': records[0].value['last_timestamp'] + state['INTERVAL'] ,

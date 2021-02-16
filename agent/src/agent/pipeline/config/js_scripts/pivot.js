@@ -5,18 +5,18 @@ function merge_two_objects(obj1, obj2) {
     return new_val
 }
 
-function get_value(path, value) {
+function extract_value(object, path) {
     path_parts = path.split('/')
     for (var k = 0; k < path_parts.length; k++) {
-        value = value[path_parts[k]]
+        object = object[path_parts[k]]
     }
-    return value
+    return object
 }
 
 for (var i = 0; i < records.length; i++) {
 
     if (state['VALUES_ARRAY_PATH']) {
-        var items = get_value(state['VALUES_ARRAY_PATH'], records[i].value)
+        var items = extract_value(records[i].value, state['VALUES_ARRAY_PATH'])
 
         for (var l = 0; l < items.length; l++) {
             var newRecord = sdcFunctions.createRecord(i + '_' + l);
