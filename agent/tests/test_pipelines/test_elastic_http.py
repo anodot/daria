@@ -30,3 +30,6 @@ class TestElastic(TestPipelineBase):
 
     def test_force_stop(self, cli_runner, name=None):
         pytest.skip()
+
+    def test_output_schema(self, name=None, pipeline_type=None, output=None):
+        pytest.skip()

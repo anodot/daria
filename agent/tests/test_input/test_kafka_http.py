@@ -38,7 +38,7 @@ class TestKafka:
                 'options': ['-a'],
                 'value': 'n\ny\n\nClicks:running_counter\nClicks:clicks',
                 'timestamp': 'timestamp_unix\nunix',
-                'advanced_options': 'key1:val1\n \n \n \nn'
+                'advanced_options': 'key1:val1\n \n \n \n\nn'
             },
             {
                 'source_name': 'test_running_counters',
@@ -60,9 +60,9 @@ class TestKafka:
                 'source_name': 'test_json_arrays',
                 'name': 'test_json_arrays',
                 'options': ['-a'],
-                'value': 'n\nn\nkpis\nclicks.display,clicks.search\nClicks:gauge\nClicks:metric',
+                'value': 'n\ny\nkpis\n\nClicks:gauge\nClicks:clicks',
                 'timestamp': 'timestamp_unix\nunix',
-                'advanced_options': ' \n \n \n \nn'
+                'advanced_options': ' \n \n \n \n\nn'
             },
             {
                 'source_name': 'test_kfk',
@@ -70,7 +70,7 @@ class TestKafka:
                 'options': ['-a'],
                 'value': 'n\ny\n \nClicks:gauge\n ',
                 'timestamp': 'timestamp_string\nstring\nM/d/yyyy H:mm:ss\nEurope/Berlin',
-                'advanced_options': '\n\n\n\nn'
+                'advanced_options': '\n\n\n\n\nn'
             },
         ],
         'test_edit': [

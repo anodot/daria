@@ -1,0 +1,86 @@
+[
+  {
+    "timestamp": 1512867600,
+    "dimensions": {
+      "ver": "1",
+      "Country": "USA"
+    },
+    "measurements": {
+      "clicks": 6784.6904
+    },
+    "schemaId": "test_json_arrays-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_json_arrays"
+      ],
+      "pipeline_type": [
+        "kafka"
+      ]
+    }
+  },
+  {
+    "timestamp": 1512867600,
+    "dimensions": {
+      "ver": "1",
+      "Country": "USA"
+    },
+    "measurements": {
+      "clicks": 111
+    },
+    "schemaId": "test_json_arrays-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_json_arrays"
+      ],
+      "pipeline_type": [
+        "kafka"
+      ]
+    }
+  },
+  {
+    "timestamp": 1512867600,
+    "dimensions": {
+      "ver": "1",
+      "Country": "USA"
+    },
+    "measurements": {
+      "clicks": 111
+    },
+    "schemaId": "test_json_arrays-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_json_arrays"
+      ],
+      "pipeline_type": [
+        "kafka"
+      ]
+    }
+  }
+]

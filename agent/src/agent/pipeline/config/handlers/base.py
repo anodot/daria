@@ -33,7 +33,6 @@ class BaseConfigLoader:
             source.TYPE_POSTGRES: 'jdbc_http',
             source.TYPE_ELASTIC: 'elastic_http',
             source.TYPE_SPLUNK: 'tcp_server_http',
-            source.TYPE_DIRECTORY: 'directory_http',
             source.TYPE_SAGE: 'sage_http',
             source.TYPE_VICTORIA: 'victoria_http',
             source.TYPE_ZABBIX: 'zabbix_http',
@@ -48,6 +47,7 @@ class SchemaBaseConfigLoader(BaseConfigLoader):
             source.TYPE_MYSQL: 'jdbc_http',
             source.TYPE_POSTGRES: 'jdbc_http',
             source.TYPE_DIRECTORY: 'directory_http',
+            source.TYPE_KAFKA: 'kafka_http',
         }[pipeline.source.type]
         return name + '_schema.json'
 

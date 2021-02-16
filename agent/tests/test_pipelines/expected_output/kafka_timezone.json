@@ -1,14 +1,15 @@
 [
   {
     "timestamp": 1512864000,
-    "properties": {
+    "dimensions": {
       "ver": "1",
       "Country": "USA",
-      "Exchange": "DoubleClick",
-      "what": "Clicks",
-      "target_type": "gauge"
+      "Exchange": "DoubleClick"
     },
-    "value": 6784.6904,
+    "measurements": {
+      "Clicks": 6784.6904
+    },
+    "schemaId": "test_kafka_timezone-1234",
     "tags": {
       "source": [
         "anodot-agent"
@@ -20,7 +21,7 @@
         "agent"
       ],
       "pipeline_id": [
-        "test_timezone"
+        "test_kafka_timezone"
       ],
       "pipeline_type": [
         "kafka"
@@ -29,14 +30,15 @@
   },
   {
     "timestamp": 1512867600,
-    "properties": {
+    "dimensions": {
       "ver": "1",
       "Country": "USA",
-      "Exchange": "DoubleClick",
-      "what": "Clicks",
-      "target_type": "gauge"
+      "Exchange": "DoubleClick"
     },
-    "value": 6839.0,
+    "measurements": {
+      "Clicks": 6839
+    },
+    "schemaId": "test_kafka_timezone-1234",
     "tags": {
       "source": [
         "anodot-agent"
@@ -48,7 +50,7 @@
         "agent"
       ],
       "pipeline_id": [
-        "test_timezone"
+        "test_kafka_timezone"
       ],
       "pipeline_type": [
         "kafka"
@@ -57,14 +59,15 @@
   },
   {
     "timestamp": 1512871200,
-    "properties": {
+    "dimensions": {
       "ver": "1",
       "Country": "USA",
-      "Exchange": "DoubleClick",
-      "what": "Clicks",
-      "target_type": "gauge"
+      "Exchange": "DoubleClick"
     },
-    "value": 6.9099935e+18,
+    "measurements": {
+      "Clicks": 6909993404034934004
+    },
+    "schemaId": "test_kafka_timezone-1234",
     "tags": {
       "source": [
         "anodot-agent"
@@ -76,7 +79,7 @@
         "agent"
       ],
       "pipeline_id": [
-        "test_timezone"
+        "test_kafka_timezone"
       ],
       "pipeline_type": [
         "kafka"
@@ -85,14 +88,15 @@
   },
   {
     "timestamp": 1512874800,
-    "properties": {
+    "dimensions": {
       "ver": "1",
       "Country": "USA",
-      "Exchange": "DoubleClick",
-      "what": "Clicks",
-      "target_type": "gauge"
+      "Exchange": "DoubleClick"
     },
-    "value": 7158.9727,
+    "measurements": {
+      "Clicks": 7158.972598273843
+    },
+    "schemaId": "test_kafka_timezone-1234",
     "tags": {
       "source": [
         "anodot-agent"
@@ -104,7 +108,7 @@
         "agent"
       ],
       "pipeline_id": [
-        "test_timezone"
+        "test_kafka_timezone"
       ],
       "pipeline_type": [
         "kafka"
@@ -113,14 +117,15 @@
   },
   {
     "timestamp": 1512878400,
-    "properties": {
+    "dimensions": {
       "ver": "1",
       "Country": "USA",
-      "Exchange": "DoubleClick",
-      "what": "Clicks",
-      "target_type": "gauge"
+      "Exchange": "DoubleClick"
     },
-    "value": 7235.7573,
+    "measurements": {
+      "Clicks": 7235.7574
+    },
+    "schemaId": "test_kafka_timezone-1234",
     "tags": {
       "source": [
         "anodot-agent"
@@ -132,7 +137,7 @@
         "agent"
       ],
       "pipeline_id": [
-        "test_timezone"
+        "test_kafka_timezone"
       ],
       "pipeline_type": [
         "kafka"
@@ -141,13 +146,14 @@
   },
   {
     "timestamp": 1512885600,
-    "properties": {
+    "dimensions": {
       "ver": "1",
-      "Exchange": "DoubleClick",
-      "what": "Clicks",
-      "target_type": "gauge"
+      "Exchange": "DoubleClick"
     },
-    "value": 7427.7744,
+    "measurements": {
+      "Clicks": 7427.7744
+    },
+    "schemaId": "test_kafka_timezone-1234",
     "tags": {
       "source": [
         "anodot-agent"
@@ -159,7 +165,7 @@
         "agent"
       ],
       "pipeline_id": [
-        "test_timezone"
+        "test_kafka_timezone"
       ],
       "pipeline_type": [
         "kafka"

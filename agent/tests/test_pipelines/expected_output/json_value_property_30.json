@@ -18,7 +18,7 @@
   },
   {
     "schemaId": "111111-22222-3333-4444",
-    "measurements": {"clicks": 6839.0},
+    "measurements": {"clicks": 6839},
     "dimensions": {
       "ver": "1",
       "Country": "USA",
@@ -35,7 +35,7 @@
   },
   {
     "schemaId": "111111-22222-3333-4444",
-    "measurements": {"clicks": 6.909993404034934e+18},
+    "measurements": {"clicks": 6909993404034934004},
     "dimensions": {
       "ver": "1",
       "Country": "USA",

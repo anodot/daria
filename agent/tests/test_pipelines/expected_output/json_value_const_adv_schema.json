@@ -2,12 +2,15 @@
   {
     "timestamp": 1512867600,
     "dimensions": {
-      "title": "CLICKS_DISPLAY"
+      "ver": "1",
+      "Country": "USA",
+      "Exchange": "DoubleClick",
+      "key1": "val1"
     },
     "measurements": {
-      "clicks": 6784.6904
+      "clicks": 1
     },
-    "schemaId": "test_transform_value_2-1234",
+    "schemaId": "test_kfk_value_const-1234",
     "tags": {
       "source": [
         "anodot-agent"
@@ -19,7 +22,7 @@
         "agent"
       ],
       "pipeline_id": [
-        "test_transform_value_2"
+        "test_kfk_value_const"
       ],
       "pipeline_type": [
         "kafka"
@@ -29,12 +32,15 @@
   {
     "timestamp": 1512871200,
     "dimensions": {
-      "title": "CLICKS_DISPLAY"
+      "ver": "1",
+      "Country": "USA",
+      "Exchange": "DoubleClick",
+      "key1": "val1"
     },
     "measurements": {
-      "clicks": 6839
+      "clicks": 1
     },
-    "schemaId": "test_transform_value_2-1234",
+    "schemaId": "test_kfk_value_const-1234",
     "tags": {
       "source": [
         "anodot-agent"
@@ -46,7 +52,7 @@
         "agent"
       ],
       "pipeline_id": [
-        "test_transform_value_2"
+        "test_kfk_value_const"
       ],
       "pipeline_type": [
         "kafka"
@@ -56,12 +62,15 @@
   {
     "timestamp": 1512874800,
     "dimensions": {
-      "title": "CLICKS_SEARCH"
+      "ver": "1",
+      "Country": "USA",
+      "Exchange": "DoubleClick",
+      "key1": "val1"
     },
     "measurements": {
-      "clicks": 6909993404034934004
+      "clicks": 1
     },
-    "schemaId": "test_transform_value_2-1234",
+    "schemaId": "test_kfk_value_const-1234",
     "tags": {
       "source": [
         "anodot-agent"
@@ -73,7 +82,7 @@
         "agent"
       ],
       "pipeline_id": [
-        "test_transform_value_2"
+        "test_kfk_value_const"
       ],
       "pipeline_type": [
         "kafka"
@@ -83,12 +92,15 @@
   {
     "timestamp": 1512878400,
     "dimensions": {
-      "title": "CLICKS_DISPLAY"
+      "ver": "1",
+      "Country": "USA",
+      "Exchange": "DoubleClick",
+      "key1": "val1"
     },
     "measurements": {
-      "clicks": 7158.972598273843
+      "clicks": 1
     },
-    "schemaId": "test_transform_value_2-1234",
+    "schemaId": "test_kfk_value_const-1234",
     "tags": {
       "source": [
         "anodot-agent"
@@ -100,7 +112,7 @@
         "agent"
       ],
       "pipeline_id": [
-        "test_transform_value_2"
+        "test_kfk_value_const"
       ],
       "pipeline_type": [
         "kafka"
@@ -110,12 +122,15 @@
   {
     "timestamp": 1512882000,
     "dimensions": {
-      "title": "CLICKS_SEARCH"
+      "ver": "1",
+      "Country": "USA",
+      "Exchange": "DoubleClick",
+      "key1": "val1"
     },
     "measurements": {
-      "clicks": 7235.7574
+      "clicks": 1
     },
-    "schemaId": "test_transform_value_2-1234",
+    "schemaId": "test_kfk_value_const-1234",
     "tags": {
       "source": [
         "anodot-agent"
@@ -127,7 +142,37 @@
         "agent"
       ],
       "pipeline_id": [
-        "test_transform_value_2"
+        "test_kfk_value_const"
+      ],
+      "pipeline_type": [
+        "kafka"
+      ]
+    }
+  },
+  {
+    "timestamp": 1512885600,
+    "dimensions": {
+      "ver": "1",
+      "Country": "USA",
+      "Exchange": "DoubleClick",
+      "key1": "val1"
+    },
+    "measurements": {
+      "clicks": 1
+    },
+    "schemaId": "test_kfk_value_const-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_kfk_value_const"
       ],
       "pipeline_type": [
         "kafka"
@@ -137,12 +182,14 @@
   {
     "timestamp": 1512889200,
     "dimensions": {
-      "title": "CLICKS_DISPLAY"
+      "ver": "1",
+      "Exchange": "DoubleClick",
+      "key1": "val1"
     },
     "measurements": {
-      "clicks": 7427.7744
+      "clicks": 1
     },
-    "schemaId": "test_transform_value_2-1234",
+    "schemaId": "test_kfk_value_const-1234",
     "tags": {
       "source": [
         "anodot-agent"
@@ -154,7 +201,7 @@
         "agent"
       ],
       "pipeline_id": [
-        "test_transform_value_2"
+        "test_kfk_value_const"
       ],
       "pipeline_type": [
         "kafka"

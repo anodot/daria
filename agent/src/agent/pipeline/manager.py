@@ -22,18 +22,15 @@ LOG_LEVELS = [logging.getLevelName(logging.INFO), logging.getLevelName(logging.E
 MAX_SAMPLE_RECORDS = 3
 
 
-def get_default_protocol(pipeline_: Pipeline):
-    if pipeline_.get_protocol():
-        return pipeline_.get_protocol()
+def supports_schema(source_type: str):
     # use protocol 3 for all new pipelines that support it
     supported = [
         source.TYPE_DIRECTORY,
         source.TYPE_MYSQL,
         source.TYPE_POSTGRES,
+        source.TYPE_KAFKA,
     ]
-    if pipeline_.source.type in supported:
-        return destination.HttpDestination.PROTOCOL_30
-    return destination.HttpDestination.PROTOCOL_20
+    return source_type in supported
 
 
 def show_preview(pipeline_: Pipeline):
@@ -173,7 +170,7 @@ def update(pipeline_: Pipeline):
     if not pipeline_.config_changed():
         logger_.info(f'No need to update pipeline {pipeline_.name}')
         return
-    if pipeline_.uses_protocol_3():
+    if pipeline_.uses_schema:
         _update_schema(pipeline_)
     sdc_client.update(pipeline_)
     pipeline.repository.save(pipeline_)
@@ -181,7 +178,7 @@ def update(pipeline_: Pipeline):
 
 
 def create(pipeline_: Pipeline):
-    if pipeline_.uses_protocol_3():
+    if pipeline_.uses_schema:
         _update_schema(pipeline_)
     sdc_client.create(pipeline_)
     pipeline.repository.save(pipeline_)
@@ -289,7 +286,9 @@ def disable_destination_logs(pipeline_: Pipeline):
 def build_test_pipeline(source_: Source) -> TestPipeline:
     # creating a new source because otherwise it will mess with the db session
     test_source = Source(source_.name, source_.type, source_.config)
-    return TestPipeline(_get_test_pipeline_name(test_source), test_source, destination.repository.get())
+    test_pipeline = TestPipeline(_get_test_pipeline_name(test_source), test_source, destination.repository.get())
+    test_pipeline.config['uses_schema'] = supports_schema(test_pipeline.source.type)
+    return test_pipeline
 
 
 def _get_test_pipeline_name(source_: Source) -> str:

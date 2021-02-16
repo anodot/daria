@@ -18,7 +18,7 @@ class TestPostgreSQL(TestPipelineBase):
                       {'name': 'test_postgres_timestamp_datetime'},
                       {'name': 'test_postgres_advanced'}, {'name': 'test_jdbc_file_short_postgres'},
                       {'name': 'test_jdbc_file_full_postgres'}],
-        'test_output': [{'name': 'test_postgres', 'output': 'jdbc.json', 'pipeline_type': 'postgres'},
+        'test_output_schema': [{'name': 'test_postgres', 'output': 'jdbc.json', 'pipeline_type': 'postgres'},
                         {'name': 'test_postgres_timestamp_ms', 'output': 'jdbc.json', 'pipeline_type': 'postgres'},
                         {'name': 'test_postgres_timestamp_datetime', 'output': 'jdbc.json',
                          'pipeline_type': 'postgres'},
@@ -52,6 +52,5 @@ class TestPostgreSQL(TestPipelineBase):
     def test_force_stop(self, cli_runner, name):
         super().test_force_stop(cli_runner, name)
 
-    def test_output(self, name, pipeline_type, output):
-        expected_output = get_expected_schema_output(name, output, pipeline_type)
-        assert get_output(f'{name}_{pipeline_type}.json') == expected_output
+    def test_output(self, name=None, pipeline_type=None, output=None):
+        pytest.skip()

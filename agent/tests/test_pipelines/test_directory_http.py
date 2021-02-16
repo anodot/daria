@@ -15,7 +15,7 @@ class TestDirectory(TestPipelineBase):
         'test_start': [{'name': 'test_dir_csv'}, {'name': 'test_dir_log'}, {'name': 'test_dir_json'}],
         'test_stop': [{'name': 'test_dir_log'}, {'name': 'test_dir_json'}, {'name': 'test_dir_csv'}],
         'test_reset': [{'name': 'test_dir_log'}],
-        'test_output': [
+        'test_output_schema': [
             {'name': 'test_dir_csv', 'output': 'directory_csv.json', 'pipeline_type': source.TYPE_DIRECTORY},
             {'name': 'test_dir_json', 'output': 'json_value_property_30.json', 'pipeline_type': source.TYPE_DIRECTORY},
             {'name': 'test_dir_log', 'output': 'log_30.json', 'pipeline_type': source.TYPE_DIRECTORY}
@@ -49,11 +49,8 @@ class TestDirectory(TestPipelineBase):
     def test_force_stop(self, cli_runner, name=None):
         pytest.skip()
 
-    def test_output(self, name, pipeline_type, output):
-        expected_output = get_expected_schema_output(name, output, pipeline_type)
-        for record in expected_output:
-            record['schemaId'] = get_schema_id(name)
-        assert get_output(f'{name}_{pipeline_type}.json') == expected_output
+    def test_output(self, name=None, pipeline_type=None, output=None):
+        pytest.skip()
 
     def test_offset(self):
         pipeline_ = pipeline.repository.get_by_id('test_dir_csv')

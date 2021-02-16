@@ -1,9 +1,8 @@
 import os
 import json
 
-from typing import Optional
 from jsonschema import validate
-from agent import source, pipeline, destination
+from agent import source, pipeline
 from agent.pipeline import Pipeline
 from agent.pipeline.config.validators import get_config_validator
 from agent.source import ElasticSource
@@ -15,17 +14,12 @@ definitions_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'jso
 def load_config(pipeline_: Pipeline, config: dict, edit=False):
     config = get_file_loader(pipeline_.source.type).load(config, edit)
 
-    config['protocol'] = _get_protocol(pipeline_, config.pop('use_schema', None))
+    if 'uses_schema' not in config:
+        config['uses_schema'] = pipeline.manager.supports_schema(pipeline_.source.type)
+
     pipeline_.set_config(config)
 
     get_config_validator(pipeline_.source.type).validate(pipeline_)
-
-
-def _get_protocol(pipeline_: Pipeline, use_schema: Optional[bool]) -> str:
-    if use_schema is None:
-        return pipeline.manager.get_default_protocol(pipeline_)
-    else:
-        return destination.HttpDestination.PROTOCOL_30 if use_schema else destination.HttpDestination.PROTOCOL_20
 
 
 class LoadClientData:
@@ -77,6 +71,9 @@ class KafkaLoadClientData(LoadClientData):
         transformation = self.client_config.get('transform', {}).get('file')
         if transformation:
             expression_parser.transformation.validate_file(transformation)
+
+        self.client_config['override_source'][source.KafkaSource.CONFIG_CONSUMER_GROUP] = \
+            "agent_" + self.client_config['pipeline_id']
         return self.client_config
 
 

@@ -114,9 +114,6 @@ class Pipeline(Entity, sdc_client.IPipeline):
     def source(self) -> Source:
         return self.source_
 
-    def get_protocol(self):
-        return self.config.get('protocol')
-
     @property
     def constant_dimensions(self) -> dict:
         return self.config.get('properties', {})
@@ -262,6 +259,10 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return self.config.get('batch_size', 1000)
 
     @property
+    def uses_schema(self) -> bool:
+        return self.config.get('uses_schema')
+
+    @property
     def histories_batch_size(self) -> str:
         return self.config.get('histories_batch_size', 100)
 
@@ -330,9 +331,6 @@ class Pipeline(Entity, sdc_client.IPipeline):
             **self.meta_tags(),
             **self.tags
         }
-
-    def uses_protocol_3(self) -> bool:
-        return self.get_protocol() == HttpDestination.PROTOCOL_30
 
 
 class TestPipeline(Pipeline):

@@ -21,6 +21,9 @@ class TestMySQL(TestPipelineBase):
                             {'name': 'test_jdbc_file_full'}, {'name': 'test_mysql_timezone_datetime'},
                             {'name': 'test_mysql_no_schema'}],
         'test_output': [
+            {'name': 'test_mysql_no_schema', 'output': 'jdbc_file_full_no_schema.json', 'pipeline_type': 'mysql'},
+        ],
+        'test_output_schema': [
             {'name': 'test_mysql', 'output': 'jdbc.json', 'pipeline_type': 'mysql'},
             {'name': 'test_mysql_timestamp_ms', 'output': 'jdbc.json', 'pipeline_type': 'mysql'},
             {'name': 'test_mysql_timestamp_datetime', 'output': 'jdbc.json', 'pipeline_type': 'mysql'},
@@ -55,16 +58,6 @@ class TestMySQL(TestPipelineBase):
 
     def test_force_stop(self, cli_runner, name):
         super().test_force_stop(cli_runner, name)
-
-    def test_output_no_schema(self):
-        name = 'test_mysql_no_schema'
-        pipeline_type = 'mysql'
-        expected_output = get_expected_output(name, 'jdbc_file_full_no_schema.json', pipeline_type)
-        assert get_output(f'{name}_{pipeline_type}.json') == expected_output
-
-    def test_output(self, name, pipeline_type, output):
-        expected_output = get_expected_schema_output(name, output, pipeline_type)
-        assert get_output(f'{name}_{pipeline_type}.json') == expected_output
 
     def test_watermark(self):
         schema_id = get_schema_id('test_mysql_advanced')
