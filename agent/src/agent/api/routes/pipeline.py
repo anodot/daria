@@ -64,7 +64,7 @@ def force_delete(pipeline_name: str):
 @needs_pipeline
 def start(pipeline_name: str):
     try:
-        sdc_client.start(pipeline.repository.get_by_name(pipeline_name))
+        sdc_client.start(pipeline.repository.get_by_id(pipeline_name))
     except sdc_client.PipelineFreezeException as e:
         return jsonify(str(e)), 400
     return jsonify('')
@@ -74,7 +74,7 @@ def start(pipeline_name: str):
 @needs_pipeline
 def stop(pipeline_name: str):
     try:
-        sdc_client.stop(pipeline.repository.get_by_name(pipeline_name))
+        sdc_client.stop(pipeline.repository.get_by_id(pipeline_name))
     except sdc_client.ApiClientException as e:
         return jsonify(str(e)), 400
     except sdc_client.PipelineFreezeException as e:
@@ -86,7 +86,7 @@ def stop(pipeline_name: str):
 @needs_pipeline
 def force_stop(pipeline_name: str):
     try:
-        sdc_client.force_stop(pipeline.repository.get_by_name(pipeline_name))
+        sdc_client.force_stop(pipeline.repository.get_by_id(pipeline_name))
     except sdc_client.PipelineFreezeException as e:
         return jsonify(str(e)), 400
     return jsonify('')
@@ -98,7 +98,7 @@ def info(pipeline_name: str):
     number_of_history_records = int(request.args.get('number_of_history_records', 10))
     try:
         return jsonify(
-            sdc_client.get_pipeline_info(pipeline.repository.get_by_name(pipeline_name), number_of_history_records)
+            sdc_client.get_pipeline_info(pipeline.repository.get_by_id(pipeline_name), number_of_history_records)
         )
     except sdc_client.ApiClientException as e:
         return jsonify(str(e)), 500
@@ -113,7 +113,7 @@ def logs(pipeline_name: str):
     number_of_records = int(request.args.get('number_of_records', 10))
     try:
         return jsonify(
-            sdc_client.get_pipeline_logs(pipeline.repository.get_by_name(pipeline_name), severity, number_of_records)
+            sdc_client.get_pipeline_logs(pipeline.repository.get_by_id(pipeline_name), severity, number_of_records)
         )
     except sdc_client.ApiClientException as e:
         return jsonify(str(e)), 500
@@ -122,14 +122,14 @@ def logs(pipeline_name: str):
 @pipelines.route('/pipelines/<pipeline_name>/enable-destination-logs', methods=['POST'])
 @needs_pipeline
 def enable_destination_logs(pipeline_name: str):
-    pipeline.manager.enable_destination_logs(pipeline.repository.get_by_name(pipeline_name))
+    pipeline.manager.enable_destination_logs(pipeline.repository.get_by_id(pipeline_name))
     return jsonify('')
 
 
 @pipelines.route('/pipelines/<pipeline_name>/disable-destination-logs', methods=['POST'])
 @needs_pipeline
 def disable_destination_logs(pipeline_name: str):
-    pipeline.manager.disable_destination_logs(pipeline.repository.get_by_name(pipeline_name))
+    pipeline.manager.disable_destination_logs(pipeline.repository.get_by_id(pipeline_name))
     return jsonify('')
 
 
@@ -137,7 +137,7 @@ def disable_destination_logs(pipeline_name: str):
 @needs_pipeline
 def reset(pipeline_name: str):
     try:
-        pipeline.manager.reset(pipeline.repository.get_by_name(pipeline_name))
+        pipeline.manager.reset(pipeline.repository.get_by_id(pipeline_name))
     except sdc_client.ApiClientException as e:
         return jsonify(str(e)), 500
     return jsonify('')
@@ -146,7 +146,7 @@ def reset(pipeline_name: str):
 @pipelines.route('/pipeline-status-change/<pipeline_id>', methods=['POST'])
 def pipeline_status_change(pipeline_id: str):
     data = request.get_json()
-    pipeline_ = pipeline.repository.get_by_name(pipeline_id)
+    pipeline_ = pipeline.repository.get_by_id(pipeline_id)
     pipeline_.status = data['pipeline_status']
     pipeline.repository.save(pipeline_)
     labels = (pipeline_.streamsets.url, pipeline_.name, pipeline_.source.type)
@@ -157,5 +157,5 @@ def pipeline_status_change(pipeline_id: str):
 @pipelines.route('/pipeline-offset/<pipeline_name>', methods=['POST'])
 @needs_pipeline
 def pipeline_offset_changed(pipeline_name: str):
-    pipeline.manager.update_pipeline_offset(pipeline.repository.get_by_name(pipeline_name))
+    pipeline.manager.update_pipeline_offset(pipeline.repository.get_by_id(pipeline_name))
     return jsonify('')

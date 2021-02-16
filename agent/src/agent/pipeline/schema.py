@@ -1,4 +1,6 @@
-from agent.destination import anodot_api_client
+from typing import Optional
+from agent import destination
+from agent.destination.anodot_api_client import AnodotApiClient
 from agent.pipeline import Pipeline
 
 
@@ -31,14 +33,17 @@ def equal(old_schema, new_schema) -> bool:
     return {key: val for key, val in old_schema.items() if key != 'id'} == new_schema
 
 
-def update(pipeline: Pipeline) -> dict:
-    new_schema = build(pipeline)
-    api_client = anodot_api_client.AnodotApiClient(pipeline.destination)
-    old_schema = pipeline.get_schema()
-    if old_schema:
-        if equal(old_schema, new_schema):
-            return old_schema
-        api_client.delete_schema(pipeline.get_schema_id())
+def create(schema: dict) -> dict:
+    # created schema contains additional id field
+    return AnodotApiClient(destination.repository.get()).create_schema(schema)['schema']
 
-    created_schema = api_client.create_schema(new_schema)
-    return created_schema['schema']
+
+def search(pipeline_id: str) -> Optional[str]:
+    for schema_ in AnodotApiClient(destination.repository.get()).get_schemas():
+        if schema_['streamSchemaWrapper']['schema']['name'] == pipeline_id:
+            return schema_['streamSchemaWrapper']['schema']['id']
+    return None
+
+
+def delete(schema_id: str):
+    AnodotApiClient(destination.repository.get()).delete_schema(schema_id)

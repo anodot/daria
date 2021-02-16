@@ -66,7 +66,7 @@ def start(pipeline_id: str, file):
     for pipeline_id in pipeline_ids:
         try:
             click.echo(f'Pipeline {pipeline_id} is starting...')
-            sdc_client.start(pipeline.repository.get_by_name(pipeline_id))
+            sdc_client.start(pipeline.repository.get_by_id(pipeline_id))
         except (sdc_client.ApiClientException, pipeline.PipelineException) as e:
             click.secho(str(e), err=True, fg='red')
             continue
@@ -83,7 +83,7 @@ def stop(pipeline_id: str, file):
 
     for pipeline_id in pipeline_ids:
         try:
-            sdc_client.stop(pipeline.repository.get_by_name(pipeline_id))
+            sdc_client.stop(pipeline.repository.get_by_id(pipeline_id))
             click.secho(f'Pipeline {pipeline_id} is stopped', fg='green')
         except (sdc_client.ApiClientException, pipeline.PipelineException) as e:
             click.secho(str(e), err=True, fg='red')
@@ -95,7 +95,7 @@ def stop(pipeline_id: str, file):
 def force_stop(pipeline_id: str):
     try:
         click.echo('Force pipeline stopping...')
-        sdc_client.force_stop(pipeline.repository.get_by_name(pipeline_id))
+        sdc_client.force_stop(pipeline.repository.get_by_id(pipeline_id))
         click.secho('Pipeline is stopped', fg='green')
     except sdc_client.ApiClientException as e:
         click.secho(str(e), err=True, fg='red')
@@ -137,7 +137,7 @@ def force_delete(pipeline_name: str):
 @click.option('-s', '--severity', type=click.Choice([Severity.INFO, Severity.ERROR]), default=None)
 def logs(pipeline_id: str, lines: int, severity: Optional[Severity]):
     try:
-        logs_ = sdc_client.get_pipeline_logs(pipeline.repository.get_by_name(pipeline_id), severity, lines)
+        logs_ = sdc_client.get_pipeline_logs(pipeline.repository.get_by_id(pipeline_id), severity, lines)
     except sdc_client.ApiClientException as e:
         raise click.ClickException(str(e))
     table = _build_table(['Timestamp', 'Severity', 'Category', 'Message'], logs_)
@@ -151,7 +151,7 @@ def destination_logs(pipeline_id: str, enable: bool):
     """
     Enable destination response logs for a pipeline (for debugging purposes only)
     """
-    pipeline_ = pipeline.repository.get_by_name(pipeline_id)
+    pipeline_ = pipeline.repository.get_by_id(pipeline_id)
     if enable:
         pipeline.manager.enable_destination_logs(pipeline_)
     else:
@@ -167,7 +167,7 @@ def info(pipeline_id: str, lines: int):
     Show pipeline status, errors if any, statistics about amount of records sent
     """
     try:
-        info_ = sdc_client.get_pipeline_info(pipeline.repository.get_by_name(pipeline_id), lines)
+        info_ = sdc_client.get_pipeline_info(pipeline.repository.get_by_id(pipeline_id), lines)
     except sdc_client.ApiClientException as e:
         raise click.ClickException(str(e))
     click.secho('=== STATUS ===', fg='green')
@@ -210,7 +210,7 @@ def reset(pipeline_id: str):
     Reset pipeline's offset
     """
     try:
-        pipeline.manager.reset(pipeline.repository.get_by_name(pipeline_id))
+        pipeline.manager.reset(pipeline.repository.get_by_id(pipeline_id))
     except sdc_client.ApiClientException as e:
         click.secho(str(e), err=True, fg='red')
         return
@@ -223,7 +223,7 @@ def update(pipeline_id: str):
     """
     Update all pipelines configuration, recreate and restart them
     """
-    pipelines = [pipeline.repository.get_by_name(pipeline_id)] if pipeline_id else pipeline.repository.get_all()
+    pipelines = [pipeline.repository.get_by_id(pipeline_id)] if pipeline_id else pipeline.repository.get_all()
     for p in pipelines:
         try:
             sdc_client.update(p)
@@ -274,7 +274,7 @@ def _edit_using_file(file):
 
 def _prompt_edit(advanced: bool, pipeline_id: str):
     try:
-        pipeline_ = pipeline.repository.get_by_name(pipeline_id)
+        pipeline_ = pipeline.repository.get_by_id(pipeline_id)
         pipeline_ = prompt.pipeline.get_prompter(pipeline_).prompt(pipeline_.to_dict(), advanced=advanced)
         pipeline.manager.update(pipeline_)
         if _should_prompt_preview(pipeline_):
