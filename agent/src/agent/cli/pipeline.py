@@ -132,11 +132,8 @@ def force_delete(pipeline_name: str):
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
 @click.option('-l', '--lines', type=click.INT, default=10)
-@click.option('-s', '--severity', type=click.Choice([Severity.INFO, Severity.ERROR]), default=None)
+@click.option('-s', '--severity', type=click.Choice([Severity.INFO, Severity.ERROR]), default=Severity.INFO)
 def logs(pipeline_id: str, lines: int, severity: Severity):
-    """
-    Show pipeline logs
-    """
     try:
         logs_ = sdc_client.get_pipeline_logs(pipeline.repository.get_by_name(pipeline_id), severity, lines)
     except sdc_client.ApiClientException as e:
