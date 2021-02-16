@@ -8,9 +8,7 @@ import sdc_client
 
 from agent import source, pipeline, destination, streamsets
 from agent.modules import tools
-from agent.pipeline.config import schema
-from agent.pipeline import Pipeline, TestPipeline, client_data
-from agent.destination import anodot_api_client
+from agent.pipeline import Pipeline, TestPipeline, client_data, schema
 from agent.modules.tools import print_json, sdc_record_map_to_dict
 from agent.modules.logger import get_logger
 from typing import List
@@ -165,7 +163,7 @@ def edit_using_json(configs: list) -> List[Pipeline]:
 
 
 def edit_pipeline_using_json(config: dict) -> Pipeline:
-    pipeline_ = pipeline.repository.get_by_name(config['pipeline_id'])
+    pipeline_ = pipeline.repository.get_by_id(config['pipeline_id'])
     client_data.load_config(pipeline_, config, edit=True)
     update(pipeline_)
     return pipeline_
@@ -176,7 +174,7 @@ def update(pipeline_: Pipeline):
         logger_.info(f'No need to update pipeline {pipeline_.name}')
         return
     if pipeline_.uses_protocol_3():
-        pipeline_.schema = schema.update(pipeline_)
+        _update_schema(pipeline_)
     sdc_client.update(pipeline_)
     pipeline.repository.save(pipeline_)
     logger_.info(f'Updated pipeline {pipeline_}')
@@ -184,7 +182,7 @@ def update(pipeline_: Pipeline):
 
 def create(pipeline_: Pipeline):
     if pipeline_.uses_protocol_3():
-        pipeline_.schema = schema.update(pipeline_)
+        _update_schema(pipeline_)
     sdc_client.create(pipeline_)
     pipeline.repository.save(pipeline_)
 
@@ -222,7 +220,18 @@ def reset(pipeline_: Pipeline):
 
 def _delete_schema(pipeline_: Pipeline):
     if pipeline_.has_schema():
-        anodot_api_client.AnodotApiClient(pipeline_.destination).delete_schema(pipeline_.get_schema_id())
+        schema.delete(pipeline_.get_schema_id())
+        pipeline_.schema = {}
+
+
+def _update_schema(pipeline_: Pipeline):
+    new_schema = schema.build(pipeline_)
+    old_schema = pipeline_.get_schema()
+    if old_schema:
+        if schema.equal(old_schema, new_schema):
+            return
+        schema.delete(pipeline_.get_schema_id())
+    pipeline_.schema = schema.create(new_schema)
 
 
 def delete(pipeline_: Pipeline):
@@ -236,28 +245,32 @@ def delete(pipeline_: Pipeline):
 
 
 def delete_by_name(pipeline_name: str):
-    delete(pipeline.repository.get_by_name(pipeline_name))
+    delete(pipeline.repository.get_by_id(pipeline_name))
 
 
-def force_delete(pipeline_name: str) -> list:
+def force_delete(pipeline_id: str) -> list:
     """
     Try do delete everything related to the pipeline
-    :param pipeline_name: string
+    :param pipeline_id: string
     :return: list of errors that occurred during deletion
     """
     exceptions = []
-    pipeline_ = pipeline.repository.get_by_name(pipeline_name)
-    try:
-        sdc_client.delete(pipeline_)
-    except Exception as e:
-        exceptions.append(str(e))
-    if pipeline.repository.exists(pipeline_name):
-        pipeline_ = pipeline.repository.get_by_name(pipeline_name)
+    if pipeline.repository.exists(pipeline_id):
+        pipeline_ = pipeline.repository.get_by_id(pipeline_id)
         try:
             _delete_schema(pipeline_)
         except Exception as e:
             exceptions.append(str(e))
+        try:
+            sdc_client.delete(pipeline_)
+        except Exception as e:
+            exceptions.append(str(e))
         pipeline.repository.delete(pipeline_)
+    else:
+        sdc_client.force_delete(pipeline_id)
+        schema_id = schema.search(pipeline_id)
+        if schema_id:
+            schema.delete(schema_id)
     return exceptions
 
 
