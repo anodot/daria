@@ -1,4 +1,6 @@
 import json
+from typing import Optional
+
 import click
 import sdc_client
 
@@ -133,10 +135,7 @@ def force_delete(pipeline_name: str):
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
 @click.option('-l', '--lines', type=click.INT, default=10)
 @click.option('-s', '--severity', type=click.Choice([Severity.INFO, Severity.ERROR]), default=None)
-def logs(pipeline_id: str, lines: int, severity: Severity):
-    """
-    Show pipeline logs
-    """
+def logs(pipeline_id: str, lines: int, severity: Optional[Severity]):
     try:
         logs_ = sdc_client.get_pipeline_logs(pipeline.repository.get_by_id(pipeline_id), severity, lines)
     except sdc_client.ApiClientException as e:
