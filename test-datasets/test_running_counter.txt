@@ -1,4 +1,4 @@
-{"timestamp_unix" : 1512867600, "ver" : 1, "AdSize" : {"type": "Small"}, "Country" : "USA", "AdType" : "Display", "metric": "clicks.display", "Clicks" : 3600, "agg_type": "running_counter" }
+{"timestamp_unix" : 1512867600, "ver" : 1, " AdSize " : {"type": "Small"}, "Country" : "USA", " AdType " : " Display ", "metric": "clicks.display", "Clicks" : 3600, "agg_type": "running_counter" }
 {"timestamp_unix" : 1512871200, "ver" : 1, "AdSize" : {"type": "Small"}, "Country" : "USA", "AdType" : "Display", "metric": "clicks.display", "Clicks" : 3600, "agg_type": "running_counter" }
 {"timestamp_unix" : 1512874800, "ver" : 1, "AdSize" : {"type": "Small"}, "Country" : "USA", "AdType" : "Search", "metric": "clicks search", "Clicks" : 14400, "agg_type": "running_counter" }
 {"timestamp_unix" : 1512878400, "ver" : 1, "AdSize" : {"type": "Small"}, "Country" : "USA", "AdType" : "Display", "metric": "clicks.display", "Clicks" : 0, "agg_type": "running_counter" }
