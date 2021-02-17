@@ -83,8 +83,8 @@ def process_matrix(result_, end_):
     for result_ in result_['data']['result']:
         base_metric = create_base_metric(get_metric_name(result_))
         for dimension, value in result_['metric'].items():
-            dimension = dimension.replace(" ", "_").replace(".", "_")
-            value = value.replace(" ", "_").replace(".", "_")
+            dimension = dimension.trim().replace(" ", "_").replace(".", "_")
+            value = value.trim().replace(" ", "_").replace(".", "_")
             base_metric['properties'][dimension] = value
         for timestamp, value in result_[get_result_key(res)]:
             metric = base_metric
