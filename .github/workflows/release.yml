@@ -34,4 +34,4 @@ jobs:
       run: VERSION=${GITHUB_REF/refs\/tags\//} && docker image tag daria_agent:latest anodot/daria:$VERSION && docker image tag daria_dc:latest anodot/streamsets:$VERSION
       
     - name: Push images
-      run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} && docker push anodot/daria && docker push anodot/streamsets
+      run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} && docker push anodot/daria && docker push anodot/streamsets && docker push anodot/daria:$VERSION && docker push anodot/streamsets:$VERSION
