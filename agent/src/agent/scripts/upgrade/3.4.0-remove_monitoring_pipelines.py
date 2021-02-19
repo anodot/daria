@@ -1,7 +1,8 @@
-from agent import pipeline, source
+from agent import pipeline, source, di
 from agent.modules import db, logger
 
 logger_ = logger.get_logger(__name__, stdout=True)
+di.init()
 
 SOURCE_NAME = 'monitoring'
 for pipeline_ in pipeline.repository.get_by_source(SOURCE_NAME):

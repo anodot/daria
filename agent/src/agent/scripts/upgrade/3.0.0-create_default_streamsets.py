@@ -1,8 +1,10 @@
-from agent import streamsets, pipeline
+from agent import streamsets, pipeline, di
 from agent.modules import constants, db
-from agent.streamsets import StreamSets, get_logger
+from agent.streamsets import StreamSets
+from agent.modules.logger import get_logger
 
 logger = get_logger(__name__, stdout=True)
+di.init()
 
 
 def create_streamsets():
