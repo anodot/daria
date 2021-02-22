@@ -82,14 +82,6 @@ def get_last_processed_id():
         return sdc.lastOffsets.get(entityName).split('_')[1]
 
 
-def query_items_sorted():
-    # returns [{itemid: val, value_type: val}, ...]
-    data = client.post('item.get', json.loads(sdc.userParams['QUERY']))
-    if len(data) == 0:
-        sdc.log.info('item.get - No data - query: ' + str(json.loads(sdc.userParams['QUERY'])))
-    return data
-
-
 def query_history(item_ids, value_type):
     for ids_chunk in chunks(item_ids, int(sdc.userParams['HISTORIES_BATCH_SIZE'])):
         history_params = {
@@ -122,8 +114,14 @@ def fetch_hosts():
 
 def fetch_itemids_value_types():
     global end
+
+    query = json.loads(sdc.userParams['QUERY'])
+    query['output'] = ['itemid', 'value_type']
+
     start = time.time()
-    itemids_value_types = query_items_sorted()
+    itemids_value_types = client.post('item.get', query)
+    if len(itemids_value_types) == 0:
+        sdc.log.info('item.get - No data - query: ' + str(json.loads(sdc.userParams['QUERY'])))
     sdc.log.debug('query_items() took ' + str(time.time() - start) + ' seconds')
     sdc.log.debug('we got ' + str(len(itemids_value_types)) + ' items')
 
