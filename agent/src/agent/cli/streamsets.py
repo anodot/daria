@@ -3,7 +3,7 @@ import click
 import requests
 import sdc_client
 
-from agent import streamsets
+from agent import streamsets, pipeline
 from agent.modules.logger import get_logger
 from agent.streamsets import StreamSets
 from agent.modules import constants, validator
@@ -53,7 +53,12 @@ def edit(url):
     except streamsets.repository.StreamsetsNotExistsException as e:
         raise click.ClickException(str(e))
     streamsets_ = _prompt_streamsets(s)
+    old_external_url = streamsets_.agent_external_url
+    streamsets_.agent_external_url = _prompt_agent_external_url(streamsets_)
     streamsets.repository.save(streamsets_)
+    if old_external_url != streamsets_.agent_external_url:
+        for pipeline_ in pipeline.repository.get_by_streamsets_id(streamsets_.id):
+            sdc_client.update(pipeline_)
     click.secho('Changes saved', fg='green')
 
 
