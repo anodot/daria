@@ -14,14 +14,14 @@ ENDC = '\033[0m'
 
 def populate_source_from_file(file):
     exceptions = []
-    for config in source.manager.extract_configs(file):
+    for config in source.json_builder.extract_configs(file):
         try:
             if 'name' not in config:
                 raise Exception(f'Source configs must contain a `name` field, check {file.name}')
             if source.repository.exists(config['name']):
-                source.manager.edit_source_using_json(config)
+                source.json_builder.edit(config)
             else:
-                source.manager.create_source_from_json(config)
+                source.json_builder.build(config)
         except Exception as e:
             if not constants.ENV_PROD:
                 raise
@@ -32,15 +32,15 @@ def populate_source_from_file(file):
 
 def populate_pipeline_from_file(file):
     exceptions = []
-    for config in pipeline.manager.extract_configs(file):
+    for config in pipeline.json_builder.extract_configs(file):
         try:
             if 'pipeline_id' not in config:
                 raise Exception(f'Pipeline configs must contain a `pipeline_id` field, check {file.name}')
             if pipeline.repository.exists(config['pipeline_id']):
-                pipeline.manager.edit_pipeline_using_json(config)
+                pipeline.json_builder.edit(config)
             else:
                 sdc_client.start(
-                    pipeline.manager.create_pipeline_from_json(config)
+                    pipeline.json_builder.build(config)
                 )
         except Exception as e:
             if not constants.ENV_PROD:
@@ -92,7 +92,7 @@ def _extract_all_names(directory, module, type_):
             if not filename.endswith('.json'):
                 continue
             with open(os.path.join(root, filename)) as file:
-                for config in module.manager.extract_configs(file):
+                for config in module.json_builder.extract_configs(file):
                     if name_key not in config:
                         raise Exception(f'{type_} config must contain a `{name_key}`, check {file.name}')
                     names.append(config[name_key])

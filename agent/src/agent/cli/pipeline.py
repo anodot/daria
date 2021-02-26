@@ -1,4 +1,3 @@
-import json
 import click
 import sdc_client
 
@@ -60,7 +59,7 @@ def start(pipeline_id: str, file):
     if not file and not pipeline_id:
         raise click.UsageError('Specify pipeline id or file')
 
-    pipeline_ids = [item['pipeline_id'] for item in pipeline.manager.extract_configs(file)] if file else [pipeline_id]
+    pipeline_ids = [item['pipeline_id'] for item in pipeline.json_builder.extract_configs(file)] if file else [pipeline_id]
 
     for pipeline_id in pipeline_ids:
         try:
@@ -78,7 +77,7 @@ def stop(pipeline_id: str, file):
     if not file and not pipeline_id:
         raise click.UsageError('Specify pipeline id or file')
 
-    pipeline_ids = [item['pipeline_id'] for item in pipeline.manager.extract_configs(file)] if file else [pipeline_id]
+    pipeline_ids = [item['pipeline_id'] for item in pipeline.json_builder.extract_configs(file)] if file else [pipeline_id]
 
     for pipeline_id in pipeline_ids:
         try:
@@ -108,7 +107,7 @@ def delete(pipeline_id: str, file):
     if not file and not pipeline_id:
         raise click.UsageError('Specify pipeline id or file')
 
-    pipeline_names = [item['pipeline_id'] for item in pipeline.manager.extract_configs(file)] if file else [pipeline_id]
+    pipeline_names = [item['pipeline_id'] for item in pipeline.json_builder.extract_configs(file)] if file else [pipeline_id]
 
     for pipeline_name in pipeline_names:
         try:
@@ -239,7 +238,7 @@ def pipeline_group():
 
 def _create_from_file(file):
     try:
-        pipeline.manager.create_from_json(json.load(file))
+        pipeline.json_builder.build_using_file(file)
     except (sdc_client.ApiClientException, ValidationError, pipeline.PipelineException) as e:
         raise click.ClickException(str(e))
 
@@ -269,7 +268,7 @@ def _should_prompt_preview(pipeline_: Pipeline) -> bool:
 
 def _edit_using_file(file):
     try:
-        pipeline.manager.edit_using_file(file)
+        pipeline.json_builder.edit_using_file(file)
     except (pipeline.PipelineException, streamsets.manager.StreamsetsException) as e:
         raise click.UsageError(str(e))
 

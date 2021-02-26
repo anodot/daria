@@ -2,7 +2,6 @@ import click
 
 from agent.pipeline.validators import elastic_query, jdbc_query
 from agent import source
-from agent.pipeline import pipeline as p
 
 
 class BaseValidator:

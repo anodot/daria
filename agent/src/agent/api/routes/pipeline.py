@@ -25,10 +25,8 @@ def list_pipelines():
 @routes.check_prerequisites
 def create():
     try:
-        pipelines_ = pipeline.manager.create_from_json(request.get_json())
-    except (
-            ValidationError, source.SourceNotExists, requests.exceptions.ConnectionError
-    ) as e:
+        pipelines_ = pipeline.json_builder.build_multiple(request.get_json())
+    except (ValidationError, source.SourceNotExists, requests.exceptions.ConnectionError) as e:
         return jsonify(str(e)), 400
     except (pipeline.PipelineException, streamsets.manager.StreamsetsException) as e:
         return jsonify(str(e)), 500
@@ -39,7 +37,7 @@ def create():
 @routes.check_prerequisites
 def edit():
     try:
-        pipelines_ = pipeline.manager.edit_using_json(request.get_json())
+        pipelines_ = pipeline.json_builder.edit_multiple(request.get_json())
     except ValueError as e:
         return jsonify(str(e)), 400
     except (pipeline.PipelineException, streamsets.manager.StreamsetsException) as e:
