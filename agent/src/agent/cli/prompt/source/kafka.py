@@ -1,11 +1,11 @@
 import click
 
-from .schemaless import SchemalessSourceBuilder
+from .schemaless import SchemalessPrompter
 from agent.modules.tools import infinite_retry
 from agent import source
 
 
-class KafkaSourceBuilder(SchemalessSourceBuilder):
+class KafkaBuilder(SchemalessPrompter):
     def prompt(self, default_config, advanced=False):
         self.prompt_connection(default_config, advanced)
         self.source.config[source.KafkaSource.CONFIG_TOPIC_LIST] = \
@@ -19,7 +19,7 @@ class KafkaSourceBuilder(SchemalessSourceBuilder):
                          type=click.Choice([source.KafkaSource.OFFSET_EARLIEST, source.KafkaSource.OFFSET_LATEST,
                                             source.KafkaSource.OFFSET_TIMESTAMP]),
                          default=default_config.get(source.KafkaSource.CONFIG_OFFSET_TYPE,
-                                                    source.KafkaSource.OFFSET_EARLIEST))
+                                                             source.KafkaSource.OFFSET_EARLIEST))
         if self.source.config[source.KafkaSource.CONFIG_OFFSET_TYPE] == source.KafkaSource.OFFSET_TIMESTAMP:
             self.source.config[source.KafkaSource.CONFIG_OFFSET_TIMESTAMP] = click.prompt(
                 'Offset timestamp (unix timestamp in milliseconds)',

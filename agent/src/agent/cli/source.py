@@ -76,7 +76,7 @@ def _create_from_file(file):
 def _prompt(advanced: bool):
     source_type = _prompt_source_type()
     source_name = _prompt_source_name()
-    prompter = prompt.source.get(
+    prompter = prompt.source.get_prompter(
         source.manager.create_source_obj(source_name, source_type)
     )
     source.repository.save(
@@ -94,7 +94,7 @@ def _edit_using_file(file):
 
 def _prompt_edit(name: str, advanced: bool) -> source.Source:
     source_ = source.repository.get_by_name(name)
-    source_ = prompt.source.get(source_).prompt(source_.config, advanced=advanced)
+    source_ = prompt.source.get_prompter(source_).prompt(source_.config, advanced=advanced)
     source.manager.update(source_)
     return source_
 

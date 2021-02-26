@@ -1,14 +1,13 @@
 import json
-from typing import Optional
-
 import click
 import sdc_client
 
+from typing import Optional
 from agent import pipeline, source, streamsets, check_prerequisites
 from agent.modules.tools import infinite_retry
 from jsonschema import ValidationError
 from texttable import Texttable
-from agent.cli import prompt
+from agent.cli import prompt, preview
 from sdc_client import Severity
 from agent.pipeline import Pipeline
 
@@ -249,15 +248,18 @@ def _prompt(advanced: bool, sources: list):
     source_name = click.prompt('Choose source config', type=click.Choice(sources), default=_get_default_source(sources))
     pipeline_id = _prompt_pipeline_id()
 
-    pipeline_prompter = prompt.pipeline.get_prompter(pipeline.manager.create_object(pipeline_id, source_name))
-    previous_config = _get_previous_pipeline_config(pipeline_prompter.pipeline.source.type)
-    pipeline_prompter.prompt(previous_config, advanced)
+    pipeline_ = pipeline.manager.create_object(pipeline_id, source_name)
+    previous_pipeline_config = _get_previous_pipeline_config(pipeline_.source.type)
+
+    pipeline_prompter = prompt.pipeline.get_prompter(pipeline_, previous_pipeline_config, advanced)
+    pipeline_prompter.prompt()
+
     pipeline.manager.create(pipeline_prompter.pipeline)
 
     click.secho('Created pipeline {}'.format(pipeline_id), fg='green')
     if _should_prompt_preview(pipeline_prompter.pipeline):
         if click.confirm('Would you like to see the result data preview?', default=True):
-            pipeline.manager.show_preview(pipeline_prompter.pipeline)
+            preview.show_preview(pipeline_prompter.pipeline)
             print('To change the config use `agent pipeline edit`')
 
 
@@ -275,11 +277,11 @@ def _edit_using_file(file):
 def _prompt_edit(advanced: bool, pipeline_id: str):
     try:
         pipeline_ = pipeline.repository.get_by_id(pipeline_id)
-        pipeline_ = prompt.pipeline.get_prompter(pipeline_).prompt(pipeline_.to_dict(), advanced=advanced)
+        pipeline_ = prompt.pipeline.get_prompter(pipeline_, pipeline_.to_dict(), advanced).prompt()
         pipeline.manager.update(pipeline_)
         if _should_prompt_preview(pipeline_):
             if click.confirm('Would you like to see the result data preview?', default=True):
-                pipeline.manager.show_preview(pipeline_)
+                preview.show_preview(pipeline_)
                 print('To change the config use `agent pipeline edit`')
     except pipeline.repository.PipelineNotExistsException:
         raise click.UsageError(f'{pipeline_id} does not exist')
@@ -301,7 +303,7 @@ def _prompt_pipeline_id():
 
 def _check_sources(sources: list):
     if len(sources) == 0:
-        raise click.ClickException('No sources configs found. Use "agent source create"')
+        raise click.ClickException('No source configs found. Use "agent source create"')
 
 
 def _get_default_source(sources: list):

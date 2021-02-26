@@ -2,11 +2,11 @@ import click
 
 from agent.modules.tools import infinite_retry
 from urllib.parse import urljoin
-from .base import PromptConfig
+from .base import Prompter
 from agent import pipeline
 
 
-class PromptConfigInflux(PromptConfig):
+class InfluxPrompter(Prompter):
     def prompt_config(self):
         self.set_measurement_name()
         self.pipeline.source.config['conf.resourceUrl'] = self.get_test_url()
@@ -14,7 +14,7 @@ class PromptConfigInflux(PromptConfig):
         self.set_value()
         self.set_target_type()
         self.set_dimensions()
-        self.set_static_properties()
+        self.set_static_dimensions()
         self.set_tags()
         self.set_delay()
         self.set_filtering()
@@ -53,7 +53,7 @@ class PromptConfigInflux(PromptConfig):
             self.config['dimensions']['required'] = []
             self.config['dimensions']['optional'] = self.prompt_dimensions('Dimensions',
                                                                            self.config['dimensions'].get('optional',
-                                                                                                         []))
+                                                                                                                  []))
 
     def set_filtering(self):
         if self.advanced or self.config.get('filtering', ''):

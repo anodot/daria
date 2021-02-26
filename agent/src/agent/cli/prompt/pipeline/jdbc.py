@@ -3,10 +3,10 @@ import click
 from agent import pipeline
 from agent.modules.tools import infinite_retry
 from agent.pipeline.validators import jdbc_query
-from .base import PromptConfig
+from .base import Prompter
 
 
-class PromptConfigJDBC(PromptConfig):
+class JDBCPrompter(Prompter):
     timestamp_types = ['datetime', 'unix', 'unix_ms']
 
     def prompt_config(self):
@@ -18,7 +18,7 @@ class PromptConfigJDBC(PromptConfig):
         self.set_timestamp()
         self.set_values()
         self.set_dimensions()
-        self.set_static_properties()
+        self.set_static_dimensions()
         self.set_tags()
         self.set_uses_schema()
 

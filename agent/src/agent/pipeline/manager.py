@@ -9,7 +9,6 @@ import sdc_client
 from agent import source, pipeline, destination, streamsets
 from agent.modules import tools
 from agent.pipeline import Pipeline, TestPipeline, client_data, schema
-from agent.modules.tools import print_json, sdc_record_map_to_dict
 from agent.modules.logger import get_logger
 from typing import List
 from agent.pipeline.config.handlers.factory import get_config_handler
@@ -22,38 +21,14 @@ LOG_LEVELS = [logging.getLevelName(logging.INFO), logging.getLevelName(logging.E
 MAX_SAMPLE_RECORDS = 3
 
 
-def supports_schema(source_type: str):
-    # use protocol 3 for all new pipelines that support it
+def supports_schema(pipeline_: Pipeline):
     supported = [
         source.TYPE_DIRECTORY,
         source.TYPE_MYSQL,
         source.TYPE_POSTGRES,
         source.TYPE_KAFKA,
     ]
-    return source_type in supported
-
-
-def show_preview(pipeline_: Pipeline):
-    try:
-        preview = sdc_client.create_preview(pipeline_)
-        # todo preview slows down tests a lot as 'No data' exception is risen
-        preview_data, errors = sdc_client.wait_for_preview(pipeline_, preview['previewerId'])
-    except sdc_client.ApiClientException as e:
-        print(str(e))
-        return
-
-    if preview_data['batchesOutput']:
-        for output in preview_data['batchesOutput'][0]:
-            if 'destination_OutputLane' in output['output']:
-                data = output['output']['destination_OutputLane'][:MAX_SAMPLE_RECORDS]
-                if data:
-                    print_json([sdc_record_map_to_dict(record['value']) for record in data])
-                else:
-                    print('Could not fetch any data matching the provided config')
-                break
-    else:
-        print('Could not fetch any data matching the provided config')
-    print(*errors, sep='\n')
+    return pipeline_.source.type in supported
 
 
 def extract_configs(file):
@@ -140,7 +115,7 @@ def create_pipeline_from_json(config: dict) -> Pipeline:
     pipeline_ = create_object(config['pipeline_id'], config['source'])
     client_data.load_config(pipeline_, config)
     create(pipeline_)
-    print(f'Pipeline {pipeline_.name} created')
+    logger_.info(f'Pipeline {pipeline_.name} created')
     return pipeline_
 
 
@@ -189,9 +164,9 @@ def update_source_pipelines(source_: Source):
         try:
             sdc_client.update(pipeline_)
         except streamsets.manager.StreamsetsException as e:
-            print(str(e))
+            logger_.exception(str(e))
             continue
-        print(f'Pipeline {pipeline_.name} updated')
+        logger_.info(f'Pipeline {pipeline_.name} updated')
 
 
 def update_pipeline_offset(pipeline_: Pipeline):
@@ -287,7 +262,7 @@ def build_test_pipeline(source_: Source) -> TestPipeline:
     # creating a new source because otherwise it will mess with the db session
     test_source = Source(source_.name, source_.type, source_.config)
     test_pipeline = TestPipeline(_get_test_pipeline_name(test_source), test_source, destination.repository.get())
-    test_pipeline.config['uses_schema'] = supports_schema(test_pipeline.source.type)
+    test_pipeline.config['uses_schema'] = supports_schema(test_pipeline)
     return test_pipeline
 
 
@@ -327,7 +302,11 @@ def transform_for_bc(pipeline_: Pipeline) -> dict:
 
 
 def get_sample_records(pipeline_: Pipeline) -> (list, list):
-    preview_data, errors = _get_preview_data(pipeline_)
+    try:
+        sdc_client.create(pipeline_)
+        preview_data, errors = get_preview_data(pipeline_)
+    finally:
+        sdc_client.delete(pipeline_)
 
     if not preview_data:
         return [], []
@@ -341,16 +320,13 @@ def get_sample_records(pipeline_: Pipeline) -> (list, list):
     return [tools.sdc_record_map_to_dict(record['value']) for record in data[:MAX_SAMPLE_RECORDS]], errors
 
 
-def _get_preview_data(test_pipeline: Pipeline) -> (list, list):
-    sdc_client.create(test_pipeline)
+def get_preview_data(pipeline_: Pipeline) -> (list, list):
     try:
-        preview = sdc_client.create_preview(test_pipeline)
-        preview_data, errors = sdc_client.wait_for_preview(test_pipeline, preview['previewerId'])
+        preview = sdc_client.create_preview(pipeline_)
+        preview_data, errors = sdc_client.wait_for_preview(pipeline_, preview['previewerId'])
     except (Exception, KeyboardInterrupt) as e:
         logger_.exception(str(e))
         raise
-    finally:
-        sdc_client.delete(test_pipeline)
     return preview_data, errors
 
 

@@ -115,7 +115,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return self.source_
 
     @property
-    def constant_dimensions(self) -> dict:
+    def static_dimensions(self) -> dict:
         return self.config.get('properties', {})
 
     @property
@@ -127,8 +127,8 @@ class Pipeline(Entity, sdc_client.IPipeline):
         self.config[self.FLUSH_BUCKET_SIZE] = FlushBucketSize(value).value
 
     @property
-    def constant_dimensions_names(self):
-        return self.constant_dimensions.keys()
+    def static_dimension_names(self):
+        return self.static_dimensions.keys()
 
     @property
     def dimensions(self) -> list:

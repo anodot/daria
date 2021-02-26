@@ -1,9 +1,9 @@
 import click
 
-from .schemaless import PromptConfigSchemaless
+from .schemaless import SchemalessPrompter
 
 
-class PromptConfigSage(PromptConfigSchemaless):
+class SagePrompter(SchemalessPrompter):
 
     def prompt_config(self):
         self.set_query()
@@ -14,7 +14,7 @@ class PromptConfigSage(PromptConfigSchemaless):
         self.set_values()
         self.set_measurement_names()
         self.set_dimensions()
-        self.set_static_properties()
+        self.set_static_dimensions()
         self.set_tags()
 
     def set_query(self):

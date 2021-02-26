@@ -1,10 +1,10 @@
 import click
 
-from .schemaless import SchemalessSourceBuilder
+from .schemaless import SchemalessPrompter
 from agent import source
 
 
-class DirectorySourceBuilder(SchemalessSourceBuilder):
+class DirectoryPrompter(SchemalessPrompter):
     CONFIG_DIR = 'conf.spoolDir'
     CONFIG_FILE_PATTERN = 'conf.filePattern'
     CONFIG_SPOOLING_PERIOD = 'conf.spoolingPeriod'
@@ -24,7 +24,7 @@ class DirectorySourceBuilder(SchemalessSourceBuilder):
     def prompt_csv(self, default_config):
         self.prompt_csv_type(default_config)
         default_use_header = default_config.get(source.SchemalessSource.CONFIG_CSV_HEADER_LINE,
-                                                source.SchemalessSource.CONFIG_CSV_HEADER_LINE_WITH_HEADER)
+                                                         source.SchemalessSource.CONFIG_CSV_HEADER_LINE_WITH_HEADER)
         if click.confirm('Use header line?',
                          default=True if default_use_header == source.SchemalessSource.CONFIG_CSV_HEADER_LINE_WITH_HEADER else False):
             self.source.config[

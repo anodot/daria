@@ -1,12 +1,12 @@
 import click
 
-from .schemaless import PromptConfigSchemaless
+from .schemaless import SchemalessPrompter
 from agent import source
 from agent.modules.tools import infinite_retry
 from agent.pipeline.validators import elastic_query
 
 
-class PromptConfigElastic(PromptConfigSchemaless):
+class ElasticPrompter(SchemalessPrompter):
     timestamp_types = ['string', 'unix', 'unix_ms']
 
     def prompt_config(self):
@@ -16,7 +16,7 @@ class PromptConfigElastic(PromptConfigSchemaless):
         self.set_measurement_names()
         self.set_timestamp()
         self.set_dimensions()
-        self.set_static_properties()
+        self.set_static_dimensions()
         self.set_tags()
 
     @infinite_retry
@@ -30,4 +30,4 @@ class PromptConfigElastic(PromptConfigSchemaless):
             if errors:
                 raise click.ClickException(errors)
 
-            self.config['override_source'][source.ElasticSource.CONFIG_QUERY] = query
+            self.override_source[source.ElasticSource.CONFIG_QUERY] = query

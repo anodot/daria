@@ -2,7 +2,6 @@ import json
 import os
 import jsonschema
 import requests
-import sqlalchemy
 import inject
 
 from abc import ABC, abstractmethod
@@ -53,8 +52,7 @@ class InfluxValidator(Validator):
     VALIDATION_SCHEMA_FILE = 'influx.json'
 
     def validate(self):
-        self.validate_json()
-        self.validate_connection()
+        super().validate()
         self.validate_db()
         self.validate_offset()
 
@@ -112,8 +110,7 @@ class JDBCValidator(Validator):
 
     @if_validation_enabled
     def validate_connection(self):
-        eng = sqlalchemy.create_engine(self._get_connection_url())
-        eng.connect()
+        validator.validate_mysql_connection(self._get_connection_url())
 
     def _get_connection_url(self):
         conn_info = urlparse(self.source.config[source.JDBCSource.CONFIG_CONNECTION_STRING])
@@ -143,8 +140,7 @@ class MongoValidator(Validator):
     VALIDATION_SCHEMA_FILE = 'mongo.json'
 
     def validate(self):
-        self.validate_json()
-        self.validate_connection()
+        super().validate()
         self.validate_db()
         self.validate_collection()
 
@@ -261,6 +257,19 @@ class DirectoryValidator(SchemalessValidator):
     VALIDATION_SCHEMA_FILE = 'directory.json'
 
 
+class CactiValidator(Validator):
+    # todo create this file
+    VALIDATION_SCHEMA_FILE = 'cacti.json'
+
+    def validate(self):
+        super().validate()
+        validator.validate_dir(self.source.config[source.CactiSource.RRD_DIR])
+
+    @if_validation_enabled
+    def validate_connection(self):
+        validator.validate_mysql_connection(self.source.config[source.CactiSource.MYSQL_CONNECTION_STRING])
+
+
 class ValidationException(Exception):
     pass
 
@@ -278,5 +287,6 @@ def get_validator(source_: Source) -> Validator:
         source.TYPE_SAGE: SageValidator,
         source.TYPE_VICTORIA: VictoriaMetricsValidator,
         source.TYPE_ZABBIX: ZabbixValidator,
+        source.TYPE_CACTI: CactiValidator,
     }
     return types[source_.type](source_)

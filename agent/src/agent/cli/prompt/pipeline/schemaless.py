@@ -2,10 +2,10 @@ import click
 
 from agent.pipeline.config import expression_parser
 from agent.modules.tools import infinite_retry, dict_get_nested
-from .base import PromptConfig
+from .base import Prompter
 
 
-class PromptConfigSchemaless(PromptConfig):
+class SchemalessPrompter(Prompter):
     timestamp_types = ['string', 'unix', 'unix_ms']
     target_types = ['counter', 'gauge']
 
@@ -15,7 +15,7 @@ class PromptConfigSchemaless(PromptConfig):
         self.set_measurement_names()
         self.set_timestamp()
         self.set_dimensions()
-        self.set_static_properties()
+        self.set_static_dimensions()
         self.set_tags()
         self.filter()
         self.set_transform()
