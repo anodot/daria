@@ -79,7 +79,10 @@ def get_interval():
 
 def get_last_processed_id():
     if sdc.lastOffsets.containsKey(entityName):
-        return sdc.lastOffsets.get(entityName).split('_')[1]
+        parts = sdc.lastOffsets.get(entityName).split('_')
+        if len(parts) == 2:
+            return parts[1]
+    return None
 
 
 def query_history(item_ids, value_type):
