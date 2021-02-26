@@ -17,7 +17,7 @@ def create():
     if destination.repository.exists():
         return 'Destination already exists', 400
     form = DestinationForm.from_json(request.get_json())
-    if not validate():
+    if not form.validate():
         return form.errors, 400
     result = destination.manager.create(
         form.data_collection_token.data,
@@ -38,7 +38,7 @@ def edit():
     if not destination.repository.exists():
         return 'Destination doesn\'t exist', 400
     form = EditDestinationForm.from_json(request.get_json())
-    if not validate():
+    if not form.validate():
         return form.errors, 400
     result = destination.manager.edit(
         destination.repository.get(),
