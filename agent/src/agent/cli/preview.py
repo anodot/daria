@@ -7,6 +7,23 @@ def print_sample_data(pipeline_: Pipeline):
     _get_preview_type(pipeline_.source.type).print_sample_data(pipeline_)
 
 
+def show_preview(pipeline_: Pipeline):
+    preview_data, errors = pipeline.manager.get_preview_data(pipeline_)
+
+    if preview_data['batchesOutput']:
+        for output in preview_data['batchesOutput'][0]:
+            if 'destination_OutputLane' in output['output']:
+                data = output['output']['destination_OutputLane'][:pipeline.manager.MAX_SAMPLE_RECORDS]
+                if data:
+                    tools.print_json([tools.sdc_record_map_to_dict(record['value']) for record in data])
+                else:
+                    print('Could not fetch any data matching the provided config')
+                break
+    else:
+        print('Could not fetch any data matching the provided config')
+    print(*errors, sep='\n')
+
+
 class Preview:
     def print_sample_data(self, pipeline_: Pipeline):
         records, errors = pipeline.manager.get_sample_records(pipeline_)

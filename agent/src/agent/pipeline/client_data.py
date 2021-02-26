@@ -15,7 +15,7 @@ def load_config(pipeline_: Pipeline, config: dict, edit=False):
     config = get_file_loader(pipeline_.source.type).load(config, edit)
 
     if 'uses_schema' not in config:
-        config['uses_schema'] = pipeline.manager.supports_schema(pipeline_.source.type)
+        config['uses_schema'] = pipeline.manager.supports_schema(pipeline_)
 
     pipeline_.set_config(config)
 

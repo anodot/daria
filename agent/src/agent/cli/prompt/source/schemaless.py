@@ -1,13 +1,13 @@
 import click
 import json
 
-from .abstract_builder import Builder
+from .base import Prompter
 from abc import ABCMeta
 from agent.modules.tools import infinite_retry, print_dicts, print_json, map_keys
 from agent import source, pipeline
 
 
-class SchemalessSourceBuilder(Builder, metaclass=ABCMeta):
+class SchemalessPrompter(Prompter, metaclass=ABCMeta):
     @infinite_retry
     def prompt_custom_delimiter(self, default_config):
         self.source.config[source.SchemalessSource.CONFIG_CSV_CUSTOM_DELIMITER] = \
@@ -21,7 +21,7 @@ class SchemalessSourceBuilder(Builder, metaclass=ABCMeta):
         self.source.config[source.SchemalessSource.CONFIG_CSV_TYPE] = \
             click.prompt('Delimited format type', type=click.Choice(source.SchemalessSource.csv_types),
                          default=default_config.get(source.SchemalessSource.CONFIG_CSV_TYPE,
-                                                    source.SchemalessSource.CONFIG_CSV_TYPE_DEFAULT))
+                                                             source.SchemalessSource.CONFIG_CSV_TYPE_DEFAULT))
         if self.source.config[source.SchemalessSource.CONFIG_CSV_TYPE] == source.SchemalessSource.CONFIG_CSV_TYPE_CUSTOM:
             self.prompt_custom_delimiter(default_config)
 
@@ -87,7 +87,7 @@ class SchemalessSourceBuilder(Builder, metaclass=ABCMeta):
         self.source.config[source.SchemalessSource.CONFIG_DATA_FORMAT] = \
             click.prompt('Data format', type=click.Choice(source.SchemalessSource.data_formats),
                          default=default_config.get(source.SchemalessSource.CONFIG_DATA_FORMAT,
-                                                    source.SchemalessSource.DATA_FORMAT_JSON))
+                                                             source.SchemalessSource.DATA_FORMAT_JSON))
         if self.source.config[source.SchemalessSource.CONFIG_DATA_FORMAT] == source.SchemalessSource.DATA_FORMAT_CSV:
             self.prompt_csv(default_config)
         elif self.source.config[source.SchemalessSource.CONFIG_DATA_FORMAT] == source.SchemalessSource.DATA_FORMAT_AVRO:
