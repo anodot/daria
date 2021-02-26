@@ -1,16 +1,12 @@
-import json
 import logging
 import random
 import string
-import traceback
-import jsonschema
 import sdc_client
 
 from agent import source, pipeline, destination, streamsets
 from agent.modules import tools
-from agent.pipeline import Pipeline, TestPipeline, client_data, schema
+from agent.pipeline import Pipeline, TestPipeline, schema
 from agent.modules.logger import get_logger
-from typing import List
 from agent.pipeline.config.handlers.factory import get_config_handler
 from agent.source import Source
 
@@ -31,51 +27,6 @@ def supports_schema(pipeline_: Pipeline):
     return pipeline_.source.type in supported
 
 
-def extract_configs(file):
-    data = json.load(file)
-    file.seek(0)
-
-    json_schema = {
-        'type': 'array',
-        'items': {
-            'type': 'object',
-            'properties': {
-                'pipeline_id': {'type': 'string', 'minLength': 1, 'maxLength': 100}
-            },
-            'required': ['pipeline_id']
-        }
-    }
-    jsonschema.validate(data, json_schema)
-    return data
-
-
-def validate_configs_for_create(configs: list):
-    json_schema = {
-        'type': 'array',
-        'items': {
-            'type': 'object',
-            'properties': {
-                'source': {'type': 'string', 'enum': source.repository.get_all_names()},
-                'pipeline_id': {'type': 'string', 'minLength': 1, 'maxLength': 100}
-            },
-            'required': ['source', 'pipeline_id']
-        }
-    }
-    jsonschema.validate(configs, json_schema)
-
-
-def validate_config_for_create(config: dict):
-    json_schema = {
-        'type': 'object',
-        'properties': {
-            'source': {'type': 'string', 'enum': source.repository.get_all_names()},
-            'pipeline_id': {'type': 'string', 'minLength': 1, 'maxLength': 100}
-        },
-        'required': ['source', 'pipeline_id']
-    }
-    jsonschema.validate(config, json_schema)
-
-
 def create_object(pipeline_id: str, source_name: str) -> Pipeline:
     pipeline_ = Pipeline(
         pipeline_id,
@@ -88,57 +39,6 @@ def create_object(pipeline_id: str, source_name: str) -> Pipeline:
 def check_pipeline_id(pipeline_id: str):
     if pipeline.repository.exists(pipeline_id):
         raise pipeline.PipelineException(f"Pipeline {pipeline_id} already exists")
-
-
-def edit_using_file(file):
-    edit_using_json(extract_configs(file))
-
-
-def create_from_json(configs: list) -> List[Pipeline]:
-    validate_configs_for_create(configs)
-    exceptions = {}
-    pipelines = []
-    for config in configs:
-        try:
-            check_pipeline_id(config['pipeline_id'])
-            pipeline_ = create_pipeline_from_json(config)
-            pipelines.append(pipeline_)
-        except Exception as e:
-            exceptions[config['pipeline_id']] = f'{type(e).__name__}: {traceback.format_exc()}'
-        if exceptions:
-            raise pipeline.PipelineException(json.dumps(exceptions))
-    return pipelines
-
-
-def create_pipeline_from_json(config: dict) -> Pipeline:
-    validate_config_for_create(config)
-    pipeline_ = create_object(config['pipeline_id'], config['source'])
-    client_data.load_config(pipeline_, config)
-    create(pipeline_)
-    logger_.info(f'Pipeline {pipeline_.name} created')
-    return pipeline_
-
-
-def edit_using_json(configs: list) -> List[Pipeline]:
-    if not isinstance(configs, list):
-        raise ValueError(f'Provided data must be a list of configs, {type(configs).__name__} provided instead')
-    exceptions = {}
-    pipelines = []
-    for config in configs:
-        try:
-            pipelines.append(edit_pipeline_using_json(config))
-        except Exception as e:
-            exceptions[config['pipeline_id']] = f'{type(e).__name__}: {str(e)}'
-        if exceptions:
-            raise pipeline.PipelineException(json.dumps(exceptions))
-    return pipelines
-
-
-def edit_pipeline_using_json(config: dict) -> Pipeline:
-    pipeline_ = pipeline.repository.get_by_id(config['pipeline_id'])
-    client_data.load_config(pipeline_, config, edit=True)
-    update(pipeline_)
-    return pipeline_
 
 
 def update(pipeline_: Pipeline):

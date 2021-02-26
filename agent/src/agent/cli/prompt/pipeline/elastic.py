@@ -30,4 +30,4 @@ class ElasticPrompter(SchemalessPrompter):
             if errors:
                 raise click.ClickException(errors)
 
-            self.override_source[source.ElasticSource.CONFIG_QUERY] = query
+            self.config['override_source'][source.ElasticSource.CONFIG_QUERY] = query

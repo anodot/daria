@@ -15,7 +15,7 @@ def list_sources():
 @routes.check_prerequisites
 def create():
     try:
-        sources_ = source.manager.create_from_json(request.get_json())
+        sources_ = source.json_builder.build_multiple(request.get_json())
     except (ValidationError, ValueError, source.SourceException) as e:
         return jsonify(str(e)), 400
     return jsonify(list(map(lambda x: x.to_dict(), sources_)))
@@ -25,7 +25,7 @@ def create():
 @routes.check_prerequisites
 def edit():
     try:
-        sources_ = source.manager.edit_using_json(request.get_json())
+        sources_ = source.json_builder.edit_multiple(request.get_json())
     except (ValidationError, source.SourceException, ValueError) as e:
         return jsonify(str(e)), 400
     return jsonify(list(map(lambda x: x.to_dict(), sources_)))

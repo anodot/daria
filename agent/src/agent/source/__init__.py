@@ -4,6 +4,7 @@ from . import repository
 from . import manager
 from . import validator
 from . import db
+from . import json_builder
 
 TYPE_INFLUX = 'influx'
 TYPE_KAFKA = 'kafka'
