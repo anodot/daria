@@ -206,11 +206,10 @@ def get_sample_records(pipeline_: Pipeline) -> (list, list):
         sdc_client.create(pipeline_)
         preview_data, errors = get_preview_data(pipeline_)
     finally:
-        pass
-        # sdc_client.delete(pipeline_)
+        sdc_client.delete(pipeline_)
 
     if not preview_data:
-        return [], []
+        return preview_data, errors
 
     try:
         data = preview_data['batchesOutput'][0][0]['output']['source_outputLane']
