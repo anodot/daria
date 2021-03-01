@@ -206,7 +206,8 @@ def get_sample_records(pipeline_: Pipeline) -> (list, list):
         sdc_client.create(pipeline_)
         preview_data, errors = get_preview_data(pipeline_)
     finally:
-        sdc_client.delete(pipeline_)
+        pass
+        # sdc_client.delete(pipeline_)
 
     if not preview_data:
         return [], []
@@ -224,6 +225,13 @@ def get_preview_data(pipeline_: Pipeline) -> (list, list):
     try:
         preview = sdc_client.create_preview(pipeline_)
         preview_data, errors = sdc_client.wait_for_preview(pipeline_, preview['previewerId'])
+    # todo it used to be
+    # except sdc_client.ApiClientException as e:
+    #     print(str(e))
+    #     return
+    except sdc_client.ApiClientException as e:
+        logger_.error(str(e))
+        return [], []
     except (Exception, KeyboardInterrupt) as e:
         logger_.exception(str(e))
         raise
