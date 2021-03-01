@@ -207,9 +207,8 @@ while True:
                     if sdc.isStopped():
                         break
 
-            if batch.size() != 0:
-                batch.process(entityName, str(end) + '_' + itemids[-1])
-                batch = sdc.createBatch()
+            # always process batch so that in case when there were no data, we save last processed itemid anyway
+            batch.process(entityName, str(end) + '_' + itemids[-1])
             if sdc.isStopped():
                 break
 
