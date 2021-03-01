@@ -10,7 +10,7 @@ def print_sample_data(pipeline_: Pipeline):
 def show_preview(pipeline_: Pipeline):
     preview_data, errors = pipeline.manager.get_preview_data(pipeline_)
 
-    if preview_data['batchesOutput']:
+    if preview_data and preview_data['batchesOutput']:
         for output in preview_data['batchesOutput'][0]:
             if 'destination_OutputLane' in output['output']:
                 data = output['output']['destination_OutputLane'][:pipeline.manager.MAX_SAMPLE_RECORDS]
