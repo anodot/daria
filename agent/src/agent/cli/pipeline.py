@@ -107,12 +107,12 @@ def delete(pipeline_id: str, file):
     if not file and not pipeline_id:
         raise click.UsageError('Specify pipeline id or file')
 
-    pipeline_names = [item['pipeline_id'] for item in pipeline.json_builder.extract_configs(file)] if file else [pipeline_id]
+    pipeline_ids = [item['pipeline_id'] for item in pipeline.json_builder.extract_configs(file)] if file else [pipeline_id]
 
-    for pipeline_name in pipeline_names:
+    for pipeline_id in pipeline_ids:
         try:
-            pipeline.manager.delete_by_name(pipeline_name)
-            click.echo(f'Pipeline {pipeline_name} deleted')
+            pipeline.manager.delete_by_id(pipeline_id)
+            click.echo(f'Pipeline {pipeline_id} deleted')
         except (
             sdc_client.ApiClientException, pipeline.PipelineException, pipeline.repository.PipelineNotExistsException
         ) as e:
@@ -121,9 +121,9 @@ def delete(pipeline_id: str, file):
 
 
 @click.command()
-@click.argument('pipeline_name', autocompletion=get_pipelines_ids_complete)
-def force_delete(pipeline_name: str):
-    errors = pipeline.manager.force_delete(pipeline_name)
+@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
+def force_delete(pipeline_id: str):
+    errors = pipeline.manager.force_delete(pipeline_id)
     for e in errors:
         click.secho(e, err=True, fg='red')
     click.echo('Finished')

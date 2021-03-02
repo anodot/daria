@@ -116,8 +116,8 @@ def delete(pipeline_: Pipeline):
     pipeline.repository.add_deleted_pipeline_id(pipeline_.name)
 
 
-def delete_by_name(pipeline_name: str):
-    delete(pipeline.repository.get_by_id(pipeline_name))
+def delete_by_id(pipeline_id: str):
+    delete(pipeline.repository.get_by_id(pipeline_id))
 
 
 def force_delete(pipeline_id: str) -> list:

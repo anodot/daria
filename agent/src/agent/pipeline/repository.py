@@ -7,16 +7,16 @@ class PipelineNotExistsException(Exception):
     pass
 
 
-def exists(pipeline_name: str) -> bool:
+def exists(pipeline_id: str) -> bool:
     return bool(session().query(
-        session().query(Pipeline).filter(Pipeline.name == pipeline_name).exists()
+        session().query(Pipeline).filter(Pipeline.name == pipeline_id).exists()
     ).scalar())
 
 
-def get_by_id(pipeline_name: str) -> Pipeline:
-    pipeline_ = session().query(Pipeline).filter(Pipeline.name == pipeline_name).first()
+def get_by_id(pipeline_id: str) -> Pipeline:
+    pipeline_ = session().query(Pipeline).filter(Pipeline.name == pipeline_id).first()
     if not pipeline_:
-        raise PipelineNotExistsException(f"Pipeline {pipeline_name} doesn't exist")
+        raise PipelineNotExistsException(f"Pipeline {pipeline_id} doesn't exist")
     return pipeline_
 
 
@@ -36,10 +36,6 @@ def save(pipeline_: Pipeline):
 def delete(pipeline_: Pipeline):
     session().delete(pipeline_)
     session().commit()
-
-
-def delete_by_name(pipeline_name: str):
-    delete(get_by_id(pipeline_name))
 
 
 def save_offset(pipeline_offset: PipelineOffset):

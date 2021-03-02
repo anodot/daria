@@ -86,8 +86,8 @@ class Pipeline(Entity, sdc_client.IPipeline):
     destination = relationship('HttpDestination')
     streamsets = relationship('StreamSets')
 
-    def __init__(self, pipeline_name: str, source_: Source, destination: HttpDestination):
-        self.name = pipeline_name
+    def __init__(self, pipeline_id: str, source_: Source, destination: HttpDestination):
+        self.name = pipeline_id
         self._previous_config = {}
         self._previous_override_source = {}
         self.config = {}
@@ -334,8 +334,8 @@ class Pipeline(Entity, sdc_client.IPipeline):
 
 
 class TestPipeline(Pipeline):
-    def __init__(self, pipeline_name: str, source_, destination: HttpDestination):
-        super().__init__(pipeline_name, source_, destination)
+    def __init__(self, pipeline_id: str, source_, destination: HttpDestination):
+        super().__init__(pipeline_id, source_, destination)
 
 
 class PipelineOffset(Entity):
