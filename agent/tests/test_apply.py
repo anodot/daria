@@ -11,5 +11,5 @@ def test_apply(cli_runner):
 
 
 def teardown_module(module):
-    pipeline.manager.delete_by_name('test_mongo_pipeline_apply')
+    pipeline.manager.delete_by_id('test_mongo_pipeline_apply')
     source.repository.delete_by_name('test_mongo_apply')
