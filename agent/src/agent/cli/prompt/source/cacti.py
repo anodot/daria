@@ -27,7 +27,7 @@ class CactiPrompter(Prompter):
         directory = click.prompt(
             'Path to the directory containing rrd files',
             type=click.STRING,
-            default=default_config.get(source.VictoriaMetricsSource.URL)
+            default=default_config.get(source.CactiSource.RRD_DIR)
         ).strip()
         validator.validate_dir(directory)
         self.source.config[source.CactiSource.RRD_DIR] = directory

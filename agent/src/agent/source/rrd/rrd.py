@@ -12,9 +12,8 @@ logger_ = logger.get_custom_logger(__name__, os.environ.get('RRD_SOURCE_LOG_FILE
 
 def extract_metrics(
     source_: Source, start: str, end: str, step: str,
-    *, exclude_hosts: list, exclude_datasources: list
+    exclude_hosts: list, exclude_datasources: list
 ) -> list:
-    # todo if average function is not available in the rrd - skip this source
     metrics = []
 
     for cacti_source in repository.get_cacti_sources(source_, exclude_hosts, exclude_datasources):
@@ -25,24 +24,31 @@ def extract_metrics(
         rrd_file_name = _extract_rrd_file_name(cacti_source)
         if not rrd_file_name:
             continue
+
         rrd_file_path = os.path.join(source_.get_rrd_dir(), rrd_file_name)
         rrd_file_path = '/Users/antonzelenin/Workspace/daria/agent/src/agent/data.rrd'
-        info = rrdtool.info(rrd_file_path)
-        res = rrdtool.fetch(rrd_file_path, 'AVERAGE', ['-s', start, '-e', end, '-r', step])
-        # res[0][2] - is the closest available step to the step provided in the fetch command
-        # if they differ - skip the source as the desired step is not available in it
-        if res[0][2] != int(step):
-            continue
+        result = rrdtool.fetch(rrd_file_path, 'AVERAGE', ['-s', start, '-e', end, '-r', step])
 
-        for name_idx, measurement_name in enumerate(res[1]):
-            def produce_metric(row_idx: int, values: tuple) -> dict:
+        # result[0][2] - is the closest available step to the step provided in the fetch command
+        # if they differ - skip the source as the desired step is not available in it
+        if result[0][2] != int(step):
+            continue
+        data_start = result[0][0]
+        for name_idx, measurement_name in enumerate(result[1]):
+            for row_idx, data in enumerate(result[2]):
+                timestamp = int(data_start) + row_idx * int(step)
+                value = data[name_idx]
+                # rrd might return a record for the timestamp earlier then start
+                if timestamp < int(start):
+                    continue
+                # value will be None if it's not available for the chosen consolidation function or timestamp
+                if value is None:
+                    continue
                 metric = base_metric.copy()
                 metric['what'] = measurement_name
-                metric['value'] = values[name_idx]
-                metric['timestamp'] = int(start) + row_idx * int(step)
-                return metric
-
-            metrics.extend([produce_metric(row_idx, data) for row_idx, data in enumerate(res[2])])
+                metric['value'] = value
+                metric['timestamp'] = timestamp
+                metrics.append(metric)
 
     return metrics
 

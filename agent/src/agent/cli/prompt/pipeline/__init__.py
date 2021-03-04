@@ -16,6 +16,7 @@ from .cacti import CactiPrompter
 
 def get_prompter(pipeline_: Pipeline, default_config: dict, advanced: bool) -> Prompter:
     prompters = {
+        source.TYPE_CACTI: CactiPrompter,
         source.TYPE_INFLUX: InfluxPrompter,
         source.TYPE_KAFKA: KafkaPrompter,
         source.TYPE_MONGO: MongoPrompter,
