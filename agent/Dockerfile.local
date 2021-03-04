@@ -8,7 +8,8 @@ COPY ./custom_entrypoint.sh /
 RUN chmod +x /custom_entrypoint.sh
 
 ENV STREAMSETS_USERNAME="admin" STREAMSETS_PASSWORD="admin" STREAMSETS_URL="http://localhost:18630" \
-    LOG_FILE_PATH="/var/log/agent.log" ANODOT_API_URL="https://api.anodot.com" ENV_PROD='true' \
+    RRD_SOURCE_LOG_FILE_PATH='/var/log/agent_rrd_source.log' LOG_FILE_PATH="/var/log/agent.log" \
+    ANODOT_API_URL="https://api.anodot.com" ENV_PROD='true' \
     GIT_SHA1=local-build VALIDATION_ENABLED="true" FLASK_APP="/usr/src/app/src/agent/api/main.py" FLASK_DEBUG=1
 
 RUN ./install_requirements.sh

@@ -59,3 +59,4 @@ regex==2020.11.13
 inject==4.3.1
 prometheus-client==0.9.0
 git+https://github.com/anodot/sdc-client.git@1.1.9
+rrdtool==0.1.15

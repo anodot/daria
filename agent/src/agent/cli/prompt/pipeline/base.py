@@ -149,8 +149,8 @@ class Prompter:
             click.prompt('Collect since (days ago)', type=click.INT,
                          default=self.default_config.get('days_to_backfill', 0))
 
-    def prompt_interval(self):
-        self.config['interval'] = click.prompt('Query interval (in seconds)', type=click.INT,
+    def prompt_interval(self, query_message='Query interval (in seconds)'):
+        self.config['interval'] = click.prompt(query_message, type=click.INT,
                                                default=self.default_config.get('interval'))
 
     def prompt_delay(self):

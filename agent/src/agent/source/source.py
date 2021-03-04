@@ -206,6 +206,12 @@ class CactiSource(Source):
     MYSQL_CONNECTION_STRING = 'mysql_connection_string'
     RRD_DIR = 'rrd_dir'
 
+    def get_rrd_dir(self) -> str:
+        return self.config[self.RRD_DIR]
+
+    def get_connection_string(self) -> str:
+        return self.config[self.MYSQL_CONNECTION_STRING]
+
 
 class DirectorySource(SchemalessSource):
     pass
