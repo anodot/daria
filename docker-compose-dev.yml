@@ -44,6 +44,7 @@ services:
       STREAMSETS_PASSWORD: 'admin'
       STREAMSETS_URL: 'http://dc:18630'
       LOG_FILE_PATH: '/var/log/agent.log'
+      RRD_SOURCE_LOG_FILE_PATH: '/var/log/agent_rrd_source.log'
       ENV_PROD: 'false'
       AGENT_DB_HOST: 'db'
       AGENT_DB_USER: 'agent'
@@ -163,7 +164,7 @@ services:
       MYSQL_USER: "user"
       MYSQL_PASSWORD: "password"
     ports:
-      - "3306:3306"
+      - "3308:3306"
     volumes:
       - /var/lib/mysql
       - ./volumes/mysql-initdb:/docker-entrypoint-initdb.d
