@@ -1,4 +1,5 @@
 from . import factory
+from . import cacti
 from . import influx
 from . import kafka
 from . import base

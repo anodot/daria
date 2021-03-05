@@ -1,7 +1,7 @@
 import json
 
 from agent import source
-from .base import Stage
+from agent.pipeline.config.stages.base import Stage
 
 
 class ZabbixScript(Stage):

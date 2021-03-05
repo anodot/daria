@@ -3,10 +3,7 @@ from . import js_pivot_array
 from . import source
 from . import expression_evaluator
 from . import destination
-from . import sage_source
-from . import victoria_source
+from .source import victoria
 from . import influx_offset
 from . import jdbc_source
 from . import jdbc_offset
-from . import influx_source
-from . import zabbix_source

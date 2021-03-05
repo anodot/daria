@@ -7,7 +7,7 @@ logger = get_logger(__name__)
 
 class TCPConfigHandler(BaseConfigHandler):
     stages_to_override = {
-        'source': stages.source.Source,
+        'source': stages.source.source.Source,
         'JavaScriptEvaluator_01': stages.js_convert_metrics.JSConvertMetrics,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties,
         'ExpressionEvaluator_03': stages.expression_evaluator.Filtering,

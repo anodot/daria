@@ -5,7 +5,6 @@ from . import manager
 from . import validator
 from . import db
 from . import json_builder
-from . import rrd
 
 TYPE_INFLUX = 'influx'
 TYPE_KAFKA = 'kafka'
