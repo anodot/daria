@@ -8,7 +8,7 @@ logger = get_logger(__name__)
 
 class VictoriaConfigHandler(BaseConfigHandler):
     stages_to_override = {
-        'source': stages.victoria_source.VictoriaScript,
+        'source': stages.source.victoria.VictoriaScript,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties,
         'destination': stages.destination.Destination
     }

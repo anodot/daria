@@ -1,4 +1,4 @@
-from .base import Stage
+from agent.pipeline.config.stages.base import Stage
 
 
 class Source(Stage):

@@ -1,4 +1,4 @@
-from .base import Stage
+from agent.pipeline.config.stages.base import Stage
 from agent import pipeline
 from urllib.parse import urljoin, quote_plus
 
