@@ -256,10 +256,7 @@ def _prompt(advanced: bool, sources: list):
     pipeline.manager.create(pipeline_prompter.pipeline)
 
     click.secho('Created pipeline {}'.format(pipeline_id), fg='green')
-    if _should_prompt_preview(pipeline_prompter.pipeline):
-        if click.confirm('Would you like to see the result data preview?', default=True):
-            preview.show_preview(pipeline_prompter.pipeline)
-            print('To change the config use `agent pipeline edit`')
+    _result_preview(pipeline_prompter.pipeline)
 
 
 def _should_prompt_preview(pipeline_: Pipeline) -> bool:
@@ -278,12 +275,16 @@ def _prompt_edit(advanced: bool, pipeline_id: str):
         pipeline_ = pipeline.repository.get_by_id(pipeline_id)
         pipeline_ = prompt.pipeline.get_prompter(pipeline_, pipeline_.to_dict(), advanced).prompt()
         pipeline.manager.update(pipeline_)
-        if _should_prompt_preview(pipeline_):
-            if click.confirm('Would you like to see the result data preview?', default=True):
-                preview.show_preview(pipeline_)
-                print('To change the config use `agent pipeline edit`')
+        _result_preview(pipeline_)
     except pipeline.repository.PipelineNotExistsException:
         raise click.UsageError(f'{pipeline_id} does not exist')
+
+
+def _result_preview(pipeline_: Pipeline):
+    if _should_prompt_preview(pipeline_):
+        if click.confirm('Would you like to see the result data preview?', default=True):
+            preview.show_preview(pipeline_)
+            print('To change the config use `agent pipeline edit`')
 
 
 def _get_previous_pipeline_config(source_type: str) -> dict:

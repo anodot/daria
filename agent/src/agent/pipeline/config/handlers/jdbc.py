@@ -9,7 +9,7 @@ logger = get_logger(__name__)
 class JDBCSchemaConfigHandler(SchemaConfigHandler):
     stages_to_override = {
         'offset': stages.jdbc_offset.JDBCScript,
-        'source': stages.jdbc_source.JDBCSource,
+        'source': stages.source.jdbc.JDBCSource,
         'JavaScriptEvaluator_01': stages.js_convert_metrics.JSConvertMetrics30,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties30,
         'destination': stages.destination.Destination
@@ -19,7 +19,7 @@ class JDBCSchemaConfigHandler(SchemaConfigHandler):
 class JDBCConfigHandler(BaseConfigHandler):
     stages_to_override = {
         'offset': stages.jdbc_offset.JDBCScript,
-        'source': stages.jdbc_source.JDBCSource,
+        'source': stages.source.jdbc.JDBCSource,
         'JavaScriptEvaluator_01': stages.js_convert_metrics.JSConvertMetrics,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties,
         'destination': stages.destination.Destination

@@ -1,44 +1,96 @@
+import json
 import rrdtool
 
 from agent import cli, source, destination, pipeline, streamsets, di
-from agent.modules import db
-# from agent.source import rrd
+from agent.api import main
+from agent.modules import db, zabbix
+from datetime import datetime, timedelta
 
-di.init()
+rrd_file_path = './agent/tests/input_files/data2.rrd'
+info = rrdtool.info(rrd_file_path)
+t = 1
 
-cli.pipeline.create()
+# with open('/Users/antonzelenin/Workspace/daria/agent/output/cacti_cacti.json') as f:
+#     new = {}
+#     data = json.load(f)
+#     for obj in data:
+#         if obj['timestamp'] not in new:
+#             new[obj['timestamp']] = []
+#         new[obj['timestamp']].append(obj['value'])
+#     with(open('blabla.json', 'a+')) as ff:
+#         json.dump(new, ff)
+#
+#
+# exit()
+
+# todo this is how I checked expected output for tests, delete this and data1_rrd in case tests are ok
+r = rrdtool.fetch(rrd_file_path, 'AVERAGE', ['-s', '1614988800', '-r', '300'])
+
+with open('agent/output/cacti_cacti.json', 'r') as f:
+    actual = json.load(f)
+
+
+def trans(dd):
+    new = {}
+    for obj in dd:
+        times = obj['timestamp']
+        if times not in new:
+            new[times] = []
+        new[times].append(obj['value'])
+    return new
+
+
+actual = trans(actual)
+
+expected = []
+with open('agent/tests/test_pipelines/expected_output/data1_rrd.json', 'r') as f:
+    expected.extend(json.load(f))
+
+
+def trans_expected(dd):
+    new = {}
+    for obj in dd:
+        times = obj['timestamp']
+        if times not in new:
+            new[times] = []
+        new[times].append(obj['0'])
+        new[times].append(obj['1'])
+        if '2' in obj:
+            new[times].append(obj['2'])
+    return new
+
+
+expected = trans_expected(expected)
+
+assert expected == actual
+
+print('hoorrayy')
 exit()
 
-rrd_file_path = '/Users/antonzelenin/Workspace/daria/agent/src/agent/data.rrd'
-info = rrdtool.info(rrd_file_path)
 
-# r = rrdtool.fetch(rrd_file_path, 'LAST', ['-s', '1614865638', '-e', '1614866638', '-r', '300'])
+# di.init()
 
-# last_update = 1612801804
-last_update = 1614866638
-step = 300
 
-period = 1000
+# def api_client():
+#     main.app.testing = True
+#     with main.app.test_client() as client:
+#         di.init()
+#         return client
 
-start1 = last_update - period * 2
-start2 = last_update - period
 
-res = rrd.extract_metrics(
-    pipeline.repository.get_by_id('c'), str(start1), str(start1 + period), str(step)
-)
-t = 1
-# res = [v['timestamp'] for v in res]
+# r = api_client().get('/rrd_source/fetch_data/ca?step=300').json
+
+# step = 300
+# data_start = r[0][0]
+# with open('agent/tests/test_pipelines/expected_output/data2_rrd.json', 'a+') as f:
+#     for row_idx, data in enumerate(r[2]):
+#         timestamp = int(data_start) + row_idx * int(step)
+#         d = {'timestamp': timestamp, '0': data[0], '1': data[1], '2': data[2]}
+#         json.dump(d, f)
+#         f.write(',\n')
 #
-# res1 = rrd.extract_metrics(
-#     source.repository.get_by_name('c'), str(start1), str(start1 + period), str(step),
-#     exclude_datasources=[], exclude_hosts=[]
-# )
-# res1 = [v['timestamp'] for v in res1]
-# res2 = rrd.extract_metrics(
-#     source.repository.get_by_name('c'), str(start2), str(start2 + period), str(step),
-#     exclude_datasources=[], exclude_hosts=[]
-# )
-# res2 = [v['timestamp'] for v in res2]
+#
+# exit()
 
 # cli.source.edit(["test_mongo"])
 # cli.destination()

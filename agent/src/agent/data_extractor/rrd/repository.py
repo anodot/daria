@@ -21,7 +21,7 @@ def _build_query(exclude_datasources: list, exclude_hosts: list):
         WHERE 1=1
     """
     for host in exclude_hosts:
-        query += f"AND h.description NOT LIKE '{host}' "
+        query += f"AND h.description NOT LIKE '{host.replace('*', '%')}' "
     for data_source in exclude_datasources:
-        query += f"AND dtd.name_cache NOT LIKE '{data_source}' "
+        query += f"AND dtd.name_cache NOT LIKE '{data_source.replace('*', '%')}' "
     return query

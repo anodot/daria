@@ -15,7 +15,8 @@ CREATE TABLE `data_local` (
 
 LOCK TABLES `data_local` WRITE;
 INSERT INTO `data_local` VALUES
-(13744,41,1008,1,'9');
+(13744,41,1008,1,'9'),
+(11530,11,512,0,'');
 UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `data_template_data`;
@@ -42,40 +43,8 @@ CREATE TABLE `data_template_data` (
 
 LOCK TABLES `data_template_data` WRITE;
 INSERT INTO `data_template_data` VALUES
-(13866,41,13744,41,2,NULL,'|host_description| - Traffic - |query_ifName| |query_ifAlias|','390257-SAPUYO-SAPUYO-CA920-T2 - Traffic - Gi0/4 ENoB-Id-L390257-SAPUYO','<path_rra>/390257-sapuyo-sapuyo-ca920-t2_traffic_in_13744.rrd',NULL,'on',NULL,300,NULL);
-UNLOCK TABLES;
-
-DROP TABLE IF EXISTS `data_template_rrd`;
-CREATE TABLE `data_template_rrd` (
-  `id` mediumint unsigned NOT NULL AUTO_INCREMENT,
-  `hash` varchar(32) NOT NULL DEFAULT '',
-  `local_data_template_rrd_id` mediumint unsigned NOT NULL DEFAULT '0',
-  `local_data_id` mediumint unsigned NOT NULL DEFAULT '0',
-  `data_template_id` mediumint unsigned NOT NULL DEFAULT '0',
-  `t_rrd_maximum` char(2) DEFAULT NULL,
-  `rrd_maximum` varchar(20) NOT NULL DEFAULT '0',
-  `t_rrd_minimum` char(2) DEFAULT NULL,
-  `rrd_minimum` varchar(20) NOT NULL DEFAULT '0',
-  `t_rrd_heartbeat` char(2) DEFAULT NULL,
-  `rrd_heartbeat` mediumint NOT NULL DEFAULT '0',
-  `t_data_source_type_id` char(2) DEFAULT NULL,
-  `data_source_type_id` smallint NOT NULL DEFAULT '0',
-  `t_data_source_name` char(2) DEFAULT NULL,
-  `data_source_name` varchar(19) NOT NULL DEFAULT '',
-  `t_data_input_field_id` char(2) DEFAULT NULL,
-  `data_input_field_id` mediumint unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `duplicate_dsname_contraint` (`local_data_id`,`data_source_name`,`data_template_id`),
-  KEY `local_data_id` (`local_data_id`),
-  KEY `data_template_id` (`data_template_id`),
-  KEY `local_data_template_rrd_id` (`local_data_template_rrd_id`),
-  KEY `data_source_name` (`data_source_name`)
-) ENGINE=MyISAM AUTO_INCREMENT=29193 DEFAULT CHARSET=latin1;
-
-LOCK TABLES `data_template_rrd` WRITE;
-INSERT INTO `data_template_rrd` VALUES
-(27038,'',54,13744,41,NULL,'|query_ifSpeed|',NULL,0,NULL,600,NULL,2,NULL,'traffic_in',NULL,0),
-(27039,'',55,13744,41,NULL,'|query_ifSpeed|',NULL,0,NULL,600,NULL,2,NULL,'traffic_out',NULL,0);
+(13866,41,13744,41,2,NULL,'|host_description| - Traffic - |query_ifName| |query_ifAlias|','390257-SAPUYO-SAPUYO-CA920-T2 - Traffic - Gi0/4 ENoB-Id-L390257-SAPUYO','<path_rra>/data1.rrd',NULL,'on',NULL,300,NULL),
+(11641,11,11530,11,4,NULL,'|host_description| - Load Average', 'DPI - SDE1-SV22K - Load Average','<path_rra>/data2.rrd',NULL,'on',NULL,300,NULL);
 UNLOCK TABLES;
 
 SET SQL_MODE='ALLOW_INVALID_DATES';
@@ -134,5 +103,6 @@ CREATE TABLE `host` (
 
 LOCK TABLES `host` WRITE;
 INSERT INTO `host` VALUES
-(1008,5,'390257-SAPUYO-SAPUYO-CA920-T2','10.20.22.30','','RedIP-SV',2,'','','','','','',161,500,2,1,23,400,3,10,1,'','',1,0,'on','',3,0,'0000-00-00 00:00:00','0000-00-00 00:00:00','Host did not respond to SNMP',1.07550,1519.15000,8.84000,7.28090,124425,150,99.87945,0.000000,0,0,0,'on',0.0000000000,0.0000000000);
+(1008,5,'390257-SAPUYO-SAPUYO-CA920-T2','10.20.22.30','','RedIP-SV',2,'','','','','','',161,500,2,1,23,400,3,10,1,'','',1,0,'on','',3,0,'0000-00-00 00:00:00','0000-00-00 00:00:00','Host did not respond to SNMP',1.07550,1519.15000,8.84000,7.28090,124425,150,99.87945,0.000000,0,0,0,'on',0.0000000000,0.0000000000),
+(512,8,'DPI - SDE1-SV22K','10.219.147.155','','svPublic',2,'','','','','','',161,500,2,1,23,400,3,10,1,'','',1,0,'on','',3,0,NULL,NULL,'Host did not respond to SNMP',0.25350,1037.20000,3.20000,4.01452,384996,72,99.98130,0.000000,0,0,0,'on',0.0000000000,0.0000000000);
 UNLOCK TABLES;

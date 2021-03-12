@@ -22,39 +22,53 @@ def get_interval():
     return int(sdc.userParams['INTERVAL_IN_SECONDS'])
 
 
+def get_step():
+    return int(sdc.userParams['STEP_IN_SECONDS'])
+
+
+def get_now_with_delay():
+    return int(time.time()) - int(sdc.userParams['DELAY_IN_MINUTES']) * 60
+
+
 entityName = ''
 
 if sdc.lastOffsets.containsKey(entityName):
     offset = int(float(sdc.lastOffsets.get(entityName)))
-# it will be implemented a bit later
-# elif sdc.userParams['INITIAL_OFFSET']:
-#     offset = to_timestamp(datetime.strptime(sdc.userParams['INITIAL_OFFSET'], '%d/%m/%Y %H:%M'))
+elif sdc.userParams['DAYS_TO_BACKFILL']:
+    offset = to_timestamp(datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=int(sdc.userParams['DAYS_TO_BACKFILL'])))
 else:
-    offset = to_timestamp(datetime.utcnow().replace(second=0, microsecond=0) - timedelta(seconds=get_interval()))
+    offset = to_timestamp(datetime.utcnow().replace(second=0, microsecond=0))
 
 sdc.log.info('OFFSET: ' + str(offset))
 
 while True:
     if sdc.isStopped():
         break
-    now = int(time.time())
-    if offset < now + get_interval():
-        time.sleep(now + get_interval() - offset)
+    end = offset + get_interval()
+    if end > get_now_with_delay():
+        time.sleep(end - get_now_with_delay())
 
     batch = sdc.createBatch()
 
-    metrics = requests.post(
+    res = requests.get(
         sdc.userParams['RRD_SOURCE_URL'],
         json={
             'start': offset,
             'end': offset + get_interval(),
-            'step': get_interval(),
+            'step': get_step(),
         }
     )
-    for metric in metrics:
+    res.raise_for_status()
+    for metric in res.json():
         record = sdc.createRecord('record created ' + str(datetime.now()))
         record.value = metric
         batch.add(record)
+
+        if batch.size() == sdc.batchSize:
+            batch.process(entityName, str(end))
+            batch = sdc.createBatch()
+            if sdc.isStopped():
+                break
 
     offset += get_interval()
     batch.process(entityName, str(offset))

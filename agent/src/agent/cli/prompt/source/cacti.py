@@ -10,6 +10,7 @@ class CactiPrompter(Prompter):
     def prompt(self, default_config, advanced=False):
         self.prompt_mysql_connection(default_config)
         self.prompt_rrd_dir(default_config)
+        self.source.set_config(self.source.config)
         return self.source
 
     @infinite_retry

@@ -1,14 +1,10 @@
-import os
 import re
 import rrdtool
 
 from typing import List
 from . import repository
-from agent.modules import logger
 from agent.pipeline import Pipeline
 from agent import source
-
-logger_ = logger.get_custom_logger(__name__, os.environ.get('RRD_SOURCE_LOG_FILE_PATH', 'agent_rrd_source.log'))
 
 
 def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> list:
@@ -28,7 +24,7 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
         if not rrd_file_name:
             continue
 
-        rrd_file_path = os.path.join(pipeline_.source.config[source.CactiSource.RRD_DIR], rrd_file_name)
+        rrd_file_path = rrd_file_name.replace('<path_rra>', pipeline_.source.config[source.CactiSource.RRD_DIR])
         result = rrdtool.fetch(rrd_file_path, 'AVERAGE', ['-s', start, '-e', end, '-r', step])
 
         # result[0][2] - is the closest available step to the step provided in the fetch command
@@ -73,8 +69,7 @@ def _extract_dimensions(cacti_source: dict) -> dict:
 
 def _extract_rrd_file_name(cacti_source: dict) -> str:
     path = cacti_source['data_source_path']
-    # every data source path starts with '<path_rra>/' so removing it
-    return path[len('<path_rra>/'):]
+    return path
 
 
 def _extract_dimension_names(name: str) -> List[str]:

@@ -5,7 +5,7 @@ from agent.api.routes import needs_pipeline
 rrd_source = Blueprint('rrd_source', __name__)
 
 
-@rrd_source.route('/rrd_source/fetch_data/<pipeline_id>', methods=['POST'])
+@rrd_source.route('/rrd_source/fetch_data/<pipeline_id>', methods=['GET'])
 @needs_pipeline
 def read(pipeline_id: str):
     pipeline_ = pipeline.repository.get_by_id(pipeline_id)
