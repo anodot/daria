@@ -10,7 +10,7 @@ from agent.modules import db
 DUMMY_DESTINATION_OUTPUT_PATH = '/output'
 TEST_DATASETS_PATH = '/home'
 
-INPUT_FILES_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'test_pipelines', 'input_files')
+INPUT_FILES_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'input_files')
 
 
 class MyRunner(CliRunner):

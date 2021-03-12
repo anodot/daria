@@ -534,7 +534,7 @@
       } ],
       "uiInfo" : {
         "description" : "",
-        "label" : "Convert timestamp to long",
+        "label" : "Add tags, convert timestamp to long",
         "xPos" : 720,
         "yPos" : 50,
         "stageType" : "PROCESSOR"

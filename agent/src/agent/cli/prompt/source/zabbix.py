@@ -14,6 +14,7 @@ class ZabbixPrompter(Prompter):
         self.prompt_password(default_config)
         self.prompt_query_timeout(default_config, advanced)
         self.validator.validate_connection()
+        self.source.set_config(self.source.config)
         return self.source
 
     @infinite_retry

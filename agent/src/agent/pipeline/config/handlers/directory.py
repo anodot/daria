@@ -4,7 +4,7 @@ from agent.pipeline.config.handlers.schema import SchemaConfigHandler
 
 class DirectoryConfigHandler(SchemaConfigHandler):
     stages_to_override = {
-        'source': stages.source.source.Source,
+        'source': stages.source.Source,
         'JavaScriptEvaluator_01': stages.js_convert_metrics.JSConvertMetrics30,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties30,
         'ExpressionEvaluator_03': stages.expression_evaluator.Filtering,

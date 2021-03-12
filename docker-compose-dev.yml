@@ -195,8 +195,10 @@ services:
 
   dummy_destination:
     build: dummy_destination
+    container_name: dummy_destination
     volumes:
       - ./agent/output:/app/log
+      - ./dummy_destination:/app/
     ports:
       - 8080:80
 
