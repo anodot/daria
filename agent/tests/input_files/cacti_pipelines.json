@@ -1,0 +1,13 @@
+[
+  {
+    "source": "cacti_file",
+    "pipeline_id": "cacti_file",
+    "interval": 300,
+    "exclude_hosts": [
+      "*exclude_me*"
+    ],
+    "exclude_datasources": [
+      "*mee too*"
+    ]
+  }
+]

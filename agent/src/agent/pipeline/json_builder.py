@@ -154,6 +154,16 @@ class LoadClientData:
             self.client_config['dimensions'] = {'required': [], 'optional': self.client_config['dimensions']}
 
 
+class CactiLoadClientData(LoadClientData):
+    VALIDATION_SCHEMA_FILE_NAME = 'cacti'
+
+    def load(self, client_config: dict):
+        super().load(client_config)
+        if 'timestamp' not in self.client_config and not self.edit:
+            self.client_config['timestamp'] = {'type': 'unix'}
+        return self.client_config
+
+
 class MongoLoadClientData(LoadClientData):
     VALIDATION_SCHEMA_FILE_NAME = 'mongo'
 
@@ -263,6 +273,7 @@ class ZabbixLoadClientData(LoadClientData):
 
 def get_file_loader(source_type: str, is_edit=False) -> LoadClientData:
     loaders = {
+        source.TYPE_CACTI: CactiLoadClientData,
         source.TYPE_INFLUX: InfluxLoadClientData,
         source.TYPE_MONGO: MongoLoadClientData,
         source.TYPE_KAFKA: KafkaLoadClientData,

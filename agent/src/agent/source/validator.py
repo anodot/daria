@@ -258,7 +258,6 @@ class DirectoryValidator(SchemalessValidator):
 
 
 class CactiValidator(Validator):
-    # todo create this file
     VALIDATION_SCHEMA_FILE = 'cacti.json'
 
     def validate(self):

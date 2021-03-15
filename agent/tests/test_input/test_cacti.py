@@ -30,9 +30,8 @@ class TestCacti:
             'interval in sec': 300,
             'collect since': (datetime.utcnow() - offset).days,
             'delay': delay,
-            # todo exclude smth for test
-            'exclude hosts': '',
-            'exclude sources': '',
+            'exclude hosts': '*exclude_me*',
+            'exclude sources': '*mee too*',
             'static dims': 'static_dim:cacti',
             'tags': 'tag:cacti',
             'preview': 'y',
