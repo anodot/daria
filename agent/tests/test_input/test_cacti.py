@@ -21,15 +21,13 @@ class TestCacti:
         assert source.repository.exists(source_name)
 
     def test_create(self, cli_runner):
-        offset = datetime.fromtimestamp(1614988800)
+        offset = datetime.fromtimestamp(1615808400)
         delay = 5
         pipeline_id = 'cacti'
         input_ = {
             'source': 'cacti',
             'id': pipeline_id,
-            'step': 300,
-            # take everything in one batch
-            'interval in sec': int((datetime.utcnow() - offset).total_seconds()) - delay * 60,
+            'interval in sec': 300,
             'collect since': (datetime.utcnow() - offset).days,
             'delay': delay,
             # todo exclude smth for test

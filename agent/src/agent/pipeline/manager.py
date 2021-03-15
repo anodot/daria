@@ -112,6 +112,8 @@ def delete(pipeline_: Pipeline):
         sdc_client.delete(pipeline_)
     except sdc_client.ApiClientException as e:
         raise pipeline.PipelineException(str(e))
+    if pipeline_.offset:
+        pipeline.repository.delete_offset(pipeline_.offset)
     pipeline.repository.delete(pipeline_)
     pipeline.repository.add_deleted_pipeline_id(pipeline_.name)
 

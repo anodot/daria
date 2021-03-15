@@ -20,7 +20,7 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
             'target_type': 'gauge',
             'properties': _extract_dimensions(cacti_source),
         }
-        rrd_file_name = _extract_rrd_file_name(cacti_source)
+        rrd_file_name = cacti_source['data_source_path']
         if not rrd_file_name:
             continue
 
@@ -41,6 +41,9 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
 
                 # rrd might return a record for the timestamp earlier then start
                 if timestamp < int(start):
+                    continue
+                # skip values with timestamp end in order not to duplicate them
+                if timestamp >= int(end):
                     continue
                 # value will be None if it's not available for the chosen consolidation function or timestamp
                 if value is None:
@@ -65,11 +68,6 @@ def _extract_dimensions(cacti_source: dict) -> dict:
         dimensions[name] = dimension_values[i]
 
     return dimensions
-
-
-def _extract_rrd_file_name(cacti_source: dict) -> str:
-    path = cacti_source['data_source_path']
-    return path
 
 
 def _extract_dimension_names(name: str) -> List[str]:

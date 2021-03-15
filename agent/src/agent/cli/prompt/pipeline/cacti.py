@@ -7,18 +7,13 @@ class CactiPrompter(Prompter):
     def prompt_config(self):
         self.config['timestamp'] = {}
         self.config['timestamp']['type'] = 'unix'
-        self.prompt_step()
-        self.prompt_interval()
-        self.prompt_days_to_backfill('Collect since (days ago), if there is no data with the specified step - the period will be skipped')
+        self.prompt_interval('Polling interval in seconds')
+        self.prompt_days_to_backfill()
         self.prompt_delay()
         self.prompt_exclude_hosts()
         self.prompt_exclude_datasources()
         self.set_static_dimensions()
         self.set_tags()
-
-    def prompt_step(self):
-        self.config['step'] = \
-            click.prompt('Step in seconds', type=click.INT, default=self.default_config.get('step'))
 
     def prompt_exclude_hosts(self):
         hosts = ','.join(self.default_config.get('exclude_hosts', []))

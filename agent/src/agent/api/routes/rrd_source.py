@@ -11,8 +11,8 @@ def read(pipeline_id: str):
     pipeline_ = pipeline.repository.get_by_id(pipeline_id)
     metrics = data_extractor.rrd.extract_metrics(
         pipeline_,
-        str(request.get_json()['start']),
-        str(request.get_json()['end']),
-        str(request.get_json()['step']),
+        str(request.args['start']),
+        str(request.args['end']),
+        str(request.args['step']),
     )
     return jsonify(metrics)

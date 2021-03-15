@@ -22,10 +22,6 @@ def get_interval():
     return int(sdc.userParams['INTERVAL_IN_SECONDS'])
 
 
-def get_step():
-    return int(sdc.userParams['STEP_IN_SECONDS'])
-
-
 def get_now_with_delay():
     return int(time.time()) - int(sdc.userParams['DELAY_IN_MINUTES']) * 60
 
@@ -52,10 +48,10 @@ while True:
 
     res = requests.get(
         sdc.userParams['RRD_SOURCE_URL'],
-        json={
+        params={
             'start': offset,
             'end': offset + get_interval(),
-            'step': get_step(),
+            'step': get_interval(),
         }
     )
     res.raise_for_status()
