@@ -55,8 +55,6 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
                 metric['timestamp'] = timestamp
                 metrics.append(metric)
 
-    metrics = _add_tags(metrics, pipeline_.tags)
-    metrics = _add_static_dimensions(metrics, pipeline_.static_dimensions)
     return metrics
 
 
@@ -79,15 +77,3 @@ def _extract_dimension_values(name: str, name_cache: str) -> List[tuple]:
     reg = re.sub('(\|[^|]+\|)', '(.*)', name)
     # todo can it return more than one group?
     return list(re.findall(reg, name_cache)[0])
-
-
-def _add_tags(metrics: list, tags: dict) -> list:
-    for metric in metrics:
-        metric['tags'] = tags
-    return metrics
-
-
-def _add_static_dimensions(metrics: list, static_dimensions: dict) -> list:
-    for metric in metrics:
-        metric['properties'] = {**metric['properties'], **static_dimensions }
-    return metrics
