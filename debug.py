@@ -5,8 +5,8 @@ import rrdtool
 # rrd_file_path = 'agent/tests/input_files/data2.rrd'
 rrd_file_path = 'test.rrd'
 # info = rrdtool.info(rrd_file_path)
-r = rrdtool.fetch(rrd_file_path, 'AVERAGE', ['-s', '1615766700', '-r', '300'])
-t = 1
+# r = rrdtool.fetch(rrd_file_path, 'AVERAGE', ['-s', '1615766700', '-r', '300'])
+# t = 1
 # values = []
 # start = 1615766400
 # step = 300
@@ -81,7 +81,7 @@ from datetime import datetime, timedelta
 # exit()
 
 
-# di.init()
+di.init()
 
 
 def api_client():
@@ -93,7 +93,7 @@ def api_client():
 
 for i in range(0, 5):
     start = 1615766700
-    r = api_client().get(f'/rrd_source/fetch_data/cacti?step=300&start={start + 300 * i}&end={start + 300 + 300 * i}').json
+    r = api_client().get(f'/rrd_source/fetch_data/cacti_file?step=300&start={start + 300 * i}&end={start + 300 + 300 * i}').json
     t = 1
 
 # step = 300
@@ -108,7 +108,7 @@ for i in range(0, 5):
 #
 # exit()
 
-# cli.source.edit(["test_mongo"])
+cli.pipeline.create(["-f", "/Users/antonzelenin/Workspace/daria/agent/tests/input_files/cacti_pipelines.json"])
 # cli.destination()
 # cli.pipeline.create()
 # cli.streamsets.delete(["asdfa"])

@@ -15,7 +15,9 @@ CREATE TABLE `data_local` (
 
 LOCK TABLES `data_local` WRITE;
 INSERT INTO `data_local` VALUES
-(13744,41,1008,1,'9');
+(13744,41,1008,1,'9'),
+(13745,41,1009,1,'9'),
+(13746,41,1010,1,'9');
 UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `data_template_data`;
@@ -42,7 +44,9 @@ CREATE TABLE `data_template_data` (
 
 LOCK TABLES `data_template_data` WRITE;
 INSERT INTO `data_template_data` VALUES
-(13866,41,13744,41,2,NULL,'|host_description| - Traffic - |query_ifName| |query_ifAlias|','390257-some_host - Traffic - Gi0/4 ENoB-Id','<path_rra>/test.rrd',NULL,'on',NULL,300,NULL);
+(13866,41,13744,41,2,NULL,'|host_description| - Traffic - |query_ifName| |query_ifAlias|','390257-some_host - Traffic - Gi0/4 ENoB-Id','<path_rra>/test.rrd',NULL,'on',NULL,300,NULL),
+(13867,41,13745,41,2,NULL,'|host_description| - Traffic - |query_ifName| |query_ifAlias|','390257-some_host - Traffic - Gi0/4 ENoB-Id','<path_rra>/test.rrd',NULL,'on',NULL,300,NULL),
+(13868,41,13746,41,2,NULL,'|host_description| - Traffic - |query_ifName| |query_ifAlias|','390257-some_host mee too','<path_rra>/test.rrd',NULL,'on',NULL,300,NULL);
 UNLOCK TABLES;
 
 SET SQL_MODE='ALLOW_INVALID_DATES';
@@ -101,5 +105,7 @@ CREATE TABLE `host` (
 
 LOCK TABLES `host` WRITE;
 INSERT INTO `host` VALUES
-(1008,5,'390257-SAPUYO-SAPUYO-CA920-T2','10.20.22.30','','RedIP-SV',2,'','','','','','',161,500,2,1,23,400,3,10,1,'','',1,0,'on','',3,0,'0000-00-00 00:00:00','0000-00-00 00:00:00','Host did not respond to SNMP',1.07550,1519.15000,8.84000,7.28090,124425,150,99.87945,0.000000,0,0,0,'on',0.0000000000,0.0000000000);
+(1008,5,'390257-SAPUYO-SAPUYO-CA920-T2','10.20.22.30','','val',2,'','','','','','',161,500,2,1,23,400,3,10,1,'','',1,0,'on','',3,0,'0000-00-00 00:00:00','0000-00-00 00:00:00','Host did not respond to SNMP',1.07550,1519.15000,8.84000,7.28090,124425,150,99.87945,0.000000,0,0,0,'on',0.0000000000,0.0000000000),
+(1009,5,'bla_exclude_me_bla 10-32o5','10.20.22.30','','val',2,'','','','','','',161,500,2,1,23,400,3,10,1,'','',1,0,'on','',3,0,'0000-00-00 00:00:00','0000-00-00 00:00:00','Host did not respond to SNMP',1.07550,1519.15000,8.84000,7.28090,124425,150,99.87945,0.000000,0,0,0,'on',0.0000000000,0.0000000000),
+(1010,5,'390257-SAPUYO-SAPUYO-CA920-T2','10.20.22.30','','val',2,'','','','','','',161,500,2,1,23,400,3,10,1,'','',1,0,'on','',3,0,'0000-00-00 00:00:00','0000-00-00 00:00:00','Host did not respond to SNMP',1.07550,1519.15000,8.84000,7.28090,124425,150,99.87945,0.000000,0,0,0,'on',0.0000000000,0.0000000000);
 UNLOCK TABLES;

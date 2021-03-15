@@ -7,20 +7,22 @@ from .test_zpipeline_base import TestPipelineBase
 class TestCacti(TestPipelineBase):
     __test__ = True
     params = {
-        'test_start': [{'name': 'cacti'}],
-        'test_force_stop': [{'name': 'cacti'}],
+        'test_create_source_with_file': [{'file_name': 'cacti_sources'}],
+        'test_create_with_file': [{'file_name': 'cacti_pipelines'}],
+        'test_start': [{'name': 'cacti'}, {'name': 'cacti_file'}],
+        'test_force_stop': [{'name': 'cacti'}, {'name': 'cacti_file'}],
         'test_output': [
             {'name': 'cacti', 'output': 'cacti.json', 'pipeline_type': source.TYPE_CACTI},
         ],
-        'test_delete_pipeline': [{'name': 'cacti'}],
-        'test_source_delete': [{'name': 'cacti'}],
+        'test_delete_pipeline': [{'name': 'cacti'}, {'name': 'cacti_file'}],
+        'test_source_delete': [{'name': 'cacti'}, {'name': 'cacti_file'}],
     }
 
-    def test_create_source_with_file(self, cli_runner, file_name=None):
-        pytest.skip()
+    def test_create_source_with_file(self, cli_runner, file_name):
+        super().test_create_source_with_file(cli_runner, file_name)
 
-    def test_create_with_file(self, cli_runner, file_name=None):
-        pytest.skip()
+    def test_create_with_file(self, cli_runner, file_name):
+        super().test_create_with_file(cli_runner, file_name)
 
     def test_edit_with_file(self, cli_runner, file_name=None):
         pytest.skip()

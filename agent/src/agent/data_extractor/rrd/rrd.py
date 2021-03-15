@@ -12,8 +12,8 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
 
     sources = repository.get_cacti_sources(
         pipeline_.source.config[source.CactiSource.MYSQL_CONNECTION_STRING],
-        pipeline_.config['exclude_datasources'],
-        pipeline_.config['exclude_hosts']
+        pipeline_.config.get('exclude_hosts'),
+        pipeline_.config.get('exclude_datasources')
     )
     for cacti_source in sources:
         base_metric = {
