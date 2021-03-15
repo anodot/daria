@@ -14,7 +14,7 @@ RUN chmod +x /custom_entrypoint.sh
 ENV SDC_CONF_PARSER_LIMIT="20048576" STREAMSETS_USERNAME="admin" STREAMSETS_PASSWORD="admin" \
     STREAMSETS_URL="http://localhost:18630"
 
-ENV LOG_FILE_PATH="/var/log/agent.log" RRD_SOURCE_LOG_FILE_PATH='/var/log/agent_rrd_source.log' ANODOT_API_URL="https://api.anodot.com" ENV_PROD='true' VALIDATION_ENABLED="true"
+ENV LOG_FILE_PATH="/var/log/agent.log" ANODOT_API_URL="https://api.anodot.com" ENV_PROD='true' VALIDATION_ENABLED="true"
 
 # flask app config
 ENV UWSGI_INI="/usr/src/app/uwsgi.ini"
