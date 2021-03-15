@@ -460,7 +460,7 @@
         "stageType" : "PROCESSOR",
         "icon" : "expression.png",
         "description" : "",
-        "label" : "Add tags, convert timestamp to long",
+        "label" : "Add tags and static dimensions, convert timestamp to long",
         "xPos" : 631
       },
       "inputLanes" : [ "destination_OutputLane" ],
