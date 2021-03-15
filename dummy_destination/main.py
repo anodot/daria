@@ -12,19 +12,28 @@ app.debug = True
 
 @app.route('/api/v1/metrics', methods=['POST'])
 def to_file():
-    data = request.json
-    if data and len(data) > 0:
-        try:
-            file_name = data[0]['tags']['pipeline_id'][0] + '_' + data[0]['tags']['pipeline_type'][0]
-        except KeyError:
-            file_name = data[0]['properties']['what']
-        with open(os.path.join(OUTPUT_DIR, file_name + '.json'), 'a+') as f:
-            json.dump(request.json, f)
-            f.write('\n')
     if request.args.get('token'):
         if request.args.get('token') == 'incorrect_token':
             return json.dumps({'errors': ['Data collection token is invalid']}), 401
+    data = request.json
+    if data and len(data) > 0:
+        file_path = os.path.join(OUTPUT_DIR, _extract_file_name(data) + '.json')
+        if os.path.isfile(file_path):
+            with open(file_path, 'r') as f:
+                existing_data = json.load(f)
+                if existing_data:
+                    data = existing_data + data
+        with open(file_path, 'w') as f:
+            json.dump(data, f)
     return json.dumps({'errors': []})
+
+
+def _extract_file_name(data):
+    try:
+        file_name = data[0]['tags']['pipeline_id'][0] + '_' + data[0]['tags']['pipeline_type'][0]
+    except KeyError:
+        file_name = data[0]['properties']['what']
+    return file_name
 
 
 @app.route('/api/v1/alert', methods=['POST'])
