@@ -1,3 +1,17 @@
+#!/usr/bin/env bash
+
+function check_cmd() {
+    cmd=$(echo $1 | awk ' { print $1; } ')
+    if ! $1 >/dev/null 2>&1; then
+        echo "Error: $cmd is either not installed, not in \$PATH, or not running!"
+        exit 1
+    fi
+}
+
+# checks to make sure docker and docker-compose are available   
+check_cmd "docker version"
+check_cmd "docker-compose --version"
+
 if [[ $1 == 'install' ]]; then
   docker-compose pull && docker-compose up -d && docker exec -i anodot-agent alembic upgrade head
 elif [[ $1 == 'upgrade' ]]; then
