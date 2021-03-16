@@ -75,5 +75,4 @@ def _extract_dimension_names(name: str) -> List[str]:
 
 def _extract_dimension_values(name: str, name_cache: str) -> List[tuple]:
     reg = re.sub('(\|[^|]+\|)', '(.*)', name)
-    # todo can it return more than one group?
     return list(re.findall(reg, name_cache)[0])

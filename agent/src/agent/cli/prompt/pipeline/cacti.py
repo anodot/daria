@@ -31,4 +31,4 @@ class CactiPrompter(Prompter):
                 'List of data sources to exclude separated by comma, can be masked with * (example: testsource_*, datasource1)', type=click.STRING,
                 default=ds
             )
-        self.config['exclude_datasources'] = [host.strip() for host in ds.split(',')]
+        self.config['exclude_datasources'] = [source.strip() for source in ds.split(',')]
