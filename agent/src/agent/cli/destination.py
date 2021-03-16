@@ -3,7 +3,6 @@ import requests
 import agent.destination
 
 from agent.destination import HttpDestination
-from agent import pipeline
 from agent.destination.anodot_api_client import AnodotApiClient
 from agent.modules.tools import infinite_retry
 from agent.modules import proxy, validator

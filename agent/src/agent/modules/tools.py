@@ -16,6 +16,8 @@ def infinite_retry(func):
                 return func(*args, **kwargs)
             except (KeyboardInterrupt, SystemExit, click.Abort):
                 raise click.Abort()
+            except click.UsageError as e:
+                click.secho(str(e.message), err=True, color='red')
             except Exception as e:
                 click.secho(str(e), err=True, color='red')
     return new_func
