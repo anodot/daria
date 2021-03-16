@@ -94,7 +94,6 @@ class Prompter:
         self.config['properties'] = self.default_config.get('properties', {})
         if self.advanced:
             self.config['properties'] = {}
-            # todo ok? Update docs
             properties = self.prompt_object('Static dimensions', self.get_default_object_value('properties'))
             for k, v in properties.items():
                 self.config['properties'][k.replace(' ', '_').replace('.', '_')] = v.replace(' ', '_').replace('.', '_')

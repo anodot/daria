@@ -224,10 +224,6 @@ def get_preview_data(pipeline_: Pipeline) -> (list, list):
     try:
         preview = sdc_client.create_preview(pipeline_)
         preview_data, errors = sdc_client.wait_for_preview(pipeline_, preview['previewerId'])
-    # todo it used to be
-    # except sdc_client.ApiClientException as e:
-    #     print(str(e))
-    #     return
     except sdc_client.ApiClientException as e:
         logger_.error(str(e))
         return [], []
