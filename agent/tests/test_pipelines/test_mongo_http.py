@@ -6,8 +6,6 @@ from .test_zpipeline_base import TestPipelineBase
 class TestMongo(TestPipelineBase):
     __test__ = True
     params = {
-        'test_create_with_file': [{'file_name': 'mongo_pipelines'}],
-        'test_create_source_with_file': [{'file_name': 'mongo_sources'}],
         'test_start': [{'name': 'test_value_const'}, {'name': 'test_timestamp_ms'},
                        {'name': 'test_timestamp_string'}, {'name': 'test_timestamp_datetime'},
                        {'name': 'test_mongo_file_short'},
@@ -29,9 +27,6 @@ class TestMongo(TestPipelineBase):
     }
 
     def test_info(self, cli_runner, name=None):
-        pytest.skip()
-
-    def test_edit_with_file(self, cli_runner, file_name=None):
         pytest.skip()
 
     def test_force_stop(self, cli_runner, name=None):

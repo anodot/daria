@@ -1,10 +1,11 @@
+from .test_zpipeline_base import TestInputBase
 from ..conftest import get_input_file_path
 from datetime import datetime
 from agent import source, cli
 
 
-class TestSage:
-
+class TestSage(TestInputBase):
+    __test__ = True
     params = {
         'test_create': [
             {'name': 'test_sage_value_const', 'options': ['-a'], 'value': 'y\nclicksS\ny\n\n \n ',
@@ -12,6 +13,8 @@ class TestSage:
             {'name': 'test_sage', 'options': [], 'value': 'n\nClicks:gauge\nClicks:clicks',
              'advanced_options': '\n\n'}],
         'test_edit': [{'options': ['-a', 'test_sage_value_const'], 'value': 'y\nclicks\n\n\n\n'}],
+        'test_create_source_with_file': [{'file_name': 'sage_sources'}],
+        'test_create_with_file': [{'file_name': 'sage_pipelines'}],
     }
 
     def test_source_create(self, cli_runner):

@@ -1,47 +1,48 @@
 from typing import List
-from agent.modules.db import session
+from agent.modules.db import Session
 from agent.streamsets import StreamSets
 
 
 def get(id_: int) -> StreamSets:
-    streamsets = session().query(StreamSets).filter(StreamSets.id == id_).first()
+    streamsets = Session.query(StreamSets).filter(StreamSets.id == id_).first()
     if not streamsets:
         raise StreamsetsNotExistsException(f'StreamSets with id {id_} doesn\'t exist')
     return streamsets
 
 
 def get_all() -> List[StreamSets]:
-    return session().query(StreamSets).all()
+    return Session.query(StreamSets).all()
 
 
 def get_by_url(url: str) -> StreamSets:
-    streamsets = session().query(StreamSets).filter(StreamSets.url == url).first()
+    streamsets = Session.query(StreamSets).filter(StreamSets.url == url).first()
     if not streamsets:
         raise StreamsetsNotExistsException(f'StreamSets with url {url} doesn\'t exist')
     return streamsets
 
 
 def save(streamsets: StreamSets):
-    session().add(streamsets)
-    session().commit()
+    if not Session.object_session(streamsets):
+        Session.add(streamsets)
+    Session.commit()
 
 
 def delete(streamsets: StreamSets):
-    session().delete(streamsets)
-    session().commit()
+    Session.delete(streamsets)
+    Session.commit()
 
 
 def get_all_names() -> List[str]:
     res = list(map(
         lambda row: row[0],
-        session().query(StreamSets.url).all()
+        Session.query(StreamSets.url).all()
     ))
     return res
 
 
 def exists(url: str) -> bool:
-    return bool(session().query(
-        session().query(StreamSets).filter(StreamSets.url == url).exists()
+    return bool(Session.query(
+        Session.query(StreamSets).filter(StreamSets.url == url).exists()
     ).scalar())
 
 

@@ -7,9 +7,6 @@ class TestInflux(TestPipelineBase):
     __test__ = True
 
     params = {
-        'test_create_with_file': [{'file_name': 'influx_pipelines'}],
-        'test_create_source_with_file': [{'file_name': 'influx_sources'}],
-        'test_edit_with_file': [{'file_name': 'influx_pipelines_edit'}],
         'test_start': [{'name': 'test_basic'}, {'name': 'test_basic_offset'}, {'name': 'test_influx_file_short'},
                        {'name': 'test_influx_file_full'}, {'name': 'test_influx_adv'}],
         'test_force_stop': [{'name': 'test_basic'}, {'name': 'test_basic_offset'}, {'name': 'test_influx_file_short'},

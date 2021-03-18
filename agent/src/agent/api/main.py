@@ -34,10 +34,9 @@ def before_request_func():
 def teardown_request_func(exception):
     try:
         if exception:
-            db.session().rollback()
+            db.Session.rollback()
         else:
-            db.session().commit()
-        db.close_session()
+            db.Session.commit()
     except Exception:
         logger_.error(traceback.format_exc())
 

@@ -11,8 +11,6 @@ class TestTCPServer(TestPipelineBase):
 
     __test__ = True
     params = {
-        'test_create_source_with_file': [{'file_name': 'tcp_sources'}],
-        'test_create_with_file': [{'file_name': 'tcp_pipelines'}],
         'test_start': [{'name': 'test_tcp_log'}, {'name': 'test_tcp_json'}, {'name': 'test_tcp_csv'}],
         'test_stop': [{'name': 'test_tcp_log'}, {'name': 'test_tcp_json'}, {'name': 'test_tcp_csv'}],
         'test_output': [
@@ -24,19 +22,8 @@ class TestTCPServer(TestPipelineBase):
         'test_source_delete': [{'name': 'test_tcp_log'}, {'name': 'test_tcp_json'}, {'name': 'test_tcp_csv'}],
     }
 
-    def test_create_source_with_file(self, cli_runner, file_name):
-        super().test_create_source_with_file(cli_runner, file_name)
-
-    def test_create_with_file(self, cli_runner, file_name):
-        super().test_create_with_file(cli_runner, file_name)
-
-    def test_edit_with_file(self, cli_runner, file_name=None):
-        pytest.skip()
-
     def test_start(self, cli_runner, name):
-        result = cli_runner.invoke(cli.pipeline.start, [name], catch_exceptions=False)
-        assert result.exit_code == 0
-        assert sdc_client.get_pipeline_status(pipeline.repository.get_by_id(name)) == pipeline.Pipeline.STATUS_RUNNING
+        super().test_start(cli_runner, name)
 
         # streams data
         pipeline_ = pipeline.repository.get_by_id(name)

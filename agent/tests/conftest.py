@@ -18,13 +18,11 @@ class MyRunner(CliRunner):
         try:
             di.init()
             result = super(MyRunner, self).invoke(*args, **kwargs)
-            db.session().commit()
+            db.Session.commit()
             return result
         except Exception:
-            db.session().rollback()
+            db.Session.rollback()
             raise
-        finally:
-            db.close_session()
 
 
 @pytest.fixture(scope="session")
