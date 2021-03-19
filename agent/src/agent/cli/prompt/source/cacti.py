@@ -10,6 +10,7 @@ class CactiPrompter(Prompter):
     def prompt(self, default_config, advanced=False):
         self.prompt_mysql_connection(default_config)
         self.prompt_rrd_dir(default_config)
+        self.source.set_config(self.source.config)
         return self.source
 
     @infinite_retry
@@ -27,7 +28,7 @@ class CactiPrompter(Prompter):
         directory = click.prompt(
             'Path to the directory containing rrd files',
             type=click.STRING,
-            default=default_config.get(source.VictoriaMetricsSource.URL)
+            default=default_config.get(source.CactiSource.RRD_DIR)
         ).strip()
         validator.validate_dir(directory)
         self.source.config[source.CactiSource.RRD_DIR] = directory
