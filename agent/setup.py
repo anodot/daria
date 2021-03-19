@@ -9,7 +9,7 @@ app_version = '3.7.7'
 def build_time():
     return datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-
+# test
 with open(os.path.join(os.path.dirname(__file__), 'src/agent/version.py'), 'w') as f:
     f.write(f'__version__ = "{app_version}"\n')
     f.write(f'__git_sha1__ = "{os.environ.get("GIT_SHA1", "local")}"\n')
