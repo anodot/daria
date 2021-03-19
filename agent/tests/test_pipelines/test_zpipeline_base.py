@@ -15,7 +15,7 @@ class TestPipelineBase(object):
     def test_start(self, cli_runner, name: str):
         result = cli_runner.invoke(cli.pipeline.start, [name], catch_exceptions=False)
         assert result.exit_code == 0
-        time.sleep(30)
+        time.sleep(10)
         pipeline_ = pipeline.repository.get_by_id(name)
         assert sdc_client.get_pipeline_status(pipeline_) == pipeline.Pipeline.STATUS_RUNNING
         # give pipelines some time to send data
