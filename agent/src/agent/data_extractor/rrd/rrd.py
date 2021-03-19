@@ -1,3 +1,4 @@
+import os
 import re
 import rrdtool
 
@@ -5,6 +6,9 @@ from typing import List
 from . import repository
 from agent.pipeline import Pipeline
 from agent import source
+from agent.modules import logger
+
+logger_ = logger.get_logger(__name__)
 
 
 def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> list:
@@ -16,15 +20,25 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
         pipeline_.config.get('exclude_datasources')
     )
     for cacti_source in sources:
+        dimensions = _extract_dimensions(cacti_source)
+        if not dimensions:
+            continue
         base_metric = {
             'target_type': 'gauge',
-            'properties': _extract_dimensions(cacti_source),
+            'properties': dimensions,
         }
         rrd_file_name = cacti_source['data_source_path']
         if not rrd_file_name:
             continue
 
+        if '<path_rra>' not in rrd_file_name:
+            logger_.warning(f'Path {rrd_file_name} does not contain "<path_rra>/", skipping')
+            continue
+
         rrd_file_path = rrd_file_name.replace('<path_rra>', pipeline_.source.config[source.CactiSource.RRD_DIR])
+        if not os.path.isfile(rrd_file_path):
+            logger_.warning(f'File {rrd_file_path} does not exist')
+            continue
         result = rrdtool.fetch(rrd_file_path, 'AVERAGE', ['-s', start, '-e', end, '-r', step])
 
         # result[0][2] - is the closest available step to the step provided in the fetch command
@@ -54,15 +68,21 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
                 metric['value'] = value
                 metric['timestamp'] = timestamp
                 metrics.append(metric)
-
     return metrics
 
 
 def _extract_dimensions(cacti_source: dict) -> dict:
+    source_name = cacti_source['name']
     dimensions = {}
-
-    dimension_values = _extract_dimension_values(cacti_source['name'], cacti_source['name_cache'])
-    for i, name in enumerate(_extract_dimension_names(cacti_source['name'])):
+    dimension_values = _extract_dimension_values(source_name, cacti_source['name_cache'])
+    if not dimension_values:
+        logger_.warning(f'Failed to extract dimension values from {source_name}, skipping')
+        return {}
+    dimension_names = _extract_dimension_names(source_name)
+    if not dimension_names:
+        logger_.warning(f'Failed to extract dimension names from {source_name}, skipping')
+        return {}
+    for i, name in enumerate(dimension_names):
         dimensions[name] = dimension_values[i]
 
     return dimensions
@@ -74,5 +94,8 @@ def _extract_dimension_names(name: str) -> List[str]:
 
 
 def _extract_dimension_values(name: str, name_cache: str) -> List[tuple]:
-    reg = re.sub('(\|[^|]+\|)', '(.*)', name)
-    return list(re.findall(reg, name_cache)[0])
+    regex = re.sub('(\|[^|]+\|)', '(.*)', name)
+    result = re.findall(regex, name_cache)
+    if not result:
+        return []
+    return list(result[0])
