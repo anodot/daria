@@ -27,8 +27,9 @@ class TestCacti:
         input_ = {
             'source': 'cacti',
             'id': pipeline_id,
-            'interval in sec': 300,
-            'collect since': (datetime.utcnow() - offset).days,
+            'step': 300,
+            'interval in sec': 3600,
+            'collect since': (datetime.now() - offset).days,
             'delay': delay,
             'exclude hosts': '*exclude_me*',
             'exclude sources': '*mee too*',

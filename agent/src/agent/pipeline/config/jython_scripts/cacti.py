@@ -26,6 +26,10 @@ def get_now_with_delay():
     return int(time.time()) - int(sdc.userParams['DELAY_IN_MINUTES']) * 60
 
 
+def get_step():
+    return int(sdc.userParams['STEP_IN_SECONDS'])
+
+
 entityName = ''
 
 if sdc.lastOffsets.containsKey(entityName):
@@ -33,7 +37,7 @@ if sdc.lastOffsets.containsKey(entityName):
 elif sdc.userParams['DAYS_TO_BACKFILL']:
     offset = to_timestamp(datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=int(sdc.userParams['DAYS_TO_BACKFILL'])))
 else:
-    offset = to_timestamp(datetime.utcnow().replace(second=0, microsecond=0))
+    offset = to_timestamp(datetime.now().replace(second=0, microsecond=0))
 
 sdc.log.info('OFFSET: ' + str(offset))
 
@@ -51,7 +55,7 @@ while True:
         params={
             'start': offset,
             'end': offset + get_interval(),
-            'step': get_interval(),
+            'step': get_step(),
         }
     )
     res.raise_for_status()

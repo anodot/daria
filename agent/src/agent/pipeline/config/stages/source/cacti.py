@@ -12,6 +12,7 @@ class Cacti(Stage):
                     {'key': 'INTERVAL_IN_SECONDS', 'value': str(self.pipeline.interval)},
                     {'key': 'DELAY_IN_MINUTES', 'value': str(self.pipeline.delay)},
                     {'key': 'DAYS_TO_BACKFILL', 'value': str(self.pipeline.days_to_backfill)},
+                    {'key': 'STEP_IN_SECONDS', 'value': str(self.pipeline.config['step'])},
                 ],
                 'script': f.read(),
             }
