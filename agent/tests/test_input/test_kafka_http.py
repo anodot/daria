@@ -53,14 +53,14 @@ class TestKafka(TestInputBase):
                 'timestamp': 'timestamp_unix\nunix',
                 'advanced_options': 'key1:val1\n \n \n \nn'
             },
-            {
-                'source_name': 'test_running_counters',
-                'name': 'test_kfk_running_counter_dynamic_what',
-                'options': ['-a'],
-                'value': 'n\nn\n\nClicks:agg_type\nClicks:metric',
-                'timestamp': 'timestamp_unix\nunix',
-                'advanced_options': 'key1:val1\n \n \n \nn'
-            },
+            # {
+            #     'source_name': 'test_running_counters',
+            #     'name': 'test_kfk_running_counter_dynamic_what',
+            #     'options': ['-a'],
+            #     'value': 'n\nn\n\nClicks:agg_type\nClicks:metric',
+            #     'timestamp': 'timestamp_unix\nunix',
+            #     'advanced_options': 'key1:val1\n \n \n \nn'
+            # },
             {
                 'source_name': 'test_json_arrays',
                 'name': 'test_json_arrays',
