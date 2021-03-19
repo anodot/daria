@@ -1,12 +1,16 @@
 from datetime import datetime
 from agent import pipeline, source
 from agent import cli
+from .test_zpipeline_base import TestInputBase
 from ..conftest import generate_input
 
 
-class TestCacti:
-
-    params = {}
+class TestCacti(TestInputBase):
+    __test__ = True
+    params = {
+        'test_create_source_with_file': [{'file_name': 'cacti_sources'}],
+        'test_create_with_file': [{'file_name': 'cacti_pipelines'}],
+    }
 
     def test_source_create(self, cli_runner):
         source_name = 'cacti'
