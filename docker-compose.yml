@@ -3,6 +3,7 @@ version: '3.1'
 services:
   dc:
     build: streamsets
+    container_name: dc
     ports:
       - "18630:18630"
     restart: on-failure
@@ -23,6 +24,7 @@ services:
 #  creating second streamsets to run tests on multiple instances
   dc2:
     build: streamsets
+    container_name: dc2
     ports:
       - "18629:18630"
     restart: on-failure
@@ -185,6 +187,7 @@ services:
 
   dummy_destination:
     build: dummy_destination
+    container_name: dummy_destination
     volumes:
       - dummy-destination-data:/app/log
 

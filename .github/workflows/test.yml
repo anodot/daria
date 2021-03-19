@@ -24,3 +24,7 @@ jobs:
 
       - name: Test
         run: make test-all
+
+      - name: Show logs
+        if: ${{ failure() }}
+        run: docker logs anodot-agent ; echo "\nDC logs\n" ; docker logs dc ; echo "\nDC 2 logs\n" ; docker logs dc2 ; echo "\nKafka logs\n" ; docker logs agent-kafka ; echo "\nDummy logs\n" ; docker logs dummy_destination
