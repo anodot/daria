@@ -5,7 +5,7 @@
     "measurement_names": {"Clicks":  "clicks"},
     "values": {"Clicks":  "gauge"},
     "dimensions": ["ver", "Country"],
-    "query_file": "/usr/src/app/tests/test_pipelines/input_files/sage_query.txt",
+    "query_file": "/usr/src/app/tests/input_files/sage_query.txt",
     "interval": 60,
     "days_to_backfill": 933
   }
