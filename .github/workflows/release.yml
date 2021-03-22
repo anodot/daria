@@ -33,6 +33,13 @@ jobs:
 
     - name: Tag version
       run: VERSION=${GITHUB_REF/refs\/tags\//} && docker image tag daria_agent:latest anodot/daria:$VERSION && docker image tag daria_dc:latest anodot/streamsets:$VERSION
-      
+
+    - name: Docker login
+      run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+    - if: ${{ !contains(github.ref, 'beta') }}
+      name: Push latest
+      run: docker push anodot/daria && docker push anodot/streamsets
+
     - name: Push images
-      run: VERSION=${GITHUB_REF/refs\/tags\//} && docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} && docker push anodot/daria && docker push anodot/streamsets && docker push anodot/daria:$VERSION && docker push anodot/streamsets:$VERSION
+      run: VERSION=${GITHUB_REF/refs\/tags\//} && docker push anodot/daria:$VERSION && docker push anodot/streamsets:$VERSION
