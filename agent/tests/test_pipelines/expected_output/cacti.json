@@ -21,9 +21,9 @@
         "cacti"
       ]
     },
-    "what": "test_data_source",
     "value": 1.0,
     "properties": {
+      "what": "test_data_source",
       "host_description": "390257-some_host",
       "static_dim": "cacti",
       "query_ifName": "Gi0/4",
@@ -53,9 +53,9 @@
         "cacti"
       ]
     },
-    "what": "test_data_source",
     "value": 0.0,
     "properties": {
+      "what": "test_data_source",
       "host_description": "390257-some_host",
       "static_dim": "cacti",
       "query_ifName": "Gi0/4",
@@ -85,9 +85,9 @@
         "cacti"
       ]
     },
-    "what": "test_data_source",
     "value": 9.0,
     "properties": {
+      "what": "test_data_source",
       "host_description": "390257-some_host",
       "static_dim": "cacti",
       "query_ifName": "Gi0/4",
@@ -117,9 +117,9 @@
         "cacti"
       ]
     },
-    "what": "test_data_source",
     "value": 8.0,
     "properties": {
+      "what": "test_data_source",
       "host_description": "390257-some_host",
       "static_dim": "cacti",
       "query_ifName": "Gi0/4",
@@ -149,9 +149,9 @@
         "cacti"
       ]
     },
-    "what": "test_data_source",
     "value": 3.0,
     "properties": {
+      "what": "test_data_source",
       "host_description": "390257-some_host",
       "static_dim": "cacti",
       "query_ifName": "Gi0/4",
@@ -181,9 +181,9 @@
         "cacti"
       ]
     },
-    "what": "test_data_source",
     "value": 0.0,
     "properties": {
+      "what": "test_data_source",
       "host_description": "390257-some_host",
       "static_dim": "cacti",
       "query_ifName": "Gi0/4",
@@ -213,9 +213,9 @@
         "cacti"
       ]
     },
-    "what": "test_data_source",
     "value": 6.0,
     "properties": {
+      "what": "test_data_source",
       "host_description": "390257-some_host",
       "static_dim": "cacti",
       "query_ifName": "Gi0/4",
@@ -245,9 +245,9 @@
         "cacti"
       ]
     },
-    "what": "test_data_source",
     "value": 3.0,
     "properties": {
+      "what": "test_data_source",
       "host_description": "390257-some_host",
       "static_dim": "cacti",
       "query_ifName": "Gi0/4",
