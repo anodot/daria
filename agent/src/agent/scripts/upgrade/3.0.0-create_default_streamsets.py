@@ -31,7 +31,3 @@ def set_pipeline_streamsets():
 
 create_streamsets()
 set_pipeline_streamsets()
-
-# todo this is temporary
-db.session().commit()
-db.session().close()

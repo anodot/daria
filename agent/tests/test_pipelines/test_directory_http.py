@@ -3,15 +3,13 @@ import pytest
 
 from ..conftest import get_output
 from agent import source
-from .test_zpipeline_base import TestPipelineBase, get_schema_id, get_expected_schema_output
+from .test_zpipeline_base import TestPipelineBase, get_schema_id
 from agent import pipeline
 
 
 class TestDirectory(TestPipelineBase):
     __test__ = True
     params = {
-        'test_create_source_with_file': [{'file_name': 'directory_sources'}],
-        'test_create_with_file': [{'file_name': 'directory_pipelines'}],
         'test_start': [{'name': 'test_dir_csv'}, {'name': 'test_dir_log'}, {'name': 'test_dir_json'}],
         'test_stop': [{'name': 'test_dir_log'}, {'name': 'test_dir_json'}, {'name': 'test_dir_csv'}],
         'test_reset': [{'name': 'test_dir_log'}],
@@ -24,17 +22,8 @@ class TestDirectory(TestPipelineBase):
         'test_source_delete': [{'name': 'test_dir_log'}, {'name': 'test_dir_json'}, {'name': 'test_dir_csv'}],
     }
 
-    def test_edit_with_file(self, cli_runner, file_name=None):
-        pytest.skip()
-
     def test_info(self, cli_runner, name=None):
         pytest.skip()
-
-    def test_create_source_with_file(self, cli_runner, file_name):
-        super().test_create_source_with_file(cli_runner, file_name)
-
-    def test_create_with_file(self, cli_runner, file_name):
-        super().test_create_with_file(cli_runner, file_name)
 
     def test_start(self, cli_runner, name):
         super().test_start(cli_runner, name)

@@ -1,12 +1,16 @@
 import traceback
 
+from .test_zpipeline_base import TestInputBase
 from ..conftest import get_input_file_path
 from agent import source, cli
 
 
-class TestTCPServer:
-
-    params = {}
+class TestTCPServer(TestInputBase):
+    __test__ = True
+    params = {
+        'test_create_source_with_file': [{'file_name': 'tcp_sources'}],
+        'test_create_with_file': [{'file_name': 'tcp_pipelines'}],
+    }
 
     def test_source_create(self, cli_runner):
         grok_file_path = get_input_file_path('grok_patterns.txt')

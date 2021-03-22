@@ -10,7 +10,7 @@ from agent.modules import db
 DUMMY_DESTINATION_OUTPUT_PATH = '/output'
 TEST_DATASETS_PATH = '/home'
 
-INPUT_FILES_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'test_pipelines', 'input_files')
+INPUT_FILES_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'input_files')
 
 
 class MyRunner(CliRunner):
@@ -18,13 +18,11 @@ class MyRunner(CliRunner):
         try:
             di.init()
             result = super(MyRunner, self).invoke(*args, **kwargs)
-            db.session().commit()
+            db.Session.commit()
             return result
         except Exception:
-            db.session().rollback()
+            db.Session.rollback()
             raise
-        finally:
-            db.close_session()
 
 
 @pytest.fixture(scope="session")

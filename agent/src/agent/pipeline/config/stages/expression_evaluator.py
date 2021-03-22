@@ -41,7 +41,7 @@ class AddProperties(Stage):
 
     def _get_config(self) -> dict:
         expressions = []
-        for key, val in self.pipeline.constant_dimensions.items():
+        for key, val in self.pipeline.static_dimensions.items():
             expressions.append(get_value(self._get_dimension_field_path(key), f'"{val}"'))
         timestamp_to_unix = get_convert_timestamp_to_unix_expression(self.pipeline.timestamp_type,
                                                                      "record:value('/timestamp')",

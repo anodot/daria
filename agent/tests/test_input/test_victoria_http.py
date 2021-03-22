@@ -1,9 +1,16 @@
 from datetime import datetime
 from agent import cli
 from agent import source
+from .test_zpipeline_base import TestInputBase
 
 
-class TestVictoria:
+class TestVictoria(TestInputBase):
+    __test__ = True
+    params = {
+        'test_create_source_with_file': [{'file_name': 'victoria_sources'}],
+        'test_create_with_file': [{'file_name': 'victoria_pipelines'}],
+    }
+
     def test_source_create(self, cli_runner):
         result = cli_runner.invoke(cli.source.create, catch_exceptions=False,
                                    input=f"victoria\ntest_victoria\nhttp://victoriametrics:8428\n\n\n")

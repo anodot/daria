@@ -1,35 +1,33 @@
 from agent import source
-from .abstract_builder import Builder
-from .directory import DirectorySourceBuilder
-from .elastic import ElasticSourceBuilder
-from .influx import InfluxSourceBuilder
-from .jdbc import JDBCSourceBuilder
-from .kafka import KafkaSourceBuilder
-from .mongo import MongoSourceBuilder
-from .sage import SageSourceBuilder
-from .tcp import TCPSourceBuilder
-from .victoria import VictoriaSourceBuilder
-from .zabbix import ZabbixSourceBuilder
+from .base import Prompter
+from .directory import DirectoryPrompter
+from .elastic import ElasticPrompter
+from .influx import InfluxPrompter
+from .jdbc import JDBCPrompter
+from .kafka import KafkaBuilder
+from .mongo import MongoPrompter
+from .sage import SagePrompter
+from .tcp import TCPPrompter
+from .victoria import VictoriaPrompter
+from .zabbix import ZabbixPrompter
+from .cacti import CactiPrompter
 
 
-def get(source_: source.Source) -> Builder:
-    return _get_source_builder_type(source_.type)(source_)
-
-
-def _get_source_builder_type(source_type: str) -> type:
+def get_prompter(source_: source.Source) -> Prompter:
     types = {
-        source.TYPE_INFLUX: InfluxSourceBuilder,
-        source.TYPE_KAFKA: KafkaSourceBuilder,
-        source.TYPE_MONGO: MongoSourceBuilder,
-        source.TYPE_MYSQL: JDBCSourceBuilder,
-        source.TYPE_POSTGRES: JDBCSourceBuilder,
-        source.TYPE_ELASTIC: ElasticSourceBuilder,
-        source.TYPE_SPLUNK: TCPSourceBuilder,
-        source.TYPE_DIRECTORY: DirectorySourceBuilder,
-        source.TYPE_SAGE: SageSourceBuilder,
-        source.TYPE_VICTORIA: VictoriaSourceBuilder,
-        source.TYPE_ZABBIX: ZabbixSourceBuilder,
+        source.TYPE_INFLUX: InfluxPrompter,
+        source.TYPE_KAFKA: KafkaBuilder,
+        source.TYPE_MONGO: MongoPrompter,
+        source.TYPE_MYSQL: JDBCPrompter,
+        source.TYPE_POSTGRES: JDBCPrompter,
+        source.TYPE_ELASTIC: ElasticPrompter,
+        source.TYPE_SPLUNK: TCPPrompter,
+        source.TYPE_DIRECTORY: DirectoryPrompter,
+        source.TYPE_SAGE: SagePrompter,
+        source.TYPE_VICTORIA: VictoriaPrompter,
+        source.TYPE_ZABBIX: ZabbixPrompter,
+        source.TYPE_CACTI: CactiPrompter,
     }
-    if source_type not in source.types:
-        raise ValueError(f'{source_type} isn\'t supported')
-    return types[source_type]
+    if source_.type not in source.types:
+        raise ValueError(f'{source_.type} isn\'t supported')
+    return types[source_.type](source_)

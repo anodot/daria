@@ -3,7 +3,7 @@ import os
 import time
 import sdc_client
 
-from ..conftest import get_output, get_input_file_path
+from ..conftest import get_output
 from agent import pipeline, source, cli
 
 
@@ -12,36 +12,15 @@ class TestPipelineBase(object):
 
     params = {}
 
-    def test_create_source_with_file(self, cli_runner, file_name):
-        input_file_path = get_input_file_path(file_name + '.json')
-        result = cli_runner.invoke(cli.source.create, ['-f', input_file_path], catch_exceptions=False)
-        assert result.exit_code == 0
-        with open(input_file_path) as f:
-            sources = json.load(f)
-            for source_ in sources:
-                assert source.repository.exists(f"{source_['name']}")
-
-    def test_create_with_file(self, cli_runner, file_name):
-        input_file_path = get_input_file_path(file_name + '.json')
-        result = cli_runner.invoke(cli.pipeline.create, ['-f', input_file_path], catch_exceptions=False)
-        assert result.exit_code == 0
-        with open(input_file_path) as f:
-            for pipeline_config in json.load(f):
-                assert sdc_client.exists(pipeline_config['pipeline_id'])
-
-    def test_edit_with_file(self, cli_runner, file_name):
-        input_file_path = get_input_file_path(file_name + '.json')
-        result = cli_runner.invoke(cli.pipeline.edit, ['-f', input_file_path], catch_exceptions=False)
-        assert result.exit_code == 0
-
     def test_start(self, cli_runner, name: str):
         result = cli_runner.invoke(cli.pipeline.start, [name], catch_exceptions=False)
-        pipeline_ = pipeline.repository.get_by_id(name)
         assert result.exit_code == 0
-        assert sdc_client.get_pipeline_status(pipeline_) == pipeline.Pipeline.STATUS_RUNNING
-        assert pipeline_.status == pipeline.Pipeline.STATUS_RUNNING
-        # give pipelines some time to send data
         time.sleep(10)
+        pipeline_ = pipeline.repository.get_by_id(name)
+        assert sdc_client.get_pipeline_status(pipeline_) == pipeline.Pipeline.STATUS_RUNNING
+        # give pipelines some time to send data
+        # at high load there might be lag before status is updated in the db, so checking after some time
+        assert pipeline_.status == pipeline.Pipeline.STATUS_RUNNING
 
     def test_info(self, cli_runner, name):
         result = cli_runner.invoke(cli.pipeline.info, [name], catch_exceptions=False)

@@ -11,7 +11,7 @@ logger = get_logger(__name__)
 class InfluxConfigHandler(base.BaseConfigHandler):
     stages_to_override = {
         'offset': stages.influx_offset.InfluxScript,
-        'source': stages.influx_source.InfluxSource,
+        'source': stages.source.influx.InfluxSource,
         'destination': stages.destination.Destination
     }
 
@@ -51,7 +51,7 @@ state['TAGS'] = {tags}
                             optional_dimensions=str(self.get_optional_dimensions()),
                             measurement_name=self.replace_illegal_chars(self.pipeline.config['measurement_name']),
                             target_type=self.pipeline.config.get('target_type', 'gauge'),
-                            constant_properties=str(self.pipeline.constant_dimensions),
+                            constant_properties=str(self.pipeline.static_dimensions),
                             host_id=self.pipeline.destination.host_id,
                             host_name=HOSTNAME,
                             pipeline_id=self.pipeline.name,

@@ -1,9 +1,9 @@
 import click
-from .schemaless import PromptConfigSchemaless
+from .schemaless import SchemalessPrompter
 from agent import pipeline
 
 
-class PromptConfigDirectory(PromptConfigSchemaless):
+class DirectoryPrompter(SchemalessPrompter):
     def prompt_config(self):
         self.config['uses_schema'] = True
         super().prompt_config()

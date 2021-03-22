@@ -1,17 +1,12 @@
-import json
 import logging
 import random
 import string
-import traceback
-import jsonschema
 import sdc_client
 
 from agent import source, pipeline, destination, streamsets
 from agent.modules import tools
-from agent.pipeline import Pipeline, TestPipeline, client_data, schema
-from agent.modules.tools import print_json, sdc_record_map_to_dict
+from agent.pipeline import Pipeline, TestPipeline, schema
 from agent.modules.logger import get_logger
-from typing import List
 from agent.pipeline.config.handlers.factory import get_config_handler
 from agent.source import Source
 
@@ -22,83 +17,14 @@ LOG_LEVELS = [logging.getLevelName(logging.INFO), logging.getLevelName(logging.E
 MAX_SAMPLE_RECORDS = 3
 
 
-def supports_schema(source_type: str):
-    # use protocol 3 for all new pipelines that support it
+def supports_schema(pipeline_: Pipeline):
     supported = [
         source.TYPE_DIRECTORY,
         source.TYPE_MYSQL,
         source.TYPE_POSTGRES,
         source.TYPE_KAFKA,
     ]
-    return source_type in supported
-
-
-def show_preview(pipeline_: Pipeline):
-    try:
-        preview = sdc_client.create_preview(pipeline_)
-        # todo preview slows down tests a lot as 'No data' exception is risen
-        preview_data, errors = sdc_client.wait_for_preview(pipeline_, preview['previewerId'])
-    except sdc_client.ApiClientException as e:
-        print(str(e))
-        return
-
-    if preview_data['batchesOutput']:
-        for output in preview_data['batchesOutput'][0]:
-            if 'destination_OutputLane' in output['output']:
-                data = output['output']['destination_OutputLane'][:MAX_SAMPLE_RECORDS]
-                if data:
-                    print_json([sdc_record_map_to_dict(record['value']) for record in data])
-                else:
-                    print('Could not fetch any data matching the provided config')
-                break
-    else:
-        print('Could not fetch any data matching the provided config')
-    print(*errors, sep='\n')
-
-
-def extract_configs(file):
-    data = json.load(file)
-    file.seek(0)
-
-    json_schema = {
-        'type': 'array',
-        'items': {
-            'type': 'object',
-            'properties': {
-                'pipeline_id': {'type': 'string', 'minLength': 1, 'maxLength': 100}
-            },
-            'required': ['pipeline_id']
-        }
-    }
-    jsonschema.validate(data, json_schema)
-    return data
-
-
-def validate_configs_for_create(configs: list):
-    json_schema = {
-        'type': 'array',
-        'items': {
-            'type': 'object',
-            'properties': {
-                'source': {'type': 'string', 'enum': source.repository.get_all_names()},
-                'pipeline_id': {'type': 'string', 'minLength': 1, 'maxLength': 100}
-            },
-            'required': ['source', 'pipeline_id']
-        }
-    }
-    jsonschema.validate(configs, json_schema)
-
-
-def validate_config_for_create(config: dict):
-    json_schema = {
-        'type': 'object',
-        'properties': {
-            'source': {'type': 'string', 'enum': source.repository.get_all_names()},
-            'pipeline_id': {'type': 'string', 'minLength': 1, 'maxLength': 100}
-        },
-        'required': ['source', 'pipeline_id']
-    }
-    jsonschema.validate(config, json_schema)
+    return pipeline_.source.type in supported
 
 
 def create_object(pipeline_id: str, source_name: str) -> Pipeline:
@@ -113,57 +39,6 @@ def create_object(pipeline_id: str, source_name: str) -> Pipeline:
 def check_pipeline_id(pipeline_id: str):
     if pipeline.repository.exists(pipeline_id):
         raise pipeline.PipelineException(f"Pipeline {pipeline_id} already exists")
-
-
-def edit_using_file(file):
-    edit_using_json(extract_configs(file))
-
-
-def create_from_json(configs: list) -> List[Pipeline]:
-    validate_configs_for_create(configs)
-    exceptions = {}
-    pipelines = []
-    for config in configs:
-        try:
-            check_pipeline_id(config['pipeline_id'])
-            pipeline_ = create_pipeline_from_json(config)
-            pipelines.append(pipeline_)
-        except Exception as e:
-            exceptions[config['pipeline_id']] = f'{type(e).__name__}: {traceback.format_exc()}'
-        if exceptions:
-            raise pipeline.PipelineException(json.dumps(exceptions))
-    return pipelines
-
-
-def create_pipeline_from_json(config: dict) -> Pipeline:
-    validate_config_for_create(config)
-    pipeline_ = create_object(config['pipeline_id'], config['source'])
-    client_data.load_config(pipeline_, config)
-    create(pipeline_)
-    print(f'Pipeline {pipeline_.name} created')
-    return pipeline_
-
-
-def edit_using_json(configs: list) -> List[Pipeline]:
-    if not isinstance(configs, list):
-        raise ValueError(f'Provided data must be a list of configs, {type(configs).__name__} provided instead')
-    exceptions = {}
-    pipelines = []
-    for config in configs:
-        try:
-            pipelines.append(edit_pipeline_using_json(config))
-        except Exception as e:
-            exceptions[config['pipeline_id']] = f'{type(e).__name__}: {str(e)}'
-        if exceptions:
-            raise pipeline.PipelineException(json.dumps(exceptions))
-    return pipelines
-
-
-def edit_pipeline_using_json(config: dict) -> Pipeline:
-    pipeline_ = pipeline.repository.get_by_id(config['pipeline_id'])
-    client_data.load_config(pipeline_, config, edit=True)
-    update(pipeline_)
-    return pipeline_
 
 
 def update(pipeline_: Pipeline):
@@ -189,9 +64,9 @@ def update_source_pipelines(source_: Source):
         try:
             sdc_client.update(pipeline_)
         except streamsets.manager.StreamsetsException as e:
-            print(str(e))
+            logger_.exception(str(e))
             continue
-        print(f'Pipeline {pipeline_.name} updated')
+        logger_.info(f'Pipeline {pipeline_.name} updated')
 
 
 def update_pipeline_offset(pipeline_: Pipeline):
@@ -237,12 +112,14 @@ def delete(pipeline_: Pipeline):
         sdc_client.delete(pipeline_)
     except sdc_client.ApiClientException as e:
         raise pipeline.PipelineException(str(e))
+    if pipeline_.offset:
+        pipeline.repository.delete_offset(pipeline_.offset)
     pipeline.repository.delete(pipeline_)
     pipeline.repository.add_deleted_pipeline_id(pipeline_.name)
 
 
-def delete_by_name(pipeline_name: str):
-    delete(pipeline.repository.get_by_id(pipeline_name))
+def delete_by_id(pipeline_id: str):
+    delete(pipeline.repository.get_by_id(pipeline_id))
 
 
 def force_delete(pipeline_id: str) -> list:
@@ -286,12 +163,12 @@ def disable_destination_logs(pipeline_: Pipeline):
 def build_test_pipeline(source_: Source) -> TestPipeline:
     # creating a new source because otherwise it will mess with the db session
     test_source = Source(source_.name, source_.type, source_.config)
-    test_pipeline = TestPipeline(_get_test_pipeline_name(test_source), test_source, destination.repository.get())
-    test_pipeline.config['uses_schema'] = supports_schema(test_pipeline.source.type)
+    test_pipeline = TestPipeline(_get_test_pipeline_id(test_source), test_source, destination.repository.get())
+    test_pipeline.config['uses_schema'] = supports_schema(test_pipeline)
     return test_pipeline
 
 
-def _get_test_pipeline_name(source_: Source) -> str:
+def _get_test_pipeline_id(source_: Source) -> str:
     return '_'.join([source_.type, source_.name, 'preview', _generate_random_string()])
 
 
@@ -327,10 +204,14 @@ def transform_for_bc(pipeline_: Pipeline) -> dict:
 
 
 def get_sample_records(pipeline_: Pipeline) -> (list, list):
-    preview_data, errors = _get_preview_data(pipeline_)
+    try:
+        sdc_client.create(pipeline_)
+        preview_data, errors = get_preview_data(pipeline_)
+    finally:
+        sdc_client.delete(pipeline_)
 
     if not preview_data:
-        return [], []
+        return preview_data, errors
 
     try:
         data = preview_data['batchesOutput'][0][0]['output']['source_outputLane']
@@ -341,16 +222,16 @@ def get_sample_records(pipeline_: Pipeline) -> (list, list):
     return [tools.sdc_record_map_to_dict(record['value']) for record in data[:MAX_SAMPLE_RECORDS]], errors
 
 
-def _get_preview_data(test_pipeline: Pipeline) -> (list, list):
-    sdc_client.create(test_pipeline)
+def get_preview_data(pipeline_: Pipeline) -> (list, list):
     try:
-        preview = sdc_client.create_preview(test_pipeline)
-        preview_data, errors = sdc_client.wait_for_preview(test_pipeline, preview['previewerId'])
+        preview = sdc_client.create_preview(pipeline_)
+        preview_data, errors = sdc_client.wait_for_preview(pipeline_, preview['previewerId'])
+    except sdc_client.ApiClientException as e:
+        logger_.error(str(e))
+        return [], []
     except (Exception, KeyboardInterrupt) as e:
         logger_.exception(str(e))
         raise
-    finally:
-        sdc_client.delete(test_pipeline)
     return preview_data, errors
 
 

@@ -7,7 +7,7 @@ from agent.modules import db, logger
 from agent.api.routes.monitoring import monitoring_bp
 from agent.api.routes.streamsets import streamsets
 from agent.api.routes.destination import destination_
-from agent.api.routes import source, pipeline, scripts
+from agent.api.routes import source, pipeline, scripts, rrd_source
 from agent.version import __version__
 
 logger_ = logger.get_logger(__name__)
@@ -21,6 +21,7 @@ app.register_blueprint(source.sources)
 app.register_blueprint(pipeline.pipelines)
 app.register_blueprint(scripts.scripts)
 app.register_blueprint(monitoring_bp)
+app.register_blueprint(rrd_source.rrd_source)
 app.config['WTF_CSRF_ENABLED'] = False
 app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = False
 
@@ -34,10 +35,9 @@ def before_request_func():
 def teardown_request_func(exception):
     try:
         if exception:
-            db.session().rollback()
+            db.Session.rollback()
         else:
-            db.session().commit()
-        db.close_session()
+            db.Session.commit()
     except Exception:
         logger_.error(traceback.format_exc())
 

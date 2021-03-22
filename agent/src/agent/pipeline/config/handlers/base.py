@@ -26,6 +26,7 @@ class BaseConfigLoader:
     @classmethod
     def _get_config_file(cls, pipeline: Pipeline) -> str:
         name = {
+            source.TYPE_CACTI: 'cacti',
             source.TYPE_INFLUX: 'influx_http',
             source.TYPE_MONGO: 'mongo_http',
             source.TYPE_KAFKA: 'kafka_http',

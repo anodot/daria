@@ -1,11 +1,11 @@
 import click
 
-from .abstract_builder import Builder
+from .base import Prompter
 from agent.modules.tools import infinite_retry
 from agent import source
 
 
-class SageSourceBuilder(Builder):
+class SagePrompter(Prompter):
     def prompt(self, default_config, advanced=False):
         self.prompt_url(default_config)
         self.prompt_token(default_config)

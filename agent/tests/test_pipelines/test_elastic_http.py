@@ -6,8 +6,6 @@ from .test_zpipeline_base import TestPipelineBase
 class TestElastic(TestPipelineBase):
     __test__ = True
     params = {
-        'test_create_source_with_file': [{'file_name': 'elastic_sources'}],
-        'test_create_with_file': [{'file_name': 'elastic_pipelines'}],
         'test_start': [{'name': 'test_es_value_const'}, {'name': 'test_es_timestamp_ms'},
                        {'name': 'test_es_file_short'}, {'name': 'test_es_file_full'}],
         'test_reset': [{'name': 'test_es_value_const'}],
@@ -21,9 +19,6 @@ class TestElastic(TestPipelineBase):
                                  {'name': 'test_es_file_short'}, {'name': 'test_es_file_full'}],
         'test_source_delete': [{'name': 'test_es'}],
     }
-
-    def test_edit_with_file(self, cli_runner, file_name=None):
-        pytest.skip()
 
     def test_info(self, cli_runner, name=None):
         pytest.skip()

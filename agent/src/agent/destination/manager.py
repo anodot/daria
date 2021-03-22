@@ -1,4 +1,4 @@
-from agent import destination, pipeline
+from agent import destination
 from agent.destination import HttpDestination
 from agent.destination.anodot_api_client import AnodotApiClient
 from agent.modules import proxy

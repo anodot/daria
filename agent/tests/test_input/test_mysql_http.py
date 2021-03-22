@@ -1,12 +1,13 @@
 from datetime import datetime
 from agent import source, cli
+from .test_zpipeline_base import TestInputBase
 from ..conftest import generate_input
 
 days_to_backfill = (datetime.now() - datetime(year=2017, month=12, day=10)).days
 
 
-class TestMySQL:
-
+class TestMySQL(TestInputBase):
+    __test__ = True
     params = {
         'test_source_create': [{'name': 'test_jdbc', 'type': 'mysql', 'conn': 'mysql://root@mysql:3306/test'}],
         'test_create': [{'name': 'test_mysql', 'source': 'test_jdbc', 'timestamp_type': '', 'timestamp_name': 'timestamp_unix'},
@@ -14,6 +15,8 @@ class TestMySQL:
                         {'name': 'test_mysql_timestamp_datetime', 'source': 'test_jdbc', 'timestamp_type': 'datetime', 'timestamp_name': 'timestamp_datetime'}],
         'test_create_timezone': [{'name': 'test_mysql_timezone_datetime', 'source': 'test_jdbc', 'timestamp_type': 'datetime', 'timezone': 'Europe/Berlin', 'timestamp_name': 'timestamp_datetime'}],
         'test_create_advanced': [{'name': 'test_mysql_advanced', 'source': 'test_jdbc'}],
+        'test_create_with_file': [{'file_name': 'jdbc_pipelines'}],
+        'test_create_source_with_file': [{'file_name': 'mysql_sources'}],
     }
 
     def test_source_create(self, cli_runner, name, type, conn):

@@ -1,11 +1,12 @@
 from datetime import datetime
-
+from .test_zpipeline_base import TestInputBase
 from ..conftest import get_input_file_path
 from agent import cli
 from agent import source
 
 
-class TestElastic:
+class TestElastic(TestInputBase):
+    __test__ = True
     params = {
         'test_create': [
             {'name': 'test_es_value_const', 'options': ['-a'], 'value': 'y\nclicksS\ny\n\n \n ',
@@ -13,6 +14,8 @@ class TestElastic:
             {'name': 'test_es_timestamp_ms', 'options': [], 'value': 'n\n_source/Clicks:gauge\n_source/Clicks:clicks',
              'timestamp': '_source/timestamp_unix_ms\nunix_ms', 'advanced_options': '\n\n'}],
         'test_edit': [{'options': ['-a', 'test_es_value_const'], 'value': 'y\nclicks\n\n\n\n'}],
+        'test_create_source_with_file': [{'file_name': 'elastic_sources'}],
+        'test_create_with_file': [{'file_name': 'elastic_pipelines'}],
     }
 
     def test_source_create(self, cli_runner):

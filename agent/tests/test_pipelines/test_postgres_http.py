@@ -1,14 +1,11 @@
 import pytest
 
-from .test_zpipeline_base import TestPipelineBase, get_expected_schema_output
-from ..conftest import get_output
+from .test_zpipeline_base import TestPipelineBase
 
 
 class TestPostgreSQL(TestPipelineBase):
     __test__ = True
     params = {
-        'test_create_with_file': [{'file_name': 'jdbc_pipelines_postgres'}],
-        'test_create_source_with_file': [{'file_name': 'postgres_sources'}],
         'test_start': [{'name': 'test_postgres'}, {'name': 'test_postgres_timestamp_ms'},
                        {'name': 'test_postgres_timestamp_datetime'},
                        {'name': 'test_postgres_advanced'}, {'name': 'test_jdbc_file_short_postgres'},
@@ -31,20 +28,11 @@ class TestPostgreSQL(TestPipelineBase):
         'test_source_delete': [{'name': 'test_jdbc_postgres'}, {'name': 'test_postgres_1'}]
     }
 
-    def test_edit_with_file(self, cli_runner, file_name=None):
-        pytest.skip()
-
     def test_info(self, cli_runner, name=None):
         pytest.skip()
 
     def test_stop(self, cli_runner, name=None):
         pytest.skip()
-
-    def test_create_source_with_file(self, cli_runner, file_name):
-        super().test_create_source_with_file(cli_runner, file_name)
-
-    def test_create_with_file(self, cli_runner, file_name):
-        super().test_create_with_file(cli_runner, file_name)
 
     def test_start(self, cli_runner, name):
         super().test_start(cli_runner, name)

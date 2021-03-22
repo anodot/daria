@@ -3,10 +3,17 @@ import sdc_client
 from datetime import datetime
 from agent import cli
 from agent import source
+from .test_zpipeline_base import TestInputBase
 from ..conftest import generate_input
 
 
-class TestZabbix:
+class TestZabbix(TestInputBase):
+    __test__ = True
+    params = {
+        'test_create_source_with_file': [{'file_name': 'zabbix_sources'}],
+        'test_create_with_file': [{'file_name': 'zabbix_pipelines'}],
+    }
+
     def test_source_create(self, cli_runner):
         name = 'test_zabbix'
         input_ = {
@@ -25,7 +32,7 @@ class TestZabbix:
         input_ = {
             'source': name,
             'name': name,
-            'query file': 'tests/test_input/input_files/zabbix_query.json',
+            'query file': 'tests/input_files/zabbix_query.json',
             'days to backfill': 0,
             'query interval': 86400,
             'data preview': 'n',

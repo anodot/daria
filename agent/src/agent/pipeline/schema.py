@@ -20,7 +20,7 @@ def build(pipeline: Pipeline) -> dict:
     return {
         'version': '1',
         'name': pipeline.name,
-        'dimensions': pipeline.dimensions_names + list(pipeline.constant_dimensions_names),
+        'dimensions': pipeline.dimensions_names + list(pipeline.static_dimension_names),
         'measurements': measurements,
         'missingDimPolicy': {
             'action': 'fill',

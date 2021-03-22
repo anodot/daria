@@ -1,8 +1,9 @@
 from agent import source, cli
+from .test_zpipeline_base import TestInputBase
 
 
-class TestMongo:
-
+class TestMongo(TestInputBase):
+    __test__ = True
     params = {
         'test_create': [{'name': 'test_value_const', 'options': ['-a'], 'value': 'y\nclicksS\ny\n\n \n ',
                          'timestamp': 'timestamp_unix\nunix', 'advanced_options': 'key1:val1\n\n\n'},
@@ -14,6 +15,8 @@ class TestMongo:
                          'timestamp': 'timestamp_string\nstring\nM/d/yyyy H:mm:ss',
                          'advanced_options': 'key1:val1\n\n\n'}],
         'test_edit': [{'options': ['-a', 'test_value_const'], 'value': 'y\nclicks\n\n\n\n'}],
+        'test_create_with_file': [{'file_name': 'mongo_pipelines'}],
+        'test_create_source_with_file': [{'file_name': 'mongo_sources'}],
     }
 
     def test_source_create(self, cli_runner):

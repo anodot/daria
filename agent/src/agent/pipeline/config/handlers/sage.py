@@ -8,7 +8,7 @@ logger = get_logger(__name__)
 
 class SageConfigHandler(BaseConfigHandler):
     stages_to_override = {
-        'source': stages.sage_source.SageScript,
+        'source': stages.source.sage.SageScript,
         'JavaScriptEvaluator_01': stages.js_convert_metrics.JSConvertMetrics,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties,
         'event_add_metadata_tags': stages.expression_evaluator.AddMetadataTags,

@@ -98,15 +98,14 @@ class TestInflux:
         assert result.status_code == 200
 
     def test_pipeline_failed(self, api_client):
-        pipeline_name = 'test_influx'
+        pipeline_id = 'test_influx'
         pipeline_status = 'RUN_ERROR'
-        res = api_client.post(f'/pipeline-status-change/{pipeline_name}', json={
+        res = api_client.post(f'/pipeline-status-change/{pipeline_id}', json={
             "pipeline_status": pipeline_status,
-            "pipeline_name": pipeline_name,
             "time": "1970-01-01 00:00:00"
         })
         assert res.status_code == 200
-        assert pipeline.repository.get_by_id(pipeline_name).status == pipeline_status
+        assert pipeline.repository.get_by_id(pipeline_id).status == pipeline_status
 
     def test_delete(self, api_client):
         pipeline_id = 'test_influx'

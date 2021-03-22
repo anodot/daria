@@ -1,9 +1,9 @@
 import click
-from .schemaless import PromptConfigSchemaless
+from .schemaless import SchemalessPrompter
 from agent import source
 
 
-class PromptConfigKafka(PromptConfigSchemaless):
+class KafkaPrompter(SchemalessPrompter):
     timestamp_types = ['datetime', 'string', 'unix', 'unix_ms']
     target_types = ['counter', 'gauge', 'running_counter']
     pass
@@ -15,7 +15,7 @@ class PromptConfigKafka(PromptConfigSchemaless):
         self.set_timestamp()
         self.set_dimensions()
         self.set_consumer_group()
-        self.set_static_properties()
+        self.set_static_dimensions()
         self.set_tags()
         self.filter()
         self.set_transform()
@@ -26,6 +26,6 @@ class PromptConfigKafka(PromptConfigSchemaless):
             click.prompt('Consumer group name', self._get_default_consumer_group())
 
     def _get_default_consumer_group(self) -> str:
-        if source.KafkaSource.CONFIG_CONSUMER_GROUP in self.pipeline.override_source:
-            return self.pipeline.override_source[source.KafkaSource.CONFIG_CONSUMER_GROUP]
+        if source.KafkaSource.CONFIG_CONSUMER_GROUP in self.config['override_source']:
+            return self.config['override_source'][source.KafkaSource.CONFIG_CONSUMER_GROUP]
         return "agent_" + self.pipeline.name

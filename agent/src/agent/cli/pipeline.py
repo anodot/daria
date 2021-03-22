@@ -1,14 +1,12 @@
-import json
-from typing import Optional
-
 import click
 import sdc_client
 
+from typing import Optional
 from agent import pipeline, source, streamsets, check_prerequisites
 from agent.modules.tools import infinite_retry
 from jsonschema import ValidationError
 from texttable import Texttable
-from agent.cli import prompt
+from agent.cli import prompt, preview
 from sdc_client import Severity
 from agent.pipeline import Pipeline
 
@@ -61,7 +59,7 @@ def start(pipeline_id: str, file):
     if not file and not pipeline_id:
         raise click.UsageError('Specify pipeline id or file')
 
-    pipeline_ids = [item['pipeline_id'] for item in pipeline.manager.extract_configs(file)] if file else [pipeline_id]
+    pipeline_ids = [item['pipeline_id'] for item in pipeline.json_builder.extract_configs(file)] if file else [pipeline_id]
 
     for pipeline_id in pipeline_ids:
         try:
@@ -79,7 +77,7 @@ def stop(pipeline_id: str, file):
     if not file and not pipeline_id:
         raise click.UsageError('Specify pipeline id or file')
 
-    pipeline_ids = [item['pipeline_id'] for item in pipeline.manager.extract_configs(file)] if file else [pipeline_id]
+    pipeline_ids = [item['pipeline_id'] for item in pipeline.json_builder.extract_configs(file)] if file else [pipeline_id]
 
     for pipeline_id in pipeline_ids:
         try:
@@ -109,12 +107,12 @@ def delete(pipeline_id: str, file):
     if not file and not pipeline_id:
         raise click.UsageError('Specify pipeline id or file')
 
-    pipeline_names = [item['pipeline_id'] for item in pipeline.manager.extract_configs(file)] if file else [pipeline_id]
+    pipeline_ids = [item['pipeline_id'] for item in pipeline.json_builder.extract_configs(file)] if file else [pipeline_id]
 
-    for pipeline_name in pipeline_names:
+    for pipeline_id in pipeline_ids:
         try:
-            pipeline.manager.delete_by_name(pipeline_name)
-            click.echo(f'Pipeline {pipeline_name} deleted')
+            pipeline.manager.delete_by_id(pipeline_id)
+            click.echo(f'Pipeline {pipeline_id} deleted')
         except (
             sdc_client.ApiClientException, pipeline.PipelineException, pipeline.repository.PipelineNotExistsException
         ) as e:
@@ -123,9 +121,9 @@ def delete(pipeline_id: str, file):
 
 
 @click.command()
-@click.argument('pipeline_name', autocompletion=get_pipelines_ids_complete)
-def force_delete(pipeline_name: str):
-    errors = pipeline.manager.force_delete(pipeline_name)
+@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
+def force_delete(pipeline_id: str):
+    errors = pipeline.manager.force_delete(pipeline_id)
     for e in errors:
         click.secho(e, err=True, fg='red')
     click.echo('Finished')
@@ -240,7 +238,7 @@ def pipeline_group():
 
 def _create_from_file(file):
     try:
-        pipeline.manager.create_from_json(json.load(file))
+        pipeline.json_builder.build_using_file(file)
     except (sdc_client.ApiClientException, ValidationError, pipeline.PipelineException) as e:
         raise click.ClickException(str(e))
 
@@ -249,16 +247,16 @@ def _prompt(advanced: bool, sources: list):
     source_name = click.prompt('Choose source config', type=click.Choice(sources), default=_get_default_source(sources))
     pipeline_id = _prompt_pipeline_id()
 
-    pipeline_prompter = prompt.pipeline.get_prompter(pipeline.manager.create_object(pipeline_id, source_name))
-    previous_config = _get_previous_pipeline_config(pipeline_prompter.pipeline.source.type)
-    pipeline_prompter.prompt(previous_config, advanced)
+    pipeline_ = pipeline.manager.create_object(pipeline_id, source_name)
+    previous_pipeline_config = _get_previous_pipeline_config(pipeline_.source.type)
+
+    pipeline_prompter = prompt.pipeline.get_prompter(pipeline_, previous_pipeline_config, advanced)
+    pipeline_prompter.prompt()
+
     pipeline.manager.create(pipeline_prompter.pipeline)
 
     click.secho('Created pipeline {}'.format(pipeline_id), fg='green')
-    if _should_prompt_preview(pipeline_prompter.pipeline):
-        if click.confirm('Would you like to see the result data preview?', default=True):
-            pipeline.manager.show_preview(pipeline_prompter.pipeline)
-            print('To change the config use `agent pipeline edit`')
+    _result_preview(pipeline_prompter.pipeline)
 
 
 def _should_prompt_preview(pipeline_: Pipeline) -> bool:
@@ -267,7 +265,7 @@ def _should_prompt_preview(pipeline_: Pipeline) -> bool:
 
 def _edit_using_file(file):
     try:
-        pipeline.manager.edit_using_file(file)
+        pipeline.json_builder.edit_using_file(file)
     except (pipeline.PipelineException, streamsets.manager.StreamsetsException) as e:
         raise click.UsageError(str(e))
 
@@ -275,14 +273,18 @@ def _edit_using_file(file):
 def _prompt_edit(advanced: bool, pipeline_id: str):
     try:
         pipeline_ = pipeline.repository.get_by_id(pipeline_id)
-        pipeline_ = prompt.pipeline.get_prompter(pipeline_).prompt(pipeline_.to_dict(), advanced=advanced)
+        pipeline_ = prompt.pipeline.get_prompter(pipeline_, pipeline_.to_dict(), advanced).prompt()
         pipeline.manager.update(pipeline_)
-        if _should_prompt_preview(pipeline_):
-            if click.confirm('Would you like to see the result data preview?', default=True):
-                pipeline.manager.show_preview(pipeline_)
-                print('To change the config use `agent pipeline edit`')
+        _result_preview(pipeline_)
     except pipeline.repository.PipelineNotExistsException:
         raise click.UsageError(f'{pipeline_id} does not exist')
+
+
+def _result_preview(pipeline_: Pipeline):
+    if _should_prompt_preview(pipeline_):
+        if click.confirm('Would you like to see the result data preview?', default=True):
+            preview.show_preview(pipeline_)
+            print('To change the config use `agent pipeline edit`')
 
 
 def _get_previous_pipeline_config(source_type: str) -> dict:
@@ -301,7 +303,7 @@ def _prompt_pipeline_id():
 
 def _check_sources(sources: list):
     if len(sources) == 0:
-        raise click.ClickException('No sources configs found. Use "agent source create"')
+        raise click.ClickException('No source configs found. Use "agent source create"')
 
 
 def _get_default_source(sources: list):

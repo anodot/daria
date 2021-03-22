@@ -202,6 +202,11 @@ class ZabbixSource(Source):
     PASSWORD = 'password'
 
 
+class CactiSource(Source):
+    MYSQL_CONNECTION_STRING = 'mysql_connection_string'
+    RRD_DIR = 'rrd_dir'
+
+
 class DirectorySource(SchemalessSource):
     pass
 

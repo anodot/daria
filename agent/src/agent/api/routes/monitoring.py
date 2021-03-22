@@ -57,11 +57,11 @@ def monitoring():
     return jsonify('')
 
 
-@monitoring_bp.route('/monitoring/source_http_error/<pipeline_name>/<code>', methods=['POST'])
-def source_http_error(pipeline_name, code):
-    pipeline_ = pipeline.repository.get_by_id(pipeline_name)
+@monitoring_bp.route('/monitoring/source_http_error/<pipeline_id>/<code>', methods=['POST'])
+def source_http_error(pipeline_id, code):
+    pipeline_ = pipeline.repository.get_by_id(pipeline_id)
     monitoring_.metrics.SOURCE_HTTP_ERRORS.labels(pipeline_.streamsets.url,
-                                                  pipeline_name, pipeline_.source.type, code).inc(1)
+                                                  pipeline_id, pipeline_.source.type, code).inc(1)
     return jsonify('')
 
 
