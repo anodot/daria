@@ -61,7 +61,7 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
                     continue
 
                 metric = base_metric.copy()
-                metric['what'] = measurement_name
+                metric['properties']['what'] = measurement_name.replace(".", "_").replace(" ", "_")
                 metric['value'] = value
                 metric['timestamp'] = timestamp
                 metrics.append(metric)
@@ -78,8 +78,12 @@ def _extract_dimensions(cacti_source: dict) -> dict:
     if not dimension_names:
         return {}
     for i, name in enumerate(dimension_names):
-        dimensions[name] = dimension_values[i]
-
+        value = dimension_values[i]
+        if isinstance(name, str):
+            name = name.replace(".", "_").replace(" ", "_")
+        if isinstance(value, str):
+            value = value.replace(".", "_").replace(" ", "_")
+        dimensions[name] = value
     return dimensions
 
 
