@@ -1,6 +1,6 @@
 import pytest
 
-from .test_zpipeline_base import TestPipelineBase
+from ..test_pipelines.test_zpipeline_base import TestPipelineBase
 
 
 class TestVictoria(TestPipelineBase):

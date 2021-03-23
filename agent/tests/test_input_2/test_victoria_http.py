@@ -1,7 +1,7 @@
 from datetime import datetime
 from agent import cli
 from agent import source
-from .test_zpipeline_base import TestInputBase
+from ..test_input.test_zpipeline_base import TestInputBase
 
 
 class TestVictoria(TestInputBase):

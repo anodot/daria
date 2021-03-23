@@ -1,6 +1,6 @@
 from datetime import datetime
 from agent import source, cli
-from .test_zpipeline_base import TestInputBase
+from ..test_input.test_zpipeline_base import TestInputBase
 
 
 class TestPostgreSQL(TestInputBase):

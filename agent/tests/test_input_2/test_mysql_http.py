@@ -1,6 +1,6 @@
 from datetime import datetime
 from agent import source, cli
-from .test_zpipeline_base import TestInputBase
+from ..test_input.test_zpipeline_base import TestInputBase
 from ..conftest import generate_input
 
 days_to_backfill = (datetime.now() - datetime(year=2017, month=12, day=10)).days

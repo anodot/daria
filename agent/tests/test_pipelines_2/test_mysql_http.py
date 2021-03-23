@@ -1,6 +1,6 @@
 import pytest
 
-from .test_zpipeline_base import TestPipelineBase, get_schema_id
+from ..test_pipelines.test_zpipeline_base import TestPipelineBase, get_schema_id
 from ..conftest import get_output
 
 

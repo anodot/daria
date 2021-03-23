@@ -1,9 +1,7 @@
 import pytest
 import socket
-import sdc_client
 
-from agent import cli
-from .test_zpipeline_base import TestPipelineBase
+from ..test_pipelines.test_zpipeline_base import TestPipelineBase
 from agent import pipeline, source
 
 
