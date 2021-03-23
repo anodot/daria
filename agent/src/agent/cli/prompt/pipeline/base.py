@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 import click
 import pytz
 
@@ -13,7 +15,7 @@ class Prompter:
     def __init__(self, pipeline_: Pipeline, default_config: dict, advanced=False):
         self.advanced = advanced
         self.default_config = default_config
-        self.config = {'override_source': pipeline_.override_source}
+        self.config = {'override_source': deepcopy(pipeline_.override_source)}
         self.pipeline = pipeline_
 
     def prompt(self) -> Pipeline:
