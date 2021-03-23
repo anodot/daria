@@ -2,7 +2,7 @@ import json
 import subprocess
 import traceback
 
-from agent import cli
+from agent import cli, pipeline
 from agent import source
 from .test_zpipeline_base import TestInputBase
 from ..conftest import get_input_file_path
@@ -109,6 +109,8 @@ class TestKafka(TestInputBase):
         )
         traceback.print_exception(*result.exc_info)
         assert result.exit_code == 0
+        pipeline_ = pipeline.repository.get_by_id(name)
+        assert bool(pipeline_.override_source)
 
     def test_edit(self, cli_runner, options, value):
         result = cli_runner.invoke(cli.pipeline.edit, options, catch_exceptions=False,
