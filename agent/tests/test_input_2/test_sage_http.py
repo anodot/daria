@@ -36,3 +36,9 @@ class TestSage(TestInputBase):
         result = cli_runner.invoke(cli.pipeline.edit, options, catch_exceptions=False,
                                    input=f"\n\n\n\n{value}\n\n\n\n\n\n\n\n\n\n\n\n")
         assert result.exit_code == 0
+
+    def test_create_with_file(self, cli_runner, file_name):
+        super().test_create_with_file(cli_runner, file_name)
+
+    def test_create_source_with_file(self, cli_runner, file_name):
+        super().test_create_source_with_file(cli_runner, file_name)

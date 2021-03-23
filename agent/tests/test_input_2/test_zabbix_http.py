@@ -73,3 +73,9 @@ class TestZabbix(TestInputBase):
             cli.pipeline.edit, ['test_zabbix', '-a'], catch_exceptions=False, input=generate_input(input_)
         )
         assert result.exit_code == 0
+
+    def test_create_with_file(self, cli_runner, file_name):
+        super().test_create_with_file(cli_runner, file_name)
+
+    def test_create_source_with_file(self, cli_runner, file_name):
+        super().test_create_source_with_file(cli_runner, file_name)
