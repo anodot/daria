@@ -13,7 +13,7 @@ check_cmd "docker version"
 check_cmd "docker-compose --version"
 
 if [[ $1 == 'install' ]]; then
-  docker-compose pull && docker-compose up -d && docker exec -i anodot-agent alembic upgrade head
+  docker-compose pull && docker-compose up -d && sleep 20 && docker exec -i anodot-agent alembic upgrade head
 elif [[ $1 == 'upgrade' ]]; then
   docker-compose pull && docker-compose up -d && sleep 30 && docker exec -i anodot-agent agent update
   docker exec -i anodot-agent alembic upgrade head

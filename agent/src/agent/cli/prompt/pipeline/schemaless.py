@@ -89,7 +89,7 @@ class SchemalessPrompter(Prompter):
             self.validate_properties_names(self.config['measurement_names'].values(), values_array)
 
     @infinite_retry
-    def prompt_files(self):
+    def prompt_transformation_files(self):
         file = click.prompt('Transformations files paths', type=click.Path(),
                             default=self.config['transform'].get('file', '')).strip()
         if not file:
@@ -120,4 +120,4 @@ class SchemalessPrompter(Prompter):
         if not self.advanced and not self.default_config.get('transform'):
             return
         self.config['transform'] = self.default_config.get('transform', {})
-        self.prompt_files()
+        self.prompt_transformation_files()

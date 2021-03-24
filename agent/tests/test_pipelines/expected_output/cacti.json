@@ -26,8 +26,8 @@
       "what": "test_data_source",
       "host_description": "390257-some_host",
       "static_dim": "cacti",
-      "query_ifName": "Gi0/4",
-      "query_ifAlias": "ENoB-Id"
+      "name": "Gi0/4",
+      "alias": "ENoB-Id"
     },
     "timestamp": 1615766700
   },
@@ -58,8 +58,8 @@
       "what": "test_data_source",
       "host_description": "390257-some_host",
       "static_dim": "cacti",
-      "query_ifName": "Gi0/4",
-      "query_ifAlias": "ENoB-Id"
+      "name": "Gi0/4",
+      "alias": "ENoB-Id"
     },
     "timestamp": 1615767000
   },
@@ -90,8 +90,8 @@
       "what": "test_data_source",
       "host_description": "390257-some_host",
       "static_dim": "cacti",
-      "query_ifName": "Gi0/4",
-      "query_ifAlias": "ENoB-Id"
+      "name": "Gi0/4",
+      "alias": "ENoB-Id"
     },
     "timestamp": 1615767300
   },
@@ -122,8 +122,8 @@
       "what": "test_data_source",
       "host_description": "390257-some_host",
       "static_dim": "cacti",
-      "query_ifName": "Gi0/4",
-      "query_ifAlias": "ENoB-Id"
+      "name": "Gi0/4",
+      "alias": "ENoB-Id"
     },
     "timestamp": 1615767600
   },
@@ -154,8 +154,8 @@
       "what": "test_data_source",
       "host_description": "390257-some_host",
       "static_dim": "cacti",
-      "query_ifName": "Gi0/4",
-      "query_ifAlias": "ENoB-Id"
+      "name": "Gi0/4",
+      "alias": "ENoB-Id"
     },
     "timestamp": 1615767900
   },
@@ -186,8 +186,8 @@
       "what": "test_data_source",
       "host_description": "390257-some_host",
       "static_dim": "cacti",
-      "query_ifName": "Gi0/4",
-      "query_ifAlias": "ENoB-Id"
+      "name": "Gi0/4",
+      "alias": "ENoB-Id"
     },
     "timestamp": 1615768200
   },
@@ -218,8 +218,8 @@
       "what": "test_data_source",
       "host_description": "390257-some_host",
       "static_dim": "cacti",
-      "query_ifName": "Gi0/4",
-      "query_ifAlias": "ENoB-Id"
+      "name": "Gi0/4",
+      "alias": "ENoB-Id"
     },
     "timestamp": 1615768500
   },
@@ -250,8 +250,8 @@
       "what": "test_data_source",
       "host_description": "390257-some_host",
       "static_dim": "cacti",
-      "query_ifName": "Gi0/4",
-      "query_ifAlias": "ENoB-Id"
+      "name": "Gi0/4",
+      "alias": "ENoB-Id"
     },
     "timestamp": 1615768800
   }

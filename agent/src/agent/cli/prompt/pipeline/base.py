@@ -167,3 +167,12 @@ class Prompter:
             return
 
         self.config['uses_schema'] = pipeline.manager.supports_schema(self.pipeline) and static_what
+
+    def prompt_rename_dimensions(self):
+        rename_dimensions_mapping = self.default_config.get('rename_dimensions_mapping', {})
+        if self.advanced:
+            rename_dimensions_mapping = self.prompt_object(
+                'Dimensions to rename in format name1:alias1 name2:alias2',
+                rename_dimensions_mapping
+            )
+        self.config['rename_dimensions_mapping'] = rename_dimensions_mapping
