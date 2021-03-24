@@ -1,0 +1,8 @@
+{
+  "type": "object",
+  "properties": {
+    "mysql_connection_string": {"type": "string"},
+    "rrd_dir": {"type": "string"}
+  },
+  "required": ["mysql_connection_string", "rrd_dir"]
+}

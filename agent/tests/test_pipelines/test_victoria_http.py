@@ -6,8 +6,6 @@ from .test_zpipeline_base import TestPipelineBase
 class TestVictoria(TestPipelineBase):
     __test__ = True
     params = {
-        'test_create_source_with_file': [{'file_name': 'victoria_sources'}],
-        'test_create_with_file': [{'file_name': 'victoria_pipelines'}],
         'test_start': [{'name': 'test_victoria'}, {'name': 'test_victoria_2'}, {'name': 'test_victoria_a'}],
         'test_force_stop': [{'name': 'test_victoria'}, {'name': 'test_victoria_2'}, {'name': 'test_victoria_a'}],
         'test_output': [
@@ -19,9 +17,6 @@ class TestVictoria(TestPipelineBase):
     }
 
     def test_reset(self, cli_runner, name=None):
-        pytest.skip()
-
-    def test_edit_with_file(self, cli_runner, file_name=None):
         pytest.skip()
 
     def test_info(self, cli_runner, name=None):

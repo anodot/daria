@@ -6,8 +6,6 @@ from .test_zpipeline_base import TestPipelineBase
 class TestSage(TestPipelineBase):
     __test__ = True
     params = {
-        'test_create_source_with_file': [{'file_name': 'sage_sources'}],
-        'test_create_with_file': [{'file_name': 'sage_pipelines'}],
         'test_start': [{'name': 'test_sage_value_const'}, {'name': 'test_sage'}, {'name': 'test_sage_file'}],
         'test_force_stop': [{'name': 'test_sage_value_const'}, {'name': 'test_sage'}, {'name': 'test_sage_file'}],
         'test_reset': [{'name': 'test_sage_value_const'}],
@@ -19,9 +17,6 @@ class TestSage(TestPipelineBase):
         'test_delete_pipeline': [{'name': 'test_sage_value_const'}, {'name': 'test_sage'}, {'name': 'test_sage_file'}],
         'test_source_delete': [{'name': 'test_sage'}],
     }
-
-    def test_edit_with_file(self, cli_runner, file_name=None):
-        pytest.skip()
 
     def test_info(self, cli_runner, name=None):
         pytest.skip()

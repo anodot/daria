@@ -1,11 +1,11 @@
 import click
 
-from .abstract_builder import Builder
+from .base import Prompter
 from agent.modules.tools import infinite_retry
 from agent import source
 
 
-class InfluxSourceBuilder(Builder):
+class InfluxPrompter(Prompter):
     def prompt(self, default_config, advanced=False):
         self.prompt_connection(default_config)
         self.prompt_db(default_config)

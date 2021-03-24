@@ -3,6 +3,7 @@ version: '3.1'
 services:
   dc:
     build: streamsets
+    container_name: dc
     ports:
       - "18630:18630"
       - "9999:9999"
@@ -21,6 +22,7 @@ services:
 #  creating second streamsets to run tests on multiple instances
   dc2:
     build: streamsets
+    container_name: dc2
     ports:
       - "18629:18630"
     restart: on-failure
@@ -163,7 +165,7 @@ services:
       MYSQL_USER: "user"
       MYSQL_PASSWORD: "password"
     ports:
-      - "3306:3306"
+      - "3308:3306"
     volumes:
       - /var/lib/mysql
       - ./volumes/mysql-initdb:/docker-entrypoint-initdb.d
@@ -192,8 +194,10 @@ services:
 
   dummy_destination:
     build: dummy_destination
+    container_name: dummy_destination
     volumes:
       - ./agent/output:/app/log
+      - ./dummy_destination:/app/
     ports:
       - 8080:80
 

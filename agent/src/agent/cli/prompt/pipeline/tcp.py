@@ -1,5 +1,5 @@
-from .schemaless import PromptConfigSchemaless
+from .schemaless import SchemalessPrompter
 
 
-class PromptConfigTCP(PromptConfigSchemaless):
+class TCPPrompter(SchemalessPrompter):
     pass

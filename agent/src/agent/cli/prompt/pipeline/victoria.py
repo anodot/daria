@@ -1,9 +1,9 @@
 import click
 
-from agent.cli.prompt.pipeline import PromptConfig
+from agent.cli.prompt.pipeline import Prompter
 
 
-class PromptConfigVictoria(PromptConfig):
+class VictoriaPrompter(Prompter):
     def prompt_config(self):
         self.prompt_query()
         self.prompt_aggregated_metric_name()
@@ -12,7 +12,7 @@ class PromptConfigVictoria(PromptConfig):
         self.prompt_delay()
         self.config['timestamp'] = {}
         self.config['timestamp']['type'] = 'unix'
-        self.set_static_properties()
+        self.set_static_dimensions()
         self.set_tags()
 
     def prompt_query(self):

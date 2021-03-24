@@ -1,0 +1,258 @@
+[
+  {
+    "target_type": "gauge",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "cacti"
+      ],
+      "pipeline_type": [
+        "cacti"
+      ],
+      "tag": [
+        "cacti"
+      ]
+    },
+    "value": 1.0,
+    "properties": {
+      "what": "test_data_source",
+      "host_description": "390257-some_host",
+      "static_dim": "cacti",
+      "query_ifName": "Gi0/4",
+      "query_ifAlias": "ENoB-Id"
+    },
+    "timestamp": 1615766700
+  },
+  {
+    "target_type": "gauge",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "cacti"
+      ],
+      "pipeline_type": [
+        "cacti"
+      ],
+      "tag": [
+        "cacti"
+      ]
+    },
+    "value": 0.0,
+    "properties": {
+      "what": "test_data_source",
+      "host_description": "390257-some_host",
+      "static_dim": "cacti",
+      "query_ifName": "Gi0/4",
+      "query_ifAlias": "ENoB-Id"
+    },
+    "timestamp": 1615767000
+  },
+  {
+    "target_type": "gauge",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "cacti"
+      ],
+      "pipeline_type": [
+        "cacti"
+      ],
+      "tag": [
+        "cacti"
+      ]
+    },
+    "value": 9.0,
+    "properties": {
+      "what": "test_data_source",
+      "host_description": "390257-some_host",
+      "static_dim": "cacti",
+      "query_ifName": "Gi0/4",
+      "query_ifAlias": "ENoB-Id"
+    },
+    "timestamp": 1615767300
+  },
+  {
+    "target_type": "gauge",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "cacti"
+      ],
+      "pipeline_type": [
+        "cacti"
+      ],
+      "tag": [
+        "cacti"
+      ]
+    },
+    "value": 8.0,
+    "properties": {
+      "what": "test_data_source",
+      "host_description": "390257-some_host",
+      "static_dim": "cacti",
+      "query_ifName": "Gi0/4",
+      "query_ifAlias": "ENoB-Id"
+    },
+    "timestamp": 1615767600
+  },
+  {
+    "target_type": "gauge",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "cacti"
+      ],
+      "pipeline_type": [
+        "cacti"
+      ],
+      "tag": [
+        "cacti"
+      ]
+    },
+    "value": 3.0,
+    "properties": {
+      "what": "test_data_source",
+      "host_description": "390257-some_host",
+      "static_dim": "cacti",
+      "query_ifName": "Gi0/4",
+      "query_ifAlias": "ENoB-Id"
+    },
+    "timestamp": 1615767900
+  },
+  {
+    "target_type": "gauge",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "cacti"
+      ],
+      "pipeline_type": [
+        "cacti"
+      ],
+      "tag": [
+        "cacti"
+      ]
+    },
+    "value": 0.0,
+    "properties": {
+      "what": "test_data_source",
+      "host_description": "390257-some_host",
+      "static_dim": "cacti",
+      "query_ifName": "Gi0/4",
+      "query_ifAlias": "ENoB-Id"
+    },
+    "timestamp": 1615768200
+  },
+  {
+    "target_type": "gauge",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "cacti"
+      ],
+      "pipeline_type": [
+        "cacti"
+      ],
+      "tag": [
+        "cacti"
+      ]
+    },
+    "value": 6.0,
+    "properties": {
+      "what": "test_data_source",
+      "host_description": "390257-some_host",
+      "static_dim": "cacti",
+      "query_ifName": "Gi0/4",
+      "query_ifAlias": "ENoB-Id"
+    },
+    "timestamp": 1615768500
+  },
+  {
+    "target_type": "gauge",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "cacti"
+      ],
+      "pipeline_type": [
+        "cacti"
+      ],
+      "tag": [
+        "cacti"
+      ]
+    },
+    "value": 3.0,
+    "properties": {
+      "what": "test_data_source",
+      "host_description": "390257-some_host",
+      "static_dim": "cacti",
+      "query_ifName": "Gi0/4",
+      "query_ifAlias": "ENoB-Id"
+    },
+    "timestamp": 1615768800
+  }
+]

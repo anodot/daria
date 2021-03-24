@@ -2,10 +2,10 @@ import click
 import socket
 
 from agent.modules.tools import infinite_retry
-from .schemaless import SchemalessSourceBuilder
+from .schemaless import SchemalessPrompter
 
 
-class TCPSourceBuilder(SchemalessSourceBuilder):
+class TCPPrompter(SchemalessPrompter):
     CONFIG_PORTS = 'conf.ports'
 
     @infinite_retry

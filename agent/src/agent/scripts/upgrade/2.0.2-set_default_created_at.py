@@ -20,6 +20,3 @@ destination_ = destination.repository.get()
 destination_.created_at = datetime.now()
 destination.repository.save(destination_)
 logger.info(f'Updated created_at column for destination')
-# todo this is temporary
-db.session().commit()
-db.session().close()

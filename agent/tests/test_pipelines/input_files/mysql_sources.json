@@ -1,9 +1,0 @@
-[
-  {
-    "type": "mysql",
-    "name": "test_mysql_1",
-    "config": {
-      "connection_string": "mysql://root@mysql:3306/test"
-    }
-  }
-]

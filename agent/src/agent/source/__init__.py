@@ -4,6 +4,7 @@ from . import repository
 from . import manager
 from . import validator
 from . import db
+from . import json_builder
 
 TYPE_INFLUX = 'influx'
 TYPE_KAFKA = 'kafka'
@@ -16,6 +17,7 @@ TYPE_DIRECTORY = 'directory'
 TYPE_SAGE = 'sage'
 TYPE_VICTORIA = 'victoria'
 TYPE_ZABBIX = 'zabbix'
+TYPE_CACTI = 'cacti'
 
 types = {
     TYPE_INFLUX: InfluxSource,
@@ -29,6 +31,7 @@ types = {
     TYPE_SAGE: SageSource,
     TYPE_VICTORIA: VictoriaMetricsSource,
     TYPE_ZABBIX: ZabbixSource,
+    TYPE_CACTI: CactiSource,
 }
 
 json_schema = {

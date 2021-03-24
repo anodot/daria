@@ -1,24 +1,24 @@
+from copy import deepcopy
+
 import click
 import pytz
 
-from agent.cli import prompt, preview
+from agent.cli import preview
 from agent.modules.tools import infinite_retry, if_validation_enabled, dict_get_nested
-from agent import pipeline, source
+from agent import pipeline
 from agent.pipeline import Pipeline
 
 
-class PromptConfig:
+class Prompter:
     timestamp_types = ['string', 'datetime', 'unix', 'unix_ms']
 
-    def __init__(self, pipeline_: Pipeline):
-        self.advanced = False
-        self.default_config = {}
-        self.config = {'override_source': {}}
-        self.pipeline = pipeline_
-
-    def prompt(self, default_config, advanced=False) -> Pipeline:
+    def __init__(self, pipeline_: Pipeline, default_config: dict, advanced=False):
         self.advanced = advanced
         self.default_config = default_config
+        self.config = {'override_source': deepcopy(pipeline_.override_source)}
+        self.pipeline = pipeline_
+
+    def prompt(self) -> Pipeline:
         self.prompt_config()
         self.pipeline.set_config(self.config)
         return self.pipeline
@@ -92,11 +92,11 @@ class PromptConfig:
             default = ' '.join([key + ':' + val for key, val in self.default_config[property_name].items()])
         return default
 
-    def set_static_properties(self):
+    def set_static_dimensions(self):
         self.config['properties'] = self.default_config.get('properties', {})
         if self.advanced:
             self.config['properties'] = {}
-            properties = self.prompt_object('Additional properties', self.get_default_object_value('properties'))
+            properties = self.prompt_object('Static dimensions', self.get_default_object_value('properties'))
             for k, v in properties.items():
                 self.config['properties'][k.replace(' ', '_').replace('.', '_')] = v.replace(' ', '_').replace('.', '_')
 
@@ -151,8 +151,8 @@ class PromptConfig:
             click.prompt('Collect since (days ago)', type=click.INT,
                          default=self.default_config.get('days_to_backfill', 0))
 
-    def prompt_interval(self):
-        self.config['interval'] = click.prompt('Query interval (in seconds)', type=click.INT,
+    def prompt_interval(self, message='Query interval (in seconds)'):
+        self.config['interval'] = click.prompt(message, type=click.INT,
                                                default=self.default_config.get('interval'))
 
     def prompt_delay(self):
@@ -163,24 +163,7 @@ class PromptConfig:
         static_what = self.config.get('static_what', True)
         if (self.advanced or self.default_config.get('uses_schema') is not None) and static_what:
             self.config['uses_schema'] = click.confirm('Use schema?',
-                                                      default=self.default_config.get('uses_schema', True))
+                                                       default=self.default_config.get('uses_schema', True))
             return
 
-        self.config['uses_schema'] = pipeline.manager.supports_schema(self.pipeline.source.type) and static_what
-
-
-def get_prompter(pipeline_: Pipeline) -> PromptConfig:
-    prompters = {
-        source.TYPE_INFLUX: prompt.pipeline.PromptConfigInflux,
-        source.TYPE_KAFKA: prompt.pipeline.PromptConfigKafka,
-        source.TYPE_MONGO: prompt.pipeline.PromptConfigMongo,
-        source.TYPE_MYSQL: prompt.pipeline.PromptConfigJDBC,
-        source.TYPE_POSTGRES: prompt.pipeline.PromptConfigJDBC,
-        source.TYPE_ELASTIC: prompt.pipeline.PromptConfigElastic,
-        source.TYPE_SPLUNK: prompt.pipeline.PromptConfigTCP,
-        source.TYPE_DIRECTORY: prompt.pipeline.PromptConfigDirectory,
-        source.TYPE_SAGE: prompt.pipeline.PromptConfigSage,
-        source.TYPE_VICTORIA: prompt.pipeline.PromptConfigVictoria,
-        source.TYPE_ZABBIX: prompt.pipeline.PromptConfigZabbix,
-    }
-    return prompters[pipeline_.source.type](pipeline_)
+        self.config['uses_schema'] = pipeline.manager.supports_schema(self.pipeline) and static_what

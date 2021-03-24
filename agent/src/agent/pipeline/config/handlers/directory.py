@@ -1,8 +1,5 @@
-from agent.modules.logger import get_logger
 from agent.pipeline.config import stages
 from agent.pipeline.config.handlers.schema import SchemaConfigHandler
-
-logger = get_logger(__name__)
 
 
 class DirectoryConfigHandler(SchemaConfigHandler):

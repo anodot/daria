@@ -1,12 +1,12 @@
 import click
 
 from agent.modules import validator
-from .abstract_builder import Builder
+from .base import Prompter
 from agent.modules.tools import infinite_retry
 from agent import source
 
 
-class ZabbixSourceBuilder(Builder):
+class ZabbixPrompter(Prompter):
     @infinite_retry
     def prompt(self, default_config, advanced=False):
         self.prompt_url(default_config)
@@ -14,6 +14,7 @@ class ZabbixSourceBuilder(Builder):
         self.prompt_password(default_config)
         self.prompt_query_timeout(default_config, advanced)
         self.validator.validate_connection()
+        self.source.set_config(self.source.config)
         return self.source
 
     @infinite_retry

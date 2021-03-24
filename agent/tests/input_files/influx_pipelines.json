@@ -1,0 +1,23 @@
+[
+  {
+    "source": "test_influx",
+    "pipeline_id": "test_influx_file_short",
+    "measurement_name": "cpu_test_e",
+    "value": ["usage_active", "usage_idle"],
+    "dimensions": ["cp<u", "host", "zone"],
+    "interval": 1200000
+  },
+  {
+    "source": "test_influx",
+    "pipeline_id": "test_influx_file_full",
+    "measurement_name": "cpu_test",
+    "value": ["usage_active"],
+    "dimensions": {
+      "required": [],
+      "optional": ["cp<u", "host", "zone"]
+    },
+    "target_type": "gauge",
+    "properties": {"test": "val"},
+    "interval": 1200000
+  }
+]

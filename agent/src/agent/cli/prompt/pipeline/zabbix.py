@@ -1,11 +1,11 @@
 import json
 import click
 
-from agent.cli.prompt.pipeline.schemaless import PromptConfigSchemaless
+from agent.cli.prompt.pipeline.schemaless import SchemalessPrompter
 from agent.modules.tools import infinite_retry
 
 
-class PromptConfigZabbix(PromptConfigSchemaless):
+class ZabbixPrompter(SchemalessPrompter):
     def prompt_config(self):
         self.prompt_query_file()
         self.prompt_batch_sizes()
@@ -17,7 +17,7 @@ class PromptConfigZabbix(PromptConfigSchemaless):
         self.set_dimensions()
         self.prompt_delay()
         self.set_transform()
-        self.set_static_properties()
+        self.set_static_dimensions()
         self.set_tags()
         # todo code duplicate
         self.config['timestamp'] = {}

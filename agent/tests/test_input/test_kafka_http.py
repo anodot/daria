@@ -1,10 +1,15 @@
+import json
+import subprocess
 import traceback
 
-from agent import cli
+from agent import cli, pipeline
 from agent import source
+from .test_zpipeline_base import TestInputBase
+from ..conftest import get_input_file_path
 
 
-class TestKafka:
+class TestKafka(TestInputBase):
+    __test__ = True
     params = {
         'test_source_create': [{'name': 'test_kfk'}, {'name': 'test_running_counters'}, {'name': 'test_json_arrays'}],
         'test_create': [
@@ -86,7 +91,9 @@ class TestKafka:
                 'pipeline_id': 'test_transform_value_2',
                 'transform_file': '/home/kafka_transform_value_2.csv'
             },
-        ]
+        ],
+        'test_create_source_with_file': [{'file_name': 'kafka_sources'}],
+        'test_create_with_file': [{'file_name': 'kafka_pipelines'}],
     }
 
     def test_source_create(self, cli_runner, name):
@@ -102,6 +109,8 @@ class TestKafka:
         )
         traceback.print_exception(*result.exc_info)
         assert result.exit_code == 0
+        pipeline_ = pipeline.repository.get_by_id(name)
+        assert bool(pipeline_.override_source)
 
     def test_edit(self, cli_runner, options, value):
         result = cli_runner.invoke(cli.pipeline.edit, options, catch_exceptions=False,
@@ -131,3 +140,15 @@ class TestKafka:
         result = cli_runner.invoke(cli.pipeline.create, ["-a"], catch_exceptions=False, input='\n'.join(input_.values()))
         traceback.print_exception(*result.exc_info)
         assert result.exit_code == 0
+
+    # I guess it's testing di.init() for cli, cli_runner doesn't run click app, and subprocess runs it
+    def test_create_subprocess(self):
+        input_file_path = get_input_file_path('kafka_sources_2.json')
+        try:
+            subprocess.check_output(['agent', 'source', 'create', '-f', input_file_path], stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as exc:
+            raise Exception(f'Status: FAIL\nexit code {exc.returncode}\n{exc.output}')
+        with open(input_file_path) as f:
+            sources = json.load(f)
+            for source_ in sources:
+                assert source.repository.exists(f"{source_['name']}")

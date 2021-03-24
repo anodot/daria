@@ -7,6 +7,7 @@ def get_config_handler(pipeline_: Pipeline) -> BaseConfigHandler:
     base_config = _get_config_loader(pipeline_).load_base_config(pipeline_)
 
     handlers_protocol20 = {
+        source.TYPE_CACTI: pipeline.config.handlers.cacti.CactiConfigHandler,
         source.TYPE_INFLUX: pipeline.config.handlers.influx.InfluxConfigHandler,
         source.TYPE_MONGO: pipeline.config.handlers.mongo.MongoConfigHandler,
         source.TYPE_KAFKA: pipeline.config.handlers.kafka.KafkaConfigHandler,
