@@ -39,7 +39,8 @@ services:
       POSTGRES_PASSWORD: agent
       POSTGRES_DB: agent
     volumes:
-      - /var/lib/postgresql/data
+      - agent-data:/var/lib/postgresql/data
 
 volumes:
   sdc-data:
+  agent-data:
