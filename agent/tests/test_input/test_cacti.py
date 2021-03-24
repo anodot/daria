@@ -25,7 +25,7 @@ class TestCacti(TestInputBase):
         assert source.repository.exists(source_name)
 
     def test_create(self, cli_runner):
-        offset = datetime.fromtimestamp(1615808400)
+        offset = datetime.fromtimestamp(1615808400).replace(hour=0, minute=0, second=0)
         delay = 5
         pipeline_id = 'cacti'
         input_ = {
@@ -39,6 +39,7 @@ class TestCacti(TestInputBase):
             'exclude sources': '*mee too*',
             'static dims': 'static_dim:cacti',
             'tags': 'tag:cacti',
+            'rename dimensions': 'query_ifAlias:alias query_ifName:name',
             'preview': 'y',
         }
         result = cli_runner.invoke(cli.pipeline.create, ['-a'], catch_exceptions=False, input=generate_input(input_))

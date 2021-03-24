@@ -15,6 +15,7 @@ class CactiPrompter(Prompter):
         self.prompt_exclude_datasources()
         self.set_static_dimensions()
         self.set_tags()
+        self.prompt_rename_dimensions()
 
     def prompt_step(self):
         self.config['step'] = \

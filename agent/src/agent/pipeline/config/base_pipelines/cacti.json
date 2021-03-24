@@ -1,11 +1,11 @@
 {
   "pipelineConfig" : {
     "schemaVersion" : 6,
-    "version" : 17,
+    "version" : 19,
     "pipelineId" : "cacti6cbb199b-50f2-49ae-9e04-065960040de3",
-    "title" : "ca",
+    "title" : "cacti",
     "description" : "",
-    "uuid" : "1a323fe3-749a-43ee-a33e-2370c08fa322",
+    "uuid" : "d5598abe-7d96-40f2-bf4a-9a04be2f0acc",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -15,15 +15,6 @@
     }, {
       "name" : "deliveryGuarantee",
       "value" : "AT_LEAST_ONCE"
-    }, {
-      "name" : "testOriginStage",
-      "value" : "streamsets-datacollector-dev-lib::com_streamsets_pipeline_stage_devtest_rawdata_RawDataDSource::3"
-    }, {
-      "name" : "startEventStage",
-      "value" : "streamsets-datacollector-basic-lib::com_streamsets_pipeline_stage_destination_devnull_ToErrorNullDTarget::1"
-    }, {
-      "name" : "stopEventStage",
-      "value" : "streamsets-datacollector-basic-lib::com_streamsets_pipeline_stage_destination_devnull_ToErrorNullDTarget::1"
     }, {
       "name" : "shouldRetry",
       "value" : true
@@ -64,14 +55,8 @@
         "value" : "http://anodot-agent"
       } ]
     }, {
-      "name" : "badRecordsHandling",
-      "value" : "streamsets-datacollector-basic-lib::com_streamsets_pipeline_stage_destination_devnull_ToErrorNullDTarget::1"
-    }, {
       "name" : "errorRecordPolicy",
       "value" : "ORIGINAL_RECORD"
-    }, {
-      "name" : "statsAggregatorStage",
-      "value" : "streamsets-datacollector-basic-lib::com_streamsets_pipeline_stage_destination_devnull_StatsDpmDirectlyDTarget::1"
     }, {
       "name" : "workerCount",
       "value" : 0
@@ -331,8 +316,87 @@
     }, {
       "name" : "transformerEMRConfig.slaveInstanceTypeCustom",
       "value" : null
+    }, {
+      "name" : "transformerEMRConfig.serviceAccessSecurityGroup",
+      "value" : null
+    }, {
+      "name" : "googleCloudConfig.region",
+      "value" : null
+    }, {
+      "name" : "googleCloudConfig.customRegion",
+      "value" : null
+    }, {
+      "name" : "googleCloudConfig.gcsStagingUri",
+      "value" : null
+    }, {
+      "name" : "googleCloudConfig.create",
+      "value" : false
+    }, {
+      "name" : "googleCloudConfig.clusterPrefix",
+      "value" : null
+    }, {
+      "name" : "googleCloudConfig.version",
+      "value" : "1.4-ubuntu18"
+    }, {
+      "name" : "googleCloudConfig.masterType",
+      "value" : null
+    }, {
+      "name" : "googleCloudConfig.workerType",
+      "value" : null
+    }, {
+      "name" : "googleCloudConfig.networkType",
+      "value" : null
+    }, {
+      "name" : "googleCloudConfig.network",
+      "value" : null
+    }, {
+      "name" : "googleCloudConfig.subnet",
+      "value" : null
+    }, {
+      "name" : "googleCloudConfig.tags",
+      "value" : [ ]
+    }, {
+      "name" : "googleCloudConfig.workerCount",
+      "value" : 2
+    }, {
+      "name" : "googleCloudConfig.clusterName",
+      "value" : null
+    }, {
+      "name" : "googleCloudConfig.terminate",
+      "value" : false
+    }, {
+      "name" : "googleCloudCredentialsConfig.projectId",
+      "value" : null
+    }, {
+      "name" : "googleCloudCredentialsConfig.credentialsProvider",
+      "value" : null
+    }, {
+      "name" : "googleCloudCredentialsConfig.path",
+      "value" : null
+    }, {
+      "name" : "googleCloudCredentialsConfig.credentialsFileContent",
+      "value" : null
+    }, {
+      "name" : "badRecordsHandling",
+      "value" : "streamsets-datacollector-basic-lib::com_streamsets_pipeline_stage_destination_devnull_ToErrorNullDTarget::1"
+    }, {
+      "name" : "statsAggregatorStage",
+      "value" : "streamsets-datacollector-basic-lib::com_streamsets_pipeline_stage_destination_devnull_StatsDpmDirectlyDTarget::1"
+    }, {
+      "name" : "startEventStage",
+      "value" : "streamsets-datacollector-basic-lib::com_streamsets_pipeline_stage_destination_devnull_ToErrorNullDTarget::1"
+    }, {
+      "name" : "stopEventStage",
+      "value" : "streamsets-datacollector-basic-lib::com_streamsets_pipeline_stage_destination_devnull_ToErrorNullDTarget::1"
+    }, {
+      "name" : "testOriginStage",
+      "value" : "streamsets-datacollector-dev-lib::com_streamsets_pipeline_stage_devtest_rawdata_RawDataDSource::3"
+    }, {
+      "name" : "clusterConfig.yarnKerberosKeytabBase64Bytes",
+      "value" : null
     } ],
     "uiInfo" : {
+      "displayMode" : "BASIC",
       "previewConfig" : {
         "previewSource" : "CONFIGURED_SOURCE",
         "batchSize" : 10,
@@ -352,7 +416,7 @@
       "stageVersion" : "1",
       "configuration" : [ {
         "name" : "script",
-        "value" : "global sdc\n\ntry:\n    sdc.importLock()\n    import sys\n    import os\n    import time\n    from datetime import datetime, timedelta\n\n    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))\n    import requests\nfinally:\n    sdc.importUnlock()\n\n\ndef to_timestamp(date):\n    epoch = datetime(1970, 1, 1)\n    return int((date - epoch).total_seconds())\n\n\ndef get_interval():\n    return int(sdc.userParams['INTERVAL_IN_SECONDS'])\n\n\ndef get_now_with_delay():\n    return int(time.time()) - int(sdc.userParams['DELAY_IN_MINUTES']) * 60\n\n\nentityName = ''\n\nif sdc.lastOffsets.containsKey(entityName):\n    offset = int(float(sdc.lastOffsets.get(entityName)))\nelif sdc.userParams['DAYS_TO_BACKFILL']:\n    offset = to_timestamp(datetime.utcnow().replace(second=0, microsecond=0) - (\n        timedelta(days=int(sdc.userParams['DAYS_TO_BACKFILL'])) + timedelta(seconds=get_interval())\n    ))\nelse:\n    offset = to_timestamp(datetime.utcnow().replace(second=0, microsecond=0) - timedelta(seconds=get_interval()))\n\nsdc.log.info('OFFSET: ' + str(offset))\n\nwhile True:\n    if sdc.isStopped():\n        break\n    end = offset + get_interval()\n    if end > get_now_with_delay():\n        time.sleep(end - get_now_with_delay())\n\n    batch = sdc.createBatch()\n\n    res = requests.get(\n        sdc.userParams['RRD_SOURCE_URL'],\n        json={\n            'start': offset,\n            'end': offset + get_interval(),\n            'step': get_interval(),\n        }\n    )\n    res.raise_for_status()\n    for metric in res.json():\n        record = sdc.createRecord('record created ' + str(datetime.now()))\n        record.value = metric\n        batch.add(record)\n\n        if batch.size() == sdc.batchSize:\n            batch.process(entityName, str(end))\n            batch = sdc.createBatch()\n            if sdc.isStopped():\n                break\n\n    offset += get_interval()\n    batch.process(entityName, str(offset))\n"
+        "value" : ""
       }, {
         "name" : "scriptConf.batchSize",
         "value" : 1000
@@ -375,7 +439,10 @@
           "value" : "0"
         }, {
           "key" : "DAYS_TO_BACKFILL",
-          "value" : "31"
+          "value" : "9"
+        }, {
+          "key" : "STEP_IN_SECONDS",
+          "value" : "300"
         } ]
       }, {
         "name" : "stageOnRecordError",
@@ -387,10 +454,54 @@
         "icon" : "jython.png",
         "description" : "",
         "label" : "Jython get metrics",
-        "xPos" : 400
+        "xPos" : 219,
+        "displayMode" : "BASIC"
       },
       "inputLanes" : [ ],
       "outputLanes" : [ "destination_OutputLane" ],
+      "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
+      "instanceName" : "FieldRenamer_01",
+      "library" : "streamsets-datacollector-basic-lib",
+      "stageName" : "com_streamsets_pipeline_stage_processor_fieldrenamer_FieldRenamerDProcessor",
+      "stageVersion" : "2",
+      "configuration" : [ {
+        "name" : "renameMapping",
+        "value" : [ {
+          "fromFieldExpression" : "/properties/query_ifAlias",
+          "toFieldExpression" : "/properties/alias"
+        } ]
+      }, {
+        "name" : "errorHandler.nonExistingFromFieldHandling",
+        "value" : "CONTINUE"
+      }, {
+        "name" : "errorHandler.existingToFieldHandling",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "errorHandler.multipleFromFieldsMatching",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "yPos" : 151,
+        "stageType" : "PROCESSOR",
+        "icon" : "edit.png",
+        "description" : "",
+        "label" : "Rename dimensions",
+        "xPos" : 438,
+        "displayMode" : "ADVANCED"
+      },
+      "inputLanes" : [ "destination_OutputLane" ],
+      "outputLanes" : [ "FieldRenamer_01OutputLane16165887647400" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -426,12 +537,21 @@
           "expression" : "${emptyList()}"
         }, {
           "fieldToSet" : "/tags/pipeline_id[0]",
-          "expression" : "${\"ca\"}"
+          "expression" : "${\"cacti\"}"
         }, {
           "fieldToSet" : "/tags/pipeline_type",
           "expression" : "${emptyList()}"
         }, {
           "fieldToSet" : "/tags/pipeline_type[0]",
+          "expression" : "${\"cacti\"}"
+        }, {
+          "fieldToSet" : "/tags/tag",
+          "expression" : "${emptyList()}"
+        }, {
+          "fieldToSet" : "/tags/tag[0]",
+          "expression" : "${\"cacti\"}"
+        }, {
+          "fieldToSet" : "/properties/static_dim",
           "expression" : "${\"cacti\"}"
         }, {
           "fieldToSet" : "/timestamp",
@@ -461,9 +581,10 @@
         "icon" : "expression.png",
         "description" : "",
         "label" : "Add tags and static dimensions, convert timestamp to long",
-        "xPos" : 631
+        "xPos" : 631,
+        "displayMode" : "BASIC"
       },
-      "inputLanes" : [ "destination_OutputLane" ],
+      "inputLanes" : [ "FieldRenamer_01OutputLane16165887647400" ],
       "outputLanes" : [ "ExpressionEvaluator_01OutputLane16152955352740" ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -773,7 +894,8 @@
         "icon" : "anodot_logo.png",
         "description" : "",
         "label" : "Anodot",
-        "xPos" : 879
+        "xPos" : 879,
+        "displayMode" : "BASIC"
       },
       "inputLanes" : [ "ExpressionEvaluator_01OutputLane16152955352740" ],
       "outputLanes" : [ ],
@@ -800,22 +922,22 @@
       "services" : [ ]
     },
     "info" : {
-      "pipelineId" : "ca",
-      "title" : "ca",
+      "pipelineId" : "cacti",
+      "title" : "cacti",
       "description" : "",
-      "created" : 1615374384422,
-      "lastModified" : 1615378766445,
+      "created" : 1616588646496,
+      "lastModified" : 1616595974154,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "1a323fe3-749a-43ee-a33e-2370c08fa322",
+      "uuid" : "d5598abe-7d96-40f2-bf4a-9a04be2f0acc",
       "valid" : true,
       "metadata" : {
         "labels" : [ "cacti", "http" ]
       },
-      "name" : "ca",
-      "sdcVersion" : "3.15.0",
-      "sdcId" : "5482b3b8-8184-11eb-901d-576ba3a131df"
+      "name" : "cacti",
+      "sdcVersion" : "3.18.0",
+      "sdcId" : "62a3bf96-8c9b-11eb-a6d9-f39b95790165"
     },
     "metadata" : {
       "labels" : [ "cacti", "http" ]
@@ -1158,7 +1280,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1615374384479,
+      "timestamp" : 1616588646608,
       "valid" : true
     }, {
       "id" : "stageErrorAlertID",
@@ -1169,7 +1291,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1615374384479,
+      "timestamp" : 1616588646608,
       "valid" : true
     }, {
       "id" : "idleGaugeID",
@@ -1180,7 +1302,7 @@
       "condition" : "${time:now() - value() > 120000}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1615374384479,
+      "timestamp" : 1616588646608,
       "valid" : true
     }, {
       "id" : "batchTimeAlertID",
@@ -1191,18 +1313,18 @@
       "condition" : "${value() > 200}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1615374384479,
+      "timestamp" : 1616588646608,
       "valid" : true
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "acf65cbb-a4d1-4d8d-83c5-6640bb6c45c1",
+    "uuid" : "9aa698fe-c646-4aec-9337-07fc5d43bf28",
     "configuration" : [ {
       "name" : "emailIDs",
-      "value" : [ ]
+      "value" : null
     }, {
       "name" : "webhookConfigs",
-      "value" : [ ]
+      "value" : null
     } ],
     "ruleIssues" : [ ],
     "configIssues" : [ ]
