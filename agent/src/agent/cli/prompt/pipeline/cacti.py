@@ -1,9 +1,9 @@
 import click
 
-from agent.cli.prompt.pipeline import Prompter
+from agent.cli.prompt.pipeline.schemaless import SchemalessPrompter
 
 
-class CactiPrompter(Prompter):
+class CactiPrompter(SchemalessPrompter):
     def prompt_config(self):
         self.config['timestamp'] = {}
         self.config['timestamp']['type'] = 'unix'
@@ -15,6 +15,7 @@ class CactiPrompter(Prompter):
         self.prompt_exclude_datasources()
         self.set_static_dimensions()
         self.set_tags()
+        self.set_transform()
         self.prompt_rename_dimensions()
 
     def prompt_step(self):
