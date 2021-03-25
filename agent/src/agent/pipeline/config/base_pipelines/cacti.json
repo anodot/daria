@@ -416,7 +416,7 @@
       "stageVersion" : "1",
       "configuration" : [ {
         "name" : "script",
-        "value" : ""
+        "value" : "global sdc\n\ntry:\n    sdc.importLock()\n    import sys\n    import os\n    import time\n    from datetime import datetime, timedelta\n\n    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))\n    import requests\nfinally:\n    sdc.importUnlock()\n\n\ndef to_timestamp(date):\n    epoch = datetime(1970, 1, 1)\n    return int((date - epoch).total_seconds())\n\n\ndef get_interval():\n    return int(sdc.userParams['INTERVAL_IN_SECONDS'])\n\n\ndef get_now_with_delay():\n    return int(time.time()) - int(sdc.userParams['DELAY_IN_MINUTES']) * 60\n\n\ndef get_step():\n    return int(sdc.userParams['STEP_IN_SECONDS'])\n\n\nentityName = ''\n\nif sdc.lastOffsets.containsKey(entityName):\n    offset = int(float(sdc.lastOffsets.get(entityName)))\nelif sdc.userParams['DAYS_TO_BACKFILL']:\n    offset = to_timestamp(datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=int(sdc.userParams['DAYS_TO_BACKFILL'])))\nelse:\n    offset = to_timestamp(datetime.now().replace(second=0, microsecond=0))\n\nsdc.log.info('OFFSET: ' + str(offset))\n\nwhile True:\n    if sdc.isStopped():\n        break\n    end = offset + get_interval()\n    if end > get_now_with_delay():\n        time.sleep(end - get_now_with_delay())\n\n    batch = sdc.createBatch()\n\n    res = requests.get(\n        sdc.userParams['RRD_SOURCE_URL'],\n        params={\n            'start': offset,\n            'end': offset + get_interval(),\n            'step': get_step(),\n        }\n    )\n    res.raise_for_status()\n    for metric in res.json():\n        record = sdc.createRecord('record created ' + str(datetime.now()))\n        record.value = metric\n        batch.add(record)\n\n        if batch.size() == sdc.batchSize:\n            batch.process(entityName, str(end))\n            batch = sdc.createBatch()\n            if sdc.isStopped():\n                break\n\n    offset += get_interval()\n    batch.process(entityName, str(offset))\n"
       }, {
         "name" : "scriptConf.batchSize",
         "value" : 1000
@@ -449,16 +449,58 @@
         "value" : "TO_ERROR"
       } ],
       "uiInfo" : {
-        "yPos" : 149,
+        "yPos" : 147,
         "stageType" : "SOURCE",
         "icon" : "jython.png",
         "description" : "",
         "label" : "Jython get metrics",
-        "xPos" : 219,
+        "xPos" : 254,
         "displayMode" : "BASIC"
       },
       "inputLanes" : [ ],
       "outputLanes" : [ "destination_OutputLane" ],
+      "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
+      "instanceName" : "ExpressionEvaluator_02",
+      "library" : "streamsets-datacollector-basic-lib",
+      "stageName" : "com_streamsets_pipeline_stage_processor_expression_ExpressionDProcessor",
+      "stageVersion" : "2",
+      "configuration" : [ {
+        "name" : "expressionProcessorConfigs",
+        "value" : [ {
+          "fieldToSet" : "/",
+          "expression" : "${record:value('/')}"
+        } ]
+      }, {
+        "name" : "headerAttributeConfigs",
+        "value" : [ { } ]
+      }, {
+        "name" : "fieldAttributeConfigs",
+        "value" : [ {
+          "fieldToSet" : "/"
+        } ]
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "yPos" : 148,
+        "stageType" : "PROCESSOR",
+        "icon" : "expression.png",
+        "description" : "",
+        "label" : "Transformations",
+        "xPos" : 492,
+        "displayMode" : "BASIC"
+      },
+      "inputLanes" : [ "destination_OutputLane" ],
+      "outputLanes" : [ "ExpressionEvaluator_02OutputLane16166668829170" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -492,15 +534,15 @@
         "value" : [ ]
       } ],
       "uiInfo" : {
-        "yPos" : 151,
+        "yPos" : 149,
         "stageType" : "PROCESSOR",
         "icon" : "edit.png",
         "description" : "",
         "label" : "Rename dimensions",
-        "xPos" : 438,
+        "xPos" : 721,
         "displayMode" : "ADVANCED"
       },
-      "inputLanes" : [ "destination_OutputLane" ],
+      "inputLanes" : [ "ExpressionEvaluator_02OutputLane16166668829170" ],
       "outputLanes" : [ "FieldRenamer_01OutputLane16165887647400" ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -545,15 +587,6 @@
           "fieldToSet" : "/tags/pipeline_type[0]",
           "expression" : "${\"cacti\"}"
         }, {
-          "fieldToSet" : "/tags/tag",
-          "expression" : "${emptyList()}"
-        }, {
-          "fieldToSet" : "/tags/tag[0]",
-          "expression" : "${\"cacti\"}"
-        }, {
-          "fieldToSet" : "/properties/static_dim",
-          "expression" : "${\"cacti\"}"
-        }, {
           "fieldToSet" : "/timestamp",
           "expression" : "${record:value('/timestamp')}"
         } ]
@@ -576,12 +609,12 @@
         "value" : [ ]
       } ],
       "uiInfo" : {
-        "yPos" : 150,
+        "yPos" : 149,
         "stageType" : "PROCESSOR",
         "icon" : "expression.png",
         "description" : "",
         "label" : "Add tags and static dimensions, convert timestamp to long",
-        "xPos" : 631,
+        "xPos" : 955,
         "displayMode" : "BASIC"
       },
       "inputLanes" : [ "FieldRenamer_01OutputLane16165887647400" ],
@@ -889,12 +922,12 @@
         "value" : [ ]
       } ],
       "uiInfo" : {
-        "yPos" : 150,
+        "yPos" : 149,
         "stageType" : "TARGET",
         "icon" : "anodot_logo.png",
         "description" : "",
         "label" : "Anodot",
-        "xPos" : 879,
+        "xPos" : 1183,
         "displayMode" : "BASIC"
       },
       "inputLanes" : [ "ExpressionEvaluator_01OutputLane16152955352740" ],

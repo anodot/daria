@@ -39,6 +39,7 @@ class TestCacti(TestInputBase):
             'exclude sources': '*mee too*',
             'static dims': 'static_dim:cacti',
             'tags': 'tag:cacti',
+            'transform file': '/home/cacti_transform.csv',
             'rename dimensions': 'query_ifAlias:alias query_ifName:name',
             'preview': 'y',
         }
