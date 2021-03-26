@@ -161,6 +161,8 @@ class CactiLoadClientData(LoadClientData):
         super().load(client_config)
         if 'timestamp' not in self.client_config and not self.edit:
             self.client_config['timestamp'] = {'type': 'unix'}
+        if 'source_cache_ttl' not in self.client_config and not self.edit:
+            self.client_config['source_cache_ttl'] = 3600
         return self.client_config
 
 

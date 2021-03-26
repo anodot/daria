@@ -18,4 +18,4 @@ class Cacti(Stage):
             }
 
     def _get_cacti_source_url(self) -> str:
-        return self.pipeline.streamsets.agent_external_url + '/data_extractor/cacti/extract_metrics/${pipeline:id()}'
+        return self.pipeline.streamsets.agent_external_url + '/data_extractor/cacti/${pipeline:id()}'

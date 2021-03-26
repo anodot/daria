@@ -1,7 +1,7 @@
 from typing import Optional
+from agent.data_extractor.cacti.source_cacher import SourcesCache
 from agent.modules import db as agent_db
 from agent.pipeline import Pipeline
-from .cacti import SourcesCache
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 

@@ -35,6 +35,7 @@ class TestCacti(TestInputBase):
             'interval in sec': 3600,
             'collect since': (datetime.now() - offset).days,
             'delay': delay,
+            'source cache ttl': 3600,
             'exclude hosts': '*exclude_me*',
             'exclude sources': '*mee too*',
             'static dims': 'static_dim:cacti',
