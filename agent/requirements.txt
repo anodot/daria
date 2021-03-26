@@ -36,7 +36,7 @@ pytest-mock==1.10.0
 python-anodot==2.0.0
 python-dateutil==2.8.0
 pytz==2018.9
-PyYAML==5.1
+PyYAML==5.4
 requests==2.25.0
 six==1.12.0
 snowballstemmer==1.2.1
