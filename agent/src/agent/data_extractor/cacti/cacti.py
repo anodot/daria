@@ -39,7 +39,7 @@ class SourceCacher:
 
     @classmethod
     def get_sources(cls, pipeline_: Pipeline) -> List[Source]:
-        sources_cache = cacti.repository.get_cacti_source_cache(pipeline_)
+        sources_cache = cacti.repository.get_source_cache(pipeline_)
         if sources_cache is None:
             sources_cache = cls._cache_sources(pipeline_)
         elif datetime.now() >= sources_cache.expires_at:

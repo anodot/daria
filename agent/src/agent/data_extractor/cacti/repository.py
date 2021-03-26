@@ -1,8 +1,13 @@
 from typing import Optional
-from . import db
 from agent.modules import db as agent_db
 from agent.pipeline import Pipeline
 from .cacti import SourcesCache
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, scoped_session
+
+
+def _get_session(connection_string: str):
+    return scoped_session(sessionmaker(bind=create_engine(connection_string)))
 
 
 def get_cacti_sources(mysql_connection_string: str, exclude_hosts: list, exclude_datasources: list) -> list:
@@ -10,9 +15,7 @@ def get_cacti_sources(mysql_connection_string: str, exclude_hosts: list, exclude
         query = _build_query(exclude_datasources, exclude_hosts)
     else:
         query = 'SELECT name, name_cache, data_source_path FROM data_template_data'
-    session = db.get_session(mysql_connection_string)
-    res = session.execute(query)
-    session.close()
+    res = _get_session(mysql_connection_string).execute(query)
     return res
 
 
@@ -31,7 +34,7 @@ def _build_query(exclude_datasources: list, exclude_hosts: list):
     return query
 
 
-def get_cacti_source_cache(pipeline_: Pipeline) -> Optional[SourcesCache]:
+def get_source_cache(pipeline_: Pipeline) -> Optional[SourcesCache]:
     return agent_db.Session\
             .query(SourcesCache)\
             .filter(SourcesCache.pipeline_id == pipeline_.name).first()
