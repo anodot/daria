@@ -8,7 +8,7 @@ class Cacti(Stage):
         with open(self.get_jython_file_path()) as f:
             return {
                 'scriptConf.params': [
-                    {'key': 'RRD_SOURCE_URL', 'value': self._get_rrd_source_url()},
+                    {'key': 'RRD_SOURCE_URL', 'value': self._get_cacti_source_url()},
                     {'key': 'INTERVAL_IN_SECONDS', 'value': str(self.pipeline.interval)},
                     {'key': 'DELAY_IN_MINUTES', 'value': str(self.pipeline.delay)},
                     {'key': 'DAYS_TO_BACKFILL', 'value': str(self.pipeline.days_to_backfill)},
@@ -17,5 +17,5 @@ class Cacti(Stage):
                 'script': f.read(),
             }
 
-    def _get_rrd_source_url(self) -> str:
-        return self.pipeline.streamsets.agent_external_url + '/rrd_source/fetch_data/${pipeline:id()}'
+    def _get_cacti_source_url(self) -> str:
+        return self.pipeline.streamsets.agent_external_url + '/data_extractor/cacti/extract_metrics/${pipeline:id()}'
