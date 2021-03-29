@@ -11,7 +11,6 @@ class CactiPrompter(SchemalessPrompter):
         self.prompt_interval('Polling interval in seconds')
         self.prompt_days_to_backfill()
         self.prompt_delay()
-        self.prompt_source_cache_ttl()
         self.prompt_exclude_hosts()
         self.prompt_exclude_datasources()
         self.set_static_dimensions()
@@ -22,13 +21,6 @@ class CactiPrompter(SchemalessPrompter):
     def prompt_step(self):
         self.config['step'] = \
             click.prompt('Step in seconds', type=click.INT, default=self.default_config.get('step'))
-
-    def prompt_source_cache_ttl(self):
-        source_cache_ttl = self.default_config.get('source_cache_ttl', 3600)
-        if self.advanced:
-            source_cache_ttl = \
-                click.prompt('Cacti source cache TTL in seconds', type=click.STRING, default=source_cache_ttl)
-        self.config['source_cache_ttl'] = source_cache_ttl
 
     def prompt_exclude_hosts(self):
         hosts = ','.join(self.default_config.get('exclude_hosts', []))

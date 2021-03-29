@@ -19,6 +19,7 @@ class TestCacti(TestInputBase):
             'name': source_name,
             'mysql conn': 'mysql://root@mysql:3306/cacti',
             'rrd files dir': '/usr/src/app/tests/input_files',
+            'source cache ttl': 3600,
         }
         result = cli_runner.invoke(cli.source.create, catch_exceptions=False, input=generate_input(input_))
         assert result.exit_code == 0
@@ -35,7 +36,6 @@ class TestCacti(TestInputBase):
             'interval in sec': 3600,
             'collect since': (datetime.now() - offset).days,
             'delay': delay,
-            'source cache ttl': 3600,
             'exclude hosts': '*exclude_me*',
             'exclude sources': '*mee too*',
             'static dims': 'static_dim:cacti',

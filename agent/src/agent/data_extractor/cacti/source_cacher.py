@@ -32,7 +32,7 @@ def _cache_sources(pipeline_: Pipeline) -> SourcesCache:
     cache = SourcesCache(
         pipeline_.name,
         _fetch_raw_sources(pipeline_),
-        _new_expire(int(pipeline_.config['source_cache_ttl']))
+        _new_expire(int(pipeline_.source.config['cache_ttl']))
     )
     cacti.repository.save_source_cache(cache)
     return cache
@@ -40,7 +40,7 @@ def _cache_sources(pipeline_: Pipeline) -> SourcesCache:
 
 def _update_cache(sources_cache: SourcesCache, pipeline_: Pipeline):
     sources_cache.raw_sources = _fetch_raw_sources(pipeline_)
-    sources_cache.expires_at = _new_expire(int(pipeline_.config['source_cache_ttl']))
+    sources_cache.expires_at = _new_expire(int(pipeline_.source.config['cache_ttl']))
     cacti.repository.save_source_cache(sources_cache)
 
 
