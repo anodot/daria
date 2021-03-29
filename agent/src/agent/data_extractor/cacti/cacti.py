@@ -3,7 +3,7 @@ import re
 import rrdtool
 
 from typing import List
-from . import repository
+from agent.data_extractor import cacti
 from agent.pipeline import Pipeline
 from agent import source
 from agent.modules import logger
@@ -11,20 +11,21 @@ from agent.modules import logger
 logger_ = logger.get_logger(__name__)
 
 
+class Source:
+    def __init__(self, data: dict):
+        self.name = data['name']
+        self.name_cache = data['name_cache']
+        self.data_source_path = data['data_source_path']
+
+
 def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> list:
     metrics = []
-
-    sources = repository.get_cacti_sources(
-        pipeline_.source.config[source.CactiSource.MYSQL_CONNECTION_STRING],
-        pipeline_.config.get('exclude_hosts'),
-        pipeline_.config.get('exclude_datasources')
-    )
-    for cacti_source in sources:
+    for cacti_source in cacti.source_cacher.get_sources(pipeline_):
         base_metric = {
             'target_type': 'gauge',
             'properties': _extract_dimensions(cacti_source),
         }
-        rrd_file_name = cacti_source['data_source_path']
+        rrd_file_name = cacti_source.data_source_path
         if not rrd_file_name:
             continue
 
@@ -68,13 +69,12 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
     return metrics
 
 
-def _extract_dimensions(cacti_source: dict) -> dict:
-    source_name = cacti_source['name']
+def _extract_dimensions(cacti_source: Source) -> dict:
     dimensions = {}
-    dimension_values = _extract_dimension_values(source_name, cacti_source['name_cache'])
+    dimension_values = _extract_dimension_values(cacti_source.name, cacti_source.name_cache)
     if not dimension_values:
         return {}
-    dimension_names = _extract_dimension_names(source_name)
+    dimension_names = _extract_dimension_names(cacti_source.name)
     if not dimension_names:
         return {}
     for i, name in enumerate(dimension_names):

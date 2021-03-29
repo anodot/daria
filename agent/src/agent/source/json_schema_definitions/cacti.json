@@ -2,7 +2,8 @@
   "type": "object",
   "properties": {
     "mysql_connection_string": {"type": "string"},
-    "rrd_dir": {"type": "string"}
+    "rrd_dir": {"type": "string"},
+    "cache_ttl": {"type": "integer"}
   },
   "required": ["mysql_connection_string", "rrd_dir"]
 }

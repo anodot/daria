@@ -10,6 +10,7 @@ class CactiPrompter(Prompter):
     def prompt(self, default_config, advanced=False):
         self.prompt_mysql_connection(default_config)
         self.prompt_rrd_dir(default_config)
+        self.prompt_source_cache_ttl(default_config)
         self.source.set_config(self.source.config)
         return self.source
 
@@ -32,3 +33,10 @@ class CactiPrompter(Prompter):
         ).strip()
         validator.validate_dir(directory)
         self.source.config[source.CactiSource.RRD_DIR] = directory
+
+    def prompt_source_cache_ttl(self, default_config):
+        self.source.config['cache_ttl'] = click.prompt(
+            'Cacti source cache TTL in seconds',
+            type=click.INT,
+            default=default_config.get('cache_ttl', 3600)
+        )
