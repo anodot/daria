@@ -206,6 +206,10 @@ class CactiSource(Source):
     MYSQL_CONNECTION_STRING = 'mysql_connection_string'
     RRD_DIR = 'rrd_dir'
 
+    @property
+    def cache_ttl(self) -> int:
+        return self.config.get('cache_ttl', 3600)
+
 
 class DirectorySource(SchemalessSource):
     pass

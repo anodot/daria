@@ -1,10 +1,19 @@
+from functools import wraps
 from typing import List
+from agent import source
 from agent.modules.db import Session
 from agent.pipeline import PipelineOffset, Pipeline
 
 
-class PipelineNotExistsException(Exception):
-    pass
+def typed_source(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        res = func(*args, **kwargs)
+        if isinstance(res, list):
+            return [_construct_source(pipeline) for pipeline in res]
+        else:
+            return _construct_source(res)
+    return wrapper
 
 
 def exists(pipeline_id: str) -> bool:
@@ -13,6 +22,7 @@ def exists(pipeline_id: str) -> bool:
     ).scalar())
 
 
+@typed_source
 def get_by_id(pipeline_id: str) -> Pipeline:
     pipeline_ = Session.query(Pipeline).filter(Pipeline.name == pipeline_id).first()
     if not pipeline_:
@@ -20,10 +30,12 @@ def get_by_id(pipeline_id: str) -> Pipeline:
     return pipeline_
 
 
+@typed_source
 def get_by_source(source_name: str) -> List[Pipeline]:
     return list(filter(lambda x: x.source.name == source_name, get_all()))
 
 
+@typed_source
 def get_all() -> List[Pipeline]:
     return Session.query(Pipeline).all()
 
@@ -50,6 +62,7 @@ def delete_offset(pipeline_offset: PipelineOffset):
     Session.commit()
 
 
+@typed_source
 def get_by_streamsets_id(streamsets_id: int) -> List[Pipeline]:
     return Session.query(Pipeline).filter(Pipeline.streamsets_id == streamsets_id).all()
 
@@ -66,3 +79,12 @@ def remove_deleted_pipeline_id(pipeline_id: str):
 
 def get_deleted_pipeline_ids() -> list:
     return Session.execute('SELECT * FROM deleted_pipelines')
+
+
+def _construct_source(pipeline: Pipeline) -> Pipeline:
+    pipeline.source.__class__ = source.types[pipeline.source.type]
+    return pipeline
+
+
+class PipelineNotExistsException(Exception):
+    pass

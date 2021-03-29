@@ -3,7 +3,6 @@
   "name": "cacti_file",
   "config": {
     "mysql_connection_string": "mysql://root@mysql:3306/cacti",
-    "rrd_dir": "/usr/src/app/tests/input_files",
-    "cache_ttl": 3600
+    "rrd_dir": "/usr/src/app/tests/input_files"
   }
 }]
