@@ -63,7 +63,7 @@ class AnodotApiClient:
 
     @endpoint
     def delete_schema(self, schema_id):
-        return self.session.delete(self._build_url('stream-schemas', schema_id), proxies=self.proxies)
+        return self.session.delete(self._build_url('stream-schemas', 'schemas', schema_id), proxies=self.proxies)
 
     @endpoint
     def send_topology_data(self, data_type, data):
