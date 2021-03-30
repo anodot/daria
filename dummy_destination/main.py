@@ -78,7 +78,7 @@ def create_schema_mock():
     return json.dumps(response)
 
 
-@app.route('/api/v2/stream-schemas/<schema_id>', methods=['DELETE'])
+@app.route('/api/v2/stream-schemas/schemas/<schema_id>', methods=['DELETE'])
 def delete_schema_mock(schema_id):
     return json.dumps({'result': 'ok'})
 
