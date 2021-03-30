@@ -39,7 +39,7 @@ def create(advanced, file):
 def edit(name, advanced, file):
     _check_prerequisites()
     if not file and not name:
-        raise click.UsageError('Specify source name or file path')
+        raise click.ClickException('Specify source name or file path')
     if file:
         _edit_using_file(file)
     else:
@@ -54,8 +54,10 @@ def _check_prerequisites():
 
 
 @click.command()
-@click.argument('name', autocompletion=autocomplete)
+@click.argument('name', autocompletion=autocomplete, required=False)
 def delete(name):
+    if not name:
+        raise click.ClickException('Specify source name')
     source.repository.delete_by_name(name)
 
 
@@ -89,7 +91,7 @@ def _edit_using_file(file):
     try:
         source.json_builder.edit_using_file(file)
     except (ValidationError, SchemaError) as e:
-        raise click.UsageError(str(e))
+        raise click.ClickException(str(e))
 
 
 def _prompt_edit(name: str, advanced: bool) -> source.Source:

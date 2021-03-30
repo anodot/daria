@@ -46,8 +46,10 @@ def add(url, username, password, agent_ext_url):
 
 
 @click.command()
-@click.argument('url', autocompletion=get_url_complete)
+@click.argument('url', autocompletion=get_url_complete, required=False)
 def edit(url):
+    if not url:
+        raise click.ClickException('Specify StreamSets URL')
     try:
         s = streamsets.repository.get_by_url(url)
     except streamsets.repository.StreamsetsNotExistsException as e:
@@ -63,8 +65,10 @@ def edit(url):
 
 
 @click.command()
-@click.argument('url', autocompletion=get_url_complete)
+@click.argument('url', autocompletion=get_url_complete, required=False)
 def delete(url):
+    if not url:
+        raise click.ClickException('Specify StreamSets URL')
     try:
         streamsets.manager.delete_streamsets(
             streamsets.repository.get_by_url(url)
