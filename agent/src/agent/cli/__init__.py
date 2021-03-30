@@ -35,20 +35,8 @@ def agent(version):
 
 
 def agent_entry_point():
-    try:
-        di.init()
-        agent(standalone_mode=False)
-        db.Session.commit()
-    except click.exceptions.Abort:
-        click.echo('Aborted!\n')
-        db.Session.rollback()
-        return
-    except click.ClickException as e:
-        click.secho(str(e), err=True, fg='red')
-        db.Session.rollback()
-    except Exception:
-        db.Session.rollback()
-        raise
+    di.init()
+    agent()
 
 
 agent.add_command(source_group)
