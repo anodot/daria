@@ -19,8 +19,10 @@ def get_pipelines_ids_complete(ctx, args, incomplete):
 def list_pipelines():
     pipelines = pipeline.repository.get_all()
     statuses = sdc_client.get_all_pipeline_statuses()
-    table = _build_table(['Name', 'Type', 'Status', 'Streamsets URL'],
-                         [[p.name, p.source.type, statuses[p.name]['status'], p.streamsets.url] for p in pipelines])
+    table = _build_table(
+        ['Name', 'Type', 'Status', 'Streamsets URL'],
+        [[p.name, p.source.type, statuses[p.name]['status'] if p.name in statuses else 'DOES NOT EXIST IN STREAMSETS', p.streamsets.url] for p in pipelines]
+    )
     click.echo(table.draw())
 
 
