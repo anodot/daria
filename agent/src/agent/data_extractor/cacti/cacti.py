@@ -11,8 +11,6 @@ from agent.modules import logger
 
 logger_ = logger.get_logger(__name__)
 
-TMP_DIR = '/tmp/cacti_rrd/'
-
 
 class Source:
     def __init__(self, data: dict):
@@ -38,7 +36,7 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
                 logger_.warning(f'Path {rrd_file_name} does not contain "<path_rra>/", skipping')
                 continue
 
-            rrd_file_path = rrd_file_name.replace('<path_rra>/', TMP_DIR)
+            rrd_file_path = rrd_file_name.replace('<path_rra>', _get_tmp_rrd_dir(pipeline_))
             if not os.path.isfile(rrd_file_path):
                 logger_.warning(f'File {rrd_file_path} does not exist')
                 continue
@@ -92,7 +90,7 @@ def _clean_rrd_dir(pipeline_: Pipeline):
 
 
 def _get_tmp_rrd_dir(pipeline_: Pipeline):
-    return os.path.join(TMP_DIR, pipeline_.name)
+    return os.path.join('/tmp/cacti_rrd/', pipeline_.name)
 
 
 def _extract_dimensions(cacti_source: Source) -> dict:
