@@ -77,8 +77,9 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
 
 
 def _extract_rrd_archive(pipeline_: Pipeline):
-    # file_path = '/Users/antonzelenin/Workspace/daria/agent/tests/input_files/cacti_rrd.tar.gz'
     file_path = pipeline_.source.config[source.CactiSource.RRD_ARCHIVE_PATH]
+    if not os.path.isfile(file_path):
+        raise ArchiveNotExistsException()
     with tarfile.open(file_path, "r:gz") as tar:
         tar.extractall(path=_get_tmp_rrd_dir(pipeline_))
 
@@ -123,3 +124,7 @@ def _extract_dimension_values(name: str, name_cache: str) -> List[tuple]:
     if not result:
         return []
     return list(result[0])
+
+
+class ArchiveNotExistsException(Exception):
+    pass

@@ -1,5 +1,7 @@
 global sdc
 
+MAX_TRIES = 3
+
 try:
     sdc.importLock()
     import sys
@@ -41,6 +43,7 @@ else:
 
 sdc.log.info('OFFSET: ' + str(offset))
 
+tries = 0
 while True:
     if sdc.isStopped():
         break
@@ -58,6 +61,15 @@ while True:
             'step': get_step(),
         }
     )
+    if res.status_code == 204:
+        # this means the rrd archive has been removed by the script that copies it via scp
+        # and we should wait until a new version of the file is uploaded and try again
+        tries += 1
+        if tries == MAX_TRIES:
+            raise Exception('extract_metrics endpoint returned 204 status code %s times in a row. The archive with rrd files does not exist' % MAX_TRIES)
+        time.sleep(30)
+        continue
+    tries = 0
     res.raise_for_status()
     for metric in res.json():
         record = sdc.createRecord('record created ' + str(datetime.now()))

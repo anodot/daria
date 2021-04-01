@@ -9,10 +9,13 @@ cacti_source_ = Blueprint('cacti_source', __name__)
 @needs_pipeline
 def read(pipeline_id: str):
     pipeline_ = pipeline.repository.get_by_id(pipeline_id)
-    metrics = data_extractor.cacti.extract_metrics(
-        pipeline_,
-        str(request.args['start']),
-        str(request.args['end']),
-        str(request.args['step']),
-    )
+    try:
+        metrics = data_extractor.cacti.extract_metrics(
+            pipeline_,
+            str(request.args['start']),
+            str(request.args['end']),
+            str(request.args['step']),
+        )
+    except data_extractor.cacti.ArchiveNotExistsException:
+        return jsonify(''), 204
     return jsonify(metrics)
