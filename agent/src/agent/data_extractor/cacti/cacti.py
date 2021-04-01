@@ -1,5 +1,6 @@
 import os
 import re
+import shutil
 import rrdtool
 import tarfile
 
@@ -84,7 +85,7 @@ def _extract_rrd_archive(pipeline_: Pipeline):
 
 def _clean_rrd_dir(pipeline_: Pipeline):
     try:
-        os.remove(_get_tmp_rrd_dir(pipeline_))
+        shutil.rmtree(_get_tmp_rrd_dir(pipeline_))
     except OSError as e:
         logger_.error(f"{e.filename} - {e.strerror}")
 
