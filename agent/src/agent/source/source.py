@@ -204,7 +204,7 @@ class ZabbixSource(Source):
 
 class CactiSource(Source):
     MYSQL_CONNECTION_STRING = 'mysql_connection_string'
-    RRD_DIR = 'rrd_dir'
+    RRD_ARCHIVE_PATH = 'rrd_archive_path'
 
     @property
     def cache_ttl(self) -> int:

@@ -26,13 +26,13 @@ class CactiPrompter(Prompter):
 
     @infinite_retry
     def prompt_rrd_dir(self, default_config):
-        directory = click.prompt(
-            'Path to the directory containing rrd files',
+        file_path = click.prompt(
+            'Path to the archive with rrd files',
             type=click.STRING,
-            default=default_config.get(source.CactiSource.RRD_DIR)
+            default=default_config.get(source.CactiSource.RRD_ARCHIVE_PATH)
         ).strip()
-        validator.validate_dir(directory)
-        self.source.config[source.CactiSource.RRD_DIR] = directory
+        validator.file_exists(file_path)
+        self.source.config[source.CactiSource.RRD_ARCHIVE_PATH] = file_path
 
     def prompt_source_cache_ttl(self, default_config):
         self.source.config['cache_ttl'] = click.prompt(

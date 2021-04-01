@@ -18,7 +18,7 @@ class TestCacti(TestInputBase):
             'type': 'cacti',
             'name': source_name,
             'mysql conn': 'mysql://root@mysql:3306/cacti',
-            'rrd files dir': '/usr/src/app/tests/input_files',
+            'rrd files dir': '/usr/src/app/tests/input_files/cacti_rrd.tar.gz',
             'source cache ttl': 3600,
         }
         result = cli_runner.invoke(cli.source.create, catch_exceptions=False, input=generate_input(input_))

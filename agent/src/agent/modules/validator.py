@@ -19,9 +19,9 @@ def validate_url_format_with_port(url: str):
         raise ValidationException(f"{url} - invalid url, please provide url in format `scheme://host:port`")
 
 
-def validate_dir(directory: str):
-    if not os.path.isdir(directory):
-        raise ValidationException(f'Directory {directory} does not exist')
+def file_exists(file_path: str):
+    if not os.path.isfile(file_path):
+        raise ValidationException(f'File {file_path} does not exist')
 
 
 def validate_mysql_connection(connection_string: str):
