@@ -262,7 +262,7 @@ class CactiValidator(Validator):
 
     def validate(self):
         super().validate()
-        validator.validate_dir(self.source.config[source.CactiSource.RRD_DIR])
+        validator.file_exists(self.source.config[source.CactiSource.RRD_ARCHIVE_PATH])
 
     @if_validation_enabled
     def validate_connection(self):

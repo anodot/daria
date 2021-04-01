@@ -138,13 +138,7 @@ class Prompter:
     @infinite_retry
     def prompt_object(prompt_text, default='') -> dict:
         properties_str = click.prompt(prompt_text, type=click.STRING, default=default)
-        result = {}
-        for i in properties_str.split():
-            pair = i.split(':')
-            if len(pair) != 2:
-                raise click.UsageError(f'`{properties_str}` wrong format, correct example - key:val key2:val2')
-            result[pair[0]] = pair[1]
-        return result
+        return str_to_object(properties_str)
 
     def prompt_days_to_backfill(self):
         self.config['days_to_backfill'] = \
@@ -175,4 +169,16 @@ class Prompter:
                 'Dimensions to rename in format name1:alias1 name2:alias2',
                 rename_dimensions_mapping
             )
+        else:
+            rename_dimensions_mapping = str_to_object(rename_dimensions_mapping)
         self.config['rename_dimensions_mapping'] = rename_dimensions_mapping
+
+
+def str_to_object(s: str) -> dict:
+    result = {}
+    for i in s.split():
+        pair = i.split(':')
+        if len(pair) != 2:
+            raise click.UsageError(f'`{s}` wrong format, correct example - key:val key2:val2')
+        result[pair[0]] = pair[1]
+    return result
