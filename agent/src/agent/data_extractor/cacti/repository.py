@@ -14,14 +14,19 @@ def get_cacti_sources(mysql_connection_string: str, exclude_hosts: list, exclude
     if exclude_hosts or exclude_datasources:
         query = _build_query(exclude_datasources, exclude_hosts)
     else:
-        query = 'SELECT name, name_cache, data_source_path FROM data_template_data'
+        query = """
+            SELECT dtd.name, dtd.name_cache, dtd.data_source_path, h.description, h.hostname
+            FROM data_template_data dtd
+            JOIN data_local dl ON dtd.local_data_id = dl.id
+            JOIN host h ON h.id = dl.host_id
+        """
     res = _get_session(mysql_connection_string).execute(query)
     return res
 
 
 def _build_query(exclude_datasources: list, exclude_hosts: list):
     query = """
-        SELECT dtd.name, dtd.name_cache, dtd.data_source_path
+        SELECT dtd.name, dtd.name_cache, dtd.data_source_path, h.description, h.hostname
         FROM data_template_data dtd
         JOIN data_local dl ON dtd.local_data_id = dl.id
         JOIN host h ON h.id = dl.host_id

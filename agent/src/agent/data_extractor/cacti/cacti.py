@@ -18,6 +18,8 @@ class Source:
         self.name = data['name']
         self.name_cache = data['name_cache']
         self.data_source_path = data['data_source_path']
+        self.host_description = data['description']
+        self.host_name = data['hostname']
 
 
 def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> list:
@@ -97,18 +99,18 @@ def _get_tmp_rrd_dir(pipeline_: Pipeline):
 def _extract_dimensions(cacti_source: Source) -> dict:
     dimensions = {}
     dimension_values = _extract_dimension_values(cacti_source.name, cacti_source.name_cache)
-    if not dimension_values:
-        return {}
-    dimension_names = _extract_dimension_names(cacti_source.name)
-    if not dimension_names:
-        return {}
-    for i, name in enumerate(dimension_names):
-        value = dimension_values[i]
-        if isinstance(name, str):
-            name = name.replace(".", "_").replace(" ", "_")
-        if isinstance(value, str):
-            value = value.replace(".", "_").replace(" ", "_")
-        dimensions[name] = value
+    if dimension_values:
+        dimension_names = _extract_dimension_names(cacti_source.name)
+        if dimension_names:
+            for i, name in enumerate(dimension_names):
+                value = dimension_values[i]
+                if isinstance(name, str):
+                    name = name.replace(".", "_").replace(" ", "_")
+                if isinstance(value, str):
+                    value = value.replace(".", "_").replace(" ", "_")
+                dimensions[name] = value
+    dimensions["host_name"] = cacti_source.host_name
+    dimensions["host_description"] = cacti_source.host_description
     return dimensions
 
 
