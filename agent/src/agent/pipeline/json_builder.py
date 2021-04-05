@@ -121,7 +121,10 @@ def _load_config(pipeline_: Pipeline, config: dict, is_edit=False):
     config = get_file_loader(pipeline_.source.type, is_edit).load(config)
 
     if 'uses_schema' not in config:
-        config['uses_schema'] = pipeline.manager.supports_schema(pipeline_)
+        if is_edit:
+            config['uses_schema'] = pipeline_.config.get('uses_schema', False)
+        else:
+            config['uses_schema'] = pipeline.manager.supports_schema(pipeline_)
 
     pipeline_.set_config(config)
     # todo too many validations, 4 validations here
