@@ -23,7 +23,7 @@ def latest_to_anodot():
             if sample.name.endswith('_created'):
                 continue
             dims = {**sample.labels, 'host_name': constants.HOSTNAME, 'source': 'agent_monitoring'}
-            data.append(anodot.Metric20(sample.name, sample.value, target_type, datetime.now(),
+            data.append(anodot.Metric20(sample.name, sample.value, target_type, datetime.utcnow(),
                                         dimensions=dims).to_dict())
 
     return data
