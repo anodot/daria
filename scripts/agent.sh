@@ -31,6 +31,10 @@ elif [[ $1 == 'set-thread-pool-size' ]]; then
     exit 1
   fi
   sed -i '' -E 's/SDC_CONF_RUNNER_THREAD_POOL_SIZE.*/SDC_CONF_RUNNER_THREAD_POOL_SIZE: "'$2'"/' docker-compose.yaml
+elif [[ $1 == 'apply' ]]; then
+  docker exec -i anodot-agent rm -rf /agent-data
+  docker cp ./agent-data anodot-agent:/agent-data
+  docker exec -i anodot-agent agent apply -d /agent-data
 else
   echo "Wrong command supplied. Please use ./agent [install|run|upgrade|set-heap-size|set-thread-pool-size]"
 fi
