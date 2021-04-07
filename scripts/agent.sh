@@ -32,16 +32,8 @@ elif [[ $1 == 'set-thread-pool-size' ]]; then
   fi
   sed -i '' -E 's/SDC_CONF_RUNNER_THREAD_POOL_SIZE.*/SDC_CONF_RUNNER_THREAD_POOL_SIZE: "'$2'"/' docker-compose.yaml
 elif [[ $1 == 'apply' ]]; then
-  if [ -z "$2" ]; then
-      echo "Please specify the directory with config files"
-      exit 1
-  fi
-  if [ ! -d $2 ]; then
-    echo "Directory $2 does not exist."
-    exit 1
-  fi
   docker exec -i anodot-agent rm -rf /agent-data
-  docker cp $2 anodot-agent:/agent-data
+  docker cp ./agent-data anodot-agent:/agent-data
   docker exec -i anodot-agent agent apply -d /agent-data
 else
   echo "Wrong command supplied. Please use ./agent [install|run|upgrade|set-heap-size|set-thread-pool-size]"
