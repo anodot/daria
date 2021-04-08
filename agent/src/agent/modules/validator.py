@@ -1,4 +1,5 @@
 import os
+import sqlalchemy
 
 from urllib.parse import urlparse
 from agent.modules.tools import if_validation_enabled
@@ -21,6 +22,12 @@ def validate_url_format_with_port(url: str):
 def file_exists(file_path: str):
     if not os.path.isfile(file_path):
         raise ValidationException(f'File {file_path} does not exist')
+
+
+def validate_mysql_connection(connection_string: str):
+    # todo raise validation exception
+    eng = sqlalchemy.create_engine(connection_string)
+    eng.connect()
 
 
 class ValidationException(Exception):
