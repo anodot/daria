@@ -20,6 +20,7 @@ def get_prompter(source_: source.Source) -> Prompter:
         source.TYPE_MONGO: MongoPrompter,
         source.TYPE_MYSQL: JDBCPrompter,
         source.TYPE_POSTGRES: JDBCPrompter,
+        source.TYPE_CLICKHOUSE: JDBCPrompter,
         source.TYPE_ELASTIC: ElasticPrompter,
         source.TYPE_SPLUNK: TCPPrompter,
         source.TYPE_DIRECTORY: DirectoryPrompter,

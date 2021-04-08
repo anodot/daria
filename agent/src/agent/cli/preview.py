@@ -81,6 +81,7 @@ def _get_preview_type(source_type: str) -> Preview:
         source.TYPE_MONGO: Preview,
         source.TYPE_MYSQL: Preview,
         source.TYPE_POSTGRES: Preview,
+        source.TYPE_CLICKHOUSE: Preview,
         source.TYPE_ELASTIC: ElasticPreview,
         source.TYPE_SPLUNK: SchemalessPreview,
         source.TYPE_DIRECTORY: SchemalessPreview,

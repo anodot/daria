@@ -280,6 +280,7 @@ def get_validator(source_: Source) -> Validator:
         source.TYPE_MONGO: MongoValidator,
         source.TYPE_MYSQL: JDBCValidator,
         source.TYPE_POSTGRES: JDBCValidator,
+        source.TYPE_CLICKHOUSE: JDBCValidator,
         source.TYPE_ELASTIC: ElasticValidator,
         source.TYPE_SPLUNK: SplunkValidator,
         source.TYPE_DIRECTORY: DirectoryValidator,

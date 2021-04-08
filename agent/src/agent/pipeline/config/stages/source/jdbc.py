@@ -29,6 +29,8 @@ AND {self._timestamp_to_unix} <= {self.LAST_TIMESTAMP} + {self.pipeline.interval
                 return f"extract(epoch from {self.pipeline.timestamp_path})"
             if self.pipeline.source.type == source.TYPE_MYSQL:
                 return f"UNIX_TIMESTAMP({self.pipeline.timestamp_path})"
+            if self.pipeline.source.type == source.TYPE_CLICKHOUSE:
+                return f"toUnixTimestamp({self.pipeline.timestamp_path})"
 
         if self.pipeline.timestamp_type == pipeline.TimestampType.UNIX_MS:
             return self.pipeline.timestamp_path + '/1000'

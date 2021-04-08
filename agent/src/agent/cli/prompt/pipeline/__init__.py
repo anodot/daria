@@ -22,6 +22,7 @@ def get_prompter(pipeline_: Pipeline, default_config: dict, advanced: bool) -> P
         source.TYPE_MONGO: MongoPrompter,
         source.TYPE_MYSQL: JDBCPrompter,
         source.TYPE_POSTGRES: JDBCPrompter,
+        source.TYPE_CLICKHOUSE: JDBCPrompter,
         source.TYPE_ELASTIC: ElasticPrompter,
         source.TYPE_SPLUNK: TCPPrompter,
         source.TYPE_DIRECTORY: DirectoryPrompter,
