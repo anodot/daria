@@ -17,6 +17,7 @@ def get_config_handler(pipeline_: Pipeline) -> BaseConfigHandler:
         source.TYPE_VICTORIA: pipeline.config.handlers.victoria.VictoriaConfigHandler,
         source.TYPE_POSTGRES: pipeline.config.handlers.jdbc.JDBCConfigHandler,
         source.TYPE_MYSQL: pipeline.config.handlers.jdbc.JDBCConfigHandler,
+        source.TYPE_CLICKHOUSE: pipeline.config.handlers.jdbc.JDBCConfigHandler,
         source.TYPE_ZABBIX: pipeline.config.handlers.zabbix.ZabbixConfigHandler
     }
 

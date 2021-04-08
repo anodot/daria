@@ -1,0 +1,29 @@
+[
+  {
+    "source": "test_jdbc_clickhouse",
+    "pipeline_id": "test_jdbc_file_short_clickhouse",
+    "values": {"clicks": "gauge", "impressions": "gauge"},
+    "dimensions": ["adsize", "country"],
+    "timestamp": {
+      "type": "unix_ms",
+      "name": "timestamp_unix_ms"
+    },
+    "interval": 86400,
+    "query": "SELECT * FROM test WHERE {TIMESTAMP_CONDITION}"
+  },
+  {
+    "source": "test_jdbc_clickhouse",
+    "pipeline_id": "test_jdbc_file_full_clickhouse",
+    "values": {"clicks": "gauge", "impressions": "gauge"},
+    "count_records": true,
+    "count_records_measurement_name": "test",
+    "dimensions": ["adsize", "country"],
+    "timestamp": {
+      "type": "datetime",
+      "name": "timestamp_datetime"
+    },
+    "properties": {"key1": "val1", "key2":  "val2"},
+    "interval": 86400,
+    "query": "SELECT * FROM test WHERE {TIMESTAMP_CONDITION} AND Country = 'USA'"
+  }
+]

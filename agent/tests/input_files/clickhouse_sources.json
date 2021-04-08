@@ -1,0 +1,9 @@
+[
+  {
+    "type": "clickhouse",
+    "name": "test_clickhouse_1",
+    "config": {
+      "connection_string": "clickhouse://clickhouse:8123/test"
+    }
+  }
+]

@@ -26,6 +26,7 @@ types = {
     TYPE_MONGO: MongoSource,
     TYPE_MYSQL: JDBCSource,
     TYPE_POSTGRES: JDBCSource,
+    TYPE_CLICKHOUSE: JDBCSource,
     TYPE_ELASTIC: ElasticSource,
     TYPE_SPLUNK: TCPSource,
     TYPE_DIRECTORY: DirectorySource,

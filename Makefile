@@ -66,6 +66,10 @@ test-postgres: bootstrap run-postgres sleep
 	$(DOCKER_TEST) tests/test_input/test_postgres_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_postgres_http.py
 
+test-clickhouse: bootstrap run-clickhouse sleep
+	$(DOCKER_TEST) tests/test_input/test_clickhouse.py
+	$(DOCKER_TEST) tests/test_pipelines/test_clickhouse.py
+
 test-tcp: bootstrap
 	$(DOCKER_TEST) tests/test_input/test_tcp_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_tcp_http.py
@@ -196,6 +200,9 @@ run-mysql:
 
 run-postgres:
 	$(DOCKER_COMPOSE_DEV) up -d postgres
+
+run-clickhouse:
+	$(DOCKER_COMPOSE_DEV) up -d clickhouse
 
 run-sage:
 	$(DOCKER_COMPOSE_DEV) up -d --build sage

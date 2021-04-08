@@ -13,6 +13,8 @@ class JDBCSource(Stage):
 
     def get_query(self):
         if isinstance(self.pipeline, pipeline.TestPipeline):
+            if not self.pipeline.query:
+                return 'SELECT * FROM t'
             query = self.pipeline.query.replace(f'{source.JDBCSource.TIMESTAMP_CONDITION}', 'true')
             return query + f' LIMIT {pipeline.manager.MAX_SAMPLE_RECORDS}'
 
@@ -40,7 +42,7 @@ AND {self._timestamp_to_unix} <= {self.LAST_TIMESTAMP} + {self.pipeline.interval
     def get_connection_configs(self):
         conf = {'hikariConfigBean.connectionString': 'jdbc:' + self.pipeline.source.config[
             source.JDBCSource.CONFIG_CONNECTION_STRING]}
-        if self.pipeline.source.config[source.JDBCSource.CONFIG_USERNAME]:
+        if self.pipeline.source.config.get(source.JDBCSource.CONFIG_USERNAME):
             conf['hikariConfigBean.useCredentials'] = True
             conf['hikariConfigBean.username'] = self.pipeline.source.config[source.JDBCSource.CONFIG_USERNAME]
             conf['hikariConfigBean.password'] = self.pipeline.source.config[source.JDBCSource.CONFIG_PASSWORD]

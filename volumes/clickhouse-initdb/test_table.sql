@@ -6,11 +6,11 @@ CREATE TABLE if not exists test.test(
     timestamp_unix_ms Int64,
     ver String,
     adsize String,
-    country String,
+    country Nullable(String),
     adtype String,
     exchange String,
-    clicks Float64,
-    impressions Int32,
+    clicks Nullable(Float64),
+    impressions Nullable(Int32),
     timestamp_datetime DateTime('Etc/UTC'),
     timestamp_string String
 ) ENGINE = MergeTree()
