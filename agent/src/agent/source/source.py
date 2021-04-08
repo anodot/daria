@@ -205,10 +205,14 @@ class ZabbixSource(Source):
 class CactiSource(Source):
     MYSQL_CONNECTION_STRING = 'mysql_connection_string'
     RRD_ARCHIVE_PATH = 'rrd_archive_path'
+    RRD_DIR_PATH = 'rrd_dir_path'
 
     @property
     def cache_ttl(self) -> int:
         return self.config.get('cache_ttl', 3600)
+
+    def is_archive(self) -> bool:
+        return self.RRD_ARCHIVE_PATH in self.config
 
 
 class DirectorySource(SchemalessSource):
