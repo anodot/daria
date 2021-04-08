@@ -211,9 +211,6 @@ class CactiSource(Source):
     def cache_ttl(self) -> int:
         return self.config.get('cache_ttl', 3600)
 
-    def is_archive(self) -> bool:
-        return self.RRD_ARCHIVE_PATH in self.config
-
 
 class DirectorySource(SchemalessSource):
     pass

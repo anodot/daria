@@ -22,7 +22,7 @@ class Source:
 
 
 def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> list:
-    if pipeline_.source.is_archive():
+    if pipeline_.source.RRD_ARCHIVE_PATH in pipeline_.source.config:
         _extract_rrd_archive(pipeline_)
 
     metrics = []
@@ -84,7 +84,7 @@ def _extract_rrd_archive(pipeline_: Pipeline):
 
 
 def _get_rrd_dir(pipeline_: Pipeline):
-    if pipeline_.source.is_archive():
+    if source.CactiSource.RRD_ARCHIVE_PATH in pipeline_.source.config:
         return os.path.join('/tmp/cacti_rrd/', pipeline_.name)
     else:
         return pipeline_.source.config[source.CactiSource.RRD_DIR_PATH]
