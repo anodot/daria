@@ -1,6 +1,7 @@
 from datetime import datetime
 from agent import source, cli
 from .test_zpipeline_base import TestInputBase
+from ..conftest import generate_input
 
 
 class TestClickhouse(TestInputBase):
@@ -19,19 +20,59 @@ class TestClickhouse(TestInputBase):
     }
 
     def test_source_create(self, cli_runner, name, type, conn):
+        input_ = {
+            "type": type,
+            "source name": name,
+            "source connection string": conn,
+            "username": "",
+            "password": ""
+        }
         result = cli_runner.invoke(cli.source.create, catch_exceptions=False,
-                                   input=f"{type}\n{name}\n{conn}\n\n\n\n")
+                                   input=generate_input(input_))
         assert result.exit_code == 0
         assert source.repository.exists(name)
 
     def test_create(self, cli_runner, name, source, timestamp_type, timestamp_name):
         days_to_backfill = (datetime.now() - datetime(year=2017, month=12, day=10)).days + 1
-        result = cli_runner.invoke(cli.pipeline.create, catch_exceptions=False,
-                                   input=f'{source}\n{name}\nSELECT * FROM test WHERE {{TIMESTAMP_CONDITION}}\n\n86400\n{days_to_backfill}\n1\n{timestamp_name}\n{timestamp_type}\n\nclicks:gauge impressions:gauge\nadsize country\n\n\n\n')
+        input_ = {
+            "source name": source,
+            "pipeline name": name,
+            "query": "SELECT * FROM test WHERE {TIMESTAMP_CONDITION}",
+            "see preview": "",
+            "interval": 86400,
+            "days to backfill": days_to_backfill,
+            "delay": 1,
+            "timestamp name": timestamp_name,
+            "timestamp_type": timestamp_type,
+            "count records": "",
+            "values": "clicks:gauge impressions:gauge",
+            "dimensions": "adsize country",
+            "static dimensions": "",
+            "tags": "",
+            "preview": ""
+        }
+        result = cli_runner.invoke(cli.pipeline.create, catch_exceptions=False, input=generate_input(input_))
         assert result.exit_code == 0
 
     def test_create_advanced(self, cli_runner, name, source):
         days_to_backfill = (datetime.now() - datetime(year=2017, month=12, day=10)).days + 1
-        result = cli_runner.invoke(cli.pipeline.create, ['-a'], catch_exceptions=False,
-                                   input=f'{source}\n{name}\nSELECT * FROM test WHERE {{TIMESTAMP_CONDITION}} AND country = \'USA\'\n\n86400\n{days_to_backfill}\n1\ntimestamp_unix\nunix\ny\ntest\nclicks:gauge impressions:gauge\nadsize country\nkey1:val1 key2:val2\n\n\n\n')
+        input_ = {
+            "source name": source,
+            "pipeline name": name,
+            "query": "SELECT * FROM test WHERE {TIMESTAMP_CONDITION} AND country = 'USA'",
+            "see preview": "",
+            "interval": 86400,
+            "days to backfill": days_to_backfill,
+            "delay": 1,
+            "timestamp name": "timestamp_unix",
+            "timestamp_type": "unix",
+            "count records": "y",
+            "count records measurement name": "test",
+            "values": "clicks:gauge impressions:gauge",
+            "dimensions": "adsize country",
+            "static dimensions": "key1:val1 key2:val2",
+            "tags": "",
+            "preview": ""
+        }
+        result = cli_runner.invoke(cli.pipeline.create, ['-a'], catch_exceptions=False, input=generate_input(input_))
         assert result.exit_code == 0
