@@ -27,8 +27,7 @@
       "host_description": "390257-some_host",
       "static_dim": "cacti",
       "name": "Gi0/4",
-      "alias": "ENoB-Id",
-      "host_name": "192.168.0.1"
+      "alias": "ENoB-Id"
     },
     "timestamp": 1615766700
   },
@@ -60,8 +59,7 @@
       "host_description": "390257-some_host",
       "static_dim": "cacti",
       "name": "Gi0/4",
-      "alias": "ENoB-Id",
-      "host_name": "192.168.0.1"
+      "alias": "ENoB-Id"
     },
     "timestamp": 1615767000
   },
@@ -93,8 +91,7 @@
       "host_description": "390257-some_host",
       "static_dim": "cacti",
       "name": "Gi0/4",
-      "alias": "ENoB-Id",
-      "host_name": "192.168.0.1"
+      "alias": "ENoB-Id"
     },
     "timestamp": 1615767300
   },
@@ -126,8 +123,7 @@
       "host_description": "390257-some_host",
       "static_dim": "cacti",
       "name": "Gi0/4",
-      "alias": "ENoB-Id",
-      "host_name": "192.168.0.1"
+      "alias": "ENoB-Id"
     },
     "timestamp": 1615767600
   },
@@ -159,8 +155,7 @@
       "host_description": "390257-some_host",
       "static_dim": "cacti",
       "name": "Gi0/4",
-      "alias": "ENoB-Id",
-      "host_name": "192.168.0.1"
+      "alias": "ENoB-Id"
     },
     "timestamp": 1615767900
   },
@@ -192,8 +187,7 @@
       "host_description": "390257-some_host",
       "static_dim": "cacti",
       "name": "Gi0/4",
-      "alias": "ENoB-Id",
-      "host_name": "192.168.0.1"
+      "alias": "ENoB-Id"
     },
     "timestamp": 1615768200
   },
@@ -225,8 +219,7 @@
       "host_description": "390257-some_host",
       "static_dim": "cacti",
       "name": "Gi0/4",
-      "alias": "ENoB-Id",
-      "host_name": "192.168.0.1"
+      "alias": "ENoB-Id"
     },
     "timestamp": 1615768500
   },
@@ -258,8 +251,7 @@
       "host_description": "390257-some_host",
       "static_dim": "cacti",
       "name": "Gi0/4",
-      "alias": "ENoB-Id",
-      "host_name": "192.168.0.1"
+      "alias": "ENoB-Id"
     },
     "timestamp": 1615768800
   }

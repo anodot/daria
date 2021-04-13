@@ -3,8 +3,8 @@ import re
 import rrdtool
 import tarfile
 
-from typing import List
-from agent.data_extractor import cacti
+from typing import List, Optional
+from agent.data_extractor.cacti.source_cacher import CactiCacher
 from agent.pipeline import Pipeline
 from agent import source
 from agent.modules import logger
@@ -21,17 +21,32 @@ class Source:
         self.host_name = data['hostname']
 
 
-def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> list:
+def new_extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> list:
     if pipeline_.source.RRD_ARCHIVE_PATH in pipeline_.source.config:
         _extract_rrd_archive(pipeline_)
 
+    cacher = CactiCacher(pipeline_)
+    variables = cacher.variables
+    graphs = cacher.graphs
+    sources = cacher.sources
+    hosts = cacher.hosts
+
     metrics = []
-    for cacti_source in cacti.source_cacher.get_sources(pipeline_):
+    for local_graph_id, rrd_file_name in sources.items():
+        if local_graph_id not in graphs:
+            logger_.warning(f'local_graph_id `{local_graph_id}` is not in a list of graphs, skipping')
+            continue
+        if local_graph_id not in variables:
+            logger_.warning(f'local_graph_id `{local_graph_id}` is not in a list of variables, skipping')
+            continue
         base_metric = {
             'target_type': 'gauge',
-            'properties': _extract_dimensions(cacti_source),
+            'properties': _extract_dimensions2(
+                graphs[local_graph_id],
+                variables[local_graph_id],
+                hosts[str(variables[local_graph_id]['host_id'])]
+            ),
         }
-        rrd_file_name = cacti_source.data_source_path
         if not rrd_file_name:
             continue
 
@@ -75,6 +90,35 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
     return metrics
 
 
+def _extract_dimensions2(graph_title: str, variables: dict, host: dict) -> dict:
+    dimensions = {}
+    for var in _extract_dimension_names(graph_title):
+        if var.startswith('host_'):
+            value = _extract_host_field(var, host)
+            if value is None:
+                continue
+        elif var.startswith('query_'):
+            var_name = var.replace('query_', '')
+            if var_name not in variables:
+                logger_.warning(f'Variable `{var} is not know`')
+                continue
+            value = variables[var_name]
+        else:
+            logger_.warning(f'Variable `{var} is not know`')
+            continue
+        # todo check if exists in variables
+        dimensions[var] = value
+    return dimensions
+
+
+def _extract_host_field(variable: str, host: dict) -> Optional[str]:
+    var_name = variable.replace('host_', '')
+    if var_name not in host:
+        logger_.warning(f'Variable `{variable} is not know`')
+        return None
+    return host[var_name]
+
+
 def _extract_rrd_archive(pipeline_: Pipeline):
     file_path = pipeline_.source.config[source.CactiSource.RRD_ARCHIVE_PATH]
     if not os.path.isfile(file_path):
@@ -90,35 +134,9 @@ def _get_rrd_dir(pipeline_: Pipeline):
         return pipeline_.source.config[source.CactiSource.RRD_DIR_PATH]
 
 
-def _extract_dimensions(cacti_source: Source) -> dict:
-    dimensions = {}
-    dimension_values = _extract_dimension_values(cacti_source.name, cacti_source.name_cache)
-    if dimension_values:
-        dimension_names = _extract_dimension_names(cacti_source.name)
-        if dimension_names:
-            for i, name in enumerate(dimension_names):
-                value = dimension_values[i]
-                if isinstance(name, str):
-                    name = name.replace(".", "_").replace(" ", "_")
-                if isinstance(value, str):
-                    value = value.replace(".", "_").replace(" ", "_")
-                dimensions[name] = value
-    dimensions["host_name"] = cacti_source.host_name
-    dimensions["host_description"] = cacti_source.host_description
-    return dimensions
-
-
 def _extract_dimension_names(name: str) -> List[str]:
     # extract all values between `|`
     return re.findall('\|([^|]+)\|', name)
-
-
-def _extract_dimension_values(name: str, name_cache: str) -> List[tuple]:
-    regex = re.sub('(\|[^|]+\|)', '(.*)', name)
-    result = re.findall(regex, name_cache)
-    if not result:
-        return []
-    return list(result[0])
 
 
 class ArchiveNotExistsException(Exception):
