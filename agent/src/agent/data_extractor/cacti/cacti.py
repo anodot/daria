@@ -94,7 +94,7 @@ def _extract_dimensions(graph_title: str, variables: dict, host: dict, add_graph
             if var_name not in variables:
                 logger_.warning(f'Variable `{var} is not know`')
                 continue
-            value = variables[var_name]
+            value = variables[var_name].strip()
         else:
             logger_.warning(f'Variable `{var} is not know`')
             continue
@@ -114,7 +114,7 @@ def _extract_host_field(variable: str, host: dict) -> Optional[str]:
     if var_name not in host:
         logger_.warning(f'Variable `{variable} is not know`')
         return None
-    return host[var_name]
+    return host[var_name].strip()
 
 
 def _extract_rrd_archive(pipeline_: Pipeline):
