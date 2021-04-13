@@ -11,6 +11,7 @@ TYPE_KAFKA = 'kafka'
 TYPE_MONGO = 'mongo'
 TYPE_MYSQL = 'mysql'
 TYPE_POSTGRES = 'postgres'
+TYPE_CLICKHOUSE = 'clickhouse'
 TYPE_ELASTIC = 'elastic'
 TYPE_SPLUNK = 'splunk'
 TYPE_DIRECTORY = 'directory'
@@ -25,6 +26,7 @@ types = {
     TYPE_MONGO: MongoSource,
     TYPE_MYSQL: JDBCSource,
     TYPE_POSTGRES: JDBCSource,
+    TYPE_CLICKHOUSE: JDBCSource,
     TYPE_ELASTIC: ElasticSource,
     TYPE_SPLUNK: TCPSource,
     TYPE_DIRECTORY: DirectorySource,

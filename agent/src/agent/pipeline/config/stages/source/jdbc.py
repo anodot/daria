@@ -13,14 +13,20 @@ class JDBCSource(Stage):
 
     def get_query(self):
         if isinstance(self.pipeline, pipeline.TestPipeline):
-            query = self.pipeline.query.replace(f'{source.JDBCSource.TIMESTAMP_CONDITION}', 'true')
-            return query + f' LIMIT {pipeline.manager.MAX_SAMPLE_RECORDS}'
+            return self._get_preview_query()
 
         timestamp_condition = f'''{self._timestamp_to_unix} > {self.LAST_TIMESTAMP} 
 AND {self._timestamp_to_unix} <= {self.LAST_TIMESTAMP} + {self.pipeline.interval}'''
 
         query = self.pipeline.query.replace(f'{source.JDBCSource.TIMESTAMP_CONDITION}', timestamp_condition)
         return query + ' ORDER BY ' + self.pipeline.timestamp_path
+
+    def _get_preview_query(self):
+        if not self.pipeline.query:
+            # dummy query for validating source connection in streamsets
+            return 'SELECT * FROM t'
+        query = self.pipeline.query.replace(f'{source.JDBCSource.TIMESTAMP_CONDITION}', 'true')
+        return query + f' LIMIT {pipeline.manager.MAX_SAMPLE_RECORDS}'
 
     @property
     def _timestamp_to_unix(self):
@@ -29,6 +35,8 @@ AND {self._timestamp_to_unix} <= {self.LAST_TIMESTAMP} + {self.pipeline.interval
                 return f"extract(epoch from {self.pipeline.timestamp_path})"
             if self.pipeline.source.type == source.TYPE_MYSQL:
                 return f"UNIX_TIMESTAMP({self.pipeline.timestamp_path})"
+            if self.pipeline.source.type == source.TYPE_CLICKHOUSE:
+                return f"toUnixTimestamp({self.pipeline.timestamp_path})"
 
         if self.pipeline.timestamp_type == pipeline.TimestampType.UNIX_MS:
             return self.pipeline.timestamp_path + '/1000'
@@ -38,7 +46,7 @@ AND {self._timestamp_to_unix} <= {self.LAST_TIMESTAMP} + {self.pipeline.interval
     def get_connection_configs(self):
         conf = {'hikariConfigBean.connectionString': 'jdbc:' + self.pipeline.source.config[
             source.JDBCSource.CONFIG_CONNECTION_STRING]}
-        if self.pipeline.source.config[source.JDBCSource.CONFIG_USERNAME]:
+        if self.pipeline.source.config.get(source.JDBCSource.CONFIG_USERNAME):
             conf['hikariConfigBean.useCredentials'] = True
             conf['hikariConfigBean.username'] = self.pipeline.source.config[source.JDBCSource.CONFIG_USERNAME]
             conf['hikariConfigBean.password'] = self.pipeline.source.config[source.JDBCSource.CONFIG_PASSWORD]

@@ -4,13 +4,24 @@ set -e
 set -u
 
 function configure_sql_drivers() {
-  local  MSQL_DRIVER_DIR=/opt/sdc-extras/streamsets-datacollector-jdbc-lib/lib/
+  local  JDBC_DRIVER_DIR=/opt/sdc-extras/streamsets-datacollector-jdbc-lib/lib/
   local  MYSQL_CONNECTOR_VERSION=8.0.18
+  local  CLICKHOUSE_DRIVER_VERSION=0.3.0
 
-  sudo mkdir -p ${MSQL_DRIVER_DIR}
+  sudo mkdir -p ${JDBC_DRIVER_DIR}
   sudo chown -R sdc:sdc /opt/sdc-extras
-  wget https://repo1.maven.org/maven2/mysql/mysql-connector-java/${MYSQL_CONNECTOR_VERSION}/mysql-connector-java-${MYSQL_CONNECTOR_VERSION}.jar -O ${MSQL_DRIVER_DIR}/${MYSQL_CONNECTOR_VERSION}.jar
-  unzip -l -q ${MSQL_DRIVER_DIR}/${MYSQL_CONNECTOR_VERSION}.jar
+  wget https://repo1.maven.org/maven2/mysql/mysql-connector-java/${MYSQL_CONNECTOR_VERSION}/mysql-connector-java-${MYSQL_CONNECTOR_VERSION}.jar -O ${JDBC_DRIVER_DIR}/${MYSQL_CONNECTOR_VERSION}.jar
+
+  # clickhouse dependencies
+  wget https://repo1.maven.org/maven2/ru/yandex/clickhouse/clickhouse-jdbc/${CLICKHOUSE_DRIVER_VERSION}/clickhouse-jdbc-${CLICKHOUSE_DRIVER_VERSION}.jar -O ${JDBC_DRIVER_DIR}/clickhouse-jdbc-${CLICKHOUSE_DRIVER_VERSION}.jar
+  wget https://repo1.maven.org/maven2/org/apache/httpcomponents/httpclient/4.5.13/httpclient-4.5.13.jar -O ${JDBC_DRIVER_DIR}/httpclient-4.5.13.jar
+  wget https://repo1.maven.org/maven2/org/apache/httpcomponents/httpmime/4.5.13/httpmime-4.5.13.jar -O ${JDBC_DRIVER_DIR}/httpmime-4.5.13.jar
+  wget https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.9.10.8/jackson-databind-2.9.10.8.jar -O ${JDBC_DRIVER_DIR}/jackson-databind-2.9.10.8.jar
+  wget https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-core/2.9.10/jackson-core-2.9.10.jar -O ${JDBC_DRIVER_DIR}/jackson-core-2.9.10.jar
+  wget https://repo1.maven.org/maven2/org/lz4/lz4-java/1.7.1/lz4-java-1.7.1.jar -O ${JDBC_DRIVER_DIR}/lz4-java-1.7.1.jar
+  wget https://repo1.maven.org/maven2/org/slf4j/slf4j-api/1.7.30/slf4j-api-1.7.30.jar -O ${JDBC_DRIVER_DIR}/slf4j-api-1.7.30.jar
+  wget https://repo1.maven.org/maven2/org/apache/httpcomponents/httpcore/4.4.13/httpcore-4.4.13.jar -O ${JDBC_DRIVER_DIR}/httpcore-4.4.13.jar
+  wget https://repo1.maven.org/maven2/commons-logging/commons-logging/1.2/commons-logging-1.2.jar -O ${JDBC_DRIVER_DIR}/commons-logging-1.2.jar
 }
 
 function install_stage_libs() {

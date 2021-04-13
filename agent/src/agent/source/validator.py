@@ -109,31 +109,18 @@ class JDBCValidator(Validator):
         self.validate_connection()
 
     @if_validation_enabled
-    def validate_connection(self):
-        validator.validate_mysql_connection(self._get_connection_url())
-
-    def _get_connection_url(self):
-        conn_info = urlparse(self.source.config[source.JDBCSource.CONFIG_CONNECTION_STRING])
-        if self.source.config.get(source.JDBCSource.CONFIG_PASSWORD):
-            userpass = self.source.config[source.JDBCSource.CONFIG_USERNAME] + ':' + self.source.config[
-                source.JDBCSource.CONFIG_PASSWORD]
-            netloc = userpass + '@' + conn_info.netloc
-        else:
-            netloc = conn_info.netloc
-        scheme = conn_info.scheme + '+mysqlconnector' if self.source.type == 'mysql' else conn_info.scheme
-        return urlunparse((scheme, netloc, conn_info.path, '', '', ''))
-
-    @if_validation_enabled
     def validate_connection_string(self):
         try:
             validator.validate_url_format_with_port(self.source.config[source.JDBCSource.CONFIG_CONNECTION_STRING])
         except validator.ValidationException as e:
             raise ValidationException(str(e))
         result = urlparse(self.source.config[source.JDBCSource.CONFIG_CONNECTION_STRING])
-        if self.source.type == 'mysql' and result.scheme != 'mysql':
+        if self.source.type == source.TYPE_MYSQL and result.scheme != 'mysql':
             raise ValidationException('Wrong url scheme. Use `mysql`')
-        if self.source.type == 'postgres' and result.scheme != 'postgresql':
+        if self.source.type == source.TYPE_POSTGRES and result.scheme != 'postgresql':
             raise ValidationException('Wrong url scheme. Use `postgresql`')
+        if self.source.type == source.TYPE_CLICKHOUSE and result.scheme != 'clickhouse':
+            raise ValidationException('Wrong url scheme. Use `clickhouse`')
 
 
 class MongoValidator(Validator):
@@ -280,6 +267,7 @@ def get_validator(source_: Source) -> Validator:
         source.TYPE_MONGO: MongoValidator,
         source.TYPE_MYSQL: JDBCValidator,
         source.TYPE_POSTGRES: JDBCValidator,
+        source.TYPE_CLICKHOUSE: JDBCValidator,
         source.TYPE_ELASTIC: ElasticValidator,
         source.TYPE_SPLUNK: SplunkValidator,
         source.TYPE_DIRECTORY: DirectoryValidator,

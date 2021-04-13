@@ -247,5 +247,14 @@ services:
     depends_on:
       - zabbix-server
 
+  clickhouse:
+    image: yandex/clickhouse-server
+    volumes:
+      - /var/lib/clickhouse
+      - ./volumes/clickhouse-initdb:/docker-entrypoint-initdb.d
+    ports:
+      - 8123:8123
+      - 9000:9000
+
 volumes:
   agent-data:

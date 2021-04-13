@@ -282,6 +282,7 @@ def get_file_loader(source_type: str, is_edit=False) -> LoadClientData:
         source.TYPE_KAFKA: KafkaLoadClientData,
         source.TYPE_MYSQL: JDBCLoadClientData,
         source.TYPE_POSTGRES: JDBCLoadClientData,
+        source.TYPE_CLICKHOUSE: JDBCLoadClientData,
         source.TYPE_ELASTIC: ElasticLoadClientData,
         source.TYPE_SPLUNK: TcpLoadClientData,
         source.TYPE_DIRECTORY: DirectoryLoadClientData,

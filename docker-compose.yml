@@ -233,6 +233,11 @@ services:
     depends_on:
       - zabbix-server
 
+  clickhouse:
+    image: yandex/clickhouse-server
+    volumes:
+      - /var/lib/clickhouse
+      - ./volumes/clickhouse-initdb:/docker-entrypoint-initdb.d
 
 volumes:
   sdc-data:

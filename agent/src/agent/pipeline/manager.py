@@ -22,6 +22,7 @@ def supports_schema(pipeline_: Pipeline):
         source.TYPE_DIRECTORY,
         source.TYPE_MYSQL,
         source.TYPE_POSTGRES,
+        source.TYPE_CLICKHOUSE,
         source.TYPE_KAFKA,
     ]
     return pipeline_.source.type in supported
