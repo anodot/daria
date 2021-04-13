@@ -98,11 +98,14 @@ def _extract_dimensions(graph_title: str, variables: dict, host: dict, add_graph
         else:
             logger_.warning(f'Variable `{var} is not know`')
             continue
-        dimensions[var] = value
+        if not value:
+            logger_.warning(f'Value for {var} variable is empty, skipping')
+            continue
+        dimensions[var] = value.replace(".", "_").replace(" ", "_")
     if add_graph_name_dimension:
         for k, v in dimensions.items():
             graph_title = graph_title.replace(f'|{k}|', v)
-        dimensions['graph_title'] = graph_title
+        dimensions['graph_title'] = graph_title.replace(".", "_").replace(" ", "_")
     return dimensions
 
 
