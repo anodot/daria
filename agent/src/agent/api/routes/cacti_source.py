@@ -10,7 +10,7 @@ cacti_source_ = Blueprint('cacti_source', __name__)
 def read(pipeline_id: str):
     pipeline_ = pipeline.repository.get_by_id(pipeline_id)
     try:
-        metrics = data_extractor.cacti.new_extract_metrics(
+        metrics = data_extractor.cacti.extract_metrics(
             pipeline_,
             str(request.args['start']),
             str(request.args['end']),

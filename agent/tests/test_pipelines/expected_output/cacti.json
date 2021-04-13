@@ -25,6 +25,7 @@
     "properties": {
       "what": "transformed_data_source",
       "host_description": "390257-some_host",
+      "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP |query_ifIP|",
       "static_dim": "cacti",
       "name": "Gi0/4",
       "alias": "ENoB-Id"
@@ -57,6 +58,7 @@
     "properties": {
       "what": "transformed_data_source",
       "host_description": "390257-some_host",
+      "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP |query_ifIP|",
       "static_dim": "cacti",
       "name": "Gi0/4",
       "alias": "ENoB-Id"
@@ -89,6 +91,7 @@
     "properties": {
       "what": "transformed_data_source",
       "host_description": "390257-some_host",
+      "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP |query_ifIP|",
       "static_dim": "cacti",
       "name": "Gi0/4",
       "alias": "ENoB-Id"
@@ -121,6 +124,7 @@
     "properties": {
       "what": "transformed_data_source",
       "host_description": "390257-some_host",
+      "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP |query_ifIP|",
       "static_dim": "cacti",
       "name": "Gi0/4",
       "alias": "ENoB-Id"
@@ -153,6 +157,7 @@
     "properties": {
       "what": "transformed_data_source",
       "host_description": "390257-some_host",
+      "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP |query_ifIP|",
       "static_dim": "cacti",
       "name": "Gi0/4",
       "alias": "ENoB-Id"
@@ -185,6 +190,7 @@
     "properties": {
       "what": "transformed_data_source",
       "host_description": "390257-some_host",
+      "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP |query_ifIP|",
       "static_dim": "cacti",
       "name": "Gi0/4",
       "alias": "ENoB-Id"
@@ -217,6 +223,7 @@
     "properties": {
       "what": "transformed_data_source",
       "host_description": "390257-some_host",
+      "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP |query_ifIP|",
       "static_dim": "cacti",
       "name": "Gi0/4",
       "alias": "ENoB-Id"
@@ -249,6 +256,7 @@
     "properties": {
       "what": "transformed_data_source",
       "host_description": "390257-some_host",
+      "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP |query_ifIP|",
       "static_dim": "cacti",
       "name": "Gi0/4",
       "alias": "ENoB-Id"

@@ -12,7 +12,8 @@
     "exclude_hosts": {"type": "array"},
     "exclude_datasources": {"type": "array"},
     "pipeline_id": {"type": "string"},
-    "source": {"type": "string"}
+    "source": {"type": "string"},
+    "add_graph_name_dimension": {"type":  "boolean"}
   },
   "required": ["interval"]
 }

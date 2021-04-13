@@ -12,16 +12,7 @@ from agent.modules import logger
 logger_ = logger.get_logger(__name__)
 
 
-class Source:
-    def __init__(self, data: dict):
-        self.name = data['name']
-        self.name_cache = data['name_cache']
-        self.data_source_path = data['data_source_path']
-        self.host_description = data['description']
-        self.host_name = data['hostname']
-
-
-def new_extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> list:
+def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> list:
     if pipeline_.source.RRD_ARCHIVE_PATH in pipeline_.source.config:
         _extract_rrd_archive(pipeline_)
 
@@ -41,10 +32,11 @@ def new_extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) ->
             continue
         base_metric = {
             'target_type': 'gauge',
-            'properties': _extract_dimensions2(
+            'properties': _extract_dimensions(
                 graphs[local_graph_id],
                 variables[local_graph_id],
-                hosts[str(variables[local_graph_id]['host_id'])]
+                hosts[str(variables[local_graph_id]['host_id'])],
+                pipeline_.config['add_graph_name_dimension']
             ),
         }
         if not rrd_file_name:
@@ -90,7 +82,7 @@ def new_extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) ->
     return metrics
 
 
-def _extract_dimensions2(graph_title: str, variables: dict, host: dict) -> dict:
+def _extract_dimensions(graph_title: str, variables: dict, host: dict, add_graph_name_dimension=False) -> dict:
     dimensions = {}
     for var in _extract_dimension_names(graph_title):
         if var.startswith('host_'):
@@ -106,8 +98,11 @@ def _extract_dimensions2(graph_title: str, variables: dict, host: dict) -> dict:
         else:
             logger_.warning(f'Variable `{var} is not know`')
             continue
-        # todo check if exists in variables
         dimensions[var] = value
+    if add_graph_name_dimension:
+        for k, v in dimensions.items():
+            graph_title = graph_title.replace(f'|{k}|', v)
+        dimensions['graph_title'] = graph_title
     return dimensions
 
 
