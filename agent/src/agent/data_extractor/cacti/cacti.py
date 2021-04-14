@@ -117,7 +117,7 @@ def _extract(variable: str, variables: dict, host: dict) -> Optional[str]:
 
 
 def _replace_illegal_chars(dimensions: dict) -> dict:
-    return {re.sub('\s+', '_', k.strip().replace(".", "_")): v.strip().replace(".", "_").replace(" ", "_") for k, v in dimensions.items()}
+    return {re.sub('\s+', '_', k.strip().replace(".", "_")): re.sub('\s+', '_', v.strip().replace(".", "_")) for k, v in dimensions.items()}
 
 
 def _extract_rrd_archive(pipeline_: Pipeline):
