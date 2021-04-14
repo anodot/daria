@@ -9,6 +9,7 @@
     ],
     "exclude_datasources": [
       "*mee too*"
-    ]
+    ],
+    "add_graph_name_dimension": true
   }
 ]

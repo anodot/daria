@@ -24,6 +24,11 @@ def file_exists(file_path: str):
         raise ValidationException(f'File {file_path} does not exist')
 
 
+def dir_exists(directory: str):
+    if not os.path.isdir(directory):
+        raise ValidationException(f'Directory {directory} does not exist')
+
+
 def validate_mysql_connection(connection_string: str):
     # todo raise validation exception
     eng = sqlalchemy.create_engine(connection_string)
