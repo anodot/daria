@@ -13,6 +13,7 @@ class CactiPrompter(SchemalessPrompter):
         self.prompt_delay()
         self.prompt_exclude_hosts()
         self.prompt_exclude_datasources()
+        self.prompt_add_graph_name_dimension()
         self.set_static_dimensions()
         self.set_tags()
         self.set_transform()
@@ -39,3 +40,6 @@ class CactiPrompter(SchemalessPrompter):
                 default=ds
             )
         self.config['exclude_datasources'] = [source.strip() for source in ds.split(',')]
+
+    def prompt_add_graph_name_dimension(self):
+        self.config['add_graph_name_dimension'] = click.confirm('Add graph name as a dimension?')

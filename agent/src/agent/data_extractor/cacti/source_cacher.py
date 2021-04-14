@@ -1,56 +1,82 @@
 from datetime import datetime, timedelta
+from typing import Optional
 from sqlalchemy import Column, String, ForeignKey, JSON, DateTime
 from agent import source
 from agent.data_extractor import cacti
 from agent.modules.db import Entity
-from agent.pipeline import Pipeline, List
+from agent.pipeline import Pipeline
 
 
-class SourcesCache(Entity):
-    __tablename__ = 'cacti_source_cache'
+class CactiCache(Entity):
+    __tablename__ = 'cacti_cache'
 
     pipeline_id = Column(String, ForeignKey('pipelines.name'), primary_key=True)
-    raw_sources = Column(JSON)
+    data = Column(JSON)
     expires_at = Column(DateTime)
 
-    def __init__(self, pipeline_id: str, raw_sources: list, expires_at):
+    def __init__(self, pipeline_id: str, data: dict, expires_at):
         self.pipeline_id = pipeline_id
-        self.raw_sources = raw_sources
+        self.data = data
         self.expires_at = expires_at
 
 
-def get_sources(pipeline_: Pipeline) -> List[cacti.Source]:
-    sources_cache = cacti.repository.get_source_cache(pipeline_)
-    if sources_cache is None:
-        sources_cache = _cache_sources(pipeline_)
-    elif datetime.now() >= sources_cache.expires_at:
-        _update_cache(sources_cache, pipeline_)
-    return [cacti.Source(source_data) for source_data in sources_cache.raw_sources]
+class CactiCacher:
+    VARIABLES = 'variables'
+    GRAPHS = 'graphs'
+    SOURCES = 'sources'
+    HOSTS = 'hosts'
 
+    def __init__(self, pipeline_: Pipeline):
+        self.pipeline = pipeline_
+        self.cache: Optional[CactiCache] = cacti.repository.get_cache(pipeline_)
 
-def _cache_sources(pipeline_: Pipeline) -> SourcesCache:
-    cache = SourcesCache(
-        pipeline_.name,
-        _fetch_raw_sources(pipeline_),
-        _new_expire(int(pipeline_.source.cache_ttl))
-    )
-    cacti.repository.save_source_cache(cache)
-    return cache
+    def _get(self, key: str):
+        if self.cache is None:
+            self._cache_data()
+        elif datetime.now() >= self.cache.expires_at:
+            self._update_cache()
+        return self.cache.data[key]
 
+    @property
+    def sources(self) -> dict:
+        return self._get(self.SOURCES)
 
-def _update_cache(sources_cache: SourcesCache, pipeline_: Pipeline):
-    sources_cache.raw_sources = _fetch_raw_sources(pipeline_)
-    sources_cache.expires_at = _new_expire(int(pipeline_.source.cache_ttl))
-    cacti.repository.save_source_cache(sources_cache)
+    @property
+    def variables(self) -> dict:
+        return self._get(self.VARIABLES)
 
+    @property
+    def graphs(self) -> dict:
+        return self._get(self.GRAPHS)
 
-def _fetch_raw_sources(pipeline_: Pipeline) -> list:
-    res = cacti.repository.get_cacti_sources(
-        pipeline_.source.config[source.CactiSource.MYSQL_CONNECTION_STRING],
-        pipeline_.config.get('exclude_hosts'),
-        pipeline_.config.get('exclude_datasources')
-    )
-    return [dict(r) for r in res]
+    @property
+    def hosts(self) -> dict:
+        return self._get(self.HOSTS)
+
+    def _cache_data(self):
+        self.cache = CactiCache(
+            self.pipeline.name,
+            self._fetch_data(),
+            _new_expire(int(self.pipeline.source.cache_ttl))
+        )
+        cacti.repository.save_source_cache(self.cache)
+
+    def _update_cache(self):
+        self.cache.data = self._fetch_data()
+        self.cache.expires_at = _new_expire(int(self.pipeline.source.cache_ttl))
+        cacti.repository.save_source_cache(self.cache)
+
+    def _fetch_data(self) -> dict:
+        return {
+            self.VARIABLES: cacti.repository.get_variables(self.connection_string),
+            self.GRAPHS: cacti.repository.get_graphs(self.connection_string),
+            self.SOURCES: cacti.repository.get_sources(self.connection_string),
+            self.HOSTS: cacti.repository.get_hosts(self.connection_string),
+        }
+
+    @property
+    def connection_string(self):
+        return self.pipeline.source.config[source.CactiSource.MYSQL_CONNECTION_STRING]
 
 
 def _new_expire(ttl_seconds: int) -> datetime:

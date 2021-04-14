@@ -18,12 +18,12 @@ depends_on = None
 
 def upgrade():
     op.create_table(
-        'cacti_source_cache',
+        'cacti_cache',
         sa.Column('pipeline_id', sa.String, primary_key=True),
-        sa.Column('raw_sources', sa.JSON, nullable=False),
+        sa.Column('data', sa.JSON, nullable=False),
         sa.Column('expires_at', sa.DateTime, nullable=False)
     )
 
 
 def downgrade():
-    op.drop_table('cacti_source_cache')
+    op.drop_table('cacti_cache')

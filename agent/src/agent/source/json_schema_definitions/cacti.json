@@ -3,7 +3,8 @@
   "properties": {
     "mysql_connection_string": {"type": "string"},
     "rrd_archive_path": {"type": "string"},
+    "rrd_dir_path": {"type": "string"},
     "cache_ttl": {"type": "integer"}
   },
-  "required": ["mysql_connection_string", "rrd_archive_path"]
+  "required": ["mysql_connection_string"]
 }
