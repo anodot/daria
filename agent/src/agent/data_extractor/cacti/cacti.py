@@ -1,5 +1,7 @@
 import os
 import re
+from copy import deepcopy
+
 import rrdtool
 import tarfile
 
@@ -72,7 +74,7 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
                 if value is None:
                     continue
 
-                metric = base_metric.copy()
+                metric = deepcopy(base_metric)
                 metric['properties']['what'] = measurement_name.replace(".", "_").replace(" ", "_")
                 metric['value'] = value
                 metric['timestamp'] = timestamp
