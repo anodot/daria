@@ -21,9 +21,7 @@ class CactiCache(Entity):
 
 
 class CactiCacher:
-    VARIABLES = 'variables'
     GRAPHS = 'graphs'
-    SOURCES = 'sources'
     HOSTS = 'hosts'
 
     def __init__(self, pipeline_: Pipeline):
@@ -33,17 +31,7 @@ class CactiCacher:
     def _get(self, key: str):
         if self.cache is None:
             self._cache_data()
-        elif datetime.now() >= self.cache.expires_at:
-            self._update_cache()
         return self.cache.data[key]
-
-    @property
-    def sources(self) -> dict:
-        return self._get(self.SOURCES)
-
-    @property
-    def variables(self) -> dict:
-        return self._get(self.VARIABLES)
 
     @property
     def graphs(self) -> dict:
@@ -53,26 +41,21 @@ class CactiCacher:
     def hosts(self) -> dict:
         return self._get(self.HOSTS)
 
-    def _cache_data(self):
-        self.cache = CactiCache(
-            self.pipeline.name,
-            self._fetch_data(),
-            _new_expire(int(self.pipeline.source.cache_ttl))
-        )
-        cacti.repository.save_source_cache(self.cache)
+    # def _cache_data(self):
+    #     self.cache = CactiCache(
+    #         self.pipeline.name,
+    #         self._fetch_data(),
+    #         _new_expire(int(self.pipeline.source.cache_ttl))
+    #     )
+    #     cacti.repository.save_cacti_cache(self.cache)
+    #
+    # def _update_cache(self):
+    #     self.cache.data = self._fetch_data()
+    #     self.cache.expires_at = _new_expire(int(self.pipeline.source.cache_ttl))
+    #     cacti.repository.save_cacti_cache(self.cache)
 
-    def _update_cache(self):
-        self.cache.data = self._fetch_data()
-        self.cache.expires_at = _new_expire(int(self.pipeline.source.cache_ttl))
-        cacti.repository.save_source_cache(self.cache)
-
-    def _fetch_data(self) -> dict:
-        return {
-            self.VARIABLES: cacti.repository.get_variables(self.connection_string),
-            self.GRAPHS: cacti.repository.get_graphs(self.connection_string),
-            self.SOURCES: cacti.repository.get_sources(self.connection_string),
-            self.HOSTS: cacti.repository.get_hosts(self.connection_string),
-        }
+    # def _fetch_data(self) -> dict:
+    #     return S(self.connection_string).get_data()
 
     @property
     def connection_string(self):
