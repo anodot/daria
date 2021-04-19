@@ -196,6 +196,10 @@ class VictoriaMetricsSource(Source):
     PASSWORD = 'password'
 
 
+class SolarWindsSource(VictoriaMetricsSource):
+    pass
+
+
 class ZabbixSource(Source):
     URL = 'url'
     USER = 'user'
