@@ -5,14 +5,9 @@ from agent.pipeline import Pipeline
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
-sessions = {}
-
 
 def _get_session(connection_string: str):
-    global sessions
-    if connection_string not in sessions:
-        sessions[connection_string] = scoped_session(sessionmaker(bind=create_engine(connection_string)))
-    return sessions[connection_string]
+    return scoped_session(sessionmaker(bind=create_engine(connection_string)))
 
 
 def get_cacti_sources(mysql_connection_string: str, exclude_hosts: list, exclude_datasources: list) -> list:

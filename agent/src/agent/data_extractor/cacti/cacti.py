@@ -1,10 +1,9 @@
 import os
 import re
-from copy import deepcopy
-
 import rrdtool
 import tarfile
 
+from copy import deepcopy
 from typing import List, Optional
 from agent.data_extractor.cacti.source_cacher import CactiCacher
 from agent.pipeline import Pipeline
@@ -26,19 +25,19 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
     metrics = []
     for local_graph_id, rrd_file_name in cacher.sources.items():
         if local_graph_id not in graphs:
-            logger_.warning(f'local_graph_id `{local_graph_id}` is not in a list of graphs, skipping')
+            logger_.debug(f'local_graph_id `{local_graph_id}` is not in a list of graphs, skipping')
             continue
         if local_graph_id not in variables:
-            logger_.warning(f'local_graph_id `{local_graph_id}` is not in a list of variables, skipping')
+            logger_.debug(f'local_graph_id `{local_graph_id}` is not in a list of variables, skipping')
             continue
         if not rrd_file_name:
             continue
         if '<path_rra>/' not in rrd_file_name:
-            logger_.warning(f'Path {rrd_file_name} does not contain "<path_rra>/", skipping')
+            logger_.debug(f'Path {rrd_file_name} does not contain "<path_rra>/", skipping')
             continue
         rrd_file_path = rrd_file_name.replace('<path_rra>', _get_rrd_dir(pipeline_))
         if not os.path.isfile(rrd_file_path):
-            logger_.warning(f'File {rrd_file_path} does not exist')
+            logger_.debug(f'File {rrd_file_path} does not exist')
             continue
 
         base_metric = {
@@ -87,10 +86,8 @@ def _extract_dimensions(graph_title: str, variables: dict, host: dict, add_graph
     for var in _extract_dimension_names(graph_title):
         value = _extract(var, variables, host)
         if value is None:
-            logger_.warning(f'Variable `{var}` does not exist`')
             continue
         if value == '':
-            logger_.warning(f'Value for `{var}` variable is empty, skipping')
             continue
 
         dimensions[var] = value
