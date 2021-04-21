@@ -25,6 +25,7 @@
     "properties": {
       "what": "transformed_data_source",
       "host_description": "390257-some_host",
+      "item_title": "Subida:",
       "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
       "static_dim": "cacti",
       "name": "Gi0/4",
@@ -58,6 +59,7 @@
     "properties": {
       "what": "transformed_data_source",
       "host_description": "390257-some_host",
+      "item_title": "Subida:",
       "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
       "static_dim": "cacti",
       "name": "Gi0/4",
@@ -91,6 +93,7 @@
     "properties": {
       "what": "transformed_data_source",
       "host_description": "390257-some_host",
+      "item_title": "Subida:",
       "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
       "static_dim": "cacti",
       "name": "Gi0/4",
@@ -124,6 +127,7 @@
     "properties": {
       "what": "transformed_data_source",
       "host_description": "390257-some_host",
+      "item_title": "Subida:",
       "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
       "static_dim": "cacti",
       "name": "Gi0/4",
@@ -157,6 +161,7 @@
     "properties": {
       "what": "transformed_data_source",
       "host_description": "390257-some_host",
+      "item_title": "Subida:",
       "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
       "static_dim": "cacti",
       "name": "Gi0/4",
@@ -190,6 +195,7 @@
     "properties": {
       "what": "transformed_data_source",
       "host_description": "390257-some_host",
+      "item_title": "Subida:",
       "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
       "static_dim": "cacti",
       "name": "Gi0/4",
@@ -223,6 +229,7 @@
     "properties": {
       "what": "transformed_data_source",
       "host_description": "390257-some_host",
+      "item_title": "Subida:",
       "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
       "static_dim": "cacti",
       "name": "Gi0/4",
@@ -256,6 +263,7 @@
     "properties": {
       "what": "transformed_data_source",
       "host_description": "390257-some_host",
+      "item_title": "Subida:",
       "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
       "static_dim": "cacti",
       "name": "Gi0/4",

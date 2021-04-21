@@ -49,6 +49,8 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
 
             first_data_item_timestamp = result[0][0]
             for name_idx, measurement_name in enumerate(result[1]):
+                if measurement_name != item['data_source_name']:
+                    continue
                 for row_idx, data in enumerate(result[2]):
                     timestamp = int(first_data_item_timestamp) + row_idx * int(step)
                     value = data[name_idx]
@@ -80,11 +82,7 @@ def _extract_dimensions(graph: dict, hosts: dict, add_graph_name_dimension=False
         # this means the graph doesn't have host and it will not be used later
         host = {}
     for var in _extract_dimension_names(graph_title):
-        if 'variables' not in graph:
-            t = 1
-        if 'host_id' not in graph:
-            t = 1
-        value = _extract(var, graph['variables'], host)
+        value = _extract(var, graph.get('variables', {}), host)
         if value is None:
             continue
         if value == '':

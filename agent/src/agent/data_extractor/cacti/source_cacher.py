@@ -29,8 +29,6 @@ class CactiCacher:
         self.cache: Optional[CactiCache] = cacti.repository.get_cache(pipeline_)
 
     def _get(self, key: str):
-        if self.cache is None:
-            self._cache_data()
         return self.cache.data[key]
 
     @property
@@ -40,22 +38,6 @@ class CactiCacher:
     @property
     def hosts(self) -> dict:
         return self._get(self.HOSTS)
-
-    # def _cache_data(self):
-    #     self.cache = CactiCache(
-    #         self.pipeline.name,
-    #         self._fetch_data(),
-    #         _new_expire(int(self.pipeline.source.cache_ttl))
-    #     )
-    #     cacti.repository.save_cacti_cache(self.cache)
-    #
-    # def _update_cache(self):
-    #     self.cache.data = self._fetch_data()
-    #     self.cache.expires_at = _new_expire(int(self.pipeline.source.cache_ttl))
-    #     cacti.repository.save_cacti_cache(self.cache)
-
-    # def _fetch_data(self) -> dict:
-    #     return S(self.connection_string).get_data()
 
     @property
     def connection_string(self):
