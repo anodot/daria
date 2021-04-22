@@ -145,15 +145,19 @@ def _extract_dimension_names(name: str) -> List[str]:
 def _extract_item_dimensions(item: dict) -> dict:
     dimensions = {}
     item_title = item['item_title']
-    for dimension_name in _extract_dimension_names(item_title):
-        if not dimension_name.startswith('query'):
-            continue
-        dimension_name = dimension_name.replace('query_', '')
-        if dimension_name not in item['variables']:
-            continue
-        dimensions[dimension_name] = item['variables'][dimension_name]
-
-    dimensions['item_title'] = item_title
+    if item_title != '':
+        dimensions['item_title'] = item_title
+    if 'variables' in item and item_title != '':
+        for dimension_name in _extract_dimension_names(item_title):
+            if not dimension_name.startswith('query'):
+                continue
+            dimension_name = dimension_name.replace('query_', '')
+            if dimension_name not in item['variables']:
+                continue
+            value = item['variables'][dimension_name]
+            if value is None or value == '':
+                continue
+            dimensions[dimension_name] = value
     return dimensions
 
 
