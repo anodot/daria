@@ -1,5 +1,5 @@
 from typing import Optional
-from agent.data_extractor.cacti.source_cacher import CactiCache
+from agent.data_extractor.cacti.cacher import CactiCache
 from agent.modules import db as agent_db
 from agent.pipeline import Pipeline
 from sqlalchemy import create_engine
@@ -22,7 +22,7 @@ def save_cacti_cache(source_cache: CactiCache):
     agent_db.Session.commit()
 
 
-class S:
+class CactiCacher:
     def __init__(self, mysql_connection_string: str):
         self.session = scoped_session(sessionmaker(bind=create_engine(mysql_connection_string)))
         self.graphs = {}

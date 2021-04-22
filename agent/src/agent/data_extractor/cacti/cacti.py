@@ -5,7 +5,7 @@ import tarfile
 
 from copy import deepcopy
 from typing import List, Optional
-from agent.data_extractor.cacti.source_cacher import CactiCacher
+from agent.data_extractor import cacti
 from agent.pipeline import Pipeline
 from agent import source
 from agent.modules import logger
@@ -17,12 +17,13 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
     if pipeline_.source.RRD_ARCHIVE_PATH in pipeline_.source.config:
         _extract_rrd_archive(pipeline_)
 
-    cacher = CactiCacher(pipeline_)
-    graphs = cacher.graphs
-    hosts = cacher.hosts
+    cache = cacti.repository.get_cache(pipeline_)
+    if cache is None:
+        cacti.cacher.cache_data()
+        cache = cacti.repository.get_cache(pipeline_)
 
     metrics = []
-    for local_graph_id, graph in graphs.items():
+    for local_graph_id, graph in cache.graphs.items():
         for item_id, item in graph['items'].items():
             data_source_path = item['data_source_path']
             if not data_source_path:
@@ -37,7 +38,7 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
 
             base_metric = {
                 'target_type': 'gauge',
-                'properties': _extract_dimensions(graph, hosts, pipeline_.config['add_graph_name_dimension']),
+                'properties': _extract_dimensions(graph, cache.hosts, pipeline_.config['add_graph_name_dimension']),
             }
 
             result = rrdtool.fetch(rrd_file_path, 'AVERAGE', ['-s', start, '-e', end, '-r', step])
