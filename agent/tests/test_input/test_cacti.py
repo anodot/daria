@@ -41,7 +41,7 @@ class TestCacti(TestInputBase):
         assert source.repository.exists(source_name)
 
     def test_archive_pipeline_create(self, cli_runner):
-        offset = datetime.fromtimestamp(1615808400).replace(hour=0, minute=0, second=0)
+        offset = datetime.fromtimestamp(1619085000).replace(hour=0, minute=0, second=0)
         delay = 5
         pipeline_id = 'cacti_archive'
         input_ = {
@@ -65,7 +65,7 @@ class TestCacti(TestInputBase):
         pipeline.repository.get_by_id(pipeline_id)
 
     def test_dir_pipeline_create(self, cli_runner):
-        offset = datetime.fromtimestamp(1615808400).replace(hour=0, minute=0, second=0)
+        offset = datetime.fromtimestamp(1619085000).replace(hour=0, minute=0, second=0)
         delay = 5
         pipeline_id = 'cacti_dir'
         input_ = {
