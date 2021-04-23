@@ -6,7 +6,7 @@
       "host_description": "390257-some_host",
       "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
       "what": "transformed_data_source",
-      "item_title": "Subida:",
+      "item_title": "Descarga:",
       "alias": "ENoB-Id",
       "name": "Gi0/4",
       "static_dim": "cacti"
@@ -40,7 +40,7 @@
       "host_description": "390257-some_host",
       "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
       "what": "transformed_data_source",
-      "item_title": "Subida:",
+      "item_title": "Descarga:",
       "alias": "ENoB-Id",
       "name": "Gi0/4",
       "static_dim": "cacti"
@@ -142,7 +142,7 @@
       "host_description": "390257-some_host",
       "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
       "what": "transformed_data_source",
-      "item_title": "Subida:",
+      "item_title": "Descarga:",
       "alias": "ENoB-Id",
       "name": "Gi0/4",
       "static_dim": "cacti"
@@ -176,7 +176,7 @@
       "host_description": "390257-some_host",
       "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
       "what": "transformed_data_source",
-      "item_title": "Subida:",
+      "item_title": "Descarga:",
       "alias": "ENoB-Id",
       "name": "Gi0/4",
       "static_dim": "cacti"
@@ -210,7 +210,7 @@
       "host_description": "390257-some_host",
       "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
       "what": "transformed_data_source",
-      "item_title": "Subida:",
+      "item_title": "Descarga:",
       "alias": "ENoB-Id",
       "name": "Gi0/4",
       "static_dim": "cacti"
@@ -244,7 +244,7 @@
       "host_description": "390257-some_host",
       "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
       "what": "transformed_data_source",
-      "item_title": "Subida:",
+      "item_title": "Descarga:",
       "alias": "ENoB-Id",
       "name": "Gi0/4",
       "static_dim": "cacti"
@@ -278,7 +278,7 @@
       "host_description": "390257-some_host",
       "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
       "what": "transformed_data_source",
-      "item_title": "Subida:",
+      "item_title": "Descarga:",
       "alias": "ENoB-Id",
       "name": "Gi0/4",
       "static_dim": "cacti"
