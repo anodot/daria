@@ -33,6 +33,8 @@ SOURCE_HTTP_ERRORS = Counter('source_http_errors', 'Source HTTP errors',
                              ['streamsets_url', 'pipeline_id', 'pipeline_type', 'code'], registry=registry)
 SCHEDULED_SCRIPTS_ERRORS = Counter('scheduled_scripts_errors', 'Scheduled scripts errors', ['script_name'],
                                    registry=registry)
+SCHEDULED_SCRIPT_EXECUTION_TIME = Gauge('scheduled_script_execution_time', 'Time to execute a scheduled script',
+                                        ['script_name'], registry=registry)
 
 # # Not for every endpoint
 # AGENT_API_REQUESTS_LATENCY = Gauge('agent_api_requests_latency_seconds', 'Agent API requests time in seconds',

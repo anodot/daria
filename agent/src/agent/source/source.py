@@ -207,10 +207,6 @@ class CactiSource(Source):
     RRD_ARCHIVE_PATH = 'rrd_archive_path'
     RRD_DIR_PATH = 'rrd_dir_path'
 
-    @property
-    def cache_ttl(self) -> int:
-        return self.config.get('cache_ttl', 3600)
-
 
 class DirectorySource(SchemalessSource):
     pass

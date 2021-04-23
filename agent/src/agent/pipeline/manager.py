@@ -5,7 +5,7 @@ import sdc_client
 
 from agent import source, pipeline, destination, streamsets
 from agent.modules import tools
-from agent.pipeline import Pipeline, TestPipeline, schema
+from agent.pipeline import Pipeline, TestPipeline, schema, extra_setup
 from agent.modules.logger import get_logger
 from agent.pipeline.config.handlers.factory import get_config_handler
 from agent.source import Source
@@ -46,14 +46,16 @@ def update(pipeline_: Pipeline):
     if not pipeline_.config_changed():
         logger_.info(f'No need to update pipeline {pipeline_.name}')
         return
+    extra_setup.do(pipeline_)
     if pipeline_.uses_schema:
         _update_schema(pipeline_)
     sdc_client.update(pipeline_)
     pipeline.repository.save(pipeline_)
-    logger_.info(f'Updated pipeline {pipeline_}')
+    logger_.info(f'Updated pipeline {pipeline_.name}')
 
 
 def create(pipeline_: Pipeline):
+    extra_setup.do(pipeline_)
     if pipeline_.uses_schema:
         _update_schema(pipeline_)
     sdc_client.create(pipeline_)

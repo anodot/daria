@@ -30,6 +30,10 @@ def get_by_id(pipeline_id: str) -> Pipeline:
     return pipeline_
 
 
+def get_by_type(type_: str) -> List[Pipeline]:
+    return list(filter(lambda x: x.source.type == type_, get_all()))
+
+
 @typed_source
 def get_by_source(source_name: str) -> List[Pipeline]:
     return list(filter(lambda x: x.source.name == source_name, get_all()))

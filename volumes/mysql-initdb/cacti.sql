@@ -175,7 +175,7 @@ CREATE TABLE `data_template_rrd` (
 
 LOCK TABLES `data_template_rrd` WRITE;
 INSERT INTO `data_template_rrd` VALUES
-(27038,'',54,13744,41,NULL,'|query_ifSpeed|',NULL,0,NULL,600,NULL,2,NULL,'traffic_in',NULL,0),
+(27038,'',54,13744,41,NULL,'|query_ifSpeed|',NULL,0,NULL,600,NULL,2,NULL,'test_data_source',NULL,0),
 (27039,'',55,13744,41,NULL,'|query_ifSpeed|',NULL,0,NULL,600,NULL,2,NULL,'traffic_out',NULL,0);
 UNLOCK TABLES;
 
@@ -262,4 +262,22 @@ CREATE TABLE `graph_templates_graph` (
 LOCK TABLES `graph_templates_graph` WRITE;
 INSERT INTO `graph_templates_graph` VALUES
 (13968,2,13882,2,0,1,0,'|host_description|-|query_ifName|-|query_ifAlias|-IP |query_ifIP|','390257-some_host-Gi0/4-ENoB-Id-IP |query_ifIP|',0,120,0,600,0,100,0,0,0,'bits per second',0,'on',0,'on',0,1,0,'',0,'',0,'on',0,'on',0,1000,0,'',0,'on',0,'',0,'');
+UNLOCK TABLES;
+
+CREATE TABLE `graph_local` (
+  `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
+  `graph_template_id` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `host_id` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `snmp_query_id` mediumint(8) NOT NULL DEFAULT '0',
+  `snmp_index` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  KEY `host_id` (`host_id`),
+  KEY `graph_template_id` (`graph_template_id`),
+  KEY `snmp_query_id` (`snmp_query_id`),
+  KEY `snmp_index` (`snmp_index`)
+) ENGINE=MyISAM AUTO_INCREMENT=15002 DEFAULT CHARSET=latin1;
+
+LOCK TABLES `graph_local` WRITE;
+INSERT INTO `graph_local` VALUES
+(13882,2,1008,1,9);
 UNLOCK TABLES;
