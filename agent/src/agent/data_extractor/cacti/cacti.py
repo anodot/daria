@@ -37,7 +37,7 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
 
             base_metric = {
                 'target_type': 'gauge',
-                'properties': _extract_dimensions(graph, cache.hosts, pipeline_.config['add_graph_name_dimension']),
+                'properties': _extract_dimensions(item, graph, cache.hosts, pipeline_.config['add_graph_name_dimension']),
             }
 
             result = rrdtool.fetch(rrd_file_path, 'AVERAGE', ['-s', start, '-e', end, '-r', step])
@@ -73,7 +73,7 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
     return metrics
 
 
-def _extract_dimensions(graph: dict, hosts: dict, add_graph_name_dimension=False) -> dict:
+def _extract_dimensions(item: dict, graph: dict, hosts: dict, add_graph_name_dimension=False) -> dict:
     dimensions = {}
     graph_title = graph['title']
     if graph['host_id'] != '0':
@@ -96,8 +96,7 @@ def _extract_dimensions(graph: dict, hosts: dict, add_graph_name_dimension=False
     if 'host_description' not in dimensions and 'description' in host:
         dimensions['host_description'] = host['description']
 
-    for item_id, item in graph['items'].items():
-        dimensions = {**dimensions, **_extract_item_dimensions(item)}
+    dimensions = {**dimensions, **_extract_item_dimensions(item)}
 
     return _replace_illegal_chars(dimensions)
 
@@ -144,19 +143,21 @@ def _extract_dimension_names(name: str) -> List[str]:
 def _extract_item_dimensions(item: dict) -> dict:
     dimensions = {}
     item_title = item['item_title']
-    if item_title != '':
-        dimensions['item_title'] = item_title
     if 'variables' in item and item_title != '':
         for dimension_name in _extract_dimension_names(item_title):
             if not dimension_name.startswith('query'):
                 continue
-            dimension_name = dimension_name.replace('query_', '')
-            if dimension_name not in item['variables']:
+            dim_name = dimension_name.replace('query_', '')
+            if dim_name not in item['variables']:
                 continue
-            value = item['variables'][dimension_name]
+            value = item['variables'][dim_name]
             if value is None or value == '':
                 continue
             dimensions[dimension_name] = value
+    if item_title != '':
+        for k, v in dimensions.items():
+            item_title = item_title.replace(f'|{k}|', v)
+        dimensions['item_title'] = item_title
     return dimensions
 
 
