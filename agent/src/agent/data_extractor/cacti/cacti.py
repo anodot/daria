@@ -19,8 +19,7 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
 
     cache = cacti.repository.get_cache(pipeline_)
     if cache is None:
-        cacti.cacher.cache_data()
-        cache = cacti.repository.get_cache(pipeline_)
+        raise Exception('Cacti cache does not exist')
 
     metrics = []
     for local_graph_id, graph in cache.graphs.items():

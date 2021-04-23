@@ -2,7 +2,6 @@ import pytest
 
 from agent import source
 from .test_zpipeline_base import TestPipelineBase
-from agent.data_extractor import cacti
 
 
 class TestCacti(TestPipelineBase):
@@ -38,6 +37,3 @@ class TestCacti(TestPipelineBase):
 
     def test_output_schema(self, name=None, pipeline_type=None, output=None):
         pytest.skip()
-
-    def test_cache_data(self):
-        cacti.cacher.cache_data()
