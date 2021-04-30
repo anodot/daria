@@ -10,6 +10,5 @@ class DeclarativeABCMeta(DeclarativeMeta, ABCMeta):
 
 
 Entity = declarative_base(metaclass=DeclarativeABCMeta)
-Session = scoped_session(sessionmaker(
-    bind=create_engine(f'postgresql://{AGENT_DB_USER}:{AGENT_DB_PASSWORD}@{AGENT_DB_HOST}/{AGENT_DB}')
-))
+engine = create_engine(f'postgresql://{AGENT_DB_USER}:{AGENT_DB_PASSWORD}@{AGENT_DB_HOST}/{AGENT_DB}')
+Session = scoped_session(sessionmaker(bind=engine))

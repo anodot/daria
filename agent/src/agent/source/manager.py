@@ -12,7 +12,7 @@ def create_source_obj(source_name: str, source_type: str) -> Source:
 
 
 def update(source_: Source):
-    if not source_.config_changed():
+    if not source.repository.is_modified(source_):
         logger_.info(f'No need to update source {source_.name}')
         return
 
