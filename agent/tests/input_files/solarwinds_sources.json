@@ -1,0 +1,11 @@
+[
+  {
+    "type": "solarwinds",
+    "name": "solarwinds_file",
+    "config": {
+      "url": "http://dummy_destination:80",
+      "username": "Admin",
+      "password": "admin"
+    }
+  }
+]

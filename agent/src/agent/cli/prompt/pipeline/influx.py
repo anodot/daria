@@ -14,8 +14,8 @@ class InfluxPrompter(Prompter):
         self.set_value()
         self.set_target_type()
         self.set_dimensions()
-        self.set_static_dimensions()
-        self.set_tags()
+        self.prompt_static_dimensions()
+        self.prompt_tags()
         self.set_delay()
         self.set_filtering()
 

@@ -13,11 +13,11 @@ class ElasticPrompter(SchemalessPrompter):
         self.prompt_query()
         self.data_preview()
         self.set_values()
-        self.set_measurement_names()
-        self.set_timestamp()
+        self.prompt_measurement_names()
+        self.prompt_timestamp()
         self.set_dimensions()
-        self.set_static_dimensions()
-        self.set_tags()
+        self.prompt_static_dimensions()
+        self.prompt_tags()
 
     @infinite_retry
     def prompt_query(self):

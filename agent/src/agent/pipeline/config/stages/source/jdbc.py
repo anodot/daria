@@ -14,12 +14,12 @@ class JDBCSource(Stage):
     def get_query(self):
         if isinstance(self.pipeline, pipeline.TestPipeline):
             return self._get_preview_query()
-
-        timestamp_condition = f'''{self._timestamp_to_unix} > {self.LAST_TIMESTAMP} 
-AND {self._timestamp_to_unix} <= {self.LAST_TIMESTAMP} + {self.pipeline.interval}'''
-
-        query = self.pipeline.query.replace(f'{source.JDBCSource.TIMESTAMP_CONDITION}', timestamp_condition)
+        query = self.pipeline.query.replace(f'{source.JDBCSource.TIMESTAMP_CONDITION}', self._get_timestamp_condition())
         return query + ' ORDER BY ' + self.pipeline.timestamp_path
+
+    def _get_timestamp_condition(self) -> str:
+        return f'{self._timestamp_to_unix} > {self.LAST_TIMESTAMP}' \
+               f' AND {self._timestamp_to_unix} <= {self.LAST_TIMESTAMP} + {self.pipeline.interval}'
 
     def _get_preview_query(self):
         if not self.pipeline.query:

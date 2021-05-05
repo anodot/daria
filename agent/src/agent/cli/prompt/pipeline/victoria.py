@@ -12,8 +12,8 @@ class VictoriaPrompter(Prompter):
         self.prompt_delay()
         self.config['timestamp'] = {}
         self.config['timestamp']['type'] = 'unix'
-        self.set_static_dimensions()
-        self.set_tags()
+        self.prompt_static_dimensions()
+        self.prompt_tags()
 
     def prompt_query(self):
         self.config['query'] = click.prompt('Query to export data from VictoriaMetrics', type=click.STRING,

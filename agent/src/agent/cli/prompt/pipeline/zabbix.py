@@ -13,12 +13,12 @@ class ZabbixPrompter(SchemalessPrompter):
         self.prompt_interval()
         self.data_preview()
         self.set_values()
-        self.set_measurement_names()
+        self.prompt_measurement_names()
         self.set_dimensions()
         self.prompt_delay()
         self.set_transform()
-        self.set_static_dimensions()
-        self.set_tags()
+        self.prompt_static_dimensions()
+        self.prompt_tags()
         # todo code duplicate
         self.config['timestamp'] = {}
         self.config['timestamp']['type'] = 'unix'

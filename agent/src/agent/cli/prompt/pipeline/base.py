@@ -1,8 +1,7 @@
-from copy import deepcopy
-
 import click
 import pytz
 
+from copy import deepcopy
 from agent.cli import preview
 from agent.modules.tools import infinite_retry, if_validation_enabled, dict_get_nested
 from agent import pipeline
@@ -26,7 +25,7 @@ class Prompter:
     def prompt_config(self):
         pass
 
-    def set_timestamp(self):
+    def prompt_timestamp(self):
         self.config['timestamp'] = self.default_config.get('timestamp', {})
         self.config['timestamp']['name'] = self.prompt_property('Timestamp property name',
                                                                 self.config['timestamp'].get('name'))
@@ -61,22 +60,6 @@ class Prompter:
                                                              default=self.config['dimensions'].get('optional', []))
 
     @infinite_retry
-    def prompt_tags(self):
-        properties_str = ''
-        if self.config['tags']:
-            properties_str = ' '.join([key + ':' + ','.join(val) for key, val in self.config['tags'].items()])
-
-        self.config['tags'] = {}
-
-        properties_str = click.prompt('Tags', type=click.STRING, default=properties_str)
-        for i in properties_str.split():
-            pair = i.split(':')
-            if len(pair) != 2:
-                raise click.UsageError('Wrong format, correct example - key:val key2:val2')
-
-            self.config['tags'][pair[0]] = pair[1].split(',')
-
-    @infinite_retry
     def set_timezone(self):
         if not self.advanced:
             return
@@ -92,7 +75,7 @@ class Prompter:
             default = ' '.join([key + ':' + val for key, val in self.default_config[property_name].items()])
         return default
 
-    def set_static_dimensions(self):
+    def prompt_static_dimensions(self):
         self.config['properties'] = self.default_config.get('properties', {})
         if self.advanced:
             self.config['properties'] = {}
@@ -100,10 +83,23 @@ class Prompter:
             for k, v in properties.items():
                 self.config['properties'][k.replace(' ', '_').replace('.', '_')] = v.replace(' ', '_').replace('.', '_')
 
-    def set_tags(self):
+    @infinite_retry
+    def prompt_tags(self):
         self.config['tags'] = self.default_config.get('tags', {})
         if self.advanced:
-            self.prompt_tags()
+            properties_str = ''
+            if self.config['tags']:
+                properties_str = ' '.join([key + ':' + ','.join(val) for key, val in self.config['tags'].items()])
+
+            self.config['tags'] = {}
+
+            properties_str = click.prompt('Tags', type=click.STRING, default=properties_str)
+            for i in properties_str.split():
+                pair = i.split(':')
+                if len(pair) != 2:
+                    raise click.UsageError('Wrong format, correct example - key:val key2:val2')
+
+                self.config['tags'][pair[0]] = pair[1].split(',')
 
     def set_measurement_name(self):
         self.config['measurement_name'] = click.prompt('Measurement name', type=click.STRING,

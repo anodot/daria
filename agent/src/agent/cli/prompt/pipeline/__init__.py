@@ -6,6 +6,7 @@ from .jdbc import JDBCPrompter
 from .kafka import KafkaPrompter
 from .mongo import MongoPrompter
 from .elastic import ElasticPrompter
+from .solarwinds import SolarWindsPrompter
 from .tcp import TCPPrompter
 from .directory import DirectoryPrompter
 from .sage import SagePrompter
@@ -17,16 +18,17 @@ from .cacti import CactiPrompter
 def get_prompter(pipeline_: Pipeline, default_config: dict, advanced: bool) -> Prompter:
     prompters = {
         source.TYPE_CACTI: CactiPrompter,
+        source.TYPE_CLICKHOUSE: JDBCPrompter,
+        source.TYPE_DIRECTORY: DirectoryPrompter,
+        source.TYPE_ELASTIC: ElasticPrompter,
         source.TYPE_INFLUX: InfluxPrompter,
         source.TYPE_KAFKA: KafkaPrompter,
         source.TYPE_MONGO: MongoPrompter,
         source.TYPE_MYSQL: JDBCPrompter,
         source.TYPE_POSTGRES: JDBCPrompter,
-        source.TYPE_CLICKHOUSE: JDBCPrompter,
-        source.TYPE_ELASTIC: ElasticPrompter,
-        source.TYPE_SPLUNK: TCPPrompter,
-        source.TYPE_DIRECTORY: DirectoryPrompter,
         source.TYPE_SAGE: SagePrompter,
+        source.TYPE_SPLUNK: TCPPrompter,
+        source.TYPE_SOLARWINDS: SolarWindsPrompter,
         source.TYPE_VICTORIA: VictoriaPrompter,
         source.TYPE_ZABBIX: ZabbixPrompter,
     }
