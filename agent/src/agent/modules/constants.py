@@ -1,7 +1,7 @@
 import os
 
 ANODOT_API_URL = os.environ.get('ANODOT_API_URL', 'https://api.anodot.com')
-ENV_PROD = True if os.environ.get('ENV_PROD') == 'true' else False
+TEST_ENV = False
 
 HOSTNAME = os.environ.get('HOSTNAME', 'agent')
 

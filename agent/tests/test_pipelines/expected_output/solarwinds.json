@@ -1,0 +1,210 @@
+[
+  {
+    "timestamp": 1617108806,
+    "properties": {
+      "NodeID": "1",
+      "what": "MinMemoryUsed",
+      "target_type": "gauge"
+    },
+    "value": 8823238656.0,
+    "tags": {
+      "source": [§
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "solarwinds"
+      ],
+      "pipeline_type": [
+        "solarwinds"
+      ]
+    }
+  },
+  {
+    "timestamp": 1617108806,
+    "properties": {
+      "NodeID": "1",
+      "what": "AvgPercentMemoryUsed",
+      "target_type": "gauge"
+    },
+    "value": 26.053014755249023,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "solarwinds"
+      ],
+      "pipeline_type": [
+        "solarwinds"
+      ]
+    }
+  },
+  {
+    "timestamp": 1617109406,
+    "properties": {
+      "NodeID": "1",
+      "what": "MinMemoryUsed",
+      "target_type": "gauge"
+    },
+    "value": 8899817472.0,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "solarwinds"
+      ],
+      "pipeline_type": [
+        "solarwinds"
+      ]
+    }
+  },
+  {
+    "timestamp": 1617109406,
+    "properties": {
+      "NodeID": "1",
+      "what": "AvgPercentMemoryUsed",
+      "target_type": "gauge"
+    },
+    "value": 26.27913475036621,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "solarwinds"
+      ],
+      "pipeline_type": [
+        "solarwinds"
+      ]
+    }
+  },
+  {
+    "timestamp": 1617110006,
+    "properties": {
+      "NodeID": "1",
+      "what": "MinMemoryUsed",
+      "target_type": "gauge"
+    },
+    "value": 8932089856.0,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "solarwinds"
+      ],
+      "pipeline_type": [
+        "solarwinds"
+      ]
+    }
+  },
+  {
+    "timestamp": 1617110006,
+    "properties": {
+      "NodeID": "1",
+      "what": "AvgPercentMemoryUsed",
+      "target_type": "gauge"
+    },
+    "value": 26.374427795410156,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "solarwinds"
+      ],
+      "pipeline_type": [
+        "solarwinds"
+      ]
+    }
+  },
+  {
+    "timestamp": 1617110606,
+    "properties": {
+      "NodeID": "1",
+      "what": "MinMemoryUsed",
+      "target_type": "gauge"
+    },
+    "value": 8968802304.0,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "solarwinds"
+      ],
+      "pipeline_type": [
+        "solarwinds"
+      ]
+    }
+  },
+  {
+    "timestamp": 1617110606,
+    "properties": {
+      "NodeID": "1",
+      "what": "AvgPercentMemoryUsed",
+      "target_type": "gauge"
+    },
+    "value": 26.482831954956055,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "solarwinds"
+      ],
+      "pipeline_type": [
+        "solarwinds"
+      ]
+    }
+  }
+]

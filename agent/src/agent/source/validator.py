@@ -6,7 +6,7 @@ import inject
 
 from abc import ABC, abstractmethod
 from datetime import datetime
-from urllib.parse import urlparse, urlunparse
+from urllib.parse import urlparse
 from agent import source
 from agent.modules.tools import if_validation_enabled
 from agent.modules import validator, zabbix
@@ -210,6 +210,26 @@ class VictoriaMetricsValidator(Validator):
             )
 
 
+class SolarWindsValidator(Validator):
+    VALIDATION_SCHEMA_FILE = 'solarwinds.json'
+
+    def validate_connection(self):
+        url = self.source.config['url'] + '/SolarWinds/InformationService/v3/Json/Query?query=SELECT TOP+1+1+as+test+FROM+Orion.Accounts'
+        session = requests.Session()
+        session.auth = (
+            self.source.config[source.APISource.USERNAME],
+            self.source.config[source.APISource.PASSWORD]
+        )
+        try:
+            res = session.get(url, verify=False)
+            res.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            raise ValidationException(
+                'Failed to connect to SolarWinds. Make sure you provided correct url, API username and password:\n'
+                + str(e)
+            )
+
+
 class ZabbixValidator(Validator):
     VALIDATION_SCHEMA_FILE = 'zabbix.json'
 
@@ -262,18 +282,19 @@ class ValidationException(Exception):
 
 def get_validator(source_: Source) -> Validator:
     types = {
+        source.TYPE_CACTI: CactiValidator,
+        source.TYPE_CLICKHOUSE: JDBCValidator,
+        source.TYPE_DIRECTORY: DirectoryValidator,
+        source.TYPE_ELASTIC: ElasticValidator,
         source.TYPE_INFLUX: InfluxValidator,
         source.TYPE_KAFKA: KafkaValidator,
         source.TYPE_MONGO: MongoValidator,
         source.TYPE_MYSQL: JDBCValidator,
         source.TYPE_POSTGRES: JDBCValidator,
-        source.TYPE_CLICKHOUSE: JDBCValidator,
-        source.TYPE_ELASTIC: ElasticValidator,
-        source.TYPE_SPLUNK: SplunkValidator,
-        source.TYPE_DIRECTORY: DirectoryValidator,
         source.TYPE_SAGE: SageValidator,
+        source.TYPE_SPLUNK: SplunkValidator,
+        source.TYPE_SOLARWINDS: SolarWindsValidator,
         source.TYPE_VICTORIA: VictoriaMetricsValidator,
         source.TYPE_ZABBIX: ZabbixValidator,
-        source.TYPE_CACTI: CactiValidator,
     }
     return types[source_.type](source_)

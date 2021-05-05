@@ -6,34 +6,36 @@ from . import validator
 from . import db
 from . import json_builder
 
+TYPE_CACTI = 'cacti'
+TYPE_CLICKHOUSE = 'clickhouse'
+TYPE_DIRECTORY = 'directory'
+TYPE_ELASTIC = 'elastic'
 TYPE_INFLUX = 'influx'
 TYPE_KAFKA = 'kafka'
 TYPE_MONGO = 'mongo'
 TYPE_MYSQL = 'mysql'
 TYPE_POSTGRES = 'postgres'
-TYPE_CLICKHOUSE = 'clickhouse'
-TYPE_ELASTIC = 'elastic'
-TYPE_SPLUNK = 'splunk'
-TYPE_DIRECTORY = 'directory'
 TYPE_SAGE = 'sage'
+TYPE_SPLUNK = 'splunk'
+TYPE_SOLARWINDS = 'solarwinds'
 TYPE_VICTORIA = 'victoria'
 TYPE_ZABBIX = 'zabbix'
-TYPE_CACTI = 'cacti'
 
 types = {
+    TYPE_CACTI: CactiSource,
+    TYPE_CLICKHOUSE: JDBCSource,
+    TYPE_DIRECTORY: DirectorySource,
+    TYPE_ELASTIC: ElasticSource,
     TYPE_INFLUX: InfluxSource,
     TYPE_KAFKA: KafkaSource,
     TYPE_MONGO: MongoSource,
     TYPE_MYSQL: JDBCSource,
     TYPE_POSTGRES: JDBCSource,
-    TYPE_CLICKHOUSE: JDBCSource,
-    TYPE_ELASTIC: ElasticSource,
-    TYPE_SPLUNK: TCPSource,
-    TYPE_DIRECTORY: DirectorySource,
     TYPE_SAGE: SageSource,
+    TYPE_SOLARWINDS: SolarWindsSource,
+    TYPE_SPLUNK: TCPSource,
     TYPE_VICTORIA: VictoriaMetricsSource,
     TYPE_ZABBIX: ZabbixSource,
-    TYPE_CACTI: CactiSource,
 }
 
 json_schema = {

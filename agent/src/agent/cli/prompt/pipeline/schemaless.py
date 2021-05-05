@@ -12,11 +12,11 @@ class SchemalessPrompter(Prompter):
     def prompt_config(self):
         self.data_preview()
         self.set_values()
-        self.set_measurement_names()
-        self.set_timestamp()
+        self.prompt_measurement_names()
+        self.prompt_timestamp()
         self.set_dimensions()
-        self.set_static_dimensions()
-        self.set_tags()
+        self.prompt_static_dimensions()
+        self.prompt_tags()
         self.filter()
         self.set_transform()
 
@@ -31,7 +31,7 @@ class SchemalessPrompter(Prompter):
     @infinite_retry
     def prompt_values(self):
         self.config['values'] = self.prompt_object(
-            'Value properties with target types. Example - property:counter property2:gauge',
+            'Name of a field containing metric value with target type. Example - field1:counter field2:gauge',
             self.get_default_object_value('values')
         )
 
@@ -76,10 +76,10 @@ class SchemalessPrompter(Prompter):
             raise click.UsageError('Set value properties or count records flag')
 
     @infinite_retry
-    def set_measurement_names(self):
-        prompt_text = 'Measurement names' if self.config.get('static_what', True) else 'Measurement properties names'
+    def prompt_measurement_names(self):
+        prompt_text = 'Metric names' if self.config.get('static_what', True) else 'Name of a field containing metric name'
         self.config['measurement_names'] = self.prompt_object(
-            prompt_text + '. Example -  property:measure property2:measure2',
+            prompt_text + '. Example -  original_name1:new_name1 original_name2:new_name2',
             self.get_default_object_value('measurement_names')
         )
         if not set(self.config['measurement_names'].keys()).issubset(set(self.config['values'].keys())):
