@@ -28,7 +28,7 @@ class TestMongo(TestInputBase):
     def test_source_edit(self, cli_runner):
         result = cli_runner.invoke(cli.source.edit, ['test_mongo'], catch_exceptions=False,
                                    input="""\n\n\n\n\n\n\n2015-01-01 00:00:00\n\n\n\n""")
-        source_ = source.repository.get_by_name('test_mongo')
+        source_ = source.repository.get_by_name_without_session('test_mongo')
         assert source_.config['configBean.initialOffset'] == '2015-01-01 00:00:00'
         assert result.exit_code == 0
 

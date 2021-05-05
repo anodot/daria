@@ -88,13 +88,18 @@ def _construct_source(source_: Source) -> Source:
     return source_
 
 
-def is_modified(source_: Source) -> bool:
-    query_result = engine.execute(Query(Source).filter(Source.name == source_.name).statement)
+def get_by_name_without_session(source_name: str) -> Source:
+    query_result = engine.execute(Query(Source).filter(Source.name == source_name).statement)
 
     sources = [i for i in query_result]
     if not sources:
         raise SourceNotExists
-    return sources[0].config != source_.config
+
+    return sources[0]
+
+
+def is_modified(source_: Source) -> bool:
+    return get_by_name_without_session(source_.name).config != source_.config
 
 
 class SourceNotExists(Exception):
