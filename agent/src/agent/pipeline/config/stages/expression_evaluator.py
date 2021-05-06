@@ -56,16 +56,16 @@ class AddProperties(Stage):
 class Filtering(Stage):
     def _get_transformations(self) -> list:
         transformations = []
-        if not self.pipeline.transformations_file_path:
+        if not self.pipeline.transformations_config:
             return transformations
 
-        with open(self.pipeline.transformations_file_path) as f:
-            for row in csv.DictReader(f, fieldnames=['result', 'value', 'condition']):
-                exp = condition.process_value(row['value'])
-                if row['condition']:
-                    exp = f"{condition.process_expression(row['condition'])} ? {exp} : record:value('/{row['result']}')"
+        for row in csv.DictReader(self.pipeline.transformations_config.splitlines(),
+                                  fieldnames=['result', 'value', 'condition']):
+            exp = condition.process_value(row['value'])
+            if row['condition']:
+                exp = f"{condition.process_expression(row['condition'])} ? {exp} : record:value('/{row['result']}')"
 
-                transformations.append(get_value('/' + row['result'], exp))
+            transformations.append(get_value('/' + row['result'], exp))
         return transformations
 
     def _get_config(self) -> dict:

@@ -99,6 +99,8 @@ class SchemalessPrompter(Prompter):
         expression_parser.transformation.validate_file(file)
 
         self.config['transform']['file'] = file
+        with open(file) as f:
+            self.config['transform']['config'] = f.read()
 
     @infinite_retry
     def prompt_condition(self):
