@@ -40,7 +40,6 @@ class Source(Entity):
 
     # todo refactor children
     def set_config(self, config):
-        self._previous_config = deepcopy(self.config)
         self.config = config
 
     @property

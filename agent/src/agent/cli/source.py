@@ -42,9 +42,11 @@ def edit(name, advanced, file):
         raise click.UsageError('Specify source name or file path')
     if file:
         _edit_using_file(file)
-    else:
-        source_ = _prompt_edit(name, advanced)
-        pipeline.manager.update_source_pipelines(source_)
+        return
+
+    source_ = source.repository.get_by_name(name)
+    source_ = prompt.source.get_prompter(source_).prompt(source_.config, advanced=advanced)
+    source.manager.update(source_)
 
 
 def _check_prerequisites():
@@ -90,13 +92,6 @@ def _edit_using_file(file):
         source.json_builder.edit_using_file(file)
     except (ValidationError, SchemaError) as e:
         raise click.UsageError(str(e))
-
-
-def _prompt_edit(name: str, advanced: bool) -> source.Source:
-    source_ = source.repository.get_by_name(name)
-    source_ = prompt.source.get_prompter(source_).prompt(source_.config, advanced=advanced)
-    source.manager.update(source_)
-    return source_
 
 
 def _prompt_source_type():

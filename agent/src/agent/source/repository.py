@@ -1,8 +1,9 @@
 from functools import wraps
 from typing import List, Optional
 from agent import source
-from agent.modules.db import Session
+from agent.modules.db import Session, engine
 from agent.source import Source
+from sqlalchemy.orm import Query
 
 
 def typed_source(func):
@@ -85,6 +86,20 @@ def get_last_edited(source_type: str) -> Optional[Source]:
 def _construct_source(source_: Source) -> Source:
     source_.__class__ = source.types[source_.type]
     return source_
+
+
+def get_by_name_without_session(source_name: str) -> Source:
+    query_result = engine.execute(Query(Source).filter(Source.name == source_name).statement)
+
+    sources = [i for i in query_result]
+    if not sources:
+        raise SourceNotExists
+
+    return sources[0]
+
+
+def is_modified(source_: Source) -> bool:
+    return get_by_name_without_session(source_.name).config != source_.config
 
 
 class SourceNotExists(Exception):
