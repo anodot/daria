@@ -215,6 +215,10 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return self.config.get('transform', {}).get('file')
 
     @property
+    def transformations_config(self) -> str:
+        return self.config.get('transform', {}).get('config')
+
+    @property
     def filter_condition(self) -> str:
         return self.config.get('filter', {}).get('condition')
 

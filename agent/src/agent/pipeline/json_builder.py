@@ -150,6 +150,17 @@ class LoadClientData:
 
         jsonschema.validate(self.client_config, schema)
         client_config.pop('source', None)
+
+        condition = self.client_config.get('filter', {}).get('condition')
+        if condition:
+            expression_parser.condition.validate(condition)
+
+        transformation = self.client_config.get('transform', {}).get('file')
+        if transformation:
+            expression_parser.transformation.validate_file(transformation)
+            with open(transformation) as f:
+                self.client_config['transform']['config'] = f.read()
+
         return self.client_config
 
     def _load_dimensions(self):
@@ -186,12 +197,6 @@ class KafkaLoadClientData(LoadClientData):
         self._load_dimensions()
         if 'timestamp' not in self.client_config and not self.edit:
             self.client_config['timestamp'] = {'name': 'kafka_timestamp', 'type': 'unix_ms'}
-        condition = self.client_config.get('filter', {}).get('condition')
-        if condition:
-            expression_parser.condition.validate(condition)
-        transformation = self.client_config.get('transform', {}).get('file')
-        if transformation:
-            expression_parser.transformation.validate_file(transformation)
 
         self.client_config['override_source'][source.KafkaSource.CONFIG_CONSUMER_GROUP] = \
             "agent_" + self.client_config['pipeline_id']
