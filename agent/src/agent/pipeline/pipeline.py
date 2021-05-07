@@ -302,7 +302,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
             **self.config,
             self.OVERRIDE_SOURCE: self.override_source,
             'pipeline_id': self.name,
-            'source': {'name': self.source.name},
+            'source': self.source.name,
         }
 
     def get_property_path(self, property_value: str) -> str:

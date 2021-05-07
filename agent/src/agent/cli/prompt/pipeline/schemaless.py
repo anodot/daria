@@ -58,8 +58,8 @@ class SchemalessPrompter(Prompter):
 
     @infinite_retry
     def set_values(self):
-        self.config['count_records'] = int(click.confirm('Count records?',
-                                                         default=self.default_config.get('count_records', False)))
+        self.config['count_records'] = click.confirm('Count records?',
+                                                     default=self.default_config.get('count_records', False))
         if self.config['count_records']:
             self.config['count_records_measurement_name'] = click.prompt('Measurement name', type=click.STRING,
                                                                          default=self.default_config.get(

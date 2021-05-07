@@ -33,7 +33,7 @@ class TestInflux:
             }],
             'er': [{"dimensions": {"optional": ["wrong"], "required": []}, "interval": 5,
                     "measurement_name": "wrong", "override_source": {}, "pipeline_id": "test_influx",
-                    "properties": {"test": "wrong"}, "source": {"name": "influx"}, "target_type": "gauge",
+                    "properties": {"test": "wrong"}, "source": "influx", "target_type": "gauge",
                     "value": {"constant": "1", "type": "property", "values": ["wrong"]}, "uses_schema": False}]
         }],
         'test_edit': [{
@@ -52,7 +52,7 @@ class TestInflux:
             }],
             'er': [{"dimensions": {"optional": ["cpu", "host", "zone"], "required": []}, "interval": 5,
                     "measurement_name": "cpu_test", "override_source": {}, "pipeline_id": "test_influx",
-                    "properties": {"test": "val"}, "source": {"name": "influx"}, "target_type": "gauge",
+                    "properties": {"test": "val"}, "source": "influx", "target_type": "gauge",
                     "value": {"constant": "1", "type": "property", "values": ["usage_active"]}, "uses_schema": False}]
         }],
     }
