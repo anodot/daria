@@ -150,7 +150,6 @@ class LoadClientData:
 
         jsonschema.validate(self.client_config, schema)
         client_config.pop('source', None)
-        del client_config['pipeline_id']
         return self.client_config
 
     def _load_dimensions(self):

@@ -11,8 +11,8 @@ for pipeline_ in pipeline.repository.get_all():
         pipeline_.config['uses_schema'] = False
         is_modified = True
 
-    if pipeline_.config.get('pipeline_id'):
-        del pipeline_.config['pipeline_id']
+    if pipeline_.config.get('pipeline_id') is None:
+        pipeline_.config['pipeline_id'] = pipeline_.name
         is_modified = True
 
     if not is_modified:
