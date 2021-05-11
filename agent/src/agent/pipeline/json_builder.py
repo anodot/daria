@@ -293,6 +293,7 @@ def get_file_loader(source_type: str, is_edit=False) -> LoadClientData:
         source.TYPE_POSTGRES: JDBCLoadClientData,
         source.TYPE_SAGE: SageLoadClientData,
         source.TYPE_SOLARWINDS: SolarWindsClientData,
+        source.TYPE_SPLUNK: TcpLoadClientData,
         source.TYPE_VICTORIA: VictoriaLoadClientData,
         source.TYPE_ZABBIX: ZabbixLoadClientData,
     }
