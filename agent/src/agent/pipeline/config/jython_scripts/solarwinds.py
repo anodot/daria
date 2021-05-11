@@ -17,7 +17,7 @@ finally:
 
 # single threaded - no entityName because we need only one offset
 entityName = ''
-DATEFORMAT = sdc.userParams['DATEFORMAT']
+DATEFORMAT = '%Y-%m-%dT%H:%M:%SZ'
 SOLARWINDS_API_ADDRESS = '/SolarWinds/InformationService/v3/Json/Query'
 LAST_TIMESTAMP = '%last_timestamp%'
 
@@ -44,7 +44,6 @@ def get_interval():
     return int(sdc.userParams['INTERVAL_IN_SECONDS'])
 
 
-# get previously committed offset or use 0
 if sdc.lastOffsets.containsKey(entityName):
     offset = int(float(sdc.lastOffsets.get(entityName)))
 elif sdc.userParams['DAYS_TO_BACKFILL']:

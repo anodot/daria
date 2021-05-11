@@ -18,7 +18,6 @@ class SolarWindsScript(JDBCSource):
                     {'key': 'INTERVAL_IN_SECONDS', 'value': str(self.pipeline.interval)},
                     {'key': 'DELAY_IN_SECONDS', 'value': str(self.pipeline.delay)},
                     {'key': 'DAYS_TO_BACKFILL', 'value': self.pipeline.days_to_backfill},
-                    {'key': 'DATEFORMAT', 'value': self.pipeline.days_to_backfill},
                 ],
                 'script': f.read()
             }

@@ -77,11 +77,12 @@ class SchemalessPrompter(Prompter):
 
     @infinite_retry
     def prompt_measurement_names(self):
-        prompt_text = 'Metric names' if self.config.get('static_what', True) else 'Name of a field containing metric name'
-        self.config['measurement_names'] = self.prompt_object(
-            prompt_text + '. Example -  original_name1:new_name1 original_name2:new_name2',
-            self.get_default_object_value('measurement_names')
-        )
+        if self.config.get('static_what', True):
+            prompt_text = 'Metric names. Example -  original_name1:new_name1 original_name2:new_name2',
+        else:
+            prompt_text = 'Names of fields containing metric names. Example -  original_name1:field_name1 original_name2:field_name2'
+        self.config['measurement_names'] = \
+            self.prompt_object(prompt_text, self.get_default_object_value('measurement_names'))
         if not set(self.config['measurement_names'].keys()).issubset(set(self.config['values'].keys())):
             raise click.UsageError('Wrong property name')
         if not self.static_what():

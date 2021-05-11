@@ -11,7 +11,7 @@
       "type": "string",
       "format": "yyyy-MM-dd'T'HH:mm:ss"
     },
-    "count_records": 0,
+    "count_records": false,
     "values": {
       "MinMemoryUsed": "gauge",
       "AvgPercentMemoryUsed": "gauge"

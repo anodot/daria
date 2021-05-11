@@ -10,7 +10,7 @@ class SolarWindsPrompter(SchemalessPrompter):
         self.prompt_days_to_backfill()
         self.prompt_interval()
         self.prompt_timestamp()
-        # todo we don't need to as is static, values array path in set_values, split that function
+        # todo we don't need to ask "is static" and "values array path" in set_values(), split that function
         self.set_values()
         self.prompt_measurement_names()
         self.set_dimensions()
