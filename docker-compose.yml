@@ -67,6 +67,8 @@ services:
     container_name: db
     image: postgres:9.6.19
     restart: always
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_USER: agent
       POSTGRES_PASSWORD: agent

@@ -6,5 +6,5 @@
     "rrd_dir_path": {"type": "string"},
     "cache_ttl": {"type": "integer"}
   },
-  "required": ["mysql_connection_string"]
+  "required": ["mysql_connection_string", "cache_ttl"]
 }

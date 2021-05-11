@@ -1,8 +1,9 @@
 from functools import wraps
 from typing import List
 from agent import source
-from agent.modules.db import Session
+from agent.modules.db import Session, engine
 from agent.pipeline import PipelineOffset, Pipeline
+from sqlalchemy.orm import Query
 
 
 def typed_source(func):
@@ -28,6 +29,19 @@ def get_by_id(pipeline_id: str) -> Pipeline:
     if not pipeline_:
         raise PipelineNotExistsException(f"Pipeline {pipeline_id} doesn't exist")
     return pipeline_
+
+
+def get_by_id_without_session(pipeline_id: str) -> Pipeline:
+    query_result = engine.execute(Query(Pipeline).filter(Pipeline.name == pipeline_id).statement)
+
+    pipelines_ = [i for i in query_result]
+    if not pipelines_:
+        raise PipelineNotExistsException(f"Pipeline {pipeline_id} doesn't exist")
+    return pipelines_[0]
+
+
+def get_by_type(type_: str) -> List[Pipeline]:
+    return list(filter(lambda x: x.source.type == type_, get_all()))
 
 
 @typed_source

@@ -5,7 +5,7 @@ import pytest
 from click.testing import CliRunner
 from agent import di
 from agent.api import main
-from agent.modules import db, constants
+from agent.modules import constants
 
 constants.TEST_ENV = True
 DUMMY_DESTINATION_OUTPUT_PATH = '/output'
@@ -14,21 +14,10 @@ TEST_DATASETS_PATH = '/home'
 INPUT_FILES_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'input_files')
 
 
-class MyRunner(CliRunner):
-    def invoke(self, *args, **kwargs):
-        try:
-            di.init()
-            result = super(MyRunner, self).invoke(*args, **kwargs)
-            db.Session.commit()
-            return result
-        except Exception:
-            db.Session.rollback()
-            raise
-
-
 @pytest.fixture(scope="session")
 def cli_runner():
-    yield MyRunner()
+    di.init()
+    yield CliRunner()
 
 
 @pytest.fixture

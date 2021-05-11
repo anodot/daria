@@ -2,7 +2,7 @@ import sdc_client
 
 from datetime import datetime
 from agent import cli
-from agent import source
+from agent import source, pipeline
 from .test_zpipeline_base import TestInputBase
 from ..conftest import generate_input
 
@@ -69,7 +69,9 @@ class TestZabbix(TestInputBase):
             'tags': 'test:zabbix',
             'preview': 'y',
         }
-        result = cli_runner.invoke(
-            cli.pipeline.edit, ['test_zabbix', '-a'], catch_exceptions=False, input=generate_input(input_)
-        )
+        name = 'test_zabbix'
+        result = cli_runner.invoke(cli.pipeline.edit, [name, '-a'], catch_exceptions=False,
+                                   input=generate_input(input_))
         assert result.exit_code == 0
+        pipeline_ = pipeline.repository.get_by_id_without_session(name)
+        assert pipeline_.config['days_to_backfill'] == days_to_backfill

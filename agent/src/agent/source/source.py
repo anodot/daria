@@ -40,7 +40,6 @@ class Source(Entity):
 
     # todo refactor children
     def set_config(self, config):
-        self._previous_config = deepcopy(self.config)
         self.config = config
 
     @property
@@ -214,10 +213,6 @@ class CactiSource(Source):
     MYSQL_CONNECTION_STRING = 'mysql_connection_string'
     RRD_ARCHIVE_PATH = 'rrd_archive_path'
     RRD_DIR_PATH = 'rrd_dir_path'
-
-    @property
-    def cache_ttl(self) -> int:
-        return self.config.get('cache_ttl', 3600)
 
 
 class DirectorySource(SchemalessSource):

@@ -1,7 +1,7 @@
 import requests
 import urllib.parse
 
-from flask import jsonify, Blueprint
+from flask import jsonify, Blueprint, request
 from agent import monitoring as monitoring_, destination, pipeline
 from agent.modules import constants, proxy
 from prometheus_client import generate_latest
@@ -13,7 +13,7 @@ monitoring_bp = Blueprint('monitoring', __name__)
 @monitoring_bp.route('/metrics', methods=['GET'])
 def metrics():
     monitoring_.pull_latest()
-    return generate_latest(registry=metrics.registry)
+    return generate_latest(registry=monitoring_.metrics.registry)
 
 
 def _send_to_anodot(data: list, url: str, proxy_obj: proxy.Proxy):
@@ -68,4 +68,10 @@ def source_http_error(pipeline_id, code):
 @monitoring_bp.route('/monitoring/scheduled_script_error/<script_name>', methods=['POST'])
 def scheduled_script_error(script_name):
     monitoring_.metrics.SCHEDULED_SCRIPTS_ERRORS.labels(script_name).inc(1)
+    return jsonify('')
+
+
+@monitoring_bp.route('/monitoring/scheduled_script_execution_time/<script_name>', methods=['POST'])
+def scheduled_script_execution_time(script_name):
+    monitoring_.metrics.SCHEDULED_SCRIPT_EXECUTION_TIME.labels(script_name).set(request.json['duration'])
     return jsonify('')
