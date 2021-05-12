@@ -125,7 +125,7 @@ test-flask-app:
 	$(DOCKER_TEST) tests/api/test_flask_app.py
 
 run-unit-tests:
-	$(DOCKER_TEST_PARALLEL) tests/unit/
+	$(DOCKER_TEST_PARALLEL) tests/unit/ src/agent/
 
 get-streamsets-libs: install-streamsets-requirements
 	rm -rf streamsets/lib/*
