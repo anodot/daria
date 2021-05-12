@@ -1,4 +1,6 @@
 import click
+import json
+import os
 import sdc_client
 
 from typing import Optional
@@ -233,6 +235,22 @@ def update(pipeline_id: str):
             continue
 
 
+@click.command()
+@click.option('-d', '--dir-path', type=click.Path(exists=True))
+def export(dir_path):
+    if not dir_path:
+        dir_path = 'pipelines'
+        if not os.path.exists(dir_path):
+            os.mkdir(dir_path)
+
+    pipelines = pipeline.repository.get_all()
+    for pipeline_ in pipelines:
+        with open(os.path.join(dir_path, pipeline_.name + '.json'), 'w+') as f:
+            json.dump([pipeline_.to_dict()], f)
+
+    click.echo(f'All pipelines exported to {dir_path} directory')
+
+
 @click.group(name='pipeline')
 def pipeline_group():
     pass
@@ -341,3 +359,4 @@ pipeline_group.add_command(reset)
 pipeline_group.add_command(edit)
 pipeline_group.add_command(destination_logs)
 pipeline_group.add_command(update)
+pipeline_group.add_command(export)

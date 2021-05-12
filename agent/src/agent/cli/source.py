@@ -1,3 +1,6 @@
+import json
+import os
+
 import click
 
 from agent import pipeline, source, check_prerequisites
@@ -61,6 +64,23 @@ def delete(name):
     source.repository.delete_by_name(name)
 
 
+@click.command()
+@click.option('-d', '--dir-path', type=click.Path(exists=True))
+def export(dir_path):
+    if not dir_path:
+        dir_path = 'sources'
+        if not os.path.exists(dir_path):
+            os.mkdir(dir_path)
+
+    sources = source.repository.get_all()
+    for source_ in sources:
+        config = [source_.to_dict()]
+        with open(os.path.join(dir_path, source_.name + '.json'), 'w+') as f:
+            json.dump(config, f)
+
+    click.echo(f'All sources exported to {dir_path} directory')
+
+
 @infinite_retry
 def _prompt_source_name():
     source_name = click.prompt('Enter unique name for this source config', type=click.STRING).strip()
@@ -102,3 +122,4 @@ source_group.add_command(create)
 source_group.add_command(list_sources)
 source_group.add_command(delete)
 source_group.add_command(edit)
+source_group.add_command(export)
