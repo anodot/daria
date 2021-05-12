@@ -143,25 +143,36 @@ class LoadClientData:
         if 'override_source' not in self.client_config:
             self.client_config['override_source'] = {}
 
+        self._validate_json_schema()
+
+        client_config.pop('source', None)
+
+        self._load_filtering()
+        self._load_transformations()
+
+        return self.client_config
+
+    def _validate_json_schema(self):
         with open(os.path.join(definitions_dir, self.VALIDATION_SCHEMA_FILE_NAME + '.json')) as f:
             schema = json.load(f)
         if self.edit:
             schema['required'] = []
 
         jsonschema.validate(self.client_config, schema)
-        client_config.pop('source', None)
 
+    def _load_filtering(self):
         condition = self.client_config.get('filter', {}).get('condition')
         if condition:
             expression_parser.condition.validate(condition)
 
-        transformation = self.client_config.get('transform', {}).get('file')
-        if transformation:
-            expression_parser.transformation.validate_file(transformation)
-            with open(transformation) as f:
-                self.client_config['transform']['config'] = f.read()
+    def _load_transformations(self):
+        transformation_file = self.client_config.get('transform', {}).get('file')
+        if not transformation_file:
+            return
 
-        return self.client_config
+        expression_parser.transformation.validate_file(transformation_file)
+        with open(transformation_file) as f:
+            self.client_config['transform']['config'] = f.read()
 
     def _load_dimensions(self):
         if type(self.client_config.get('dimensions')) == list:
