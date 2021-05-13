@@ -8,25 +8,26 @@ def get_config_handler(pipeline_: Pipeline) -> BaseConfigHandler:
 
     handlers_protocol20 = {
         source.TYPE_CACTI: pipeline.config.handlers.cacti.CactiConfigHandler,
-        source.TYPE_INFLUX: pipeline.config.handlers.influx.InfluxConfigHandler,
-        source.TYPE_MONGO: pipeline.config.handlers.mongo.MongoConfigHandler,
-        source.TYPE_KAFKA: pipeline.config.handlers.kafka.KafkaConfigHandler,
-        source.TYPE_ELASTIC: pipeline.config.handlers.elastic.ElasticConfigHandler,
-        source.TYPE_SPLUNK: pipeline.config.handlers.tcp.TCPConfigHandler,
-        source.TYPE_SAGE: pipeline.config.handlers.sage.SageConfigHandler,
-        source.TYPE_VICTORIA: pipeline.config.handlers.victoria.VictoriaConfigHandler,
-        source.TYPE_POSTGRES: pipeline.config.handlers.jdbc.JDBCConfigHandler,
-        source.TYPE_MYSQL: pipeline.config.handlers.jdbc.JDBCConfigHandler,
         source.TYPE_CLICKHOUSE: pipeline.config.handlers.jdbc.JDBCConfigHandler,
-        source.TYPE_ZABBIX: pipeline.config.handlers.zabbix.ZabbixConfigHandler
+        source.TYPE_ELASTIC: pipeline.config.handlers.elastic.ElasticConfigHandler,
+        source.TYPE_INFLUX: pipeline.config.handlers.influx.InfluxConfigHandler,
+        source.TYPE_KAFKA: pipeline.config.handlers.kafka.KafkaConfigHandler,
+        source.TYPE_MONGO: pipeline.config.handlers.mongo.MongoConfigHandler,
+        source.TYPE_MYSQL: pipeline.config.handlers.jdbc.JDBCConfigHandler,
+        source.TYPE_POSTGRES: pipeline.config.handlers.jdbc.JDBCConfigHandler,
+        source.TYPE_SAGE: pipeline.config.handlers.sage.SageConfigHandler,
+        source.TYPE_SOLARWINDS: pipeline.config.handlers.solarwinds.SolarWindsConfigHandler,
+        source.TYPE_SPLUNK: pipeline.config.handlers.tcp.TCPConfigHandler,
+        source.TYPE_VICTORIA: pipeline.config.handlers.victoria.VictoriaConfigHandler,
+        source.TYPE_ZABBIX: pipeline.config.handlers.zabbix.ZabbixConfigHandler,
     }
 
     handlers_protocol30 = {
-        source.TYPE_KAFKA: pipeline.config.handlers.kafka.KafkaSchemaConfigHandler,
-        source.TYPE_DIRECTORY: pipeline.config.handlers.directory.DirectoryConfigHandler,
-        source.TYPE_POSTGRES: pipeline.config.handlers.jdbc.JDBCSchemaConfigHandler,
         source.TYPE_CLICKHOUSE: pipeline.config.handlers.jdbc.JDBCSchemaConfigHandler,
-        source.TYPE_MYSQL: pipeline.config.handlers.jdbc.JDBCSchemaConfigHandler
+        source.TYPE_DIRECTORY: pipeline.config.handlers.directory.DirectoryConfigHandler,
+        source.TYPE_KAFKA: pipeline.config.handlers.kafka.KafkaSchemaConfigHandler,
+        source.TYPE_MYSQL: pipeline.config.handlers.jdbc.JDBCSchemaConfigHandler,
+        source.TYPE_POSTGRES: pipeline.config.handlers.jdbc.JDBCSchemaConfigHandler,
     }
 
     if pipeline_.uses_schema:

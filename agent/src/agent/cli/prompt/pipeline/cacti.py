@@ -14,8 +14,8 @@ class CactiPrompter(SchemalessPrompter):
         self.prompt_exclude_hosts()
         self.prompt_exclude_datasources()
         self.prompt_add_graph_name_dimension()
-        self.set_static_dimensions()
-        self.set_tags()
+        self.prompt_static_dimensions()
+        self.prompt_tags()
         self.set_transform()
         self.prompt_rename_dimensions()
 

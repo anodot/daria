@@ -189,10 +189,18 @@ class SageSource(Source):
     TOKEN = 'token'
 
 
-class VictoriaMetricsSource(Source):
+class APISource(Source):
     URL = 'url'
     USERNAME = 'username'
     PASSWORD = 'password'
+
+
+class VictoriaMetricsSource(APISource):
+    pass
+
+
+class SolarWindsSource(APISource):
+    pass
 
 
 class ZabbixSource(Source):

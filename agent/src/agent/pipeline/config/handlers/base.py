@@ -27,15 +27,16 @@ class BaseConfigLoader:
     def _get_config_file(cls, pipeline: Pipeline) -> str:
         name = {
             source.TYPE_CACTI: 'cacti',
-            source.TYPE_INFLUX: 'influx_http',
-            source.TYPE_MONGO: 'mongo_http',
-            source.TYPE_KAFKA: 'kafka_http',
-            source.TYPE_MYSQL: 'jdbc_http',
-            source.TYPE_POSTGRES: 'jdbc_http',
             source.TYPE_CLICKHOUSE: 'jdbc_http',
             source.TYPE_ELASTIC: 'elastic_http',
-            source.TYPE_SPLUNK: 'tcp_server_http',
+            source.TYPE_INFLUX: 'influx_http',
+            source.TYPE_KAFKA: 'kafka_http',
+            source.TYPE_MONGO: 'mongo_http',
+            source.TYPE_MYSQL: 'jdbc_http',
+            source.TYPE_POSTGRES: 'jdbc_http',
             source.TYPE_SAGE: 'sage_http',
+            source.TYPE_SPLUNK: 'tcp_server_http',
+            source.TYPE_SOLARWINDS: 'solarwinds',
             source.TYPE_VICTORIA: 'victoria_http',
             source.TYPE_ZABBIX: 'zabbix_http',
         }[pipeline.source.type]
@@ -61,16 +62,17 @@ class TestPipelineBaseConfigLoader(BaseConfigLoader):
     @classmethod
     def _get_config_file(cls, pipeline: Pipeline) -> str:
         return {
+            source.TYPE_CLICKHOUSE: 'test_jdbc_pdsf4587',
+            source.TYPE_DIRECTORY: 'test_directory_ksdjfjk21',
+            source.TYPE_ELASTIC: 'test_elastic_asdfs3245',
             source.TYPE_INFLUX: 'test_influx_qwe093',
             source.TYPE_MONGO: 'test_mongo_rand847',
             source.TYPE_KAFKA: 'test_kafka_kjeu4334',
             source.TYPE_MYSQL: 'test_jdbc_pdsf4587',
             source.TYPE_POSTGRES: 'test_jdbc_pdsf4587',
-            source.TYPE_CLICKHOUSE: 'test_jdbc_pdsf4587',
-            source.TYPE_ELASTIC: 'test_elastic_asdfs3245',
-            source.TYPE_SPLUNK: 'test_tcp_server_jksrj322',
-            source.TYPE_DIRECTORY: 'test_directory_ksdjfjk21',
             source.TYPE_SAGE: 'test_sage_jfhdkj',
+            source.TYPE_SPLUNK: 'test_tcp_server_jksrj322',
+            source.TYPE_SOLARWINDS: 'test_solarwinds_jksrj322',
             source.TYPE_ZABBIX: 'test_zabbix_jfhdkj',
         }[pipeline.source.type] + '.json'
 

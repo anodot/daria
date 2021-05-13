@@ -2,12 +2,12 @@ import click
 import json
 
 from datetime import datetime
-from agent.modules.constants import ENV_PROD, VALIDATION_ENABLED
+from agent.modules import constants
 from tabulate import tabulate
 
 
 def infinite_retry(func):
-    if not ENV_PROD:
+    if not constants.ENV_PROD:
         return func
 
     def new_func(*args, **kwargs):
@@ -42,7 +42,7 @@ def map_keys(records, mapping):
 
 
 def if_validation_enabled(func):
-    if not VALIDATION_ENABLED:
+    if not constants.VALIDATION_ENABLED:
         def new_func(*args, **kwargs):
             return True
         return new_func

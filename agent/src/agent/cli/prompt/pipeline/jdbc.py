@@ -15,11 +15,11 @@ class JDBCPrompter(Prompter):
         self.prompt_interval()
         self.prompt_days_to_backfill()
         self.prompt_delay()
-        self.set_timestamp()
+        self.prompt_timestamp()
         self.set_values()
         self.set_dimensions()
-        self.set_static_dimensions()
-        self.set_tags()
+        self.prompt_static_dimensions()
+        self.prompt_tags()
         self.set_uses_schema()
 
     @infinite_retry
