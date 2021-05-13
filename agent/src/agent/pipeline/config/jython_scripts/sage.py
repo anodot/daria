@@ -5,7 +5,6 @@ try:
     import sys
     import os
     import time
-    import urlparse
     import traceback
     import re
 

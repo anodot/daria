@@ -277,6 +277,10 @@ class SageLoadClientData(LoadClientData):
         return self.client_config
 
 
+class SolarWindsClientData(LoadClientData):
+    VALIDATION_SCHEMA_FILE_NAME = 'solarwinds'
+
+
 class VictoriaLoadClientData(LoadClientData):
     VALIDATION_SCHEMA_FILE_NAME = 'victoria'
 
@@ -295,16 +299,17 @@ class ZabbixLoadClientData(LoadClientData):
 def get_file_loader(source_type: str, is_edit=False) -> LoadClientData:
     loaders = {
         source.TYPE_CACTI: CactiLoadClientData,
+        source.TYPE_CLICKHOUSE: JDBCLoadClientData,
+        source.TYPE_DIRECTORY: DirectoryLoadClientData,
+        source.TYPE_ELASTIC: ElasticLoadClientData,
         source.TYPE_INFLUX: InfluxLoadClientData,
-        source.TYPE_MONGO: MongoLoadClientData,
         source.TYPE_KAFKA: KafkaLoadClientData,
+        source.TYPE_MONGO: MongoLoadClientData,
         source.TYPE_MYSQL: JDBCLoadClientData,
         source.TYPE_POSTGRES: JDBCLoadClientData,
-        source.TYPE_CLICKHOUSE: JDBCLoadClientData,
-        source.TYPE_ELASTIC: ElasticLoadClientData,
-        source.TYPE_SPLUNK: TcpLoadClientData,
-        source.TYPE_DIRECTORY: DirectoryLoadClientData,
         source.TYPE_SAGE: SageLoadClientData,
+        source.TYPE_SOLARWINDS: SolarWindsClientData,
+        source.TYPE_SPLUNK: TcpLoadClientData,
         source.TYPE_VICTORIA: VictoriaLoadClientData,
         source.TYPE_ZABBIX: ZabbixLoadClientData,
     }

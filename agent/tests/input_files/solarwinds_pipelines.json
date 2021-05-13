@@ -1,0 +1,28 @@
+[
+  {
+    "source": "solarwinds_file",
+    "pipeline_id": "solarwinds_file",
+    "query": "SELECT TOP 1000 NodeID, DateTime, Archive, MinLoad, MaxLoad, AvgLoad, TotalMemory, MinMemoryUsed, MaxMemoryUsed, AvgMemoryUsed, AvgPercentMemoryUsed FROM Orion.CPULoad WHERE {TIMESTAMP_CONDITION}",
+    "delay": 0,
+    "days_to_backfill": 0,
+    "interval": 60,
+    "timestamp": {
+      "name": "DateTime",
+      "type": "string",
+      "format": "yyyy-MM-dd'T'HH:mm:ss"
+    },
+    "count_records": false,
+    "values": {
+      "MinMemoryUsed": "gauge",
+      "AvgPercentMemoryUsed": "gauge"
+    },
+    "measurement_names": {
+      "MinMemoryUsed": "MinMemoryUsed",
+      "AvgPercentMemoryUsed": "AvgPercentMemoryUsed"
+    },
+    "dimensions": {
+      "required": ["NodeID"],
+      "optional": []
+    }
+  }
+]

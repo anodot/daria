@@ -12,10 +12,10 @@ class SagePrompter(SchemalessPrompter):
         self.prompt_days_to_backfill()
         # self.data_preview()
         self.set_values()
-        self.set_measurement_names()
+        self.prompt_measurement_names()
         self.set_dimensions()
-        self.set_static_dimensions()
-        self.set_tags()
+        self.prompt_static_dimensions()
+        self.prompt_tags()
 
     def set_query(self):
         self.config['query_file'] = click.prompt('Query file path', type=click.Path(exists=True, dir_okay=False),
