@@ -18,11 +18,12 @@ class SolarWindsScript(JDBCSource):
                     {'key': 'INTERVAL_IN_SECONDS', 'value': str(self.pipeline.interval)},
                     {'key': 'DELAY_IN_SECONDS', 'value': str(self.pipeline.delay)},
                     {'key': 'DAYS_TO_BACKFILL', 'value': self.pipeline.days_to_backfill},
+                    {'key': 'QUERY_TIMEOUT', 'value': self.pipeline.source.query_timeout},
                 ],
                 'script': f.read()
             }
 
     def _get_timestamp_condition(self) -> str:
         date_time = f"DateTime('{self.LAST_TIMESTAMP}')"
-        return f'{self._timestamp_to_unix} > {date_time}' \
-               f' AND {self._timestamp_to_unix} <= AddSecond({self.pipeline.interval}, {date_time})'
+        return f'{self.pipeline.timestamp_path} > {date_time}' \
+               f' AND {self.pipeline.timestamp_path} <= AddSecond({self.pipeline.interval}, {date_time})'

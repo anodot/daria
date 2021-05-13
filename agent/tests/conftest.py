@@ -5,9 +5,7 @@ import pytest
 from click.testing import CliRunner
 from agent import di
 from agent.api import main
-from agent.modules import constants
 
-constants.TEST_ENV = True
 DUMMY_DESTINATION_OUTPUT_PATH = '/output'
 TEST_DATASETS_PATH = '/home'
 

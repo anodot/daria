@@ -1,5 +1,6 @@
 import json
 import os
+import urllib.parse
 import jsonschema
 import requests
 import inject
@@ -214,14 +215,17 @@ class SolarWindsValidator(Validator):
     VALIDATION_SCHEMA_FILE = 'solarwinds.json'
 
     def validate_connection(self):
-        url = self.source.config['url'] + '/SolarWinds/InformationService/v3/Json/Query?query=SELECT TOP+1+1+as+test+FROM+Orion.Accounts'
+        url = urllib.parse.urljoin(
+            self.source.config['url'],
+            '/SolarWinds/InformationService/v3/Json/Query?query=SELECT+TOP+1+1+as+test+FROM+Orion.Accounts'
+        )
         session = requests.Session()
         session.auth = (
             self.source.config[source.APISource.USERNAME],
             self.source.config[source.APISource.PASSWORD]
         )
         try:
-            res = session.get(url, verify=False)
+            res = session.get(url, verify=False, timeout=20)
             res.raise_for_status()
         except requests.exceptions.RequestException as e:
             raise ValidationException(

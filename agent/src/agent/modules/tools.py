@@ -7,7 +7,7 @@ from tabulate import tabulate
 
 
 def infinite_retry(func):
-    if constants.TEST_ENV:
+    if not constants.ENV_PROD:
         return func
 
     def new_func(*args, **kwargs):

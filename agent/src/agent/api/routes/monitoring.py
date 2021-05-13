@@ -57,6 +57,7 @@ def monitoring():
     return jsonify('')
 
 
+# this endpoint
 @monitoring_bp.route('/monitoring/source_http_error/<pipeline_id>/<code>', methods=['POST'])
 def source_http_error(pipeline_id, code):
     pipeline_ = pipeline.repository.get_by_id(pipeline_id)
