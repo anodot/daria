@@ -74,31 +74,39 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
 
 
 def _extract_dimensions(item: dict, graph: dict, hosts: dict, add_graph_name_dimension=False) -> dict:
-    dimensions = {}
     graph_title = graph['title']
-    if graph['host_id'] != '0':
-        host = hosts[graph['host_id']]
-    else:
-        # this means the graph doesn't have host and it will not be used later
-        host = {}
-    for var in _extract_dimension_names(graph_title):
-        value = _extract(var, graph.get('variables', {}), host)
-        if value is None:
-            continue
-        if value == '':
-            continue
+    host = _get_host(graph, hosts)
 
-        dimensions[var] = value
+    dimensions = _extract_title_dimensions(graph_title, graph, host)
     if add_graph_name_dimension:
-        for k, v in dimensions.items():
-            graph_title = graph_title.replace(f'|{k}|', v)
-        dimensions['graph_title'] = graph_title
+        dimensions = _add_graph_name_dimension(dimensions, graph_title)
     if 'host_description' not in dimensions and 'description' in host:
         dimensions['host_description'] = host['description']
-
     dimensions = {**dimensions, **_extract_item_dimensions(item)}
 
     return _replace_illegal_chars(dimensions)
+
+
+def _add_graph_name_dimension(dimensions: dict, graph_title: str) -> dict:
+    for k, v in dimensions.items():
+        graph_title = graph_title.replace(f'|{k}|', v)
+    dimensions['graph_title'] = graph_title
+    return dimensions
+
+
+def _extract_title_dimensions(graph_title: str, graph: dict, host: dict) -> dict:
+    dimensions = {}
+    for var in _extract_dimension_names(graph_title):
+        value = _extract(var, graph.get('variables', {}), host)
+        if value is None or value == '':
+            continue
+        dimensions[var] = value
+    return _replace_illegal_chars(dimensions)
+
+
+def _get_host(graph, hosts):
+    # if the host_id is 0 it means the graph doesn't have a host and it will not be used later
+    return hosts[graph['host_id']] if graph['host_id'] != '0' else {}
 
 
 def _extract(variable: str, variables: dict, host: dict) -> Optional[str]:
@@ -158,7 +166,7 @@ def _extract_item_dimensions(item: dict) -> dict:
         for k, v in dimensions.items():
             item_title = item_title.replace(f'|{k}|', v)
         dimensions['item_title'] = item_title
-    return dimensions
+    return _replace_illegal_chars(dimensions)
 
 
 class ArchiveNotExistsException(Exception):
