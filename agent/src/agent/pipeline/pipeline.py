@@ -211,8 +211,8 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return self.config.get('static_what', True)
 
     @property
-    def transformations_file_path(self) -> str:
-        return self.config.get('transform', {}).get('file')
+    def transformations_config(self) -> str:
+        return self.config.get('transform', {}).get('config')
 
     @property
     def filter_condition(self) -> str:
