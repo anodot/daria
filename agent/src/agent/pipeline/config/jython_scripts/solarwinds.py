@@ -76,20 +76,7 @@ while True:
                 res.raise_for_status()
                 break
             except requests.HTTPError as e:
-                event = sdc.createEvent('sage_error', 1)
-                event.value = {
-                    'value': 1,
-                    'properties': {
-                        'what': 'solarwinds_http_error',
-                        'target_type': 'gauge',
-                        'code': e.response.status_code,
-                        'pipeline_name': sdc.userParams['PIPELINE_NAME']
-                    },
-                    'timestamp': time.time()
-                }
-                cur_batch.addEvent(event)
-                cur_batch.process(entityName, offset)
-                cur_batch = sdc.createBatch()
+                requests.post(sdc.userParams['MONITORING_URL'] + str(res.status_code))
                 sdc.log.error(str(e))
                 if i == N_REQUESTS_TRIES:
                     raise

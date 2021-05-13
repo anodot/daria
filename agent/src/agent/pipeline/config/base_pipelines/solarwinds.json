@@ -5,7 +5,7 @@
     "pipelineId" : "sagehttp3f008d4f-3724-4c23-adc8-525cb97c2332",
     "title" : "solarwinds",
     "description" : "",
-    "uuid" : "2a1bf1ec-35d2-4eb3-a064-c8f3df452854",
+    "uuid" : "f24314e9-413d-43db-ac3f-f2e1b470c6ea",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -416,7 +416,7 @@
       "stageVersion" : "1",
       "configuration" : [ {
         "name" : "script",
-        "value" : "global sdc\n\ntry:\n    sdc.importLock()\n    import sys\n    import os\n    import time\n    import traceback\n\n    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))\n    import requests\n\n    from datetime import datetime, timedelta\n    from requests.auth import HTTPBasicAuth\nfinally:\n    sdc.importUnlock()\n\n# single threaded - no entityName because we need only one offset\nentityName = ''\n# todo dateformat is specified by the user\nDATEFORMAT = '%Y-%m-%dT%H:%M:%SZ'\nSOLARWINDS_API_ADDRESS = '/SolarWinds/InformationService/v3/Json/Query'\nLAST_TIMESTAMP = '%last_timestamp%'\n\n\n# Jython converts datetime objects to java.sql.Timestamp when assigning it to a variable\ndef date_from_str(date):\n    return datetime.strptime(date, DATEFORMAT)\n\n\ndef date_to_str(date):\n    return date.strftime(DATEFORMAT)\n\n\ndef get_now_with_delay():\n    return int(time.time()) - int(sdc.userParams['DELAY_IN_SECONDS'])\n\n\ndef to_timestamp(date):\n    epoch = datetime(1970, 1, 1)\n    return int((date - epoch).total_seconds())\n\n\ndef get_interval():\n    return int(sdc.userParams['INTERVAL_IN_SECONDS'])\n\n\n# get previously committed offset or use 0\nif sdc.lastOffsets.containsKey(entityName):\n    offset = int(float(sdc.lastOffsets.get(entityName)))\nelif sdc.userParams['DAYS_TO_BACKFILL']:\n    offset = to_timestamp(datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=int(sdc.userParams['DAYS_TO_BACKFILL'])))\nelse:\n    offset = to_timestamp(datetime.now().replace(second=0, microsecond=0))\n\nsdc.log.info('Start offset: ' + str(offset))\n\ncur_batch = sdc.createBatch()\n\nN_REQUESTS_TRIES = 3\n\nwhile True:\n    try:\n        end = offset + get_interval()\n        if end > get_now_with_delay():\n            time.sleep(end - get_now_with_delay())\n        query = sdc.userParams['QUERY'].replace(LAST_TIMESTAMP, date_to_str(datetime.fromtimestamp(offset)))\n\n        for i in range(1, N_REQUESTS_TRIES + 1):\n            try:\n                res = requests.get(\n                    sdc.userParams['SOLARWINDS_API_URL'] + SOLARWINDS_API_ADDRESS,\n                    auth=HTTPBasicAuth(sdc.userParams['API_USER'], sdc.userParams['API_PASSWORD']),\n                    params={'query': query},\n                    verify=False, timeout=180,\n                )\n                res.raise_for_status()\n                break\n            except requests.HTTPError as e:\n                event = sdc.createEvent('sage_error', 1)\n                event.value = {\n                    'value': 1,\n                    'properties': {\n                        'what': 'solarwinds_http_error',\n                        # todo gauge?\n                        'target_type': 'gauge',\n                        'code': e.response.status_code,\n                        'pipeline_name': sdc.userParams['PIPELINE_NAME']\n                    },\n                    'timestamp': time.time()\n                }\n                cur_batch.addEvent(event)\n                cur_batch.process(entityName, offset)\n                cur_batch = sdc.createBatch()\n                sdc.log.error(str(e))\n                if i == N_REQUESTS_TRIES:\n                    raise\n                time.sleep(2 ** i)\n\n        for row in res.json()['results']:\n            record = sdc.createRecord('record created ' + str(datetime.now()))\n            record.value = row\n            cur_batch.add(record)\n\n        # send batch and save offset\n        offset = end\n        cur_batch.process(entityName, str(offset))\n        cur_batch = sdc.createBatch()\n        if sdc.isStopped():\n            break\n    except Exception as e:\n        sdc.log.error(traceback.format_exc())\n        raise\n\nif cur_batch.size() + cur_batch.errorCount() + cur_batch.eventCount() > 0:\n    cur_batch.process(entityName, str(offset))"
+        "value" : "global sdc\n\ntry:\n    sdc.importLock()\n    import sys\n    import os\n    import time\n    import traceback\n\n    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))\n    import requests\n    import urlparse\n\n    from datetime import datetime, timedelta\n    from requests.auth import HTTPBasicAuth\nfinally:\n    sdc.importUnlock()\n\n# single threaded - no entityName because we need only one offset\nentityName = ''\nDATEFORMAT = '%Y-%m-%dT%H:%M:%SZ'\nSOLARWINDS_API_ADDRESS = '/SolarWinds/InformationService/v3/Json/Query'\nLAST_TIMESTAMP = '%last_timestamp%'\n\n\n# Jython converts datetime objects to java.sql.Timestamp when assigning it to a variable\ndef date_from_str(date):\n    return datetime.strptime(date, DATEFORMAT)\n\n\ndef date_to_str(date):\n    return date.strftime(DATEFORMAT)\n\n\ndef get_now_with_delay():\n    return int(time.time()) - int(sdc.userParams['DELAY_IN_SECONDS'])\n\n\ndef to_timestamp(date):\n    epoch = datetime(1970, 1, 1)\n    return int((date - epoch).total_seconds())\n\n\ndef get_interval():\n    return int(sdc.userParams['INTERVAL_IN_SECONDS'])\n\n\nif sdc.lastOffsets.containsKey(entityName):\n    offset = int(float(sdc.lastOffsets.get(entityName)))\nelif sdc.userParams['DAYS_TO_BACKFILL']:\n    offset = to_timestamp(datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=int(sdc.userParams['DAYS_TO_BACKFILL'])))\nelse:\n    offset = to_timestamp(datetime.now().replace(second=0, microsecond=0))\n\nsdc.log.info('Start offset: ' + str(offset))\n\ncur_batch = sdc.createBatch()\n\nN_REQUESTS_TRIES = 3\n\nwhile True:\n    try:\n        end = offset + get_interval()\n        if end > get_now_with_delay():\n            time.sleep(end - get_now_with_delay())\n        query = sdc.userParams['QUERY'].replace(LAST_TIMESTAMP, date_to_str(datetime.fromtimestamp(offset)))\n\n        for i in range(1, N_REQUESTS_TRIES + 1):\n            try:\n                res = requests.get(\n                    sdc.userParams['SOLARWINDS_API_URL'] + SOLARWINDS_API_ADDRESS,\n                    auth=HTTPBasicAuth(sdc.userParams['API_USER'], sdc.userParams['API_PASSWORD']),\n                    params={'query': query},\n                    verify=False,\n                    timeout=sdc.userParams['QUERY_TIMEOUT'],\n                )\n                raise requests.HTTPError('test')\n                res.raise_for_status()\n                break\n            except requests.HTTPError as e:\n                requests.post(sdc.userParams['MONITORING_URL'] + str(res.status_code))\n                sdc.log.error(str(e))\n                if i == N_REQUESTS_TRIES:\n                    raise\n                time.sleep(2 ** i)\n\n        for row in res.json()['results']:\n            record = sdc.createRecord('record created ' + str(datetime.now()))\n            record.value = row\n            cur_batch.add(record)\n\n        # send batch and save offset\n        offset = end\n        cur_batch.process(entityName, str(offset))\n        cur_batch = sdc.createBatch()\n        if sdc.isStopped():\n            break\n    except Exception as e:\n        sdc.log.error(traceback.format_exc())\n        raise\n\nif cur_batch.size() + cur_batch.errorCount() + cur_batch.eventCount() > 0:\n    cur_batch.process(entityName, str(offset))"
       }, {
         "name" : "scriptConf.batchSize",
         "value" : 1
@@ -436,7 +436,7 @@
           "value" : "SELECT TOP 1000 NodeID, DateTime, Archive, MinLoad, MaxLoad, AvgLoad, TotalMemory, MinMemoryUsed, MaxMemoryUsed, AvgMemoryUsed, AvgPercentMemoryUsed FROM Orion.CPULoad WHERE DateTime > DateTime('%last_timestamp%') AND DateTime <= AddSecond(86400, DateTime('%last_timestamp%')) ORDER BY DateTime"
         }, {
           "key" : "SOLARWINDS_API_URL",
-          "value" : "http://dummy_destination:80"
+          "value" : "http://dummy_destination:80/"
         }, {
           "key" : "API_USER",
           "value" : "Admin"
@@ -451,24 +451,30 @@
           "value" : "0"
         }, {
           "key" : "DAYS_TO_BACKFILL",
-          "value" : "31"
+          "value" : "44"
+        }, {
+          "key" : "QUERY_TIMEOUT",
+          "value" : "300"
+        }, {
+          "key" : "MONITORING_URL",
+          "value" : "http://anodot-agent/monitoring/source_http_error/solarwinds/"
         } ]
       }, {
         "name" : "stageOnRecordError",
         "value" : "TO_ERROR"
       } ],
       "uiInfo" : {
-        "yPos" : 50,
+        "yPos" : 52,
         "stageType" : "SOURCE",
         "icon" : "jython.png",
         "description" : "",
         "label" : "Jython Scripting 1",
-        "xPos" : 59,
+        "xPos" : 57,
         "displayMode" : "ADVANCED"
       },
       "inputLanes" : [ ],
       "outputLanes" : [ "JythonScripting_01OutputLane15924840586690" ],
-      "eventLanes" : [ "JythonScripting_01_EventLane" ],
+      "eventLanes" : [ ],
       "services" : [ ]
     }, {
       "instanceName" : "JavaScriptEvaluator_01",
@@ -557,7 +563,7 @@
           "expression" : "${\"solarwinds\"}"
         }, {
           "fieldToSet" : "/timestamp",
-          "expression" : "${time:dateTimeToMilliseconds(time:extractDateFromString(record:value('/timestamp'), 'yyyy-MM-dd\\'T\\'HH:mm:ss'))/1000}"
+          "expression" : "${time:dateTimeToMilliseconds(time:createDateFromStringTZ(record:value('/timestamp'), 'UTC', 'yyyy-MM-dd\\'T\\'HH:mm:ss'))/1000}"
         } ]
       }, {
         "name" : "headerAttributeConfigs",
@@ -966,389 +972,6 @@
       "outputLanes" : [ ],
       "eventLanes" : [ ],
       "services" : [ ]
-    }, {
-      "instanceName" : "event_add_metadata_tags",
-      "library" : "streamsets-datacollector-basic-lib",
-      "stageName" : "com_streamsets_pipeline_stage_processor_expression_ExpressionDProcessor",
-      "stageVersion" : "2",
-      "configuration" : [ {
-        "name" : "expressionProcessorConfigs",
-        "value" : [ {
-          "fieldToSet" : "/tags",
-          "expression" : "${emptyMap()}"
-        }, {
-          "fieldToSet" : "/tags/source",
-          "expression" : "${emptyList()}"
-        }, {
-          "fieldToSet" : "/tags/source[0]",
-          "expression" : "${\"anodot-agent\"}"
-        }, {
-          "fieldToSet" : "/tags/source_host_id",
-          "expression" : "${emptyList()}"
-        }, {
-          "fieldToSet" : "/tags/source_host_id[0]",
-          "expression" : "${\"ABCDEF\"}"
-        }, {
-          "fieldToSet" : "/tags/source_host_name",
-          "expression" : "${emptyList()}"
-        }, {
-          "fieldToSet" : "/tags/source_host_name[0]",
-          "expression" : "${\"agent\"}"
-        }, {
-          "fieldToSet" : "/tags/pipeline_id",
-          "expression" : "${emptyList()}"
-        }, {
-          "fieldToSet" : "/tags/pipeline_id[0]",
-          "expression" : "${\"solarwinds\"}"
-        }, {
-          "fieldToSet" : "/tags/pipeline_type",
-          "expression" : "${emptyList()}"
-        }, {
-          "fieldToSet" : "/tags/pipeline_type[0]",
-          "expression" : "${\"solarwinds\"}"
-        } ]
-      }, {
-        "name" : "headerAttributeConfigs",
-        "value" : [ { } ]
-      }, {
-        "name" : "fieldAttributeConfigs",
-        "value" : [ {
-          "fieldToSet" : "/"
-        } ]
-      }, {
-        "name" : "stageOnRecordError",
-        "value" : "TO_ERROR"
-      }, {
-        "name" : "stageRequiredFields",
-        "value" : [ ]
-      }, {
-        "name" : "stageRecordPreconditions",
-        "value" : [ ]
-      } ],
-      "uiInfo" : {
-        "yPos" : 203,
-        "stageType" : "PROCESSOR",
-        "icon" : "expression.png",
-        "description" : "",
-        "label" : "Add metadata tags",
-        "xPos" : 255
-      },
-      "inputLanes" : [ "JythonScripting_01_EventLane" ],
-      "outputLanes" : [ "ExpressionEvaluator_03OutputLane15983670731270" ],
-      "eventLanes" : [ ],
-      "services" : [ ]
-    }, {
-      "instanceName" : "events_destination",
-      "library" : "anodot",
-      "stageName" : "anodot_stage_destination_AnodotDTarget",
-      "stageVersion" : "1",
-      "configuration" : [ {
-        "name" : "conf.resourceUrl",
-        "value" : "${ANODOT_BASE_URL}/api/v1/metrics?token=${TOKEN}&protocol=${PROTOCOL}"
-      }, {
-        "name" : "conf.dataFormat",
-        "value" : "JSON"
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.charset",
-        "value" : "UTF-8"
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.csvFileFormat",
-        "value" : "CSV"
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.csvHeader",
-        "value" : "NO_HEADER"
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.csvReplaceNewLines",
-        "value" : true
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.csvReplaceNewLinesString",
-        "value" : " "
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.csvCustomDelimiter",
-        "value" : "|"
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.csvCustomEscape",
-        "value" : "\\"
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.csvCustomQuote",
-        "value" : "\""
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.jsonMode",
-        "value" : "ARRAY_OBJECTS"
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.textFieldPath",
-        "value" : "/text"
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.textRecordSeparator",
-        "value" : "\\n"
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.textFieldMissingAction",
-        "value" : "ERROR"
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.textEmptyLineIfNull",
-        "value" : false
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.avroSchemaSource",
-        "value" : null
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.avroSchema",
-        "value" : null
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.registerSchema",
-        "value" : false
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.schemaRegistryUrlsForRegistration",
-        "value" : [ ]
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.schemaRegistryUrls",
-        "value" : [ ]
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.schemaLookupMode",
-        "value" : "SUBJECT"
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.subject",
-        "value" : null
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.subjectToRegister",
-        "value" : null
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.schemaId",
-        "value" : null
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.includeSchema",
-        "value" : true
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.avroCompression",
-        "value" : "NULL"
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.binaryFieldPath",
-        "value" : "/"
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.protoDescriptorFile",
-        "value" : null
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.messageType",
-        "value" : null
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.fileNameEL",
-        "value" : null
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.wholeFileExistsAction",
-        "value" : "TO_ERROR"
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.includeChecksumInTheEvents",
-        "value" : false
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.checksumAlgorithm",
-        "value" : "MD5"
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.xmlPrettyPrint",
-        "value" : true
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.xmlValidateSchema",
-        "value" : false
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.xmlSchema",
-        "value" : null
-      }, {
-        "name" : "conf.client.transferEncoding",
-        "value" : "BUFFERED"
-      }, {
-        "name" : "conf.client.httpCompression",
-        "value" : "NONE"
-      }, {
-        "name" : "conf.client.connectTimeoutMillis",
-        "value" : 300000
-      }, {
-        "name" : "conf.client.readTimeoutMillis",
-        "value" : 300000
-      }, {
-        "name" : "conf.client.numThreads",
-        "value" : 1
-      }, {
-        "name" : "conf.client.authType",
-        "value" : "NONE"
-      }, {
-        "name" : "conf.client.useOAuth2",
-        "value" : false
-      }, {
-        "name" : "conf.client.oauth.consumerKey",
-        "value" : ""
-      }, {
-        "name" : "conf.client.oauth.consumerSecret",
-        "value" : ""
-      }, {
-        "name" : "conf.client.oauth.token",
-        "value" : ""
-      }, {
-        "name" : "conf.client.oauth.tokenSecret",
-        "value" : ""
-      }, {
-        "name" : "conf.client.oauth2.credentialsGrantType",
-        "value" : null
-      }, {
-        "name" : "conf.client.oauth2.tokenUrl",
-        "value" : null
-      }, {
-        "name" : "conf.client.oauth2.clientId",
-        "value" : ""
-      }, {
-        "name" : "conf.client.oauth2.clientSecret",
-        "value" : ""
-      }, {
-        "name" : "conf.client.oauth2.username",
-        "value" : ""
-      }, {
-        "name" : "conf.client.oauth2.password",
-        "value" : ""
-      }, {
-        "name" : "conf.client.oauth2.resourceOwnerClientId",
-        "value" : ""
-      }, {
-        "name" : "conf.client.oauth2.resourceOwnerClientSecret",
-        "value" : ""
-      }, {
-        "name" : "conf.client.oauth2.algorithm",
-        "value" : "NONE"
-      }, {
-        "name" : "conf.client.oauth2.key",
-        "value" : ""
-      }, {
-        "name" : "conf.client.oauth2.jwtClaims",
-        "value" : null
-      }, {
-        "name" : "conf.client.oauth2.transferEncoding",
-        "value" : "BUFFERED"
-      }, {
-        "name" : "conf.client.oauth2.additionalValues",
-        "value" : [ { } ]
-      }, {
-        "name" : "conf.client.basicAuth.username",
-        "value" : ""
-      }, {
-        "name" : "conf.client.basicAuth.password",
-        "value" : ""
-      }, {
-        "name" : "conf.client.useProxy",
-        "value" : true
-      }, {
-        "name" : "conf.client.proxy.uri",
-        "value" : "http://squid:3128"
-      }, {
-        "name" : "conf.client.proxy.username",
-        "value" : ""
-      }, {
-        "name" : "conf.client.proxy.password",
-        "value" : ""
-      }, {
-        "name" : "conf.client.tlsConfig.tlsEnabled",
-        "value" : false
-      }, {
-        "name" : "conf.client.tlsConfig.keyStoreFilePath",
-        "value" : null
-      }, {
-        "name" : "conf.client.tlsConfig.keyStoreType",
-        "value" : "JKS"
-      }, {
-        "name" : "conf.client.tlsConfig.keyStorePassword",
-        "value" : ""
-      }, {
-        "name" : "conf.client.tlsConfig.keyStoreAlgorithm",
-        "value" : "SunX509"
-      }, {
-        "name" : "conf.client.tlsConfig.trustStoreFilePath",
-        "value" : null
-      }, {
-        "name" : "conf.client.tlsConfig.trustStoreType",
-        "value" : "JKS"
-      }, {
-        "name" : "conf.client.tlsConfig.trustStorePassword",
-        "value" : ""
-      }, {
-        "name" : "conf.client.tlsConfig.trustStoreAlgorithm",
-        "value" : "SunX509"
-      }, {
-        "name" : "conf.client.tlsConfig.useDefaultProtocols",
-        "value" : true
-      }, {
-        "name" : "conf.client.tlsConfig.protocols",
-        "value" : [ ]
-      }, {
-        "name" : "conf.client.tlsConfig.useDefaultCiperSuites",
-        "value" : true
-      }, {
-        "name" : "conf.client.tlsConfig.cipherSuites",
-        "value" : [ ]
-      }, {
-        "name" : "conf.client.requestLoggingConfig.enableRequestLogging",
-        "value" : false
-      }, {
-        "name" : "conf.client.requestLoggingConfig.logLevel",
-        "value" : "INFO"
-      }, {
-        "name" : "conf.client.requestLoggingConfig.verbosity",
-        "value" : "PAYLOAD_ANY"
-      }, {
-        "name" : "conf.client.requestLoggingConfig.maxEntitySize",
-        "value" : 1000
-      }, {
-        "name" : "conf.headers",
-        "value" : [ ]
-      }, {
-        "name" : "conf.httpMethod",
-        "value" : "POST"
-      }, {
-        "name" : "conf.methodExpression",
-        "value" : null
-      }, {
-        "name" : "conf.singleRequestPerBatch",
-        "value" : true
-      }, {
-        "name" : "conf.rateLimit",
-        "value" : 0
-      }, {
-        "name" : "conf.maxRequestCompletionSecs",
-        "value" : 60
-      }, {
-        "name" : "conf.responseConf.sendResponseToOrigin",
-        "value" : false
-      }, {
-        "name" : "conf.responseConf.responseType",
-        "value" : "SUCCESS_RECORDS"
-      }, {
-        "name" : "stageOnRecordError",
-        "value" : "TO_ERROR"
-      }, {
-        "name" : "stageRequiredFields",
-        "value" : [ ]
-      }, {
-        "name" : "stageRecordPreconditions",
-        "value" : [ ]
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.csvQuoteMode",
-        "value" : "MINIMAL"
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.basicAuthUserInfo",
-        "value" : null
-      }, {
-        "name" : "conf.dataGeneratorFormatConfig.basicAuthUserInfoForRegistration",
-        "value" : null
-      }, {
-        "name" : "conf.agentOffsetUrl",
-        "value" : null
-      } ],
-      "uiInfo" : {
-        "yPos" : 203,
-        "stageType" : "TARGET",
-        "icon" : "anodot_logo.png",
-        "description" : "",
-        "label" : "Anodot",
-        "xPos" : 482
-      },
-      "inputLanes" : [ "ExpressionEvaluator_03OutputLane15983670731270" ],
-      "outputLanes" : [ ],
-      "eventLanes" : [ ],
-      "services" : [ ]
     } ],
     "errorStage" : {
       "instanceName" : "Discard_ErrorStage",
@@ -1372,19 +995,19 @@
       "pipelineId" : "solarwinds",
       "title" : "solarwinds",
       "description" : "",
-      "created" : 1619788703871,
-      "lastModified" : 1619790765058,
+      "created" : 1620903704020,
+      "lastModified" : 1620904340282,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "2a1bf1ec-35d2-4eb3-a064-c8f3df452854",
+      "uuid" : "f24314e9-413d-43db-ac3f-f2e1b470c6ea",
       "valid" : true,
       "metadata" : {
         "labels" : [ "solarwinds", "http" ]
       },
       "name" : "solarwinds",
       "sdcVersion" : "3.18.0",
-      "sdcId" : "82016bb8-a816-11eb-b1f2-91f4c6ab4840"
+      "sdcId" : "ef6d815e-b3d1-11eb-8b03-070579d4b4ab"
     },
     "metadata" : {
       "labels" : [ "solarwinds", "http" ]
@@ -1725,7 +1348,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1619788703938,
+      "timestamp" : 1620903704086,
       "valid" : true
     }, {
       "id" : "stageErrorAlertID",
@@ -1736,7 +1359,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1619788703938,
+      "timestamp" : 1620903704086,
       "valid" : true
     }, {
       "id" : "idleGaugeID",
@@ -1747,7 +1370,7 @@
       "condition" : "${time:now() - value() > 120000}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1619788703938,
+      "timestamp" : 1620903704086,
       "valid" : true
     }, {
       "id" : "batchTimeAlertID",
@@ -1758,12 +1381,12 @@
       "condition" : "${value() > 200}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1619788703938,
+      "timestamp" : 1620903704086,
       "valid" : true
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "bec37e1a-2e98-4f69-b221-9a2fdcaf0473",
+    "uuid" : "0c64231f-00c9-4790-b88d-81f3739a8de8",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : null

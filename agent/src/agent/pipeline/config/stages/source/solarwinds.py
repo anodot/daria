@@ -1,3 +1,5 @@
+import urllib.parse
+
 from agent import source
 from agent.pipeline.config.stages.source.jdbc import JDBCSource
 
@@ -18,7 +20,14 @@ class SolarWindsScript(JDBCSource):
                     {'key': 'INTERVAL_IN_SECONDS', 'value': str(self.pipeline.interval)},
                     {'key': 'DELAY_IN_SECONDS', 'value': str(self.pipeline.delay)},
                     {'key': 'DAYS_TO_BACKFILL', 'value': self.pipeline.days_to_backfill},
-                    {'key': 'QUERY_TIMEOUT', 'value': self.pipeline.source.query_timeout},
+                    {'key': 'QUERY_TIMEOUT', 'value': str(self.pipeline.source.query_timeout)},
+                    {
+                        'key': 'MONITORING_URL',
+                        'value': urllib.parse.urljoin(
+                            self.pipeline.streamsets.agent_external_url,
+                            f'/monitoring/source_http_error/{self.pipeline.name}/'
+                        )
+                    },
                 ],
                 'script': f.read()
             }
