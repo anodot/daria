@@ -24,6 +24,7 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
     metrics = []
     for local_graph_id, graph in cache.graphs.items():
         for item_id, item in graph['items'].items():
+            should_convert_to_bits = _should_convert_to_bits(item)
             data_source_path = item['data_source_path']
             if not data_source_path:
                 continue
@@ -64,6 +65,9 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
                     # value will be None if it's not available for the chosen consolidation function or timestamp
                     if value is None:
                         continue
+
+                    if should_convert_to_bits and pipeline_.config['convert_bytes_into_bits']:
+                        value *= 8
 
                     metric = deepcopy(base_metric)
                     metric['properties']['what'] = measurement_name.replace(".", "_").replace(" ", "_")
@@ -167,6 +171,26 @@ def _extract_item_dimensions(item: dict) -> dict:
             item_title = item_title.replace(f'|{k}|', v)
         dimensions['item_title'] = item_title
     return _replace_illegal_chars(dimensions)
+
+
+def _should_convert_to_bits(item: dict) -> bool:
+    # the table cdef_items contains a list of functions that will be applied to a graph item
+    # we need to find if there's a function that converts values to bits. We can find it out by checking two things:
+    # 1. Either function description, which is a string, contains "8,*", that means multiply by 8
+    # 2. Or the function will have two sequential items with values 8 and 3. In this case 3 will also mean
+    # multiplication
+
+    # todo make sure the order is correct
+    contains_8 = False
+    for sequence, value in item['cdef_items'].items():
+        if "8,*" in value:
+            return True
+        if str(value) == '8':
+            contains_8 = True
+        else:
+            if contains_8 and str(value) == '3':
+                return True
+            contains_8 = False
 
 
 class ArchiveNotExistsException(Exception):

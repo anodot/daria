@@ -4,12 +4,6 @@
     "pipeline_id": "cacti_file",
     "step": 300,
     "interval": 300,
-    "exclude_hosts": [
-      "*exclude_me*"
-    ],
-    "exclude_datasources": [
-      "*mee too*"
-    ],
     "add_graph_name_dimension": true
   }
 ]

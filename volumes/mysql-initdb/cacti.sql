@@ -281,3 +281,22 @@ LOCK TABLES `graph_local` WRITE;
 INSERT INTO `graph_local` VALUES
 (13882,2,1008,1,9);
 UNLOCK TABLES;
+
+CREATE TABLE `cdef_items` (
+  `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
+  `hash` varchar(32) NOT NULL DEFAULT '',
+  `cdef_id` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `sequence` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `type` tinyint(2) NOT NULL DEFAULT '0',
+  `value` varchar(150) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  KEY `cdef_id` (`cdef_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=48 DEFAULT CHARSET=latin1;
+
+LOCK TABLES `cdef_items` WRITE;
+INSERT INTO `cdef_items` VALUES
+(7,'9bbf6b792507bb9bb17d2af0970f9be9',2,1,4,'CURRENT_DATA_SOURCE'),
+(9,'a4b8eb2c3bf4920a3ef571a7a004be53',2,2,6,8),
+(8,'caa4e023ac2d7b1c4b4c8c4adfd55dfe',2,3,2,3),
+(32,'82b2966f515fc959cc51d753d0e082d2',18,1,6,'SIMILAR_DATA_SOURCES_NODUPS,8,*,-1,*');
+UNLOCK TABLES;
