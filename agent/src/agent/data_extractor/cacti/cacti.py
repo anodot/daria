@@ -179,10 +179,13 @@ def _should_convert_to_bits(item: dict) -> bool:
     # 1. Either function description, which is a string, contains "8,*", that means multiply by 8
     # 2. Or the function will have two sequential items with values 8 and 3. In this case 3 will also mean
     # multiplication
+    # also we assume cdef_items are ordered by `sequence`
 
-    # todo make sure the order is correct
+    if 'cdef_items' not in item:
+        return False
+
     contains_8 = False
-    for sequence, value in item['cdef_items'].items():
+    for value in item['cdef_items'].values():
         if "8,*" in value:
             return True
         if str(value) == '8':
