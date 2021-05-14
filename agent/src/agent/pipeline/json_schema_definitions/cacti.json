@@ -9,11 +9,10 @@
     "days_to_backfill": {"type": "integer"},
     "interval": {"type": "integer"},
     "delay": {"type": "integer"},
-    "exclude_hosts": {"type": "array"},
-    "exclude_datasources": {"type": "array"},
     "pipeline_id": {"type": "string"},
     "source": {"type": "string"},
-    "add_graph_name_dimension": {"type":  "boolean"}
+    "add_graph_name_dimension": {"type":  "boolean"},
+    "convert_bytes_into_bits": {"type": "boolean"}
   },
   "required": ["interval"]
 }

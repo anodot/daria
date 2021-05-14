@@ -1,7 +1,7 @@
 [
   {
     "target_type": "gauge",
-    "value": 0.02666666666666667,
+    "value": 0.0033333333333333335,
     "properties": {
       "host_description": "390257-some_host",
       "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
@@ -35,7 +35,7 @@
   },
   {
     "target_type": "gauge",
-    "value": 71.76,
+    "value": 8.97,
     "properties": {
       "host_description": "390257-some_host",
       "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
@@ -69,7 +69,7 @@
   },
   {
     "target_type": "gauge",
-    "value": 8.026666666666667,
+    "value": 1.0033333333333334,
     "properties": {
       "host_description": "390257-some_host",
       "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
@@ -103,7 +103,7 @@
   },
   {
     "target_type": "gauge",
-    "value": 79.76,
+    "value": 9.97,
     "properties": {
       "host_description": "390257-some_host",
       "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
@@ -137,7 +137,7 @@
   },
   {
     "target_type": "gauge",
-    "value": 64.02666666666667,
+    "value": 8.003333333333334,
     "properties": {
       "host_description": "390257-some_host",
       "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
@@ -171,7 +171,7 @@
   },
   {
     "target_type": "gauge",
-    "value": 24.133333333333333,
+    "value": 3.0166666666666666,
     "properties": {
       "host_description": "390257-some_host",
       "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
@@ -205,7 +205,7 @@
   },
   {
     "target_type": "gauge",
-    "value": 0.08,
+    "value": 0.01,
     "properties": {
       "host_description": "390257-some_host",
       "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
@@ -239,7 +239,7 @@
   },
   {
     "target_type": "gauge",
-    "value": 47.84,
+    "value": 5.98,
     "properties": {
       "host_description": "390257-some_host",
       "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
@@ -273,7 +273,7 @@
   },
   {
     "target_type": "gauge",
-    "value": 24.08,
+    "value": 3.01,
     "properties": {
       "host_description": "390257-some_host",
       "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
@@ -307,7 +307,7 @@
   },
   {
     "target_type": "gauge",
-    "value": 72.02666666666667,
+    "value": 9.003333333333334,
     "properties": {
       "host_description": "390257-some_host",
       "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
@@ -341,7 +341,7 @@
   },
   {
     "target_type": "gauge",
-    "value": 32.13333333333333,
+    "value": 4.016666666666667,
     "properties": {
       "host_description": "390257-some_host",
       "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
@@ -375,7 +375,7 @@
   },
   {
     "target_type": "gauge",
-    "value": 8.08,
+    "value": 1.01,
     "properties": {
       "host_description": "390257-some_host",
       "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
@@ -409,7 +409,7 @@
   },
   {
     "target_type": "gauge",
-    "value": 55.84,
+    "value": 6.98,
     "properties": {
       "host_description": "390257-some_host",
       "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
@@ -443,7 +443,7 @@
   },
   {
     "target_type": "gauge",
-    "value": 32.08,
+    "value": 4.01,
     "properties": {
       "host_description": "390257-some_host",
       "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
