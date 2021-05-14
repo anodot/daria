@@ -32,6 +32,7 @@ class CactiCacher:
         self._get_graph_variables()
         self._get_items_variables()
         self._get_hosts()
+        self._get_item_cdef_items()
 
     def _get_graph_titles(self):
         res = self.session.execute("""
@@ -120,6 +121,26 @@ class CactiCacher:
         """)
         for row in res:
             self.hosts[row['id']] = dict(row)
+
+    def _get_item_cdef_items(self):
+        res = self.session.execute("""
+            SELECT gti.id as item_id, gti.local_graph_id, ci.sequence, ci.value
+            FROM cdef_items ci
+            JOIN graph_templates_item gti on gti.cdef_id = ci.cdef_id
+            WHERE gti.cdef_id != 0
+            AND gti.local_graph_id != 0
+            ORDER BY item_id, sequence
+        """)
+        for row in res:
+            if row['local_graph_id'] not in self.graphs:
+                continue
+            graph = self.graphs[row['local_graph_id']]
+            if row['item_id'] not in graph['items']:
+                continue
+            item = graph['items'][row['item_id']]
+            if 'cdef_items' not in item:
+                item['cdef_items'] = {}
+            item['cdef_items'][row['sequence']] = row['value']
 
     def get_data(self) -> dict:
         return {

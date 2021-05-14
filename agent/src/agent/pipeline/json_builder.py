@@ -188,6 +188,8 @@ class CactiLoadClientData(LoadClientData):
             self.client_config['timestamp'] = {'type': 'unix'}
         if 'add_graph_name_dimension' not in self.client_config and not self.edit:
             self.client_config['add_graph_name_dimension'] = False
+        if 'convert_bytes_into_bits' not in self.client_config and not self.edit:
+            self.client_config['convert_bytes_into_bits'] = False
         return self.client_config
 
 

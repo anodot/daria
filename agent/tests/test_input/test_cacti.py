@@ -51,13 +51,12 @@ class TestCacti(TestInputBase):
             'interval in sec': 3600,
             'collect since': (datetime.now() - offset).days,
             'delay': delay,
-            'exclude hosts': '*exclude_me*',
-            'exclude sources': '*mee too*',
             'add_graph_name_dimension': 'y',
             'static dims': 'static_dim:cacti',
             'tags': 'tag:cacti',
             'transform file': '/home/cacti_transform.csv',
             'rename dimensions': 'query_ifAlias:alias query_ifName:name',
+            'Convert bytes into bits': 'n',
             'preview': 'y',
         }
         result = cli_runner.invoke(cli.pipeline.create, ['-a'], catch_exceptions=False, input=generate_input(input_))
@@ -75,13 +74,12 @@ class TestCacti(TestInputBase):
             'interval in sec': 3600,
             'collect since': (datetime.now() - offset).days,
             'delay': delay,
-            'exclude hosts': '*exclude_me*',
-            'exclude sources': '*mee too*',
             'add_graph_name_dimension': 'y',
             'static dims': 'static_dim:cacti',
             'tags': 'tag:cacti',
             'transform file': '/home/cacti_transform.csv',
             'rename dimensions': 'query_ifAlias:alias query_ifName:name',
+            'Convert bytes into bits': 'y',
             'preview': 'y',
         }
         result = cli_runner.invoke(cli.pipeline.create, ['-a'], catch_exceptions=False, input=generate_input(input_))
