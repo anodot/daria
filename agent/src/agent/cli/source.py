@@ -1,9 +1,8 @@
 import json
 import os
-
 import click
 
-from agent import pipeline, source, check_prerequisites
+from agent import source, check_prerequisites
 from agent.modules.tools import infinite_retry
 from jsonschema import ValidationError, SchemaError
 from agent.cli import prompt
