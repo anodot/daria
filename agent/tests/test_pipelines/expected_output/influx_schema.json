@@ -1,0 +1,187 @@
+[
+  {
+    "timestamp": 1552654426.147,
+    "dimensions": {
+      "cp_u": "cpu-total-usage",
+      "zone": "GEO",
+      "host": "msk-air-trn5",
+      "measurement_category": "cpu_test"
+    },
+    "measurements": {
+      "usage_active": 0.204,
+      "usage_idle": 62.53
+    },
+    "schemaId": "test_basic-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_basic"
+      ],
+      "pipeline_type": [
+        "influx"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552754426.174,
+    "dimensions": {
+      "cp_u": "cpu-total-usage",
+      "zone": "GF",
+      "host": "msk_a_ir_trn1",
+      "measurement_category": "cpu_test"
+    },
+    "measurements": {
+      "usage_active": 0.224,
+      "usage_idle": 14.247
+    },
+    "schemaId": "test_basic-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_basic"
+      ],
+      "pipeline_type": [
+        "influx"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552854426.174,
+    "dimensions": {
+      "cp_u": "cpu-total-usage",
+      "zone": "GF",
+      "host": "msk_air_trn1",
+      "measurement_category": "cpu_test"
+    },
+    "measurements": {
+      "usage_active": 0.22432747346756737,
+      "usage_idle": 14.247
+    },
+    "schemaId": "test_basic-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_basic"
+      ],
+      "pipeline_type": [
+        "influx"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552954426.168,
+    "dimensions": {
+      "cp_u": "cpu-total-usage",
+      "host": "msk-air-trn1",
+      "measurement_category": "cpu_test"
+    },
+    "measurements": {
+      "usage_active": 0.224,
+      "usage_idle": 14.247
+    },
+    "schemaId": "test_basic-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_basic"
+      ],
+      "pipeline_type": [
+        "influx"
+      ]
+    }
+  },
+  {
+    "timestamp": 1553054426.168,
+    "dimensions": {
+      "cp_u": "cpu-total-usage",
+      "zone": "GF",
+      "host": "msk-air-trn1",
+      "measurement_category": "cpu_test"
+    },
+    "measurements": {
+      "usage_active": 0.504,
+      "usage_idle": 260404905034043060000
+    },
+    "schemaId": "test_basic-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_basic"
+      ],
+      "pipeline_type": [
+        "influx"
+      ]
+    }
+  },
+  {
+    "timestamp": 1553154426.168,
+    "dimensions": {
+      "cp_u": "cpu-total-usage",
+      "zone": "GEO",
+      "host": "msk-air-trn1",
+      "measurement_category": "cpu_test"
+    },
+    "measurements": {
+      "usage_active": 0.504,
+      "usage_idle": 26
+    },
+    "schemaId": "test_basic-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_basic"
+      ],
+      "pipeline_type": [
+        "influx"
+      ]
+    }
+  }
+]

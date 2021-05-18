@@ -118,13 +118,13 @@ def _validate_config_for_create(config: dict):
 
 
 def _load_config(pipeline_: Pipeline, config: dict, is_edit=False):
-    config = get_file_loader(pipeline_.source.type, is_edit).load(config)
-
     if 'uses_schema' not in config:
         if is_edit:
             config['uses_schema'] = pipeline_.config.get('uses_schema', False)
         else:
             config['uses_schema'] = pipeline.manager.supports_schema(pipeline_)
+
+    config = get_file_loader(pipeline_.source.type, is_edit).load(config)
 
     pipeline_.set_config(config)
     # todo too many validations, 4 validations here
@@ -221,10 +221,19 @@ class InfluxLoadClientData(LoadClientData):
 
     def load_value(self):
         if type(self.client_config.get('value')) == list:
-            self.client_config['value'] = {'type': 'property', 'values': self.client_config['value'], 'constant': '1'}
+            if self.client_config.get('uses_schema'):
+                self.client_config['values'] = {}
+                for value in self.client_config['value']:
+                    self.client_config['values'][value] = self.client_config.get('target_type', 'gauge')
+                del self.client_config['value']
+            else:
+                self.client_config['value'] = {'type': 'property', 'values': self.client_config['value'], 'constant': '1'}
         elif str(self.client_config.get('value')).isnumeric():
-            self.client_config['value'] = {'type': 'constant', 'values': [],
-                                           'constant': str(self.client_config['value'])}
+            self.client_config['value'] = {
+                'type': 'constant',
+                'values': [],
+                'constant': str(self.client_config['value'])
+            }
 
     def load(self, client_config):
         super().load(client_config)

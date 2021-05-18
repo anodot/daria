@@ -78,7 +78,7 @@ class SchemalessPrompter(Prompter):
     @infinite_retry
     def prompt_measurement_names(self):
         if self.config.get('static_what', True):
-            prompt_text = 'Metric names. Example - field1:new_name1 field2:new_name2',
+            prompt_text = 'Metric names. Example - field1:new_name1 field2:new_name2'
         else:
             prompt_text = 'Names of fields containing metric names. Example - field1:field_name1 field1:field_name2'
         self.config['measurement_names'] = \

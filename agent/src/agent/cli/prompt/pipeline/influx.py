@@ -18,6 +18,7 @@ class InfluxPrompter(Prompter):
         self.prompt_tags()
         self.set_delay()
         self.set_filtering()
+        self.set_uses_schema()
 
     def get_test_url(self):
         source_config = self.pipeline.source.config
@@ -31,13 +32,16 @@ class InfluxPrompter(Prompter):
 
     @infinite_retry
     def set_value(self):
-        self.config['value'] = self.default_config.get('value', {'constant': 1, 'values': []})
+        if self.default_config.get('uses_schema', False):
+            self.config['value'] = {'values': self.default_config['values']}
+        else:
+            self.config['value'] = self.default_config.get('value', {'constant': 1, 'values': []})
 
         self.config['value']['type'] = 'column'
         default_names = self.config['value'].get('values')
         default_names = ' '.join(default_names) if len(default_names) > 0 else None
-        self.config['value']['values'] = click.prompt('Value columns names', type=click.STRING,
-                                                      default=default_names).split()
+        self.config['value']['values'] = \
+            click.prompt('Value columns names', type=click.STRING, default=default_names).split()
         self.validate_properties_names(self.config['value']['values'], self.pipeline.source.sample_data)
         self.config['value']['constant'] = '1'
 
@@ -46,16 +50,28 @@ class InfluxPrompter(Prompter):
         required = self.config['dimensions'].get('required', [])
         if self.advanced or len(required) > 0:
             self.config['dimensions']['required'] = self.prompt_dimensions('Required dimensions', required)
-            self.config['dimensions']['optional'] = click.prompt('Optional dimensions', type=click.STRING,
-                                                                 value_proc=lambda x: x.split(),
-                                                                 default=self.config['dimensions'].get('optional', []))
+            self.config['dimensions']['optional'] = click.prompt(
+                'Optional dimensions', type=click.STRING,
+                value_proc=lambda x: x.split(),
+                default=self.config['dimensions'].get('optional', [])
+            )
         else:
             self.config['dimensions']['required'] = []
-            self.config['dimensions']['optional'] = self.prompt_dimensions('Dimensions',
-                                                                           self.config['dimensions'].get('optional',
-                                                                                                                  []))
+            self.config['dimensions']['optional'] = \
+                self.prompt_dimensions('Dimensions', self.config['dimensions'].get('optional', []))
 
     def set_filtering(self):
         if self.advanced or self.config.get('filtering', ''):
-            self.config['filtering'] = click.prompt('Filtering condition', type=click.STRING,
-                                                    default=self.default_config.get('filtering', '')).strip()
+            self.config['filtering'] = click.prompt(
+                'Filtering condition',
+                type=click.STRING,
+                default=self.default_config.get('filtering', '')
+            ).strip()
+
+    def set_uses_schema(self):
+        super().set_uses_schema()
+        if self.config['uses_schema']:
+            self.config['values'] = {}
+            for value_name in self.config['value']['values']:
+                self.config['values'][value_name] = self.config['target_type']
+            del self.config['value']

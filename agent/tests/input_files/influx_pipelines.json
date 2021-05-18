@@ -5,7 +5,8 @@
     "measurement_name": "cpu_test_e",
     "value": ["usage_active", "usage_idle"],
     "dimensions": ["cp<u", "host", "zone"],
-    "interval": 1200000
+    "interval": 1200000,
+    "uses_schema": false
   },
   {
     "source": "test_influx",
@@ -18,6 +19,7 @@
     },
     "target_type": "gauge",
     "properties": {"test": "val"},
-    "interval": 1200000
+    "interval": 1200000,
+    "uses_schema": false
   }
 ]

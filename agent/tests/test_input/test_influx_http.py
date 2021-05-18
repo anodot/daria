@@ -1,9 +1,10 @@
-from agent import cli
+from agent import cli, pipeline
 from agent import source
 from .test_zpipeline_base import TestInputBase
-from ..conftest import get_input_file_path
+from ..conftest import get_input_file_path, generate_input
 
 
+# todo probably add no for all not-schema pipelines
 class TestInflux(TestInputBase):
     __test__ = True
     params = {
@@ -29,7 +30,7 @@ class TestInflux(TestInputBase):
     def test_create_adv(self, cli_runner):
         pipeline_id = 'test_influx_adv'
         result = cli_runner.invoke(cli.pipeline.create, ['-a'], catch_exceptions=False,
-                                   input=f"test_influx\n{pipeline_id}\ncpu_test\n\nusage_active usage_idle\n\ncp<u zone host\n \nkey:val key1:val1\nkey:val key1:val1\n\n1200000\nzone = 'GEO'\n\n\n")
+                                   input=f"test_influx\n{pipeline_id}\ncpu_test\n\nusage_active usage_idle\n\ncp<u zone host\n \nkey:val key1:val1\nkey:val key1:val1\n\n1200000\nzone = 'GEO'\nn\n\n")
         assert result.exit_code == 0
 
     def test_create_with_file(self, cli_runner, file_name):
