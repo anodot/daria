@@ -18,7 +18,6 @@ finally:
 # single threaded - no entityName because we need only one offset
 entityName = ''
 DATEFORMAT = '%Y-%m-%dT%H:%M:%SZ'
-SOLARWINDS_API_ADDRESS = '/SolarWinds/InformationService/v3/Json/Query'
 LAST_TIMESTAMP = '%last_timestamp%'
 
 
@@ -67,7 +66,7 @@ while True:
         for i in range(1, N_REQUESTS_TRIES + 1):
             try:
                 res = requests.get(
-                    sdc.userParams['SOLARWINDS_API_URL'] + SOLARWINDS_API_ADDRESS,
+                    sdc.userParams['SOLARWINDS_API_URL'],
                     auth=HTTPBasicAuth(sdc.userParams['API_USER'], sdc.userParams['API_PASSWORD']),
                     params={'query': query},
                     verify=False,
