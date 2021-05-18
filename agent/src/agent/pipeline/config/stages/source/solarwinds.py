@@ -7,6 +7,7 @@ from agent.pipeline.config.stages.source.jdbc import JDBCSource
 class SolarWindsScript(JDBCSource):
     JYTHON_SCRIPT = 'solarwinds.py'
     LAST_TIMESTAMP = '%last_timestamp%'
+    SOLARWINDS_API_ADDRESS = '/SolarWinds/InformationService/v3/Json/Query'
 
     def _get_config(self) -> dict:
         with open(self.get_jython_file_path()) as f:
@@ -14,7 +15,13 @@ class SolarWindsScript(JDBCSource):
                 'scriptConf.params': [
                     {'key': 'PIPELINE_NAME', 'value': self.pipeline.name},
                     {'key': 'QUERY', 'value': self.get_query()},
-                    {'key': 'SOLARWINDS_API_URL', 'value': self.pipeline.source.config[source.SolarWindsSource.URL]},
+                    {
+                        'key': 'SOLARWINDS_API_URL',
+                        'value': urllib.parse.urljoin(
+                            self.pipeline.source.config[source.SolarWindsSource.URL],
+                            self.SOLARWINDS_API_ADDRESS
+                        )
+                    },
                     {'key': 'API_USER', 'value': self.pipeline.source.config[source.SolarWindsSource.USERNAME]},
                     {'key': 'API_PASSWORD', 'value': self.pipeline.source.config[source.SolarWindsSource.PASSWORD]},
                     {'key': 'INTERVAL_IN_SECONDS', 'value': str(self.pipeline.interval)},
