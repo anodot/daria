@@ -24,8 +24,8 @@ def is_valid_destination_url(url: str, proxy_obj: proxy.Proxy = None) -> bool:
 
 
 @if_validation_enabled
-def is_valid_resource_url(resource_url: str) -> bool:
-    response = requests.post(resource_url, timeout=5)
+def is_valid_resource_url(resource_url: str, proxy_obj: proxy.Proxy = None) -> bool:
+    response = requests.post(resource_url, proxies=proxy.get_config(proxy_obj), timeout=5)
     if response.status_code != 401:
         response.raise_for_status()
     return response.status_code != 401
