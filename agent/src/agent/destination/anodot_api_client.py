@@ -84,4 +84,5 @@ class AnodotApiClient:
 
     @endpoint
     def get_schemas(self):
-        return self.session.get(self._build_url('stream-schemas', 'schemas'), params={'excludeCubes': True})
+        return self.session.get(self._build_url('stream-schemas', 'schemas'), params={'excludeCubes': True},
+                                proxies=self.proxies)
