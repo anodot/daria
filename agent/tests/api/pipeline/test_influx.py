@@ -29,7 +29,8 @@ class TestInflux:
                 },
                 "target_type": "gauge",
                 "properties": {"test": "wrong"},
-                "interval": 5
+                "interval": 5,
+                "uses_schema": False
             }],
             'er': [{"dimensions": {"optional": ["wrong"], "required": []}, "interval": 5,
                     "measurement_name": "wrong", "override_source": {}, "pipeline_id": "test_influx",

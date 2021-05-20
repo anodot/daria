@@ -49,8 +49,8 @@ class SchemaBaseConfigLoader(BaseConfigLoader):
         name = {
             source.TYPE_CLICKHOUSE: 'jdbc_http',
             source.TYPE_DIRECTORY: 'directory_http',
-            source.TYPE_KAFKA: 'kafka_http',
             source.TYPE_INFLUX: 'influx',
+            source.TYPE_KAFKA: 'kafka_http',
             source.TYPE_MYSQL: 'jdbc_http',
             source.TYPE_POSTGRES: 'jdbc_http',
         }[pipeline.source.type]

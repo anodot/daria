@@ -8,6 +8,7 @@ from .schema import SchemaConfigHandler
 
 logger = get_logger(__name__)
 
+
 class InfluxConfigHandler(base.BaseConfigHandler):
     stages_to_override = {
         'offset': stages.influx_offset.InfluxScript,

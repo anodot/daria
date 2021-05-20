@@ -1,10 +1,9 @@
-from agent import cli, pipeline
+from agent import cli
 from agent import source
 from .test_zpipeline_base import TestInputBase
-from ..conftest import get_input_file_path, generate_input
+from ..conftest import get_input_file_path
 
 
-# todo probably add no for all not-schema pipelines
 class TestInflux(TestInputBase):
     __test__ = True
     params = {
