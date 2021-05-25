@@ -22,19 +22,18 @@ class TestInflux:
                 "source": "influx",
                 "pipeline_id": "test_influx",
                 "measurement_name": "wrong",
-                "value": ["wrong"],
+                "values": {"wrong": "gauge"},
                 "dimensions": {
                     "required": [],
                     "optional": ["wrong"]
                 },
-                "target_type": "gauge",
                 "properties": {"test": "wrong"},
                 "interval": 5,
                 "uses_schema": False
             }],
             'er': [{"dimensions": {"optional": ["wrong"], "required": []}, "interval": 5,
                     "measurement_name": "wrong", "override_source": {}, "pipeline_id": "test_influx",
-                    "properties": {"test": "wrong"}, "source": "influx", "target_type": "gauge",
+                    "properties": {"test": "wrong"}, "source": "influx",
                     "value": {"constant": "1", "type": "property", "values": ["wrong"]}, "uses_schema": False}]
         }],
         'test_edit': [{
@@ -47,13 +46,12 @@ class TestInflux:
                     "required": [],
                     "optional": ["cpu", "host", "zone"]
                 },
-                "target_type": "gauge",
                 "properties": {"test": "val"},
                 "interval": 5
             }],
             'er': [{"dimensions": {"optional": ["cpu", "host", "zone"], "required": []}, "interval": 5,
                     "measurement_name": "cpu_test", "override_source": {}, "pipeline_id": "test_influx",
-                    "properties": {"test": "val"}, "source": "influx", "target_type": "gauge",
+                    "properties": {"test": "val"}, "source": "influx",
                     "value": {"constant": "1", "type": "property", "values": ["usage_active"]}, "uses_schema": False}]
         }],
     }

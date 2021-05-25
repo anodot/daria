@@ -43,14 +43,13 @@ class AddProperties(Stage):
         expressions = []
         for key, val in self.pipeline.static_dimensions.items():
             expressions.append(get_value(self._get_dimension_field_path(key), f'"{val}"'))
-        if 'timestamp' in self.pipeline.config:
-            timestamp_to_unix = get_convert_timestamp_to_unix_expression(
-                self.pipeline.timestamp_type,
-                "record:value('/timestamp')",
-                self.pipeline.timestamp_format,
-                self.pipeline.timezone
-            )
-            expressions.append(get_value('/timestamp', timestamp_to_unix))
+        timestamp_to_unix = get_convert_timestamp_to_unix_expression(
+            self.pipeline.timestamp_type,
+            "record:value('/timestamp')",
+            self.pipeline.timestamp_format,
+            self.pipeline.timezone
+        )
+        expressions.append(get_value('/timestamp', timestamp_to_unix))
         return {
             'expressionProcessorConfigs': get_tags_expressions(self.pipeline.get_tags()) + expressions
         }
@@ -107,4 +106,14 @@ class AddMetadataTags(Stage):
     def _get_config(self) -> dict:
         return {
             'expressionProcessorConfigs': get_tags_expressions(self.pipeline.meta_tags())
+        }
+
+
+class InfluxAddMeasurementCategory(Stage):
+    def _get_config(self) -> dict:
+        return {
+            'expressionProcessorConfigs': [{
+                'fieldToSet': '/dimensions/measurement_category',
+                'expression': self.pipeline.config['measurement_name']
+            }]
         }

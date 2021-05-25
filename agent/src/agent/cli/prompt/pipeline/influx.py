@@ -1,6 +1,5 @@
 import click
 
-from agent.modules.tools import infinite_retry
 from urllib.parse import urljoin
 from .base import Prompter
 from agent import pipeline
@@ -11,14 +10,17 @@ class InfluxPrompter(Prompter):
         self.set_measurement_name()
         self.pipeline.source.config['conf.resourceUrl'] = self.get_test_url()
         self.data_preview()
-        self.set_value()
-        self.set_target_type()
+        self.prompt_values()
         self.set_dimensions()
         self.prompt_static_dimensions()
         self.prompt_tags()
         self.set_delay()
         self.set_filtering()
         self.set_uses_schema()
+        self.config['timestamp'] = {
+            'type': 'unix_ms',
+            'name': 'time',
+        }
 
     def get_test_url(self):
         source_config = self.pipeline.source.config
@@ -29,21 +31,6 @@ class InfluxPrompter(Prompter):
         self.config['delay'] = click.prompt('Delay', type=click.STRING, default=self.default_config.get('delay', '0s'))
         self.config['interval'] = click.prompt('Interval, seconds', type=click.INT,
                                                default=self.default_config.get('interval', 60))
-
-    @infinite_retry
-    def set_value(self):
-        if self.default_config.get('uses_schema', False):
-            self.config['value'] = {'values': self.default_config['values']}
-        else:
-            self.config['value'] = self.default_config.get('value', {'constant': 1, 'values': []})
-
-        self.config['value']['type'] = 'column'
-        default_names = self.config['value'].get('values')
-        default_names = ' '.join(default_names) if len(default_names) > 0 else None
-        self.config['value']['values'] = \
-            click.prompt('Value columns names', type=click.STRING, default=default_names).split()
-        self.validate_properties_names(self.config['value']['values'], self.pipeline.source.sample_data)
-        self.config['value']['constant'] = '1'
 
     def set_dimensions(self):
         self.config['dimensions'] = self.default_config.get('dimensions', {})
@@ -67,11 +54,3 @@ class InfluxPrompter(Prompter):
                 type=click.STRING,
                 default=self.default_config.get('filtering', '')
             ).strip()
-
-    def set_uses_schema(self):
-        super().set_uses_schema()
-        if self.config['uses_schema']:
-            self.config['values'] = {}
-            for value_name in self.config['value']['values']:
-                self.config['values'][value_name] = self.config['target_type']
-            del self.config['value']

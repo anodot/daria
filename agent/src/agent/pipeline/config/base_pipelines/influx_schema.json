@@ -5,7 +5,7 @@
     "pipelineId" : "test_basic",
     "title" : "test_basic",
     "description" : "",
-    "uuid" : "99181eb8-bf4e-48db-9a19-7e9ed32c1990",
+    "uuid" : "193ae0a4-886a-4ce4-a8d2-d1d50106e831",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -419,7 +419,7 @@
       "stageVersion" : "1",
       "configuration" : [ {
         "name" : "script",
-        "value" : "global sdc\n\ntry:\n    sdc.importLock()\n    import time\n    from datetime import datetime, timedelta\nfinally:\n    sdc.importUnlock()\n\n\ndef get_interval():\n    return int(sdc.userParams['INTERVAL_IN_SECONDS'])\n\n\ndef get_now_with_delay():\n    return int(time.time()) - int(sdc.userParams['DELAY_IN_SECONDS'])\n\n\ndef to_timestamp(date):\n    epoch = datetime(1970, 1, 1)\n    return int((date - epoch).total_seconds())\n\n\nentityName = ''\ninterval = timedelta(seconds=get_interval())\n\nif sdc.lastOffsets.containsKey(entityName):\n    offset = int(float(sdc.lastOffsets.get(entityName)))\nelif sdc.userParams['INITIAL_OFFSET']:\n    offset = to_timestamp(datetime.strptime(sdc.userParams['INITIAL_OFFSET'], '%d/%m/%Y %H:%M'))\nelse:\n    offset = to_timestamp(datetime.utcnow().replace(second=0, microsecond=0) - interval)\n\nsdc.log.info('OFFSET: ' + str(offset))\n\nwhile True:\n    if sdc.isStopped():\n        break\n    now_with_delay = get_now_with_delay() - interval.total_seconds()\n    if offset > now_with_delay:\n        time.sleep(offset - now_with_delay)\n    cur_batch = sdc.createBatch()\n    record = sdc.createRecord('record created ' + str(datetime.now()))\n    record.value = {'last_timestamp': int(offset) * int(1e9)}\n    offset += interval.total_seconds()\n    cur_batch.add(record)\n    cur_batch.process(entityName, str(offset))\n"
+        "value" : ""
       }, {
         "name" : "scriptConf.batchSize",
         "value" : 1000
@@ -687,7 +687,7 @@
         "value" : "JSON"
       }, {
         "name" : "conf.resourceUrl",
-        "value" : "http://influx:8086/query?db=test&epoch=ms&q=SELECT+%22cp%3Cu%22%3A%3Atag%2C%22zone%22%3A%3Atag%2C%22host%22%3A%3Atag%2C%22usage_active%22%3A%3Afield%2C%22usage_idle%22%3A%3Afield+FROM+%22cpu_test%22+WHERE+%28%22time%22+%3E%3D+${record:value('/last_timestamp')}+AND+%22time%22+%3C+${record:value('/last_timestamp')}%2B1200000s+AND+%22time%22+%3C+now%28%29+-+0s%29+"
+        "value" : "http://influx:8086/query?db=test&epoch=ms&q=SELECT+%22cpu%22%3A%3Atag%2C%22zone%22%3A%3Atag%2C%22host%22%3A%3Atag%2C%22usage_active%22%3A%3Afield%2C%22usage_idle%22%3A%3Afield+FROM+%22cpu_test%22+WHERE+%28%22time%22+%3E%3D+${record:value('/last_timestamp')}+AND+%22time%22+%3C+${record:value('/last_timestamp')}%2B1200000s+AND+%22time%22+%3C+now%28%29+-+0s%29+"
       }, {
         "name" : "conf.headers",
         "value" : [ ]
@@ -978,7 +978,7 @@
         "value" : ""
       }, {
         "name" : "script",
-        "value" : "for(var i = 0; i < records.length; i++) {\n  try {\n    if (records[i].value['response']['results'][0]['series'] == null) {\n      continue;\n    } \n    series = records[i].value['response']['results'][0]['series'][0]\n    for (var k = 0; k < series['values'].length; k++) {\n      var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + k);\n      newRecord.value = {};\n      for (var c = 0; c < series['columns'].length; c++) {\n\t\tif (series['values'][k][c] == null) {\n          continue;\n        }\n        newRecord.value[series['columns'][c].replace(/[\\. \\<]+/g, '_')] = typeof series['values'][k][c] === 'string' \n          ? series['values'][k][c].replace(/[\\. ]+/g, '_') : series['values'][k][c]\n      }\n      newRecord.value['last_timestamp'] = records[i].value['last_timestamp']\n      output.write(newRecord);\n    }\n  } catch (e) {\n    // Send record to error\n    error.write(records[i], e);\n  }\n}"
+        "value" : "for(var i = 0; i < records.length; i++) {\n  try {\n    if (records[i].value['response']['results'][0]['series'] == null) {\n      continue;\n    } \n    series = records[i].value['response']['results'][0]['series'][0]\n    for (var k = 0; k < series['values'].length; k++) {\n      var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + k);\n      newRecord.value = {};\n      for (var c = 0; c < series['columns'].length; c++) {\n\t\tif (series['values'][k][c] == null) {\n          continue;\n        }\n        newRecord.value[series['columns'][c].replace(/[\\. \\<]+/g, '_')] = typeof series['values'][k][c] === 'string' \n          ? series['values'][k][c].replace(/[\\. ]+/g, '_') : series['values'][k][c]\n      }\n      newRecord.value['last_timestamp'] = records[i].value['last_timestamp'] / 1e9\n      output.write(newRecord);\n    }\n  } catch (e) {\n    // Send record to error\n    error.write(records[i], e);\n  }\n}"
       }, {
         "name" : "destroyScript",
         "value" : "/**\n * Available Objects:\n * \n *  state: a dict that is preserved between invocations of this script. \n *        Useful for caching bits of data e.g. counters and long-lived resources.\n *\n *  log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n *                               loglevel is any log4j level: e.g. info, error, warn, trace.\n *   sdcFunctions.getFieldNull(Record, 'field path'): Receive a constant defined above \n *                          to check if the field is typed field with value null\n *   sdcFunctions.createMap(boolean listMap): Create a map for use as a field in a record. \n *                          Pass true to this function to create a list map (ordered map)\n *   sdcFunctions.createEvent(String type, int version): Creates a new event.\n *                          Create new empty event with standard headers.\n *   sdcFunctions.toEvent(Record): Send event to event stream\n *                          Only events created with sdcFunctions.createEvent are supported.\n */\n\n// state['connection'].close();"
@@ -1020,10 +1020,10 @@
         "value" : "BATCH"
       }, {
         "name" : "initScript",
-        "value" : "state['MEASUREMENT_NAME'] = 'cpu_test';\nstate['MEASUREMENT_NAMES'] = ['usage_active', 'usage_idle'];\nstate['REQUIRED_DIMENSIONS'] = [];\nstate['OPTIONAL_DIMENSIONS'] = ['cp_u', 'zone', 'host'];\nstate['TARGET_TYPE'] = 'gauge';\nstate['TARGET_TYPES'] = ['gauge', 'gauge'];\nstate['CONSTANT_PROPERTIES'] = {}\nstate['HOST_ID'] = 'ABCDEF'\nstate['HOST_NAME'] = 'agent'\nstate['PIPELINE_ID'] = 'test_basic'\nstate['TAGS'] = {\"source\": [\"anodot-agent\"], \"source_host_id\": [\"ABCDEF\"], \"source_host_name\": [\"agent\"], \"pipeline_id\": [\"test_basic\"], \"pipeline_type\": [\"influx\"]}\nstate['INTERVAL'] = 1200000"
+        "value" : ""
       }, {
         "name" : "script",
-        "value" : "function extract_value(object, path) {\n  path_parts = path.split('/')\n  for (var k = 0; k < path_parts.length; k++) {\n    object = object[path_parts[k]]\n    if (object === null) {\n      return null;\n    }\n  }\n  if (object === null) {\n    return 'NULL';\n  }\n  return object\n}\n\n\nfunction replace_illegal_chars(str) {\n    return str.replace(/[\\. ]+/g, '_')\n}\n\nfunction get_dimensions(record) {\n    var dimensions = {};\n    var dim_types = ['REQUIRED_DIMENSIONS', 'OPTIONAL_DIMENSIONS']\n    for (var i = 0; i < 2; i++) {\n      var dim_type = dim_types[i]\n      for (var j = 0; j < state[dim_type].length; j++) {\n          var dimension = extract_value(record, state[dim_type][j])\n          if (dimension === null) {\n              continue;\n          }\n          dimension = String(dimension).trim()\n          if (dimension === '') {\n              continue;\n          }\n          var dimension_name = replace_illegal_chars(state[dim_type][j]).replace(/[\\/]+/g, '_')\n          dimensions[dimension_name] = replace_illegal_chars(dimension)\n      }\n    }\n    return dimensions\n}\n\nfunction get_measurements(record) {\n    var measurements = {}\n    for (var j = 0; j < state['MEASUREMENT_NAMES'].length; j++) {\n        var value = extract_value(record, state['MEASUREMENT_NAMES'][j]);\n        if (value === null || value === '' || isNaN(value)) {\n            continue;\n        }\n        if (typeof value === 'string' || value instanceof String) {\n            value = parseFloat(value)\n        }\n        var measurement = state['MEASUREMENT_NAMES'][j];\n\n        measurements[measurement] = value;\n    }\n    return measurements\n}\n\n\nfor (var i = 0; i < records.length; i++) {\n    try {\n        var timestamp = extract_value(records[i].value, 'time') / 1e3\n        if (timestamp === null) {\n            continue;\n        }\n        var measurements = get_measurements(records[i].value)\n        if (JSON.stringify(measurements) === JSON.stringify({})) {\n            continue;\n        }\n        var newRecord = sdcFunctions.createRecord(i);\n        var item = {\n            'timestamp': timestamp,\n            'dimensions': get_dimensions(records[i].value),\n            'measurements': measurements,\n            'schemaId': \"${SCHEMA_ID}\"\n        };\n        item['dimensions']['measurement_category'] = state['MEASUREMENT_NAME'].replace(/[\\. ]+/g, '_');\n        newRecord.value = item\n        output.write(newRecord);\n    } catch (e) {\n        error.write(records[i], e);\n    }\n}\n\nif (records.length > 0 && extract_value(records[0].value, 'time')) {\n  event = sdc.createEvent('interval processed', 1);\n  event.value = {\n    'watermark': records[0].value['last_timestamp'] / 1e9 + state['INTERVAL'] ,\n  };\n  sdc.toEvent(event);\n}"
+        "value" : ""
       }, {
         "name" : "destroyScript",
         "value" : ""
@@ -1032,7 +1032,7 @@
         "value" : "TO_ERROR"
       }, {
         "name" : "stageRequiredFields",
-        "value" : [ ]
+        "value" : [ "/time" ]
       }, {
         "name" : "stageRecordPreconditions",
         "value" : [ ]
@@ -1411,6 +1411,48 @@
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
+      "instanceName" : "ExpressionEvaluator_03",
+      "library" : "streamsets-datacollector-basic-lib",
+      "stageName" : "com_streamsets_pipeline_stage_processor_expression_ExpressionDProcessor",
+      "stageVersion" : "2",
+      "configuration" : [ {
+        "name" : "expressionProcessorConfigs",
+        "value" : [ {
+          "fieldToSet" : "/",
+          "expression" : "${record:value('/')}"
+        } ]
+      }, {
+        "name" : "headerAttributeConfigs",
+        "value" : [ { } ]
+      }, {
+        "name" : "fieldAttributeConfigs",
+        "value" : [ {
+          "fieldToSet" : "/"
+        } ]
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "yPos" : 119.00569915771484,
+        "stageType" : "PROCESSOR",
+        "icon" : "expression.png",
+        "description" : "",
+        "label" : "Add measurement category",
+        "xPos" : 959.8220520019531,
+        "displayMode" : "BASIC"
+      },
+      "inputLanes" : [ "destination_OutputLane" ],
+      "outputLanes" : [ "ExpressionEvaluator_03OutputLane16219463598200" ],
+      "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
       "instanceName" : "ExpressionEvaluator_02",
       "library" : "streamsets-datacollector-basic-lib",
       "stageName" : "com_streamsets_pipeline_stage_processor_expression_ExpressionDProcessor",
@@ -1450,6 +1492,9 @@
         }, {
           "fieldToSet" : "/tags/pipeline_type[0]",
           "expression" : "${\"influx\"}"
+        }, {
+          "fieldToSet" : "/timestamp",
+          "expression" : "${record:value('/timestamp')/1000}"
         } ]
       }, {
         "name" : "headerAttributeConfigs",
@@ -1470,15 +1515,15 @@
         "value" : [ ]
       } ],
       "uiInfo" : {
-        "yPos" : 118.00569915771484,
+        "yPos" : 117.00569915771484,
         "stageType" : "PROCESSOR",
         "icon" : "expression.png",
         "description" : "",
         "label" : "Add tags and static dimensions",
-        "xPos" : 966.8220520019531,
+        "xPos" : 1149.8220520019531,
         "displayMode" : "BASIC"
       },
-      "inputLanes" : [ "destination_OutputLane" ],
+      "inputLanes" : [ "ExpressionEvaluator_03OutputLane16219463598200" ],
       "outputLanes" : [ "ExpressionEvaluator_02OutputLane16215134030410" ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -1787,7 +1832,7 @@
         "stageType" : "TARGET",
         "description" : "",
         "label" : "Send Records To Anodot",
-        "xPos" : 1202.6775512695312,
+        "xPos" : 1394.6775512695312,
         "displayMode" : "BASIC"
       },
       "inputLanes" : [ "ExpressionEvaluator_02OutputLane16215134030410" ],
@@ -1817,19 +1862,19 @@
       "pipelineId" : "test_basic",
       "title" : "test_basic",
       "description" : "",
-      "created" : 1621513957577,
-      "lastModified" : 1621514181445,
+      "created" : 1621946278787,
+      "lastModified" : 1621946372833,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "99181eb8-bf4e-48db-9a19-7e9ed32c1990",
+      "uuid" : "193ae0a4-886a-4ce4-a8d2-d1d50106e831",
       "valid" : true,
       "metadata" : {
         "labels" : [ "influx", "http" ]
       },
       "name" : "test_basic",
       "sdcVersion" : "3.18.0",
-      "sdcId" : "f7e2eb13-b7d6-11eb-9a21-3da4069c2650"
+      "sdcId" : "91582cd8-bd45-11eb-9863-bdca190cf8c0"
     },
     "metadata" : {
       "labels" : [ "influx", "http" ]
@@ -2170,7 +2215,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1621513957645,
+      "timestamp" : 1621946278858,
       "valid" : true
     }, {
       "id" : "stageErrorAlertID",
@@ -2181,7 +2226,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1621513957645,
+      "timestamp" : 1621946278858,
       "valid" : true
     }, {
       "id" : "idleGaugeID",
@@ -2192,7 +2237,7 @@
       "condition" : "${time:now() - value() > 120000}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1621513957645,
+      "timestamp" : 1621946278858,
       "valid" : true
     }, {
       "id" : "batchTimeAlertID",
@@ -2203,12 +2248,12 @@
       "condition" : "${value() > 200}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1621513957645,
+      "timestamp" : 1621946278858,
       "valid" : true
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "893c4fd9-50b3-4b97-a38f-bcf8119088da",
+    "uuid" : "339c124c-eb35-47c2-973c-b6a9292460a9",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : null
