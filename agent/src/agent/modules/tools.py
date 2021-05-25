@@ -99,7 +99,7 @@ def replace_illegal_chars(value):
 
 
 def _replace_illegal_chars(value: str) -> str:
-    value = value.strip().replace(".", "_").replace('/', '_')
+    value = value.strip().replace(".", "_")
     return re.sub('\s+', '_', value)
 
 

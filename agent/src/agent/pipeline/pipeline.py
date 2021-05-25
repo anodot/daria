@@ -156,7 +156,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
 
     @property
     def dimensions_names(self):
-        return [tools.replace_illegal_chars(d) for d in self.dimensions]
+        return [tools.replace_illegal_chars(d.replace('/', '_')) for d in self.dimensions]
 
     @property
     def dimensions_paths(self):
