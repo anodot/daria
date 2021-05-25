@@ -51,7 +51,7 @@ class CactiCacher:
             self.graphs[row['local_graph_id']]['host_id'] = str(row['host_id'])
 
     def _get_graph_variables(self):
-        res = self.session.execute("""
+        res = self.session.execute(f"""
             SELECT gl.id, field_name, field_value
             FROM host_snmp_cache hsc FORCE INDEX (`PRIMARY`)
             JOIN graph_local gl
