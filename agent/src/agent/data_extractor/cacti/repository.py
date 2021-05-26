@@ -42,7 +42,7 @@ class CactiCacher:
             SELECT gtg.local_graph_id, gtg.title, gl.host_id
             FROM graph_templates_graph gtg
             JOIN graph_local gl ON gtg.local_graph_id = gl.id
-            WHERE local_graph_id != 0 {self._filter_by_graph_ids('gtg.local_graph_id', add_and=True)}
+            WHERE local_graph_id != 0 {self._filter_by_graph_ids('gtg.local_graph_id')}
         """)
         for row in res:
             if row['local_graph_id'] not in self.graphs:
@@ -79,7 +79,7 @@ class CactiCacher:
             WHERE gtg.local_graph_id != 0
             AND gti.graph_type_id IN (4, 5, 6, 7 ,8)
             AND dtd.data_source_path IS NOT NULL
-            {self._filter_by_graph_ids('gti.local_graph_id', add_and=True)}
+            {self._filter_by_graph_ids('gti.local_graph_id')}
         """)
         for row in res:
             local_graph_id = row['local_graph_id']
@@ -104,7 +104,7 @@ class CactiCacher:
             WHERE hsc.host_id = dl.host_id
             AND hsc.snmp_query_id = dl.snmp_query_id
             AND hsc.snmp_index = dl.snmp_index
-            {self._filter_by_graph_ids('gti.local_graph_id', add_and=True)}
+            {self._filter_by_graph_ids('gti.local_graph_id')}
         """)
         for row in res:
             local_graph_id = row['local_graph_id']
@@ -135,7 +135,7 @@ class CactiCacher:
             JOIN graph_templates_item gti on gti.cdef_id = ci.cdef_id
             WHERE gti.cdef_id != 0
             AND gti.local_graph_id != 0
-            {self._filter_by_graph_ids('gti.local_graph_id', add_and=True)}
+            {self._filter_by_graph_ids('gti.local_graph_id')}
             ORDER BY item_id, sequence
         """)
         for row in res:
@@ -149,13 +149,11 @@ class CactiCacher:
                 item['cdef_items'] = {}
             item['cdef_items'][row['sequence']] = row['value']
 
-    def _filter_by_graph_ids(self, field_name, add_and=False):
+    def _filter_by_graph_ids(self, field_name):
         graph_ids = self.pipeline.config.get('graph_ids')
         if not graph_ids:
             return ''
-        condition = 'AND ' if add_and else ''
-        condition += f'{field_name} in ({",".join(graph_ids)})'
-        return condition
+        return f'AND {field_name} in ({",".join(graph_ids)})'
 
     def get_data(self) -> dict:
         return {

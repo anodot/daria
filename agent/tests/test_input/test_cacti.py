@@ -5,11 +5,18 @@ from .test_zpipeline_base import TestInputBase
 from ..conftest import generate_input
 
 
+def _get_days_to_backfill():
+    return (datetime.now() - datetime.fromtimestamp(1619085000).replace(hour=0, minute=0, second=0)).days
+
+
 class TestCacti(TestInputBase):
     __test__ = True
     params = {
         'test_create_source_with_file': [{'file_name': 'cacti_sources'}],
-        'test_create_with_file': [{'file_name': 'cacti_pipelines'}],
+        'test_create_with_file': [{
+            'file_name': 'cacti_pipelines',
+            'config': {'days_to_backfill': _get_days_to_backfill()}
+        }],
     }
 
     def test_source_archive_create(self, cli_runner):
@@ -41,7 +48,6 @@ class TestCacti(TestInputBase):
         assert source.repository.exists(source_name)
 
     def test_archive_pipeline_create(self, cli_runner):
-        offset = datetime.fromtimestamp(1619085000).replace(hour=0, minute=0, second=0)
         delay = 5
         pipeline_id = 'cacti_archive'
         input_ = {
@@ -49,7 +55,7 @@ class TestCacti(TestInputBase):
             'id': pipeline_id,
             'step': 300,
             'interval in sec': 3600,
-            'collect since': (datetime.now() - offset).days,
+            'collect since': _get_days_to_backfill(),
             'delay': delay,
             'add_graph_name_dimension': 'y',
             'static dims': 'static_dim:cacti',

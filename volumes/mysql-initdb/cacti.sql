@@ -135,6 +135,8 @@ CREATE TABLE `graph_templates_item` (
 
 LOCK TABLES `graph_templates_item` WRITE;
 INSERT INTO `graph_templates_item` VALUES
+(1234,'',145348,1111,2,27038,94,99,7,2,1,'Descarga:','','',2,6),
+(1235,'',135866,1111,2,27038,0,'FF',9,2,4,'Actual:','','',2,1),
 (181079,'',145348,13882,2,27038,94,99,7,2,1,'Descarga:','','',2,6),
 (181080,'',135866,13882,2,27038,0,'FF',9,2,4,'Actual:','','',2,1),
 (181081,'',11,13882,2,27038,0,'FF',9,2,1,'Average:','','',2,7),
@@ -261,6 +263,7 @@ CREATE TABLE `graph_templates_graph` (
 
 LOCK TABLES `graph_templates_graph` WRITE;
 INSERT INTO `graph_templates_graph` VALUES
+(12345,2,1111,2,0,1,0,'|host_description|-|query_ifName|-|query_ifAlias|-IP |query_ifIP| - graph2','390257-some_host-Gi0/4-ENoB-Id-IP |query_ifIP|',0,120,0,600,0,100,0,0,0,'bits per second',0,'on',0,'on',0,1,0,'',0,'',0,'on',0,'on',0,1000,0,'',0,'on',0,'',0,''),
 (13968,2,13882,2,0,1,0,'|host_description|-|query_ifName|-|query_ifAlias|-IP |query_ifIP|','390257-some_host-Gi0/4-ENoB-Id-IP |query_ifIP|',0,120,0,600,0,100,0,0,0,'bits per second',0,'on',0,'on',0,1,0,'',0,'',0,'on',0,'on',0,1000,0,'',0,'on',0,'',0,'');
 UNLOCK TABLES;
 
@@ -279,6 +282,7 @@ CREATE TABLE `graph_local` (
 
 LOCK TABLES `graph_local` WRITE;
 INSERT INTO `graph_local` VALUES
+(1111,2,1008,1,9),
 (13882,2,1008,1,9);
 UNLOCK TABLES;
 
