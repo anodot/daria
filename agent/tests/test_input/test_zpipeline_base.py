@@ -18,7 +18,7 @@ class TestInputBase(object):
             for source_ in sources:
                 assert source.repository.exists(f"{source_['name']}")
 
-    def test_create_with_file(self, cli_runner, file_name, config: dict = None):
+    def test_create_with_file(self, cli_runner, file_name, config: dict):
         input_file_path = get_input_file_path(file_name + '.json')
         _replace_config_in_file(input_file_path, config)
         result = cli_runner.invoke(cli.pipeline.create, ['-f', input_file_path], catch_exceptions=False)

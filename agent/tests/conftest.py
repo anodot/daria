@@ -42,8 +42,9 @@ def pytest_generate_tests(metafunc):
     if metafunc.cls is None or not hasattr(metafunc.cls, 'params') or metafunc.function.__name__ not in metafunc.cls.params:
         return
     funcarglist = metafunc.cls.params[metafunc.function.__name__]
-    argnames = sorted(funcarglist[0])
-    metafunc.parametrize(argnames, [[funcargs[name] for name in argnames] for funcargs in funcarglist])
+    function_argnames = set(metafunc.function.__code__.co_varnames[:metafunc.function.__code__.co_argcount])
+    params = function_argnames - {'self', 'cli_runner'}
+    metafunc.parametrize(list(params), [[funcargs.get(name, None) for name in params] for funcargs in funcarglist])
 
 
 def generate_input(input_: dict) -> str:
