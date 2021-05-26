@@ -45,7 +45,6 @@ state['TAGS'] = {tags}
         return self.DECLARE_VARS_JS.format(
             required_dimensions=str(self.pipeline.required_dimensions),
             optional_dimensions=str(self.pipeline.optional_dimensions),
-            # todo add stage to influx
             measurement_name=tools.replace_illegal_chars(self.pipeline.config['measurement_name']),
             target_type=self.pipeline.config.get('target_type', 'gauge'),
             constant_properties=str(self.pipeline.static_dimensions),
@@ -62,6 +61,5 @@ class InfluxSchemaConfigHandler(SchemaConfigHandler):
         'source': stages.source.influx.InfluxSource,
         'transform_records': stages.js_convert_metrics.JSConvertMetrics30,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties30,
-        'ExpressionEvaluator_03': stages.expression_evaluator.InfluxAddMeasurementCategory,
         'destination': stages.destination.Destination
     }

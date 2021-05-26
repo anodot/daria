@@ -5,7 +5,7 @@
     "pipelineId" : "test_basic",
     "title" : "test_basic",
     "description" : "",
-    "uuid" : "193ae0a4-886a-4ce4-a8d2-d1d50106e831",
+    "uuid" : "ddd792c9-101f-44f3-9352-a2ba105879f2",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -1411,48 +1411,6 @@
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
-      "instanceName" : "ExpressionEvaluator_03",
-      "library" : "streamsets-datacollector-basic-lib",
-      "stageName" : "com_streamsets_pipeline_stage_processor_expression_ExpressionDProcessor",
-      "stageVersion" : "2",
-      "configuration" : [ {
-        "name" : "expressionProcessorConfigs",
-        "value" : [ {
-          "fieldToSet" : "/",
-          "expression" : "${record:value('/')}"
-        } ]
-      }, {
-        "name" : "headerAttributeConfigs",
-        "value" : [ { } ]
-      }, {
-        "name" : "fieldAttributeConfigs",
-        "value" : [ {
-          "fieldToSet" : "/"
-        } ]
-      }, {
-        "name" : "stageOnRecordError",
-        "value" : "TO_ERROR"
-      }, {
-        "name" : "stageRequiredFields",
-        "value" : [ ]
-      }, {
-        "name" : "stageRecordPreconditions",
-        "value" : [ ]
-      } ],
-      "uiInfo" : {
-        "yPos" : 119.00569915771484,
-        "stageType" : "PROCESSOR",
-        "icon" : "expression.png",
-        "description" : "",
-        "label" : "Add measurement category",
-        "xPos" : 959.8220520019531,
-        "displayMode" : "BASIC"
-      },
-      "inputLanes" : [ "destination_OutputLane" ],
-      "outputLanes" : [ "ExpressionEvaluator_03OutputLane16219463598200" ],
-      "eventLanes" : [ ],
-      "services" : [ ]
-    }, {
       "instanceName" : "ExpressionEvaluator_02",
       "library" : "streamsets-datacollector-basic-lib",
       "stageName" : "com_streamsets_pipeline_stage_processor_expression_ExpressionDProcessor",
@@ -1515,15 +1473,15 @@
         "value" : [ ]
       } ],
       "uiInfo" : {
-        "yPos" : 117.00569915771484,
+        "yPos" : 118.00569915771484,
         "stageType" : "PROCESSOR",
         "icon" : "expression.png",
         "description" : "",
         "label" : "Add tags and static dimensions",
-        "xPos" : 1149.8220520019531,
+        "xPos" : 963.8220520019531,
         "displayMode" : "BASIC"
       },
-      "inputLanes" : [ "ExpressionEvaluator_03OutputLane16219463598200" ],
+      "inputLanes" : [ "destination_OutputLane" ],
       "outputLanes" : [ "ExpressionEvaluator_02OutputLane16215134030410" ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -1828,11 +1786,11 @@
         "value" : null
       } ],
       "uiInfo" : {
-        "yPos" : 117.64195251464844,
+        "yPos" : 118.64195251464844,
         "stageType" : "TARGET",
         "description" : "",
         "label" : "Send Records To Anodot",
-        "xPos" : 1394.6775512695312,
+        "xPos" : 1195.6775512695312,
         "displayMode" : "BASIC"
       },
       "inputLanes" : [ "ExpressionEvaluator_02OutputLane16215134030410" ],
@@ -1862,19 +1820,19 @@
       "pipelineId" : "test_basic",
       "title" : "test_basic",
       "description" : "",
-      "created" : 1621946278787,
-      "lastModified" : 1621946372833,
+      "created" : 1622040453629,
+      "lastModified" : 1622040502420,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "193ae0a4-886a-4ce4-a8d2-d1d50106e831",
+      "uuid" : "ddd792c9-101f-44f3-9352-a2ba105879f2",
       "valid" : true,
       "metadata" : {
         "labels" : [ "influx", "http" ]
       },
       "name" : "test_basic",
       "sdcVersion" : "3.18.0",
-      "sdcId" : "91582cd8-bd45-11eb-9863-bdca190cf8c0"
+      "sdcId" : "36557a8b-be1e-11eb-b7d1-db797dc358a4"
     },
     "metadata" : {
       "labels" : [ "influx", "http" ]
@@ -2215,7 +2173,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1621946278858,
+      "timestamp" : 1622040453701,
       "valid" : true
     }, {
       "id" : "stageErrorAlertID",
@@ -2226,7 +2184,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1621946278858,
+      "timestamp" : 1622040453701,
       "valid" : true
     }, {
       "id" : "idleGaugeID",
@@ -2237,7 +2195,7 @@
       "condition" : "${time:now() - value() > 120000}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1621946278858,
+      "timestamp" : 1622040453701,
       "valid" : true
     }, {
       "id" : "batchTimeAlertID",
@@ -2248,12 +2206,12 @@
       "condition" : "${value() > 200}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1621946278858,
+      "timestamp" : 1622040453701,
       "valid" : true
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "339c124c-eb35-47c2-973c-b6a9292460a9",
+    "uuid" : "f53c0658-5493-46db-8228-9eb96c9a9b72",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : null

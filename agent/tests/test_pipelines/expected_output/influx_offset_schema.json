@@ -4,8 +4,7 @@
     "dimensions": {
       "cpu": "cpu-total-usage",
       "zone": "GF",
-      "host": "msk-air-trn1",
-      "measurement_category": "cpu_test"
+      "host": "msk-air-trn1"
     },
     "measurements": {
       "usage_active": 0.504,
@@ -35,8 +34,7 @@
     "dimensions": {
       "cpu": "cpu-total-usage",
       "zone": "GEO",
-      "host": "msk-air-trn1",
-      "measurement_category": "cpu_test"
+      "host": "msk-air-trn1"
     },
     "measurements": {
       "usage_active": 0.504,

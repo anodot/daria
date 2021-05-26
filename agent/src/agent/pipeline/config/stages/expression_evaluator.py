@@ -107,13 +107,3 @@ class AddMetadataTags(Stage):
         return {
             'expressionProcessorConfigs': get_tags_expressions(self.pipeline.meta_tags())
         }
-
-
-class InfluxAddMeasurementCategory(Stage):
-    def _get_config(self) -> dict:
-        return {
-            'expressionProcessorConfigs': [{
-                'fieldToSet': '/dimensions/measurement_category',
-                'expression': self.pipeline.config['measurement_name']
-            }]
-        }
