@@ -43,7 +43,7 @@ def pytest_generate_tests(metafunc):
         return
     funcarglist = metafunc.cls.params[metafunc.function.__name__]
     function_argnames = set(metafunc.function.__code__.co_varnames[:metafunc.function.__code__.co_argcount])
-    params = function_argnames - {'self', 'cli_runner'}
+    params = function_argnames - {'self', 'cli_runner', 'api_client'}
     metafunc.parametrize(list(params), [[funcargs.get(name, None) for name in params] for funcargs in funcarglist])
 
 
