@@ -58,7 +58,7 @@ class CactiCacher:
             ON gl.host_id = hsc.host_id
             AND gl.snmp_index = hsc.snmp_index
             AND gl.snmp_query_id = hsc.snmp_query_id
-            WHERE {self._filter_by_graph_ids('gl.id')}
+            WHERE 1 {self._filter_by_graph_ids('gl.id')}
         """)
         for row in res:
             local_graph_id = row['id']
