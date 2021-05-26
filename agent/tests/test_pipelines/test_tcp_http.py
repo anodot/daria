@@ -23,7 +23,7 @@ class TestTCPServer(TestPipelineBase):
     }
 
     def test_start(self, cli_runner, name, sleep):
-        super().test_start(cli_runner, sleep)
+        super().test_start(cli_runner, name, sleep)
 
         # streams data
         pipeline_ = pipeline.repository.get_by_id(name)
