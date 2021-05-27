@@ -50,4 +50,3 @@ class JSConvertMetrics30(JSConvertMetrics):
             'stageRequiredFields': [f'/{f}' for f in [*self.pipeline.required_dimensions_paths,
                                                       self.pipeline.timestamp_path]]
         }
-

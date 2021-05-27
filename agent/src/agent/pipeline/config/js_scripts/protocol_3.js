@@ -14,7 +14,7 @@ function extract_value(object, path) {
 
 
 function replace_illegal_chars(str) {
-    return str.replace(/[\. ]+/g, '_')
+    return str.replace(/[\. \<]+/g, '_')
 }
 
 function get_measurement_name(record, value_idx) {
@@ -31,7 +31,7 @@ function get_measurement_name(record, value_idx) {
 function get_dimensions(record) {
     var dimensions = {};
     for (var j = 0; j < state['DIMENSIONS'].length; j++) {
-        var dimension = extract_value(record, state['DIMENSIONS'][j])
+        var dimension = extract_value(record, replace_illegal_chars(state['DIMENSIONS'][j]))
         if (dimension === null) {
             continue;
         }

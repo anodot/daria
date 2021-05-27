@@ -3,6 +3,7 @@ import sdc_client
 from typing import Optional, List
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import relationship
+from agent.modules import tools
 from agent.modules.constants import HOSTNAME
 from agent.modules.db import Entity
 from agent.destination import HttpDestination
@@ -136,12 +137,26 @@ class Pipeline(Entity, sdc_client.IPipeline):
         if not dimensions:
             return []
         if type(self.config['dimensions']) is dict:
-            dimensions = self.config['dimensions']['required'] + self.config['dimensions'].get('optional', [])
+            dimensions = self.required_dimensions + self.optional_dimensions
         return dimensions
 
     @property
+    def required_dimensions(self) -> list:
+        dimensions = self.config.get('dimensions')
+        if type(dimensions) is not dict or 'required' not in dimensions:
+            return []
+        return dimensions['required']
+
+    @property
+    def optional_dimensions(self) -> list:
+        dimensions = self.config.get('dimensions')
+        if type(dimensions) is not dict or 'optional' not in dimensions:
+            return []
+        return dimensions['optional']
+
+    @property
     def dimensions_names(self):
-        return [self.replace_chars(d) for d in self.dimensions]
+        return [tools.replace_illegal_chars(d.replace('/', '_')) for d in self.dimensions]
 
     @property
     def dimensions_paths(self):
@@ -149,9 +164,8 @@ class Pipeline(Entity, sdc_client.IPipeline):
 
     @property
     def required_dimensions_paths(self) -> list:
-        if 'dimensions' not in self.config or self.config['dimensions'] is not dict:
-            return []
-        return [self.get_property_path(value) for value in self.config['dimensions']['required']]
+        # todo replace chars
+        return [self.get_property_path(value) for value in self.required_dimensions]
 
     @property
     def timestamp_path(self) -> str:
@@ -171,9 +185,6 @@ class Pipeline(Entity, sdc_client.IPipeline):
 
     @property
     def values(self) -> list:
-        if self.source.type == source.TYPE_INFLUX:
-            value = self.config.get('value', {})
-            return value['values'] if 'values' in value else []
         return list(self.config.get('values', {}).keys())
 
     @property
@@ -188,7 +199,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
 
     @property
     def measurement_names(self):
-        return [self.replace_chars(self.config.get('measurement_names', {}).get(key, key)) for key in self.values]
+        return [tools.replace_illegal_chars(self.config.get('measurement_names', {}).get(key, key)) for key in self.values]
 
     @property
     def measurement_names_paths(self):
@@ -204,7 +215,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
 
     @property
     def count_records_measurement_name(self) -> str:
-        return self.replace_chars(self.config.get('count_records_measurement_name', 'count'))
+        return tools.replace_illegal_chars(self.config.get('count_records_measurement_name', 'count'))
 
     @property
     def static_what(self) -> bool:
@@ -312,10 +323,6 @@ class Pipeline(Entity, sdc_client.IPipeline):
                 return str(idx)
 
         return str(property_value)
-
-    @classmethod
-    def replace_chars(cls, property_name):
-        return property_name.replace('/', '_').replace('.', '_').replace(' ', '_')
 
     def meta_tags(self) -> dict:
         return {

@@ -8,7 +8,7 @@ from typing import List, Optional
 from agent.data_extractor import cacti
 from agent.pipeline import Pipeline
 from agent import source
-from agent.modules import logger
+from agent.modules import logger, tools
 
 logger_ = logger.get_logger(__name__)
 
@@ -88,7 +88,7 @@ def _extract_dimensions(item: dict, graph: dict, hosts: dict, add_graph_name_dim
         dimensions['host_description'] = host['description']
     dimensions = {**dimensions, **_extract_item_dimensions(item)}
 
-    return _replace_illegal_chars(dimensions)
+    return tools.replace_illegal_chars(dimensions)
 
 
 def _add_graph_name_dimension(dimensions: dict, graph_title: str) -> dict:
@@ -105,7 +105,7 @@ def _extract_title_dimensions(graph_title: str, graph: dict, host: dict) -> dict
         if value is None or value == '':
             continue
         dimensions[var] = value
-    return _replace_illegal_chars(dimensions)
+    return tools.replace_illegal_chars(dimensions)
 
 
 def _get_host(graph, hosts):
@@ -126,10 +126,6 @@ def _extract(variable: str, variables: dict, host: dict) -> Optional[str]:
     if var_name not in vars_:
         return None
     return vars_[var_name]
-
-
-def _replace_illegal_chars(dimensions: dict) -> dict:
-    return {re.sub('\s+', '_', k.strip().replace(".", "_")): re.sub('\s+', '_', v.strip().replace(".", "_")) for k, v in dimensions.items()}
 
 
 def _extract_rrd_archive(pipeline_: Pipeline):
@@ -170,7 +166,7 @@ def _extract_item_dimensions(item: dict) -> dict:
         for k, v in dimensions.items():
             item_title = item_title.replace(f'|{k}|', v)
         dimensions['item_title'] = item_title
-    return _replace_illegal_chars(dimensions)
+    return tools.replace_illegal_chars(dimensions)
 
 
 def _should_convert_to_bits(item: dict) -> bool:
