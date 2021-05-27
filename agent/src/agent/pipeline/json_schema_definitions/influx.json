@@ -2,11 +2,7 @@
   "type": "object",
   "properties": {
     "measurement_name": {"type": "string", "minLength": 1},
-    "target_type": {"type": "string", "enum": ["counter", "gauge"]},
-    "value": {"oneOf": [
-      {"type": "array", "items": {"type": "string"}},
-      {"type": "number"}
-    ]},
+    "values": {"type": "object"},
     "dimensions": {"oneOf": [
       {"type": "array", "items": {"type": "string"}},
       {"type": "object", "properties": {
@@ -22,5 +18,5 @@
     "delay": {"type": "string"},
     "interval": {"type": "integer"}
   },
-  "required": ["measurement_name", "value", "dimensions"]
+  "required": ["measurement_name", "values", "dimensions"]
 }

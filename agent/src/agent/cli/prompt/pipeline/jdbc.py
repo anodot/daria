@@ -23,16 +23,6 @@ class JDBCPrompter(Prompter):
         self.set_uses_schema()
 
     @infinite_retry
-    def prompt_values(self):
-        self.config['values'] = self.prompt_object(
-            'Value columns with target types. Example - column:counter column2:gauge',
-            self.get_default_object_value('values')
-        )
-        if not set(self.config['values'].values()).issubset(('counter', 'gauge')):
-            raise click.UsageError('Target type should be counter or gauge')
-        self.validate_properties_names(self.config['values'].keys(), self.pipeline.source.sample_data)
-
-    @infinite_retry
     def set_query(self):
         self.config['query'] = click.prompt('Query', type=click.STRING, default=self.default_config.get('query'))
         errors = jdbc_query.get_errors(self.config['query'])

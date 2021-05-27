@@ -40,6 +40,16 @@ class Prompter:
             self.set_timezone()
 
     @infinite_retry
+    def prompt_values(self):
+        self.config['values'] = self.prompt_object(
+            'Value columns with target types. Example - column:counter column2:gauge',
+            self.get_default_object_value('values')
+        )
+        if not set(self.config['values'].values()).issubset(('counter', 'gauge')):
+            raise click.UsageError('Target type should be counter or gauge')
+        self.validate_properties_names(self.config['values'].keys(), self.pipeline.source.sample_data)
+
+    @infinite_retry
     def prompt_property(self, text: str, default_value) -> str:
         value = click.prompt(text, type=click.STRING, default=default_value)
         self.validate_properties_names([value], self.pipeline.source.sample_data)
@@ -104,10 +114,6 @@ class Prompter:
     def set_measurement_name(self):
         self.config['measurement_name'] = click.prompt('Measurement name', type=click.STRING,
                                                        default=self.default_config.get('measurement_name'))
-
-    def set_target_type(self):
-        self.config['target_type'] = click.prompt('Target type', type=click.Choice(['counter', 'gauge']),
-                                                  default=self.default_config.get('target_type', 'gauge'))
 
     @if_validation_enabled
     def validate_properties_names(self, names, sample_data):

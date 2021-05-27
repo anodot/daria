@@ -23,13 +23,13 @@ class TestInflux(TestInputBase):
 
     def test_create(self, cli_runner, name, source_):
         result = cli_runner.invoke(cli.pipeline.create, catch_exceptions=False,
-                                   input=f'{source_}\n{name}\ncpu_test\n\nusage_active usage_idle\n\ncp<u zone host\n\n1200000\n\n\n')
+                                   input=f'{source_}\n{name}\ncpu_test\n\nusage_active:gauge usage_idle:gauge\ncpu zone host\n\n1200000\n\n')
         assert result.exit_code == 0
 
     def test_create_adv(self, cli_runner):
         pipeline_id = 'test_influx_adv'
         result = cli_runner.invoke(cli.pipeline.create, ['-a'], catch_exceptions=False,
-                                   input=f"test_influx\n{pipeline_id}\ncpu_test\n\nusage_active usage_idle\n\ncp<u zone host\n \nkey:val key1:val1\nkey:val key1:val1\n\n1200000\nzone = 'GEO'\n\n\n")
+                                   input=f"test_influx\n{pipeline_id}\ncpu_test\n\nusage_active:gauge usage_idle:gauge\ncpu zone host\n \nkey:val key1:val1\nkey:val key1:val1\n\n1200000\nzone = 'GEO'\nn\n\n")
         assert result.exit_code == 0
 
     def test_create_with_file(self, cli_runner, file_name):

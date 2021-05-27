@@ -40,9 +40,9 @@ def build_multiple(configs: list) -> List[Pipeline]:
 def build(config: dict) -> Pipeline:
     _validate_config_for_create(config)
     pipeline_ = pipeline.manager.create_object(config['pipeline_id'], config['source'])
-    
+
     _load_config(pipeline_, config)
-    
+
     pipeline.manager.create(pipeline_)
     logger_.info(f'Pipeline {pipeline_.name} created')
     return pipeline_
@@ -65,9 +65,9 @@ def edit_multiple(configs: list) -> List[Pipeline]:
 
 def edit(config: dict) -> Pipeline:
     pipeline_ = pipeline.repository.get_by_id(config['pipeline_id'])
-    
+
     _load_config(pipeline_, config, is_edit=True)
-    
+
     pipeline.manager.update(pipeline_)
     return pipeline_
 
@@ -118,13 +118,13 @@ def _validate_config_for_create(config: dict):
 
 
 def _load_config(pipeline_: Pipeline, config: dict, is_edit=False):
-    config = get_file_loader(pipeline_.source.type, is_edit).load(config)
-
     if 'uses_schema' not in config:
         if is_edit:
             config['uses_schema'] = pipeline_.config.get('uses_schema', False)
         else:
             config['uses_schema'] = pipeline.manager.supports_schema(pipeline_)
+
+    config = get_file_loader(pipeline_.source.type, is_edit).load(config)
 
     pipeline_.set_config(config)
     # todo too many validations, 4 validations here
@@ -219,18 +219,17 @@ class KafkaLoadClientData(LoadClientData):
 class InfluxLoadClientData(LoadClientData):
     VALIDATION_SCHEMA_FILE_NAME = 'influx'
 
-    def load_value(self):
-        if type(self.client_config.get('value')) == list:
-            self.client_config['value'] = {'type': 'property', 'values': self.client_config['value'], 'constant': '1'}
-        elif str(self.client_config.get('value')).isnumeric():
-            self.client_config['value'] = {'type': 'constant', 'values': [],
-                                           'constant': str(self.client_config['value'])}
-
     def load(self, client_config):
         super().load(client_config)
         self._load_dimensions()
-        self.load_value()
+        self._set_timestamp()
         return self.client_config
+
+    def _set_timestamp(self):
+        self.client_config['timestamp'] = {
+            'type': 'unix_ms',
+            'name': 'time',
+        }
 
 
 class JDBCLoadClientData(LoadClientData):
