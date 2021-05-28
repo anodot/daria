@@ -22,8 +22,8 @@ class TestTCPServer(TestPipelineBase):
         'test_source_delete': [{'name': 'test_tcp_log'}, {'name': 'test_tcp_json'}, {'name': 'test_tcp_csv'}],
     }
 
-    def test_start(self, cli_runner, name):
-        super().test_start(cli_runner, name)
+    def test_start(self, cli_runner, name, sleep):
+        super().test_start(cli_runner, name, sleep)
 
         # streams data
         pipeline_ = pipeline.repository.get_by_id(name)

@@ -32,8 +32,8 @@ class TestInflux(TestInputBase):
                                    input=f"test_influx\n{pipeline_id}\ncpu_test\n\nusage_active:gauge usage_idle:gauge\ncpu zone host\n \nkey:val key1:val1\nkey:val key1:val1\n\n1200000\nzone = 'GEO'\nn\n\n")
         assert result.exit_code == 0
 
-    def test_create_with_file(self, cli_runner, file_name):
-        super().test_create_with_file(cli_runner, file_name)
+    def test_create_with_file(self, cli_runner, file_name, config):
+        super().test_create_with_file(cli_runner, file_name, config)
 
     def test_create_source_with_file(self, cli_runner, file_name):
         super().test_create_source_with_file(cli_runner, file_name)
