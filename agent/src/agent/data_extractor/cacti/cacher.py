@@ -39,8 +39,7 @@ class CactiCache(Entity):
 def cache_pipeline_data(pipeline_: Pipeline, *, force=False):
     cache = cacti.repository.get_cache(pipeline_)
     if force or cache is None or cache.is_expired():
-        data = cacti.repository.CactiCacher(
-            pipeline_.source.config[source.CactiSource.MYSQL_CONNECTION_STRING]).get_data()
+        data = cacti.repository.CactiCacher(pipeline_).get_data()
         if cache is None:
             cache = cacti.cacher.CactiCache(
                 pipeline_.name,

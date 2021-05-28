@@ -25,8 +25,8 @@ class TestDirectory(TestPipelineBase):
     def test_info(self, cli_runner, name=None):
         pytest.skip()
 
-    def test_start(self, cli_runner, name):
-        super().test_start(cli_runner, name)
+    def test_start(self, cli_runner, name, sleep):
+        super().test_start(cli_runner, name, sleep)
 
     def test_stop(self, cli_runner, name):
         super().test_stop(cli_runner, name)
