@@ -1,5 +1,7 @@
 import os
 import re
+import shutil
+
 import rrdtool
 import tarfile
 
@@ -9,6 +11,7 @@ from agent.data_extractor import cacti
 from agent.pipeline import Pipeline
 from agent import source
 from agent.modules import logger, tools
+from distutils.dir_util import copy_tree
 
 logger_ = logger.get_logger(__name__)
 
@@ -16,6 +19,8 @@ logger_ = logger.get_logger(__name__)
 def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> list:
     if pipeline_.source.RRD_ARCHIVE_PATH in pipeline_.source.config:
         _extract_rrd_archive(pipeline_)
+    else:
+        _copy_rrd_to_tmp_dir(pipeline_)
 
     cache = cacti.repository.get_cache(pipeline_)
     if cache is None:
@@ -136,11 +141,12 @@ def _extract_rrd_archive(pipeline_: Pipeline):
         tar.extractall(path=_get_rrd_dir(pipeline_))
 
 
+def _copy_rrd_to_tmp_dir(pipeline_: Pipeline):
+    copy_tree(pipeline_.source.config[source.CactiSource.RRD_DIR_PATH], _get_rrd_dir(pipeline_), update=1)
+
+
 def _get_rrd_dir(pipeline_: Pipeline):
-    if source.CactiSource.RRD_ARCHIVE_PATH in pipeline_.source.config:
-        return os.path.join('/tmp/cacti_rrd/', pipeline_.name)
-    else:
-        return pipeline_.source.config[source.CactiSource.RRD_DIR_PATH]
+    return os.path.join('/tmp/cacti_rrd/', pipeline_.name)
 
 
 def _extract_dimension_names(name: str) -> List[str]:
