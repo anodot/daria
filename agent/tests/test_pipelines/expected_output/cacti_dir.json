@@ -205,6 +205,74 @@
   },
   {
     "target_type": "gauge",
+    "value": 8.026666666666667,
+    "properties": {
+      "host_description": "390257-some_host",
+      "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
+      "what": "traffic_out",
+      "item_title": "Total_Out:_|sum:auto:current:2:auto|",
+      "alias": "ENoB-Id",
+      "name": "Gi0/4",
+      "static_dim": "cacti"
+    },
+    "timestamp": 1619085000,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "cacti_dir"
+      ],
+      "pipeline_type": [
+        "cacti"
+      ],
+      "tag": [
+        "cacti"
+      ]
+    }
+  },
+  {
+    "target_type": "gauge",
+    "value": 79.76,
+    "properties": {
+      "host_description": "390257-some_host",
+      "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
+      "what": "traffic_out",
+      "item_title": "Total_Out:_|sum:auto:current:2:auto|",
+      "alias": "ENoB-Id",
+      "name": "Gi0/4",
+      "static_dim": "cacti"
+    },
+    "timestamp": 1619085300,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "cacti_dir"
+      ],
+      "pipeline_type": [
+        "cacti"
+      ],
+      "tag": [
+        "cacti"
+      ]
+    }
+  },
+  {
+    "target_type": "gauge",
     "value": 64.02666666666667,
     "properties": {
       "host_description": "390257-some_host",
@@ -687,6 +755,176 @@
       "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
       "what": "traffic_out",
       "item_title": "Subida:",
+      "alias": "ENoB-Id",
+      "name": "Gi0/4",
+      "static_dim": "cacti"
+    },
+    "timestamp": 1619086800,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "cacti_dir"
+      ],
+      "pipeline_type": [
+        "cacti"
+      ],
+      "tag": [
+        "cacti"
+      ]
+    }
+  },
+  {
+    "target_type": "gauge",
+    "value": 72.02666666666667,
+    "properties": {
+      "host_description": "390257-some_host",
+      "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
+      "what": "traffic_out",
+      "item_title": "Total_Out:_|sum:auto:current:2:auto|",
+      "alias": "ENoB-Id",
+      "name": "Gi0/4",
+      "static_dim": "cacti"
+    },
+    "timestamp": 1619085600,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "cacti_dir"
+      ],
+      "pipeline_type": [
+        "cacti"
+      ],
+      "tag": [
+        "cacti"
+      ]
+    }
+  },
+  {
+    "target_type": "gauge",
+    "value": 32.13333333333333,
+    "properties": {
+      "host_description": "390257-some_host",
+      "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
+      "what": "traffic_out",
+      "item_title": "Total_Out:_|sum:auto:current:2:auto|",
+      "alias": "ENoB-Id",
+      "name": "Gi0/4",
+      "static_dim": "cacti"
+    },
+    "timestamp": 1619085900,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "cacti_dir"
+      ],
+      "pipeline_type": [
+        "cacti"
+      ],
+      "tag": [
+        "cacti"
+      ]
+    }
+  },
+  {
+    "target_type": "gauge",
+    "value": 8.08,
+    "properties": {
+      "host_description": "390257-some_host",
+      "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
+      "what": "traffic_out",
+      "item_title": "Total_Out:_|sum:auto:current:2:auto|",
+      "alias": "ENoB-Id",
+      "name": "Gi0/4",
+      "static_dim": "cacti"
+    },
+    "timestamp": 1619086200,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "cacti_dir"
+      ],
+      "pipeline_type": [
+        "cacti"
+      ],
+      "tag": [
+        "cacti"
+      ]
+    }
+  },
+  {
+    "target_type": "gauge",
+    "value": 55.84,
+    "properties": {
+      "host_description": "390257-some_host",
+      "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
+      "what": "traffic_out",
+      "item_title": "Total_Out:_|sum:auto:current:2:auto|",
+      "alias": "ENoB-Id",
+      "name": "Gi0/4",
+      "static_dim": "cacti"
+    },
+    "timestamp": 1619086500,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "cacti_dir"
+      ],
+      "pipeline_type": [
+        "cacti"
+      ],
+      "tag": [
+        "cacti"
+      ]
+    }
+  },
+  {
+    "target_type": "gauge",
+    "value": 32.08,
+    "properties": {
+      "host_description": "390257-some_host",
+      "graph_title": "390257-some_host-Gi0/4-ENoB-Id-IP_|query_ifIP|",
+      "what": "traffic_out",
+      "item_title": "Total_Out:_|sum:auto:current:2:auto|",
       "alias": "ENoB-Id",
       "name": "Gi0/4",
       "static_dim": "cacti"

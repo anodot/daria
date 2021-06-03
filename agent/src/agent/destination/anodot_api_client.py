@@ -62,8 +62,22 @@ class AnodotApiClient:
         return self.session.post(self._build_url('stream-schemas'), json=schema, proxies=self.proxies)
 
     @endpoint
+    def _delete_schema_old_api(self, schema_id):
+        """
+        Used for old anodot api version (for on-prem)
+        :param schema_id:
+        :return:
+        """
+        return self.session.delete(self._build_url('stream-schemas', schema_id), proxies=self.proxies)
+
+    @endpoint
     def delete_schema(self, schema_id):
-        return self.session.delete(self._build_url('stream-schemas', 'schemas', schema_id), proxies=self.proxies)
+        try:
+            return self.session.delete(self._build_url('stream-schemas', 'schemas', schema_id), proxies=self.proxies)
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 404:
+                return self._delete_schema_old_api(schema_id)
+            raise
 
     @endpoint
     def send_topology_data(self, data_type, data):
@@ -83,6 +97,23 @@ class AnodotApiClient:
         )
 
     @endpoint
+    def _get_schemas_old_api(self):
+        """
+        Used for old anodot api version (for on-prem)
+        :param schema_id:
+        :return:
+        """
+        return self.session.get(self._build_url('stream-schemas'), params={'excludeCubes': True}, proxies=self.proxies)
+
+    @endpoint
     def get_schemas(self):
-        return self.session.get(self._build_url('stream-schemas', 'schemas'), params={'excludeCubes': True},
-                                proxies=self.proxies)
+        try:
+            return self.session.get(
+                self._build_url('stream-schemas', 'schemas'),
+                params={'excludeCubes': True},
+                proxies=self.proxies
+            )
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 404:
+                return self._get_schemas_old_api()
+            raise

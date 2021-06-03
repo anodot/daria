@@ -3,7 +3,7 @@ import json
 import os
 import sdc_client
 
-from agent import pipeline, source
+from agent import pipeline, source, check_prerequisites
 from agent.modules import logger, constants
 
 logger_ = logger.get_logger(__name__, stdout=True)
@@ -103,6 +103,7 @@ def _extract_all_names(directory, module, type_):
 @click.option('-d', '--work-dir', type=click.Path(exists=True), required=True)
 @click.option('--keep-not-existing/--remove-not-existing', default=True)
 def apply(work_dir, keep_not_existing):
+    _check_prerequisites()
     logger_.info('Run in ' + work_dir)
     sources_dir = os.path.join(work_dir, 'sources')
     pipelines_dir = os.path.join(work_dir, 'pipelines')
@@ -113,3 +114,9 @@ def apply(work_dir, keep_not_existing):
     if not keep_not_existing:
         delete_not_existing(pipelines_dir, pipeline, 'Pipeline')
         delete_not_existing(sources_dir, source, 'Source')
+
+
+def _check_prerequisites():
+    errors = check_prerequisites()
+    if errors:
+        raise click.ClickException("\n".join(errors))

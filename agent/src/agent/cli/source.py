@@ -61,6 +61,7 @@ def _check_prerequisites():
 @click.argument('name', autocompletion=autocomplete)
 def delete(name):
     source.repository.delete_by_name(name)
+    click.echo(f'Source {name} deleted')
 
 
 @click.command()

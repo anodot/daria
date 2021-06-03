@@ -1,5 +1,7 @@
 import os
 import re
+import shutil
+
 import rrdtool
 import tarfile
 
@@ -9,6 +11,7 @@ from agent.data_extractor import cacti
 from agent.pipeline import Pipeline
 from agent import source
 from agent.modules import logger, tools
+from distutils.dir_util import copy_tree
 
 logger_ = logger.get_logger(__name__)
 
@@ -16,6 +19,8 @@ logger_ = logger.get_logger(__name__)
 def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> list:
     if pipeline_.source.RRD_ARCHIVE_PATH in pipeline_.source.config:
         _extract_rrd_archive(pipeline_)
+    else:
+        _copy_rrd_to_tmp_dir(pipeline_)
 
     cache = cacti.repository.get_cache(pipeline_)
     if cache is None:
@@ -23,8 +28,10 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
 
     metrics = []
     for local_graph_id, graph in cache.graphs.items():
+        # Count sum of metrics with the same name if graph for item that have SIMILAR_DATA_SOURCES_NODUPS in cdef
+        metrics_to_sum = {}
+        graph_metrics = []
         for item_id, item in graph['items'].items():
-            should_convert_to_bits = _should_convert_to_bits(item)
             data_source_path = item['data_source_path']
             if not data_source_path:
                 continue
@@ -40,6 +47,9 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
                 'target_type': 'gauge',
                 'properties': _extract_dimensions(item, graph, cache.hosts, pipeline_.config['add_graph_name_dimension']),
             }
+            if _should_sum_similar_items(item):
+                metrics_to_sum[_get_measurement_name(item['data_source_name'])] = base_metric
+                continue
 
             result = rrdtool.fetch(rrd_file_path, 'AVERAGE', ['-s', start, '-e', end, '-r', step])
 
@@ -48,33 +58,81 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
             if result[0][2] != int(step):
                 continue
 
-            first_data_item_timestamp = result[0][0]
-            for name_idx, measurement_name in enumerate(result[1]):
-                if measurement_name != item['data_source_name']:
-                    continue
-                for row_idx, data in enumerate(result[2]):
-                    timestamp = int(first_data_item_timestamp) + row_idx * int(step)
-                    value = data[name_idx]
-
-                    # rrd might return a record for the timestamp earlier then start
-                    if timestamp < int(start):
-                        continue
-                    # skip values with timestamp end in order not to duplicate them
-                    if timestamp >= int(end):
-                        continue
-                    # value will be None if it's not available for the chosen consolidation function or timestamp
-                    if value is None:
-                        continue
-
-                    if should_convert_to_bits and pipeline_.config['convert_bytes_into_bits']:
-                        value *= 8
-
-                    metric = deepcopy(base_metric)
-                    metric['properties']['what'] = measurement_name.replace(".", "_").replace(" ", "_")
-                    metric['value'] = value
-                    metric['timestamp'] = timestamp
-                    metrics.append(metric)
+            graph_metrics += _get_metric_values_for_item(
+                result,
+                item,
+                start,
+                end,
+                step,
+                _should_convert_to_bits(item, pipeline_),
+                base_metric
+            )
+        metrics += graph_metrics
+        metrics += _sum_similar(graph_metrics, metrics_to_sum)
     return metrics
+
+
+def _sum_similar(all_metrics: list, metrics_to_sum: dict) -> list:
+    if not metrics_to_sum:
+        return []
+
+    result = {}
+    for metric in all_metrics:
+        if metric['properties']['what'] not in metrics_to_sum:
+            continue
+        key = metric['properties']['what'] + '_' + str(metric['timestamp'])
+        if key in result:
+            result[key]['value'] += metric['value']
+            continue
+        result[key] = deepcopy(metrics_to_sum[metric['properties']['what']])
+        result[key]['properties']['what'] = metric['properties']['what']
+        result[key]['value'] = metric['value']
+        result[key]['timestamp'] = metric['timestamp']
+
+    return list(result.values())
+
+
+def _get_metric_values_for_item(
+        rrd_result,
+        item: dict,
+        start: str,
+        end: str,
+        step: str,
+        should_convert_to_bits: bool,
+        base_metric: dict
+) -> list:
+    values = []
+    first_data_item_timestamp = rrd_result[0][0]
+    for name_idx, measurement_name in enumerate(rrd_result[1]):
+        if measurement_name != item['data_source_name']:
+            continue
+        for row_idx, data in enumerate(rrd_result[2]):
+            timestamp = int(first_data_item_timestamp) + row_idx * int(step)
+            value = data[name_idx]
+
+            # rrd might return a record for the timestamp earlier then start
+            if timestamp < int(start):
+                continue
+            # skip values with timestamp end in order not to duplicate them
+            if timestamp >= int(end):
+                continue
+            # value will be None if it's not available for the chosen consolidation function or timestamp
+            if value is None:
+                continue
+
+            if should_convert_to_bits:
+                value *= 8
+
+            metric = deepcopy(base_metric)
+            metric['properties']['what'] = _get_measurement_name(item['data_source_name'])
+            metric['value'] = value
+            metric['timestamp'] = timestamp
+            values.append(metric)
+    return values
+
+
+def _get_measurement_name(data_source_name):
+    return data_source_name.replace(".", "_").replace(" ", "_")
 
 
 def _extract_dimensions(item: dict, graph: dict, hosts: dict, add_graph_name_dimension=False) -> dict:
@@ -136,11 +194,12 @@ def _extract_rrd_archive(pipeline_: Pipeline):
         tar.extractall(path=_get_rrd_dir(pipeline_))
 
 
+def _copy_rrd_to_tmp_dir(pipeline_: Pipeline):
+    copy_tree(pipeline_.source.config[source.CactiSource.RRD_DIR_PATH], _get_rrd_dir(pipeline_), update=1)
+
+
 def _get_rrd_dir(pipeline_: Pipeline):
-    if source.CactiSource.RRD_ARCHIVE_PATH in pipeline_.source.config:
-        return os.path.join('/tmp/cacti_rrd/', pipeline_.name)
-    else:
-        return pipeline_.source.config[source.CactiSource.RRD_DIR_PATH]
+    return os.path.join('/tmp/cacti_rrd/', pipeline_.name)
 
 
 def _extract_dimension_names(name: str) -> List[str]:
@@ -169,7 +228,7 @@ def _extract_item_dimensions(item: dict) -> dict:
     return tools.replace_illegal_chars(dimensions)
 
 
-def _should_convert_to_bits(item: dict) -> bool:
+def _should_convert_to_bits(item: dict, pipeline_: Pipeline) -> bool:
     # the table cdef_items contains a list of functions that will be applied to a graph item
     # we need to find if there's a function that converts values to bits. We can find it out by checking two things:
     # 1. Either function description, which is a string, contains "8,*", that means multiply by 8
@@ -177,7 +236,7 @@ def _should_convert_to_bits(item: dict) -> bool:
     # multiplication
     # also we assume cdef_items are ordered by `sequence`
 
-    if 'cdef_items' not in item:
+    if not pipeline_.config['convert_bytes_into_bits'] or 'cdef_items' not in item:
         return False
 
     contains_8 = False
@@ -190,6 +249,15 @@ def _should_convert_to_bits(item: dict) -> bool:
             if contains_8 and str(value) == '3':
                 return True
             contains_8 = False
+
+
+def _should_sum_similar_items(item: dict) -> bool:
+    if 'cdef_items' not in item:
+        return False
+    for value in item['cdef_items'].values():
+        if 'SIMILAR_DATA_SOURCES_NODUPS' in value:
+            return True
+    return False
 
 
 class ArchiveNotExistsException(Exception):
