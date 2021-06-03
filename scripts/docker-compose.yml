@@ -10,6 +10,10 @@ services:
       SDC_CONF_RUNNER_THREAD_POOL_SIZE: "200"
     volumes:
       - sdc-data:/data
+    ulimits:
+      nofile:
+        soft: 32768
+        hard: 32768
 
   agent:
     image: anodot/daria:latest
