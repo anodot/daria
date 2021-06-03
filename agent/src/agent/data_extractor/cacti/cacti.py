@@ -236,7 +236,7 @@ def _should_convert_to_bits(item: dict, pipeline_: Pipeline) -> bool:
     # multiplication
     # also we assume cdef_items are ordered by `sequence`
 
-    if pipeline_.config['convert_bytes_into_bits'] or 'cdef_items' not in item:
+    if not pipeline_.config['convert_bytes_into_bits'] or 'cdef_items' not in item:
         return False
 
     contains_8 = False
