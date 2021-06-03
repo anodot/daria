@@ -51,8 +51,6 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
                 metrics_to_sum[_get_measurement_name(item['data_source_name'])] = base_metric
                 continue
 
-            should_convert_to_bits = _should_convert_to_bits(item)
-
             result = rrdtool.fetch(rrd_file_path, 'AVERAGE', ['-s', start, '-e', end, '-r', step])
 
             # result[0][2] - is the closest available step to the step provided in the fetch command
@@ -60,13 +58,13 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
             if result[0][2] != int(step):
                 continue
 
-            graph_metrics += _get_values_for_item(
+            graph_metrics += _get_metric_values_for_item(
                 result,
                 item,
                 start,
                 end,
                 step,
-                should_convert_to_bits and pipeline_.config['convert_bytes_into_bits'],
+                _should_convert_to_bits(item, pipeline_),
                 base_metric
             )
         metrics += graph_metrics
@@ -94,7 +92,7 @@ def _sum_similar(all_metrics: list, metrics_to_sum: dict) -> list:
     return list(result.values())
 
 
-def _get_values_for_item(
+def _get_metric_values_for_item(
         rrd_result,
         item: dict,
         start: str,
@@ -230,7 +228,7 @@ def _extract_item_dimensions(item: dict) -> dict:
     return tools.replace_illegal_chars(dimensions)
 
 
-def _should_convert_to_bits(item: dict) -> bool:
+def _should_convert_to_bits(item: dict, pipeline_: Pipeline) -> bool:
     # the table cdef_items contains a list of functions that will be applied to a graph item
     # we need to find if there's a function that converts values to bits. We can find it out by checking two things:
     # 1. Either function description, which is a string, contains "8,*", that means multiply by 8
@@ -238,7 +236,7 @@ def _should_convert_to_bits(item: dict) -> bool:
     # multiplication
     # also we assume cdef_items are ordered by `sequence`
 
-    if 'cdef_items' not in item:
+    if pipeline_.config['convert_bytes_into_bits'] or 'cdef_items' not in item:
         return False
 
     contains_8 = False
