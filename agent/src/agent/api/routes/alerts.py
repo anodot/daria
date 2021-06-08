@@ -42,15 +42,7 @@ def get_alert_status():
             'errors': {'destination': [str(e)]},
         }), 400
     except requests.exceptions.HTTPError as e:
-        if e.response.status_code == 401:
-            return jsonify({
-                'status': 'Not connected',
-                'errors': {'Unauthorized': [str(e)]},
-            }), 401
-        return jsonify({
-                'status': 'Not connected',
-                'errors': {'HTTPError': [str(e)]},
-            }), 500
+        return _error_response(e)
 
     _filter_groups_by_name(alert_groups, form.alert_name.data)
     _filter_group_alerts_by_host(alert_groups, form.host.data)
@@ -85,19 +77,23 @@ def get_alerts():
             'errors': {'destination': [str(e)]},
         }), 400
     except requests.exceptions.HTTPError as e:
-        if e.response.status_code == 401:
-            return jsonify({
-                'status': 'Not connected',
-                'errors': {'Unauthorized': [str(e)]},
-            }), 401
-        return jsonify({
-            'status': 'Not connected',
-            'errors': {'HTTPError': [str(e)]},
-        }), 500
+        return _error_response(e)
 
     _move_metric_dimensions(alert_groups)
     _move_metric_scores(alert_groups)
     return jsonify(_transform(alert_groups))
+
+
+def _error_response(e: requests.exceptions.HTTPError):
+    if e.response.status_code == 401:
+        return jsonify({
+            'status': 'Not connected',
+            'errors': {'Unauthorized': [str(e)]},
+        }), 401
+    return jsonify({
+        'status': 'Not connected',
+        'errors': {'HTTPError': [str(e)]},
+    }), 500
 
 
 def _filter_groups_by_name(alert_groups: dict, alert_name: str):
