@@ -46,8 +46,11 @@ def get_alert_status():
             return jsonify({
                 'status': 'Not connected',
                 'errors': {'Unauthorized': [str(e)]},
-            }), 400
-        return jsonify(str(e)), 500
+            }), 401
+        return jsonify({
+                'status': 'Not connected',
+                'errors': {'HTTPError': [str(e)]},
+            }), 500
 
     _filter_groups_by_name(alert_groups, form.alert_name.data)
     _filter_group_alerts_by_host(alert_groups, form.host.data)
@@ -87,7 +90,10 @@ def get_alerts():
                 'status': 'Not connected',
                 'errors': {'Unauthorized': [str(e)]},
             }), 400
-        return jsonify(str(e)), 500
+        return jsonify({
+            'status': 'Not connected',
+            'errors': {'HTTPError': [str(e)]},
+        }), 500
 
     _move_metric_dimensions(alert_groups)
     _move_metric_scores(alert_groups)
