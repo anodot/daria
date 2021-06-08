@@ -89,7 +89,7 @@ def get_alerts():
             return jsonify({
                 'status': 'Not connected',
                 'errors': {'Unauthorized': [str(e)]},
-            }), 400
+            }), 401
         return jsonify({
             'status': 'Not connected',
             'errors': {'HTTPError': [str(e)]},
