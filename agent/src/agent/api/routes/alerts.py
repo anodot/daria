@@ -109,10 +109,9 @@ def _filter_group_alerts_by_host(alert_groups: dict, host: str):
         del alert_groups['alertGroups'][i]
 
 
-def _filter_alerts_by_metric_host(alerts: list, host: str):
-    # this function changes the input alerts
+def _filter_alerts_by_metric_host(alerts_: list, host: str):
     delete_alerts = []
-    for i, alert in enumerate(alerts):
+    for i, alert in enumerate(alerts_):
         correct_host = False
         # if at least one metric in the alert has the correct host - we keep this alert
         for metric in alert['metrics']:
@@ -125,7 +124,7 @@ def _filter_alerts_by_metric_host(alerts: list, host: str):
         if not correct_host:
             delete_alerts.append(i)
     for i in delete_alerts:
-        del alerts[i]
+        del alerts_[i]
 
 
 def _extract_alert_statuses(alert_groups: list) -> list:
