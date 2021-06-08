@@ -119,7 +119,7 @@ class AnodotApiClient:
             raise
 
     @endpoint
-    def get_alerts_by_status(self, params: dict):
+    def get_alerts(self, params: dict):
         return self.session.get(
             self._build_url('alerts', 'triggered'),
             params=params,

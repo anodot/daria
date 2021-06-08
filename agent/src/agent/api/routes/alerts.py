@@ -20,10 +20,10 @@ TRANSFORM_ALERT_GROUPS = {
         }
     }
 }
+OPEN = 'OPEN'
+CLOSE = 'CLOSE'
 
 
-# todo When communication with the Anodot API is not possible.
-# сделать дименшены конфигурируемыми
 @alerts.route('/alert/status', methods=['GET'])
 def get_alert_status():
     form = AlertStatusForm(request.args)
@@ -33,31 +33,33 @@ def get_alert_status():
             'errors': form.errors,
         }), 400
     try:
-        alert_groups = AnodotApiClient(destination.repository.get()).get_alerts_by_status({
+        alert_groups = AnodotApiClient(destination.repository.get()).get_alerts({
             'startTime': form.start_time.data,
-            'status': 'OPEN',
         })
     except destination.repository.DestinationNotExists as e:
         return jsonify({
             'status': 'Not connected',
-            'errors': [str(e)],
+            'errors': {'destination': [str(e)]},
         }), 400
     except requests.exceptions.HTTPError as e:
+        if e.response.status_code == 401:
+            return jsonify({
+                'status': 'Not connected',
+                'errors': {'Unauthorized': [str(e)]},
+            }), 400
         return jsonify(str(e)), 500
 
     _filter_groups_by_name(alert_groups, form.alert_name.data)
     _filter_group_alerts_by_host(alert_groups, form.host.data)
+
     alert_groups = alert_groups['alertGroups']
     if len(alert_groups) == 0 or len(alert_groups[0]['alerts']) == 0:
         return jsonify({'status': 'No alert'})
-    return jsonify({
-        'status': alert_groups[0]['alerts'][0]['status']
-    })
+    return jsonify(_extract_alert_statuses(alert_groups))
 
 
-# todo don't set startTime, take all open alerts
 @alerts.route('/alerts', methods=['GET'])
-def get_alerts_by_status():
+def get_alerts():
     form = AlertsByStatusForm(request.args)
     if not form.validate():
         return jsonify({
@@ -65,36 +67,46 @@ def get_alerts_by_status():
             'errors': form.errors,
         }), 400
     try:
-        alert_groups = AnodotApiClient(destination.repository.get()).get_alerts_by_status({
-            'status': form.status,
-            'order': form.order,
-            'sort': form.sort,
-            'startTime': form.start_time,
-        })
+        params = {
+            'status': form.status.data,
+            'order': form.order.data,
+            'sort': form.sort.data,
+        }
+        # apply time constraints only to CLOSE status
+        if form.status.data != OPEN:
+            params['startTime'] = form.start_time.data
+        alert_groups = AnodotApiClient(destination.repository.get()).get_alerts(params)
     except destination.repository.DestinationNotExists as e:
         return jsonify({
             'status': 'Not connected',
-            'errors': [str(e)],
+            'errors': {'destination': [str(e)]},
         }), 400
     except requests.exceptions.HTTPError as e:
+        if e.response.status_code == 401:
+            return jsonify({
+                'status': 'Not connected',
+                'errors': {'Unauthorized': [str(e)]},
+            }), 400
         return jsonify(str(e)), 500
 
-    # _filter_metric_dimensions(alert_groups, 'host')
     _move_metric_dimensions(alert_groups)
     _move_metric_scores(alert_groups)
-    # alert_groups['total'] = len(alert_groups['alertGroups'])
     return jsonify(_transform(alert_groups))
 
 
 def _filter_groups_by_name(alert_groups: dict, alert_name: str):
     alert_groups['alertGroups'] = [group for group in alert_groups['alertGroups'] if group['name'] == alert_name]
+    _set_total(alert_groups)
 
 
 def _filter_group_alerts_by_host(alert_groups: dict, host: str):
+    to_delete = []
     for i, group in enumerate(alert_groups['alertGroups']):
         _filter_alerts_by_metric_host(group['alerts'], host)
         if len(group['alerts']) == 0:
-            del alert_groups[i]
+            to_delete.append(i)
+    for i in to_delete:
+        del alert_groups['alertGroups'][i]
 
 
 def _filter_alerts_by_metric_host(alerts: list, host: str):
@@ -116,17 +128,15 @@ def _filter_alerts_by_metric_host(alerts: list, host: str):
         del alerts[i]
 
 
-# def _filter_metric_dimensions(alert_groups: dict, keep_dimension_name: str):
-#     for group in alert_groups['alertGroups']:
-#         for alert in group['alerts']:
-#             for metric in alert['metrics']:
-#                 to_delete = []
-#                 for i, dimension in enumerate(metric['properties']):
-#                     if dimension['key'] != keep_dimension_name:
-#                         to_delete.append(i)
-#                 to_delete.sort(reverse=True)
-#                 for i in to_delete:
-#                     del metric['properties'][i]
+def _extract_alert_statuses(alert_groups: list) -> list:
+    statuses = []
+    for group in alert_groups:
+        for alert in group['alerts']:
+            statuses.append({
+                'id': alert['id'],
+                'status': alert['status'],
+            })
+    return statuses
 
 
 def _move_metric_dimensions(alert_groups: dict):
@@ -143,7 +153,7 @@ def _move_metric_scores(alert_groups: dict):
         for alert in group['alerts']:
             for metric in alert['metrics']:
                 for interval in metric['intervals']:
-                    if interval['status'] == 'OPEN' and 'score' in interval:
+                    if interval['status'] == OPEN and 'score' in interval:
                         metric['score'] = interval['value']
                         break
 
@@ -153,6 +163,7 @@ def _transform(alert_groups: dict) -> dict:
         deepcopy(alert_groups),
         deepcopy(TRANSFORM_ALERT_GROUPS)
     )
+    _set_total(alert_groups)
     return alert_groups
 
 
@@ -169,13 +180,7 @@ def _recursive_transform(dict_: dict, transform_config: dict) -> dict:
 
     return dict_
 
-[
-    {
-        'alert_id_1': 'afhadsf',
-        'status': 'open',
-    },
-    {
-        'alert_id_2': 'different',
-        'status': 'close',
-    },
-]
+
+def _set_total(alert_groups):
+    # sometimes the total value is incorrect, so we calculate in on our own
+    alert_groups['total'] = len(alert_groups['alertGroups'])
