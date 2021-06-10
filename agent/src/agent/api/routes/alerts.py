@@ -42,8 +42,9 @@ def get_alert_status():
     alert_groups = alert_groups['alertGroups']
     if len(alert_groups) == 0 or len(alert_groups[0]['alerts']) == 0:
         return jsonify({'status': 'No alert'})
-    # todo next commit
-    return jsonify(_extract_alert_statuses(alert_groups))
+    return jsonify({
+        'status': _extract_alert_status(alert_groups)
+    })
 
 
 @alerts.route('/alerts', methods=['GET'])
@@ -123,15 +124,13 @@ def _filter_alerts_by_metric_host(alerts_: list, host: str):
         del alerts_[i]
 
 
-def _extract_alert_statuses(alert_groups: list) -> list:
-    statuses = []
+def _extract_alert_status(alert_groups: list) -> str:
+    # return OPEN status if at least one alert is open
     for group in alert_groups:
         for alert in group['alerts']:
-            statuses.append({
-                'id': alert['id'],
-                'status': alert['status'],
-            })
-    return statuses
+            if alert['status'] == OPEN:
+                return OPEN
+    return CLOSE
 
 
 def _move_metric_dimensions(alert_groups: dict):
