@@ -316,6 +316,13 @@ class Pipeline(Entity, sdc_client.IPipeline):
             'source': self.source.name,
         }
 
+    def to_dict_whole(self):
+        return {
+            **self.config,
+            'source': self.source.config,
+            'destination': self.destination.config,
+        }
+
     def get_property_path(self, property_value: str) -> str:
         mapping = self.source.config.get('csv_mapping', {})
         for idx, item in mapping.items():

@@ -5,12 +5,12 @@ from wtforms.validators import AnyOf, DataRequired, Optional
 
 
 class AlertStatusForm(FlaskForm):
-    alert_name = StringField('Alert name', [DataRequired()])
-    host = StringField('Host', [DataRequired()])
-    start_time = IntegerField(
+    alertName = StringField('Alert name', [DataRequired()])
+    host = StringField('Host', [Optional()])
+    startTime = IntegerField(
         'Start time',
         [Optional()],
-        default=int((datetime.now() - timedelta(days=10)).timestamp())
+        default=int((datetime.now() - timedelta(days=7)).timestamp())
     )
 
 
@@ -22,8 +22,8 @@ class AlertsByStatusForm(FlaskForm):
         [Optional(), AnyOf(['startTime', 'updateTime', 'duration', 'score', 'metrics'])],
         default='updateTime'
     )
-    start_time = IntegerField(
+    startTime = IntegerField(
         'Start time',
         [Optional()],
-        default=int((datetime.now() - timedelta(days=10)).timestamp())
+        default=int((datetime.now() - timedelta(days=7)).timestamp())
     )

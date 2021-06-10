@@ -1,3 +1,5 @@
+import json
+import os
 import requests
 
 from copy import deepcopy
@@ -5,21 +7,10 @@ from flask import Blueprint, request, jsonify
 from agent import destination
 from agent.api.forms.alerts import AlertsByStatusForm, AlertStatusForm
 from agent.destination.anodot_api_client import AnodotApiClient
+from agent.modules import constants
 
 alerts = Blueprint('alerts', __name__)
 
-TRANSFORM_ALERT_GROUPS = {
-    'keep': ['total', 'alertGroups'],
-    'alertGroups': {
-        'keep': ['id', 'name', 'alerts'],
-        'alerts': {
-            'keep': ['status', 'startTime', 'updateTime', 'endTime', 'metrics'],
-            'metrics': {
-                'keep': ['what', 'host', 'score'],
-            }
-        }
-    }
-}
 OPEN = 'OPEN'
 CLOSE = 'CLOSE'
 
@@ -34,7 +25,7 @@ def get_alert_status():
         }), 400
     try:
         alert_groups = AnodotApiClient(destination.repository.get()).get_alerts({
-            'startTime': form.start_time.data,
+            'startTime': form.startTime.data,
         })
     except destination.repository.DestinationNotExists as e:
         return jsonify({
@@ -44,12 +35,14 @@ def get_alert_status():
     except requests.exceptions.HTTPError as e:
         return _error_response(e)
 
-    _filter_groups_by_name(alert_groups, form.alert_name.data)
-    _filter_group_alerts_by_host(alert_groups, form.host.data)
+    _filter_groups_by_name(alert_groups, form.alertName.data)
+    if form.host.data:
+        _filter_group_alerts_by_host(alert_groups, form.host.data)
 
     alert_groups = alert_groups['alertGroups']
     if len(alert_groups) == 0 or len(alert_groups[0]['alerts']) == 0:
         return jsonify({'status': 'No alert'})
+    # todo next commit
     return jsonify(_extract_alert_statuses(alert_groups))
 
 
@@ -69,7 +62,7 @@ def get_alerts():
         }
         # apply time constraints only to CLOSE status
         if form.status.data != OPEN:
-            params['startTime'] = form.start_time.data
+            params['startTime'] = form.startTime.data
         alert_groups = AnodotApiClient(destination.repository.get()).get_alerts(params)
     except destination.repository.DestinationNotExists as e:
         return jsonify({
@@ -81,7 +74,8 @@ def get_alerts():
 
     _move_metric_dimensions(alert_groups)
     _move_metric_scores(alert_groups)
-    return jsonify(_transform(alert_groups))
+    _transform(alert_groups)
+    return jsonify(alert_groups)
 
 
 def _error_response(e: requests.exceptions.HTTPError):
@@ -155,20 +149,17 @@ def _move_metric_scores(alert_groups: dict):
             for metric in alert['metrics']:
                 for interval in metric['intervals']:
                     if interval['status'] == OPEN and 'score' in interval:
-                        metric['score'] = interval['value']
+                        metric['score'] = interval['score']
                         break
 
 
-def _transform(alert_groups: dict) -> dict:
-    alert_groups = _recursive_transform(
-        deepcopy(alert_groups),
-        deepcopy(TRANSFORM_ALERT_GROUPS)
-    )
+def _transform(alert_groups: dict):
+    with open(os.path.join(constants.ROOT_DIR, 'api', 'configs', 'alerts_transformation.json')) as f:
+        _recursive_transform(alert_groups, json.load(f))
     _set_total(alert_groups)
-    return alert_groups
 
 
-def _recursive_transform(dict_: dict, transform_config: dict) -> dict:
+def _recursive_transform(dict_: dict, transform_config: dict):
     keep = transform_config.pop('keep')
     for k in list(dict_.keys()):
         if k not in keep:
@@ -178,8 +169,6 @@ def _recursive_transform(dict_: dict, transform_config: dict) -> dict:
         if k in transform_config:
             for v2 in v:
                 _recursive_transform(v2, deepcopy(transform_config[k]))
-
-    return dict_
 
 
 def _set_total(alert_groups):

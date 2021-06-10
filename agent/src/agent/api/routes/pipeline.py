@@ -21,6 +21,11 @@ def list_pipelines():
     return jsonify(configs)
 
 
+@pipelines.route('/pipelines/<pipeline_id>', methods=['GET'])
+def get_pipeline_config(pipeline_id: str):
+    return jsonify(pipeline.repository.get_by_id(pipeline_id).to_dict_whole())
+
+
 @pipelines.route('/pipelines', methods=['POST'])
 @routes.check_prerequisites
 def create():
