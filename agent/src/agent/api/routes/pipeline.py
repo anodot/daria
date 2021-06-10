@@ -23,7 +23,7 @@ def list_pipelines():
 
 @pipelines.route('/pipelines/<pipeline_id>', methods=['GET'])
 def get_pipeline_config(pipeline_id: str):
-    return jsonify(pipeline.repository.get_by_id(pipeline_id).to_dict_whole())
+    return jsonify(pipeline.repository.get_by_id(pipeline_id).to_dict())
 
 
 @pipelines.route('/pipelines', methods=['POST'])

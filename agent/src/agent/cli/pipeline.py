@@ -246,7 +246,7 @@ def export(dir_path):
     pipelines = pipeline.repository.get_all()
     for pipeline_ in pipelines:
         with open(os.path.join(dir_path, pipeline_.name + '.json'), 'w+') as f:
-            json.dump([pipeline_.to_dict()], f)
+            json.dump([pipeline_.export()], f)
 
     click.echo(f'All pipelines exported to {dir_path} directory')
 
@@ -293,7 +293,7 @@ def _edit_using_file(file):
 def _prompt_edit(advanced: bool, pipeline_id: str):
     try:
         pipeline_ = pipeline.repository.get_by_id(pipeline_id)
-        pipeline_ = prompt.pipeline.get_prompter(pipeline_, pipeline_.to_dict(), advanced).prompt()
+        pipeline_ = prompt.pipeline.get_prompter(pipeline_, pipeline_.config, advanced).prompt()
         pipeline.manager.update(pipeline_)
         _result_preview(pipeline_)
     except pipeline.repository.PipelineNotExistsException:
@@ -310,7 +310,7 @@ def _result_preview(pipeline_: Pipeline):
 def _get_previous_pipeline_config(source_type: str) -> dict:
     pipelines_with_source = pipeline.repository.get_by_source(source_type)
     if pipelines_with_source:
-        return max(pipelines_with_source, key=lambda p: p.last_edited).to_dict()
+        return max(pipelines_with_source, key=lambda p: p.last_edited).config
     return {}
 
 

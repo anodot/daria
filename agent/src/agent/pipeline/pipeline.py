@@ -308,7 +308,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
     def get_schema_id(self):
         return self.get_schema().get('id')
 
-    def to_dict(self):
+    def export(self):
         return {
             **self.config,
             self.OVERRIDE_SOURCE: self.override_source,
@@ -316,9 +316,12 @@ class Pipeline(Entity, sdc_client.IPipeline):
             'source': self.source.name,
         }
 
-    def to_dict_whole(self):
+    def to_dict(self):
         return {
-            **self.config,
+            'id': self.name,
+            'config': self.config,
+            'schema': self.get_schema(),
+            'override_source': self.override_source,
             'source': self.source.config,
             'destination': self.destination.config,
         }
