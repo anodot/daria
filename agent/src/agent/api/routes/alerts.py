@@ -2,7 +2,6 @@ import json
 import os
 import requests
 
-from copy import deepcopy
 from flask import Blueprint, request, jsonify
 from agent import destination
 from agent.api.forms.alerts import AlertsByStatusForm, AlertStatusForm
@@ -167,7 +166,7 @@ def _recursive_transform(dict_: dict, transform_config: dict):
     for k, v in dict_.items():
         if k in transform_config:
             for v2 in v:
-                _recursive_transform(v2, deepcopy(transform_config[k]))
+                _recursive_transform(v2, transform_config[k])
 
 
 def _set_total(alert_groups):

@@ -3,7 +3,7 @@
     "alertGroups": {
         "keep": ["id", "name", "alerts"],
         "alerts": {
-            "keep": ["status", "startTime", "updateTime", "endTime", "metrics"],
+            "keep": ["status", "startTime", "updateTime", "endTime", "metrics", "type"],
             "metrics": {
                 "keep": ["what", "host", "score"]
             }
