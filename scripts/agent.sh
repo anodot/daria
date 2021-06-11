@@ -13,10 +13,9 @@ check_cmd "docker version"
 check_cmd "docker-compose --version"
 
 if [[ $1 == 'install' ]]; then
-  docker-compose pull && docker-compose up -d && sleep 20 && docker exec -i anodot-agent alembic upgrade head
+  docker-compose pull && docker-compose up -d
 elif [[ $1 == 'upgrade' ]]; then
-  docker-compose pull && docker-compose up -d && sleep 30 && docker exec -i anodot-agent agent update
-  docker exec -i anodot-agent alembic upgrade head
+  docker-compose pull && docker-compose up -d && sleep 30 && docker exec -i anodot-agent agent pipeline update
 elif [[ $1 == 'run' ]]; then
     docker-compose up -d && docker exec -it anodot-agent bash
 elif [[ $1 == 'set-heap-size' ]]; then
