@@ -16,6 +16,7 @@ state['STATIC_WHAT'] = {int(self.pipeline.static_what)};
 state['VALUES_ARRAY_PATH'] = '{self.pipeline.values_array_path}';
 state['VALUES_ARRAY_FILTER'] = {self.pipeline.values_array_filter_metrics};
 state['INTERVAL'] = {self.pipeline.interval if self.pipeline.interval is not None else 'null'};
+state['HEADER_ATTRIBUTES'] = {self.pipeline.header_attributes};
 state['metrics'] = {{}}
     """
 

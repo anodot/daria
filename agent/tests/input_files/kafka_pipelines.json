@@ -37,6 +37,7 @@
       "required": ["ver", "Country"],
       "optional": ["Exchange", "optional_dim"]
     },
+    "header_attributes": ["topic"],
     "timestamp": {
       "type": "unix",
       "name": "timestamp_unix"

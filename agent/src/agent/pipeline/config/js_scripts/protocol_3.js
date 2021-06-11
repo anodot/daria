@@ -31,7 +31,7 @@ function get_measurement_name(record, value_idx) {
 function get_dimensions(record) {
     var dimensions = {};
     for (var j = 0; j < state['DIMENSIONS'].length; j++) {
-        var dimension = extract_value(record, replace_illegal_chars(state['DIMENSIONS'][j]))
+        var dimension = extract_value(record.value, replace_illegal_chars(state['DIMENSIONS'][j]))
         if (dimension === null) {
             continue;
         }
@@ -41,7 +41,18 @@ function get_dimensions(record) {
         }
         var dimension_name = replace_illegal_chars(state['DIMENSIONS_NAMES'][j]).replace(/[\/]+/g, '_')
         dimensions[dimension_name] = replace_illegal_chars(dimension)
+    }
 
+    for (var k = 0; k < state['HEADER_ATTRIBUTES'].length; k++) {
+        var attribute_value = record.attributes[state['HEADER_ATTRIBUTES'][k]]
+        if (attribute_value === null) {
+            continue;
+        }
+        attribute_value = String(attribute_value).trim()
+        if (attribute_value === '') {
+            continue;
+        }
+        dimensions[replace_illegal_chars(state['HEADER_ATTRIBUTES'][k])] = replace_illegal_chars(attribute_value)
     }
     return dimensions
 }
@@ -81,7 +92,7 @@ for (var i = 0; i < records.length; i++) {
         var newRecord = sdcFunctions.createRecord(i);
         newRecord.value = {
             'timestamp': timestamp,
-            'dimensions': get_dimensions(records[i].value),
+            'dimensions': get_dimensions(records[i]),
             'measurements': measurements,
             'schemaId': "${SCHEMA_ID}"
         };
