@@ -277,6 +277,10 @@ class Pipeline(Entity, sdc_client.IPipeline):
     def histories_batch_size(self) -> str:
         return self.config.get('histories_batch_size', 100)
 
+    @property
+    def header_attributes(self):
+        return self.config.get('header_attributes', [])
+
     def get_streamsets_config(self) -> dict:
         return pipeline.manager.create_streamsets_pipeline_config(self)
 
