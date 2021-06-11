@@ -32,10 +32,45 @@ class TestInflux:
                 "uses_schema": False
             }],
             'er': [{
-                "dimensions": {"optional": ["wrong"], "required": []}, "interval": 5,
-                "measurement_name": "wrong", "override_source": {}, "pipeline_id": "test_influx",
-                "properties": {"test": "wrong"}, "source": "influx",
-                "values": {"wrong": "gauge"}, "uses_schema": False, 'timestamp': {'name': 'time', 'type': 'unix_ms'},
+                "config": {
+                    "dimensions": {
+                        "optional": [
+                            "wrong"
+                        ],
+                        "required": []
+                    },
+                    "interval": 5,
+                    "measurement_name": "wrong",
+                    "pipeline_id": "test_influx",
+                    "properties": {
+                        "test": "wrong"
+                    },
+                    "timestamp": {
+                        "name": "time",
+                        "type": "unix_ms"
+                    },
+                    "uses_schema": False,
+                    "values": {
+                        "wrong": "gauge"
+                    }
+                },
+                "destination": {
+                    "conf.client.proxy.password": "",
+                    "conf.client.proxy.uri": "http://squid:3128",
+                    "conf.client.proxy.username": "",
+                    "conf.client.useProxy": True,
+                    "token": "correct_token",
+                    "url": "http://dummy_destination"
+                },
+                "id": "test_influx",
+                "override_source": {},
+                "schema": {},
+                "source": {
+                    "db": "test",
+                    "host": "http://influx:8086",
+                    "password": "admin",
+                    "username": "admin"
+                }
             }]
         }],
         'test_edit': [{
@@ -52,10 +87,48 @@ class TestInflux:
                 "interval": 5
             }],
             'er': [{
-                "dimensions": {"optional": ["cpu", "host", "zone"], "required": []}, "interval": 5,
-                "measurement_name": "cpu_test", "override_source": {}, "pipeline_id": "test_influx",
-                "properties": {"test": "val"}, "source": "influx",
-                "values": {"usage_active": "gauge"}, "uses_schema": False, 'timestamp': {'name': 'time', 'type': 'unix_ms'}}]
+                "config": {
+                    "dimensions": {
+                        "optional": [
+                            "cpu",
+                            "host",
+                            "zone"
+                        ],
+                        "required": []
+                    },
+                    "interval": 5,
+                    "measurement_name": "cpu_test",
+                    "pipeline_id": "test_influx",
+                    "properties": {
+                        "test": "val"
+                    },
+                    "timestamp": {
+                        "name": "time",
+                        "type": "unix_ms"
+                    },
+                    "uses_schema": False,
+                    "values": {
+                        "usage_active": "gauge"
+                    }
+                },
+                "destination": {
+                    "conf.client.proxy.password": "",
+                    "conf.client.proxy.uri": "http://squid:3128",
+                    "conf.client.proxy.username": "",
+                    "conf.client.useProxy": True,
+                    "token": "correct_token",
+                    "url": "http://dummy_destination"
+                },
+                "id": "test_influx",
+                "override_source": {},
+                "schema": {},
+                "source": {
+                    "db": "test",
+                    "host": "http://influx:8086",
+                    "password": "admin",
+                    "username": "admin"
+                }
+            }]
         }],
     }
 

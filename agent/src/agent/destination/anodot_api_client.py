@@ -117,3 +117,11 @@ class AnodotApiClient:
             if e.response.status_code == 404:
                 return self._get_schemas_old_api()
             raise
+
+    @endpoint
+    def get_alerts(self, params: dict):
+        return self.session.get(
+            self._build_url('alerts', 'triggered'),
+            params=params,
+            proxies=self.proxies
+        )

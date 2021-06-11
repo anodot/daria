@@ -210,9 +210,9 @@ class KafkaLoadClientData(LoadClientData):
         self._load_dimensions()
         if 'timestamp' not in self.client_config and not self.edit:
             self.client_config['timestamp'] = {'name': 'kafka_timestamp', 'type': 'unix_ms'}
-
-        self.client_config['override_source'][source.KafkaSource.CONFIG_CONSUMER_GROUP] = \
-            "agent_" + self.client_config['pipeline_id']
+        if source.KafkaSource.CONFIG_CONSUMER_GROUP not in self.client_config['override_source']:
+            self.client_config['override_source'][source.KafkaSource.CONFIG_CONSUMER_GROUP] = \
+                "agent_" + self.client_config['pipeline_id']
         return self.client_config
 
 

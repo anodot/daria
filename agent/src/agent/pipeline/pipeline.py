@@ -108,8 +108,8 @@ class Pipeline(Entity, sdc_client.IPipeline):
     def set_config(self, config: dict):
         self._previous_config = deepcopy(self.config)
         self._previous_override_source = deepcopy(self.override_source)
+        self.override_source = config.pop(self.OVERRIDE_SOURCE, {})
         self.config = deepcopy(config)
-        self.override_source = deepcopy(self.config.get(self.OVERRIDE_SOURCE, {}))
 
     @property
     def source(self) -> Source:
@@ -308,12 +308,22 @@ class Pipeline(Entity, sdc_client.IPipeline):
     def get_schema_id(self):
         return self.get_schema().get('id')
 
-    def to_dict(self):
+    def export(self):
         return {
             **self.config,
             self.OVERRIDE_SOURCE: self.override_source,
             'pipeline_id': self.name,
             'source': self.source.name,
+        }
+
+    def to_dict(self):
+        return {
+            'id': self.name,
+            'config': self.config,
+            'schema': self.get_schema(),
+            'override_source': self.override_source,
+            'source': self.source.config,
+            'destination': self.destination.config,
         }
 
     def get_property_path(self, property_value: str) -> str:
