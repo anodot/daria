@@ -184,7 +184,7 @@ class CactiLoadClientData(LoadClientData):
 
     def load(self, client_config: dict):
         super().load(client_config)
-        if 'timestamp' not in self.client_config and not self.edit:
+        if 'timestamp' not in self.client_config:
             self.client_config['timestamp'] = {'type': 'unix'}
         if 'add_graph_name_dimension' not in self.client_config and not self.edit:
             self.client_config['add_graph_name_dimension'] = False
