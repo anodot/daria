@@ -11,16 +11,19 @@ from agent.data_extractor import cacti
 from agent.pipeline import Pipeline
 from agent import source
 from agent.modules import logger, tools
-from distutils.dir_util import copy_tree
+from shutil import copyfile
 
 logger_ = logger.get_logger(__name__)
+
+
+RRD_TMP_DIR = '/tmp/cacti_rrd/'
 
 
 def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> list:
     if pipeline_.source.RRD_ARCHIVE_PATH in pipeline_.source.config:
         _extract_rrd_archive(pipeline_)
-    else:
-        _copy_rrd_to_tmp_dir(pipeline_)
+    # else:
+    #     _copy_rrd_to_tmp_dir(pipeline_)
 
     cache = cacti.repository.get_cache(pipeline_)
     if cache is None:
@@ -32,15 +35,13 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
         metrics_to_sum = {}
         graph_metrics = []
         for item_id, item in graph['items'].items():
-            data_source_path = item['data_source_path']
-            if not data_source_path:
+            result = _read_data_from_rrd(item['data_source_path'], start, end, step, pipeline_)
+            if not result:
                 continue
-            if '<path_rra>/' not in data_source_path:
-                logger_.debug(f'Path {data_source_path} does not contain "<path_rra>/", skipping')
-                continue
-            rrd_file_path = data_source_path.replace('<path_rra>', _get_rrd_dir(pipeline_))
-            if not os.path.isfile(rrd_file_path):
-                logger_.debug(f'File {rrd_file_path} does not exist')
+
+            # result[0][2] - is the closest available step to the step provided in the fetch command
+            # if they differ - skip the source as the desired step is not available for it
+            if result[0][2] != int(step):
                 continue
 
             base_metric = {
@@ -49,13 +50,6 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
             }
             if _should_sum_similar_items(item):
                 metrics_to_sum[_get_measurement_name(item['data_source_name'])] = base_metric
-                continue
-
-            result = rrdtool.fetch(rrd_file_path, 'AVERAGE', ['-s', start, '-e', end, '-r', step])
-
-            # result[0][2] - is the closest available step to the step provided in the fetch command
-            # if they differ - skip the source as the desired step is not available for it
-            if result[0][2] != int(step):
                 continue
 
             graph_metrics += _get_metric_values_for_item(
@@ -70,6 +64,37 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
         metrics += graph_metrics
         metrics += _sum_similar(graph_metrics, metrics_to_sum)
     return metrics
+
+
+def _read_data_from_rrd(data_source_path, start, end, step, pipeline_: Pipeline):
+    if not data_source_path:
+        return
+    if '<path_rra>/' not in data_source_path:
+        logger_.debug(f'Path {data_source_path} does not contain "<path_rra>/", skipping')
+        return
+
+    if source.CactiSource.RRD_DIR_PATH in pipeline_.source.config:
+        source_dir = pipeline_.source.config[source.CactiSource.RRD_DIR_PATH]
+    else:
+        source_dir = _get_rrd_tmp_dir(pipeline_)
+
+    rrd_file_path = data_source_path.replace('<path_rra>', source_dir)
+    if not os.path.isfile(rrd_file_path):
+        logger_.debug(f'File {rrd_file_path} does not exist')
+        return
+
+    if source.CactiSource.RRD_DIR_PATH in pipeline_.source.config:
+        tmp_dir = _get_rrd_tmp_dir(pipeline_)
+        if not os.path.isdir(tmp_dir):
+            os.mkdir(tmp_dir)
+        new_path = data_source_path.replace('<path_rra>', tmp_dir)
+        copyfile(rrd_file_path, new_path)
+        rrd_file_path = new_path
+
+    result = rrdtool.fetch(rrd_file_path, 'AVERAGE', ['-s', start, '-e', end, '-r', step])
+    if source.CactiSource.RRD_DIR_PATH in pipeline_.source.config:
+        os.remove(rrd_file_path)
+    return result
 
 
 def _sum_similar(all_metrics: list, metrics_to_sum: dict) -> list:
@@ -191,15 +216,11 @@ def _extract_rrd_archive(pipeline_: Pipeline):
     if not os.path.isfile(file_path):
         raise ArchiveNotExistsException()
     with tarfile.open(file_path, "r:gz") as tar:
-        tar.extractall(path=_get_rrd_dir(pipeline_))
+        tar.extractall(path=_get_rrd_tmp_dir(pipeline_))
 
 
-def _copy_rrd_to_tmp_dir(pipeline_: Pipeline):
-    copy_tree(pipeline_.source.config[source.CactiSource.RRD_DIR_PATH], _get_rrd_dir(pipeline_), update=1)
-
-
-def _get_rrd_dir(pipeline_: Pipeline):
-    return os.path.join('/tmp/cacti_rrd/', pipeline_.name)
+def _get_rrd_tmp_dir(pipeline_: Pipeline):
+    return os.path.join(RRD_TMP_DIR, pipeline_.name)
 
 
 def _extract_dimension_names(name: str) -> List[str]:
