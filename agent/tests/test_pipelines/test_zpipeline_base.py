@@ -80,3 +80,11 @@ def get_expected_schema_output(pipeline_id: str, expected_output_file: str, pipe
 
 def get_schema_id(pipeline_id: str) -> str:
     return f'{pipeline_id}-1234'
+
+
+def sort_output(output: list) -> list:
+    return sorted(output, key=lambda x: (x['properties']['what'], x['timestamp']))
+
+
+def sort_output_schema(output: list) -> list:
+    return sorted(output, key=lambda x: x['timestamp'])

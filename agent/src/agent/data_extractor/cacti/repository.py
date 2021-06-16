@@ -69,15 +69,14 @@ class CactiCacher:
             self.graphs[local_graph_id]['variables'][row['field_name']] = row['field_value']
 
     def _get_graph_items(self):
-        # (4, 5, 6, 7 ,8) are ids of AREA, STACK, LINE1, LINE2, and LINE3 graph item types
         res = self.session.execute(f"""
-            SELECT gti.id as item_id, gti.local_graph_id, dtr.data_source_name, gti.text_format as item_title, dtd.data_source_path
+            SELECT gti.id as item_id, gti.local_graph_id, dtr.data_source_name, gti.text_format as item_title, 
+                    dtd.data_source_path, gti.graph_type_id
             FROM graph_templates_item gti
             JOIN graph_templates_graph gtg on gti.local_graph_id = gtg.local_graph_id
             JOIN data_template_rrd dtr on dtr.id = gti.task_item_id
             JOIN data_template_data dtd on dtd.local_data_id = dtr.local_data_id
             WHERE gtg.local_graph_id != 0
-            AND gti.graph_type_id IN (4, 5, 6, 7 ,8)
             AND dtd.data_source_path IS NOT NULL
             {self._filter_by_graph_ids('gti.local_graph_id')}
         """)
@@ -93,6 +92,7 @@ class CactiCacher:
             self.graphs[local_graph_id]['items'][row['item_id']]['data_source_path'] = row['data_source_path']
             self.graphs[local_graph_id]['items'][row['item_id']]['data_source_name'] = row['data_source_name']
             self.graphs[local_graph_id]['items'][row['item_id']]['item_title'] = row['item_title']
+            self.graphs[local_graph_id]['items'][row['item_id']]['graph_type_id'] = row['graph_type_id']
 
     def _get_items_variables(self):
         res = self.session.execute(f"""
