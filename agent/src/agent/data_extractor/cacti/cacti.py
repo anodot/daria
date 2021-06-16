@@ -15,15 +15,12 @@ from shutil import copyfile
 
 logger_ = logger.get_logger(__name__)
 
-
 RRD_TMP_DIR = '/tmp/cacti_rrd/'
 
 
 def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> list:
     if pipeline_.source.RRD_ARCHIVE_PATH in pipeline_.source.config:
         _extract_rrd_archive(pipeline_)
-    # else:
-    #     _copy_rrd_to_tmp_dir(pipeline_)
 
     cache = cacti.repository.get_cache(pipeline_)
     if cache is None:
@@ -33,26 +30,25 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
     for local_graph_id, graph in cache.graphs.items():
         # Count sum of metrics with the same name if graph for item that have SIMILAR_DATA_SOURCES_NODUPS in cdef
         metrics_to_sum = {}
-        graph_metrics = []
         for item_id, item in graph['items'].items():
+            # (4, 5, 6, 7 ,8) are ids of AREA, STACK, LINE1, LINE2, and LINE3 graph item types
+            if item['graph_type_id'] not in (4, 5, 6, 7, 8):
+                continue
+
             result = _read_data_from_rrd(item['data_source_path'], start, end, step, pipeline_)
             if not result:
                 continue
 
-            # result[0][2] - is the closest available step to the step provided in the fetch command
-            # if they differ - skip the source as the desired step is not available for it
-            if result[0][2] != int(step):
-                continue
-
             base_metric = {
                 'target_type': 'gauge',
-                'properties': _extract_dimensions(item, graph, cache.hosts, pipeline_.config['add_graph_name_dimension']),
+                'properties': _extract_dimensions(item, graph, cache.hosts,
+                                                  pipeline_.config['add_graph_name_dimension']),
             }
             if _should_sum_similar_items(item):
-                metrics_to_sum[_get_measurement_name(item['data_source_name'])] = base_metric
+                metrics_to_sum[item['data_source_name']] = base_metric
                 continue
 
-            graph_metrics += _get_metric_values_for_item(
+            metrics += _get_metric_values_for_item(
                 result,
                 item,
                 start,
@@ -61,8 +57,7 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
                 _should_convert_to_bits(item, pipeline_),
                 base_metric
             )
-        metrics += graph_metrics
-        metrics += _sum_similar(graph_metrics, metrics_to_sum)
+        metrics += _sum_similar(graph['items'], metrics_to_sum, start, end, step, pipeline_)
     return metrics
 
 
@@ -94,25 +89,53 @@ def _read_data_from_rrd(data_source_path, start, end, step, pipeline_: Pipeline)
     result = rrdtool.fetch(rrd_file_path, 'AVERAGE', ['-s', start, '-e', end, '-r', step])
     if source.CactiSource.RRD_DIR_PATH in pipeline_.source.config:
         os.remove(rrd_file_path)
+
+    if not result or not result[0]:
+        return
+
+    # result[0][2] - is the closest available step to the step provided in the fetch command
+    # if they differ - skip the source as the desired step is not available for it
+    if result[0][2] != int(step):
+        return
     return result
 
 
-def _sum_similar(all_metrics: list, metrics_to_sum: dict) -> list:
+def _sum_similar(items: dict, metrics_to_sum: dict, start, end, step, pipeline_: Pipeline) -> list:
     if not metrics_to_sum:
         return []
 
+    data = {}
+    for item in items.values():
+        if item['data_source_name'] not in metrics_to_sum:
+            continue
+        key = item['data_source_path'] + '_' + item['data_source_name']
+        if key in data:
+            continue
+        result = _read_data_from_rrd(item['data_source_path'], start, end, step, pipeline_)
+        if not result:
+            continue
+
+        data[key] = _get_metric_values_for_item(
+            result,
+            item,
+            start,
+            end,
+            step,
+            _should_convert_to_bits(item, pipeline_),
+            metrics_to_sum[item['data_source_name']]
+        )
+
     result = {}
-    for metric in all_metrics:
-        if metric['properties']['what'] not in metrics_to_sum:
-            continue
-        key = metric['properties']['what'] + '_' + str(metric['timestamp'])
-        if key in result:
-            result[key]['value'] += metric['value']
-            continue
-        result[key] = deepcopy(metrics_to_sum[metric['properties']['what']])
-        result[key]['properties']['what'] = metric['properties']['what']
-        result[key]['value'] = metric['value']
-        result[key]['timestamp'] = metric['timestamp']
+    for data_source in data.values():
+        for metric in data_source:
+            key = metric['properties']['what'] + '_' + str(metric['timestamp'])
+            if key in result:
+                result[key]['value'] += metric['value']
+                continue
+            result[key] = deepcopy(metrics_to_sum[metric['properties']['what']])
+            result[key]['properties']['what'] = metric['properties']['what']
+            result[key]['value'] = metric['value']
+            result[key]['timestamp'] = metric['timestamp']
 
     return list(result.values())
 
