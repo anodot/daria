@@ -44,11 +44,11 @@ class TestPipelineBase(object):
 
     def test_output(self, name, pipeline_type, output):
         expected_output = get_expected_output(name, output, pipeline_type)
-        assert sort_output(get_output(f'{name}_{pipeline_type}.json')) == sort_output(expected_output)
+        assert get_output(f'{name}_{pipeline_type}.json') == expected_output
 
     def test_output_schema(self, name, pipeline_type, output):
         expected_output = get_expected_schema_output(name, output, pipeline_type)
-        assert sort_output(get_output(f'{name}_{pipeline_type}.json')) == sort_output(expected_output)
+        assert get_output(f'{name}_{pipeline_type}.json') == expected_output
 
     def test_delete_pipeline(self, cli_runner, name):
         result = cli_runner.invoke(cli.pipeline.delete, [name], catch_exceptions=False)
@@ -84,3 +84,7 @@ def get_schema_id(pipeline_id: str) -> str:
 
 def sort_output(output: list) -> list:
     return sorted(output, key=lambda x: (x['properties']['what'], x['timestamp']))
+
+
+def sort_output_schema(output: list) -> list:
+    return sorted(output, key=lambda x: x['timestamp'])

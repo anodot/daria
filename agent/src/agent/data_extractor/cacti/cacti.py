@@ -1,6 +1,5 @@
 import os
 import re
-import shutil
 
 import rrdtool
 import tarfile
@@ -68,23 +67,13 @@ def _read_data_from_rrd(data_source_path, start, end, step, pipeline_: Pipeline)
         logger_.debug(f'Path {data_source_path} does not contain "<path_rra>/", skipping')
         return
 
-    if source.CactiSource.RRD_DIR_PATH in pipeline_.source.config:
-        source_dir = pipeline_.source.config[source.CactiSource.RRD_DIR_PATH]
-    else:
-        source_dir = _get_rrd_tmp_dir(pipeline_)
-
-    rrd_file_path = data_source_path.replace('<path_rra>', source_dir)
+    rrd_file_path = data_source_path.replace('<path_rra>', _get_source_dir(pipeline_))
     if not os.path.isfile(rrd_file_path):
         logger_.debug(f'File {rrd_file_path} does not exist')
         return
 
     if source.CactiSource.RRD_DIR_PATH in pipeline_.source.config:
-        tmp_dir = _get_rrd_tmp_dir(pipeline_)
-        if not os.path.isdir(tmp_dir):
-            os.mkdir(tmp_dir)
-        new_path = data_source_path.replace('<path_rra>', tmp_dir)
-        copyfile(rrd_file_path, new_path)
-        rrd_file_path = new_path
+        rrd_file_path = _copy_files_to_tmp_dir(pipeline_, rrd_file_path, data_source_path)
 
     result = rrdtool.fetch(rrd_file_path, 'AVERAGE', ['-s', start, '-e', end, '-r', step])
     if source.CactiSource.RRD_DIR_PATH in pipeline_.source.config:
@@ -100,22 +89,35 @@ def _read_data_from_rrd(data_source_path, start, end, step, pipeline_: Pipeline)
     return result
 
 
-def _sum_similar(items: dict, metrics_to_sum: dict, start, end, step, pipeline_: Pipeline) -> list:
-    if not metrics_to_sum:
-        return []
+def _get_source_dir(pipeline_: Pipeline) -> str:
+    if source.CactiSource.RRD_DIR_PATH in pipeline_.source.config:
+        return pipeline_.source.config[source.CactiSource.RRD_DIR_PATH]
+    return _get_rrd_tmp_dir(pipeline_)
 
-    data = {}
+
+def _copy_files_to_tmp_dir(pipeline_: Pipeline, old_path, data_source_path) -> str:
+    tmp_dir = _get_rrd_tmp_dir(pipeline_)
+    if not os.path.isdir(tmp_dir):
+        os.mkdir(tmp_dir)
+    new_path = data_source_path.replace('<path_rra>', tmp_dir)
+    copyfile(old_path, new_path)
+    return new_path
+
+
+def _get_data_to_sum(items: dict, metrics_to_sum: dict, start, end, step, pipeline_: Pipeline) -> list:
+    data = []
+    extracted_sources = set()
     for item in items.values():
         if item['data_source_name'] not in metrics_to_sum:
             continue
         key = item['data_source_path'] + '_' + item['data_source_name']
-        if key in data:
+        if key in extracted_sources:
             continue
         result = _read_data_from_rrd(item['data_source_path'], start, end, step, pipeline_)
         if not result:
             continue
 
-        data[key] = _get_metric_values_for_item(
+        data += _get_metric_values_for_item(
             result,
             item,
             start,
@@ -124,18 +126,25 @@ def _sum_similar(items: dict, metrics_to_sum: dict, start, end, step, pipeline_:
             _should_convert_to_bits(item, pipeline_),
             metrics_to_sum[item['data_source_name']]
         )
+        extracted_sources.add(key)
+
+    return data
+
+
+def _sum_similar(items: dict, metrics_to_sum: dict, start, end, step, pipeline_: Pipeline) -> list:
+    if not metrics_to_sum:
+        return []
 
     result = {}
-    for data_source in data.values():
-        for metric in data_source:
-            key = metric['properties']['what'] + '_' + str(metric['timestamp'])
-            if key in result:
-                result[key]['value'] += metric['value']
-                continue
-            result[key] = deepcopy(metrics_to_sum[metric['properties']['what']])
-            result[key]['properties']['what'] = metric['properties']['what']
-            result[key]['value'] = metric['value']
-            result[key]['timestamp'] = metric['timestamp']
+    for metric in _get_data_to_sum(items, metrics_to_sum, start, end, step, pipeline_):
+        key = metric['properties']['what'] + '_' + str(metric['timestamp'])
+        if key in result:
+            result[key]['value'] += metric['value']
+            continue
+        result[key] = deepcopy(metrics_to_sum[metric['properties']['what']])
+        result[key]['properties']['what'] = metric['properties']['what']
+        result[key]['value'] = metric['value']
+        result[key]['timestamp'] = metric['timestamp']
 
     return list(result.values())
 
