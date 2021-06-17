@@ -44,9 +44,9 @@ CREATE TABLE `data_template_data` (
 
 LOCK TABLES `data_template_data` WRITE;
 INSERT INTO `data_template_data` VALUES
-(13866,41,13744,41,2,NULL,'|host_description| - Traffic - |query_ifName| |query_ifAlias|','390257-some_host - Traffic - Gi0/4 ENoB-Id','<path_rra>/cacti.rrd',NULL,'on',NULL,300,NULL),
-(13867,41,13745,41,2,NULL,'|host_description| - Traffic - |query_ifName| |query_ifAlias|','390257-some_host - Traffic - Gi0/4 ENoB-Id','<path_rra>/cacti.rrd',NULL,'on',NULL,300,NULL),
-(13868,41,13746,41,2,NULL,'|host_description| - Traffic - |query_ifName| |query_ifAlias|','390257-some_host mee too','<path_rra>/cacti.rrd',NULL,'on',NULL,300,NULL);
+(13866,41,13744,41,2,NULL,'|host_description| - Traffic - |query_ifName| |query_ifAlias|','390257-some_host - Traffic - Gi0/4 ENoB-Id','<path_rra>/rrd/1/cacti.rrd',NULL,'on',NULL,300,NULL),
+(13867,41,13745,41,2,NULL,'|host_description| - Traffic - |query_ifName| |query_ifAlias|','390257-some_host - Traffic - Gi0/4 ENoB-Id','<path_rra>/rrd/1/cacti.rrd',NULL,'on',NULL,300,NULL),
+(13868,41,13746,41,2,NULL,'|host_description| - Traffic - |query_ifName| |query_ifAlias|','390257-some_host mee too','<path_rra>/rrd/1/cacti.rrd',NULL,'on',NULL,300,NULL);
 UNLOCK TABLES;
 
 SET SQL_MODE='ALLOW_INVALID_DATES';
