@@ -97,9 +97,8 @@ def _get_source_dir(pipeline_: Pipeline) -> str:
 
 def _copy_files_to_tmp_dir(pipeline_: Pipeline, old_path, data_source_path) -> str:
     tmp_dir = _get_rrd_tmp_dir(pipeline_)
-    if not os.path.isdir(tmp_dir):
-        os.mkdir(tmp_dir)
     new_path = data_source_path.replace('<path_rra>', tmp_dir)
+    os.makedirs(os.path.dirname(new_path), exist_ok=True)
     copyfile(old_path, new_path)
     return new_path
 
