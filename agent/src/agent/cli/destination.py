@@ -38,6 +38,8 @@ def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, a
         _prompt_access_key(destination_)
         agent.destination.repository.save(destination_)
         # todo code duplicate, try to avoid it
+        if destination_.auth_token:
+            agent.destination.repository.delete_auth_token(destination_.auth_token)
         auth_token = agent.destination.AuthenticationToken(destination_.id, AnodotApiClient(destination_).get_new_token())
         agent.destination.repository.save_auth_token(auth_token)
 

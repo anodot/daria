@@ -34,5 +34,10 @@ def save_auth_token(token: AuthenticationToken):
     Session.commit()
 
 
+def delete_auth_token(token: AuthenticationToken):
+    Session.delete(token)
+    Session.commit()
+
+
 class DestinationNotExists(Exception):
     pass
