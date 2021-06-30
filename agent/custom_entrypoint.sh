@@ -5,6 +5,7 @@ set -u
 
 sleep 5 && alembic upgrade head
 
+OPEN_SSL_VERSION="${OPEN_SSL_VERSION:-1.1.1}"
 if [[ $OPEN_SSL_VERSION == '1.0.2k' ]]; then
   mv /usr/bin/openssl /usr/bin/openssl.old
   mv /usr/include/openssl /usr/include/openssl.old
