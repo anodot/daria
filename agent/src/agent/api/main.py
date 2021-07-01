@@ -4,7 +4,7 @@ import wtforms_json
 from flask import Flask, jsonify
 from agent import di
 from agent.api.routes.alerts import alerts
-from agent.api.routes.cacti_source import cacti_source_
+from agent.api.routes.sources.cacti import cacti_source_
 from agent.modules import db, logger
 from agent.api.routes.monitoring import monitoring_bp
 from agent.api.routes.streamsets import streamsets
