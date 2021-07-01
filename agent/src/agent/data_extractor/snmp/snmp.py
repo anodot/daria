@@ -1,13 +1,20 @@
-from pysnmp.hlapi.v1arch import *
+from pysnmp.entity.engine import SnmpEngine
+from pysnmp.hlapi import getCmd, CommunityData, UdpTransportTarget, ContextData
+from pysnmp.smi.rfc1902 import ObjectType, ObjectIdentity
 
 
 def extract_metrics():
+    # todo does it have timeout?
     iterator = getCmd(
-        SnmpDispatcher(),
+        SnmpEngine(),
+        # todo auth is somewhere here
         CommunityData('public', mpModel=0),
-        UdpTransportTarget(('demo.snmplabs.com', 161)),
-        ObjectType(ObjectIdentity('SNMPv2-MIB', 'sysDescr', 0)),
-        lookupMib=True
+        UdpTransportTarget(('localhost', 1161)),
+        ContextData(),
+        ObjectType(ObjectIdentity('SNMPv2-MIB', 'sysUpTime', 0)),
+        ObjectType(ObjectIdentity('1.3.6.1.2.1.55.1.5.1.10.1')),
+        ObjectType(ObjectIdentity('1.3.6.1.2.1.55.1.5.1.3.1')),
+        # lookupMib=True
     )
 
     for response in iterator:

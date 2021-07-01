@@ -10,6 +10,7 @@ from .solarwinds import SolarWindsPrompter
 from .tcp import TCPPrompter
 from .directory import DirectoryPrompter
 from .sage import SagePrompter
+from .snmp import SNMPPrompter
 from .victoria import VictoriaPrompter
 from .zabbix import ZabbixPrompter
 from .cacti import CactiPrompter
@@ -27,6 +28,7 @@ def get_prompter(pipeline_: Pipeline, default_config: dict, advanced: bool) -> P
         source.TYPE_MYSQL: JDBCPrompter,
         source.TYPE_POSTGRES: JDBCPrompter,
         source.TYPE_SAGE: SagePrompter,
+        source.TYPE_SNMP: SNMPPrompter,
         source.TYPE_SPLUNK: TCPPrompter,
         source.TYPE_SOLARWINDS: SolarWindsPrompter,
         source.TYPE_VICTORIA: VictoriaPrompter,

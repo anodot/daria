@@ -4,7 +4,6 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy import Column, Integer, String, JSON, func
 from agent.modules.db import Entity
-from copy import deepcopy
 
 
 class Source(Entity):
@@ -193,6 +192,10 @@ class APISource(Source):
     URL = 'url'
     USERNAME = 'username'
     PASSWORD = 'password'
+
+
+class SNMPSource(APISource):
+    pass
 
 
 class VictoriaMetricsSource(APISource):

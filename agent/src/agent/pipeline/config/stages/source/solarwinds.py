@@ -35,6 +35,7 @@ class SolarWindsScript(JDBCSource):
                             f'/monitoring/source_http_error/{self.pipeline.name}/'
                         )
                     },
+                    {'key': 'VERIFY_SSL', 'value': '1' if self.pipeline.source.config.get('verify_ssl', True) else ''},
                 ],
                 'script': f.read()
             }

@@ -278,6 +278,17 @@ class SageLoadClientData(LoadClientData):
         return self.client_config
 
 
+class SNMPLoadClientData(LoadClientData):
+    VALIDATION_SCHEMA_FILE_NAME = 'snmp'
+
+    def load(self, client_config):
+        # todo check that mibs_file or mibs is set
+        super().load(client_config)
+        with open(self.client_config['mibs_file']) as f:
+            self.client_config['mibs'] = f.readlines()
+        return self.client_config
+
+
 class SolarWindsClientData(LoadClientData):
     VALIDATION_SCHEMA_FILE_NAME = 'solarwinds'
 
@@ -309,6 +320,7 @@ def get_file_loader(source_type: str, is_edit=False) -> LoadClientData:
         source.TYPE_MYSQL: JDBCLoadClientData,
         source.TYPE_POSTGRES: JDBCLoadClientData,
         source.TYPE_SAGE: SageLoadClientData,
+        source.TYPE_SNMP: SNMPLoadClientData,
         source.TYPE_SOLARWINDS: SolarWindsClientData,
         source.TYPE_SPLUNK: TcpLoadClientData,
         source.TYPE_VICTORIA: VictoriaLoadClientData,

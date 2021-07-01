@@ -168,6 +168,16 @@ class MongoValidator(Validator):
                 f'Collection {self.source.config[source.MongoSource.CONFIG_DATABASE]} doesn\'t exist')
 
 
+class SNMPValidator(Validator):
+    # todo
+    def validate(self):
+        pass
+
+    @if_validation_enabled
+    def validate_connection(self):
+        pass
+
+
 class SageValidator(Validator):
     VALIDATION_SCHEMA_FILE = 'sage.json'
 
@@ -296,6 +306,7 @@ def get_validator(source_: Source) -> Validator:
         source.TYPE_MYSQL: JDBCValidator,
         source.TYPE_POSTGRES: JDBCValidator,
         source.TYPE_SAGE: SageValidator,
+        source.TYPE_SNMP: SNMPValidator,
         source.TYPE_SPLUNK: SplunkValidator,
         source.TYPE_SOLARWINDS: SolarWindsValidator,
         source.TYPE_VICTORIA: VictoriaMetricsValidator,

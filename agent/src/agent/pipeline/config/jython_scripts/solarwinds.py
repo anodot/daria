@@ -69,7 +69,7 @@ while True:
                     sdc.userParams['SOLARWINDS_API_URL'],
                     auth=HTTPBasicAuth(sdc.userParams['API_USER'], sdc.userParams['API_PASSWORD']),
                     params={'query': query},
-                    verify=False,
+                    verify=bool(sdc.userParams['VERIFY_SSL']),
                     timeout=sdc.userParams['QUERY_TIMEOUT'],
                 )
                 res.raise_for_status()

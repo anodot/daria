@@ -35,6 +35,7 @@ class BaseConfigLoader:
             source.TYPE_MYSQL: 'jdbc_http',
             source.TYPE_POSTGRES: 'jdbc_http',
             source.TYPE_SAGE: 'sage_http',
+            source.TYPE_SNMP: 'snmp',
             source.TYPE_SPLUNK: 'tcp_server_http',
             source.TYPE_SOLARWINDS: 'solarwinds',
             source.TYPE_VICTORIA: 'victoria_http',
@@ -72,6 +73,8 @@ class TestPipelineBaseConfigLoader(BaseConfigLoader):
             source.TYPE_MYSQL: 'test_jdbc_pdsf4587',
             source.TYPE_POSTGRES: 'test_jdbc_pdsf4587',
             source.TYPE_SAGE: 'test_sage_jfhdkj',
+            # todo do I need it?
+            source.TYPE_SNMP: 'test_snmp_jfhdkj',
             source.TYPE_SPLUNK: 'test_tcp_server_jksrj322',
             source.TYPE_SOLARWINDS: 'test_solarwinds_jksrj322',
             source.TYPE_ZABBIX: 'test_zabbix_jfhdkj',
