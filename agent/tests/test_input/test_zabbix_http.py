@@ -4,7 +4,8 @@ from datetime import datetime
 from agent import cli
 from agent import source, pipeline
 from .test_zpipeline_base import TestInputBase
-from ..conftest import generate_input
+from ..conftest import generate_input, get_input_file_path
+from agent.pipeline import PipelineOffset
 
 
 class TestZabbix(TestInputBase):
@@ -12,6 +13,7 @@ class TestZabbix(TestInputBase):
     params = {
         'test_create_source_with_file': [{'file_name': 'zabbix_sources'}],
         'test_create_with_file': [{'file_name': 'zabbix_pipelines'}],
+        'test_edit_advanced': [{'pipeline_id': 'test_zabbix'}, {'pipeline_id': 'test_zabbix_edit_query'}],
     }
 
     def test_source_create(self, cli_runner):
@@ -28,10 +30,10 @@ class TestZabbix(TestInputBase):
         assert source.repository.exists(name)
 
     def test_create(self, cli_runner):
-        name = 'test_zabbix'
+        pipeline_id = 'test_zabbix'
         input_ = {
-            'source': name,
-            'name': name,
+            'source': pipeline_id,
+            'name': pipeline_id,
             'query file': 'tests/input_files/zabbix_query.json',
             'days to backfill': 0,
             'query interval': 86400,
@@ -47,12 +49,21 @@ class TestZabbix(TestInputBase):
         }
         result = cli_runner.invoke(cli.pipeline.create, catch_exceptions=False, input=generate_input(input_))
         assert result.exit_code == 0
-        assert sdc_client.exists(name)
+        assert sdc_client.exists(pipeline_id)
 
-    def test_edit_advanced(self, cli_runner):
+    def test_create_edit_query(self, cli_runner):
+        input_file_path = get_input_file_path('zabbix_pipelines_edit_query.json')
+        result = cli_runner.invoke(cli.pipeline.create, ['-f', input_file_path], catch_exceptions=False)
+        assert result.exit_code == 0
+        pipeline_ = pipeline.repository.get_by_id('test_zabbix_edit_query')
+        pipeline_.offset = PipelineOffset(pipeline_.id, '{"version": 2, "offsets": {"": "1611320000_30590"}}')
+        sdc_client.update(pipeline_)
+        pipeline.repository.save_offset(pipeline_.offset)
+
+    def test_edit_advanced(self, cli_runner, pipeline_id: str):
         days_to_backfill = (datetime.now() - datetime(year=2021, month=1, day=22)).days
         input_ = {
-            'query file': '',
+            'query file': 'tests/input_files/zabbix_query.json',
             'items batch size': '',
             'histories batch size': 50,
             'days to backfill': days_to_backfill,
@@ -69,9 +80,9 @@ class TestZabbix(TestInputBase):
             'tags': 'test:zabbix',
             'preview': 'y',
         }
-        name = 'test_zabbix'
-        result = cli_runner.invoke(cli.pipeline.edit, [name, '-a'], catch_exceptions=False,
-                                   input=generate_input(input_))
+        result = cli_runner.invoke(
+            cli.pipeline.edit, [pipeline_id, '-a'], catch_exceptions=False, input=generate_input(input_)
+        )
         assert result.exit_code == 0
-        pipeline_ = pipeline.repository.get_by_id_without_session(name)
+        pipeline_ = pipeline.repository.get_by_id_without_session(pipeline_id)
         assert pipeline_.config['days_to_backfill'] == days_to_backfill
