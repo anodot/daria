@@ -123,10 +123,11 @@ def fetch_itemids_value_types():
 
     start = time.time()
     itemids_value_types = client.post('item.get', query)
-    if len(itemids_value_types) == 0:
-        sdc.log.info('item.get - No data - query: ' + str(json.loads(sdc.userParams['QUERY'])))
     sdc.log.debug('query_items() took ' + str(time.time() - start) + ' seconds')
     sdc.log.debug('we got ' + str(len(itemids_value_types)) + ' items')
+    if len(itemids_value_types) == 0:
+        sdc.log.info('item.get - No data - query: ' + str(json.loads(sdc.userParams['QUERY'])))
+        return []
 
     last_processed_id = get_last_processed_id()
     if last_processed_id and int(last_processed_id) != int(itemids_value_types[-1]['itemid']):
