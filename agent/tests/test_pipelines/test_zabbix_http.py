@@ -6,12 +6,13 @@ from .test_zpipeline_base import TestPipelineBase
 class TestZabbix(TestPipelineBase):
     __test__ = True
     params = {
-        'test_start': [{'name': 'test_zabbix'}, {'name': 'test_zabbix_file'}],
-        'test_force_stop': [{'name': 'test_zabbix'}, {'name': 'test_zabbix_file'}],
+        'test_start': [{'name': 'test_zabbix'}, {'name': 'test_zabbix_file'}, {'name': 'test_zabbix_edit_query'}],
+        'test_force_stop': [{'name': 'test_zabbix'}, {'name': 'test_zabbix_file'}, {'name': 'test_zabbix_edit_query'}],
         'test_output': [
             {'name': 'test_zabbix', 'output': 'zabbix.json', 'pipeline_type': 'zabbix'},
+            {'name': 'test_zabbix_edit_query', 'output': 'zabbix.json', 'pipeline_type': 'zabbix'},
         ],
-        'test_delete_pipeline': [{'name': 'test_zabbix'}, {'name': 'test_zabbix_file'}],
+        'test_delete_pipeline': [{'name': 'test_zabbix'}, {'name': 'test_zabbix_file'}, {'name': 'test_zabbix_edit_query'}],
         'test_source_delete': [{'name': 'test_zabbix'}, {'name': 'test_zabbix_file'}],
     }
 

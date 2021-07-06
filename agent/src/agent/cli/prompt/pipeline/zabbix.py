@@ -54,6 +54,8 @@ class ZabbixPrompter(SchemalessPrompter):
         self.config['query_file'] = click.prompt('File with query params', type=click.STRING, default=self.default_config.get('query_file'))
         with open(self.config['query_file']) as fp:
             self.config['query'] = json.load(fp)
+        if 'query' in self.pipeline.config and self.pipeline.config['query'] != self.config['query']:
+            self.config['query_changed'] = True
 
     def set_dimensions(self):
         self.config['dimensions'] = self.prompt_dimensions('Dimensions', self.default_config.get('dimensions', []))

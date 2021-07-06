@@ -1,0 +1,45 @@
+[
+  {
+    "source": "test_zabbix",
+    "pipeline_id": "test_zabbix_edit_query",
+    "query": {
+      "output": "extend",
+      "search": {
+        "key_": "system.cpu.load"
+      }
+    },
+    "static_what": false,
+    "count_records": 1,
+    "count_records_measurement_name": "counter",
+    "days_to_backfill": 10,
+    "interval": 86400,
+    "values": {
+      "value": "gauge"
+    },
+    "measurement_names": {
+      "value": "what"
+    },
+    "dimensions": [
+      "host",
+      "content-provider",
+      "service-provider"
+    ],
+    "transform": {
+      "file": "/home/zabbix_transform_value.csv",
+      "config": "content-provider,\"str:regExCapture(name, '(.+)\\\\s-\\\\s(.+)\\\\s-\\\\s(.+)', 1)\"\nwhat,\"str:regExCapture(name, '(.+)\\\\s-\\\\s(.+)\\\\s-\\\\s(.+)', 2)\"\nservice-provider,\"str:regExCapture(name, '(.+)\\\\s-\\\\s(.+)\\\\s-\\\\s(.+)', 3)\"\n"
+    },
+    "properties": {
+      "test_type": "input"
+    },
+    "tags": {
+      "test": [
+        "zabbix"
+      ]
+    },
+    "timestamp": {
+      "type": "unix",
+      "name": "clock"
+    },
+    "delay": 0
+  }
+]
