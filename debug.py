@@ -20,11 +20,10 @@ di.init()
 # s = http.Session()
 # r = s.get('https://10.237.70.2:17778/SolarWinds/InformationService/v3/Json/Query?query=select+top+1+1+as+test+from+Orion.Accounts')
 # r.raise_for_status()
-# print(r.text)
 
 t = 1
 
-cli.source.edit(["solarwinds"])
+# cli.source.edit(["solarwinds"])
 # cli.destination()
 # cli.pipeline.create()
 # cli.streamsets.delete(["asdfa"])
