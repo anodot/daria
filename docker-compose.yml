@@ -52,8 +52,6 @@ services:
       AGENT_DB_PASSWORD: 'agent'
       PGPASSWORD: 'agent'
       AGENT_URL: 'http://anodot-agent'
-#      todo delete?
-#      OPEN_SSL_VERSION: '1.0.2k'
     #      VALIDATION_ENABLED: 'false'
     stdin_open: true
     tty: true
