@@ -28,7 +28,7 @@ RUN cd /usr/local/src && wget https://www.openssl.org/source/openssl-1.0.2k.tar.
 
 RUN groupadd -g 10001 agent && useradd -r -u 10001 -g agent agent
 RUN mkdir /var/log/agent && chown agent:agent /var/log/agent /etc/nginx/conf.d /etc/supervisor/conf.d \
-/var/log/supervisor /var/cache/nginx /var/cache/nginx
+/var/log/supervisor /var/cache/nginx /var/cache/nginx /usr/src/app/tests/input_files
 USER agent
 
 ENTRYPOINT ["/custom_entrypoint.sh"]
