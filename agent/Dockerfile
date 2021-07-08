@@ -12,6 +12,7 @@ COPY ./custom_entrypoint.sh /
 COPY supervisord.conf /etc/supervisor/supervisord.conf
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY uwsgi-nginx-entrypoint.sh /uwsgi-nginx-entrypoint.sh
+COPY uwsgi.ini /etc/uwsgi/uwsgi.ini
 
 RUN chmod +x /custom_entrypoint.sh /uwsgi-nginx-entrypoint.sh
 
@@ -20,8 +21,8 @@ ENV SDC_CONF_PARSER_LIMIT="20048576" STREAMSETS_USERNAME="admin" STREAMSETS_PASS
 
 ENV LOG_FILE_PATH="/var/log/agent.log" ANODOT_API_URL="https://api.anodot.com" ENV_PROD='true' VALIDATION_ENABLED="true"
 
-# flask app config
-ENV UWSGI_INI="/usr/src/app/uwsgi.ini"
+ENV LISTEN_PORT 8080
+EXPOSE 8080
 
 RUN ./install_requirements.sh
 RUN python setup.py install && echo ". /usr/src/app/agent-complete.sh" >> /root/.bashrc
