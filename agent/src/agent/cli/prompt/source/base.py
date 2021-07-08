@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from agent import source
 from agent.modules import validator
 from agent.modules.tools import infinite_retry
+from agent.source import Source
 
 
 class Prompter(ABC):
@@ -25,9 +26,13 @@ class Prompter(ABC):
 
 
 class APIPrompter(Prompter):
-    @abstractmethod
-    def prompt(self, default_config, advanced=False):
-        pass
+    NAME = ""
+
+    def prompt(self, default_config, advanced=False) -> Source:
+        self.prompt_connection(default_config, self.NAME)
+        self.prompt_verify_certificate(default_config, advanced)
+        self.prompt_query_timeout(default_config, advanced)
+        return self.source
 
     @infinite_retry
     def prompt_url(self, prompt_text: str, default_config):
@@ -59,3 +64,10 @@ class APIPrompter(Prompter):
     def prompt_verify_certificate(self, default_config, advanced):
         verify = click.confirm('Verify ssl certificate?', default_config.get('verify_ssl', True)) if advanced else True
         self.source.config['verify_ssl'] = verify
+
+    @infinite_retry
+    def prompt_connection(self, default_config: dict, name: str):
+        self.prompt_url(f'{name} API URL', default_config)
+        self.prompt_username(f'{name} API username', default_config)
+        self.prompt_password(f'{name} API password', default_config)
+        self.validator.validate_connection()
