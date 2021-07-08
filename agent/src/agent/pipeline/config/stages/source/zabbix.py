@@ -19,7 +19,6 @@ class ZabbixScript(Stage):
                     {'key': 'INITIAL_TIMESTAMP', 'value': str(int(self.get_initial_timestamp().timestamp()))},
                     {'key': 'INTERVAL', 'value': str(self.pipeline.interval)},
                     {'key': 'DELAY_IN_MINUTES', 'value': str(self.pipeline.delay)},
-                    {'key': 'DELAY_IN_MINUTES', 'value': str(self.pipeline.delay)},
                     {'key': 'ITEMS_BATCH_SIZE', 'value': str(self.pipeline.batch_size)},
                     {'key': 'HISTORIES_BATCH_SIZE', 'value': str(self.pipeline.histories_batch_size)},
                 ],
