@@ -242,6 +242,7 @@ class ZabbixValidator(Validator):
             self.source.config[source.ZabbixSource.URL],
             self.source.config[source.ZabbixSource.USER],
             self.source.config[source.ZabbixSource.PASSWORD],
+            self.source.config[source.ZabbixSource.VERIFY_SSL],
         )
 
 
