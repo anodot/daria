@@ -21,9 +21,6 @@ ENV SDC_CONF_PARSER_LIMIT="20048576" STREAMSETS_USERNAME="admin" STREAMSETS_PASS
 
 ENV LOG_FILE_PATH="/var/log/agent.log" ANODOT_API_URL="https://api.anodot.com" ENV_PROD='true' VALIDATION_ENABLED="true"
 
-ENV LISTEN_PORT 8080
-EXPOSE 8080
-
 RUN ./install_requirements.sh
 RUN python setup.py install && echo ". /usr/src/app/agent-complete.sh" >> /root/.bashrc
 
