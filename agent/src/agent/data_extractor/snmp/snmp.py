@@ -1,9 +1,10 @@
 from pysnmp.entity.engine import SnmpEngine
 from pysnmp.hlapi import getCmd, CommunityData, UdpTransportTarget, ContextData
 from pysnmp.smi.rfc1902 import ObjectType, ObjectIdentity
+from agent.pipeline import Pipeline
 
 
-def extract_metrics():
+def extract_metrics(pipeline_: Pipeline):
     # todo does it have timeout?
     iterator = getCmd(
         SnmpEngine(),
@@ -21,11 +22,14 @@ def extract_metrics():
         errorIndication, errorStatus, errorIndex, varBinds = response
         if errorIndication:
             print(errorIndication)
+            return
         elif errorStatus:
             print('%s at %s' % (
                 errorStatus.prettyPrint(),
                 errorIndex and varBinds[int(errorIndex) - 1][0] or '?'
             ))
-        else:
-            for varBind in varBinds:
-                print(' = '.join([x.prettyPrint() for x in varBind]))
+            return
+        for varBind in varBinds:
+            a = varBind[0]
+            b = varBind[1]
+            t = 1
