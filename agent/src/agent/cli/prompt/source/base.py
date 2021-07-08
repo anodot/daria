@@ -50,14 +50,14 @@ class APIPrompter(Prompter):
         self.source.config[source.APISource.USERNAME] = click.prompt(
             f'{self.NAME} API username',
             type=click.STRING,
-            default=default_config.get('username', '')
+            default=default_config.get(source.APISource.USERNAME, '')
         ).strip()
 
     def prompt_password(self, default_config):
-        self.source.config['password'] = click.prompt(
+        self.source.config[source.APISource.PASSWORD] = click.prompt(
             f'{self.NAME} API password',
             type=click.STRING,
-            default=default_config.get('password', '')
+            default=default_config.get(source.APISource.PASSWORD, '')
         ).strip()
 
     def prompt_verify_certificate(self, default_config, advanced):
