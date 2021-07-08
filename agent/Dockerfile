@@ -9,7 +9,11 @@ WORKDIR /usr/src/app
 COPY . .
 COPY .bashrc /root/.bashr
 COPY ./custom_entrypoint.sh /
-RUN chmod +x /custom_entrypoint.sh
+COPY supervisord.conf /etc/supervisor/supervisord.conf
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY uwsgi-nginx-entrypoint.sh /uwsgi-nginx-entrypoint.sh
+
+RUN chmod +x /custom_entrypoint.sh /uwsgi-nginx-entrypoint.sh
 
 ENV SDC_CONF_PARSER_LIMIT="20048576" STREAMSETS_USERNAME="admin" STREAMSETS_PASSWORD="admin" \
     STREAMSETS_URL="http://localhost:18630"
