@@ -22,7 +22,5 @@ ENV UWSGI_INI="/usr/src/app/uwsgi.ini"
 RUN ./install_requirements.sh
 RUN python setup.py install && echo ". /usr/src/app/agent-complete.sh" >> /root/.bashrc
 
-RUN cd /usr/local/src && wget https://www.openssl.org/source/openssl-1.0.2k.tar.gz && tar xvf openssl-1.0.2k.tar.gz && cd openssl-1.0.2k/ && ./config --prefix=/usr/local/openssl-1.0.2k && make && make install
-
 ENTRYPOINT ["/custom_entrypoint.sh"]
 CMD ["/start.sh"]
