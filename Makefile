@@ -146,11 +146,9 @@ setup-all: setup-victoria setup-kafka setup-elastic setup-zabbix
 ##-----------------------
 build-dev:
 	$(DOCKER_COMPOSE_DEV) up -d --build
-	docker exec -i anodot-agent python setup.py develop
 
 run-dev:
 	$(DOCKER_COMPOSE_DEV) up -d
-	docker exec -i anodot-agent python setup.py develop
 
 bootstrap: clean-docker-volumes run-base-services test-streamsets test-destination
 
