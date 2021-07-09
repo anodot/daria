@@ -27,7 +27,7 @@ RUN python setup.py install && echo ". /usr/src/app/agent-complete.sh" >> /root/
 RUN cd /usr/local/src && wget https://www.openssl.org/source/openssl-1.0.2k.tar.gz && tar xvf openssl-1.0.2k.tar.gz && cd openssl-1.0.2k/ && ./config --prefix=/usr/local/openssl-1.0.2k && make && make install
 
 RUN groupadd -g 10001 agent && useradd -r -u 10001 -g agent agent
-RUN mkdir /var/log/agent && chown agent:agent /var/log/agent /etc/nginx/conf.d /etc/supervisor/conf.d \
+RUN mkdir /var/log/agent && chown -R agent:agent /var/log/agent /etc/nginx/conf.d /etc/supervisor/conf.d \
 /var/log/supervisor /var/cache/nginx /var/cache/nginx /usr/src/app/tests/input_files
 USER agent
 

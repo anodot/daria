@@ -164,7 +164,7 @@ run-base-services: _run-base-services nap
 
 _run-base-services:
 	$(DOCKER_COMPOSE_DEV) up -d agent dc squid dummy_destination
-	docker exec -i anodot-agent python setup.py develop
+	#docker exec -i anodot-agent python setup.py develop
 
 build-base-services: clean-docker-volumes _build-base-services nap
 

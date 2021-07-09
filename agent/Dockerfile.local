@@ -5,14 +5,23 @@ WORKDIR /usr/src/app
 COPY . .
 ADD .bashrc /root/.bashrc
 COPY ./custom_entrypoint.sh /
-RUN chmod +x /custom_entrypoint.sh
+COPY supervisord.conf /etc/supervisor/supervisord.conf
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY uwsgi-nginx-entrypoint.sh /uwsgi-nginx-entrypoint.sh
+COPY uwsgi.ini /etc/uwsgi/uwsgi.ini
+RUN chmod +x /custom_entrypoint.sh /uwsgi-nginx-entrypoint.sh
 
 ENV STREAMSETS_USERNAME="admin" STREAMSETS_PASSWORD="admin" STREAMSETS_URL="http://localhost:18630" \
-    LOG_FILE_PATH="/var/log/agent.log" ANODOT_API_URL="https://api.anodot.com" ENV_PROD='true' \
+    LOG_FILE_PATH="/var/log/agent/agent.log" ANODOT_API_URL="https://api.anodot.com" ENV_PROD='true' \
     GIT_SHA1=local-build VALIDATION_ENABLED="true" FLASK_APP="/usr/src/app/src/agent/api/main.py" FLASK_DEBUG=1
 
 RUN ./install_requirements.sh
 RUN python setup.py develop
+
+RUN groupadd -g 10001 agent && useradd -r -u 10001 -g agent agent
+RUN mkdir /var/log/agent && chown agent:agent /var/log/agent /etc/nginx/conf.d /etc/supervisor/conf.d \
+/var/log/supervisor /var/cache/nginx /var/cache/nginx /usr/src/app/tests/input_files
+USER agent
 
 ENTRYPOINT ["/custom_entrypoint.sh"]
 CMD flask run --host=0.0.0.0 --port=80
