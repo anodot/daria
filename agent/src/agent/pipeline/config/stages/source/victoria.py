@@ -18,7 +18,10 @@ class VictoriaScript(Stage):
                     {'key': 'INITIAL_TIMESTAMP', 'value': str(int(self.get_initial_timestamp().timestamp()))},
                     {'key': 'INTERVAL', 'value': str(self.pipeline.interval)},
                     {'key': 'DELAY_IN_MINUTES', 'value': str(self.pipeline.delay)},
-                    {'key': 'VERIFY_SSL', 'value': '1' if self.pipeline.source.config.get('verify_ssl', True) else ''},
+                    {
+                        'key': 'VERIFY_SSL',
+                        'value': '1' if self.pipeline.source.config.get(source.APISource.VERIFY_SSL, True) else ''
+                    },
                     {'key': 'QUERY_TIMEOUT', 'value': str(self.pipeline.source.query_timeout)},
                     {'key': 'AGGREGATED_METRIC_NAME', 'value': str(self.pipeline.config.get('aggregated_metric_name'))},
                 ],

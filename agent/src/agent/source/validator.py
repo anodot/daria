@@ -10,7 +10,7 @@ from datetime import datetime
 from urllib.parse import urlparse
 from agent import source
 from agent.modules.tools import if_validation_enabled
-from agent.modules import validator, zabbix
+from agent.modules import validator, zabbix, http
 from agent.source import Source
 
 
@@ -219,7 +219,7 @@ class SolarWindsValidator(Validator):
             self.source.config['url'],
             '/SolarWinds/InformationService/v3/Json/Query?query=SELECT+TOP+1+1+as+test+FROM+Orion.Accounts'
         )
-        session = requests.Session()
+        session = http.Session()
         session.auth = (
             self.source.config[source.APISource.USERNAME],
             self.source.config[source.APISource.PASSWORD]
@@ -242,6 +242,7 @@ class ZabbixValidator(Validator):
             self.source.config[source.ZabbixSource.URL],
             self.source.config[source.ZabbixSource.USER],
             self.source.config[source.ZabbixSource.PASSWORD],
+            self.source.config.get(source.ZabbixSource.VERIFY_SSL, True),
         )
 
 

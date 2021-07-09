@@ -37,7 +37,8 @@ class Client:
                     headers={
                         'Content-Type': 'application/json-rpc'
                     },
-                    timeout=sdc.userParams['QUERY_TIMEOUT']
+                    timeout=sdc.userParams['QUERY_TIMEOUT'],
+                    verify=bool(sdc.userParams.get('VERIFY_SSL', True))
                 )
                 res.raise_for_status()
                 result = res.json()
