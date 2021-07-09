@@ -1,10 +1,8 @@
-from typing import Optional
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy import Column, Integer, String, JSON, func
 from agent.modules.db import Entity
-from copy import deepcopy
 
 
 class Source(Entity):
@@ -43,7 +41,7 @@ class Source(Entity):
         self.config = config
 
     @property
-    def query_timeout(self) -> Optional[int]:
+    def query_timeout(self) -> int:
         return int(self.config.get('query_timeout', 300))
 
 
@@ -193,6 +191,7 @@ class APISource(Source):
     URL = 'url'
     USERNAME = 'username'
     PASSWORD = 'password'
+    VERIFY_SSL = 'verify_ssl'
 
 
 class VictoriaMetricsSource(APISource):
@@ -203,10 +202,8 @@ class SolarWindsSource(APISource):
     pass
 
 
-class ZabbixSource(Source):
-    URL = 'url'
+class ZabbixSource(APISource):
     USER = 'user'
-    PASSWORD = 'password'
 
 
 class CactiSource(Source):
