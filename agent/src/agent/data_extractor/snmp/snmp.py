@@ -12,10 +12,10 @@ def extract_metrics(pipeline_: Pipeline):
         CommunityData('public', mpModel=0),
         UdpTransportTarget(('localhost', 1161)),
         ContextData(),
-        ObjectType(ObjectIdentity('SNMPv2-MIB', 'sysUpTime', 0)),
-        ObjectType(ObjectIdentity('1.3.6.1.2.1.55.1.5.1.10.1')),
-        ObjectType(ObjectIdentity('1.3.6.1.2.1.55.1.5.1.3.1')),
-        # lookupMib=True
+        *[ObjectType(ObjectIdentity(mib)) for mib in pipeline_.config['mibs']],
+        # ObjectType(ObjectIdentity('SNMPv2-MIB', 'sysUpTime', 0)),
+        # ObjectType(ObjectIdentity('1.3.6.1.2.1.55.1.5.1.10.1')),
+        # ObjectType(ObjectIdentity('1.3.6.1.2.1.55.1.5.1.3.1')),
     )
 
     for response in iterator:

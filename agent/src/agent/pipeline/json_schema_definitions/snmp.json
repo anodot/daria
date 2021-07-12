@@ -2,6 +2,7 @@
   "type": "object",
   "properties": {
     "properties": {"type": "object"},
+    "source": {"type": "string"},
     "tags": {
       "type": "object",
       "patternProperties":  {"[^ \\.]+": {"type": "array", "items": {"type": "string"}}}
@@ -10,7 +11,15 @@
     "pipeline_id": {"type": "string"},
     "mibs_file": {"type": "string"},
     "mibs": {"type": "array", "items": {"type": "string"}},
-    "source": {"type": "string"}
+    "values": {"type": "object"},
+    "measurement_names": {"type": "object"},
+    "dimensions": {"oneOf": [
+      {"type": "array", "items": {"type": "string"}},
+      {"type": "object", "properties": {
+        "required": {"type": "array", "items": {"type": "string"}},
+        "optional": {"type": "array", "items": {"type": "string"}}
+      }}
+    ]}
   },
   "required": ["interval"]
 }
