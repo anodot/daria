@@ -124,7 +124,7 @@ def _load_config(pipeline_: Pipeline, config: dict, is_edit=False):
         else:
             config['uses_schema'] = pipeline.manager.supports_schema(pipeline_)
 
-    config = get_file_loader(pipeline_.source.type, is_edit).load(config)
+    config = get_file_loader(pipeline_, is_edit).load(config)
 
     pipeline_.set_config(config)
     # todo too many validations, 4 validations here
@@ -134,8 +134,9 @@ def _load_config(pipeline_: Pipeline, config: dict, is_edit=False):
 class LoadClientData:
     VALIDATION_SCHEMA_FILE_NAME = ''
 
-    def __init__(self, is_edit: bool):
+    def __init__(self, pipeline_: Pipeline, is_edit: bool):
         self.client_config = {}
+        self.pipeline = pipeline_
         self.edit = is_edit
 
     def load(self, client_config) -> dict:
@@ -305,10 +306,12 @@ class ZabbixLoadClientData(LoadClientData):
         self.client_config['timestamp'] = {}
         self.client_config['timestamp']['type'] = 'unix'
         self.client_config['timestamp']['name'] = 'clock'
+        if 'query' in self.pipeline.config and self.pipeline.config['query'] != self.client_config['query']:
+            self.client_config['query_changed'] = True
         return self.client_config
 
 
-def get_file_loader(source_type: str, is_edit=False) -> LoadClientData:
+def get_file_loader(pipeline_: Pipeline, is_edit=False) -> LoadClientData:
     loaders = {
         source.TYPE_CACTI: CactiLoadClientData,
         source.TYPE_CLICKHOUSE: JDBCLoadClientData,
@@ -326,4 +329,4 @@ def get_file_loader(source_type: str, is_edit=False) -> LoadClientData:
         source.TYPE_VICTORIA: VictoriaLoadClientData,
         source.TYPE_ZABBIX: ZabbixLoadClientData,
     }
-    return loaders[source_type](is_edit)
+    return loaders[pipeline_.source.type](pipeline_, is_edit)

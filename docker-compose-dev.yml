@@ -45,7 +45,6 @@ services:
       STREAMSETS_USERNAME: 'admin'
       STREAMSETS_PASSWORD: 'admin'
       STREAMSETS_URL: 'http://dc:18630'
-      LOG_FILE_PATH: '/var/log/agent.log'
       ENV_PROD: 'false'
       AGENT_DB_HOST: 'db'
       AGENT_DB_USER: 'agent'
@@ -53,6 +52,7 @@ services:
       GIT_SHA1: 'local'
       AGENT_URL: 'http://anodot-agent'
       PGPASSWORD: 'agent'
+      TLS_VERSION: '1.1'
     depends_on:
       - dc
       - db

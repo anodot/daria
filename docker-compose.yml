@@ -45,14 +45,13 @@ services:
       STREAMSETS_USERNAME: 'admin'
       STREAMSETS_PASSWORD: 'admin'
       STREAMSETS_URL: 'http://dc:18630'
-      LOG_FILE_PATH: '/var/log/agent.log'
       ENV_PROD: 'false'
       AGENT_DB_HOST: 'db'
       AGENT_DB_USER: 'agent'
       AGENT_DB_PASSWORD: 'agent'
       PGPASSWORD: 'agent'
       AGENT_URL: 'http://anodot-agent'
-#      OPEN_SSL_VERSION: '1.0.2k'
+      TLS_VERSION: '1.1'
     #      VALIDATION_ENABLED: 'false'
     stdin_open: true
     tty: true
