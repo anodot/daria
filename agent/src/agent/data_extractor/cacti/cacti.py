@@ -6,6 +6,9 @@ import tarfile
 
 from copy import deepcopy
 from typing import List, Optional
+
+from anodot.tools import replace_illegal_chars
+
 from agent.data_extractor import cacti
 from agent.pipeline import Pipeline
 from agent import source
@@ -180,15 +183,11 @@ def _get_metric_values_for_item(
                 value *= 8
 
             metric = deepcopy(base_metric)
-            metric['properties']['what'] = _get_measurement_name(item['data_source_name'])
+            metric['properties']['what'] = replace_illegal_chars(item['data_source_name'])
             metric['value'] = value
             metric['timestamp'] = timestamp
             values.append(metric)
     return values
-
-
-def _get_measurement_name(data_source_name):
-    return data_source_name.replace(".", "_").replace(" ", "_")
 
 
 def _extract_dimensions(item: dict, graph: dict, hosts: dict, add_graph_name_dimension=False) -> dict:
