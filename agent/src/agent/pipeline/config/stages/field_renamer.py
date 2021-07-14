@@ -1,7 +1,7 @@
 from agent.pipeline.config.stages.base import Stage
 
 
-class CactiDimensionsRenamer(Stage):
+class DimensionsRenamer(Stage):
     def _get_config(self) -> dict:
         renameMapping = []
         for field, alias in self.pipeline.config.get('rename_dimensions_mapping', {}).items():

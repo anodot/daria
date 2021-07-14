@@ -115,6 +115,7 @@ def _edit_using_file(file):
 
 
 def _prompt_source_type():
+    # todo filter snmp
     return click.prompt('Choose source', type=click.Choice(source.types.keys())).strip()
 
 

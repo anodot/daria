@@ -7,19 +7,18 @@
       "type": "object",
       "patternProperties":  {"[^ \\.]+": {"type": "array", "items": {"type": "string"}}}
     },
-    "interval": {"type": "integer"},
+    "interval": {"type": "string", "enum": ["1m", "5m", "1h"]},
     "pipeline_id": {"type": "string"},
-    "mibs_file": {"type": "string"},
     "mibs": {"type": "array", "items": {"type": "string"}},
     "values": {"type": "object"},
     "measurement_names": {"type": "object"},
-    "dimensions": {"oneOf": [
-      {"type": "array", "items": {"type": "string"}},
-      {"type": "object", "properties": {
-        "required": {"type": "array", "items": {"type": "string"}},
-        "optional": {"type": "array", "items": {"type": "string"}}
-      }}
-    ]}
+    "dimensions": {"type": "array", "items": {"type": "string"}},
+    "transform": {
+      "type": "object",
+      "properties": {
+        "config": {"type": "string"}
+      }
+    }
   },
-  "required": ["interval"]
+  "required": ["mibs", "interval", "values"]
 }

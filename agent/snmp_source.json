@@ -1,7 +1,11 @@
 [
   {
     "type": "snmp",
-    "name": "snmp?",
-
+    "name": "snmp",
+    "config": {
+      "url": "http://localhost:1161",
+      "read_community": "public",
+      "query_timeout": 30
+    }
   }
 ]

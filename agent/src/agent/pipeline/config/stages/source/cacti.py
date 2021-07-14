@@ -1,3 +1,5 @@
+import urllib.parse
+
 from agent.pipeline.config.stages.base import Stage
 
 
@@ -18,4 +20,7 @@ class Cacti(Stage):
             }
 
     def _get_cacti_source_url(self) -> str:
-        return self.pipeline.streamsets.agent_external_url + '/data_extractor/cacti/${pipeline:id()}'
+        return urllib.parse.urljoin(
+            self.pipeline.streamsets.agent_external_url,
+            '/data_extractor/cacti/${pipeline:id()}'
+        )

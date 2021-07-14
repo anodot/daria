@@ -197,6 +197,8 @@ run-zookeeper:
 run-mongo:
 	$(DOCKER_COMPOSE_DEV) up -d mongo
 
+run-cacti: run-mysql
+
 run-mysql:
 	$(DOCKER_COMPOSE_DEV) up -d mysql
 

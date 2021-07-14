@@ -16,7 +16,6 @@ def get_config_handler(pipeline_: Pipeline) -> BaseConfigHandler:
         source.TYPE_MYSQL: pipeline.config.handlers.jdbc.JDBCConfigHandler,
         source.TYPE_POSTGRES: pipeline.config.handlers.jdbc.JDBCConfigHandler,
         source.TYPE_SAGE: pipeline.config.handlers.sage.SageConfigHandler,
-        source.TYPE_SNMP: pipeline.config.handlers.snmp.SNMPConfigHandler,
         source.TYPE_SOLARWINDS: pipeline.config.handlers.solarwinds.SolarWindsConfigHandler,
         source.TYPE_SPLUNK: pipeline.config.handlers.tcp.TCPConfigHandler,
         source.TYPE_VICTORIA: pipeline.config.handlers.victoria.VictoriaConfigHandler,
@@ -30,6 +29,7 @@ def get_config_handler(pipeline_: Pipeline) -> BaseConfigHandler:
         source.TYPE_KAFKA: pipeline.config.handlers.kafka.KafkaSchemaConfigHandler,
         source.TYPE_MYSQL: pipeline.config.handlers.jdbc.JDBCSchemaConfigHandler,
         source.TYPE_POSTGRES: pipeline.config.handlers.jdbc.JDBCSchemaConfigHandler,
+        source.TYPE_SNMP: pipeline.config.handlers.snmp.SNMPConfigHandler,
     }
 
     if pipeline_.uses_schema:

@@ -2,9 +2,9 @@
   "type": "object",
   "properties": {
     "url": {"type": "string"},
-    "username": {"type":  "string"},
-    "password": {"type": "string"},
-    "verify_ssl": {"type": "boolean"}
+    "read_community": {"type": "string"},
+    "verify_ssl": {"type": "boolean"},
+    "query_timeout": {"type": "integer"}
   },
-  "required": ["url"]
+  "required": ["url", "read_community"]
 }

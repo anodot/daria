@@ -5,6 +5,7 @@ import jsonschema
 
 from typing import List
 from agent import source, pipeline
+from agent.data_extractor.snmp import snmp
 from agent.modules.logger import get_logger
 from agent.pipeline import Pipeline
 from agent.pipeline.config import expression_parser
@@ -283,11 +284,19 @@ class SNMPLoadClientData(LoadClientData):
     VALIDATION_SCHEMA_FILE_NAME = 'snmp'
 
     def load(self, client_config):
-        # todo check that mibs_file or mibs is set
         super().load(client_config)
-        with open(self.client_config['mibs_file']) as f:
-            self.client_config['mibs'] = f.readlines()
+        self.client_config['timestamp'] = {}
+        self.client_config['timestamp']['type'] = 'unix'
+        self.client_config['uses_schema'] = True
+        self._add_default_dimensions()
         return self.client_config
+
+    def _add_default_dimensions(self):
+        if 'dimensions' not in self.client_config:
+            self.client_config['dimensions'] = []
+        # todo it should be named. Create mapping?
+        self.client_config['mibs'].append(snmp.HOSTNAME_OID)
+        self.client_config['dimensions'].append(snmp.HOSTNAME_OID)
 
 
 class SolarWindsClientData(LoadClientData):

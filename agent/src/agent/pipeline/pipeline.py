@@ -11,6 +11,7 @@ from enum import Enum
 from sqlalchemy import Column, Integer, String, JSON, ForeignKey, func
 from copy import deepcopy
 from agent import source, pipeline
+from agent.modules.time import Interval
 from agent.source import Source
 from agent.streamsets import StreamSets
 
@@ -27,24 +28,8 @@ class TimestampType(Enum):
     UNIX_MS = 'unix_ms'
 
 
-class FlushBucketSize(Enum):
-    MIN_1 = '1m'
-    MIN_5 = '5m'
-    HOUR_1 = '1h'
-    DAY_1 = '1d'
-    WEEK_1 = '1w'
-
-    def total_seconds(self):
-        if self == self.MIN_1:
-            return 60
-        if self == self.MIN_5:
-            return 60 * 5
-        if self == self.HOUR_1:
-            return 60 * 60
-        if self == self.DAY_1:
-            return 60 * 60 * 24
-        if self == self.WEEK_1:
-            return 60 * 60 * 24 * 7
+class FlushBucketSize(Interval):
+    pass
 
 
 class Pipeline(Entity, sdc_client.IPipeline):
@@ -63,12 +48,16 @@ class Pipeline(Entity, sdc_client.IPipeline):
     OVERRIDE_SOURCE = 'override_source'
     FLUSH_BUCKET_SIZE = 'flush_bucket_size'
 
+    COUNTER = 'counter'
+    GAUGE = 'gauge'
+    RUNNING_COUNTER = 'running_counter'
+
     error_statuses = [STATUS_RUN_ERROR, STATUS_START_ERROR, STATUS_STOP_ERROR, STATUS_RUNNING_ERROR]
     # TODO make it enum
     statuses = [STATUS_EDITED, STATUS_STARTING, STATUS_RUNNING, STATUS_STOPPING, STATUS_STOPPED, STATUS_RETRY,
                 STATUS_RUN_ERROR, STATUS_START_ERROR, STATUS_STOP_ERROR, STATUS_RUNNING_ERROR]
 
-    TARGET_TYPES = ['counter', 'gauge', 'running_counter']
+    TARGET_TYPES = [COUNTER, GAUGE, RUNNING_COUNTER]
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
@@ -184,22 +173,26 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return self.config['timestamp'].get('format')
 
     @property
-    def values(self) -> list:
+    def values(self) -> dict:
+        return self.config.get('values', {})
+
+    @property
+    def value_names(self) -> list:
         return list(self.config.get('values', {}).keys())
 
     @property
     def values_paths(self):
-        return [self.get_property_path(value) for value in self.values]
+        return [self.get_property_path(value) for value in self.value_names]
 
     @property
     def target_types(self) -> list:
         if self.source.type == source.TYPE_INFLUX:
-            return [self.config.get('target_type', 'gauge')] * len(self.values)
+            return [self.config.get('target_type', 'gauge')] * len(self.value_names)
         return list(self.config['values'].values())
 
     @property
     def measurement_names(self):
-        return [tools.replace_illegal_chars(self.config.get('measurement_names', {}).get(key, key)) for key in self.values]
+        return [tools.replace_illegal_chars(self.config.get('measurement_names', {}).get(key, key)) for key in self.value_names]
 
     @property
     def measurement_names_paths(self):

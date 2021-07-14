@@ -35,7 +35,6 @@ class BaseConfigLoader:
             source.TYPE_MYSQL: 'jdbc_http',
             source.TYPE_POSTGRES: 'jdbc_http',
             source.TYPE_SAGE: 'sage_http',
-            source.TYPE_SNMP: 'snmp',
             source.TYPE_SPLUNK: 'tcp_server_http',
             source.TYPE_SOLARWINDS: 'solarwinds',
             source.TYPE_VICTORIA: 'victoria_http',
@@ -54,6 +53,7 @@ class SchemaBaseConfigLoader(BaseConfigLoader):
             source.TYPE_KAFKA: 'kafka_http',
             source.TYPE_MYSQL: 'jdbc_http',
             source.TYPE_POSTGRES: 'jdbc_http',
+            source.TYPE_SNMP: 'snmp',
         }[pipeline.source.type]
         return name + '_schema.json'
 
