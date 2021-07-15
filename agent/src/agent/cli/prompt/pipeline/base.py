@@ -1,5 +1,6 @@
 import click
 import pytz
+import re
 
 from copy import deepcopy
 from agent.cli import preview
@@ -91,7 +92,7 @@ class Prompter:
             self.config['properties'] = {}
             properties = self.prompt_object('Static dimensions', self.get_default_object_value('properties'))
             for k, v in properties.items():
-                self.config['properties'][k.replace(' ', '_').replace('.', '_')] = v.replace(' ', '_').replace('.', '_')
+                self.config['properties'][re.sub('\s+', '_', k).replace('.', '_')] = re.sub('\s+', '_', v).replace('.', '_')
 
     @infinite_retry
     def prompt_tags(self):

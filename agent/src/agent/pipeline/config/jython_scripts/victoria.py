@@ -10,6 +10,7 @@ try:
     import json
     import time
     import urllib
+    import re
 finally:
     sdc.importUnlock()
 
@@ -41,7 +42,7 @@ def make_request(url_):
     for i in range(1, N_REQUESTS_TRIES + 1):
         try:
             sdc.log.debug(url_)
-            res = session.get(url_, stream=True, headers={"Accept-Encoding": "deflate"},
+            res = session.get(url_, stream=True, headers={'Accept-Encoding': 'deflate'},
                               verify=bool(sdc.userParams['VERIFY_SSL']), timeout=sdc.userParams['QUERY_TIMEOUT'])
             res.raise_for_status()
         except Exception as e:
@@ -72,7 +73,7 @@ def create_base_metric(metric_name):
             'what': metric_name,
             'target_type': 'gauge',
         },
-        "tags": {},
+        'tags': {},
     }
     return base_metric_
 
@@ -83,8 +84,8 @@ def process_matrix(result_, end_):
     for result_ in result_['data']['result']:
         base_metric = create_base_metric(get_metric_name(result_))
         for dimension, value in result_['metric'].items():
-            dimension = dimension.strip().replace(" ", "_").replace(".", "_")
-            value = value.strip().replace(" ", "_").replace(".", "_")
+            dimension = re.sub('\s+', '_', dimension.strip()).replace('.', '_')
+            value = re.sub('\s+', '_', value.strip()).replace('.', '_')
             base_metric['properties'][dimension] = value
         for timestamp, value in result_[get_result_key(res)]:
             metric = base_metric
@@ -109,8 +110,8 @@ def process_vector(result_, end_):
     for result_ in result_['data']['result']:
         base_metric = create_base_metric(get_metric_name(result_))
         for dimension, value in result_['metric'].items():
-            dimension = dimension.replace(" ", "_").replace(".", "_")
-            value = value.replace(" ", "_").replace(".", "_")
+            dimension = re.sub('\s+', '_', dimension.strip()).replace('.', '_')
+            value = re.sub('\s+', '_', value).replace('.', '_')
             base_metric['properties'][dimension] = value
         timestamp, value = result_[get_result_key(res)]
         metric = base_metric
