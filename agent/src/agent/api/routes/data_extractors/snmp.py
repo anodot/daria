@@ -10,5 +10,4 @@ snmp = Blueprint('snmp_source', __name__)
 def read(pipeline_id: str):
     pipeline_ = pipeline.repository.get_by_id(pipeline_id)
     metrics = data_extractor.snmp.extract_metrics(pipeline_)
-    raise Exception('hey3')
     return jsonify(metrics)
