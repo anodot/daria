@@ -1,12 +1,11 @@
 import time
-
 import pytest
 
 from .test_zpipeline_base import TestPipelineBase, get_expected_schema_output
 from ..conftest import get_output
 
 
-class TestKafka(TestPipelineBase):
+class TestSNMP(TestPipelineBase):
     __test__ = True
     params = {
         'test_start': [

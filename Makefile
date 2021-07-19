@@ -137,7 +137,7 @@ get-streamsets-libs: install-streamsets-requirements
 
 install-streamsets-requirements:
 	rm -rf streamsets/python-libs/*
-	pip install --upgrade pip && pip install --target streamsets/python-libs -r streamsets/python_requirements.txt
+	pip install --upgrade pip && pip install --target streamsets/python-libs -r containers/streamsets/python_requirements.txt
 
 setup-all: setup-victoria setup-kafka setup-elastic setup-zabbix
 

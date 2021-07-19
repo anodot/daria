@@ -85,7 +85,6 @@ def _get_preview_type(source_type: str) -> Preview:
         source.TYPE_ELASTIC: ElasticPreview,
         source.TYPE_SPLUNK: SchemalessPreview,
         source.TYPE_DIRECTORY: SchemalessPreview,
-        # todo snmp preview?
         source.TYPE_SAGE: Preview,
         source.TYPE_VICTORIA: Preview,
         source.TYPE_ZABBIX: SchemalessPreview,
