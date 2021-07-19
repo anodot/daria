@@ -244,8 +244,6 @@ services:
   snmpsim:
     build: containers/snmpsim
     container_name: snmpsim
-    ports:
-      - 11161:11161/udp
 
 volumes:
   sdc-data:

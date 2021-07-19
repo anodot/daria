@@ -19,8 +19,7 @@ def extract_metrics(pipeline_: Pipeline) -> list:
     iterator = getCmd(
         SnmpEngine(),
         CommunityData(pipeline_.source.read_community, mpModel=0),
-        # UdpTransportTarget((url.hostname, url.port), timeout=pipeline_.source.query_timeout),
-        UdpTransportTarget(("127.0.0.1", 11161), timeout=pipeline_.source.query_timeout),
+        UdpTransportTarget((url.hostname, url.port), timeout=pipeline_.source.query_timeout),
         ContextData(),
         *[ObjectType(ObjectIdentity(mib)) for mib in pipeline_.config['mibs']],
         lookupNames=True,
@@ -46,7 +45,7 @@ def extract_metrics(pipeline_: Pipeline) -> list:
 def _create_metric(pipeline_: Pipeline, var_binds: list) -> dict:
     metric = {
         'measurements': {},
-        'schema_id': pipeline_.get_schema_id(),
+        'schemaId': pipeline_.get_schema_id(),
         'dimensions': {},
         'tags': {},
     }
