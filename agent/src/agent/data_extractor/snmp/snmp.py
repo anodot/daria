@@ -19,7 +19,8 @@ def extract_metrics(pipeline_: Pipeline) -> list:
     iterator = getCmd(
         SnmpEngine(),
         CommunityData(pipeline_.source.read_community, mpModel=0),
-        UdpTransportTarget((url.hostname, url.port), timeout=pipeline_.source.query_timeout),
+        # UdpTransportTarget((url.hostname, url.port), timeout=pipeline_.source.query_timeout),
+        UdpTransportTarget(("127.0.0.1", 11161), timeout=pipeline_.source.query_timeout),
         ContextData(),
         *[ObjectType(ObjectIdentity(mib)) for mib in pipeline_.config['mibs']],
         lookupNames=True,

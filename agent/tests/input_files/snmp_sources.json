@@ -3,7 +3,7 @@
     "type": "snmp",
     "name": "snmp",
     "config": {
-      "url": "http://localhost:1161",
+      "url": "http://snmpsim:161",
       "read_community": "public",
       "query_timeout": 30
     }
