@@ -63,7 +63,7 @@ services:
 #      - ./scripts:/usr/src/app/scripts
       - ./test-datasets:/home
     ports:
-      - 80:80
+      - 80:8080
 
   db:
     container_name: db

@@ -1,10 +1,8 @@
 import os
 import subprocess
 
-from agent import cli
 
-
-def test_send_to_bc(cli_runner):
+def test_send_to_bc():
     # if the script is not working the test will fail with an exception
     path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'src', 'agent', 'scripts', 'send_to_bc.py')
     try:
