@@ -247,8 +247,12 @@ class Pipeline(Entity, sdc_client.IPipeline):
         self.config['query'] = query
 
     @property
-    def interval(self) -> str:
-        return self.config.get('interval')
+    def interval(self) -> int:
+        # returns interval in seconds
+        interval = self.config.get('interval')
+        if interval in Interval.VALUES:
+            return Interval(interval).total_seconds()
+        return int(interval)
 
     @property
     def days_to_backfill(self) -> str:

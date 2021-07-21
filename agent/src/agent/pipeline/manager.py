@@ -192,8 +192,8 @@ def transform_for_bc(pipeline_: Pipeline) -> dict:
             'type': pipeline_.source.type,
         },
         'scheduling': {
-            'interval': int(pipeline_.config.get('interval', 0)),
-            'delay': pipeline_.config.get('delay', 0),
+            'interval': pipeline_.interval,
+            'delay': pipeline_.delay,
         },
         'progress': {
             'last_offset': pipeline_.offset.offset if pipeline_.offset else '',
