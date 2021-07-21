@@ -181,6 +181,9 @@ _run-elastic:
 run-influx:
 	$(DOCKER_COMPOSE_DEV) up -d influx
 
+run-snmpsim:
+	$(DOCKER_COMPOSE_DEV) up -d snmpsim
+
 run-victoria: _run-victoria nap setup-victoria
 
 _run-victoria:
