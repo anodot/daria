@@ -37,29 +37,35 @@ entityName = ''
 if sdc.lastOffsets.containsKey(entityName):
     offset = int(float(sdc.lastOffsets.get(entityName)))
 else:
-    offset = to_timestamp(datetime.now().replace(second=0, microsecond=0)) - get_interval()
+    offset = to_timestamp(datetime.now().replace(second=0, microsecond=0))
 
 sdc.log.info('OFFSET: ' + str(offset))
 
 while True:
     if sdc.isStopped():
         break
-    end = offset + get_interval()
-    if end > get_now():
-        time.sleep(end - get_now())
+    if offset > get_now():
+        time.sleep(offset - get_now())
 
     batch = sdc.createBatch()
 
     res = requests.get(sdc.userParams['SNMP_SOURCE_URL'])
     res.raise_for_status()
     for metric in res.json():
+        metric['timestamp'] = offset
         record = sdc.createRecord('record created ' + str(datetime.now()))
         record.value = metric
         batch.add(record)
 
         if batch.size() == sdc.batchSize:
-            batch.process(entityName, str(end))
+            batch.process(entityName, str(offset))
             batch = sdc.createBatch()
 
-    offset += get_interval()
+    event = sdc.createEvent('sage_error', 1)
+    event.value = {
+        'watermark': offset,
+        'schemaId': sdc.userParams['SCHEMA_ID']
+    }
+    batch.addEvent(event)
     batch.process(entityName, str(offset))
+    offset += get_interval()

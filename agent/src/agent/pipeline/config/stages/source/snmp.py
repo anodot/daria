@@ -12,6 +12,7 @@ class SNMP(Stage):
                 'scriptConf.params': [
                     {'key': 'SNMP_SOURCE_URL', 'value': self._get_snmp_source_url()},
                     {'key': 'INTERVAL_IN_SECONDS', 'value': str(self.pipeline.interval)},
+                    {'key': 'SCHEMA_ID', 'value': str(self.pipeline.get_schema_id())},
                 ],
                 'script': f.read(),
             }

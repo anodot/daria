@@ -3,9 +3,9 @@
     "schemaVersion" : 6,
     "version" : 19,
     "pipelineId" : "cacti6cbb199b-50f2-49ae-9e04-065960040de3",
-    "title" : "cacti",
+    "title" : "snmp",
     "description" : "",
-    "uuid" : "d5598abe-7d96-40f2-bf4a-9a04be2f0acc",
+    "uuid" : "2e4c663b-fe40-4f0d-bcaf-b27661baeed1",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -416,7 +416,7 @@
       "stageVersion" : "1",
       "configuration" : [ {
         "name" : "script",
-        "value" : "global sdc\n\ntry:\n    sdc.importLock()\n    import sys\n    import os\n    import time\n    from datetime import datetime, timedelta\n\n    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))\n    import requests\nfinally:\n    sdc.importUnlock()\n\n\ndef to_timestamp(date):\n    epoch = datetime(1970, 1, 1)\n    return int((date - epoch).total_seconds())\n\n\ndef get_interval():\n    return int(sdc.userParams['INTERVAL_IN_SECONDS'])\n\n\ndef get_now_with_delay():\n    return int(time.time()) - int(sdc.userParams['DELAY_IN_MINUTES']) * 60\n\n\ndef get_step():\n    return int(sdc.userParams['STEP_IN_SECONDS'])\n\n\nentityName = ''\n\nif sdc.lastOffsets.containsKey(entityName):\n    offset = int(float(sdc.lastOffsets.get(entityName)))\nelif sdc.userParams['DAYS_TO_BACKFILL']:\n    offset = to_timestamp(datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=int(sdc.userParams['DAYS_TO_BACKFILL'])))\nelse:\n    offset = to_timestamp(datetime.now().replace(second=0, microsecond=0))\n\nsdc.log.info('OFFSET: ' + str(offset))\n\nwhile True:\n    if sdc.isStopped():\n        break\n    end = offset + get_interval()\n    if end > get_now_with_delay():\n        time.sleep(end - get_now_with_delay())\n\n    batch = sdc.createBatch()\n\n    res = requests.get(\n        sdc.userParams['RRD_SOURCE_URL'],\n        params={\n            'start': offset,\n            'end': offset + get_interval(),\n            'step': get_step(),\n        }\n    )\n    res.raise_for_status()\n    for metric in res.json():\n        record = sdc.createRecord('record created ' + str(datetime.now()))\n        record.value = metric\n        batch.add(record)\n\n        if batch.size() == sdc.batchSize:\n            batch.process(entityName, str(end))\n            batch = sdc.createBatch()\n            if sdc.isStopped():\n                break\n\n    offset += get_interval()\n    batch.process(entityName, str(offset))\n"
+        "value" : "global sdc\n\nMAX_TRIES = 3\n\ntry:\n    sdc.importLock()\n    import sys\n    import os\n    import time\n    from datetime import datetime, timedelta\n\n    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))\n    import requests\nfinally:\n    sdc.importUnlock()\n\n\ndef to_timestamp(date):\n    epoch = datetime(1970, 1, 1)\n    return int((date - epoch).total_seconds())\n\n\ndef get_interval():\n    return int(sdc.userParams['INTERVAL_IN_SECONDS'])\n\n\ndef get_now():\n    return int(time.time())\n\n\ndef get_step():\n    return int(sdc.userParams['STEP_IN_SECONDS'])\n\n\nentityName = ''\n\nif sdc.lastOffsets.containsKey(entityName):\n    offset = int(float(sdc.lastOffsets.get(entityName)))\nelse:\n    offset = to_timestamp(datetime.now().replace(second=0, microsecond=0)) - get_interval()\n\nsdc.log.info('OFFSET: ' + str(offset))\n\nwhile True:\n    if sdc.isStopped():\n        break\n    end = offset + get_interval()\n    if end > get_now():\n        time.sleep(end - get_now())\n\n    batch = sdc.createBatch()\n\n    res = requests.get(sdc.userParams['SNMP_SOURCE_URL'])\n    res.raise_for_status()\n    for metric in res.json():\n        record = sdc.createRecord('record created ' + str(datetime.now()))\n        record.value = metric\n        batch.add(record)\n\n        if batch.size() == sdc.batchSize:\n            batch.process(entityName, str(end))\n            batch = sdc.createBatch()\n\n    event = sdc.createEvent('sage_error', 1)\n    event.value = {\n        'watermark': end,\n        'schemaId': sdc.userParams['SCHEMA_ID']\n    }\n    batch.addEvent(event)\n    batch.process(entityName, str(offset))\n    offset = end"
       }, {
         "name" : "scriptConf.batchSize",
         "value" : 1000
@@ -429,20 +429,14 @@
       }, {
         "name" : "scriptConf.params",
         "value" : [ {
-          "key" : "RRD_SOURCE_URL",
-          "value" : "http://anodot-agent/rrd_source/fetch_data/${pipeline:id()}"
+          "key" : "SNMP_SOURCE_URL",
+          "value" : "http://anodot-agent/data_extractor/snmp/${pipeline:id()}"
         }, {
           "key" : "INTERVAL_IN_SECONDS",
           "value" : "300"
         }, {
-          "key" : "DELAY_IN_MINUTES",
-          "value" : "0"
-        }, {
-          "key" : "DAYS_TO_BACKFILL",
-          "value" : "9"
-        }, {
-          "key" : "STEP_IN_SECONDS",
-          "value" : "300"
+          "key" : "SCHEMA_ID",
+          "value" : "snmp-1234"
         } ]
       }, {
         "name" : "stageOnRecordError",
@@ -455,11 +449,11 @@
         "description" : "",
         "label" : "Jython get metrics",
         "xPos" : 254,
-        "displayMode" : "BASIC"
+        "displayMode" : "ADVANCED"
       },
       "inputLanes" : [ ],
       "outputLanes" : [ "destination_OutputLane" ],
-      "eventLanes" : [ ],
+      "eventLanes" : [ "source_EventLane" ],
       "services" : [ ]
     }, {
       "instanceName" : "ExpressionEvaluator_02",
@@ -469,8 +463,8 @@
       "configuration" : [ {
         "name" : "expressionProcessorConfigs",
         "value" : [ {
-          "fieldToSet" : "/",
-          "expression" : "${record:value('/')}"
+          "fieldToSet" : "/dimensions/sysName",
+          "expression" : "${record:value('/dimensions/sysName') == 'value=zeus.snmplabs.com (you can change this!)' ? 'zeus.snmplabs.com' : record:value('/dimensions/sysName')}"
         } ]
       }, {
         "name" : "headerAttributeConfigs",
@@ -511,8 +505,11 @@
       "configuration" : [ {
         "name" : "renameMapping",
         "value" : [ {
-          "fromFieldExpression" : "/properties/query_ifAlias",
-          "toFieldExpression" : "/properties/alias"
+          "fromFieldExpression" : "/dimensions/sysDescr",
+          "toFieldExpression" : "/dimensions/system_description"
+        }, {
+          "fromFieldExpression" : "/dimensions/sysName",
+          "toFieldExpression" : "/dimensions/host_name"
         } ]
       }, {
         "name" : "errorHandler.nonExistingFromFieldHandling",
@@ -579,13 +576,13 @@
           "expression" : "${emptyList()}"
         }, {
           "fieldToSet" : "/tags/pipeline_id[0]",
-          "expression" : "${\"cacti\"}"
+          "expression" : "${\"snmp\"}"
         }, {
           "fieldToSet" : "/tags/pipeline_type",
           "expression" : "${emptyList()}"
         }, {
           "fieldToSet" : "/tags/pipeline_type[0]",
-          "expression" : "${\"cacti\"}"
+          "expression" : "${\"snmp\"}"
         }, {
           "fieldToSet" : "/timestamp",
           "expression" : "${record:value('/timestamp')}"
@@ -823,10 +820,10 @@
         "value" : ""
       }, {
         "name" : "conf.client.useProxy",
-        "value" : false
+        "value" : true
       }, {
         "name" : "conf.client.proxy.uri",
-        "value" : null
+        "value" : "http://squid:3128"
       }, {
         "name" : "conf.client.proxy.username",
         "value" : ""
@@ -934,6 +931,319 @@
       "outputLanes" : [ ],
       "eventLanes" : [ ],
       "services" : [ ]
+    }, {
+      "instanceName" : "AnodotDestination_01",
+      "library" : "anodot",
+      "stageName" : "anodot_stage_destination_AnodotDTarget",
+      "stageVersion" : "1",
+      "configuration" : [ {
+        "name" : "conf.resourceUrl",
+        "value" : "${ANODOT_BASE_URL}/api/v1/metrics/watermark?token=${TOKEN}&protocol=${PROTOCOL}"
+      }, {
+        "name" : "conf.dataFormat",
+        "value" : "JSON"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.charset",
+        "value" : "UTF-8"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.csvFileFormat",
+        "value" : "CSV"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.csvHeader",
+        "value" : "NO_HEADER"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.csvReplaceNewLines",
+        "value" : true
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.csvReplaceNewLinesString",
+        "value" : " "
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.csvCustomDelimiter",
+        "value" : "|"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.csvCustomEscape",
+        "value" : "\\"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.csvCustomQuote",
+        "value" : "\""
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.csvQuoteMode",
+        "value" : "MINIMAL"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.jsonMode",
+        "value" : "MULTIPLE_OBJECTS"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.textFieldPath",
+        "value" : "/text"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.textRecordSeparator",
+        "value" : "\\n"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.textFieldMissingAction",
+        "value" : "ERROR"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.textEmptyLineIfNull",
+        "value" : false
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.avroSchemaSource",
+        "value" : null
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.avroSchema",
+        "value" : null
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.registerSchema",
+        "value" : false
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.schemaRegistryUrlsForRegistration",
+        "value" : [ "" ]
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.schemaRegistryUrls",
+        "value" : [ "" ]
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.basicAuthUserInfo",
+        "value" : null
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.schemaLookupMode",
+        "value" : "SUBJECT"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.subject",
+        "value" : null
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.subjectToRegister",
+        "value" : null
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.basicAuthUserInfoForRegistration",
+        "value" : null
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.schemaId",
+        "value" : null
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.includeSchema",
+        "value" : true
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.avroCompression",
+        "value" : "NULL"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.binaryFieldPath",
+        "value" : "/"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.protoDescriptorFile",
+        "value" : null
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.messageType",
+        "value" : null
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.fileNameEL",
+        "value" : null
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.wholeFileExistsAction",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.includeChecksumInTheEvents",
+        "value" : false
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.checksumAlgorithm",
+        "value" : "MD5"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.xmlPrettyPrint",
+        "value" : true
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.xmlValidateSchema",
+        "value" : false
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.xmlSchema",
+        "value" : null
+      }, {
+        "name" : "conf.client.transferEncoding",
+        "value" : "BUFFERED"
+      }, {
+        "name" : "conf.client.httpCompression",
+        "value" : "NONE"
+      }, {
+        "name" : "conf.client.connectTimeoutMillis",
+        "value" : 0
+      }, {
+        "name" : "conf.client.readTimeoutMillis",
+        "value" : 0
+      }, {
+        "name" : "conf.client.numThreads",
+        "value" : 1
+      }, {
+        "name" : "conf.client.authType",
+        "value" : "NONE"
+      }, {
+        "name" : "conf.client.useOAuth2",
+        "value" : false
+      }, {
+        "name" : "conf.client.oauth.consumerKey",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth.consumerSecret",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth.token",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth.tokenSecret",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth2.credentialsGrantType",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth2.tokenUrl",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth2.clientId",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth2.clientSecret",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth2.username",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth2.password",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth2.resourceOwnerClientId",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth2.resourceOwnerClientSecret",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth2.algorithm",
+        "value" : "NONE"
+      }, {
+        "name" : "conf.client.oauth2.key",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth2.jwtClaims",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth2.transferEncoding",
+        "value" : "BUFFERED"
+      }, {
+        "name" : "conf.client.oauth2.additionalValues",
+        "value" : [ { } ]
+      }, {
+        "name" : "conf.client.basicAuth.username",
+        "value" : null
+      }, {
+        "name" : "conf.client.basicAuth.password",
+        "value" : null
+      }, {
+        "name" : "conf.client.useProxy",
+        "value" : false
+      }, {
+        "name" : "conf.client.proxy.uri",
+        "value" : null
+      }, {
+        "name" : "conf.client.proxy.username",
+        "value" : null
+      }, {
+        "name" : "conf.client.proxy.password",
+        "value" : null
+      }, {
+        "name" : "conf.client.tlsConfig.tlsEnabled",
+        "value" : false
+      }, {
+        "name" : "conf.client.tlsConfig.keyStoreFilePath",
+        "value" : null
+      }, {
+        "name" : "conf.client.tlsConfig.keyStoreType",
+        "value" : "JKS"
+      }, {
+        "name" : "conf.client.tlsConfig.keyStorePassword",
+        "value" : null
+      }, {
+        "name" : "conf.client.tlsConfig.keyStoreAlgorithm",
+        "value" : "SunX509"
+      }, {
+        "name" : "conf.client.tlsConfig.trustStoreFilePath",
+        "value" : null
+      }, {
+        "name" : "conf.client.tlsConfig.trustStoreType",
+        "value" : "JKS"
+      }, {
+        "name" : "conf.client.tlsConfig.trustStorePassword",
+        "value" : null
+      }, {
+        "name" : "conf.client.tlsConfig.trustStoreAlgorithm",
+        "value" : "SunX509"
+      }, {
+        "name" : "conf.client.tlsConfig.useDefaultProtocols",
+        "value" : true
+      }, {
+        "name" : "conf.client.tlsConfig.protocols",
+        "value" : [ ]
+      }, {
+        "name" : "conf.client.tlsConfig.useDefaultCiperSuites",
+        "value" : true
+      }, {
+        "name" : "conf.client.tlsConfig.cipherSuites",
+        "value" : [ ]
+      }, {
+        "name" : "conf.client.requestLoggingConfig.enableRequestLogging",
+        "value" : false
+      }, {
+        "name" : "conf.client.requestLoggingConfig.logLevel",
+        "value" : "FINE"
+      }, {
+        "name" : "conf.client.requestLoggingConfig.verbosity",
+        "value" : "HEADERS_ONLY"
+      }, {
+        "name" : "conf.client.requestLoggingConfig.maxEntitySize",
+        "value" : 0
+      }, {
+        "name" : "conf.headers",
+        "value" : [ ]
+      }, {
+        "name" : "conf.httpMethod",
+        "value" : "POST"
+      }, {
+        "name" : "conf.methodExpression",
+        "value" : null
+      }, {
+        "name" : "conf.singleRequestPerBatch",
+        "value" : true
+      }, {
+        "name" : "conf.rateLimit",
+        "value" : 0
+      }, {
+        "name" : "conf.maxRequestCompletionSecs",
+        "value" : 60
+      }, {
+        "name" : "conf.responseConf.sendResponseToOrigin",
+        "value" : false
+      }, {
+        "name" : "conf.responseConf.responseType",
+        "value" : "SUCCESS_RECORDS"
+      }, {
+        "name" : "conf.agentOffsetUrl",
+        "value" : null
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "yPos" : 297,
+        "stageType" : "TARGET",
+        "icon" : "anodot_logo.png",
+        "description" : "",
+        "label" : "Anodot Watermark Destination",
+        "xPos" : 474,
+        "displayMode" : "BASIC"
+      },
+      "inputLanes" : [ "source_EventLane" ],
+      "outputLanes" : [ ],
+      "eventLanes" : [ ],
+      "services" : [ ]
     } ],
     "errorStage" : {
       "instanceName" : "Discard_ErrorStage",
@@ -955,25 +1265,25 @@
       "services" : [ ]
     },
     "info" : {
-      "pipelineId" : "cacti",
-      "title" : "cacti",
+      "pipelineId" : "snmp",
+      "title" : "snmp",
       "description" : "",
-      "created" : 1616588646496,
-      "lastModified" : 1616595974154,
+      "created" : 1626943829742,
+      "lastModified" : 1626944367840,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "d5598abe-7d96-40f2-bf4a-9a04be2f0acc",
+      "uuid" : "2e4c663b-fe40-4f0d-bcaf-b27661baeed1",
       "valid" : true,
       "metadata" : {
-        "labels" : [ "cacti", "http" ]
+        "labels" : [ "snmp", "http" ]
       },
-      "name" : "cacti",
+      "name" : "snmp",
       "sdcVersion" : "3.18.0",
-      "sdcId" : "62a3bf96-8c9b-11eb-a6d9-f39b95790165"
+      "sdcId" : "71a6d5f1-eac8-11eb-b64e-dd3347959f5a"
     },
     "metadata" : {
-      "labels" : [ "cacti", "http" ]
+      "labels" : [ "snmp", "http" ]
     },
     "statsAggregatorStage" : {
       "instanceName" : "statsAggregatorStageInstance",
@@ -1313,7 +1623,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1616588646608,
+      "timestamp" : 1626943829803,
       "valid" : true
     }, {
       "id" : "stageErrorAlertID",
@@ -1324,7 +1634,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1616588646608,
+      "timestamp" : 1626943829803,
       "valid" : true
     }, {
       "id" : "idleGaugeID",
@@ -1335,7 +1645,7 @@
       "condition" : "${time:now() - value() > 120000}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1616588646608,
+      "timestamp" : 1626943829803,
       "valid" : true
     }, {
       "id" : "batchTimeAlertID",
@@ -1346,12 +1656,12 @@
       "condition" : "${value() > 200}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1616588646608,
+      "timestamp" : 1626943829803,
       "valid" : true
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "9aa698fe-c646-4aec-9337-07fc5d43bf28",
+    "uuid" : "f753b8df-d542-44ac-9536-df9bb2db7e60",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : null

@@ -1,7 +1,7 @@
 import time
 import pytest
 
-from .test_zpipeline_base import TestPipelineBase, get_expected_schema_output
+from .test_zpipeline_base import TestPipelineBase, get_expected_schema_output, get_schema_id
 from ..conftest import get_output
 
 
@@ -18,8 +18,6 @@ class TestSNMP(TestPipelineBase):
         'test_delete_pipeline': [{'name': 'snmp'}],
         'test_source_delete': [{'name': 'snmp'}],
     }
-
-    # todo test watermark
 
     def test_info(self, cli_runner, name=None):
         pytest.skip()
@@ -43,5 +41,10 @@ class TestSNMP(TestPipelineBase):
         expected_output = get_expected_schema_output(name, output, pipeline_type)
         actual_output = get_output(f'{name}_{pipeline_type}.json')
         # we send current timestamp, it's hard to test, so I check only that data was sent during the last minute
-        assert int(time.time()) - actual_output[0].pop('timestamp') < 60
+        timestamp = actual_output[0].pop('timestamp')
+        assert int(time.time()) - timestamp < 60
         assert actual_output == expected_output
+        schema_id = get_schema_id(name)
+        watermark = get_output(f'{schema_id}_watermark.json')
+        assert schema_id == watermark['schemaId']
+        assert timestamp == watermark['watermark']
