@@ -19,7 +19,7 @@ def extract_metrics(pipeline_: Pipeline) -> list:
     iterator = getCmd(
         SnmpEngine(),
         CommunityData(pipeline_.source.read_community, mpModel=0),
-        UdpTransportTarget((url.hostname, url.port), timeout=pipeline_.source.query_timeout),
+        UdpTransportTarget((url.hostname, url.port), timeout=pipeline_.source.query_timeout, retries=0),
         ContextData(),
         *[ObjectType(ObjectIdentity(mib)) for mib in pipeline_.config['mibs']],
         lookupNames=True,
@@ -67,11 +67,10 @@ def _is_dimension(key: str, pipeline_: Pipeline) -> bool:
     return key in pipeline_.dimensions
 
 
-# todo bla is ObjectSomething
-def _get_measurement_name(bla, pipeline_: Pipeline) -> str:
-    if str(bla) in pipeline_.measurement_names:
-        return pipeline_.measurement_names[str(bla)]
-    return bla.getMibNode().label
+def _get_measurement_name(oid: ObjectIdentity, pipeline_: Pipeline) -> str:
+    if str(oid) in pipeline_.measurement_names:
+        return pipeline_.measurement_names[str(oid)]
+    return oid.getMibNode().label
 
 
 def _get_value(var_bind, pipeline_: Pipeline):

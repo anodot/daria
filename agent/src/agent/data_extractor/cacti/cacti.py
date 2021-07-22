@@ -1,14 +1,11 @@
 import os
 import re
-
 import rrdtool
 import tarfile
 
 from copy import deepcopy
 from typing import List, Optional
-
 from anodot.tools import replace_illegal_chars
-
 from agent.data_extractor import cacti
 from agent.pipeline import Pipeline
 from agent import source

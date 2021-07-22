@@ -259,6 +259,8 @@ services:
   snmpsim:
     build: containers/snmpsim
     container_name: snmpsim
+    ports:
+      - 1161:1161/udp
 
 volumes:
   agent-data:
