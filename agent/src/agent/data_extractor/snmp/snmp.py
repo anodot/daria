@@ -24,7 +24,7 @@ def extract_metrics(pipeline_: Pipeline) -> list:
         CommunityData(pipeline_.source.read_community, mpModel=0),
         UdpTransportTarget((url.hostname, url.port), timeout=pipeline_.source.query_timeout, retries=0),
         ContextData(),
-        *[ObjectType(ObjectIdentity(mib)) for mib in pipeline_.config['mibs']],
+        *[ObjectType(ObjectIdentity(mib)) for mib in pipeline_.config['oids']],
         lookupNames=True,
         lookupMib=True
     )
