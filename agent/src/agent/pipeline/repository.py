@@ -81,6 +81,11 @@ def get_by_streamsets_id(streamsets_id: int) -> List[Pipeline]:
     return Session.query(Pipeline).filter(Pipeline.streamsets_id == streamsets_id).all()
 
 
+@typed_source
+def get_by_streamsets_url(streamsets_url: str) -> List[Pipeline]:
+    return Session.query(Pipeline).filter(Pipeline.streamsets.has(url=streamsets_url)).all()
+
+
 def add_deleted_pipeline_id(pipeline_id: str):
     Session.execute(f"INSERT INTO deleted_pipelines VALUES ('{pipeline_id}') ON CONFLICT DO NOTHING")
     Session.commit()

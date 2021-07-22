@@ -53,6 +53,7 @@ class SchemaBaseConfigLoader(BaseConfigLoader):
             source.TYPE_KAFKA: 'kafka_http',
             source.TYPE_MYSQL: 'jdbc_http',
             source.TYPE_POSTGRES: 'jdbc_http',
+            source.TYPE_SNMP: 'snmp',
         }[pipeline.source.type]
         return name + '_schema.json'
 

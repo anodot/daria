@@ -1,0 +1,28 @@
+[
+  {
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "snmp"
+      ],
+      "pipeline_type": [
+        "snmp"
+      ]
+    },
+    "dimensions": {
+      "system_description": "Linux zeus 4.8.6.5-smp #2 SMP Sun Nov 13 14:58:11 CDT 2016 i686",
+      "host_name": "zeus.snmplabs.com"
+    },
+    "measurements": {
+      "mib-2": 2.0
+    }
+  }
+]

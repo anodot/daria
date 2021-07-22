@@ -1,3 +1,4 @@
+from agent.data_extractor.snmp import snmp
 from agent import cli, source, destination, pipeline, streamsets, di
 from agent.api import main
 from agent.destination.anodot_api_client import AnodotApiClient
@@ -20,6 +21,7 @@ di.init()
 # s = http.Session()
 # r = s.get('https://10.237.70.2:17778/SolarWinds/InformationService/v3/Json/Query?query=select+top+1+1+as+test+from+Orion.Accounts')
 # r.raise_for_status()
+# r = snmp.extract_metrics(pipeline.repository.get_by_id('snmp'))
 
 t = 1
 

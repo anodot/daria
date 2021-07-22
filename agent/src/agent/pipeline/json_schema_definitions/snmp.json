@@ -1,0 +1,25 @@
+{
+  "type": "object",
+  "properties": {
+    "properties": {"type": "object"},
+    "source": {"type": "string"},
+    "tags": {
+      "type": "object",
+      "patternProperties":  {"[^ \\.]+": {"type": "array", "items": {"type": "string"}}}
+    },
+    "interval": {"type": "string", "enum": ["1m", "5m", "1h"]},
+    "pipeline_id": {"type": "string"},
+    "mibs": {"type": "array", "items": {"type": "string"}},
+    "values": {"type": "object"},
+    "measurement_names": {"type": "object"},
+    "rename_dimensions_mapping": {"type": "object"},
+    "dimensions": {"type": "array", "items": {"type": "string"}},
+    "transform": {
+      "type": "object",
+      "properties": {
+        "config": {"type": "string"}
+      }
+    }
+  },
+  "required": ["mibs", "interval", "values"]
+}

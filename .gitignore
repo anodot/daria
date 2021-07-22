@@ -9,5 +9,5 @@ agent.log
 agent/data/*
 version.py
 sdc-data*/
-streamsets/python-libs/
+containers/streamsets/python-libs/
 agent/backup-data/

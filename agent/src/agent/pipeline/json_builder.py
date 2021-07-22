@@ -5,6 +5,7 @@ import jsonschema
 
 from typing import List
 from agent import source, pipeline
+from agent.data_extractor.snmp import snmp
 from agent.modules.logger import get_logger
 from agent.pipeline import Pipeline
 from agent.pipeline.config import expression_parser
@@ -279,6 +280,24 @@ class SageLoadClientData(LoadClientData):
         return self.client_config
 
 
+class SNMPLoadClientData(LoadClientData):
+    VALIDATION_SCHEMA_FILE_NAME = 'snmp'
+
+    def load(self, client_config):
+        super().load(client_config)
+        self.client_config['timestamp'] = {}
+        self.client_config['timestamp']['type'] = 'unix'
+        self.client_config['uses_schema'] = True
+        self._add_default_dimensions()
+        return self.client_config
+
+    def _add_default_dimensions(self):
+        if 'dimensions' not in self.client_config:
+            self.client_config['dimensions'] = []
+        self.client_config['mibs'].append(snmp.HOSTNAME_OID)
+        self.client_config['dimensions'].append(snmp.HOSTNAME_OID)
+
+
 class SolarWindsClientData(LoadClientData):
     VALIDATION_SCHEMA_FILE_NAME = 'solarwinds'
 
@@ -312,6 +331,7 @@ def get_file_loader(pipeline_: Pipeline, is_edit=False) -> LoadClientData:
         source.TYPE_MYSQL: JDBCLoadClientData,
         source.TYPE_POSTGRES: JDBCLoadClientData,
         source.TYPE_SAGE: SageLoadClientData,
+        source.TYPE_SNMP: SNMPLoadClientData,
         source.TYPE_SOLARWINDS: SolarWindsClientData,
         source.TYPE_SPLUNK: TcpLoadClientData,
         source.TYPE_VICTORIA: VictoriaLoadClientData,

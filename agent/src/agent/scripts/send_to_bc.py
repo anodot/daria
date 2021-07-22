@@ -6,7 +6,7 @@ from agent.destination.anodot_api_client import AnodotApiClient
 from agent.modules.logger import get_logger
 
 destination_ = destination.repository.get()
-logger = get_logger(__name__)
+logger = get_logger(__name__, stdout=True)
 
 
 def _update_errors_count():

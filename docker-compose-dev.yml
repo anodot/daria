@@ -2,7 +2,7 @@ version: '3.1'
 
 services:
   dc:
-    build: streamsets
+    build: containers/streamsets
     container_name: dc
     ports:
       - "18630:18630"
@@ -21,7 +21,7 @@ services:
 
 #  creating second streamsets to run tests on multiple instances
   dc2:
-    build: streamsets
+    build: containers/streamsets
     container_name: dc2
     ports:
       - "18629:18630"
@@ -193,16 +193,16 @@ services:
       - 9200:9200
 
   dummy_destination:
-    build: dummy_destination
+    build: containers/dummy_destination
     container_name: dummy_destination
     volumes:
       - ./agent/output:/app/log
-      - ./dummy_destination:/app/
+      - ./containers/dummy_destination:/app/
     ports:
       - 8080:80
 
   sage:
-    build: sage_mock
+    build: containers/sage_mock
 
   victoriametrics:
     container_name: victoriametrics
@@ -255,6 +255,12 @@ services:
     ports:
       - 8123:8123
       - 9000:9000
+
+  snmpsim:
+    build: containers/snmpsim
+    container_name: snmpsim
+    ports:
+      - 1161:1161/udp
 
 volumes:
   agent-data:

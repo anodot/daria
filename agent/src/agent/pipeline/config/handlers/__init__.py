@@ -8,6 +8,7 @@ from . import jdbc
 from . import kafka
 from . import mongo
 from . import schema
+from . import snmp
 from . import solarwinds
 from . import tcp
 from . import victoria

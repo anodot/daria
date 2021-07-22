@@ -4,6 +4,8 @@ from agent.pipeline.validators import elastic_query, jdbc_query
 from agent import source
 
 
+# todo don't raise ClickException here, we need ValidationException
+
 class BaseValidator:
     @staticmethod
     def validate(pipeline):
@@ -31,6 +33,6 @@ class JDBCValidator(BaseValidator):
 def get_config_validator(source_type: str) -> BaseValidator:
     if source_type == source.TYPE_ELASTIC:
         return ElasticValidator()
-    if source_type in [source.TYPE_MYSQL, source.TYPE_POSTGRES, source.TYPE_CLICKHOUSE]:
+    elif source_type in [source.TYPE_MYSQL, source.TYPE_POSTGRES, source.TYPE_CLICKHOUSE]:
         return JDBCValidator()
     return BaseValidator()

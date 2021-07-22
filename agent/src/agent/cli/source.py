@@ -115,7 +115,15 @@ def _edit_using_file(file):
 
 
 def _prompt_source_type():
-    return click.prompt('Choose source', type=click.Choice(source.types.keys())).strip()
+    return click.prompt(
+        'Choose source',
+        type=click.Choice(_filter_without_cli(source.types.keys()))
+    ).strip()
+
+
+def _filter_without_cli(sources: list) -> list:
+    without_cli = [source.TYPE_SNMP]
+    return [source_ for source_ in sources if source_ not in without_cli]
 
 
 source_group.add_command(create)

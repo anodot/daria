@@ -132,12 +132,12 @@ run-unit-tests:
 	$(DOCKER_TEST_PARALLEL) tests/unit/
 
 get-streamsets-libs: install-streamsets-requirements
-	rm -rf streamsets/lib/*
-	curl -L https://github.com/anodot/anodot-sdc-stage/releases/download/v1.1.2/anodot-1.1.2.tar.gz -o /tmp/sdc.tar.gz && tar xvfz /tmp/sdc.tar.gz -C streamsets/lib
+	rm -rf containers/streamsets/lib/*
+	curl -L https://github.com/anodot/anodot-sdc-stage/releases/download/v1.1.2/anodot-1.1.2.tar.gz -o /tmp/sdc.tar.gz && tar xvfz /tmp/sdc.tar.gz -C containers/streamsets/lib
 
 install-streamsets-requirements:
-	rm -rf streamsets/python-libs/*
-	pip install --upgrade pip && pip install --target streamsets/python-libs -r streamsets/python_requirements.txt
+	rm -rf containers/streamsets/python-libs/*
+	pip install --upgrade pip && pip install --target containers/streamsets/python-libs -r containers/streamsets/python_requirements.txt
 
 setup-all: setup-victoria setup-kafka setup-elastic setup-zabbix
 
@@ -181,6 +181,9 @@ _run-elastic:
 run-influx:
 	$(DOCKER_COMPOSE_DEV) up -d influx
 
+run-snmpsim:
+	$(DOCKER_COMPOSE_DEV) up -d snmpsim
+
 run-victoria: _run-victoria nap setup-victoria
 
 _run-victoria:
@@ -196,6 +199,8 @@ run-zookeeper:
 
 run-mongo:
 	$(DOCKER_COMPOSE_DEV) up -d mongo
+
+run-cacti: run-mysql
 
 run-mysql:
 	$(DOCKER_COMPOSE_DEV) up -d mysql

@@ -2,7 +2,7 @@ version: '3.1'
 
 services:
   dc:
-    build: streamsets
+    build: containers/streamsets
     container_name: dc
     ports:
       - "18630:18630"
@@ -23,7 +23,7 @@ services:
 
   #  creating second streamsets to run tests on multiple instances
   dc2:
-    build: streamsets
+    build: containers/streamsets
     container_name: dc2
     ports:
       - "18629:18630"
@@ -188,13 +188,13 @@ services:
       - 9200:9200
 
   dummy_destination:
-    build: dummy_destination
+    build: containers/dummy_destination
     container_name: dummy_destination
     volumes:
       - dummy-destination-data:/app/log
 
   sage:
-    build: sage_mock
+    build: containers/sage_mock
 
   victoriametrics:
     container_name: victoriametrics
@@ -240,6 +240,12 @@ services:
     volumes:
       - /var/lib/clickhouse
       - ./volumes/clickhouse-initdb:/docker-entrypoint-initdb.d
+
+  snmpsim:
+    build: containers/snmpsim
+    container_name: snmpsim
+    ports:
+      - 1161:1161/udp
 
 volumes:
   sdc-data:

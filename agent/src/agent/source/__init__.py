@@ -16,6 +16,7 @@ TYPE_MONGO = 'mongo'
 TYPE_MYSQL = 'mysql'
 TYPE_POSTGRES = 'postgres'
 TYPE_SAGE = 'sage'
+TYPE_SNMP = 'snmp'
 TYPE_SPLUNK = 'splunk'
 TYPE_SOLARWINDS = 'solarwinds'
 TYPE_VICTORIA = 'victoria'
@@ -32,6 +33,7 @@ types = {
     TYPE_MYSQL: JDBCSource,
     TYPE_POSTGRES: JDBCSource,
     TYPE_SAGE: SageSource,
+    TYPE_SNMP: SNMPSource,
     TYPE_SOLARWINDS: SolarWindsSource,
     TYPE_SPLUNK: TCPSource,
     TYPE_VICTORIA: VictoriaMetricsSource,

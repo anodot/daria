@@ -193,6 +193,18 @@ class APISource(Source):
     PASSWORD = 'password'
     VERIFY_SSL = 'verify_ssl'
 
+    @property
+    def url(self) -> str:
+        return self.config[self.URL]
+
+
+class SNMPSource(APISource):
+    READ_COMMUNITY = 'read_community'
+
+    @property
+    def read_community(self) -> str:
+        return self.config[self.READ_COMMUNITY]
+
 
 class VictoriaMetricsSource(APISource):
     pass

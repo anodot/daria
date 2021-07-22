@@ -8,10 +8,15 @@ import inject
 from abc import ABC, abstractmethod
 from datetime import datetime
 from urllib.parse import urlparse
+
+from pysnmp.entity.engine import SnmpEngine
+from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
+
 from agent import source
 from agent.modules.tools import if_validation_enabled
 from agent.modules import validator, zabbix, http
 from agent.source import Source
+from pysnmp.hlapi import getCmd, CommunityData, UdpTransportTarget, ContextData
 
 
 def validate(source_: Source):
@@ -168,6 +173,27 @@ class MongoValidator(Validator):
                 f'Collection {self.source.config[source.MongoSource.CONFIG_DATABASE]} doesn\'t exist')
 
 
+class SNMPValidator(Validator):
+    def validate(self):
+        url = urlparse(self.source.url)
+        iterator = getCmd(
+            SnmpEngine(),
+            CommunityData(self.source.read_community, mpModel=0),
+            UdpTransportTarget((url.hostname, url.port), timeout=10, retries=0),
+            ContextData(),
+            ObjectType(ObjectIdentity('1.3.6.1.2.1.1.5.0')),
+            lookupNames=True,
+            lookupMib=True
+        )
+        for response in iterator:
+            if type(response[0]).__name__ == 'RequestTimedOut':
+                raise ValidationException(f'Couldn\'t get response from `{self.source.url}`')
+
+    @if_validation_enabled
+    def validate_connection(self):
+        pass
+
+
 class SageValidator(Validator):
     VALIDATION_SCHEMA_FILE = 'sage.json'
 
@@ -297,6 +323,7 @@ def get_validator(source_: Source) -> Validator:
         source.TYPE_MYSQL: JDBCValidator,
         source.TYPE_POSTGRES: JDBCValidator,
         source.TYPE_SAGE: SageValidator,
+        source.TYPE_SNMP: SNMPValidator,
         source.TYPE_SPLUNK: SplunkValidator,
         source.TYPE_SOLARWINDS: SolarWindsValidator,
         source.TYPE_VICTORIA: VictoriaMetricsValidator,
