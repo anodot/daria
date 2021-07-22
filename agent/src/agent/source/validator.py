@@ -179,7 +179,7 @@ class SNMPValidator(Validator):
         iterator = getCmd(
             SnmpEngine(),
             CommunityData(self.source.read_community, mpModel=0),
-            UdpTransportTarget((url.hostname, 300), timeout=10, retries=0),
+            UdpTransportTarget((url.hostname, url.port), timeout=10, retries=0),
             ContextData(),
             ObjectType(ObjectIdentity('1.3.6.1.2.1.1.5.0')),
             lookupNames=True,

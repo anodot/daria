@@ -73,8 +73,6 @@ class TestPipelineBaseConfigLoader(BaseConfigLoader):
             source.TYPE_MYSQL: 'test_jdbc_pdsf4587',
             source.TYPE_POSTGRES: 'test_jdbc_pdsf4587',
             source.TYPE_SAGE: 'test_sage_jfhdkj',
-            # todo do I need it?
-            source.TYPE_SNMP: 'test_snmp_jfhdkj',
             source.TYPE_SPLUNK: 'test_tcp_server_jksrj322',
             source.TYPE_SOLARWINDS: 'test_solarwinds_jksrj322',
             source.TYPE_ZABBIX: 'test_zabbix_jfhdkj',
