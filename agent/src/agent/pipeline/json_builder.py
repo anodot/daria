@@ -294,7 +294,7 @@ class SNMPLoadClientData(LoadClientData):
     def _add_default_dimensions(self):
         if 'dimensions' not in self.client_config:
             self.client_config['dimensions'] = []
-        self.client_config['mibs'].append(snmp.HOSTNAME_OID)
+        self.client_config['oids'].append(snmp.HOSTNAME_OID)
         self.client_config['dimensions'].append(snmp.HOSTNAME_OID)
 
 
