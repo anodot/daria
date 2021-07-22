@@ -49,7 +49,7 @@ while True:
 
     batch = sdc.createBatch()
 
-    res = requests.get(sdc.userParams['SNMP_SOURCE_URL'])
+    res = requests.get(sdc.userParams['SNMP_SOURCE_URL'], timeout=60)
     res.raise_for_status()
     for metric in res.json():
         metric['timestamp'] = offset
@@ -61,7 +61,7 @@ while True:
             batch.process(entityName, str(offset))
             batch = sdc.createBatch()
 
-    event = sdc.createEvent('sage_error', 1)
+    event = sdc.createEvent('interval_processed', 1)
     event.value = {
         'watermark': offset,
         'schemaId': sdc.userParams['SCHEMA_ID']

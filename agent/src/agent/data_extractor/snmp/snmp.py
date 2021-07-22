@@ -1,8 +1,11 @@
 import time
 
+from flask import jsonify
 from pysnmp.entity.engine import SnmpEngine
 from pysnmp.hlapi import getCmd, CommunityData, UdpTransportTarget, ContextData
 from pysnmp.smi.rfc1902 import ObjectType, ObjectIdentity
+
+from agent import monitoring
 from agent.data_extractor.snmp.delta_calculator import DeltaCalculator
 from agent.modules import logger
 from agent.pipeline import Pipeline
@@ -31,13 +34,14 @@ def extract_metrics(pipeline_: Pipeline) -> list:
         error_indication, error_status, error_index, var_binds = response
         if error_indication:
             logger_.error(error_indication)
-            continue
+            raise SNMPError(error_indication)
         elif error_status:
-            logger_.error('%s at %s' % (
+            message = '%s at %s' % (
                 error_status.prettyPrint(),
                 error_index and var_binds[int(error_index) - 1][0] or '?'
-            ))
-            continue
+            )
+            logger_.error(message)
+            raise SNMPError(message)
         metrics.append(_create_metric(pipeline_, var_binds))
     return metrics
 
@@ -81,3 +85,7 @@ def _get_value(var_bind, pipeline_: Pipeline):
 
 def _is_running_counter(var_bind, pipeline_) -> bool:
     return pipeline_.values[str(var_bind[0])] == Pipeline.RUNNING_COUNTER
+
+
+class SNMPError(Exception):
+    pass
