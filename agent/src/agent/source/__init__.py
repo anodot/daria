@@ -36,7 +36,7 @@ types = {
     TYPE_SNMP: SNMPSource,
     TYPE_SOLARWINDS: SolarWindsSource,
     TYPE_SPLUNK: TCPSource,
-    TYPE_VICTORIA: VictoriaMetricsSource,
+    TYPE_VICTORIA: PromQLSource,
     TYPE_ZABBIX: ZabbixSource,
 }
 

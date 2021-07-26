@@ -11,6 +11,6 @@ from . import schema
 from . import snmp
 from . import solarwinds
 from . import tcp
-from . import victoria
+from . import promql
 from . import zabbix
 from .sage import SageConfigHandler
