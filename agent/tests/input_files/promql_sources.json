@@ -5,5 +5,12 @@
     "config": {
       "url": "http://victoriametrics:8428"
     }
+  },
+  {
+    "name": "test_thanos",
+    "type": "thanos",
+    "config": {
+      "url": "http://victoriametrics:8428"
+    }
   }
 ]

@@ -6,9 +6,9 @@ from agent.pipeline.config import stages
 logger = get_logger(__name__)
 
 
-class VictoriaConfigHandler(BaseConfigHandler):
+class PromQLConfigHandler(BaseConfigHandler):
     stages_to_override = {
-        'source': stages.source.victoria.VictoriaScript,
+        'source': stages.source.promql.PromQLScript,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties,
         'destination': stages.destination.Destination
     }

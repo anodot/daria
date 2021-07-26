@@ -19,6 +19,7 @@ TYPE_SAGE = 'sage'
 TYPE_SNMP = 'snmp'
 TYPE_SPLUNK = 'splunk'
 TYPE_SOLARWINDS = 'solarwinds'
+TYPE_THANOS = 'thanos'
 TYPE_VICTORIA = 'victoria'
 TYPE_ZABBIX = 'zabbix'
 
@@ -36,7 +37,8 @@ types = {
     TYPE_SNMP: SNMPSource,
     TYPE_SOLARWINDS: SolarWindsSource,
     TYPE_SPLUNK: TCPSource,
-    TYPE_VICTORIA: VictoriaMetricsSource,
+    TYPE_THANOS: PromQLSource,
+    TYPE_VICTORIA: PromQLSource,
     TYPE_ZABBIX: ZabbixSource,
 }
 

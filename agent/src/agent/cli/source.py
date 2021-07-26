@@ -122,7 +122,7 @@ def _prompt_source_type():
 
 
 def _filter_without_cli(sources: list) -> list:
-    without_cli = [source.TYPE_SNMP]
+    without_cli = [source.TYPE_SNMP, source.TYPE_THANOS]
     return [source_ for source_ in sources if source_ not in without_cli]
 
 
