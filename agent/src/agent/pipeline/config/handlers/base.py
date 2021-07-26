@@ -37,6 +37,7 @@ class BaseConfigLoader:
             source.TYPE_SAGE: 'sage_http',
             source.TYPE_SPLUNK: 'tcp_server_http',
             source.TYPE_SOLARWINDS: 'solarwinds',
+            source.TYPE_THANOS: 'promql_http',
             source.TYPE_VICTORIA: 'promql_http',
             source.TYPE_ZABBIX: 'zabbix_http',
         }[pipeline.source.type]

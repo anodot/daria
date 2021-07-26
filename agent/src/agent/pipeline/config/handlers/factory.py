@@ -18,6 +18,7 @@ def get_config_handler(pipeline_: Pipeline) -> BaseConfigHandler:
         source.TYPE_SAGE: pipeline.config.handlers.sage.SageConfigHandler,
         source.TYPE_SOLARWINDS: pipeline.config.handlers.solarwinds.SolarWindsConfigHandler,
         source.TYPE_SPLUNK: pipeline.config.handlers.tcp.TCPConfigHandler,
+        source.TYPE_THANOS: pipeline.config.handlers.promql.PromQLConfigHandler,
         source.TYPE_VICTORIA: pipeline.config.handlers.promql.PromQLConfigHandler,
         source.TYPE_ZABBIX: pipeline.config.handlers.zabbix.ZabbixConfigHandler,
     }

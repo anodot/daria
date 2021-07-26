@@ -334,6 +334,7 @@ def get_file_loader(pipeline_: Pipeline, is_edit=False) -> LoadClientData:
         source.TYPE_SNMP: SNMPLoadClientData,
         source.TYPE_SOLARWINDS: SolarWindsClientData,
         source.TYPE_SPLUNK: TcpLoadClientData,
+        source.TYPE_THANOS: PromQLLoadClientData,
         source.TYPE_VICTORIA: PromQLLoadClientData,
         source.TYPE_ZABBIX: ZabbixLoadClientData,
     }

@@ -326,6 +326,7 @@ def get_validator(source_: Source) -> Validator:
         source.TYPE_SNMP: SNMPValidator,
         source.TYPE_SPLUNK: SplunkValidator,
         source.TYPE_SOLARWINDS: SolarWindsValidator,
+        source.TYPE_THANOS: PromQLValidator,
         source.TYPE_VICTORIA: PromQLValidator,
         source.TYPE_ZABBIX: ZabbixValidator,
     }
