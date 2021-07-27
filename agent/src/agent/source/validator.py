@@ -127,6 +127,8 @@ class JDBCValidator(Validator):
             raise ValidationException('Wrong url scheme. Use `postgresql`')
         if self.source.type == source.TYPE_CLICKHOUSE and result.scheme != 'clickhouse':
             raise ValidationException('Wrong url scheme. Use `clickhouse`')
+        if self.source.type == source.TYPE_ORACLE and result.scheme != 'oracle:thin':
+            raise ValidationException('Wrong url scheme. Use `oracle:thin`')
 
 
 class MongoValidator(Validator):
@@ -321,6 +323,7 @@ def get_validator(source_: Source) -> Validator:
         source.TYPE_KAFKA: KafkaValidator,
         source.TYPE_MONGO: MongoValidator,
         source.TYPE_MYSQL: JDBCValidator,
+        source.TYPE_ORACLE: JDBCValidator,
         source.TYPE_POSTGRES: JDBCValidator,
         source.TYPE_SAGE: SageValidator,
         source.TYPE_SNMP: SNMPValidator,

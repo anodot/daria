@@ -29,6 +29,7 @@ def get_config_handler(pipeline_: Pipeline) -> BaseConfigHandler:
         source.TYPE_INFLUX: pipeline.config.handlers.influx.InfluxSchemaConfigHandler,
         source.TYPE_KAFKA: pipeline.config.handlers.kafka.KafkaSchemaConfigHandler,
         source.TYPE_MYSQL: pipeline.config.handlers.jdbc.JDBCSchemaConfigHandler,
+        source.TYPE_ORACLE: pipeline.config.handlers.jdbc.JDBCSchemaConfigHandler,
         source.TYPE_POSTGRES: pipeline.config.handlers.jdbc.JDBCSchemaConfigHandler,
         source.TYPE_SNMP: pipeline.config.handlers.snmp.SNMPConfigHandler,
     }
