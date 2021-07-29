@@ -1,8 +1,7 @@
 from functools import wraps
 from typing import List, Optional
-from agent import source
 from agent.modules.db import Session, engine
-from agent.source import Source
+from agent.source import Source, make_typed
 from sqlalchemy.orm import Query
 
 
@@ -11,10 +10,10 @@ def typed_source(func):
     def wrapper(*args, **kwargs):
         res = func(*args, **kwargs)
         if isinstance(res, list):
-            return [_construct_source(source_) for source_ in res]
+            return [make_typed(source_) for source_ in res]
         else:
             if res is not None:
-                return _construct_source(res)
+                return make_typed(res)
             else:
                 return res
     return wrapper
@@ -81,11 +80,6 @@ def get_all() -> List[Source]:
 @typed_source
 def get_last_edited(source_type: str) -> Optional[Source]:
     return Session.query(Source).filter(Source.type == source_type).order_by(Source.last_edited.desc()).first()
-
-
-def _construct_source(source_: Source) -> Source:
-    source_.__class__ = source.types[source_.type]
-    return source_
 
 
 def get_by_name_without_session(source_name: str) -> Source:

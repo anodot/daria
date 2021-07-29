@@ -166,7 +166,7 @@ def disable_destination_logs(pipeline_: Pipeline):
 
 def build_test_pipeline(source_: Source) -> TestPipeline:
     # creating a new source because otherwise it will mess with the db session
-    test_source = Source(source_.name, source_.type, source_.config)
+    test_source = source.make_typed(Source(source_.name, source_.type, source_.config))
     test_pipeline = TestPipeline(_get_test_pipeline_id(test_source), test_source, destination.repository.get())
     test_pipeline.config['uses_schema'] = supports_schema(test_pipeline)
     return test_pipeline

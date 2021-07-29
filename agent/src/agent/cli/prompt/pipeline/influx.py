@@ -8,7 +8,8 @@ from agent import pipeline
 class InfluxPrompter(Prompter):
     def prompt_config(self):
         self.set_measurement_name()
-        self.pipeline.source.config['conf.resourceUrl'] = self.get_test_url()
+        # todo what if delete it?
+        # self.pipeline.source.config['conf.resourceUrl'] = self.get_test_url()
         self.data_preview()
         self.prompt_values()
         self.set_dimensions()
@@ -25,6 +26,8 @@ class InfluxPrompter(Prompter):
     def get_test_url(self):
         source_config = self.pipeline.source.config
         query = f"select+%2A+from+{self.config['measurement_name']}+limit+{pipeline.manager.MAX_SAMPLE_RECORDS}"
+        if self.pipeline.source.is_v2():
+            return urljoin(source_config['host'], f"/query?epoch=ns&q={query}")
         return urljoin(source_config['host'], f"/query?db={source_config['db']}&epoch=ns&q={query}")
 
     def set_delay(self):

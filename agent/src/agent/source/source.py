@@ -2,6 +2,7 @@ from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy import Column, Integer, String, JSON, func
+from agent import source
 from agent.modules.db import Entity
 
 
@@ -233,7 +234,15 @@ class TCPSource(SchemalessSource):
 
 
 class InfluxSource(Source):
-    pass
+    INFLUX_V1 = '1.0+'
+    INFLUX_V2 = '2.0+'
+
+    @property
+    def version(self) -> str:
+        return self.config.get('version', self.INFLUX_V1)
+
+    def is_v2(self) -> bool:
+        return self.config.get('version', self.INFLUX_V1) == self.INFLUX_V2
 
 
 class SourceException(Exception):
@@ -242,3 +251,8 @@ class SourceException(Exception):
 
 class SourceNotExists(SourceException):
     pass
+
+
+def make_typed(source_: Source) -> Source:
+    source_.__class__ = source.types[source_.type]
+    return source_

@@ -8,10 +8,8 @@ import inject
 from abc import ABC, abstractmethod
 from datetime import datetime
 from urllib.parse import urlparse
-
 from pysnmp.entity.engine import SnmpEngine
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
-
 from agent import source
 from agent.modules.tools import if_validation_enabled
 from agent.modules import validator, zabbix, http
@@ -55,6 +53,7 @@ class Validator:
 
 
 class InfluxValidator(Validator):
+    # todo two definition files?
     VALIDATION_SCHEMA_FILE = 'influx.json'
 
     def validate(self):
@@ -73,8 +72,14 @@ class InfluxValidator(Validator):
 
     @if_validation_enabled
     def validate_db(self):
-        client = source.db.get_influx_client(self.source.config['host'], self.source.config.get('username'),
-                                             self.source.config.get('password'))
+        if self.source.is_v2():
+            # todo
+            return
+        client = source.db.get_influx_client(
+            self.source.config['host'],
+            self.source.config.get('username'),
+            self.source.config.get('password')
+        )
         if not any([db['name'] == self.source.config['db'] for db in client.get_list_database()]):
             raise ValidationException(
                 f"Database {self.source.config['db']} not found. Please check your credentials again"

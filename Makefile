@@ -181,6 +181,9 @@ _run-elastic:
 run-influx:
 	$(DOCKER_COMPOSE_DEV) up -d influx
 
+run-influx-2:
+	$(DOCKER_COMPOSE_DEV) up -d influx-2
+
 run-snmpsim:
 	$(DOCKER_COMPOSE_DEV) up -d snmpsim
 
