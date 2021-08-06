@@ -9,7 +9,7 @@ class JSPivotArray(base.Stage):
     state['VALUES_ARRAY_PATH'] = '{self.pipeline.values_array_path}';
         """
 
-    def _get_config(self) -> dict:
+    def get_config(self) -> dict:
         with open(self._get_js_file_path(self.JS_SCRIPT_NAME)) as f:
             script = f.read()
 

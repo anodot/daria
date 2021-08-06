@@ -63,3 +63,13 @@ class InfluxSchemaConfigHandler(SchemaConfigHandler):
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties30,
         'destination': stages.destination.Destination
     }
+
+
+class Influx2SchemaConfigHandler(SchemaConfigHandler):
+    # todo TIMESTAMP_COLUMN in transform records
+    stages_to_override = {
+        'source': stages.source.influx2.Influx2Source,
+        'transform_records': stages.js_convert_metrics.JSConvertMetrics30,
+        'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties30,
+        'destination': stages.destination.Destination
+    }

@@ -1,16 +1,11 @@
 {
   "type": "object",
   "properties": {
-    "version": {"type": "string", "enum": ["1.0+", "2.0+"]},
     "host": {"type": "string"},
     "db": {"type": "string"},
     "username": {"type": "string"},
     "password": {"type": "string"},
-    "write_host": {"type": "string"},
-    "write_db": {"type": "string"},
-    "write_username": {"type": "string"},
-    "write_password": {"type": "string"},
     "offset": {"type": "string"}
   },
-  "required": ["host"]
+  "required": ["host", "db"]
 }

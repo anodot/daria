@@ -11,9 +11,10 @@
     "type": "influx",
     "name": "test_influx_2",
     "config": {
-      "host": "http://influx:8086",
+      "host": "http://influx2:8086",
       "version": "2.0+",
-      "token": "theauthenticationtoken"
+      "token": "token",
+      "bucket": "test"
     }
   }
 ]

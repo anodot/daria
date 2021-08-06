@@ -234,15 +234,11 @@ class TCPSource(SchemalessSource):
 
 
 class InfluxSource(Source):
-    INFLUX_V1 = '1.0+'
-    INFLUX_V2 = '2.0+'
+    pass
 
-    @property
-    def version(self) -> str:
-        return self.config.get('version', self.INFLUX_V1)
 
-    def is_v2(self) -> bool:
-        return self.config.get('version', self.INFLUX_V1) == self.INFLUX_V2
+class Influx2Source(InfluxSource):
+    pass
 
 
 class SourceException(Exception):

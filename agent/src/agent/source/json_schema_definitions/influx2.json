@@ -1,0 +1,11 @@
+{
+  "type": "object",
+  "properties": {
+    "host": {"type": "string"},
+    "token": {"type": "string"},
+    "bucket": {"type": "string"},
+    "org": {"type": "string"},
+    "offset": {"type": "string"}
+  },
+  "required": ["host", "token", "bucket", "org"]
+}

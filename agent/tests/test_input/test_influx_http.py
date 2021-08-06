@@ -17,7 +17,7 @@ class TestInflux(TestInputBase):
 
     def test_source_create(self, cli_runner, name, offset):
         result = cli_runner.invoke(cli.source.create, catch_exceptions=False,
-                                   input=f"influx\n{name}\n1.0+\nhttp://influx:8086\nadmin\nadmin\ntest\n{offset}\n\n")
+                                   input=f"influx\n{name}\nhttp://influx:8086\nadmin\nadmin\ntest\n{offset}\n\n")
         assert result.exit_code == 0
         assert source.repository.exists(name)
 

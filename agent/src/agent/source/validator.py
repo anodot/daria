@@ -72,9 +72,6 @@ class InfluxValidator(Validator):
 
     @if_validation_enabled
     def validate_db(self):
-        if self.source.is_v2():
-            # todo
-            return
         client = source.db.get_influx_client(
             self.source.config['host'],
             self.source.config.get('username'),
@@ -99,6 +96,20 @@ class InfluxValidator(Validator):
                 datetime.strptime(self.source.config['offset'], '%d/%m/%Y %H:%M').timestamp()
             except ValueError as e:
                 raise ValidationException(str(e))
+
+
+class Influx2Validator(InfluxValidator):
+    VALIDATION_SCHEMA_FILE = 'influx2.json'
+
+    @if_validation_enabled
+    def validate_connection(self):
+        # todo
+        pass
+
+    @if_validation_enabled
+    def validate_db(self):
+        # todo
+        pass
 
 
 class ElasticValidator(Validator):
@@ -323,6 +334,7 @@ def get_validator(source_: Source) -> Validator:
         source.TYPE_DIRECTORY: DirectoryValidator,
         source.TYPE_ELASTIC: ElasticValidator,
         source.TYPE_INFLUX: InfluxValidator,
+        source.TYPE_INFLUX_2: Influx2Validator,
         source.TYPE_KAFKA: KafkaValidator,
         source.TYPE_MONGO: MongoValidator,
         source.TYPE_MYSQL: JDBCValidator,
