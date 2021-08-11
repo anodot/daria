@@ -231,16 +231,16 @@ class SageValidator(Validator):
         pass
 
 
-class VictoriaMetricsValidator(Validator):
-    VALIDATION_SCHEMA_FILE = 'victoria.json'
+class PromQLValidator(Validator):
+    VALIDATION_SCHEMA_FILE = 'promql.json'
 
     def validate_connection(self):
         url = self.source.config['url'] + '/api/v1/export?match[]={__name__="not_existing_dsger43"}'
         session = requests.Session()
-        if self.source.config.get(source.VictoriaMetricsSource.USERNAME):
+        if self.source.config.get(source.PromQLSource.USERNAME):
             session.auth = (
-                self.source.config[source.VictoriaMetricsSource.USERNAME],
-                self.source.config[source.VictoriaMetricsSource.PASSWORD]
+                self.source.config[source.PromQLSource.USERNAME],
+                self.source.config[source.PromQLSource.PASSWORD]
             )
         try:
             res = session.get(url, verify=False)
@@ -342,7 +342,8 @@ def get_validator(source_: Source) -> Validator:
         source.TYPE_SNMP: SNMPValidator,
         source.TYPE_SPLUNK: SplunkValidator,
         source.TYPE_SOLARWINDS: SolarWindsValidator,
-        source.TYPE_VICTORIA: VictoriaMetricsValidator,
+        source.TYPE_THANOS: PromQLValidator,
+        source.TYPE_VICTORIA: PromQLValidator,
         source.TYPE_ZABBIX: ZabbixValidator,
     }
     return types[source_.type](source_)

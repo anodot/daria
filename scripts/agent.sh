@@ -35,5 +35,5 @@ elif [[ $1 == 'apply' ]]; then
   docker cp ./agent-data anodot-agent:/agent-data
   docker exec -i anodot-agent agent apply -d /agent-data
 else
-  echo "Wrong command supplied. Please use ./agent [install|run|upgrade|set-heap-size|set-thread-pool-size]"
+  echo "Wrong command supplied. Please use ./agent [install|run|upgrade|set-heap-size|set-thread-pool-size|apply]"
 fi

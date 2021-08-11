@@ -207,7 +207,7 @@ class SNMPSource(APISource):
         return self.config[self.READ_COMMUNITY]
 
 
-class VictoriaMetricsSource(APISource):
+class PromQLSource(APISource):
     pass
 
 

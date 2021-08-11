@@ -1,9 +1,0 @@
-[
-  {
-    "query": "{__name__!=\"\"}",
-    "days_to_backfill": 0,
-    "interval": 10,
-    "pipeline_id": "test_victoria_2",
-    "source": "test_victoria_2"
-  }
-]

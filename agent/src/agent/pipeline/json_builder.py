@@ -317,8 +317,8 @@ class SolarWindsClientData(LoadClientData):
     VALIDATION_SCHEMA_FILE_NAME = 'solarwinds'
 
 
-class VictoriaLoadClientData(LoadClientData):
-    VALIDATION_SCHEMA_FILE_NAME = 'victoria'
+class PromQLLoadClientData(LoadClientData):
+    VALIDATION_SCHEMA_FILE_NAME = 'promql'
 
 
 class ZabbixLoadClientData(LoadClientData):
@@ -350,7 +350,8 @@ def get_file_loader(pipeline_: Pipeline, is_edit=False) -> LoadClientData:
         source.TYPE_SNMP: SNMPLoadClientData,
         source.TYPE_SOLARWINDS: SolarWindsClientData,
         source.TYPE_SPLUNK: TcpLoadClientData,
-        source.TYPE_VICTORIA: VictoriaLoadClientData,
+        source.TYPE_THANOS: PromQLLoadClientData,
+        source.TYPE_VICTORIA: PromQLLoadClientData,
         source.TYPE_ZABBIX: ZabbixLoadClientData,
     }
     return loaders[pipeline_.source.type](pipeline_, is_edit)

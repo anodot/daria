@@ -4,11 +4,18 @@ from agent import source
 from .test_zpipeline_base import TestInputBase
 
 
-class TestVictoria(TestInputBase):
+def _get_days_to_backfill():
+    return (datetime.now() - datetime(year=2020, month=7, day=7)).days + 1
+
+
+class TestPromQL(TestInputBase):
     __test__ = True
     params = {
-        'test_create_source_with_file': [{'file_name': 'victoria_sources'}],
-        'test_create_with_file': [{'file_name': 'victoria_pipelines'}],
+        'test_create_source_with_file': [{'file_name': 'promql_sources'}],
+        'test_create_with_file': [{
+            'file_name': 'promql_pipelines',
+            'config': {'days_to_backfill': _get_days_to_backfill()}
+        }],
     }
 
     def test_source_create(self, cli_runner):
@@ -21,7 +28,7 @@ class TestVictoria(TestInputBase):
         name = 'test_victoria'
         interval = 10000
         query = f'log_messages_total[{interval}s]'
-        days_to_backfill = (datetime.now() - datetime(year=2020, month=7, day=7)).days + 1
+        days_to_backfill = _get_days_to_backfill()
         result = cli_runner.invoke(
             cli.pipeline.create, catch_exceptions=False,
             input=f'test_victoria\n{name}\n{query}\n{days_to_backfill}\n{interval}\n\n'
@@ -32,7 +39,7 @@ class TestVictoria(TestInputBase):
         name = 'test_victoria_a'
         interval = 100000
         query = f'rate(log_messages_total2[{interval}s])'
-        days_to_backfill = (datetime.now() - datetime(year=2020, month=7, day=7)).days + 1
+        days_to_backfill = _get_days_to_backfill()
         result = cli_runner.invoke(
             cli.pipeline.create, ["-a"], catch_exceptions=False,
             input=f'test_victoria\n{name}\n{query}\naggregated_metric\n{days_to_backfill}\n{interval}\n\nstatic:dimension\ntag:value\n'
