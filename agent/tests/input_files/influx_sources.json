@@ -9,7 +9,7 @@
   },
   {
     "type": "influx2",
-    "name": "test_influx_2",
+    "name": "test_influx2_file",
     "config": {
       "host": "http://influx2:8086",
       "token": "token",

@@ -2,13 +2,16 @@
   {
     "timestamp": 1552654426.147624,
     "dimensions": {
+      "cpu": "cpu-total-usage",
+      "host": "msk-air-trn5",
       "zone": "GEO",
-      "cpu": "cpu-total-usage"
+      "test": "val"
     },
     "measurements": {
+      "usage_active": 0.204,
       "usage_idle": 62.53
     },
-    "schemaId": "influx2-1234",
+    "schemaId": "test_influx2_file_full-1234",
     "tags": {
       "source": [
         "anodot-agent"
@@ -20,7 +23,7 @@
         "agent"
       ],
       "pipeline_id": [
-        "influx2"
+        "test_influx2_file_full"
       ],
       "pipeline_type": [
         "influx2"
@@ -30,13 +33,16 @@
   {
     "timestamp": 1552754426.174862,
     "dimensions": {
+      "cpu": "cpu-total-usage",
+      "host": "msk_a_ir_trn1",
       "zone": "GF",
-      "cpu": "cpu-total-usage"
+      "test": "val"
     },
     "measurements": {
+      "usage_active": 0.224,
       "usage_idle": 14.247
     },
-    "schemaId": "influx2-1234",
+    "schemaId": "test_influx2_file_full-1234",
     "tags": {
       "source": [
         "anodot-agent"
@@ -48,7 +54,7 @@
         "agent"
       ],
       "pipeline_id": [
-        "influx2"
+        "test_influx2_file_full"
       ],
       "pipeline_type": [
         "influx2"
@@ -58,13 +64,16 @@
   {
     "timestamp": 1552854426.174862,
     "dimensions": {
+      "cpu": "cpu-total-usage",
+      "host": "msk_air_trn1",
       "zone": "GF",
-      "cpu": "cpu-total-usage"
+      "test": "val"
     },
     "measurements": {
+      "usage_active": 0.22432747346756737,
       "usage_idle": 14.247
     },
-    "schemaId": "influx2-1234",
+    "schemaId": "test_influx2_file_full-1234",
     "tags": {
       "source": [
         "anodot-agent"
@@ -76,7 +85,7 @@
         "agent"
       ],
       "pipeline_id": [
-        "influx2"
+        "test_influx2_file_full"
       ],
       "pipeline_type": [
         "influx2"
@@ -86,12 +95,15 @@
   {
     "timestamp": 1552954426.168997,
     "dimensions": {
-      "cpu": "cpu-total-usage"
+      "cpu": "cpu-total-usage",
+      "host": "msk-air-trn1",
+      "test": "val"
     },
     "measurements": {
+      "usage_active": 0.224,
       "usage_idle": 14.247
     },
-    "schemaId": "influx2-1234",
+    "schemaId": "test_influx2_file_full-1234",
     "tags": {
       "source": [
         "anodot-agent"
@@ -103,7 +115,7 @@
         "agent"
       ],
       "pipeline_id": [
-        "influx2"
+        "test_influx2_file_full"
       ],
       "pipeline_type": [
         "influx2"
@@ -113,13 +125,16 @@
   {
     "timestamp": 1553054426.168997,
     "dimensions": {
+      "cpu": "cpu-total-usage",
+      "host": "msk-air-trn1",
       "zone": "GF",
-      "cpu": "cpu-total-usage"
+      "test": "val"
     },
     "measurements": {
+      "usage_active": 0.504,
       "usage_idle": 2.6040490503404306e+20
     },
-    "schemaId": "influx2-1234",
+    "schemaId": "test_influx2_file_full-1234",
     "tags": {
       "source": [
         "anodot-agent"
@@ -131,7 +146,7 @@
         "agent"
       ],
       "pipeline_id": [
-        "influx2"
+        "test_influx2_file_full"
       ],
       "pipeline_type": [
         "influx2"
@@ -141,13 +156,16 @@
   {
     "timestamp": 1553154426.168997,
     "dimensions": {
+      "cpu": "cpu-total-usage",
+      "host": "msk-air-trn1",
       "zone": "GEO",
-      "cpu": "cpu-total-usage"
+      "test": "val"
     },
     "measurements": {
+      "usage_active": 0.504,
       "usage_idle": 26.0
     },
-    "schemaId": "influx2-1234",
+    "schemaId": "test_influx2_file_full-1234",
     "tags": {
       "source": [
         "anodot-agent"
@@ -159,7 +177,7 @@
         "agent"
       ],
       "pipeline_id": [
-        "influx2"
+        "test_influx2_file_full"
       ],
       "pipeline_type": [
         "influx2"

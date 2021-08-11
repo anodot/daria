@@ -1,7 +1,7 @@
 from agent import cli
 from agent import source
 from .test_zpipeline_base import TestInputBase
-from ..conftest import get_input_file_path
+from ..conftest import get_input_file_path, generate_input
 
 
 class TestInflux(TestInputBase):
@@ -42,3 +42,36 @@ class TestInflux(TestInputBase):
         input_file_path = get_input_file_path('influx_pipelines_edit.json')
         result = cli_runner.invoke(cli.pipeline.edit, ['-f', input_file_path], catch_exceptions=False)
         assert result.exit_code == 0
+
+    def test_influx2_source_create(self, cli_runner):
+        name = 'test_influx2'
+        input_ = {
+            'type': 'influx2',
+            'source name': name,
+            'url': 'http://influx2:8086',
+            'token': 'token',
+            'bucket': 'test',
+            'org': 'test',
+            'offset': '10/03/2019 12:53',
+        }
+        result = cli_runner.invoke(cli.source.create, catch_exceptions=False, input=generate_input(input_))
+        assert result.exit_code == 0
+        assert source.repository.exists(name)
+
+    def test_influx2_pipeline_create(self, cli_runner):
+        name = 'test_influx2'
+        input_ = {
+            'source': 'test_influx2',
+            'name': name,
+            'query type': 'Flux',
+            'measurement name': 'cpu_test',
+            'preview': 'n',
+            'value columns': 'usage_idle:gauge',
+            'dimensions': 'zone cpu',
+            'delay': '',
+            'interval': 1200000,
+            'result preview': 'n',
+        }
+        result = cli_runner.invoke(cli.pipeline.create, catch_exceptions=False, input=generate_input(input_))
+        assert result.exit_code == 0
+        assert source.repository.exists(name)
