@@ -53,7 +53,6 @@ class Validator:
 
 
 class InfluxValidator(Validator):
-    # todo two definition files?
     VALIDATION_SCHEMA_FILE = 'influx.json'
 
     def validate(self):

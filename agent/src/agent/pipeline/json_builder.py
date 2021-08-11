@@ -234,6 +234,21 @@ class InfluxLoadClientData(LoadClientData):
         }
 
 
+class Influx2LoadClientData(InfluxLoadClientData):
+    VALIDATION_SCHEMA_FILE_NAME = 'influx2'
+
+    def load(self, client_config):
+        super().load(client_config)
+        self.client_config['uses_schema'] = True
+        return self.client_config
+
+    def _set_timestamp(self):
+        self.client_config['timestamp'] = {
+            'type': 'unix_ms',
+            'name': '_time',
+        }
+
+
 class JDBCLoadClientData(LoadClientData):
     VALIDATION_SCHEMA_FILE_NAME = 'jdbc'
 
@@ -326,6 +341,7 @@ def get_file_loader(pipeline_: Pipeline, is_edit=False) -> LoadClientData:
         source.TYPE_DIRECTORY: DirectoryLoadClientData,
         source.TYPE_ELASTIC: ElasticLoadClientData,
         source.TYPE_INFLUX: InfluxLoadClientData,
+        source.TYPE_INFLUX_2: Influx2LoadClientData,
         source.TYPE_KAFKA: KafkaLoadClientData,
         source.TYPE_MONGO: MongoLoadClientData,
         source.TYPE_MYSQL: JDBCLoadClientData,

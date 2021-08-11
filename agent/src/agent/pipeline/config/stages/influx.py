@@ -24,6 +24,19 @@ class InfluxScript(Stage):
         return offset
 
 
+class JythonTransformRecords(Stage):
+    JYTHON_SCRIPT = 'influx2_transform_records.py'
+
+    def get_config(self) -> dict:
+        with open(self.get_jython_file_path()) as f:
+            return {
+                'scriptConf.params': [
+                    {'key': 'TIMESTAMP_COLUMN', 'value': self.pipeline.config['timestamp']['name']},
+                ],
+                'script': f.read(),
+            }
+
+
 def _convert_to_seconds(string):
     seconds_per_unit = {"s": 1, "m": 60, "h": 3600, "d": 86400, "w": 604800}
     return int(string[:-1]) * seconds_per_unit[string[-1]]

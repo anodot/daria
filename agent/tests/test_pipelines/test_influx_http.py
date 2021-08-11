@@ -13,7 +13,7 @@ class TestInflux(TestPipelineBase):
             {'name': 'test_basic_offset'},
             {'name': 'test_influx_file_short'},
             {'name': 'test_influx_file_full'},
-            {'name': 'test_influx_file_full_2'},
+            {'name': 'test_influx2_file_full'},
             {'name': 'test_influx_adv'}
         ],
         'test_force_stop': [
@@ -21,28 +21,34 @@ class TestInflux(TestPipelineBase):
             {'name': 'test_basic_offset'},
             {'name': 'test_influx_file_short'},
             {'name': 'test_influx_file_full'},
-            {'name': 'test_influx_file_full_2'},
+            {'name': 'test_influx2_file_full'},
             {'name': 'test_influx_adv'}
         ],
         'test_reset': [{'name': 'test_basic'}],
         'test_output': [
             {'name': 'test_influx_file_short', 'output': 'influx.json', 'pipeline_type': 'influx'},
             {'name': 'test_influx_file_full', 'output': 'influx_file_full.json', 'pipeline_type': 'influx'},
-            {'name': 'test_influx_file_full_2', 'output': 'influx_file_full.json', 'pipeline_type': 'influx'},
             {'name': 'test_influx_adv', 'output': 'influx_adv.json', 'pipeline_type': 'influx'}
         ],
         'test_output_schema': [
             {'name': 'test_basic', 'output': 'influx_schema.json', 'pipeline_type': 'influx'},
             {'name': 'test_basic_offset', 'output': 'influx_offset_schema.json', 'pipeline_type': 'influx'},
+            {'name': 'test_influx2_file_full', 'output': 'influx2_schema.json', 'pipeline_type': 'influx2'},
         ],
         'test_delete_pipeline': [
             {'name': 'test_basic'},
             {'name': 'test_basic_offset'},
             {'name': 'test_influx_file_short'},
             {'name': 'test_influx_file_full'},
-            {'name': 'test_influx_file_full_2'},
-            {'name': 'test_influx_adv'}],
-        'test_source_delete': [{'name': 'test_influx'}, {'name': 'test_influx_offset'}, {'name': 'test_influx_1'}],
+            {'name': 'test_influx2_file_full'},
+            {'name': 'test_influx_adv'},
+        ],
+        'test_source_delete': [
+            {'name': 'test_influx'},
+            {'name': 'test_influx_offset'},
+            {'name': 'test_influx_1'},
+            {'name': 'test_influx_2'},
+        ],
     }
 
     def test_info(self, cli_runner, name=None):

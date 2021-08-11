@@ -1,6 +1,6 @@
 from agent import pipeline
 from urllib.parse import urljoin, quote_plus
-from agent.pipeline.config.stages.influx_offset import InfluxScript
+from agent.pipeline.config.stages.influx import InfluxScript
 
 # todo
 FLUX = 'Flux'
