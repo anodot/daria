@@ -31,7 +31,6 @@
       "optional": ["cpu", "host", "zone"]
     },
     "properties": {"test": "val"},
-    "interval": 1200000,
-    "query_type": "Flux"
+    "interval": 1200000
   }
 ]

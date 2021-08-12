@@ -16,8 +16,7 @@
       "patternProperties":  {"[^ \\.]+": {"type": "array", "items": {"type": "string"}}}
     },
     "delay": {"type": "string"},
-    "interval": {"type": "integer"},
-    "query_type": {"interval": {"type": "string", "enum": ["InfluxQL", "Flux"]}}
+    "interval": {"type": "integer"}
   },
   "required": ["measurement_name", "values", "dimensions"]
 }

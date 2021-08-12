@@ -1,5 +1,7 @@
 import click
 
+from urllib.parse import urljoin
+from agent import pipeline
 from .base import Prompter
 
 
@@ -7,7 +9,7 @@ class InfluxPrompter(Prompter):
     def prompt_config(self):
         self.set_measurement_name()
         # todo what if delete it?
-        # self.pipeline.source.config['conf.resourceUrl'] = self.get_test_url()
+        self.pipeline.source.config['conf.resourceUrl'] = self.get_test_url()
         self.data_preview()
         self.prompt_values()
         self.set_dimensions()
@@ -22,12 +24,10 @@ class InfluxPrompter(Prompter):
         }
 
     # todo delete?
-    # def get_test_url(self):
-    #     source_config = self.pipeline.source.config
-    #     query = f"select+%2A+from+{self.config['measurement_name']}+limit+{pipeline.manager.MAX_SAMPLE_RECORDS}"
-    #     if self.pipeline.source.is_v2():
-    #         return urljoin(source_config['host'], f"/query?database={source_config['bucket']}&epoch=ns&q={query}")
-    #     return urljoin(source_config['host'], f"/query?db={source_config['db']}&epoch=ns&q={query}")
+    def get_test_url(self):
+        source_config = self.pipeline.source.config
+        query = f"select+%2A+from+{self.config['measurement_name']}+limit+{pipeline.manager.MAX_SAMPLE_RECORDS}"
+        return urljoin(source_config['host'], f"/query?db={source_config['db']}&epoch=ns&q={query}")
 
     def set_delay(self):
         self.config['delay'] = click.prompt('Delay', type=click.STRING, default=self.default_config.get('delay', '0s'))
@@ -60,7 +60,6 @@ class InfluxPrompter(Prompter):
 
 class Influx2Prompter(InfluxPrompter):
     def prompt_config(self):
-        self.prompt_query_type()
         self.set_measurement_name()
         self.data_preview()
         self.prompt_values()
@@ -69,18 +68,8 @@ class Influx2Prompter(InfluxPrompter):
         self.prompt_tags()
         self.set_delay()
         self.set_filtering()
-        # todo make a class to set defaults
         self.config['uses_schema'] = True
         self.config['timestamp'] = {
             'type': 'unix_ms',
             'name': '_time',
         }
-
-    # todo same for file, add to test input
-    def prompt_query_type(self):
-        self.config['query_type'] = click.prompt(
-            'Query type',
-            # todo constants
-            type=click.Choice(['InfluxQL', 'Flux']),
-            default=self.default_config.get('query_type', 'InfluxQL')
-        )
