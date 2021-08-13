@@ -6,6 +6,7 @@ import requests
 import inject
 
 from abc import ABC, abstractmethod
+from urllib.parse import urljoin
 from datetime import datetime
 from urllib.parse import urlparse
 from pysnmp.entity.engine import SnmpEngine
@@ -102,13 +103,17 @@ class Influx2Validator(InfluxValidator):
 
     @if_validation_enabled
     def validate_connection(self):
-        # todo
-        pass
+        res = requests.get(self.source.config['host'])
+        res.raise_for_status()
 
     @if_validation_enabled
     def validate_db(self):
-        # todo
-        pass
+        session = requests.Session()
+        session.headers['Authorization'] = f'Token {self.source.config["token"]}'
+        res = session.get(
+            urljoin(self.source.config['host'], '/api/v2/buckets')
+        )
+        res.raise_for_status()
 
 
 class ElasticValidator(Validator):
