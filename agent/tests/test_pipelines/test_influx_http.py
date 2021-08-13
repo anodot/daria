@@ -15,6 +15,7 @@ class TestInflux(TestPipelineBase):
             {'name': 'test_influx_file_full'},
             {'name': 'test_influx2'},
             {'name': 'test_influx2_file_full'},
+            {'name': 'influx2_influxql_pipeline'},
             {'name': 'test_influx_adv'}
         ],
         'test_force_stop': [
@@ -24,6 +25,7 @@ class TestInflux(TestPipelineBase):
             {'name': 'test_influx_file_full'},
             {'name': 'test_influx2'},
             {'name': 'test_influx2_file_full'},
+            {'name': 'influx2_influxql_pipeline'},
             {'name': 'test_influx_adv'}
         ],
         'test_reset': [{'name': 'test_basic'}],
@@ -34,6 +36,7 @@ class TestInflux(TestPipelineBase):
         ],
         'test_output_schema': [
             {'name': 'test_basic', 'output': 'influx_schema.json', 'pipeline_type': 'influx'},
+            {'name': 'influx2_influxql_pipeline', 'output': 'influx2_influxql_schema.json', 'pipeline_type': 'influx'},
             {'name': 'test_basic_offset', 'output': 'influx_offset_schema.json', 'pipeline_type': 'influx'},
             {'name': 'test_influx2', 'output': 'influx2_schema.json', 'pipeline_type': 'influx2'},
             {'name': 'test_influx2_file_full', 'output': 'influx2_file_schema.json', 'pipeline_type': 'influx2'},
@@ -45,6 +48,7 @@ class TestInflux(TestPipelineBase):
             {'name': 'test_influx_file_full'},
             {'name': 'test_influx2'},
             {'name': 'test_influx2_file_full'},
+            {'name': 'influx2_influxql_pipeline'},
             {'name': 'test_influx_adv'},
         ],
         'test_source_delete': [
@@ -53,6 +57,7 @@ class TestInflux(TestPipelineBase):
             {'name': 'test_influx_1'},
             {'name': 'test_influx2'},
             {'name': 'test_influx2_file'},
+            {'name': 'influx2_influxql_source'},
         ],
     }
 

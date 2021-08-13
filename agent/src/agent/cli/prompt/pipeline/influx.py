@@ -8,7 +8,6 @@ from .base import Prompter
 class InfluxPrompter(Prompter):
     def prompt_config(self):
         self.set_measurement_name()
-        # todo what if delete it?
         self.pipeline.source.config['conf.resourceUrl'] = self.get_test_url()
         self.data_preview()
         self.prompt_values()
@@ -23,7 +22,6 @@ class InfluxPrompter(Prompter):
             'name': 'time',
         }
 
-    # todo delete?
     def get_test_url(self):
         source_config = self.pipeline.source.config
         query = f"select+%2A+from+{self.config['measurement_name']}+limit+{pipeline.manager.MAX_SAMPLE_RECORDS}"

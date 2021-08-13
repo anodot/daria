@@ -21,9 +21,26 @@ class TestInflux(TestInputBase):
         assert result.exit_code == 0
         assert source.repository.exists(name)
 
+    def test_influx2_influxql_source_create(self, cli_runner):
+        name = 'influx2_influxql_source'
+        result = cli_runner.invoke(
+            cli.source.create,
+            catch_exceptions=False,
+            input=f"influx\n{name}\nhttp://influx2:8086\ntest\ntesttest\ntest\n10/03/2019 12:53\n\n"
+        )
+        assert result.exit_code == 0
+        assert source.repository.exists(name)
+
     def test_create(self, cli_runner, name, source_):
         result = cli_runner.invoke(cli.pipeline.create, catch_exceptions=False,
                                    input=f'{source_}\n{name}\ncpu_test\n\nusage_active:gauge usage_idle:gauge\ncpu zone host\n\n1200000\n\n')
+        assert result.exit_code == 0
+
+    def test_influx2_influxql_create(self, cli_runner):
+        result = cli_runner.invoke(
+            cli.pipeline.create,
+            catch_exceptions=False,
+            input='influx2_influxql_source\ninflux2_influxql_pipeline\ncpu_test\n\nusage_active:gauge usage_idle:gauge\ncpu zone host\n\n1200000\n\n')
         assert result.exit_code == 0
 
     def test_create_adv(self, cli_runner):
@@ -63,7 +80,6 @@ class TestInflux(TestInputBase):
         input_ = {
             'source': 'test_influx2',
             'name': name,
-            'query type': 'Flux',
             'measurement name': 'cpu_test',
             'preview': 'n',
             'value columns': 'usage_idle:gauge',
