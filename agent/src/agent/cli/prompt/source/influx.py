@@ -70,6 +70,5 @@ class Influx2Prompter(InfluxPrompter):
         ).strip()
 
     def prompt_org(self, default_config: dict):
-        # todo tests
         self.source.config['org'] = \
             click.prompt('Organization', type=click.STRING, default=default_config.get('org'))

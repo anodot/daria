@@ -66,9 +66,7 @@ while True:
     stop = int(offset + interval.total_seconds())
 
     session = requests.Session()
-    # todo is it ok or I should merge headers?
     session.headers = sdc.userParams['HEADERS']
-    # todo for influxql get and data-urlencoded
     res = session.post(
         sdc.userParams['URL'],
         data=sdc.userParams['DATA'].format(
