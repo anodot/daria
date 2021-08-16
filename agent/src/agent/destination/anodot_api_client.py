@@ -61,7 +61,6 @@ class AnodotApiClient:
     def create_schema(self, schema):
         return self.session.post(self._build_url('stream-schemas'), json=schema, proxies=self.proxies)
 
-    @endpoint
     def _delete_schema_old_api(self, schema_id):
         """
         Used for old anodot api version (for on-prem)
@@ -73,7 +72,9 @@ class AnodotApiClient:
     @endpoint
     def delete_schema(self, schema_id):
         try:
-            return self.session.delete(self._build_url('stream-schemas', 'schemas', schema_id), proxies=self.proxies)
+            res = self.session.delete(self._build_url('stream-schemas', 'schemas', schema_id), proxies=self.proxies)
+            res.raise_for_status()
+            return res
         except requests.exceptions.HTTPError as e:
             if e.response.status_code == 404:
                 return self._delete_schema_old_api(schema_id)
@@ -96,7 +97,6 @@ class AnodotApiClient:
             params={'pipelineId': pipeline_id}
         )
 
-    @endpoint
     def _get_schemas_old_api(self):
         """
         Used for old anodot api version (for on-prem)
@@ -108,11 +108,13 @@ class AnodotApiClient:
     @endpoint
     def get_schemas(self):
         try:
-            return self.session.get(
+            res = self.session.get(
                 self._build_url('stream-schemas', 'schemas'),
                 params={'excludeCubes': True},
                 proxies=self.proxies
             )
+            res.raise_for_status()
+            return res
         except requests.exceptions.HTTPError as e:
             if e.response.status_code == 404:
                 return self._get_schemas_old_api()
