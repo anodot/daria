@@ -1,6 +1,6 @@
 [
   {
-    "timestamp": 1552654426.147624,
+    "timestamp": 1552654426,
     "dimensions": {
       "zone": "GEO",
       "cpu": "cpu-total-usage"
@@ -28,7 +28,7 @@
     }
   },
   {
-    "timestamp": 1552754426.174862,
+    "timestamp": 1552754426,
     "dimensions": {
       "zone": "GF",
       "cpu": "cpu-total-usage"
@@ -56,7 +56,7 @@
     }
   },
   {
-    "timestamp": 1552854426.174862,
+    "timestamp": 1552854426,
     "dimensions": {
       "zone": "GF",
       "cpu": "cpu-total-usage"
@@ -84,7 +84,7 @@
     }
   },
   {
-    "timestamp": 1552954426.168997,
+    "timestamp": 1552954426,
     "dimensions": {
       "cpu": "cpu-total-usage"
     },
@@ -111,7 +111,7 @@
     }
   },
   {
-    "timestamp": 1553154426.168997,
+    "timestamp": 1553154426,
     "dimensions": {
       "zone": "GEO",
       "cpu": "cpu-total-usage"

@@ -1,6 +1,6 @@
 [
   {
-    "timestamp": 1552654426.147,
+    "timestamp": 1552654426,
     "dimensions": {
       "cpu": "cpu-total-usage",
       "zone": "GEO",
@@ -30,7 +30,7 @@
     }
   },
   {
-    "timestamp": 1552754426.174,
+    "timestamp": 1552754426,
     "dimensions": {
       "cpu": "cpu-total-usage",
       "zone": "GF",
@@ -60,7 +60,7 @@
     }
   },
   {
-    "timestamp": 1552854426.174,
+    "timestamp": 1552854426,
     "dimensions": {
       "cpu": "cpu-total-usage",
       "zone": "GF",
@@ -90,7 +90,7 @@
     }
   },
   {
-    "timestamp": 1552954426.168,
+    "timestamp": 1552954426,
     "dimensions": {
       "cpu": "cpu-total-usage",
       "host": "msk-air-trn1"
@@ -119,7 +119,7 @@
     }
   },
   {
-    "timestamp": 1553154426.168,
+    "timestamp": 1553154426,
     "dimensions": {
       "cpu": "cpu-total-usage",
       "zone": "GEO",

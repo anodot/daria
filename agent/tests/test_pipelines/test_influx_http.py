@@ -74,10 +74,10 @@ class TestInflux(TestPipelineBase):
         super().test_force_stop(cli_runner, name)
 
     def test_watermark(self):
-        initial_offset = 1552222380.0
+        initial_offset = 1552222380
         interval = 1200000
         schema_id = get_schema_id('test_basic')
         assert get_output(f'{schema_id}_watermark.json') == {'watermark': initial_offset + interval, 'schemaId': schema_id}
-        initial_offset = 1552999980.0
+        initial_offset = 1552999980
         schema_id = get_schema_id('test_basic_offset')
         assert get_output(f'{schema_id}_watermark.json') == {'watermark': initial_offset + interval, 'schemaId': schema_id}
