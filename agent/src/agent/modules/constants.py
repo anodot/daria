@@ -25,6 +25,7 @@ DEFAULT_STREAMSETS_USERNAME = os.environ.get('STREAMSETS_USERNAME', 'admin')
 DEFAULT_STREAMSETS_PASSWORD = os.environ.get('STREAMSETS_PASSWORD', 'admin')
 
 MONITORING_URL = os.environ.get('MONITORING_URL')
+MONITORING_TOKEN = os.environ.get('MONITORING_TOKEN')
 MONITORING_SEND_TO_CLIENT = True if os.environ.get('MONITORING_SEND_TO_CLIENT', 'true') == 'true' else False
 MONITORING_SEND_TO_ANODOT = True if os.environ.get('MONITORING_SEND_TO_ANODOT', 'true') == 'true' else False
 
