@@ -9,7 +9,7 @@ class TestPromQL(TestPipelineBase):
         'test_start': [{'name': 'test_victoria'}, {'name': 'test_victoria_2'}, {'name': 'test_victoria_a'},
                        {'name': 'test_thanos'}],
         'test_force_stop': [{'name': 'test_victoria'}, {'name': 'test_victoria_2'}, {'name': 'test_victoria_a'},
-                            {'name': 'test_thanos'}],
+                            {'name': 'test_thanos', 'sleep': 30}],
         'test_output': [
             {'name': 'test_victoria', 'output': 'victoria.jsonl', 'pipeline_type': 'victoria'},
             {'name': 'test_victoria_a', 'output': 'victoria_advanced.jsonl', 'pipeline_type': 'victoria'},
