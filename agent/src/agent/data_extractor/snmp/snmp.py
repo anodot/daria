@@ -1,11 +1,8 @@
 import time
 
-from flask import jsonify
 from pysnmp.entity.engine import SnmpEngine
 from pysnmp.hlapi import getCmd, CommunityData, UdpTransportTarget, ContextData
 from pysnmp.smi.rfc1902 import ObjectType, ObjectIdentity
-
-from agent import monitoring
 from agent.data_extractor.snmp.delta_calculator import DeltaCalculator
 from agent.modules import logger
 from agent.pipeline import Pipeline

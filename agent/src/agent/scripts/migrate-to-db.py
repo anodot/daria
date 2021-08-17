@@ -2,7 +2,7 @@ import argparse
 import json
 import os
 
-from agent.modules import logger, db
+from agent.modules import logger
 from agent import source, pipeline, destination, streamsets
 
 logger_ = logger.get_logger('scripts.migrate-to-db.run', stdout=True)

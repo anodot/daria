@@ -1,6 +1,5 @@
 from datetime import datetime
 from agent import pipeline, source, destination, di
-from agent.modules import db
 from agent.modules.logger import get_logger
 
 logger = get_logger(__name__, stdout=True)

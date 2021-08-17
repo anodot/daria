@@ -53,7 +53,7 @@ def edit(pipeline_id: str, advanced: bool, file):
 def _check_prerequisites():
     errors = check_prerequisites()
     if errors:
-        click.ClickException("\n".join(errors))
+        raise click.ClickException("\n".join(errors))
 
 
 @click.command()
