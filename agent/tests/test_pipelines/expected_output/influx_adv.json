@@ -1,6 +1,6 @@
 [
   {
-    "timestamp": 1552654426.147,
+    "timestamp": 1552654426,
     "properties": {
       "target_type": "gauge",
       "cpu": "cpu-total-usage",
@@ -23,7 +23,7 @@
     "value": 0.204
   },
   {
-    "timestamp": 1552654426.147,
+    "timestamp": 1552654426,
     "properties": {
       "target_type": "gauge",
       "cpu": "cpu-total-usage",
@@ -46,7 +46,7 @@
     "value": 62.53
   },
   {
-    "timestamp": 1553154426.168,
+    "timestamp": 1553154426,
     "properties": {
       "target_type": "gauge",
       "cpu": "cpu-total-usage",
@@ -69,7 +69,7 @@
     "value": 0.504
   },
   {
-    "timestamp": 1553154426.168,
+    "timestamp": 1553154426,
     "properties": {
       "target_type": "gauge",
       "cpu": "cpu-total-usage",

@@ -6,18 +6,18 @@ from urllib.parse import urljoin, quote_plus
 class InfluxSource(Stage):
     QUERY_GET_DATA = "SELECT+{dimensions}+FROM+{metric}+WHERE+%28%22time%22+%3E%3D+${{record:value('/last_timestamp')}}+AND+%22time%22+%3C+${{record:value('/last_timestamp')}}%2B{interval}+AND+%22time%22+%3C+now%28%29+-+{delay}%29+{where}"
 
-    def _get_config(self) -> dict:
-        source_config = self.pipeline.source.config
-        params = f"/query?db={source_config['db']}&epoch=ms&q="
+    def get_config(self) -> dict:
         return {
-            'conf.resourceUrl': urljoin(source_config['host'], params + self.get_query()),
+            'conf.resourceUrl': urljoin(
+                self.pipeline.source.config['host'],
+                f'/query?db={self.pipeline.source.config["db"]}&epoch=ms&q={self.get_query()}'
+            ),
             **self.get_auth_config()
         }
 
     def get_auth_config(self):
         if 'username' not in self.pipeline.source.config:
             return {}
-
         return {
             'conf.client.authType': 'BASIC',
             'conf.client.basicAuth.username': self.pipeline.source.config['username'],

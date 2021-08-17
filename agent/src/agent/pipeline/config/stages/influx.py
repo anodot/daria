@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 class InfluxScript(Stage):
     JYTHON_SCRIPT = 'influx.py'
 
-    def _get_config(self) -> dict:
+    def get_config(self) -> dict:
         with open(self.get_jython_file_path()) as f:
             return {
                 'scriptConf.params': [
@@ -22,6 +22,19 @@ class InfluxScript(Stage):
         if offset.isdigit():
             offset = (datetime.now() - timedelta(days=int(offset))).strftime('%d/%m/%Y %H:%M')
         return offset
+
+
+class JythonTransformRecords(Stage):
+    JYTHON_SCRIPT = 'influx2_transform_records.py'
+
+    def get_config(self) -> dict:
+        with open(self.get_jython_file_path()) as f:
+            return {
+                'scriptConf.params': [
+                    {'key': 'TIMESTAMP_COLUMN', 'value': self.pipeline.config['timestamp']['name']},
+                ],
+                'script': f.read(),
+            }
 
 
 def _convert_to_seconds(string):

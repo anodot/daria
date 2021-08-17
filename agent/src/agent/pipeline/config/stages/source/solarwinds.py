@@ -9,7 +9,7 @@ class SolarWindsScript(JDBCSource):
     LAST_TIMESTAMP = '%last_timestamp%'
     SOLARWINDS_API_ADDRESS = '/SolarWinds/InformationService/v3/Json/Query'
 
-    def _get_config(self) -> dict:
+    def get_config(self) -> dict:
         with open(self.get_jython_file_path()) as f:
             return {
                 'scriptConf.params': [

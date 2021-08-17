@@ -7,7 +7,7 @@ from agent.pipeline.config.stages.base import Stage
 class ZabbixScript(Stage):
     JYTHON_SCRIPT = 'zabbix.py'
 
-    def _get_config(self) -> dict:
+    def get_config(self) -> dict:
         with open(self.get_jython_file_path()) as f:
             return {
                 'scriptConf.params': [

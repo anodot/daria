@@ -11,6 +11,7 @@ TYPE_CLICKHOUSE = 'clickhouse'
 TYPE_DIRECTORY = 'directory'
 TYPE_ELASTIC = 'elastic'
 TYPE_INFLUX = 'influx'
+TYPE_INFLUX_2 = 'influx2'
 TYPE_KAFKA = 'kafka'
 TYPE_MONGO = 'mongo'
 TYPE_MYSQL = 'mysql'
@@ -29,6 +30,7 @@ types = {
     TYPE_DIRECTORY: DirectorySource,
     TYPE_ELASTIC: ElasticSource,
     TYPE_INFLUX: InfluxSource,
+    TYPE_INFLUX_2: Influx2Source,
     TYPE_KAFKA: KafkaSource,
     TYPE_MONGO: MongoSource,
     TYPE_MYSQL: JDBCSource,

@@ -20,7 +20,7 @@ state['HEADER_ATTRIBUTES'] = {self.pipeline.header_attributes};
 state['metrics'] = {{}}
     """
 
-    def _get_config(self) -> dict:
+    def get_config(self) -> dict:
         required_fields = [*self.pipeline.required_dimensions_paths, self.pipeline.timestamp_path]
         if self.pipeline.values_array_path:
             required_fields.append(self.pipeline.values_array_path)
@@ -41,7 +41,7 @@ state['metrics'] = {{}}
 class JSConvertMetrics30(JSConvertMetrics):
     JS_SCRIPT_NAME = 'protocol_3.js'
 
-    def _get_config(self) -> dict:
+    def get_config(self) -> dict:
         with open(self._get_js_file_path(self.JS_SCRIPT_NAME)) as f:
             script = f.read()
 

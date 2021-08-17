@@ -1,7 +1,7 @@
 from agent import source
 from agent.pipeline import Pipeline
 from .base import Prompter
-from .influx import InfluxPrompter
+from .influx import InfluxPrompter, Influx2Prompter
 from .jdbc import JDBCPrompter
 from .kafka import KafkaPrompter
 from .mongo import MongoPrompter
@@ -22,6 +22,7 @@ def get_prompter(pipeline_: Pipeline, default_config: dict, advanced: bool) -> P
         source.TYPE_DIRECTORY: DirectoryPrompter,
         source.TYPE_ELASTIC: ElasticPrompter,
         source.TYPE_INFLUX: InfluxPrompter,
+        source.TYPE_INFLUX_2: Influx2Prompter,
         source.TYPE_KAFKA: KafkaPrompter,
         source.TYPE_MONGO: MongoPrompter,
         source.TYPE_MYSQL: JDBCPrompter,

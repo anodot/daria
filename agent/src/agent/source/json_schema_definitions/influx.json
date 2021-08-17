@@ -5,10 +5,6 @@
     "db": {"type": "string"},
     "username": {"type": "string"},
     "password": {"type": "string"},
-    "write_host": {"type": "string"},
-    "write_db": {"type": "string"},
-    "write_username": {"type": "string"},
-    "write_password": {"type": "string"},
     "offset": {"type": "string"}
   },
   "required": ["host", "db"]

@@ -5,6 +5,7 @@ from agent import source
 from agent.modules.logger import get_logger
 from agent.modules.constants import ROOT_DIR
 from agent.pipeline import Pipeline
+from agent.pipeline.config.stages.base import Stage
 
 logger = get_logger(__name__)
 
@@ -51,6 +52,7 @@ class SchemaBaseConfigLoader(BaseConfigLoader):
             source.TYPE_CLICKHOUSE: 'jdbc_http',
             source.TYPE_DIRECTORY: 'directory_http',
             source.TYPE_INFLUX: 'influx',
+            source.TYPE_INFLUX_2: 'influx2',
             source.TYPE_KAFKA: 'kafka_http',
             source.TYPE_MYSQL: 'jdbc_http',
             source.TYPE_POSTGRES: 'jdbc_http',
@@ -99,10 +101,19 @@ class BaseConfigHandler:
     def _override_stages(self):
         for stage in self.config['stages']:
             if stage['instanceName'] in self.stages_to_override:
-                stage_config = self.stages_to_override[stage['instanceName']](self.pipeline, stage).config
+                stage_config = self._get_stage(stage).get_config()
                 for conf in stage['configuration']:
                     if conf['name'] in stage_config:
                         conf['value'] = stage_config[conf['name']]
+
+    def _get_stage(self, stage) -> Stage:
+        return self.stages_to_override[stage['instanceName']](self.pipeline)
+
+    def _override_pipeline_config(self):
+        self.config['title'] = self.pipeline.name
+        for config in self.config['configuration']:
+            if config['name'] == 'constants':
+                config['value'] = [{'key': key, 'value': val} for key, val in self._get_pipeline_config().items()]
 
     def _get_pipeline_config(self) -> dict:
         return {
@@ -111,9 +122,3 @@ class BaseConfigHandler:
             'ANODOT_BASE_URL': self.pipeline.destination.url,
             'AGENT_URL': self.pipeline.streamsets.agent_external_url,
         }
-
-    def _override_pipeline_config(self):
-        self.config['title'] = self.pipeline.name
-        for config in self.config['configuration']:
-            if config['name'] == 'constants':
-                config['value'] = [{'key': key, 'value': val} for key, val in self._get_pipeline_config().items()]

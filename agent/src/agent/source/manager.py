@@ -7,8 +7,8 @@ from agent.modules.logger import get_logger
 logger_ = get_logger(__name__, stdout=True)
 
 
-def create_source_obj(source_name: str, source_type: str) -> Source:
-    return source.types[source_type](source_name, source_type, {})
+def create_source_obj(source_name: str, source_type: str, config: dict = None) -> Source:
+    return source.types[source_type](source_name, source_type, config or {})
 
 
 def update(source_: Source):
