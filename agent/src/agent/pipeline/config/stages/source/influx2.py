@@ -37,4 +37,11 @@ class Influx2Source(InfluxScript):
     def _get_query(self) -> str:
         return f'from(bucket:"{self.pipeline.source.config["bucket"]}") ' \
                '|> range(start: {}, stop: {}) ' \
-               f'|> filter(fn: (r) => r._measurement == "{self.pipeline.config["measurement_name"]}")'
+               f'|> filter(fn: (r) => {self._get_filter_condition()}")'
+
+    def _get_filter_condition(self) -> str:
+        filter_condition = f'r._measurement == "{self.pipeline.config["measurement_name"]}'
+        custom_filtering = self.pipeline.config.get('filtering')
+        if custom_filtering:
+            filter_condition += f' and {custom_filtering}'
+        return filter_condition

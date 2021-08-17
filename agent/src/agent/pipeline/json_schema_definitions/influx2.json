@@ -16,7 +16,8 @@
       "patternProperties":  {"[^ \\.]+": {"type": "array", "items": {"type": "string"}}}
     },
     "delay": {"type": "string"},
-    "interval": {"type": "integer"}
+    "interval": {"type": "integer"},
+    "filtering": {"type": "string"}
   },
   "required": ["measurement_name", "values", "dimensions"]
 }
