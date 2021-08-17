@@ -6,12 +6,11 @@ import requests
 import inject
 
 from abc import ABC, abstractmethod
+from urllib.parse import urljoin
 from datetime import datetime
 from urllib.parse import urlparse
-
 from pysnmp.entity.engine import SnmpEngine
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
-
 from agent import source
 from agent.modules.tools import if_validation_enabled
 from agent.modules import validator, zabbix, http
@@ -73,8 +72,11 @@ class InfluxValidator(Validator):
 
     @if_validation_enabled
     def validate_db(self):
-        client = source.db.get_influx_client(self.source.config['host'], self.source.config.get('username'),
-                                             self.source.config.get('password'))
+        client = source.db.get_influx_client(
+            self.source.config['host'],
+            self.source.config.get('username'),
+            self.source.config.get('password')
+        )
         if not any([db['name'] == self.source.config['db'] for db in client.get_list_database()]):
             raise ValidationException(
                 f"Database {self.source.config['db']} not found. Please check your credentials again"
@@ -94,6 +96,24 @@ class InfluxValidator(Validator):
                 datetime.strptime(self.source.config['offset'], '%d/%m/%Y %H:%M').timestamp()
             except ValueError as e:
                 raise ValidationException(str(e))
+
+
+class Influx2Validator(InfluxValidator):
+    VALIDATION_SCHEMA_FILE = 'influx2.json'
+
+    @if_validation_enabled
+    def validate_connection(self):
+        res = requests.get(self.source.config['host'])
+        res.raise_for_status()
+
+    @if_validation_enabled
+    def validate_db(self):
+        session = requests.Session()
+        session.headers['Authorization'] = f'Token {self.source.config["token"]}'
+        res = session.get(
+            urljoin(self.source.config['host'], '/api/v2/buckets')
+        )
+        res.raise_for_status()
 
 
 class ElasticValidator(Validator):
@@ -318,6 +338,7 @@ def get_validator(source_: Source) -> Validator:
         source.TYPE_DIRECTORY: DirectoryValidator,
         source.TYPE_ELASTIC: ElasticValidator,
         source.TYPE_INFLUX: InfluxValidator,
+        source.TYPE_INFLUX_2: Influx2Validator,
         source.TYPE_KAFKA: KafkaValidator,
         source.TYPE_MONGO: MongoValidator,
         source.TYPE_MYSQL: JDBCValidator,

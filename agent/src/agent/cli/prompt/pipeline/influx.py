@@ -1,8 +1,8 @@
 import click
 
 from urllib.parse import urljoin
-from .base import Prompter
 from agent import pipeline
+from .base import Prompter
 
 
 class InfluxPrompter(Prompter):
@@ -54,3 +54,20 @@ class InfluxPrompter(Prompter):
                 type=click.STRING,
                 default=self.default_config.get('filtering', '')
             ).strip()
+
+
+class Influx2Prompter(InfluxPrompter):
+    def prompt_config(self):
+        self.set_measurement_name()
+        self.data_preview()
+        self.prompt_values()
+        self.set_dimensions()
+        self.prompt_static_dimensions()
+        self.prompt_tags()
+        self.set_delay()
+        self.set_filtering()
+        self.config['uses_schema'] = True
+        self.config['timestamp'] = {
+            'type': 'unix',
+            'name': '_time',
+        }

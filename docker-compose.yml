@@ -146,6 +146,22 @@ services:
   #      INFLUXDB_READ_USER: ro
   #      INFLUXDB_READ_USER_PASSWORD: roro
 
+  influx-2:
+    image: influxdb:2.0.7
+    container_name: influx2
+    ports:
+      - "8087:8086"
+    volumes:
+      - /var/lib/influxdb
+      - ./volumes/influx2.0-initdb:/docker-entrypoint-initdb.d
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: test
+      DOCKER_INFLUXDB_INIT_PASSWORD: testtest
+      DOCKER_INFLUXDB_INIT_ORG: test
+      DOCKER_INFLUXDB_INIT_BUCKET: test
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: token
+
   squid:
     image: datadog/squid
     extra_hosts:

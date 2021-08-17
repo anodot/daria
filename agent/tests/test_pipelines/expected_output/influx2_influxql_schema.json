@@ -119,36 +119,6 @@
     }
   },
   {
-    "timestamp": 1553054426,
-    "dimensions": {
-      "cpu": "cpu-total-usage",
-      "zone": "GF",
-      "host": "msk-air-trn1"
-    },
-    "measurements": {
-      "usage_active": 0.504,
-      "usage_idle": 260404905034043060000
-    },
-    "schemaId": "test_basic-1234",
-    "tags": {
-      "source": [
-        "anodot-agent"
-      ],
-      "source_host_id": [
-        "ABCDEF"
-      ],
-      "source_host_name": [
-        "agent"
-      ],
-      "pipeline_id": [
-        "test_basic"
-      ],
-      "pipeline_type": [
-        "influx"
-      ]
-    }
-  },
-  {
     "timestamp": 1553154426,
     "dimensions": {
       "cpu": "cpu-total-usage",
