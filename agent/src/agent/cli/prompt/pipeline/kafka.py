@@ -6,7 +6,6 @@ from agent import source
 class KafkaPrompter(SchemalessPrompter):
     timestamp_types = ['datetime', 'string', 'unix', 'unix_ms']
     target_types = ['counter', 'gauge', 'running_counter']
-    pass
 
     def prompt_config(self):
         self.data_preview()
