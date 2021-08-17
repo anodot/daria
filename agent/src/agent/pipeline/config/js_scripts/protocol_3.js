@@ -1,5 +1,5 @@
 function extract_value(object, path) {
-  path_parts = path.split('/')
+  let path_parts = path.split('/')
   for (var k = 0; k < path_parts.length; k++) {
     object = object[path_parts[k]]
     if (object === null) {

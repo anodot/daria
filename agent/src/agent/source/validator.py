@@ -7,11 +7,8 @@ import inject
 
 from abc import ABC, abstractmethod
 from datetime import datetime
-from urllib.parse import urlparse
-
 from pysnmp.entity.engine import SnmpEngine
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
-
 from agent import source
 from agent.modules.tools import if_validation_enabled
 from agent.modules import validator, zabbix, http
@@ -120,7 +117,7 @@ class JDBCValidator(Validator):
             validator.validate_url_format_with_port(self.source.config[source.JDBCSource.CONFIG_CONNECTION_STRING])
         except validator.ValidationException as e:
             raise ValidationException(str(e))
-        result = urlparse(self.source.config[source.JDBCSource.CONFIG_CONNECTION_STRING])
+        result = urllib.parse.urlparse(self.source.config[source.JDBCSource.CONFIG_CONNECTION_STRING])
         if self.source.type == source.TYPE_MYSQL and result.scheme != 'mysql':
             raise ValidationException('Wrong url scheme. Use `mysql`')
         if self.source.type == source.TYPE_POSTGRES and result.scheme != 'postgresql':
@@ -175,7 +172,7 @@ class MongoValidator(Validator):
 
 class SNMPValidator(Validator):
     def validate(self):
-        url = urlparse(self.source.url)
+        url = urllib.parse.urlparse(self.source.url)
         iterator = getCmd(
             SnmpEngine(),
             CommunityData(self.source.read_community, mpModel=0),

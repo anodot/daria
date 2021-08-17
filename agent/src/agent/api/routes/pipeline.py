@@ -3,7 +3,7 @@ import sdc_client
 
 from jsonschema import ValidationError
 from agent.api.routes import needs_pipeline
-from flask import jsonify, Blueprint, request
+from flask import jsonify, Blueprint, request, escape
 from agent.api import routes
 from agent import pipeline, source, streamsets, monitoring
 from agent.modules import logger
@@ -111,7 +111,7 @@ def info(pipeline_id: str):
 @needs_pipeline
 def logs(pipeline_id: str):
     if 'severity' in request.args and request.args['severity'] not in pipeline.manager.LOG_LEVELS:
-        return f'{request.args["severity"]} logging level is not one of {", ".join(pipeline.manager.LOG_LEVELS)}', 400
+        return f'{escape(request.args["severity"])} logging level is not one of {", ".join(pipeline.manager.LOG_LEVELS)}', 400
     severity = Severity[request.args.get('severity', Severity.INFO.value)]
     number_of_records = int(request.args.get('number_of_records', 10))
     try:
