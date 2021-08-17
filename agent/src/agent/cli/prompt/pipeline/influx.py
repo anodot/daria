@@ -68,6 +68,6 @@ class Influx2Prompter(InfluxPrompter):
         self.set_filtering()
         self.config['uses_schema'] = True
         self.config['timestamp'] = {
-            'type': 'unix_ms',
+            'type': 'unix',
             'name': '_time',
         }

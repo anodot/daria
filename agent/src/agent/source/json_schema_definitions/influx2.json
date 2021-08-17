@@ -5,7 +5,8 @@
     "token": {"type": "string"},
     "bucket": {"type": "string"},
     "org": {"type": "string"},
-    "offset": {"type": "string"}
+    "offset": {"type": "string"},
+    "query_timeout": {"type": "integer"}
   },
   "required": ["host", "token", "bucket", "org"]
 }

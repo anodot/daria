@@ -244,7 +244,7 @@ class Influx2LoadClientData(InfluxLoadClientData):
 
     def _set_timestamp(self):
         self.client_config['timestamp'] = {
-            'type': 'unix_ms',
+            'type': 'unix',
             'name': '_time',
         }
 

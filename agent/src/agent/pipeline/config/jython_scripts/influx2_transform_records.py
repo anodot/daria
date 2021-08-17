@@ -4,7 +4,6 @@ try:
     sdc.importLock()
     import sys
     import os
-    import collections
 
     sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))
 
@@ -20,22 +19,16 @@ def to_timestamp(date):
     return (date - epoch).total_seconds()
 
 
-records = {}
+records = []
 for record in sdc.records:
-    # * 1000 because of strange implementaion of 'Add tags and static dimensions', it will divide by 1000 later
-    timestamp = to_timestamp(datetime.strptime(record.value[sdc.userParams['TIMESTAMP_COLUMN']], DATEFORMAT)) * 1000
-    if timestamp in records:
-        r = records[timestamp]
-        r[record.value['_field']] = record.value['_value']
-        continue
+    timestamp = to_timestamp(datetime.strptime(record.value[sdc.userParams['TIMESTAMP_COLUMN']], DATEFORMAT))
     record.value[record.value['_field']] = record.value['_value']
     record.value[sdc.userParams['TIMESTAMP_COLUMN']] = timestamp
-    records[timestamp] = record.value
+    records.append(record.value)
 
-records = sorted(records.items(), key=lambda x: x[1][sdc.userParams['TIMESTAMP_COLUMN']])
-records = collections.OrderedDict(records)
+records = sorted(records, key=lambda x: x[sdc.userParams['TIMESTAMP_COLUMN']])
 
-for timestamp, obj in records.items():
-    record = sdc.createRecord('record created ' + str(timestamp))
+for obj in records:
+    record = sdc.createRecord('record created ' + str(obj[sdc.userParams['TIMESTAMP_COLUMN']]))
     record.value = obj
     sdc.output.write(record)

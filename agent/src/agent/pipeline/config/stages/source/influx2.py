@@ -1,3 +1,5 @@
+import urllib.parse
+
 from urllib.parse import urljoin
 from agent.pipeline.config.stages.influx import InfluxScript
 
@@ -10,7 +12,15 @@ class Influx2Source(InfluxScript):
         config['scriptConf.params'].extend([
             {'key': 'URL', 'value': self._get_url()},
             {'key': 'HEADERS', 'value': self._get_headers()},
-            {'key': 'DATA', 'value': self._get_data()},
+            {'key': 'QUERY', 'value': self._get_query()},
+            {'key': 'TIMEOUT', 'value': self.pipeline.source.query_timeout},
+            {
+                'key': 'MONITORING_URL',
+                'value': urllib.parse.urljoin(
+                    self.pipeline.streamsets.agent_external_url,
+                    f'/monitoring/source_http_error/{self.pipeline.name}/'
+                )
+            },
         ])
         return config
 
@@ -24,7 +34,7 @@ class Influx2Source(InfluxScript):
             'Content-type': 'application/vnd.flux',
         }
 
-    def _get_data(self) -> str:
+    def _get_query(self) -> str:
         return f'from(bucket:"{self.pipeline.source.config["bucket"]}") ' \
                '|> range(start: {}, stop: {}) ' \
                f'|> filter(fn: (r) => r._measurement == "{self.pipeline.config["measurement_name"]}")'

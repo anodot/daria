@@ -56,6 +56,8 @@ else:
 
 sdc.log.info('OFFSET: ' + str(offset))
 
+N_REQUESTS_TRIES = 3
+
 while True:
     if sdc.isStopped():
         break
@@ -67,13 +69,20 @@ while True:
 
     session = requests.Session()
     session.headers = sdc.userParams['HEADERS']
-    res = session.post(
-        sdc.userParams['URL'],
-        data=sdc.userParams['DATA'].format(
-            start, stop
-        )
-    )
-    res.raise_for_status()
+    for i in range(1, N_REQUESTS_TRIES + 1):
+        try:
+            res = session.post(
+                sdc.userParams['URL'],
+                data=sdc.userParams['QUERY'].format(start, stop),
+                timeout=sdc.userParams['TIMEOUT']
+            )
+            res.raise_for_status()
+        except requests.HTTPError as e:
+            requests.post(sdc.userParams['MONITORING_URL'] + str(res.status_code))
+            sdc.log.error(str(e))
+            if i == N_REQUESTS_TRIES:
+                raise
+            time.sleep(2 ** i)
 
     cur_batch = sdc.createBatch()
     for obj in csv_to_json(res.text, int(offset)):
