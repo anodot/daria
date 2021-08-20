@@ -42,7 +42,7 @@ class TestZabbix(TestInputBase):
             'counter name': 'counter',
             'value props': 'value:gauge',
             'measurement names': 'value:what',
-            'dimensions': 'host content-provider service-provider',
+            'dimensions': 'host content-provider service-provider key_',
             'delay': 0,
             'tags': 'test_type:zabbix',
             'preview': 'n',
@@ -62,8 +62,11 @@ class TestZabbix(TestInputBase):
 
     def test_edit_advanced(self, cli_runner, pipeline_id: str):
         days_to_backfill = (datetime.now() - datetime(year=2021, month=1, day=22)).days
+        query_file = ''
+        if pipeline_id == 'test_zabbix_edit_query':
+            query_file = 'tests/input_files/zabbix_query_2.json'
         input_ = {
-            'query file': 'tests/input_files/zabbix_query.json',
+            'query file': query_file,
             'items batch size': '',
             'histories batch size': 50,
             'days to backfill': days_to_backfill,

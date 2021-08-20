@@ -3,10 +3,12 @@
     "source": "test_zabbix",
     "pipeline_id": "test_zabbix_edit_query",
     "query": {
-      "output": "extend",
       "search": {
-        "key_": "system.cpu.load"
-      }
+        "output": ["name", "value_type"],
+        "key_": ["vm.memory.size[*]", "system.cpu.load"]
+      },
+      "searchWildcardsEnabled": true,
+      "searchByAny": true
     },
     "static_what": false,
     "count_records": 1,
@@ -22,7 +24,8 @@
     "dimensions": [
       "host",
       "content-provider",
-      "service-provider"
+      "service-provider",
+      "key_"
     ],
     "transform": {
       "file": "/home/zabbix_transform_value.csv",
