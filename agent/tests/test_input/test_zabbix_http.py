@@ -63,7 +63,7 @@ class TestZabbix(TestInputBase):
     def test_edit_advanced(self, cli_runner, pipeline_id: str):
         days_to_backfill = (datetime.now() - datetime(year=2021, month=1, day=22)).days
         input_ = {
-            'query file': 'tests/input_files/zabbix_query.json',
+            'query file': 'tests/input_files/zabbix_query_2.json',
             'items batch size': '',
             'histories batch size': 50,
             'days to backfill': days_to_backfill,

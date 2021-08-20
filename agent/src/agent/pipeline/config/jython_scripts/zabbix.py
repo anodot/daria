@@ -198,11 +198,10 @@ def replace_item_macros(items_):
     for itemid in itemids_with_macros:
         item = items_[itemid]
         for k, v in item.items():
-            if not isinstance(v, unicode):
-                continue
-            res = re.search('.*({\$.*})', v)
-            if res:
-                item[k] = re.sub('{\$.*}', macros[item['hostid']][res.group(1)], v)
+            if isinstance(v, unicode) and re.search('({\$.*})', v):
+                for macro_name in list(re.findall('({\$[^\}]+})', v)):
+                    v = v.replace(macro_name, macros[item['hostid']][macro_name])
+                item[k] = v
     return items_
 
 
