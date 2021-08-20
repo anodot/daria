@@ -35,7 +35,7 @@ print('CPU item created')
 memory_item = client.post('item.create', {
     'hostid': host_id,
     'name': 'agent - Memory - anodot',
-    'key_': 'vm.memory.size',
+    'key_': 'vm.memory.size[{$MY_MACRO}]',
     'type': 0,
     'value_type': 3,
     'delay': '30s',
@@ -43,6 +43,13 @@ memory_item = client.post('item.create', {
 })
 memory_item_id = memory_item['itemids'][0]
 print('Memory item created')
+
+client.post('usermacro.create', {
+    "hostid": host_id,
+    "macro": "{$MY_MACRO}",
+    "value": "macro_value"
+})
+print('Macro MY_MACRO created')
 
 cpu_values = [
     (cpu_item_id, '1611322479', '0.1', '257117700'),

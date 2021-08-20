@@ -42,7 +42,7 @@ class TestZabbix(TestInputBase):
             'counter name': 'counter',
             'value props': 'value:gauge',
             'measurement names': 'value:what',
-            'dimensions': 'host content-provider service-provider',
+            'dimensions': 'host content-provider service-provider key_',
             'delay': 0,
             'tags': 'test_type:zabbix',
             'preview': 'n',

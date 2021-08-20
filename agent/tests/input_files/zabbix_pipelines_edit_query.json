@@ -22,7 +22,8 @@
     "dimensions": [
       "host",
       "content-provider",
-      "service-provider"
+      "service-provider",
+      "key_"
     ],
     "transform": {
       "file": "/home/zabbix_transform_value.csv",

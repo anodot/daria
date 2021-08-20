@@ -9,6 +9,7 @@ try:
     import traceback
     import time
     import json
+    import re
 finally:
     sdc.importUnlock()
 
@@ -86,10 +87,10 @@ def get_last_processed_id():
     return None
 
 
-def query_history(item_ids, value_type):
+def query_history(item_ids, value_type_):
     for ids_chunk in chunks(item_ids, int(sdc.userParams['HISTORIES_BATCH_SIZE'])):
         history_params = {
-            'history': value_type,
+            'history': value_type_,
             'itemids': ids_chunk,
             'sortfield': 'clock',
             'sortorder': 'ASC',
@@ -142,11 +143,11 @@ def fetch_itemids_value_types():
     return itemids_value_types
 
 
-def fetch_items_data(itemids):
-    global hosts
+def fetch_items_data(itemids_):
+    hosts = fetch_hosts()
     start = time.time()
-    items = {}
-    params = {'itemids': itemids}
+    items_ = {}
+    params = {'itemids': itemids_}
     query = json.loads(sdc.userParams['QUERY'])
     if 'output' in query:
         params['output'] = query['output']
@@ -155,9 +156,9 @@ def fetch_items_data(itemids):
         if item['hostid'] not in hosts:
             continue
         item['host'] = hosts[item['hostid']]['name']
-        items[item['itemid']] = item
+        items_[item['itemid']] = item
     sdc.log.debug('fetch_items_data() took ' + str(time.time() - start) + ' seconds')
-    return items
+    return items_
 
 
 def group_ids_by_value_types(itemids_value_types):
@@ -169,15 +170,61 @@ def group_ids_by_value_types(itemids_value_types):
     return itemids_by_value_types
 
 
+def extract_item_ids(itemids_value_types_):
+    return list(map(
+        lambda x: x['itemid'],
+        itemids_value_types_
+    ))
+
+
+def replace_item_macros(items_):
+    host_ids_to_fetch_macros, itemids_with_macros = get_host_ids_to_fetch_macros(items_)
+    res = client.post(
+        'usermacro.get',
+        {
+            'output': ['hostid', 'macro', 'value'],
+            'hostids': host_ids_to_fetch_macros,
+        }
+    )
+    # macros look like
+    # {
+    #     'hostid1': {'{%MACRO1}': 'value1', '{%MACRO2}': 'value2'}
+    # }
+    macros = {}
+    for macro in res:
+        if macro['hostid'] not in macros:
+            macros[macro['hostid']] = {}
+        macros[macro['hostid']][macro['macro']] = macro['value']
+    for itemid in itemids_with_macros:
+        item = items_[itemid]
+        for k, v in item.items():
+            if not isinstance(v, unicode):
+                continue
+            res = re.search('.*({\$.*})', v)
+            if res:
+                item[k] = re.sub('{\$.*}', macros[item['hostid']][res.group(1)], v)
+    return items_
+
+
+def get_host_ids_to_fetch_macros(items_):
+    itemids_with_macros = []
+    host_ids_to_fetch_macros = []
+    for item in items_.values():
+        for k, v in item.items():
+            if isinstance(v, unicode) and re.search('.*({\$.*})', v):
+                host_ids_to_fetch_macros.append(item['hostid'])
+                itemids_with_macros.append(item['itemid'])
+                continue
+    return host_ids_to_fetch_macros, itemids_with_macros
+
+
 interval = get_interval()
 end = get_backfill_offset() + interval
 sdc.log.info('INTERVAL: ' + str(interval))
 sdc.log.info('TIME_TO: ' + str(end))
-hosts = {}
 
 while True:
     try:
-        hosts = fetch_hosts()
         if end > get_now_with_delay():
             time.sleep(end - get_now_with_delay())
         if sdc.isStopped():
@@ -186,11 +233,9 @@ while True:
         # they are ordered by itemid asc
         for itemids_value_types in chunks(fetch_itemids_value_types(), int(sdc.userParams['ITEMS_BATCH_SIZE'])):
             batch = sdc.createBatch()
-            itemids = list(map(
-                lambda x: x['itemid'],
-                itemids_value_types
-            ))
+            itemids = extract_item_ids(itemids_value_types)
             items = fetch_items_data(itemids)
+            items = replace_item_macros(items)
 
             for value_type, ids in group_ids_by_value_types(itemids_value_types).items():
                 for histories in query_history(ids, value_type):
