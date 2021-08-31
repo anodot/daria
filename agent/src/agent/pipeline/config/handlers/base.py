@@ -55,6 +55,7 @@ class SchemaBaseConfigLoader(BaseConfigLoader):
             source.TYPE_INFLUX_2: 'influx2',
             source.TYPE_KAFKA: 'kafka_http',
             source.TYPE_MYSQL: 'jdbc_http',
+            source.TYPE_OBSERVIUM: 'observium',
             source.TYPE_POSTGRES: 'jdbc_http',
             source.TYPE_SNMP: 'snmp',
         }[pipeline.source.type]

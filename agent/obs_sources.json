@@ -1,0 +1,11 @@
+[
+  {
+    "type": "observium",
+    "name": "observium",
+    "config": {
+      "url": "http://dummy_destination:80",
+      "username": "admin",
+      "password": "admin"
+    }
+  }
+]

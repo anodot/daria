@@ -133,6 +133,7 @@ def force_delete(pipeline_id: str):
     click.echo('Finished')
 
 
+# todo severity is not working
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
 @click.option('-l', '--lines', type=click.INT, default=10)

@@ -278,6 +278,26 @@ class SolarWindsValidator(Validator):
             )
 
 
+class ObserviumValidator(Validator):
+    VALIDATION_SCHEMA_FILE = 'solarwinds.json'
+
+    def validate_connection(self):
+        session = http.Session()
+        session.auth = (
+            self.source.config[source.ObserviumSource.USERNAME],
+            self.source.config[source.ObserviumSource.PASSWORD]
+        )
+        try:
+            url = urllib.parse.urljoin(self.source.config['url'], source.ObserviumSource.DEVICES_API_PATH)
+            res = session.get(url, verify=self.source.config.get('verify_ssl', True), timeout=self.source.query_timeout)
+            res.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            raise ValidationException(
+                'Failed to connect to Observium API. Make sure you provided correct url, API username and password:\n'
+                + str(e)
+            )
+
+
 class ZabbixValidator(Validator):
     VALIDATION_SCHEMA_FILE = 'zabbix.json'
 
@@ -340,6 +360,7 @@ def get_validator(source_: Source) -> Validator:
         source.TYPE_KAFKA: KafkaValidator,
         source.TYPE_MONGO: MongoValidator,
         source.TYPE_MYSQL: JDBCValidator,
+        source.TYPE_OBSERVIUM: ObserviumValidator,
         source.TYPE_POSTGRES: JDBCValidator,
         source.TYPE_SAGE: SageValidator,
         source.TYPE_SNMP: SNMPValidator,

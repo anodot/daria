@@ -266,6 +266,18 @@ class ElasticLoadClientData(LoadClientData):
         return self.client_config
 
 
+class ObserviumLoadClientData(LoadClientData):
+    VALIDATION_SCHEMA_FILE_NAME = 'observium'
+
+    def load(self, client_config):
+        super().load(client_config)
+        self.client_config['timestamp'] = {}
+        self.client_config['timestamp']['type'] = 'unix'
+        self.client_config['timestamp']['name'] = 'poll_time'
+        self.client_config['uses_schema'] = True
+        return self.client_config
+
+
 class TcpLoadClientData(LoadClientData):
     VALIDATION_SCHEMA_FILE_NAME = 'tcp_server'
 
@@ -346,6 +358,7 @@ def get_file_loader(pipeline_: Pipeline, is_edit=False) -> LoadClientData:
         source.TYPE_MONGO: MongoLoadClientData,
         source.TYPE_MYSQL: JDBCLoadClientData,
         source.TYPE_POSTGRES: JDBCLoadClientData,
+        source.TYPE_OBSERVIUM: ObserviumLoadClientData,
         source.TYPE_SAGE: SageLoadClientData,
         source.TYPE_SNMP: SNMPLoadClientData,
         source.TYPE_SOLARWINDS: SolarWindsClientData,

@@ -25,7 +25,7 @@ di.init()
 
 t = 1
 
-# cli.source.edit(["solarwinds"])
+cli.source.create(["-f", "/Users/antonzelenin/Workspace/daria/agent/obs_sources.json"])
 # cli.destination()
 # cli.pipeline.create()
 # cli.streamsets.delete(["asdfa"])
