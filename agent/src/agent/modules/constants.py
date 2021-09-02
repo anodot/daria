@@ -7,6 +7,7 @@ ENV_PROD = True if os.environ.get('ENV_PROD') == 'true' else False
 HOSTNAME = os.environ.get('HOSTNAME', 'agent')
 
 STREAMSETS_PREVIEW_TIMEOUT = os.environ.get('STREAMSETS_PREVIEW_TIMEOUT', 30000)
+STREAMSETS_MAX_RETRY_ATTEMPTS = int(os.environ.get('STREAMSETS_MAX_RETRY_ATTEMPTS', 5))
 
 VALIDATION_ENABLED = os.environ.get('VALIDATION_ENABLED', 'true') == 'true'
 

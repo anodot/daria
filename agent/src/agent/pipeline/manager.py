@@ -4,8 +4,8 @@ import string
 import sdc_client
 
 from agent import source, pipeline, destination, streamsets
-from agent.modules import tools
-from agent.pipeline import Pipeline, TestPipeline, schema, extra_setup
+from agent.modules import tools, constants
+from agent.pipeline import Pipeline, TestPipeline, schema, extra_setup, PipelineRetries
 from agent.modules.logger import get_logger
 from agent.pipeline.config.handlers.factory import get_config_handler
 from agent.source import Source
@@ -41,6 +41,26 @@ def create_object(pipeline_id: str, source_name: str) -> Pipeline:
 def check_pipeline_id(pipeline_id: str):
     if pipeline.repository.exists(pipeline_id):
         raise pipeline.PipelineException(f"Pipeline {pipeline_id} already exists")
+
+
+def start(pipeline_: Pipeline):
+    # remove saved retry attempts on pipeline start
+    # todo should we do the same on status change? I guess not
+    _reset_pipeline_retries(pipeline_)
+    sdc_client.start(pipeline_)
+
+
+def _reset_pipeline_retries(pipeline_: Pipeline):
+    retries = pipeline.repository.get_pipeline_retries(pipeline_)
+    if retries:
+        retries.number_of_error_statuses = 0
+        pipeline.repository.save_pipeline_retries(retries)
+
+
+def _delete_pipeline_retries(pipeline_: Pipeline):
+    retries = pipeline.repository.get_pipeline_retries(pipeline_)
+    if retries:
+        pipeline.repository.delete_pipeline_retries(retries)
 
 
 def update(pipeline_: Pipeline):
@@ -111,6 +131,7 @@ def _update_schema(pipeline_: Pipeline):
 
 
 def delete(pipeline_: Pipeline):
+    _delete_pipeline_retries(pipeline_)
     _delete_schema(pipeline_)
     try:
         sdc_client.delete(pipeline_)
@@ -135,6 +156,7 @@ def force_delete(pipeline_id: str) -> list:
     exceptions = []
     if pipeline.repository.exists(pipeline_id):
         pipeline_ = pipeline.repository.get_by_id(pipeline_id)
+        _delete_pipeline_retries(pipeline_)
         try:
             _delete_schema(pipeline_)
         except Exception as e:
@@ -204,7 +226,19 @@ def transform_for_bc(pipeline_: Pipeline) -> dict:
     }
     data['config'].pop('interval', 0)
     data['config'].pop('delay', 0)
+    if _should_send_error_notification(pipeline_):
+        data['notification'] = {
+            'code': 1000,
+            'description': 'pipeline error',
+        }
     return data
+
+
+def _should_send_error_notification(pipeline_: Pipeline) -> bool:
+    retries = pipeline.repository.get_pipeline_retries(pipeline_)
+    # number of error statuses = number of retries + 1
+    # also streamsets sends status update twice on the last retry that's why we need to subtract 2
+    return retries and retries.number_of_error_statuses - 2 >= constants.STREAMSETS_MAX_RETRY_ATTEMPTS and pipeline_.error_notification_enabled()
 
 
 def get_sample_records(pipeline_: Pipeline) -> (list, list):
@@ -241,3 +275,11 @@ def get_preview_data(pipeline_: Pipeline) -> (list, list):
 
 def create_streamsets_pipeline_config(pipeline_: Pipeline) -> dict:
     return get_config_handler(pipeline_).override_base_config()
+
+
+def increase_retry_counter(pipeline_: Pipeline):
+    retries = pipeline.repository.get_pipeline_retries(pipeline_)
+    if not retries:
+        retries = PipelineRetries(pipeline_)
+    retries.number_of_error_statuses += 1
+    pipeline.repository.save_pipeline_retries(retries)

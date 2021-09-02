@@ -52,7 +52,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
     GAUGE = 'gauge'
     RUNNING_COUNTER = 'running_counter'
 
-    error_statuses = [STATUS_RUN_ERROR, STATUS_START_ERROR, STATUS_STOP_ERROR, STATUS_RUNNING_ERROR]
+    ERROR_STATUSES = [STATUS_RUN_ERROR, STATUS_RUNNING_ERROR]
     # TODO make it enum
     statuses = [STATUS_EDITED, STATUS_STARTING, STATUS_RUNNING, STATUS_STOPPING, STATUS_STOPPED, STATUS_RETRY,
                 STATUS_RUN_ERROR, STATUS_START_ERROR, STATUS_STOP_ERROR, STATUS_RUNNING_ERROR]
@@ -350,6 +350,9 @@ class Pipeline(Entity, sdc_client.IPipeline):
             **self.tags
         }
 
+    def error_notification_enabled(self) -> bool:
+        return not self.config.get('disable_error_notifications', False)
+
 
 class TestPipeline(Pipeline):
     def __init__(self, pipeline_id: str, source_, destination: HttpDestination):
@@ -374,3 +377,14 @@ class Provider(sdc_client.IPipelineProvider):
 
     def save(self, pipeline_: Pipeline):
         pipeline.repository.save(pipeline_)
+
+
+class PipelineRetries(Entity):
+    __tablename__ = 'pipeline_retries'
+
+    pipeline_id = Column(String, ForeignKey('pipelines.name'), primary_key=True)
+    number_of_error_statuses = Column(Integer)
+
+    def __init__(self, pipeline_: Pipeline):
+        self.pipeline_id = pipeline_.name
+        self.number_of_error_statuses = 0

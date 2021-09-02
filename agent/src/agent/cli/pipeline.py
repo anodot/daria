@@ -68,7 +68,7 @@ def start(pipeline_id: str, file):
     for pipeline_id in pipeline_ids:
         try:
             click.echo(f'Pipeline {pipeline_id} is starting...')
-            sdc_client.start(pipeline.repository.get_by_id(pipeline_id))
+            pipeline.manager.start(pipeline.repository.get_by_id(pipeline_id))
         except (sdc_client.ApiClientException, pipeline.PipelineException) as e:
             click.secho(str(e), err=True, fg='red')
             continue
