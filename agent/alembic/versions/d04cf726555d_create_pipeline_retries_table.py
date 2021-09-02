@@ -19,9 +19,10 @@ depends_on = None
 def upgrade():
     op.create_table(
         'pipeline_retries',
-        sa.Column('pipeline_id', sa.String, nullable=False),
+        sa.Column('pipeline_id', sa.String, primary_key=True),
         sa.Column('number_of_error_statuses', sa.Integer, nullable=False)
     )
+    op.create_foreign_key('fk_pipeline_retries_pipeline', 'pipeline_retries', 'pipelines', ['pipeline_id'], ['name'])
 
 
 def downgrade():
