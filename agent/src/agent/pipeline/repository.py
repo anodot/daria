@@ -106,7 +106,6 @@ def _construct_source(pipeline: Pipeline) -> Pipeline:
 
 
 def get_pipeline_retries(pipeline_: Pipeline) -> Optional[PipelineRetries]:
-    # todo first or one?
     return Session.query(PipelineRetries).filter(PipelineRetries.pipeline_id == pipeline_.name).first()
 
 

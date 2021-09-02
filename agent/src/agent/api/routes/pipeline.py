@@ -152,7 +152,7 @@ def pipeline_status_change(pipeline_id: str):
     status = data['pipeline_status']
     pipeline_ = pipeline.repository.get_by_id(pipeline_id)
 
-    if status in pipeline.Pipeline.ERROR_STATUSES:
+    if status in [pipeline.Pipeline.STATUS_RUN_ERROR, pipeline.Pipeline.STATUS_RUNNING_ERROR]:
         pipeline.manager.increase_retry_counter(pipeline_)
 
     pipeline_.status = status
