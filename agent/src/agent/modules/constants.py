@@ -28,6 +28,8 @@ MONITORING_URL = os.environ.get('MONITORING_URL')
 MONITORING_TOKEN = os.environ.get('MONITORING_TOKEN')
 MONITORING_SEND_TO_CLIENT = True if os.environ.get('MONITORING_SEND_TO_CLIENT', 'true') == 'true' else False
 MONITORING_SEND_TO_ANODOT = True if os.environ.get('MONITORING_SEND_TO_ANODOT', 'true') == 'true' else False
+MONITORING_COLLECT_ALL_STAGES_PROCESSING_TIME = True if os.environ.get('MONITORING_COLLECT_ALL_STAGES_PROCESSING_TIME',
+                                                                       'false') == 'true' else False
 
 _agent_listen_port = os.environ.get('LISTEN_PORT', 80)
 AGENT_MONITORING_ENDPOINT = os.environ.get('AGENT_MONITORING_ENDPOINT',

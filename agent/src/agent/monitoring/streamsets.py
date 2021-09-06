@@ -1,8 +1,10 @@
 import prometheus_client
 import sdc_client
+import re
 
 from agent import streamsets, pipeline, source
 from agent.monitoring import metrics
+from agent.modules import constants
 
 
 def _pull_system_metrics(streamsets_: streamsets.StreamSets):
@@ -42,6 +44,17 @@ def _pull_pipeline_metrics(pipeline_: pipeline.Pipeline):
             _increase_counter(bean['Count'], metrics.PIPELINE_OUTGOING_RECORDS.labels(*labels))
         elif bean['name'].endswith('pipeline.batchErrorRecords.counter'):
             _increase_counter(bean['Count'], metrics.PIPELINE_ERROR_RECORDS.labels(*labels))
+
+    if constants.MONITORING_COLLECT_ALL_STAGES_PROCESSING_TIME:
+        for bean in jmx['beans']:
+            m = re.match('.+\.stage\.(.+)\.batchProcessing\.timer$', bean['name'])
+            if not m:
+                continue
+            metrics.PIPELINE_STAGE_BATCH_PROCESSING_TIME_AVG.labels(*labels, m.group(1)).set(bean['Mean'] / 1000)
+            metrics.PIPELINE_STAGE_BATCH_PROCESSING_TIME_50th.labels(*labels, m.group(1)).set(
+                bean['50thPercentile'] / 1000)
+            metrics.PIPELINE_STAGE_BATCH_PROCESSING_TIME_999th.labels(*labels, m.group(1)).set(
+                bean['999thPercentile'] / 1000)
 
 
 def _pull_kafka_metrics(streamsets_: streamsets.StreamSets):
