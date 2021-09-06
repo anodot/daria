@@ -33,4 +33,6 @@ _agent_listen_port = os.environ.get('LISTEN_PORT', 80)
 AGENT_MONITORING_ENDPOINT = os.environ.get('AGENT_MONITORING_ENDPOINT',
                                            f'http://localhost:{_agent_listen_port}/monitoring')
 
+SEND_TO_BC = True if os.environ.get('SEND_PIPELINE_INFO_TO_ANODOT', 'true') == 'true' else False
+
 TLS_VERSION = ssl.PROTOCOL_TLSv1_1 if os.environ.get('TLS_VERSION', '1.2') == '1.1' else ssl.PROTOCOL_TLSv1_2

@@ -4,6 +4,10 @@ import requests
 from agent import pipeline, destination, monitoring
 from agent.destination.anodot_api_client import AnodotApiClient
 from agent.modules.logger import get_logger
+from agent.modules import constants
+
+if not constants.SEND_TO_BC:
+    exit(0)
 
 destination_ = destination.repository.get()
 logger = get_logger(__name__, stdout=True)
