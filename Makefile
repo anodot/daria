@@ -133,7 +133,7 @@ run-unit-tests:
 
 get-streamsets-libs: install-streamsets-requirements
 	rm -rf containers/streamsets/lib/anodot
-	curl -L https://github.com/anodot/anodot-sdc-stage/releases/download/v2.0.0/anodot-2.0.0.tar.gz -o /tmp/sdc.tar.gz && tar xvfz /tmp/sdc.tar.gz -C containers/streamsets/lib
+	curl -L https://github.com/anodot/anodot-sdc-stage/releases/download/v2.0.4/anodot-2.0.4.tar.gz -o /tmp/sdc.tar.gz && tar xvfz /tmp/sdc.tar.gz -C containers/streamsets/lib
 
 install-streamsets-requirements:
 	rm -rf containers/streamsets/python-libs/*
