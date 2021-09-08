@@ -132,8 +132,8 @@ run-unit-tests:
 	$(DOCKER_TEST_PARALLEL) tests/unit/
 
 get-streamsets-libs: install-streamsets-requirements
-	rm -rf containers/streamsets/lib/*
-	curl -L https://github.com/anodot/anodot-sdc-stage/releases/download/v1.1.2/anodot-1.1.2.tar.gz -o /tmp/sdc.tar.gz && tar xvfz /tmp/sdc.tar.gz -C containers/streamsets/lib
+	rm -rf containers/streamsets/lib/anodot
+	curl -L https://github.com/anodot/anodot-sdc-stage/releases/download/v2.0.4/anodot-2.0.4.tar.gz -o /tmp/sdc.tar.gz && tar xvfz /tmp/sdc.tar.gz -C containers/streamsets/lib
 
 install-streamsets-requirements:
 	rm -rf containers/streamsets/python-libs/*
