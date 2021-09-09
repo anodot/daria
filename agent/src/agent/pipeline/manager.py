@@ -45,11 +45,11 @@ def check_pipeline_id(pipeline_id: str):
 
 def start(pipeline_: Pipeline):
     # remove saved retry attempts on pipeline start
-    _reset_pipeline_retries(pipeline_)
+    reset_pipeline_retries(pipeline_)
     sdc_client.start(pipeline_)
 
 
-def _reset_pipeline_retries(pipeline_: Pipeline):
+def reset_pipeline_retries(pipeline_: Pipeline):
     retries = pipeline.repository.get_pipeline_retries(pipeline_)
     if retries:
         retries.number_of_error_statuses = 0
@@ -202,7 +202,6 @@ def _generate_random_string(size: int = 6):
 
 
 def transform_for_bc(pipeline_: Pipeline) -> dict:
-    GENERAL_PIPELINE_ERROR_CODE = 70
     data = {
         'pipeline_id': pipeline_.name,
         'created': int(pipeline_.created_at.timestamp()),
@@ -226,15 +225,10 @@ def transform_for_bc(pipeline_: Pipeline) -> dict:
     }
     data['config'].pop('interval', 0)
     data['config'].pop('delay', 0)
-    if _should_send_error_notification(pipeline_):
-        data['notification'] = {
-            'code': GENERAL_PIPELINE_ERROR_CODE,
-            'description': 'pipeline error',
-        }
     return data
 
 
-def _should_send_error_notification(pipeline_: Pipeline) -> bool:
+def should_send_error_notification(pipeline_: Pipeline) -> bool:
     retries = pipeline.repository.get_pipeline_retries(pipeline_)
     # number of error statuses = number of retries + 1
     # also streamsets sends status update twice on the last retry that's why we need to subtract 2

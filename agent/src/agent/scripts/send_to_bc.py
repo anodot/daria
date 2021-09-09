@@ -5,7 +5,8 @@ from agent import pipeline, destination, monitoring
 from agent.destination.anodot_api_client import AnodotApiClient
 from agent.modules.logger import get_logger
 
-destination_ = destination.repository.get()
+GENERAL_PIPELINE_ERROR_CODE = 70
+
 logger = get_logger(__name__, stdout=True)
 
 
@@ -17,7 +18,7 @@ def _update_errors_count(num_of_errors: int):
 def main():
     num_of_errors = 0
     try:
-        api_client = AnodotApiClient(destination_)
+        api_client = AnodotApiClient(destination.repository.get())
         pipelines = pipeline.repository.get_all()
     except Exception:
         _update_errors_count(0)
@@ -25,7 +26,17 @@ def main():
 
     for pipeline_ in pipelines:
         try:
+            pipeline_data = pipeline.manager.transform_for_bc(pipeline_)
+            should_send_error_notification = pipeline.manager.should_send_error_notification(pipeline_)
+            if should_send_error_notification:
+                pipeline_data['notification'] = {
+                    'code': GENERAL_PIPELINE_ERROR_CODE,
+                    'description': 'pipeline error',
+                }
             api_client.send_pipeline_data_to_bc(pipeline.manager.transform_for_bc(pipeline_))
+            if should_send_error_notification:
+                # reset retries counter after sending a notification
+                pipeline.manager.reset_pipeline_retries(pipeline_)
         except requests.HTTPError as e:
             if not e.response.status_code == 404:
                 num_of_errors = _update_errors_count(num_of_errors)
