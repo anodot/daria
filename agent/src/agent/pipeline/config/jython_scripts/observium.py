@@ -17,17 +17,7 @@ finally:
 
 # single threaded - no entityName because we need only one offset
 entityName = ''
-DATEFORMAT = '%Y-%m-%dT%H:%M:%SZ'
 LAST_TIMESTAMP = '%last_timestamp%'
-
-
-# Jython converts datetime objects to java.sql.Timestamp when assigning it to a variable
-def date_from_str(date):
-    return datetime.strptime(date, DATEFORMAT)
-
-
-def date_to_str(date):
-    return date.strftime(DATEFORMAT)
 
 
 def get_now_with_delay():
@@ -41,6 +31,74 @@ def to_timestamp(date):
 
 def get_interval():
     return int(sdc.userParams['INTERVAL_IN_SECONDS'])
+
+
+def get_ports():
+    for i in range(1, N_REQUESTS_TRIES + 1):
+        try:
+            res = requests.get(
+                sdc.userParams['PORTS_URL'],
+                auth=HTTPBasicAuth(sdc.userParams['API_USER'], sdc.userParams['API_PASSWORD']),
+                params=sdc.userParams['PORTS_PARAMS'],
+                verify=bool(sdc.userParams['VERIFY_SSL']),
+                timeout=sdc.userParams['QUERY_TIMEOUT'],
+            )
+            res.raise_for_status()
+            return res.json()['ports']
+        except requests.HTTPError as e:
+            requests.post(sdc.userParams['MONITORING_URL'] + str(res.status_code))
+            sdc.log.error(str(e))
+            if i == N_REQUESTS_TRIES:
+                raise
+            time.sleep(2 ** i)
+
+
+def get_devices():
+    for i in range(1, N_REQUESTS_TRIES + 1):
+        try:
+            res = requests.get(
+                sdc.userParams['DEVICES_URL'],
+                auth=HTTPBasicAuth(sdc.userParams['API_USER'], sdc.userParams['API_PASSWORD']),
+                # todo add or remove
+                # params=params,
+                verify=bool(sdc.userParams['VERIFY_SSL']),
+                timeout=sdc.userParams['QUERY_TIMEOUT'],
+            )
+            res.raise_for_status()
+            res = res.json()['devices']
+            break
+        except requests.HTTPError as e:
+            requests.post(sdc.userParams['MONITORING_URL'] + str(res.status_code))
+            sdc.log.error(str(e))
+            if i == N_REQUESTS_TRIES:
+                raise
+            time.sleep(2 ** i)
+    devices = {}
+    for device in res.values():
+        devices[device['device_id']] = device
+    return devices
+
+
+def add_sys_name_and_locaion(ports_data, devices):
+    for port in ports_data.values():
+        # todo probably log or kind of if there's no such device?
+        if port['device_id'] in devices:
+            port['sysName'] = devices[port['device_id']]['sysName']
+            port['location'] = devices[port['device_id']]['location']
+    return ports_data
+
+
+def create_metrics(ports_data):
+    return [transform_port(port_data, sdc.userParams['DIMENSIONS'], sdc.userParams['MEASUREMENTS']) for port_data in ports_data.values()]
+
+
+def transform_port(port_data, dimensions, measurements):
+    return {
+        "timestamp": port_data['poll_time'],
+        "dimensions": {k: v for k, v in port_data.items() if k in dimensions},
+        "measurements": {k: float(v) for k, v in port_data.items() if k in measurements},
+        "schemaId": sdc.userParams['SCHEMA_ID'],
+    }
 
 
 if sdc.lastOffsets.containsKey(entityName):
@@ -62,32 +120,18 @@ while True:
         if end > get_now_with_delay():
             time.sleep(end - get_now_with_delay())
 
-        for i in range(1, N_REQUESTS_TRIES + 1):
-            try:
-                res = requests.get(
-                    sdc.userParams['API_URL'],
-                    auth=HTTPBasicAuth(sdc.userParams['API_USER'], sdc.userParams['API_PASSWORD']),
-                    # todo
-                    # params=params,
-                    verify=bool(sdc.userParams['VERIFY_SSL']),
-                    timeout=sdc.userParams['QUERY_TIMEOUT'],
-                )
-                res.raise_for_status()
-                break
-            except requests.HTTPError as e:
-                requests.post(sdc.userParams['MONITORING_URL'] + str(res.status_code))
-                sdc.log.error(str(e))
-                if i == N_REQUESTS_TRIES:
-                    raise
-                time.sleep(2 ** i)
+        data = add_sys_name_and_locaion(get_ports(), get_devices())
+        metrics = create_metrics(data)
 
-        # todo
-        for row in res.json():
+        for metric in metrics:
             record = sdc.createRecord('record created ' + str(datetime.now()))
-            record.value = row
+            record.value = metric
             cur_batch.add(record)
 
-        # send batch and save offset
+            if cur_batch.size() == sdc.batchSize:
+                cur_batch.process(entityName, str(offset))
+                cur_batch = sdc.createBatch()
+
         offset = end
         cur_batch.process(entityName, str(offset))
         cur_batch = sdc.createBatch()
@@ -99,3 +143,6 @@ while True:
 
 if cur_batch.size() + cur_batch.errorCount() + cur_batch.eventCount() > 0:
     cur_batch.process(entityName, str(offset))
+
+
+# BIG TODO how to be with intervals?

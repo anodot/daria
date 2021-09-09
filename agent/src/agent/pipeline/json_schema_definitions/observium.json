@@ -17,13 +17,8 @@
     "count_records": {"type": "boolean"},
     "values": {"type": "object"},
     "measurement_names": {"type": "object"},
-    "dimensions": {
-      "type": "object",
-      "properties": {
-        "required": {"type": "array", "items": {"type": "string"}},
-        "optional": {"type": "array", "items": {"type": "string"}}
-      }
-    },
+    "dimensions": {"type": "array", "items": {"type": "string"}},
+    "rename_dimensions_mapping": {"type": "object"},
     "tags": {
       "type": "object",
       "patternProperties":  {"[^ \\.]+": {"type": "array", "items": {"type": "string"}}}

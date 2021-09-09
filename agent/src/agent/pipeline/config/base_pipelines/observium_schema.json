@@ -3,9 +3,9 @@
     "schemaVersion" : 6,
     "version" : 19,
     "pipelineId" : "sagehttp3f008d4f-3724-4c23-adc8-525cb97c2332",
-    "title" : "solarwinds",
+    "title" : "observium",
     "description" : "",
-    "uuid" : "f24314e9-413d-43db-ac3f-f2e1b470c6ea",
+    "uuid" : "722eeefa-1a00-48d0-b791-d8967b98e940",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -416,7 +416,7 @@
       "stageVersion" : "1",
       "configuration" : [ {
         "name" : "script",
-        "value" : "global sdc\n\ntry:\n    sdc.importLock()\n    import sys\n    import os\n    import time\n    import traceback\n\n    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))\n    import requests\n    import urlparse\n\n    from datetime import datetime, timedelta\n    from requests.auth import HTTPBasicAuth\nfinally:\n    sdc.importUnlock()\n\n# single threaded - no entityName because we need only one offset\nentityName = ''\nDATEFORMAT = '%Y-%m-%dT%H:%M:%SZ'\nSOLARWINDS_API_ADDRESS = '/SolarWinds/InformationService/v3/Json/Query'\nLAST_TIMESTAMP = '%last_timestamp%'\n\n\n# Jython converts datetime objects to java.sql.Timestamp when assigning it to a variable\ndef date_from_str(date):\n    return datetime.strptime(date, DATEFORMAT)\n\n\ndef date_to_str(date):\n    return date.strftime(DATEFORMAT)\n\n\ndef get_now_with_delay():\n    return int(time.time()) - int(sdc.userParams['DELAY_IN_SECONDS'])\n\n\ndef to_timestamp(date):\n    epoch = datetime(1970, 1, 1)\n    return int((date - epoch).total_seconds())\n\n\ndef get_interval():\n    return int(sdc.userParams['INTERVAL_IN_SECONDS'])\n\n\nif sdc.lastOffsets.containsKey(entityName):\n    offset = int(float(sdc.lastOffsets.get(entityName)))\nelif sdc.userParams['DAYS_TO_BACKFILL']:\n    offset = to_timestamp(datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=int(sdc.userParams['DAYS_TO_BACKFILL'])))\nelse:\n    offset = to_timestamp(datetime.now().replace(second=0, microsecond=0))\n\nsdc.log.info('Start offset: ' + str(offset))\n\ncur_batch = sdc.createBatch()\n\nN_REQUESTS_TRIES = 3\n\nwhile True:\n    try:\n        end = offset + get_interval()\n        if end > get_now_with_delay():\n            time.sleep(end - get_now_with_delay())\n        query = sdc.userParams['QUERY'].replace(LAST_TIMESTAMP, date_to_str(datetime.fromtimestamp(offset)))\n\n        for i in range(1, N_REQUESTS_TRIES + 1):\n            try:\n                res = requests.get(\n                    sdc.userParams['SOLARWINDS_API_URL'] + SOLARWINDS_API_ADDRESS,\n                    auth=HTTPBasicAuth(sdc.userParams['API_USER'], sdc.userParams['API_PASSWORD']),\n                    params={'query': query},\n                    verify=False,\n                    timeout=sdc.userParams['QUERY_TIMEOUT'],\n                )\n                raise requests.HTTPError('test')\n                res.raise_for_status()\n                break\n            except requests.HTTPError as e:\n                requests.post(sdc.userParams['MONITORING_URL'] + str(res.status_code))\n                sdc.log.error(str(e))\n                if i == N_REQUESTS_TRIES:\n                    raise\n                time.sleep(2 ** i)\n\n        for row in res.json()['results']:\n            record = sdc.createRecord('record created ' + str(datetime.now()))\n            record.value = row\n            cur_batch.add(record)\n\n        # send batch and save offset\n        offset = end\n        cur_batch.process(entityName, str(offset))\n        cur_batch = sdc.createBatch()\n        if sdc.isStopped():\n            break\n    except Exception as e:\n        sdc.log.error(traceback.format_exc())\n        raise\n\nif cur_batch.size() + cur_batch.errorCount() + cur_batch.eventCount() > 0:\n    cur_batch.process(entityName, str(offset))"
+        "value" : "global sdc\n\ntry:\n    sdc.importLock()\n    import sys\n    import os\n    import time\n    import traceback\n\n    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))\n    import requests\n\n    from datetime import datetime, timedelta\n    from requests.auth import HTTPBasicAuth\nfinally:\n    sdc.importUnlock()\n\n# single threaded - no entityName because we need only one offset\nentityName = ''\nLAST_TIMESTAMP = '%last_timestamp%'\n\n\ndef get_now_with_delay():\n    return int(time.time()) - int(sdc.userParams['DELAY_IN_SECONDS'])\n\n\ndef to_timestamp(date):\n    epoch = datetime(1970, 1, 1)\n    return int((date - epoch).total_seconds())\n\n\ndef get_interval():\n    return int(sdc.userParams['INTERVAL_IN_SECONDS'])\n\n\ndef get_measurements():\n    if 'MEASUREMENTS' in sdc.userParams:\n        return sdc.userParams['MEASUREMENTS']\n    return [\"encrypted\", \"ignore\", \"disabled\", \"detailed\", \"deleted\", \"ifInUcastPkts\", \"ifInUcastPkts_rate\",\n            \"ifOutUcastPkts\", \"ifOutUcastPkts_rate\", \"ifInErrors\", \"ifInErrors_rate\", \"ifOutErrors\",\n            \"ifOutErrors_rate\", \"ifOctets_rate\", \"ifUcastPkts_rate\", \"ifErrors_rate\", \"ifInOctets\", \"ifInOctets_rate\",\n            \"ifOutOctets\", \"ifOutOctets_rate\", \"ifInOctets_perc\", \"ifOutOctets_perc\", \"ifInErrors\", \"ifOutErrors\",\n            \"ifInNUcastPkts\", \"ifInNUcastPkts_rate\", \"ifOutNUcastPkts\", \"ifOutNUcastPkts_rate\", \"ifInBroadcastPkts\",\n            \"ifInBroadcastPkts_rate\", \"ifOutBroadcastPkts\", \"ifOutBroadcastPkts_rate\", \"ifInMulticastPkts\",\n            \"ifInMulticastPkts_rate\", \"ifOutMulticastPkts\", \"ifOutMulticastPkts_rate\", \"port_mcbc\", \"ifInDiscards\",\n            \"ifInDiscards_rate\", \"ifOutDiscards\", \"ifOutDiscards_rate\", \"ifDiscards_rate\"]\n\n\ndef get_dimensions():\n    if sdc.userParams['DIMENSIONS']:\n        return sdc.userParams['DIMENSIONS']\n    # todo move to a separate stage\n    return {\n        \"ifName\": \"Interface Name\",\n        \"ifAlias\": \"Interface Alias\",\n        \"ifDescr\": \"Interface Description\",\n        \"ifSpeed\": \"Bandwidth\",\n        \"sysName\": \"Host Name\",\n        \"location\": \"Location\",\n    }\n\n\ndef get_ports():\n    for i in range(1, N_REQUESTS_TRIES + 1):\n        try:\n            res = requests.get(\n                sdc.userParams['PORTS_URL'],\n                auth=HTTPBasicAuth(sdc.userParams['API_USER'], sdc.userParams['API_PASSWORD']),\n                # todo\n                # params=params,\n                verify=bool(sdc.userParams['VERIFY_SSL']),\n                timeout=sdc.userParams['QUERY_TIMEOUT'],\n            )\n            res.raise_for_status()\n            return res.json()['ports']\n            break\n        except requests.HTTPError as e:\n            requests.post(sdc.userParams['MONITORING_URL'] + str(res.status_code))\n            sdc.log.error(str(e))\n            if i == N_REQUESTS_TRIES:\n                raise\n            time.sleep(2 ** i)\n\n\ndef get_devices():\n    for i in range(1, N_REQUESTS_TRIES + 1):\n        try:\n            res = requests.get(\n                sdc.userParams['DEVICES_URL'],\n                auth=HTTPBasicAuth(sdc.userParams['API_USER'], sdc.userParams['API_PASSWORD']),\n                # todo\n                # params=params,\n                verify=bool(sdc.userParams['VERIFY_SSL']),\n                timeout=sdc.userParams['QUERY_TIMEOUT'],\n            )\n            res.raise_for_status()\n            return res.json()['devices']\n            break\n        except requests.HTTPError as e:\n            requests.post(sdc.userParams['MONITORING_URL'] + str(res.status_code))\n            sdc.log.error(str(e))\n            if i == N_REQUESTS_TRIES:\n                raise\n            time.sleep(2 ** i)\n\n\ndef add_sys_name_and_locaion(ports_data, devices):\n    for port in ports_data.values():\n        # todo are 1, 2, 3 etc device ids or just row numbers?\n        # todo probably log or kind of if there's no such device?\n        if port['device_id'] in devices:\n            port['sysName'] = devices[port['device_id']]['sysName']\n            port['location'] = devices[port['device_id']]['location']\n    return ports_data\n\n\ndef create_metrics(ports_data):\n    return [transform_port(port_data, get_dimensions(), get_measurements()) for port_data in ports_data.values()]\n\n\ndef transform_port(port_data, dimensions, measurements):\n    return {\n        \"timestamp\": port_data['poll_time'],\n        # todo dimensions is a string\n        \"dimensions\": {k: v for k, v in port_data.items() if k in dimensions},\n        \"measurements\": {k: float(v) for k, v in port_data.items() if k in measurements},\n        \"schemaId\": sdc.userParams['SCHEMA_ID'],\n    }\n\n\nif sdc.lastOffsets.containsKey(entityName):\n    offset = int(float(sdc.lastOffsets.get(entityName)))\nelif sdc.userParams['DAYS_TO_BACKFILL']:\n    offset = to_timestamp(datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=int(sdc.userParams['DAYS_TO_BACKFILL'])))\nelse:\n    offset = to_timestamp(datetime.now().replace(second=0, microsecond=0))\n\nsdc.log.info('Start offset: ' + str(offset))\n\ncur_batch = sdc.createBatch()\n\nN_REQUESTS_TRIES = 3\n\nwhile True:\n    try:\n        end = offset + get_interval()\n        if end > get_now_with_delay():\n            time.sleep(end - get_now_with_delay())\n\n        data = add_sys_name_and_locaion(get_ports(), get_devices())\n        metrics = create_metrics(data)\n\n        for metric in metrics:\n            record = sdc.createRecord('record created ' + str(datetime.now()))\n            record.value = metric\n            cur_batch.add(record)\n\n            if cur_batch.size() == sdc.batchSize:\n                cur_batch.process(entityName, str(offset))\n                cur_batch = sdc.createBatch()\n\n        offset = end\n        cur_batch.process(entityName, str(offset))\n        cur_batch = sdc.createBatch()\n        if sdc.isStopped():\n            break\n    except Exception as e:\n        sdc.log.error(traceback.format_exc())\n        raise\n\nif cur_batch.size() + cur_batch.errorCount() + cur_batch.eventCount() > 0:\n    cur_batch.process(entityName, str(offset))"
       }, {
         "name" : "scriptConf.batchSize",
         "value" : 1
@@ -429,47 +429,55 @@
       }, {
         "name" : "scriptConf.params",
         "value" : [ {
-          "key" : "PIPELINE_NAME",
-          "value" : "solarwinds"
+          "key" : "DEVICES_URL",
+          "value" : "http://dummy_destination:80/api/v0/devices"
         }, {
-          "key" : "QUERY",
-          "value" : "SELECT TOP 1000 NodeID, DateTime, Archive, MinLoad, MaxLoad, AvgLoad, TotalMemory, MinMemoryUsed, MaxMemoryUsed, AvgMemoryUsed, AvgPercentMemoryUsed FROM Orion.CPULoad WHERE DateTime > DateTime('%last_timestamp%') AND DateTime <= AddSecond(86400, DateTime('%last_timestamp%')) ORDER BY DateTime"
+          "key" : "PORTS_URL",
+          "value" : "http://dummy_destination:80/api/v0/ports"
         }, {
-          "key" : "SOLARWINDS_API_URL",
-          "value" : "http://dummy_destination:80/"
+          "key" : "DIMENSIONS",
+          "value" : {
+            "ifType" : "ifType"
+          }
         }, {
           "key" : "API_USER",
-          "value" : "Admin"
+          "value" : "admin"
         }, {
           "key" : "API_PASSWORD",
           "value" : "admin"
         }, {
           "key" : "INTERVAL_IN_SECONDS",
-          "value" : "86400"
+          "value" : "60"
         }, {
           "key" : "DELAY_IN_SECONDS",
           "value" : "0"
         }, {
           "key" : "DAYS_TO_BACKFILL",
-          "value" : "44"
+          "value" : "0"
         }, {
           "key" : "QUERY_TIMEOUT",
           "value" : "300"
         }, {
           "key" : "MONITORING_URL",
-          "value" : "http://anodot-agent/monitoring/source_http_error/solarwinds/"
+          "value" : "http://anodot-agent/monitoring/source_http_error/observium/"
+        }, {
+          "key" : "VERIFY_SSL",
+          "value" : "1"
+        }, {
+          "key" : "SCHEMA_ID",
+          "value" : "observium-1234"
         } ]
       }, {
         "name" : "stageOnRecordError",
         "value" : "TO_ERROR"
       } ],
       "uiInfo" : {
-        "yPos" : 52,
+        "yPos" : 157,
         "stageType" : "SOURCE",
         "icon" : "jython.png",
         "description" : "",
-        "label" : "Jython Scripting 1",
-        "xPos" : 57,
+        "label" : "Get metrics",
+        "xPos" : 230,
         "displayMode" : "ADVANCED"
       },
       "inputLanes" : [ ],
@@ -477,48 +485,43 @@
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
-      "instanceName" : "JavaScriptEvaluator_01",
+      "instanceName" : "FieldRenamer_01",
       "library" : "streamsets-datacollector-basic-lib",
-      "stageName" : "com_streamsets_pipeline_stage_processor_javascript_JavaScriptDProcessor",
-      "stageVersion" : "3",
+      "stageName" : "com_streamsets_pipeline_stage_processor_fieldrenamer_FieldRenamerDProcessor",
+      "stageVersion" : "2",
       "configuration" : [ {
-        "name" : "processingMode",
-        "value" : "BATCH"
+        "name" : "renameMapping",
+        "value" : [ { } ]
       }, {
-        "name" : "initScript",
-        "value" : "\nstate['TIMESTAMP_COLUMN'] = 'DateTime';\nstate['DIMENSIONS'] = ['NodeID'];\nstate['DIMENSIONS_NAMES'] = ['NodeID'];\nstate['VALUES_COLUMNS'] = ['MinMemoryUsed', 'AvgPercentMemoryUsed'];\nstate['MEASUREMENT_NAMES'] = ['MinMemoryUsed', 'AvgPercentMemoryUsed'];\nstate['TARGET_TYPES'] = ['gauge', 'gauge'];\nstate['COUNT_RECORDS'] = 0;\nstate['COUNT_RECORDS_MEASUREMENT_NAME'] = 'count';\nstate['STATIC_WHAT'] = 1;\nstate['VALUES_ARRAY_PATH'] = '';\nstate['VALUES_ARRAY_FILTER'] = [];\nstate['INTERVAL'] = 86400;\nstate['metrics'] = {}\n    "
+        "name" : "errorHandler.nonExistingFromFieldHandling",
+        "value" : "TO_ERROR"
       }, {
-        "name" : "script",
-        "value" : "TARGET_TYPES = ['counter', 'gauge', 'running_counter']\n\nfunction get_value(path, value) {\n  path_parts = path.split('/')\n  for (var k = 0; k < path_parts.length; k++) {\n    value = value[path_parts[k]]\n  }\n  return value\n}\n\nfunction metric_to_string(dimensions) {\n  var str = '';\n    for (var p in dimensions) {\n        if (dimensions.hasOwnProperty(p)) {\n            str += p + ':' + dimensions[p] + ',';\n        }\n    }\n    return str;\n}\n\nfunction get_running_counter_value(metric_properties, curr_value, time) {\n  metric = metric_to_string(metric_properties)\n  if (state['metrics'][metric] == null) {\n    state['metrics'][metric] = {'val': curr_value, 'time': time}\n    return null;\n  }\n  counter_val = curr_value - state['metrics'][metric]['val']\n  if (counter_val < 0) {\n    return null;\n  }\n  state['metrics'][metric]['val'] = curr_value\n  prev_time = state['metrics'][metric]['time']\n  state['metrics'][metric]['time'] = time\n  return counter_val / (time - prev_time)\n}\n\nfunction get_target_type_value(target_type_property, record) {\n\n  if (TARGET_TYPES.indexOf(target_type_property) < 0) {\n    if (TARGET_TYPES.indexOf(record[target_type_property]) < 0) {\n      throw 'Target type property ' + target_type_property + ' should be counter, gauge or running_counter'\n    }\n    return get_value(target_type_property, record)\n  } \n  return target_type_property\n}\n\nfor(var i = 0; i < records.length; i++) {\n  try {\n\tvar timestamp = get_value(state['TIMESTAMP_COLUMN'], records[i].value)\n    \n    var properties = {}\n    for (var j = 0; j < state['DIMENSIONS'].length; j++) {\n      var dim_val = get_value(state['DIMENSIONS'][j], records[i].value)\n      if (dim_val !== null && String(dim_val).trim() !== '') {\n        dim_val = String(dim_val).substring(0, 150)\n        properties[state['DIMENSIONS_NAMES'][j].replace(/[\\.\\s]+/g, '_')] = dim_val.trim().replace(/[\\.\\s]+/g, '_')\n      }\n    }\n    \n    for (var j = 0; j < state['VALUES_COLUMNS'].length; j++) {\n      \n      var values_array = [records[i].value]\n      if (state['VALUES_ARRAY_PATH'].length > 0) {\n        values_array = get_value(state['VALUES_ARRAY_PATH'], records[i].value)\n      }\n      for (var l = 0; l < values_array.length; l++) {\n        if (state['STATIC_WHAT']) {\n          properties['what'] = state['MEASUREMENT_NAMES'][j].replace(/[\\.\\s]+/g, '_');\n          properties['target_type'] = state['TARGET_TYPES'][j];\n        } else {\n          meas_name = get_value(state['MEASUREMENT_NAMES'][j], values_array[l])\n          if (state['VALUES_ARRAY_FILTER'].length > 0 && state['VALUES_ARRAY_FILTER'].indexOf(meas_name) < 0) {\n            continue;\n          }\n          properties['what'] = String(meas_name).replace(/[\\.\\s]+/g, '_');\n          properties['target_type'] = get_target_type_value(state['TARGET_TYPES'][j], values_array[l]);\n        }\n\n        var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + i);\n        var value = get_value(state['VALUES_COLUMNS'][j], values_array[l])\n        if (properties['target_type'] == 'running_counter') {\n          properties['target_type'] = 'gauge';\n          value = get_running_counter_value(properties, value, timestamp);\n          if (value === null) {\n            continue;\n          }\n        }\n\t\tif (value === null) {\n            continue;\n        } \n        newRecord.value = {'timestamp' : timestamp,\n                           'properties' : properties,\n                           'value': value};\n        output.write(newRecord);\n      }\n    }\n    if (state['COUNT_RECORDS']) {\n      var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + i);\n      properties['what'] = state['COUNT_RECORDS_MEASUREMENT_NAME'];\n      properties['target_type'] = 'counter';\n      newRecord.value = {'timestamp' : timestamp,\n                         'properties' : properties,\n                         'value': 1};\n      output.write(newRecord);\n    }\n\n    // output.write(records[i]);\n  } catch (e) {\n    // Send record to error\n    error.write(records[i], e);\n  }\n}"
+        "name" : "errorHandler.existingToFieldHandling",
+        "value" : "TO_ERROR"
       }, {
-        "name" : "destroyScript",
-        "value" : "/**\n * Available Objects:\n * \n *  state: a dict that is preserved between invocations of this script. \n *        Useful for caching bits of data e.g. counters and long-lived resources.\n *\n *  log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n *                               loglevel is any log4j level: e.g. info, error, warn, trace.\n *   sdcFunctions.getFieldNull(Record, 'field path'): Receive a constant defined above \n *                          to check if the field is typed field with value null\n *   sdcFunctions.createMap(boolean listMap): Create a map for use as a field in a record. \n *                          Pass true to this function to create a list map (ordered map)\n *   sdcFunctions.createEvent(String type, int version): Creates a new event.\n *                          Create new empty event with standard headers.\n *   sdcFunctions.toEvent(Record): Send event to event stream\n *                          Only events created with sdcFunctions.createEvent are supported.\n */\n\n// state['connection'].close();"
+        "name" : "errorHandler.multipleFromFieldsMatching",
+        "value" : "TO_ERROR"
       }, {
         "name" : "stageOnRecordError",
         "value" : "TO_ERROR"
       }, {
         "name" : "stageRequiredFields",
-        "value" : [ "/DateTime", "/MinMemoryUsed", "/AvgPercentMemoryUsed" ]
+        "value" : [ ]
       }, {
         "name" : "stageRecordPreconditions",
         "value" : [ ]
-      }, {
-        "name" : "scriptRecordType",
-        "value" : "NATIVE_OBJECTS"
-      }, {
-        "name" : "userParams",
-        "value" : [ ]
       } ],
       "uiInfo" : {
-        "yPos" : 50,
+        "yPos" : 157,
         "stageType" : "PROCESSOR",
+        "icon" : "edit.png",
         "description" : "",
-        "label" : "transform",
-        "xPos" : 280,
-        "displayMode" : "ADVANCED"
+        "label" : "Rename dimensions",
+        "xPos" : 436,
+        "displayMode" : "BASIC"
       },
       "inputLanes" : [ "JythonScripting_01OutputLane15924840586690" ],
-      "outputLanes" : [ "JavaScriptEvaluator_01OutputLane15620549534460" ],
+      "outputLanes" : [ "FieldRenamer_01OutputLane16310197909500" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -554,16 +557,16 @@
           "expression" : "${emptyList()}"
         }, {
           "fieldToSet" : "/tags/pipeline_id[0]",
-          "expression" : "${\"solarwinds\"}"
+          "expression" : "${\"observium\"}"
         }, {
           "fieldToSet" : "/tags/pipeline_type",
           "expression" : "${emptyList()}"
         }, {
           "fieldToSet" : "/tags/pipeline_type[0]",
-          "expression" : "${\"solarwinds\"}"
+          "expression" : "${\"observium\"}"
         }, {
           "fieldToSet" : "/timestamp",
-          "expression" : "${time:dateTimeToMilliseconds(time:createDateFromStringTZ(record:value('/timestamp'), 'UTC', 'yyyy-MM-dd\\'T\\'HH:mm:ss'))/1000}"
+          "expression" : "${record:value('/timestamp')}"
         } ]
       }, {
         "name" : "headerAttributeConfigs",
@@ -584,14 +587,14 @@
         "value" : [ ]
       } ],
       "uiInfo" : {
-        "yPos" : 50,
+        "yPos" : 158,
         "stageType" : "PROCESSOR",
         "description" : "",
-        "label" : "Add tags and static dimensions, convert timestamp to long",
-        "xPos" : 499,
+        "label" : "Add tags and static dimensions",
+        "xPos" : 635,
         "displayMode" : "BASIC"
       },
-      "inputLanes" : [ "JavaScriptEvaluator_01OutputLane15620549534460" ],
+      "inputLanes" : [ "FieldRenamer_01OutputLane16310197909500" ],
       "outputLanes" : [ "ExpressionEvaluator_02OutputLane15480856372920" ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -606,16 +609,6 @@
       }, {
         "name" : "fieldTypeConverterConfigs",
         "value" : [ {
-          "fields" : [ "/value" ],
-          "targetType" : "DOUBLE",
-          "treatInputFieldAsDate" : false,
-          "dataLocale" : "en,US",
-          "scale" : -1,
-          "decimalScaleRoundingStrategy" : "ROUND_UNNECESSARY",
-          "dateFormat" : "OTHER",
-          "zonedDateTimeFormat" : "ISO_ZONED_DATE_TIME",
-          "encoding" : "UTF-8"
-        }, {
           "fields" : [ "/timestamp" ],
           "targetType" : "INTEGER",
           "treatInputFieldAsDate" : false,
@@ -650,11 +643,11 @@
         "value" : [ ]
       } ],
       "uiInfo" : {
-        "yPos" : 50,
+        "yPos" : 159,
         "stageType" : "PROCESSOR",
-        "description" : "Convert value to float and timestamp to int",
-        "label" : "Convert value and timestamp",
-        "xPos" : 721,
+        "description" : "Convert timestamp to int",
+        "label" : "Convert timestamp",
+        "xPos" : 861,
         "displayMode" : "ADVANCED"
       },
       "inputLanes" : [ "ExpressionEvaluator_02OutputLane15480856372920" ],
@@ -866,10 +859,10 @@
         "value" : ""
       }, {
         "name" : "conf.client.useProxy",
-        "value" : false
+        "value" : true
       }, {
         "name" : "conf.client.proxy.uri",
-        "value" : null
+        "value" : "http://squid:3128"
       }, {
         "name" : "conf.client.proxy.username",
         "value" : ""
@@ -962,11 +955,12 @@
         "value" : null
       } ],
       "uiInfo" : {
+        "yPos" : 160,
+        "stageType" : "TARGET",
         "description" : "",
-        "label" : "HTTP Client 1",
-        "xPos" : 939,
-        "yPos" : 52,
-        "stageType" : "TARGET"
+        "label" : "Anodot",
+        "xPos" : 1069,
+        "displayMode" : "BASIC"
       },
       "inputLanes" : [ "destination_OutputLane" ],
       "outputLanes" : [ ],
@@ -992,25 +986,25 @@
       "services" : [ ]
     },
     "info" : {
-      "pipelineId" : "solarwinds",
-      "title" : "solarwinds",
+      "pipelineId" : "observium",
+      "title" : "observium",
       "description" : "",
-      "created" : 1620903704020,
-      "lastModified" : 1620904340282,
+      "created" : 1631011250327,
+      "lastModified" : 1631019802289,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "f24314e9-413d-43db-ac3f-f2e1b470c6ea",
+      "uuid" : "722eeefa-1a00-48d0-b791-d8967b98e940",
       "valid" : true,
       "metadata" : {
-        "labels" : [ "solarwinds", "http" ]
+        "labels" : [ "observium", "http" ]
       },
-      "name" : "solarwinds",
+      "name" : "observium",
       "sdcVersion" : "3.18.0",
-      "sdcId" : "ef6d815e-b3d1-11eb-8b03-070579d4b4ab"
+      "sdcId" : "37fd4b41-0f11-11ec-8cf5-772cb784e565"
     },
     "metadata" : {
-      "labels" : [ "solarwinds", "http" ]
+      "labels" : [ "observium", "http" ]
     },
     "statsAggregatorStage" : {
       "instanceName" : "statsAggregatorStageInstance",
@@ -1348,7 +1342,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1620903704086,
+      "timestamp" : 1631011250415,
       "valid" : true
     }, {
       "id" : "stageErrorAlertID",
@@ -1359,7 +1353,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1620903704086,
+      "timestamp" : 1631011250415,
       "valid" : true
     }, {
       "id" : "idleGaugeID",
@@ -1370,7 +1364,7 @@
       "condition" : "${time:now() - value() > 120000}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1620903704086,
+      "timestamp" : 1631011250415,
       "valid" : true
     }, {
       "id" : "batchTimeAlertID",
@@ -1381,12 +1375,12 @@
       "condition" : "${value() > 200}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1620903704086,
+      "timestamp" : 1631011250415,
       "valid" : true
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "0c64231f-00c9-4790-b88d-81f3739a8de8",
+    "uuid" : "8f4601b4-bba6-40d1-97a8-68bc25afbcdf",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : null

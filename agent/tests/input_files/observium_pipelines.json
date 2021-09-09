@@ -4,7 +4,7 @@
     "pipeline_id": "observium",
     "delay": 0,
     "days_to_backfill": 0,
-    "interval": 60,
+    "interval": 6000,
     "timestamp": {
       "name": "DateTime",
       "type": "string",
@@ -19,9 +19,24 @@
       "MinMemoryUsed": "MinMemoryUsed",
       "AvgPercentMemoryUsed": "AvgPercentMemoryUsed"
     },
-    "dimensions": {
-      "required": ["NodeID"],
-      "optional": []
+    "ports": {
+      "location": "",
+      "device_id": "",
+      "group": "",
+      "disable": "",
+      "deleted": "",
+      "ignore": "",
+      "ifSpeed": "",
+      "ifType": "",
+      "hostname": "",
+      "ifAlias": "",
+      "ifDescr": "test",
+      "port_descr_type": "",
+      "errors": "",
+      "alerted": "",
+      "state": "",
+      "cbqos": "",
+      "mac_accounting": ""
     }
   }
 ]

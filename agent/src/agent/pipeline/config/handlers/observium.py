@@ -5,13 +5,10 @@ from agent.pipeline.config import stages
 logger = get_logger(__name__)
 
 
-# todo
 class ObserviumConfigHandler(BaseConfigHandler):
     stages_to_override = {
         'source': stages.source.observium.ObserviumScript,
-        'JavaScriptEvaluator_01': stages.js_convert_metrics.JSConvertMetrics,
+        'FieldRenamer_01': stages.field_renamer.ObserviumDimensionsRenamer,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties,
-        'event_add_metadata_tags': stages.expression_evaluator.AddMetadataTags,
-        'events_destination': stages.destination.EventsDestination,
         'destination': stages.destination.Destination
     }
