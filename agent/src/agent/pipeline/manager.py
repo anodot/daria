@@ -202,6 +202,7 @@ def _generate_random_string(size: int = 6):
 
 
 def transform_for_bc(pipeline_: Pipeline) -> dict:
+    GENERAL_PIPELINE_ERROR_CODE = 70
     data = {
         'pipeline_id': pipeline_.name,
         'created': int(pipeline_.created_at.timestamp()),
@@ -227,7 +228,7 @@ def transform_for_bc(pipeline_: Pipeline) -> dict:
     data['config'].pop('delay', 0)
     if _should_send_error_notification(pipeline_):
         data['notification'] = {
-            'code': 1000,
+            'code': GENERAL_PIPELINE_ERROR_CODE,
             'description': 'pipeline error',
         }
     return data
