@@ -95,7 +95,7 @@ def query_history(item_ids, value_type_):
             'sortfield': 'clock',
             'sortorder': 'ASC',
             'time_from': end - interval,
-            'time_till': end
+            'time_till': end - 1
         }
         histories = client.post('history.get', history_params)
         # add fields from item to every history record
