@@ -44,7 +44,6 @@ def check_pipeline_id(pipeline_id: str):
 
 
 def start(pipeline_: Pipeline):
-    # remove saved retry attempts on pipeline start
     reset_pipeline_retries(pipeline_)
     sdc_client.start(pipeline_)
 
