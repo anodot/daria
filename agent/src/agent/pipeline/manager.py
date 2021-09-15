@@ -49,16 +49,14 @@ def start(pipeline_: Pipeline):
 
 
 def reset_pipeline_retries(pipeline_: Pipeline):
-    retries = pipeline.repository.get_pipeline_retries(pipeline_)
-    if retries:
-        retries.number_of_error_statuses = 0
-        pipeline.repository.save_pipeline_retries(retries)
+    if pipeline_.retries:
+        pipeline_.retries.number_of_error_statuses = 0
+        pipeline.repository.save_pipeline_retries(pipeline_.retries)
 
 
 def _delete_pipeline_retries(pipeline_: Pipeline):
-    retries = pipeline.repository.get_pipeline_retries(pipeline_)
-    if retries:
-        pipeline.repository.delete_pipeline_retries(retries)
+    if pipeline_.retries:
+        pipeline.repository.delete_pipeline_retries(pipeline_.retries)
 
 
 def update(pipeline_: Pipeline):
@@ -228,10 +226,12 @@ def transform_for_bc(pipeline_: Pipeline) -> dict:
 
 
 def should_send_error_notification(pipeline_: Pipeline) -> bool:
-    retries = pipeline.repository.get_pipeline_retries(pipeline_)
     # number of error statuses = number of retries + 1
     # also streamsets sends status update twice on the last retry that's why we need to subtract 2
-    return retries and retries.number_of_error_statuses - 2 >= constants.STREAMSETS_MAX_RETRY_ATTEMPTS and pipeline_.error_notification_enabled()
+    return not constants.DISABLE_PIPELINE_ERROR_NOTIFICATIONS \
+           and pipeline_.error_notification_enabled() \
+           and pipeline_.retries \
+           and pipeline_.retries.number_of_error_statuses - 2 >= constants.STREAMSETS_MAX_RETRY_ATTEMPTS
 
 
 def get_sample_records(pipeline_: Pipeline) -> (list, list):
@@ -271,8 +271,7 @@ def create_streamsets_pipeline_config(pipeline_: Pipeline) -> dict:
 
 
 def increase_retry_counter(pipeline_: Pipeline):
-    retries = pipeline.repository.get_pipeline_retries(pipeline_)
-    if not retries:
-        retries = PipelineRetries(pipeline_)
-    retries.number_of_error_statuses += 1
-    pipeline.repository.save_pipeline_retries(retries)
+    if not pipeline_.retries:
+        pipeline_.retries = PipelineRetries(pipeline_)
+    pipeline_.retries.number_of_error_statuses += 1
+    pipeline.repository.save_pipeline_retries(pipeline_.retries)

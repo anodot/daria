@@ -75,6 +75,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
     source_ = relationship('Source', back_populates='pipelines')
     destination = relationship('HttpDestination')
     streamsets = relationship('StreamSets')
+    retries = relationship('PipelineRetries')
 
     def __init__(self, pipeline_id: str, source_: Source, destination: HttpDestination):
         self.name = pipeline_id

@@ -105,10 +105,6 @@ def _construct_source(pipeline: Pipeline) -> Pipeline:
     return pipeline
 
 
-def get_pipeline_retries(pipeline_: Pipeline) -> Optional[PipelineRetries]:
-    return Session.query(PipelineRetries).filter(PipelineRetries.pipeline_id == pipeline_.name).first()
-
-
 def save_pipeline_retries(pipeline_retries: PipelineRetries):
     if not Session.object_session(pipeline_retries):
         Session.add(pipeline_retries)
