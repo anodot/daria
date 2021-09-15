@@ -13,7 +13,7 @@ all: build-all test-all
 
 build-all: get-streamsets-libs build-docker sleep setup-all
 
-test-all: run-unit-tests test-flask-app test-streamsets test-destination test-apply test-api test-api-scripts test-input test-streamsets-2 test-send-to-bc test-pipelines
+test-all: run-unit-tests test-flask-app test-streamsets test-destination test-apply test-api test-api-scripts test-input test-streamsets-2 test-send-to-bc test-pipelines test-send-to-watermark
 
 ##-------------
 ## DEVELOPMENT
