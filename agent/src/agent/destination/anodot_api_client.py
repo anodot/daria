@@ -40,6 +40,7 @@ class AnodotApiClient:
         self.api_v = api_v or self.V2
         self.url = destination_.url
         self.access_key = destination_.access_key
+        self.token = destination_.config['token']
         self.proxies = proxy.get_config(destination_.proxy)
         self.session = requests.Session()
         self.auth_token: Optional[AuthenticationToken] = destination_.auth_token
@@ -93,7 +94,6 @@ class AnodotApiClient:
     def send_pipeline_data_to_bc(self, pipeline_data: dict):
         return self.session.post(self._build_url('bc', 'agents'), proxies=self.proxies, json=pipeline_data)
 
-    # todo надо ли добавлять токен в реквест аргс или аутентификация этого клиента будет работать?
     @endpoint
     def send_watermark_to_bc(self, schema_id: str, watermark: float):
         return self.session.post(
@@ -102,7 +102,8 @@ class AnodotApiClient:
             json={
                 'schemaId': schema_id,
                 'watermark': watermark,
-            }
+            },
+            params={'protocol': destination.HttpDestination.PROTOCOL_30, 'token': self.token}
         )
 
     @endpoint
