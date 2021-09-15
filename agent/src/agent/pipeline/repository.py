@@ -1,8 +1,8 @@
 from functools import wraps
-from typing import List
+from typing import List, Optional
 from agent import source
 from agent.modules.db import Session, engine
-from agent.pipeline import PipelineOffset, Pipeline
+from agent.pipeline import PipelineOffset, Pipeline, PipelineRetries
 from sqlalchemy.orm import Query
 
 
@@ -103,6 +103,17 @@ def get_deleted_pipeline_ids() -> list:
 def _construct_source(pipeline: Pipeline) -> Pipeline:
     pipeline.source.__class__ = source.types[pipeline.source.type]
     return pipeline
+
+
+def save_pipeline_retries(pipeline_retries: PipelineRetries):
+    if not Session.object_session(pipeline_retries):
+        Session.add(pipeline_retries)
+    Session.commit()
+
+
+def delete_pipeline_retries(pipeline_retries: PipelineRetries):
+    Session.delete(pipeline_retries)
+    Session.commit()
 
 
 class PipelineNotExistsException(Exception):

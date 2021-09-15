@@ -2,6 +2,7 @@ import json
 import os
 
 from agent import source
+from agent.modules import constants
 from agent.modules.logger import get_logger
 from agent.modules.constants import ROOT_DIR
 from agent.pipeline import Pipeline
@@ -114,6 +115,8 @@ class BaseConfigHandler:
         for config in self.config['configuration']:
             if config['name'] == 'constants':
                 config['value'] = [{'key': key, 'value': val} for key, val in self._get_pipeline_config().items()]
+            if config['name'] == 'retryAttempts':
+                config['value'] = constants.STREAMSETS_MAX_RETRY_ATTEMPTS
 
     def _get_pipeline_config(self) -> dict:
         return {

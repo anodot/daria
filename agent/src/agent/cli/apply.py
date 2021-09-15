@@ -39,7 +39,7 @@ def populate_pipeline_from_file(file):
             if pipeline.repository.exists(config['pipeline_id']):
                 pipeline.json_builder.edit(config)
             else:
-                sdc_client.start(
+                pipeline.manager.start(
                     pipeline.json_builder.build(config)
                 )
         except Exception as e:
