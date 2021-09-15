@@ -210,7 +210,7 @@ services:
 
   dummy_destination:
     build: containers/dummy_destination
-    container_name: dd
+    container_name: dummy_destination
     volumes:
       - ./agent/output:/app/log
       - ./containers/dummy_destination:/app/
