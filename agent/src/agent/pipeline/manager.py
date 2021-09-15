@@ -127,14 +127,11 @@ def _update_schema(pipeline_: Pipeline):
 
 
 def delete(pipeline_: Pipeline):
-    _delete_pipeline_retries(pipeline_)
     _delete_schema(pipeline_)
     try:
         sdc_client.delete(pipeline_)
     except sdc_client.ApiClientException as e:
         raise pipeline.PipelineException(str(e))
-    if pipeline_.offset:
-        pipeline.repository.delete_offset(pipeline_.offset)
     pipeline.repository.delete(pipeline_)
     pipeline.repository.add_deleted_pipeline_id(pipeline_.name)
 
@@ -227,11 +224,10 @@ def transform_for_bc(pipeline_: Pipeline) -> dict:
 
 def should_send_error_notification(pipeline_: Pipeline) -> bool:
     # number of error statuses = number of retries + 1
-    # also streamsets sends status update twice on the last retry that's why we need to subtract 2
     return not constants.DISABLE_PIPELINE_ERROR_NOTIFICATIONS \
            and pipeline_.error_notification_enabled() \
            and pipeline_.retries \
-           and pipeline_.retries.number_of_error_statuses - 2 >= constants.STREAMSETS_MAX_RETRY_ATTEMPTS
+           and pipeline_.retries.number_of_error_statuses - 1 >= constants.STREAMSETS_MAX_RETRY_ATTEMPTS
 
 
 def get_sample_records(pipeline_: Pipeline) -> (list, list):
