@@ -53,6 +53,7 @@ services:
       AGENT_URL: 'http://anodot-agent'
       TLS_VERSION: '1.1'
     #      VALIDATION_ENABLED: 'false'
+      LISTEN_PORT: 8080
     stdin_open: true
     tty: true
     depends_on:

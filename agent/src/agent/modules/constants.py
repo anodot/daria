@@ -10,7 +10,7 @@ STREAMSETS_PREVIEW_TIMEOUT = os.environ.get('STREAMSETS_PREVIEW_TIMEOUT', 30000)
 
 VALIDATION_ENABLED = os.environ.get('VALIDATION_ENABLED', 'true') == 'true'
 
-AGENT_DEFAULT_URL = os.environ.get('AGENT_URL', 'http://anodot-agent')
+AGENT_DEFAULT_URL = os.environ.get('AGENT_URL', 'http://anodot-agent:8080')
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 
