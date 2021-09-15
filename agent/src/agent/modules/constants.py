@@ -7,8 +7,10 @@ ENV_PROD = os.environ.get('ENV_PROD') == 'true'
 HOSTNAME = os.environ.get('HOSTNAME', 'agent')
 
 STREAMSETS_PREVIEW_TIMEOUT = os.environ.get('STREAMSETS_PREVIEW_TIMEOUT', 30000)
+STREAMSETS_MAX_RETRY_ATTEMPTS = int(os.environ.get('STREAMSETS_MAX_RETRY_ATTEMPTS', 5))
 
 VALIDATION_ENABLED = os.environ.get('VALIDATION_ENABLED', 'true') == 'true'
+DISABLE_PIPELINE_ERROR_NOTIFICATIONS = os.environ.get('DISABLE_PIPELINE_ERROR_NOTIFICATIONS', 'false') == 'true'
 
 AGENT_DEFAULT_URL = os.environ.get('AGENT_URL', 'http://anodot-agent:8080')
 

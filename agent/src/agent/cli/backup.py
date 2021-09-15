@@ -56,10 +56,10 @@ def _update_status(pipeline_: Pipeline):
     if expected_status in [Pipeline.STATUS_RUNNING, Pipeline.STATUS_STARTING]:
         if actual_status in [Pipeline.STATUS_EDITED, Pipeline.STATUS_STOPPED, Pipeline.STATUS_RUN_ERROR,
                              Pipeline.STATUS_STOP_ERROR, Pipeline.STATUS_START_ERROR]:
-            sdc_client.start(pipeline_)
+            pipeline.manager.start(pipeline_)
         elif actual_status == Pipeline.STATUS_STOPPING:
             sdc_client.force_stop(pipeline_)
-            sdc_client.start(pipeline_)
+            pipeline.manager.start(pipeline_)
     elif expected_status in [Pipeline.STATUS_EDITED, Pipeline.STATUS_STOPPED, Pipeline.STATUS_STOPPING]:
         if actual_status in [Pipeline.STATUS_RUNNING, Pipeline.STATUS_STARTING]:
             sdc_client.stop(pipeline_)

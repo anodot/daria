@@ -75,6 +75,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
     source_ = relationship('Source', back_populates='pipelines')
     destination = relationship('HttpDestination')
     streamsets = relationship('StreamSets')
+    retries = relationship('PipelineRetries', cascade="delete", uselist=False)
 
     def __init__(self, pipeline_id: str, source_: Source, destination: HttpDestination):
         self.name = pipeline_id
@@ -358,6 +359,9 @@ class Pipeline(Entity, sdc_client.IPipeline):
             **self.tags
         }
 
+    def error_notification_enabled(self) -> bool:
+        return not self.config.get('disable_error_notifications', False)
+
 
 class TestPipeline(Pipeline):
     def __init__(self, pipeline_id: str, source_, destination: HttpDestination):
@@ -384,3 +388,14 @@ class Provider(sdc_client.IPipelineProvider):
 
     def save(self, pipeline_: Pipeline):
         pipeline.repository.save(pipeline_)
+
+
+class PipelineRetries(Entity):
+    __tablename__ = 'pipeline_retries'
+
+    pipeline_id = Column(String, ForeignKey('pipelines.name'), primary_key=True)
+    number_of_error_statuses = Column(Integer)
+
+    def __init__(self, pipeline_: Pipeline):
+        self.pipeline_id = pipeline_.name
+        self.number_of_error_statuses = 0
