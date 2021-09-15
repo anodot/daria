@@ -92,7 +92,7 @@ test-cacti: bootstrap run-mysql sleep
 ## RELEASE DEPENDENCY TARGETS
 ##---------------------------
 build-docker:
-    docker-compose down -v
+	docker-compose down -v
 	docker-compose build --build-arg GIT_SHA1="$(git describe --tags --dirty --always)"
 	docker-compose up -d
 
