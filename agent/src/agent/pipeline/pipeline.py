@@ -8,7 +8,7 @@ from agent.modules.constants import HOSTNAME
 from agent.modules.db import Entity
 from agent.destination import HttpDestination
 from enum import Enum
-from sqlalchemy import Column, Integer, String, JSON, ForeignKey, func
+from sqlalchemy import Column, Integer, String, JSON, ForeignKey, func, Float
 from copy import deepcopy
 from agent import source, pipeline
 from agent.modules.time import Interval
@@ -107,6 +107,14 @@ class Pipeline(Entity, sdc_client.IPipeline):
     @property
     def static_dimensions(self) -> dict:
         return self.config.get('properties', {})
+
+    @property
+    def periodic_watermark_config(self) -> dict:
+        return self.config.get('periodic_watermark')
+
+    @property
+    def watermark_delay(self) -> int:
+        return self.config.get('periodic_watermark', {}).get('watermark_delay', 0)
 
     @property
     def flush_bucket_size(self) -> FlushBucketSize:
@@ -362,10 +370,12 @@ class PipelineOffset(Entity):
     id = Column(Integer, primary_key=True)
     pipeline_id = Column(Integer, ForeignKey('pipelines.id'))
     offset = Column(String)
+    timestamp = Column(Float)
 
-    def __init__(self, pipeline_id: int, offset: str):
+    def __init__(self, pipeline_id: int, offset: str, timestamp: float):
         self.pipeline_id = pipeline_id
         self.offset = offset
+        self.timestamp = timestamp
 
 
 class Provider(sdc_client.IPipelineProvider):

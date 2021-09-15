@@ -42,6 +42,10 @@
       "type": "unix",
       "name": "timestamp_unix"
     },
-    "tags": {"tag1": ["tagval"], "tag2": ["tagval"]}
+    "tags": {"tag1": ["tagval"], "tag2": ["tagval"]},
+    "periodic_watermark": {
+      "bucket_size": "5m",
+      "watermark_delay": 0
+    }
   }
 ]

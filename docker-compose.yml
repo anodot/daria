@@ -205,7 +205,7 @@ services:
 
   dummy_destination:
     build: containers/dummy_destination
-    container_name: dummy_destination
+    container_name: dd
     volumes:
       - dummy-destination-data:/app/log
 

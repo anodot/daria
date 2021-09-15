@@ -160,5 +160,8 @@ def pipeline_status_change(pipeline_id: str):
 @pipelines.route('/pipeline-offset/<pipeline_id>', methods=['POST'])
 @needs_pipeline
 def pipeline_offset_changed(pipeline_id: str):
-    pipeline.manager.update_pipeline_offset(pipeline.repository.get_by_id(pipeline_id))
+    pipeline.manager.update_pipeline_offset(
+        pipeline.repository.get_by_id(pipeline_id),
+        float(request.get_json()['offset'])
+    )
     return jsonify('')

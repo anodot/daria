@@ -23,7 +23,7 @@ def endpoint(func):
             return res.json()
         except requests.exceptions.HTTPError:
             if res.text:
-                logger.error(res.text)
+                logger.error(f'{res.url} - {res.text}')
             raise
     return wrapper
 
@@ -33,7 +33,11 @@ class AnodotApiClientException(click.ClickException):
 
 
 class AnodotApiClient:
-    def __init__(self, destination_: HttpDestination):
+    V1 = 'v1'
+    V2 = 'v2'
+
+    def __init__(self, destination_: HttpDestination, api_v=None):
+        self.api_v = api_v or self.V2
         self.url = destination_.url
         self.access_key = destination_.access_key
         self.proxies = proxy.get_config(destination_.proxy)
@@ -55,7 +59,7 @@ class AnodotApiClient:
         return response.text.replace('"', '')
 
     def _build_url(self, *args) -> str:
-        return urllib.parse.urljoin(self.url, '/'.join(['/api/v2', *args]))
+        return urllib.parse.urljoin(self.url, '/'.join(['/api', self.api_v, *args]))
 
     @endpoint
     def create_schema(self, schema):
@@ -88,6 +92,18 @@ class AnodotApiClient:
     @endpoint
     def send_pipeline_data_to_bc(self, pipeline_data: dict):
         return self.session.post(self._build_url('bc', 'agents'), proxies=self.proxies, json=pipeline_data)
+
+    # todo надо ли добавлять токен в реквест аргс или аутентификация этого клиента будет работать?
+    @endpoint
+    def send_watermark_to_bc(self, schema_id: str, watermark: float):
+        return self.session.post(
+            self._build_url('metrics', 'watermark'),
+            proxies=self.proxies,
+            json={
+                'schemaId': schema_id,
+                'watermark': watermark,
+            }
+        )
 
     @endpoint
     def delete_pipeline_from_bc(self, pipeline_id: str):

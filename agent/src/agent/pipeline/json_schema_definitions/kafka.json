@@ -21,6 +21,13 @@
     "tags": {
       "type": "object",
       "patternProperties":  {"[^ \\.]+": {"type": "array", "items": {"type": "string"}}}
+    },
+    "periodic_watermark": {
+      "type": "object",
+      "properties":  {
+        "bucket_size": {"type": "string"},
+        "watermark_delay": {"type": "integer"}
+      }
     }
   },
   "required": ["values", "dimensions", "timestamp"]

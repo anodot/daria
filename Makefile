@@ -101,6 +101,9 @@ test-apply:
 test-send-to-bc:
 	$(DOCKER_TEST) tests/test_send_to_bc.py
 
+test-send-to-watermark:
+	$(DOCKER_TEST) tests/test_send_watermark.py
+
 test-destination:
 	$(DOCKER_TEST) tests/test_destination.py
 
