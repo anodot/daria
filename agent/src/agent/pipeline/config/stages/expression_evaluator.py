@@ -76,7 +76,8 @@ class Filtering(Stage):
             preconditions.append(condition.process_expression(self.pipeline.filter_condition))
 
         return {
-            'expressionProcessorConfigs': self._get_transformations()
+            'expressionProcessorConfigs': self._get_transformations(),
+            'stageRecordPreconditions': ['${' + p + '}' for p in preconditions]
         }
 
 
