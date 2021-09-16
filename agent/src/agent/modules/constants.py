@@ -12,7 +12,7 @@ STREAMSETS_MAX_RETRY_ATTEMPTS = int(os.environ.get('STREAMSETS_MAX_RETRY_ATTEMPT
 VALIDATION_ENABLED = os.environ.get('VALIDATION_ENABLED', 'true') == 'true'
 DISABLE_PIPELINE_ERROR_NOTIFICATIONS = os.environ.get('DISABLE_PIPELINE_ERROR_NOTIFICATIONS', 'false') == 'true'
 
-AGENT_DEFAULT_URL = os.environ.get('AGENT_URL', 'http://anodot-agent:8080')
+AGENT_DEFAULT_URL = os.environ.get('AGENT_URL', 'http://anodot-agent')
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 

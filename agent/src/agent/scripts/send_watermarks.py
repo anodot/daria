@@ -12,7 +12,6 @@ from agent.pipeline import Pipeline
 if not constants.SEND_WATERMARKS_BY_CRON:
     exit(0)
 
-destination_ = destination.repository.get()
 logger = get_logger(__name__, stdout=True)
 
 
@@ -37,7 +36,7 @@ def _get_next_bucket_start(pipeline_: Pipeline) -> float:
 
 def main():
     try:
-        api_client = AnodotApiClient(destination_, AnodotApiClient.V1)
+        api_client = AnodotApiClient(destination.repository.get(), AnodotApiClient.V1)
         pipelines = pipeline.repository.get_all()
     except Exception:
         _update_errors_count(0)
