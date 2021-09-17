@@ -48,10 +48,12 @@ def main():
                 and pipeline_.periodic_watermark_config \
                 and pipeline_.offset.timestamp + pipeline_.watermark_delay <= time.time():
             try:
+                destination_ = destination.repository.get()
                 api_client.send_watermark(
                     anodot.Watermark(pipeline_.get_schema_id(), _get_next_bucket_start(pipeline_)),
-                    destination.repository.get().token,
-                    logger
+                    destination_.token,
+                    logger,
+                    destination_.url
                 )
             except requests.HTTPError:
                 num_of_errors = _update_errors_count(num_of_errors)
