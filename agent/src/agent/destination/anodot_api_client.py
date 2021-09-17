@@ -33,11 +33,7 @@ class AnodotApiClientException(click.ClickException):
 
 
 class AnodotApiClient:
-    V1 = 'v1'
-    V2 = 'v2'
-
-    def __init__(self, destination_: HttpDestination, api_v=None):
-        self.api_v = api_v or self.V2
+    def __init__(self, destination_: HttpDestination):
         self.url = destination_.url
         self.access_key = destination_.access_key
         self.token = destination_.config['token']
@@ -60,7 +56,7 @@ class AnodotApiClient:
         return response.text.replace('"', '')
 
     def _build_url(self, *args) -> str:
-        return urllib.parse.urljoin(self.url, '/'.join(['/api', self.api_v, *args]))
+        return urllib.parse.urljoin(self.url, '/'.join(['/api/v2', *args]))
 
     @endpoint
     def create_schema(self, schema):
@@ -117,7 +113,6 @@ class AnodotApiClient:
     def _get_schemas_old_api(self):
         """
         Used for old anodot api version (for on-prem)
-        :param schema_id:
         :return:
         """
         return self.session.get(self._build_url('stream-schemas'), params={'excludeCubes': True}, proxies=self.proxies)
