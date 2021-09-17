@@ -36,7 +36,6 @@ class AnodotApiClient:
     def __init__(self, destination_: HttpDestination):
         self.url = destination_.url
         self.access_key = destination_.access_key
-        self.token = destination_.config['token']
         self.proxies = proxy.get_config(destination_.proxy)
         self.session = requests.Session()
         self.auth_token: Optional[AuthenticationToken] = destination_.auth_token
@@ -89,18 +88,6 @@ class AnodotApiClient:
     @endpoint
     def send_pipeline_data_to_bc(self, pipeline_data: dict):
         return self.session.post(self._build_url('bc', 'agents'), proxies=self.proxies, json=pipeline_data)
-
-    @endpoint
-    def send_watermark_to_bc(self, schema_id: str, watermark: float):
-        return self.session.post(
-            self._build_url('metrics', 'watermark'),
-            proxies=self.proxies,
-            json={
-                'schemaId': schema_id,
-                'watermark': watermark,
-            },
-            params={'protocol': destination.HttpDestination.PROTOCOL_30, 'token': self.token}
-        )
 
     @endpoint
     def delete_pipeline_from_bc(self, pipeline_id: str):

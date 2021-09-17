@@ -55,9 +55,6 @@ def main():
                     logger,
                     destination_.url
                 )
-            except requests.HTTPError:
-                num_of_errors = _update_errors_count(num_of_errors)
-                logger.error(traceback.format_exc())
             except Exception:
                 num_of_errors = _update_errors_count(num_of_errors)
                 logger.error(f'Error sending pipeline watermark {pipeline_.name}')
