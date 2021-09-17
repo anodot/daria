@@ -1,8 +1,8 @@
 """add timestamp column to PipelineOffset
 
-Revision ID: cf312d693dff
-Revises: fc92fa8ed02b
-Create Date: 2021-09-15 15:00:34.795316
+Revision ID: 9b34e359fbde
+Revises: d04cf726555d
+Create Date: 2021-09-17 13:03:02.676455
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'cf312d693dff'
-down_revision = 'fc92fa8ed02b'
+revision = '9b34e359fbde'
+down_revision = 'd04cf726555d'
 branch_labels = None
 depends_on = None
 

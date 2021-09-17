@@ -1,12 +1,10 @@
 import time
 import traceback
-
 import anodot
 import requests
 
 from datetime import datetime, timedelta, timezone
 from agent import pipeline, destination, monitoring
-from agent.destination.anodot_api_client import AnodotApiClient
 from agent.modules.logger import get_logger
 from agent.modules import constants
 from agent.pipeline import Pipeline
