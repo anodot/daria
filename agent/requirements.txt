@@ -33,7 +33,7 @@ pyparsing==2.3.1
 pyrsistent==0.15.1
 pytest==4.1.1
 pytest-mock==1.10.0
-python-anodot==2.0.0
+python-anodot==2.0.3
 python-dateutil==2.8.0
 pytz==2018.9
 PyYAML==5.4
