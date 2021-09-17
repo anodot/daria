@@ -89,14 +89,15 @@ def update_source_pipelines(source_: Source):
         logger_.info(f'Pipeline {pipeline_.name} updated')
 
 
-def update_pipeline_offset(pipeline_: Pipeline):
+def update_pipeline_offset(pipeline_: Pipeline, timestamp: float):
     offset = sdc_client.get_pipeline_offset(pipeline_)
     if not offset:
         return
     if pipeline_.offset:
         pipeline_.offset.offset = offset
+        pipeline_.offset.timestamp = timestamp
     else:
-        pipeline_.offset = pipeline.PipelineOffset(pipeline_.id, offset)
+        pipeline_.offset = pipeline.PipelineOffset(pipeline_.id, offset, timestamp)
     pipeline.repository.save_offset(pipeline_.offset)
 
 

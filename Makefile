@@ -13,7 +13,7 @@ all: build-all test-all
 
 build-all: get-streamsets-libs build-docker sleep setup-all
 
-test-all: run-unit-tests test-flask-app test-streamsets test-destination test-apply test-api test-api-scripts test-input test-streamsets-2 test-send-to-bc test-pipelines
+test-all: run-unit-tests test-flask-app test-streamsets test-destination test-apply test-api test-api-scripts test-input test-streamsets-2 test-send-to-bc test-pipelines test-send-to-watermark
 
 ##-------------
 ## DEVELOPMENT
@@ -92,6 +92,7 @@ test-cacti: bootstrap run-mysql sleep
 ## RELEASE DEPENDENCY TARGETS
 ##---------------------------
 build-docker:
+	docker-compose down -v
 	docker-compose build --build-arg GIT_SHA1="$(git describe --tags --dirty --always)"
 	docker-compose up -d
 
@@ -100,6 +101,9 @@ test-apply:
 
 test-send-to-bc:
 	$(DOCKER_TEST) tests/test_send_to_bc.py
+
+test-send-to-watermark:
+	$(DOCKER_TEST) tests/test_send_watermark.py
 
 test-destination:
 	$(DOCKER_TEST) tests/test_destination.py

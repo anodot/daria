@@ -56,7 +56,7 @@ class TestZabbix(TestInputBase):
         result = cli_runner.invoke(cli.pipeline.create, ['-f', input_file_path], catch_exceptions=False)
         assert result.exit_code == 0
         pipeline_ = pipeline.repository.get_by_id('test_zabbix_edit_query')
-        pipeline_.offset = PipelineOffset(pipeline_.id, '{"version": 2, "offsets": {"": "1611320000_30590"}}')
+        pipeline_.offset = PipelineOffset(pipeline_.id, '{"version": 2, "offsets": {"": "1611320000_30590"}}', 1611320000.0)
         sdc_client.update(pipeline_)
         pipeline.repository.save_offset(pipeline_.offset)
 

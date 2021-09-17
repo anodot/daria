@@ -23,7 +23,7 @@ def endpoint(func):
             return res.json()
         except requests.exceptions.HTTPError:
             if res.text:
-                logger.error(res.text)
+                logger.error(f'{res.url} - {res.text}')
             raise
     return wrapper
 
@@ -100,7 +100,6 @@ class AnodotApiClient:
     def _get_schemas_old_api(self):
         """
         Used for old anodot api version (for on-prem)
-        :param schema_id:
         :return:
         """
         return self.session.get(self._build_url('stream-schemas'), params={'excludeCubes': True}, proxies=self.proxies)
