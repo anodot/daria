@@ -23,6 +23,20 @@ PIPELINE_DESTINATION_LATENCY = Gauge('pipeline_destination_latency_seconds', 'Pi
                                      ['streamsets_url', 'pipeline_id', 'pipeline_type'], registry=registry)
 PIPELINE_SOURCE_LATENCY = Gauge('pipeline_source_latency_seconds', 'Pipeline source latency',
                                 ['streamsets_url', 'pipeline_id', 'pipeline_type'], registry=registry)
+PIPELINE_STAGE_BATCH_PROCESSING_TIME_AVG = Gauge('pipeline_stage_patch_processing_time_avg_seconds',
+                                                 'Pipeline stage batch processing time avg',
+                                                 ['streamsets_url', 'pipeline_id', 'pipeline_type', 'stage'],
+                                                 registry=registry)
+
+PIPELINE_STAGE_BATCH_PROCESSING_TIME_50th = Gauge('pipeline_stage_patch_processing_time_50th_seconds',
+                                                  'Pipeline stage batch processing time 50th percentile',
+                                                  ['streamsets_url', 'pipeline_id', 'pipeline_type', 'stage'],
+                                                  registry=registry)
+
+PIPELINE_STAGE_BATCH_PROCESSING_TIME_999th = Gauge('pipeline_stage_patch_processing_time_999th_seconds',
+                                                   'Pipeline stage batch processing time 999th percentile',
+                                                   ['streamsets_url', 'pipeline_id', 'pipeline_type', 'stage'],
+                                                   registry=registry)
 
 PIPELINE_STATUS = Enum('pipeline_status', 'Pipeline status', ['streamsets_url', 'pipeline_id', 'pipeline_type'],
                        states=Pipeline.statuses, registry=registry)

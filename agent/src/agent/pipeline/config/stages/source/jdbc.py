@@ -5,7 +5,7 @@ from agent import pipeline, source
 class JDBCSource(Stage):
     LAST_TIMESTAMP = '${record:value("/last_timestamp")}'
 
-    def _get_config(self) -> dict:
+    def get_config(self) -> dict:
         return {
             'query': self.get_query(),
             ** self.get_connection_configs()

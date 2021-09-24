@@ -1,0 +1,23 @@
+{
+  "type": "object",
+  "properties": {
+    "measurement_name": {"type": "string", "minLength": 1},
+    "values": {"type": "object"},
+    "dimensions": {"oneOf": [
+      {"type": "array", "items": {"type": "string"}},
+      {"type": "object", "properties": {
+        "required": {"type": "array", "items": {"type": "string"}},
+        "optional": {"type": "array", "items": {"type": "string"}}
+      }}
+    ]},
+    "properties": {"type": "object"},
+    "tags": {
+      "type": "object",
+      "patternProperties":  {"[^ \\.]+": {"type": "array", "items": {"type": "string"}}}
+    },
+    "delay": {"type": "string"},
+    "interval": {"type": "integer"},
+    "filtering": {"type": "string"}
+  },
+  "required": ["measurement_name", "values", "dimensions"]
+}

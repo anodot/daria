@@ -12,13 +12,11 @@ class Stage(ABC):
     JYTHON_SCRIPTS_PATH = os.path.join('pipeline', 'config', 'jython_scripts')
     JS_SCRIPTS_PATH = os.path.join('pipeline', 'config', 'js_scripts')
 
-    def __init__(self, pipeline_: Pipeline, sdc_stage: dict):
+    def __init__(self, pipeline_: Pipeline):
         self.pipeline = pipeline_
-        self.sdc_stage = sdc_stage
-        self.config = self._get_config()
 
     @abstractmethod
-    def _get_config(self) -> dict:
+    def get_config(self) -> dict:
         pass
 
     def get_jython_file_path(self):

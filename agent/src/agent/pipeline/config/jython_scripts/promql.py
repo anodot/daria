@@ -7,7 +7,6 @@ try:
     sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))
     import requests
     import traceback
-    import json
     import time
     import urllib
     import re

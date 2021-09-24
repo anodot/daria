@@ -1,6 +1,5 @@
 import click
 
-from agent import pipeline
 from agent.modules.tools import infinite_retry
 from agent.pipeline.validators import jdbc_query
 from .base import Prompter

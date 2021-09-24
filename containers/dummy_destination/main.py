@@ -51,6 +51,9 @@ def monitoring_api_mock():
 
 @app.route('/api/v1/metrics/watermark', methods=['POST'])
 def watermark_mock():
+    if request.args.get('token'):
+        if request.args.get('token') != 'correct_token':
+            return json.dumps({'errors': ['Data collection token is invalid']}), 401
     data = request.json
     with open(os.path.join(OUTPUT_DIR, data['schemaId'] + '_watermark.json'), 'w') as f:
         json.dump(data, f)

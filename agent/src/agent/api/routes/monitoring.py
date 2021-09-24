@@ -39,16 +39,17 @@ def monitoring():
 
     data = monitoring_.latest_to_anodot()
     monitoring_url = constants.MONITORING_URL if constants.MONITORING_URL else destination_.url
+    monitoring_token = constants.MONITORING_TOKEN if constants.MONITORING_TOKEN else destination_.token
 
     errors = []
     if constants.MONITORING_SEND_TO_CLIENT:
         url = urllib.parse.urljoin(monitoring_url,
-                                   f'api/v1/metrics?token={destination_.token}&protocol={destination_.PROTOCOL_20}')
+                                   f'api/v1/metrics?token={monitoring_token}&protocol={destination_.PROTOCOL_20}')
         errors += _send_to_anodot(data, url, destination_.proxy)
 
     if constants.MONITORING_SEND_TO_ANODOT:
         url = urllib.parse.urljoin(monitoring_url,
-                                   f'api/v1/agents?token={destination_.token}&protocol={destination_.PROTOCOL_20}')
+                                   f'api/v1/agents?token={monitoring_token}&protocol={destination_.PROTOCOL_20}')
         errors += _send_to_anodot(data, url, destination_.proxy)
 
     if errors:

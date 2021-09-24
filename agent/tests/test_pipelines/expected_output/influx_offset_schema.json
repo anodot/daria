@@ -1,6 +1,6 @@
 [
   {
-    "timestamp": 1553054426.168,
+    "timestamp": 1553054426,
     "dimensions": {
       "cpu": "cpu-total-usage",
       "zone": "GF",
@@ -30,7 +30,7 @@
     }
   },
   {
-    "timestamp": 1553154426.168,
+    "timestamp": 1553154426,
     "dimensions": {
       "cpu": "cpu-total-usage",
       "zone": "GEO",

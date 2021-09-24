@@ -1,5 +1,5 @@
 from agent import streamsets, pipeline, di
-from agent.modules import constants, db
+from agent.modules import constants
 from agent.streamsets import StreamSets
 from agent.modules.logger import get_logger
 

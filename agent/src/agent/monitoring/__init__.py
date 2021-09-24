@@ -37,3 +37,8 @@ def increase_scheduled_script_error_counter(script_name):
 def set_scheduled_script_execution_time(script_name, duration):
     url = constants.AGENT_MONITORING_ENDPOINT + '/scheduled_script_execution_time/' + script_name
     requests.post(url, json={'duration': duration}).raise_for_status()
+
+
+def run():
+    url = constants.AGENT_MONITORING_ENDPOINT
+    requests.get(url).raise_for_status()

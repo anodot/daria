@@ -20,7 +20,7 @@ interface = client.post('hostinterface.get', {
 })
 interface_id = interface[0]['interfaceid']
 
-for j in range(0, 10000):
+for j in range(0, 2):
     # cpu_item = client.post('item.create', {
     #     'hostid': host_id,
     #     'name': 'CPU',
@@ -45,17 +45,17 @@ for j in range(0, 10000):
     memory_item_id = memory_item['itemids'][0]
     print(str(j) + ' Memory item created')
 
-    mysql_conn = create_engine(f'mysql+mysqlconnector://root@localhost/zabbix')
+    mysql_conn = create_engine(f'mysql+mysqlconnector://root@127.0.0.1:3308/zabbix')
     cpu_values = []
     memory_values = []
-    for i in range(0, 1000):
+    for i in range(0, 10):
         # cpu_values.append((cpu_item_id, str(1611322479 + i), '0.1', '257117700'))
         # cpu_values.append((cpu_item_id, str(1611322529 + i), '0.23', '267117877'))
         # cpu_values.append((cpu_item_id, str(1611322559 + i), '0.15', '267237777'))
 
-        memory_values.append((memory_item_id, str(1611322470 + i), '10000567', '257136700'))
-        memory_values.append((memory_item_id, str(1611322520 + i), '9347567', '267187877'))
-        memory_values.append((memory_item_id, str(1611322550 + i), '9347293', '267239977'))
+        memory_values.append((memory_item_id, str(1611322470 + i * 10), '10000567', '257136700'))
+        # memory_values.append((memory_item_id, str(1611322520 + i), '9347567', '267187877'))
+        # memory_values.append((memory_item_id, str(1611322550 + i), '9347293', '267239977'))
 
     # cpu_values = ','.join(map(lambda x: '(' + ','.join(x) + ')', cpu_values))
     memory_values = ','.join(map(lambda x: '(' + ','.join(x) + ')', memory_values))

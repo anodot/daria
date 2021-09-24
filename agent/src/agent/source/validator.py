@@ -7,11 +7,8 @@ import inject
 
 from abc import ABC, abstractmethod
 from datetime import datetime
-from urllib.parse import urlparse
-
 from pysnmp.entity.engine import SnmpEngine
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
-
 from agent import source
 from agent.modules.tools import if_validation_enabled
 from agent.modules import validator, zabbix, http
@@ -73,8 +70,11 @@ class InfluxValidator(Validator):
 
     @if_validation_enabled
     def validate_db(self):
-        client = source.db.get_influx_client(self.source.config['host'], self.source.config.get('username'),
-                                             self.source.config.get('password'))
+        client = source.db.get_influx_client(
+            self.source.config['host'],
+            self.source.config.get('username'),
+            self.source.config.get('password')
+        )
         if not any([db['name'] == self.source.config['db'] for db in client.get_list_database()]):
             raise ValidationException(
                 f"Database {self.source.config['db']} not found. Please check your credentials again"
@@ -94,6 +94,24 @@ class InfluxValidator(Validator):
                 datetime.strptime(self.source.config['offset'], '%d/%m/%Y %H:%M').timestamp()
             except ValueError as e:
                 raise ValidationException(str(e))
+
+
+class Influx2Validator(InfluxValidator):
+    VALIDATION_SCHEMA_FILE = 'influx2.json'
+
+    @if_validation_enabled
+    def validate_connection(self):
+        res = requests.get(self.source.config['host'])
+        res.raise_for_status()
+
+    @if_validation_enabled
+    def validate_db(self):
+        session = requests.Session()
+        session.headers['Authorization'] = f'Token {self.source.config["token"]}'
+        res = session.get(
+            urllib.parse.urljoin(self.source.config['host'], '/api/v2/buckets')
+        )
+        res.raise_for_status()
 
 
 class ElasticValidator(Validator):
@@ -120,7 +138,7 @@ class JDBCValidator(Validator):
             validator.validate_url_format_with_port(self.source.config[source.JDBCSource.CONFIG_CONNECTION_STRING])
         except validator.ValidationException as e:
             raise ValidationException(str(e))
-        result = urlparse(self.source.config[source.JDBCSource.CONFIG_CONNECTION_STRING])
+        result = urllib.parse.urlparse(self.source.config[source.JDBCSource.CONFIG_CONNECTION_STRING])
         if self.source.type == source.TYPE_MYSQL and result.scheme != 'mysql':
             raise ValidationException('Wrong url scheme. Use `mysql`')
         if self.source.type == source.TYPE_POSTGRES and result.scheme != 'postgresql':
@@ -177,7 +195,7 @@ class MongoValidator(Validator):
 
 class SNMPValidator(Validator):
     def validate(self):
-        url = urlparse(self.source.url)
+        url = urllib.parse.urlparse(self.source.url)
         iterator = getCmd(
             SnmpEngine(),
             CommunityData(self.source.read_community, mpModel=0),
@@ -320,6 +338,7 @@ def get_validator(source_: Source) -> Validator:
         source.TYPE_DIRECTORY: DirectoryValidator,
         source.TYPE_ELASTIC: ElasticValidator,
         source.TYPE_INFLUX: InfluxValidator,
+        source.TYPE_INFLUX_2: Influx2Validator,
         source.TYPE_KAFKA: KafkaValidator,
         source.TYPE_MONGO: MongoValidator,
         source.TYPE_MYSQL: JDBCValidator,

@@ -12,7 +12,7 @@ logger = get_logger(__name__)
 
 class InfluxConfigHandler(base.BaseConfigHandler):
     stages_to_override = {
-        'offset': stages.influx_offset.InfluxScript,
+        'offset': stages.influx.InfluxScript,
         'source': stages.source.influx.InfluxSource,
         'destination': stages.destination.Destination
     }
@@ -57,9 +57,19 @@ state['TAGS'] = {tags}
 
 class InfluxSchemaConfigHandler(SchemaConfigHandler):
     stages_to_override = {
-        'offset': stages.influx_offset.InfluxScript,
+        'offset': stages.influx.InfluxScript,
         'source': stages.source.influx.InfluxSource,
         'transform_records': stages.js_convert_metrics.JSConvertMetrics30,
+        'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties30,
+        'destination': stages.destination.Destination
+    }
+
+
+class Influx2SchemaConfigHandler(SchemaConfigHandler):
+    stages_to_override = {
+        'source': stages.source.influx2.Influx2Source,
+        'jython_transform_records': stages.influx.JythonTransformRecords,
+        'js_create_metrics': stages.js_convert_metrics.JSConvertMetrics30,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties30,
         'destination': stages.destination.Destination
     }

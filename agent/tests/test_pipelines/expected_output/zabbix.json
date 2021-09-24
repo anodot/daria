@@ -7,7 +7,8 @@
       "service-provider": "anodot",
       "what": "Memory",
       "target_type": "gauge",
-      "test_type": "input"
+      "test_type": "input",
+      "key_": "vm_memory_size[macro_value,macro_value_2]"
     },
     "value": 10000567.0,
     "tags": {
@@ -39,7 +40,8 @@
       "service-provider": "anodot",
       "what": "counter",
       "target_type": "counter",
-      "test_type": "input"
+      "test_type": "input",
+      "key_": "vm_memory_size[macro_value,macro_value_2]"
     },
     "value": 1.0,
     "tags": {
@@ -71,7 +73,8 @@
       "service-provider": "anodot",
       "what": "Memory",
       "target_type": "gauge",
-      "test_type": "input"
+      "test_type": "input",
+      "key_": "vm_memory_size[macro_value,macro_value_2]"
     },
     "value": 9347567.0,
     "tags": {
@@ -103,7 +106,8 @@
       "service-provider": "anodot",
       "what": "counter",
       "target_type": "counter",
-      "test_type": "input"
+      "test_type": "input",
+      "key_": "vm_memory_size[macro_value,macro_value_2]"
     },
     "value": 1.0,
     "tags": {
@@ -135,7 +139,8 @@
       "service-provider": "anodot",
       "what": "Memory",
       "target_type": "gauge",
-      "test_type": "input"
+      "test_type": "input",
+      "key_": "vm_memory_size[macro_value,macro_value_2]"
     },
     "value": 9347293.0,
     "tags": {
@@ -167,7 +172,8 @@
       "service-provider": "anodot",
       "what": "counter",
       "target_type": "counter",
-      "test_type": "input"
+      "test_type": "input",
+      "key_": "vm_memory_size[macro_value,macro_value_2]"
     },
     "value": 1.0,
     "tags": {

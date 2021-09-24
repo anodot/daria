@@ -4,8 +4,8 @@ import string
 import sdc_client
 
 from agent import source, pipeline, destination, streamsets
-from agent.modules import tools
-from agent.pipeline import Pipeline, TestPipeline, schema, extra_setup
+from agent.modules import tools, constants
+from agent.pipeline import Pipeline, TestPipeline, schema, extra_setup, PipelineRetries
 from agent.modules.logger import get_logger
 from agent.pipeline.config.handlers.factory import get_config_handler
 from agent.source import Source
@@ -45,6 +45,22 @@ def check_pipeline_id(pipeline_id: str):
         raise pipeline.PipelineException(f"Pipeline {pipeline_id} already exists")
 
 
+def start(pipeline_: Pipeline):
+    reset_pipeline_retries(pipeline_)
+    sdc_client.start(pipeline_)
+
+
+def reset_pipeline_retries(pipeline_: Pipeline):
+    if pipeline_.retries:
+        pipeline_.retries.number_of_error_statuses = 0
+        pipeline.repository.save_pipeline_retries(pipeline_.retries)
+
+
+def _delete_pipeline_retries(pipeline_: Pipeline):
+    if pipeline_.retries:
+        pipeline.repository.delete_pipeline_retries(pipeline_.retries)
+
+
 def update(pipeline_: Pipeline):
     if not pipeline_.config_changed():
         logger_.info(f'No need to update pipeline {pipeline_.name}')
@@ -75,14 +91,15 @@ def update_source_pipelines(source_: Source):
         logger_.info(f'Pipeline {pipeline_.name} updated')
 
 
-def update_pipeline_offset(pipeline_: Pipeline):
+def update_pipeline_offset(pipeline_: Pipeline, timestamp: float):
     offset = sdc_client.get_pipeline_offset(pipeline_)
     if not offset:
         return
     if pipeline_.offset:
         pipeline_.offset.offset = offset
+        pipeline_.offset.timestamp = timestamp
     else:
-        pipeline_.offset = pipeline.PipelineOffset(pipeline_.id, offset)
+        pipeline_.offset = pipeline.PipelineOffset(pipeline_.id, offset, timestamp)
     pipeline.repository.save_offset(pipeline_.offset)
 
 
@@ -118,8 +135,6 @@ def delete(pipeline_: Pipeline):
         sdc_client.delete(pipeline_)
     except sdc_client.ApiClientException as e:
         raise pipeline.PipelineException(str(e))
-    if pipeline_.offset:
-        pipeline.repository.delete_offset(pipeline_.offset)
     pipeline.repository.delete(pipeline_)
     pipeline.repository.add_deleted_pipeline_id(pipeline_.name)
 
@@ -137,6 +152,7 @@ def force_delete(pipeline_id: str) -> list:
     exceptions = []
     if pipeline.repository.exists(pipeline_id):
         pipeline_ = pipeline.repository.get_by_id(pipeline_id)
+        _delete_pipeline_retries(pipeline_)
         try:
             _delete_schema(pipeline_)
         except Exception as e:
@@ -168,7 +184,7 @@ def disable_destination_logs(pipeline_: Pipeline):
 
 def build_test_pipeline(source_: Source) -> TestPipeline:
     # creating a new source because otherwise it will mess with the db session
-    test_source = Source(source_.name, source_.type, source_.config)
+    test_source = source.manager.create_source_obj(source_.name, source_.type, source_.config)
     test_pipeline = TestPipeline(_get_test_pipeline_id(test_source), test_source, destination.repository.get())
     test_pipeline.config['uses_schema'] = supports_schema(test_pipeline)
     return test_pipeline
@@ -209,6 +225,14 @@ def transform_for_bc(pipeline_: Pipeline) -> dict:
     return data
 
 
+def should_send_error_notification(pipeline_: Pipeline) -> bool:
+    # number of error statuses = number of retries + 1
+    return not constants.DISABLE_PIPELINE_ERROR_NOTIFICATIONS \
+           and pipeline_.error_notification_enabled() \
+           and pipeline_.retries \
+           and pipeline_.retries.number_of_error_statuses - 1 >= constants.STREAMSETS_MAX_RETRY_ATTEMPTS
+
+
 def get_sample_records(pipeline_: Pipeline) -> (list, list):
     try:
         sdc_client.create(pipeline_)
@@ -243,3 +267,10 @@ def get_preview_data(pipeline_: Pipeline) -> (list, list):
 
 def create_streamsets_pipeline_config(pipeline_: Pipeline) -> dict:
     return get_config_handler(pipeline_).override_base_config()
+
+
+def increase_retry_counter(pipeline_: Pipeline):
+    if not pipeline_.retries:
+        pipeline_.retries = PipelineRetries(pipeline_)
+    pipeline_.retries.number_of_error_statuses += 1
+    pipeline.repository.save_pipeline_retries(pipeline_.retries)

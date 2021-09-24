@@ -20,5 +20,17 @@
     "properties": {"test": "val"},
     "interval": 1200000,
     "uses_schema": false
+  },
+  {
+    "source": "test_influx2_file",
+    "pipeline_id": "test_influx2_file_full",
+    "measurement_name": "cpu_test",
+    "values": {"usage_active": "gauge", "usage_idle": "gauge"},
+    "dimensions": {
+      "required": [],
+      "optional": ["cpu", "host", "zone"]
+    },
+    "properties": {"test": "val"},
+    "interval": 1200000
   }
 ]

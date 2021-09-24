@@ -2,6 +2,7 @@ from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy import Column, Integer, String, JSON, func
+from agent import source
 from agent.modules.db import Entity
 
 
@@ -236,9 +237,18 @@ class InfluxSource(Source):
     pass
 
 
+class Influx2Source(InfluxSource):
+    pass
+
+
 class SourceException(Exception):
     pass
 
 
 class SourceNotExists(SourceException):
     pass
+
+
+def make_typed(source_: Source) -> Source:
+    source_.__class__ = source.types[source_.type]
+    return source_

@@ -20,18 +20,9 @@ state['HEADER_ATTRIBUTES'] = {self.pipeline.header_attributes};
 state['metrics'] = {{}}
     """
 
-    def _get_config(self) -> dict:
+    def get_config(self) -> dict:
         required_fields = [*self.pipeline.required_dimensions_paths, self.pipeline.timestamp_path]
-        if self.pipeline.values_array_path:
-            required_fields.append(self.pipeline.values_array_path)
-        else:
-            required_fields += self.pipeline.values_paths
 
-        if not self.pipeline.static_what:
-            required_fields += self.pipeline.measurement_names_paths
-            for t_type in self.pipeline.target_types_paths:
-                if t_type not in self.pipeline.TARGET_TYPES:
-                    required_fields.append(t_type)
         return {
             'initScript': self.get_js_vars(),
             'stageRequiredFields': [f'/{f}' for f in required_fields],
@@ -41,7 +32,7 @@ state['metrics'] = {{}}
 class JSConvertMetrics30(JSConvertMetrics):
     JS_SCRIPT_NAME = 'protocol_3.js'
 
-    def _get_config(self) -> dict:
+    def get_config(self) -> dict:
         with open(self._get_js_file_path(self.JS_SCRIPT_NAME)) as f:
             script = f.read()
 
