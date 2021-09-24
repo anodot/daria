@@ -4,7 +4,7 @@ import os
 import sdc_client
 
 from typing import Optional
-from agent import pipeline, source, streamsets, check_prerequisites
+from agent import pipeline, source, streamsets, check_prerequisites, check_raw_prerequisites
 from agent.modules.tools import infinite_retry
 from jsonschema import ValidationError
 from texttable import Texttable
@@ -33,10 +33,17 @@ def list_pipelines():
 @click.option('-f', '--file', type=click.File())
 def create(advanced: bool, file):
     _check_prerequisites()
-    sources = source.repository.get_all_names()
-    _check_sources(sources)
+    _create_from_file(file) if file else _prompt(advanced)
 
-    _create_from_file(file) if file else _prompt(advanced, sources)
+
+@click.command(name='create-raw')
+@click.option('-f', '--file', type=click.File(), required=True)
+def create_raw(file):
+    _check_raw_prerequisites()
+    try:
+        pipeline.json_builder.build_multiple_raw(pipeline.json_builder.extract_configs(file))
+    except (sdc_client.ApiClientException, ValidationError, pipeline.PipelineException) as e:
+        raise click.ClickException(str(e))
 
 
 @click.command()
@@ -52,6 +59,12 @@ def edit(pipeline_id: str, advanced: bool, file):
 
 def _check_prerequisites():
     errors = check_prerequisites()
+    if errors:
+        raise click.ClickException("\n".join(errors))
+
+
+def _check_raw_prerequisites():
+    errors = check_raw_prerequisites()
     if errors:
         raise click.ClickException("\n".join(errors))
 
@@ -263,7 +276,8 @@ def _create_from_file(file):
         raise click.ClickException(str(e))
 
 
-def _prompt(advanced: bool, sources: list):
+def _prompt(advanced: bool):
+    sources = source.repository.get_all_names()
     source_name = click.prompt('Choose source config', type=click.Choice(sources), default=_get_default_source(sources))
     pipeline_id = _prompt_pipeline_id()
 
@@ -321,11 +335,6 @@ def _prompt_pipeline_id():
     return pipeline_id
 
 
-def _check_sources(sources: list):
-    if len(sources) == 0:
-        raise click.ClickException('No source configs found. Use "agent source create"')
-
-
 def _get_default_source(sources: list):
     return sources[0] if len(sources) == 1 else None
 
@@ -347,6 +356,7 @@ def _build_table(header, rows):
 
 
 pipeline_group.add_command(create)
+pipeline_group.add_command(create_raw)
 pipeline_group.add_command(list_pipelines)
 pipeline_group.add_command(start)
 pipeline_group.add_command(stop)

@@ -16,6 +16,10 @@ from agent.source import Source
 from agent.streamsets import StreamSets
 
 
+REGULAR_PIPELINE = 'regular_pipeline'
+RAW_PIPELINE = 'raw_pipeline'
+
+
 class PipelineException(Exception):
     pass
 
@@ -61,6 +65,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
+    type = Column(String)
     source_id = Column(Integer, ForeignKey('sources.id'))
     destination_id = Column(Integer, ForeignKey('destinations.id'))
     config = Column(JSON)
@@ -89,6 +94,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
         self.override_source = {}
         self.streamsets_id = None
         self.streamsets = None
+        self.type = REGULAR_PIPELINE
 
     def config_changed(self) -> bool:
         if not hasattr(self, '_previous_config'):
@@ -361,6 +367,13 @@ class Pipeline(Entity, sdc_client.IPipeline):
 
     def error_notification_enabled(self) -> bool:
         return not self.config.get('disable_error_notifications', False)
+
+
+# todo mb self.type is enough and I don't need RawPipeline?
+class RawPipeline(Pipeline):
+    def __init__(self, pipeline_id: str, source_: Source, destination: HttpDestination):
+        super(RawPipeline, self).__init__(pipeline_id, source_, destination)
+        self.type = RAW_PIPELINE
 
 
 class TestPipeline(Pipeline):

@@ -5,7 +5,7 @@ import sdc_client
 
 from agent import source, pipeline, destination, streamsets
 from agent.modules import tools, constants
-from agent.pipeline import Pipeline, TestPipeline, schema, extra_setup, PipelineRetries
+from agent.pipeline import Pipeline, TestPipeline, schema, extra_setup, PipelineRetries, RawPipeline
 from agent.modules.logger import get_logger
 from agent.pipeline.config.handlers.factory import get_config_handler
 from agent.source import Source
@@ -51,7 +51,7 @@ def start(pipeline_: Pipeline):
 def reset_pipeline_retries(pipeline_: Pipeline):
     if pipeline_.retries:
         pipeline_.retries.number_of_error_statuses = 0
-        pipeline.repository.save_pipeline_retries(pipeline_.retries)
+        pipeline.repository.save(pipeline_.retries)
 
 
 def _delete_pipeline_retries(pipeline_: Pipeline):
@@ -98,7 +98,7 @@ def update_pipeline_offset(pipeline_: Pipeline, timestamp: float):
         pipeline_.offset.timestamp = timestamp
     else:
         pipeline_.offset = pipeline.PipelineOffset(pipeline_.id, offset, timestamp)
-    pipeline.repository.save_offset(pipeline_.offset)
+    pipeline.repository.save(pipeline_.offset)
 
 
 def reset(pipeline_: Pipeline):
@@ -271,4 +271,10 @@ def increase_retry_counter(pipeline_: Pipeline):
     if not pipeline_.retries:
         pipeline_.retries = PipelineRetries(pipeline_)
     pipeline_.retries.number_of_error_statuses += 1
-    pipeline.repository.save_pipeline_retries(pipeline_.retries)
+    pipeline.repository.save(pipeline_.retries)
+
+
+# todo move
+def create_raw_pipeline(raw_pipeline: RawPipeline):
+    sdc_client.create(raw_pipeline)
+    pipeline.repository.save(raw_pipeline)

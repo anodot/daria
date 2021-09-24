@@ -3,3 +3,6 @@ from . import manager
 from . import repository
 from . import validators
 from . import json_builder
+from . import jdbc
+
+TYPES = {REGULAR_PIPELINE: Pipeline, RAW_PIPELINE: RawPipeline}

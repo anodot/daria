@@ -6,6 +6,8 @@ from agent.pipeline.config.handlers.schema import SchemaConfigHandler
 
 def get_config_handler(pipeline_: Pipeline) -> BaseConfigHandler:
     base_config = _get_config_loader(pipeline_).load_base_config(pipeline_)
+    if isinstance(pipeline_, pipeline.RawPipeline):
+        return _get_raw_handler(pipeline_, base_config)
     if pipeline_.uses_schema:
         return _get_schema_handler(pipeline_, base_config)
     return _get_handler(pipeline_, base_config)
@@ -31,6 +33,15 @@ def _get_handler(pipeline_: Pipeline, base_config: dict) -> BaseConfigHandler:
     return handlers_protocol20[pipeline_.source.type](pipeline_, base_config)
 
 
+def _get_raw_handler(pipeline_: Pipeline, base_config: dict) -> SchemaConfigHandler:
+    handlers_protocol30 = {
+        source.TYPE_CLICKHOUSE: pipeline.config.handlers.jdbc.JDBCRawConfigHandler,
+        source.TYPE_MYSQL: pipeline.config.handlers.jdbc.JDBCRawConfigHandler,
+        source.TYPE_POSTGRES: pipeline.config.handlers.jdbc.JDBCRawConfigHandler,
+    }
+    return handlers_protocol30[pipeline_.source.type](pipeline_, base_config)
+
+
 def _get_schema_handler(pipeline_: Pipeline, base_config: dict) -> SchemaConfigHandler:
     handlers_protocol30 = {
         source.TYPE_CLICKHOUSE: pipeline.config.handlers.jdbc.JDBCSchemaConfigHandler,
@@ -48,6 +59,8 @@ def _get_schema_handler(pipeline_: Pipeline, base_config: dict) -> SchemaConfigH
 def _get_config_loader(pipeline_: Pipeline):
     if isinstance(pipeline_, pipeline.TestPipeline):
         return pipeline.config.handlers.base.TestPipelineBaseConfigLoader
+    if isinstance(pipeline_, pipeline.RawPipeline):
+        return pipeline.config.handlers.base.RawConfigLoader
     if pipeline_.uses_schema:
         return pipeline.config.handlers.base.SchemaBaseConfigLoader
     return pipeline.config.handlers.base.BaseConfigLoader

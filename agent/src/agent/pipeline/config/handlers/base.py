@@ -29,13 +29,13 @@ class BaseConfigLoader:
     def _get_config_file(cls, pipeline: Pipeline) -> str:
         name = {
             source.TYPE_CACTI: 'cacti',
-            source.TYPE_CLICKHOUSE: 'jdbc_http',
+            source.TYPE_CLICKHOUSE: 'jdbc',
             source.TYPE_ELASTIC: 'elastic_http',
             source.TYPE_INFLUX: 'influx_http',
             source.TYPE_KAFKA: 'kafka_http',
             source.TYPE_MONGO: 'mongo_http',
-            source.TYPE_MYSQL: 'jdbc_http',
-            source.TYPE_POSTGRES: 'jdbc_http',
+            source.TYPE_MYSQL: 'jdbc',
+            source.TYPE_POSTGRES: 'jdbc',
             source.TYPE_SAGE: 'sage_http',
             source.TYPE_SPLUNK: 'tcp_server_http',
             source.TYPE_SOLARWINDS: 'solarwinds',
@@ -46,17 +46,21 @@ class BaseConfigLoader:
         return name + '.json'
 
 
+class RawConfigLoader(BaseConfigLoader):
+    BASE_PIPELINE_CONFIGS_PATH = 'base_pipelines/raw'
+
+
 class SchemaBaseConfigLoader(BaseConfigLoader):
     @classmethod
     def _get_config_file(cls, pipeline: Pipeline) -> str:
         name = {
-            source.TYPE_CLICKHOUSE: 'jdbc_http',
+            source.TYPE_CLICKHOUSE: 'jdbc',
             source.TYPE_DIRECTORY: 'directory_http',
             source.TYPE_INFLUX: 'influx',
             source.TYPE_INFLUX_2: 'influx2',
             source.TYPE_KAFKA: 'kafka_http',
-            source.TYPE_MYSQL: 'jdbc_http',
-            source.TYPE_POSTGRES: 'jdbc_http',
+            source.TYPE_MYSQL: 'jdbc',
+            source.TYPE_POSTGRES: 'jdbc',
             source.TYPE_SNMP: 'snmp',
         }[pipeline.source.type]
         return name + '_schema.json'
@@ -119,6 +123,7 @@ class BaseConfigHandler:
                 config['value'] = constants.STREAMSETS_MAX_RETRY_ATTEMPTS
 
     def _get_pipeline_config(self) -> dict:
+        # todo I don't need it in raw
         return {
             'TOKEN': self.pipeline.destination.token,
             'PROTOCOL': self.pipeline.destination.PROTOCOL_20,

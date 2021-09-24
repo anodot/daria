@@ -14,6 +14,8 @@ def api_client():
 
 di.init()
 
+r = pipeline.manager.transform_for_bc(pipeline.repository.get_by_id('test_dir_json'))
+t = 1
 # res = api_client().get('/alerts?status=CLOSE&startTime=1623321686')
 # res = api_client().get('/alert/status?alertName=Drop%20in%20Device_uptime%20for%20All%20equipments&host=eNodeBbaicells180&startTime=-300')
 
@@ -27,5 +29,6 @@ t = 1
 
 # cli.source.edit(["solarwinds"])
 # cli.destination()
-# cli.pipeline.create()
+# cli.pipeline.create_raw(["-f", "/Users/antonzelenin/Workspace/daria/agent/src/agent/mysql_raw.json"])
+cli.pipeline.update(["test_jdbc"])
 # cli.streamsets.delete(["asdfa"])

@@ -1,7 +1,6 @@
 import time
 import traceback
 import anodot
-import requests
 
 from datetime import datetime, timedelta, timezone
 from agent import pipeline, destination, monitoring
