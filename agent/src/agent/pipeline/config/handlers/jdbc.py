@@ -30,6 +30,5 @@ class JDBCRawConfigHandler(BaseConfigHandler):
     stages_to_override = {
         'offset': stages.jdbc.JDBCOffsetScript,
         'source': stages.source.jdbc.JDBCSource,
-        'JythonEvaluator_01': stages.jdbc.JDBCRawTransformScript,
-        'destination': stages.destination.Destination
+        'JythonEvaluator_01': stages.jdbc.JDBCRawTransformScript
     }

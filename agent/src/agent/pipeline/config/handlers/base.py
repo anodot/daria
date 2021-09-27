@@ -37,6 +37,7 @@ class BaseConfigLoader:
             source.TYPE_MYSQL: 'jdbc',
             source.TYPE_POSTGRES: 'jdbc',
             source.TYPE_SAGE: 'sage_http',
+            source.TYPE_SNMP: 'snmp',
             source.TYPE_SPLUNK: 'tcp_server_http',
             source.TYPE_SOLARWINDS: 'solarwinds',
             source.TYPE_THANOS: 'promql_http',

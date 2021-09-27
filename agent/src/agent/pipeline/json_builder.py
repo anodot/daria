@@ -343,6 +343,17 @@ class SNMPLoadClientData(LoadClientData):
         self.client_config['dimensions'].append(snmp.HOSTNAME_OID)
 
 
+class SNMPRawLoadClientData(LoadClientData):
+    VALIDATION_SCHEMA_FILE_NAME = 'snmp'
+    VALIDATION_SCHEMA_DIR_NAME = 'json_schema_definitions/raw'
+
+    def load(self, client_config):
+        super().load(client_config)
+        self.client_config['timestamp'] = {}
+        self.client_config['timestamp']['type'] = 'unix'
+        return self.client_config
+
+
 class SolarWindsClientData(LoadClientData):
     VALIDATION_SCHEMA_FILE_NAME = 'solarwinds'
 
@@ -399,5 +410,6 @@ def _get_raw_loader(pipeline_: Pipeline, is_edit: bool) -> LoadClientData:
         source.TYPE_CLICKHOUSE: JDBCRawLoadClientData,
         source.TYPE_MYSQL: JDBCRawLoadClientData,
         source.TYPE_POSTGRES: JDBCRawLoadClientData,
+        source.TYPE_SNMP: SNMPRawLoadClientData,
     }
     return loaders[pipeline_.source.type](pipeline_, is_edit)

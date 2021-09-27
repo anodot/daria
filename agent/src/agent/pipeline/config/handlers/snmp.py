@@ -13,3 +13,10 @@ class SNMPConfigHandler(BaseConfigHandler):
         'ExpressionEvaluator_01': stages.expression_evaluator.AddProperties,
         'destination': stages.destination.Destination,
     }
+
+
+class SNMPRawConfigHandler(BaseConfigHandler):
+    # todo надо еще отправлять откуда и как мы эти данные достали
+    stages_to_override = {
+        'source': stages.source.snmp.SNMPRaw,
+    }

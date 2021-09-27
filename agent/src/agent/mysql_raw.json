@@ -1,6 +1,6 @@
 [
   {
-    "source": "test_jdbc",
+    "source": "my",
     "pipeline_id": "test_raw_jdbc",
     "interval": 86400,
     "days_to_backfill": 1384,

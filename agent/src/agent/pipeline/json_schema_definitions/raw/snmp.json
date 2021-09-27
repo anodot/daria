@@ -1,0 +1,11 @@
+{
+  "type": "object",
+  "properties": {
+    "properties": {"type": "object"},
+    "source": {"type": "string"},
+    "interval": {"type": "string", "enum": ["1m", "5m", "1h"]},
+    "pipeline_id": {"type": "string"},
+    "oids": {"type": "array", "items": {"type": "string"}}
+  },
+  "required": ["oids", "interval"]
+}

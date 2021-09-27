@@ -71,13 +71,8 @@ def local_fs(file_name: str):
     data = request.get_json()
     if data and len(data) > 0:
         # todo is it always json?
-        file_path = os.path.join(constants.LOCAL_DESTINATION_OUTPUT_DIR, f'{file_name}.json')
-        if os.path.isfile(file_path):
-            with open(file_path, 'r') as f:
-                # todo is it always json?
-                existing_data = json.load(f)
-                if existing_data:
-                    data = existing_data + data
-        with open(file_path, 'w') as f:
-            json.dump(data, f)
+        with open(os.path.join(constants.LOCAL_DESTINATION_OUTPUT_DIR, f'{file_name}.json'), 'a') as f:
+            for obj in data:
+                json.dump(obj, f)
+                f.write(",\n")
     return ''

@@ -33,13 +33,14 @@ def _get_handler(pipeline_: Pipeline, base_config: dict) -> BaseConfigHandler:
     return handlers_protocol20[pipeline_.source.type](pipeline_, base_config)
 
 
-def _get_raw_handler(pipeline_: Pipeline, base_config: dict) -> SchemaConfigHandler:
-    handlers_protocol30 = {
+def _get_raw_handler(pipeline_: Pipeline, base_config: dict) -> BaseConfigHandler:
+    handlers = {
         source.TYPE_CLICKHOUSE: pipeline.config.handlers.jdbc.JDBCRawConfigHandler,
         source.TYPE_MYSQL: pipeline.config.handlers.jdbc.JDBCRawConfigHandler,
         source.TYPE_POSTGRES: pipeline.config.handlers.jdbc.JDBCRawConfigHandler,
+        source.TYPE_SNMP: pipeline.config.handlers.snmp.SNMPRawConfigHandler,
     }
-    return handlers_protocol30[pipeline_.source.type](pipeline_, base_config)
+    return handlers[pipeline_.source.type](pipeline_, base_config)
 
 
 def _get_schema_handler(pipeline_: Pipeline, base_config: dict) -> SchemaConfigHandler:
