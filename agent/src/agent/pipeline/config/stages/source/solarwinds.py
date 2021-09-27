@@ -1,6 +1,6 @@
 import urllib.parse
 
-from agent import source
+from agent import source, pipeline
 from agent.pipeline.config.stages.source.jdbc import JDBCSource
 
 
@@ -14,7 +14,7 @@ class SolarWindsScript(JDBCSource):
             return {
                 'scriptConf.params': [
                     {'key': 'PIPELINE_NAME', 'value': self.pipeline.name},
-                    {'key': 'QUERY', 'value': self.get_query()},
+                    {'key': 'QUERY', 'value': pipeline.jdbc.query.Builder(self.pipeline).build()},
                     {
                         'key': 'SOLARWINDS_API_URL',
                         'value': urllib.parse.urljoin(
