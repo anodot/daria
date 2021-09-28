@@ -77,6 +77,7 @@ class TestPipelineBaseConfigLoader(BaseConfigLoader):
             source.TYPE_KAFKA: 'test_kafka_kjeu4334',
             source.TYPE_MYSQL: 'test_jdbc_pdsf4587',
             source.TYPE_POSTGRES: 'test_jdbc_pdsf4587',
+            source.TYPE_ORACLE: 'test_jdbc_pdsf4587',
             source.TYPE_SAGE: 'test_sage_jfhdkj',
             source.TYPE_SPLUNK: 'test_tcp_server_jksrj322',
             source.TYPE_SOLARWINDS: 'test_solarwinds_jksrj322',

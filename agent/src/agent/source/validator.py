@@ -7,6 +7,8 @@ import inject
 
 from abc import ABC, abstractmethod
 from datetime import datetime
+from urllib.parse import urlparse
+
 from pysnmp.entity.engine import SnmpEngine
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 from agent import source
@@ -134,18 +136,29 @@ class JDBCValidator(Validator):
 
     @if_validation_enabled
     def validate_connection_string(self):
+        #TODO unit test
+        url = deepcopy(self.source.config[source.JDBCSource.CONFIG_CONNECTION_STRING])
+        if url.startswith('oracle:thin'):
+            url = url.replace('oracle:thin', 'oracle:')
+        result = urlparse(url.replace('oracle:thin', 'oracle:'))
         try:
-            validator.validate_url_format_with_port(self.source.config[source.JDBCSource.CONFIG_CONNECTION_STRING])
-        except validator.ValidationException as e:
-            raise ValidationException(str(e))
-        result = urllib.parse.urlparse(self.source.config[source.JDBCSource.CONFIG_CONNECTION_STRING])
+            result.port
+        except ValueError:
+            result = urlparse(':'.join(url.split(':')[:-1]))
+        if not all([result.scheme, result.hostname, result.port]):
+            raise ValidationException(f"{url} - invalid url, please provide url in format `scheme://host:port`")
+
+        self._validate_schema(self.source.config[source.JDBCSource.CONFIG_CONNECTION_STRING])
+
+    def _validate_schema(self, url):
+        result = urlparse(url)
         if self.source.type == source.TYPE_MYSQL and result.scheme != 'mysql':
             raise ValidationException('Wrong url scheme. Use `mysql`')
         if self.source.type == source.TYPE_POSTGRES and result.scheme != 'postgresql':
             raise ValidationException('Wrong url scheme. Use `postgresql`')
         if self.source.type == source.TYPE_CLICKHOUSE and result.scheme != 'clickhouse':
             raise ValidationException('Wrong url scheme. Use `clickhouse`')
-        if self.source.type == source.TYPE_ORACLE and result.scheme != 'oracle:thin':
+        if self.source.type == source.TYPE_ORACLE and not url.startswith('oracle:thin'):
             raise ValidationException('Wrong url scheme. Use `oracle:thin`')
 
 
