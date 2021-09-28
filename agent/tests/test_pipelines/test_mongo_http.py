@@ -1,6 +1,6 @@
 import pytest
 
-from .base import PipelineBaseTest
+from .zbase import PipelineBaseTest
 
 
 class TestMongo(PipelineBaseTest):

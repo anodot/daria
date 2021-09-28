@@ -1,6 +1,6 @@
 import pytest
 
-from .base import PipelineBaseTest, get_schema_id
+from .zbase import PipelineBaseTest, get_schema_id
 from ..conftest import get_output
 
 

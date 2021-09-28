@@ -1,7 +1,7 @@
 import pytest
 
 from agent import source
-from .base import PipelineBaseTest
+from .zbase import PipelineBaseTest
 
 
 class TestSolarWinds(PipelineBaseTest):

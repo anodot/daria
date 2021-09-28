@@ -1,7 +1,7 @@
 from agent import pipeline, source
 from agent import cli
 from .zbase import InputBaseTest
-from ..test_pipelines.base import get_schema_id
+from ..test_pipelines.zbase import get_schema_id
 
 
 class TestDirectory(InputBaseTest):

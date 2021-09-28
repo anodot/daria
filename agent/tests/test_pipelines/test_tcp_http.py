@@ -1,7 +1,7 @@
 import pytest
 import socket
 
-from .base import PipelineBaseTest
+from .zbase import PipelineBaseTest
 from agent import pipeline, source
 
 
