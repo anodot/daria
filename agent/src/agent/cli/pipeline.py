@@ -4,13 +4,13 @@ import os
 import sdc_client
 
 from typing import Optional
-from agent import pipeline, source, streamsets, check_raw_prerequisites
+from agent import pipeline, source, streamsets
 from agent.modules.tools import infinite_retry
 from jsonschema import ValidationError
 from texttable import Texttable
 from agent.cli import prompt, preview
 from sdc_client import Severity
-from agent.pipeline import Pipeline
+from agent.pipeline import Pipeline, check_raw_prerequisites
 
 
 def get_pipelines_ids_complete(ctx, args, incomplete):
@@ -63,8 +63,7 @@ def _check_prerequisites():
 
 
 def _check_raw_prerequisites():
-    errors = check_raw_prerequisites()
-    if errors:
+    if errors := check_raw_prerequisites():
         raise click.ClickException("\n".join(errors))
 
 

@@ -1,8 +1,7 @@
 import json
-from typing import Callable
-
 import sdc_client
 
+from typing import Callable
 from ..conftest import get_input_file_path
 from agent import source, cli
 

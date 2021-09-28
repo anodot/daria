@@ -6,8 +6,6 @@ from ...test_pipelines.test_zpipeline_base import TestPipelineBase
 
 
 class TestRawPipelineBase(TestPipelineBase):
-    __test__ = False
-
     params = {}
 
     def test_reset(self, cli_runner, name=None):
@@ -32,7 +30,8 @@ class TestRawPipelineBase(TestPipelineBase):
         expected_output = \
             read_file(os.path.join(os.path.dirname(os.path.realpath(__file__)), f'expected_output/{output_file}'))
         actual_output = get_output(f'{name}.json')
-        assert expected_output == actual_output
+        if expected_output != actual_output:
+            raise Exception(actual_output)
 
     def test_delete_pipeline(self, cli_runner, name):
         super(TestRawPipelineBase, self).test_delete_pipeline(cli_runner, name)

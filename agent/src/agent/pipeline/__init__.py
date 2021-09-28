@@ -18,3 +18,10 @@ def check_prerequisites() -> list:
     if e := agent.check_streamsets():
         errors.append(e)
     return errors
+
+
+def check_raw_prerequisites() -> list:
+    errors = []
+    if e := agent.check_streamsets():
+        errors.append(e)
+    return errors
