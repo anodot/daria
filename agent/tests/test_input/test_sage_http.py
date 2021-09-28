@@ -1,4 +1,4 @@
-from .base import InputBaseTest
+from .zbase import InputBaseTest
 from ..conftest import get_input_file_path
 from datetime import datetime
 from agent import source, cli

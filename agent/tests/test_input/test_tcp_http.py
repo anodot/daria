@@ -1,6 +1,6 @@
 import traceback
 
-from .base import InputBaseTest
+from .zbase import InputBaseTest
 from ..conftest import get_input_file_path
 from agent import source, cli
 

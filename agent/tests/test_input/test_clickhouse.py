@@ -1,6 +1,6 @@
 from datetime import datetime
 from agent import source, cli
-from .base import InputBaseTest
+from .zbase import InputBaseTest
 from ..conftest import generate_input
 
 

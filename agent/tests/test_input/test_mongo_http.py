@@ -1,5 +1,5 @@
 from agent import source, cli
-from .base import InputBaseTest
+from .zbase import InputBaseTest
 
 
 class TestMongo(InputBaseTest):

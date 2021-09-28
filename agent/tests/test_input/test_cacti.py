@@ -1,7 +1,7 @@
 from datetime import datetime
 from agent import pipeline, source
 from agent import cli
-from .base import InputBaseTest
+from .zbase import InputBaseTest
 from ..conftest import generate_input
 
 

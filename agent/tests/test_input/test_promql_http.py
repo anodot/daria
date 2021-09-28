@@ -1,7 +1,7 @@
 from datetime import datetime
 from agent import cli
 from agent import source
-from .base import InputBaseTest
+from .zbase import InputBaseTest
 
 
 def _get_days_to_backfill():

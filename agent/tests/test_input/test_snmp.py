@@ -1,4 +1,4 @@
-from .base import InputBaseTest
+from .zbase import InputBaseTest
 
 
 class TestSNMP(InputBaseTest):

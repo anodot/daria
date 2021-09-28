@@ -1,5 +1,5 @@
 from datetime import datetime
-from .base import InputBaseTest
+from .zbase import InputBaseTest
 from ..conftest import generate_input
 from agent import cli, source, pipeline
 

@@ -3,7 +3,7 @@ import sdc_client
 from datetime import datetime
 from agent import cli
 from agent import source, pipeline
-from .base import InputBaseTest
+from .zbase import InputBaseTest
 from ..conftest import generate_input, get_input_file_path
 from agent.pipeline import PipelineOffset
 
