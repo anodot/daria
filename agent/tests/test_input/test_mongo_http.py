@@ -1,9 +1,8 @@
 from agent import source, cli
-from .test_zpipeline_base import TestInputBase
+from .base import InputBaseTest
 
 
-class TestMongo(TestInputBase):
-    __test__ = True
+class TestMongo(InputBaseTest):
     params = {
         'test_create': [{'name': 'test_value_const', 'options': ['-a'], 'value': 'y\nclicksS\ny\n\n \n ',
                          'timestamp': 'timestamp_unix\nunix', 'advanced_options': 'key1:val1\n\n\n'},

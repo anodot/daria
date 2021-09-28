@@ -1,11 +1,10 @@
 from datetime import datetime
 from agent import source, cli
-from .test_zpipeline_base import TestInputBase
+from .base import InputBaseTest
 from ..conftest import generate_input
 
 
-class TestClickhouse(TestInputBase):
-    __test__ = True
+class TestClickhouse(InputBaseTest):
     params = {
         'test_source_create': [{'name': 'test_jdbc_clickhouse', 'type': 'clickhouse', 'conn': 'clickhouse://clickhouse:8123/test'}],
         'test_create': [

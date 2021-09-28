@@ -1,10 +1,9 @@
 import pytest
 
-from .test_zpipeline_base import TestPipelineBase
+from .base import PipelineBaseTest
 
 
-class TestSage(TestPipelineBase):
-    __test__ = True
+class TestSage(PipelineBaseTest):
     params = {
         'test_start': [{'name': 'test_sage_value_const'}, {'name': 'test_sage'}, {'name': 'test_sage_file'}],
         'test_force_stop': [{'name': 'test_sage_value_const'}, {'name': 'test_sage'}, {'name': 'test_sage_file'}],

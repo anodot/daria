@@ -1,15 +1,11 @@
 import pytest
 import socket
-import sdc_client
 
-from agent import cli
-from .test_zpipeline_base import TestPipelineBase
+from .base import PipelineBaseTest
 from agent import pipeline, source
 
 
-class TestTCPServer(TestPipelineBase):
-
-    __test__ = True
+class TestTCPServer(PipelineBaseTest):
     params = {
         'test_start': [{'name': 'test_tcp_log'}, {'name': 'test_tcp_json'}, {'name': 'test_tcp_csv'}],
         'test_stop': [{'name': 'test_tcp_log'}, {'name': 'test_tcp_json'}, {'name': 'test_tcp_csv'}],

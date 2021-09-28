@@ -7,9 +7,7 @@ from ..conftest import get_output
 from agent import pipeline, source, cli
 
 
-class TestPipelineBase(object):
-    __test__ = False
-
+class PipelineBaseTest(object):
     params = {}
 
     def test_start(self, cli_runner, name: str, sleep: int):

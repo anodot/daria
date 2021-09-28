@@ -1,10 +1,9 @@
 import pytest
 
-from .test_zpipeline_base import TestPipelineBase
+from .base import PipelineBaseTest
 
 
-class TestPromQL(TestPipelineBase):
-    __test__ = True
+class TestPromQL(PipelineBaseTest):
     params = {
         'test_start': [{'name': 'test_victoria'}, {'name': 'test_victoria_2'}, {'name': 'test_victoria_a'},
                        {'name': 'test_thanos'}],

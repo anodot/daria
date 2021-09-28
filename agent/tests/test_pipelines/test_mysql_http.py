@@ -1,11 +1,10 @@
 import pytest
 
-from .test_zpipeline_base import TestPipelineBase, get_schema_id
+from .base import PipelineBaseTest, get_schema_id
 from ..conftest import get_output
 
 
-class TestMySQL(TestPipelineBase):
-    __test__ = True
+class TestMySQL(PipelineBaseTest):
     params = {
         'test_start': [{'name': 'test_mysql'}, {'name': 'test_mysql_timestamp_ms'},
                        {'name': 'test_mysql_timestamp_datetime'},

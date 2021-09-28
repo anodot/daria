@@ -3,13 +3,12 @@ import sdc_client
 from datetime import datetime
 from agent import cli
 from agent import source, pipeline
-from .test_zpipeline_base import TestInputBase
+from .base import InputBaseTest
 from ..conftest import generate_input, get_input_file_path
 from agent.pipeline import PipelineOffset
 
 
-class TestZabbix(TestInputBase):
-    __test__ = True
+class TestZabbix(InputBaseTest):
     params = {
         'test_create_source_with_file': [{'file_name': 'zabbix_sources'}],
         'test_create_with_file': [{'file_name': 'zabbix_pipelines'}],

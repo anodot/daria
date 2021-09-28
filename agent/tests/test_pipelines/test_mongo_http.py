@@ -1,10 +1,9 @@
 import pytest
 
-from .test_zpipeline_base import TestPipelineBase
+from .base import PipelineBaseTest
 
 
-class TestMongo(TestPipelineBase):
-    __test__ = True
+class TestMongo(PipelineBaseTest):
     params = {
         'test_start': [{'name': 'test_value_const'}, {'name': 'test_timestamp_ms'},
                        {'name': 'test_timestamp_string'}, {'name': 'test_timestamp_datetime'},

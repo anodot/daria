@@ -1,12 +1,11 @@
 from datetime import datetime
-from .test_zpipeline_base import TestInputBase
+from .base import InputBaseTest
 from ..conftest import get_input_file_path
 from agent import cli
 from agent import source
 
 
-class TestElastic(TestInputBase):
-    __test__ = True
+class TestElastic(InputBaseTest):
     params = {
         'test_create': [
             {'name': 'test_es_value_const', 'options': ['-a'], 'value': 'y\nclicksS\ny\n\n \n ',

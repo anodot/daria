@@ -5,8 +5,7 @@ from ..conftest import get_input_file_path
 from agent import source, cli
 
 
-class TestInputBase(object):
-    __test__ = False
+class InputBaseTest(object):
     params = {}
 
     def test_create_source_with_file(self, cli_runner, file_name):

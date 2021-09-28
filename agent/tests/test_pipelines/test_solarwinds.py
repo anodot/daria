@@ -1,11 +1,10 @@
 import pytest
 
 from agent import source
-from .test_zpipeline_base import TestPipelineBase
+from .base import PipelineBaseTest
 
 
-class TestSolarWinds(TestPipelineBase):
-    __test__ = True
+class TestSolarWinds(PipelineBaseTest):
     params = {
         'test_start': [{'name': 'solarwinds'}, {'name': 'solarwinds_file'}],
         'test_force_stop': [{'name': 'solarwinds'}, {'name': 'solarwinds_file'}],

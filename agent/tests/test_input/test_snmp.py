@@ -1,8 +1,7 @@
-from .test_zpipeline_base import TestInputBase
+from .base import InputBaseTest
 
 
-class TestSNMP(TestInputBase):
-    __test__ = True
+class TestSNMP(InputBaseTest):
     params = {
         'test_create_source_with_file': [{'file_name': 'snmp_sources'}],
         'test_create_with_file': [{'file_name': 'snmp_pipelines'}],

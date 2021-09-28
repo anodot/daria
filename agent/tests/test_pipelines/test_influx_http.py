@@ -1,12 +1,10 @@
 import pytest
 
-from .test_zpipeline_base import TestPipelineBase, get_schema_id
+from .base import PipelineBaseTest, get_schema_id
 from ..conftest import get_output
 
 
-class TestInflux(TestPipelineBase):
-    __test__ = True
-
+class TestInflux(PipelineBaseTest):
     params = {
         'test_start': [
             {'name': 'test_basic'},

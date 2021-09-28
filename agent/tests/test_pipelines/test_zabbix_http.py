@@ -1,10 +1,9 @@
 import pytest
 
-from .test_zpipeline_base import TestPipelineBase
+from .base import PipelineBaseTest
 
 
-class TestZabbix(TestPipelineBase):
-    __test__ = True
+class TestZabbix(PipelineBaseTest):
     params = {
         'test_start': [{'name': 'test_zabbix'}, {'name': 'test_zabbix_file'}, {'name': 'test_zabbix_edit_query'}],
         'test_force_stop': [{'name': 'test_zabbix'}, {'name': 'test_zabbix_file'}, {'name': 'test_zabbix_edit_query'}],

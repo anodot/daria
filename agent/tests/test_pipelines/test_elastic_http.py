@@ -1,10 +1,9 @@
 import pytest
 
-from .test_zpipeline_base import TestPipelineBase
+from .base import PipelineBaseTest
 
 
-class TestElastic(TestPipelineBase):
-    __test__ = True
+class TestElastic(PipelineBaseTest):
     params = {
         'test_start': [{'name': 'test_es_value_const'}, {'name': 'test_es_timestamp_ms'},
                        {'name': 'test_es_file_short'}, {'name': 'test_es_file_full'}],

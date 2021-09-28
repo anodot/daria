@@ -1,10 +1,9 @@
 import pytest
 
-from .test_zpipeline_base import TestPipelineBase
+from .base import PipelineBaseTest
 
 
-class TestClickhouse(TestPipelineBase):
-    __test__ = True
+class TestClickhouse(PipelineBaseTest):
     params = {
         'test_start': [{'name': 'test_clickhouse'}, {'name': 'test_clickhouse_timestamp_ms'},
                        {'name': 'test_clickhouse_timestamp_datetime'},

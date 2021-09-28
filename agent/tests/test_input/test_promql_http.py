@@ -1,15 +1,14 @@
 from datetime import datetime
 from agent import cli
 from agent import source
-from .test_zpipeline_base import TestInputBase
+from .base import InputBaseTest
 
 
 def _get_days_to_backfill():
     return (datetime.now() - datetime(year=2020, month=7, day=7)).days + 1
 
 
-class TestPromQL(TestInputBase):
-    __test__ = True
+class TestPromQL(InputBaseTest):
     params = {
         'test_create_source_with_file': [{'file_name': 'promql_sources'}],
         'test_create_with_file': [{

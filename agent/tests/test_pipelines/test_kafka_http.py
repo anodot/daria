@@ -1,10 +1,9 @@
 import pytest
 
-from .test_zpipeline_base import TestPipelineBase
+from .base import PipelineBaseTest
 
 
-class TestKafka(TestPipelineBase):
-    __test__ = True
+class TestKafka(PipelineBaseTest):
     params = {
         'test_start': [
             {'name': 'test_kfk_value_const'},

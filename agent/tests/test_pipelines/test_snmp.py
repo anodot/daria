@@ -1,12 +1,11 @@
 import time
 import pytest
 
-from .test_zpipeline_base import TestPipelineBase, get_expected_schema_output, get_schema_id
+from .base import PipelineBaseTest, get_expected_schema_output, get_schema_id
 from ..conftest import get_output
 
 
-class TestSNMP(TestPipelineBase):
-    __test__ = True
+class TestSNMP(PipelineBaseTest):
     params = {
         'test_start': [
             {'name': 'snmp', 'sleep': 20},

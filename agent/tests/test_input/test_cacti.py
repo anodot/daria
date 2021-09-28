@@ -1,7 +1,7 @@
 from datetime import datetime
 from agent import pipeline, source
 from agent import cli
-from .test_zpipeline_base import TestInputBase
+from .base import InputBaseTest
 from ..conftest import generate_input
 
 
@@ -9,8 +9,7 @@ def _get_days_to_backfill():
     return (datetime.now() - datetime.fromtimestamp(1619085000).replace(hour=0, minute=0, second=0)).days
 
 
-class TestCacti(TestInputBase):
-    __test__ = True
+class TestCacti(InputBaseTest):
     params = {
         'test_create_source_with_file': [{'file_name': 'cacti_sources'}],
         'test_create_with_file': [{

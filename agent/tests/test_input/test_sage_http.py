@@ -1,11 +1,10 @@
-from .test_zpipeline_base import TestInputBase
+from .base import InputBaseTest
 from ..conftest import get_input_file_path
 from datetime import datetime
 from agent import source, cli
 
 
-class TestSage(TestInputBase):
-    __test__ = True
+class TestSage(InputBaseTest):
     params = {
         'test_create': [
             {'name': 'test_sage_value_const', 'options': ['-a'], 'value': 'y\nclicksS\ny\n\n \n ',

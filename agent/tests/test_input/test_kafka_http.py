@@ -4,12 +4,11 @@ import traceback
 
 from agent import cli, pipeline
 from agent import source
-from .test_zpipeline_base import TestInputBase
+from .base import InputBaseTest
 from ..conftest import get_input_file_path
 
 
-class TestKafka(TestInputBase):
-    __test__ = True
+class TestKafka(InputBaseTest):
     params = {
         'test_source_create': [{'name': 'test_kfk'}, {'name': 'test_running_counters'}, {'name': 'test_json_arrays'}],
         'test_create': [

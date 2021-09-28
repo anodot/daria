@@ -1,10 +1,9 @@
 from datetime import datetime
 from agent import source, cli
-from .test_zpipeline_base import TestInputBase
+from .base import InputBaseTest
 
 
-class TestPostgreSQL(TestInputBase):
-    __test__ = True
+class TestPostgreSQL(InputBaseTest):
     params = {
         'test_source_create': [{'name': 'test_jdbc_postgres', 'type': 'postgres', 'conn': 'postgresql://postgres:5432/test'}],
         'test_create': [

@@ -1,10 +1,9 @@
 import pytest
 
-from .test_zpipeline_base import TestPipelineBase
+from .base import PipelineBaseTest
 
 
-class TestPostgreSQL(TestPipelineBase):
-    __test__ = True
+class TestPostgreSQL(PipelineBaseTest):
     params = {
         'test_start': [{'name': 'test_postgres'}, {'name': 'test_postgres_timestamp_ms'},
                        {'name': 'test_postgres_timestamp_datetime'},

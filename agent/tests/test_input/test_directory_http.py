@@ -1,11 +1,10 @@
 from agent import pipeline, source
 from agent import cli
-from .test_zpipeline_base import TestInputBase
-from ..test_pipelines.test_zpipeline_base import get_schema_id
+from .base import InputBaseTest
+from ..test_pipelines.base import get_schema_id
 
 
-class TestDirectory(TestInputBase):
-    __test__ = True
+class TestDirectory(InputBaseTest):
     params = {
         'test_create_source_with_file': [{'file_name': 'directory_sources'}],
         'test_create_with_file': [{'file_name': 'directory_pipelines'}],

@@ -1,13 +1,12 @@
 from datetime import datetime
 from agent import source, cli
-from .test_zpipeline_base import TestInputBase
+from .base import InputBaseTest
 from ..conftest import generate_input
 
 days_to_backfill = (datetime.now() - datetime(year=2017, month=12, day=10)).days
 
 
-class TestMySQL(TestInputBase):
-    __test__ = True
+class TestMySQL(InputBaseTest):
     params = {
         'test_source_create': [{'name': 'test_jdbc', 'type': 'mysql', 'conn': 'mysql://root@mysql:3306/test'}],
         'test_create': [{'name': 'test_mysql', 'source': 'test_jdbc', 'timestamp_type': '', 'timestamp_name': 'timestamp_unix'},

@@ -1,11 +1,10 @@
 from agent import cli
 from agent import source
-from .test_zpipeline_base import TestInputBase
+from .base import InputBaseTest
 from ..conftest import get_input_file_path, generate_input
 
 
-class TestInflux(TestInputBase):
-    __test__ = True
+class TestInflux(InputBaseTest):
     params = {
         'test_source_create': [{'name': 'test_influx', 'offset': '10/03/2019 12:53'},
                                {'name': 'test_influx_offset', 'offset': '19/03/2019 12:53'}],

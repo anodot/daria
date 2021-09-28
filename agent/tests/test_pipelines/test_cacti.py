@@ -1,12 +1,10 @@
 import pytest
-import time
 
 from agent import source
-from .test_zpipeline_base import TestPipelineBase
+from .base import PipelineBaseTest
 
 
-class TestCacti(TestPipelineBase):
-    __test__ = True
+class TestCacti(PipelineBaseTest):
     params = {
         'test_start': [{'name': 'cacti_archive'}, {'name': 'cacti_dir'}, {'name': 'cacti_file', 'sleep': 30}],
         'test_force_stop': [{'name': 'cacti_archive'}, {'name': 'cacti_dir'}, {'name': 'cacti_file'}],

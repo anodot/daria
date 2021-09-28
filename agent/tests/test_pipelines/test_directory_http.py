@@ -3,12 +3,11 @@ import pytest
 
 from ..conftest import get_output
 from agent import source
-from .test_zpipeline_base import TestPipelineBase, get_schema_id
+from .base import PipelineBaseTest, get_schema_id
 from agent import pipeline
 
 
-class TestDirectory(TestPipelineBase):
-    __test__ = True
+class TestDirectory(PipelineBaseTest):
     params = {
         'test_start': [{'name': 'test_dir_csv'}, {'name': 'test_dir_log'}, {'name': 'test_dir_json'}],
         'test_stop': [{'name': 'test_dir_log'}, {'name': 'test_dir_json'}, {'name': 'test_dir_csv'}],
