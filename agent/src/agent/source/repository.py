@@ -74,6 +74,11 @@ def get_by_name(source_name: str) -> Source:
 
 
 @typed_source
+def get_by_type(source_type: str) -> List[Source]:
+    return Session.query(Source).filter(Source.type == source_type).all()
+
+
+@typed_source
 def get_all() -> List[Source]:
     return Session.query(Source).all()
 
