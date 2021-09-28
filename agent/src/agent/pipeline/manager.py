@@ -79,6 +79,11 @@ def create(pipeline_: Pipeline):
     pipeline.repository.save(pipeline_)
 
 
+def create_raw_pipeline(raw_pipeline: RawPipeline):
+    sdc_client.create(raw_pipeline)
+    pipeline.repository.save(raw_pipeline)
+
+
 def update_source_pipelines(source_: Source):
     for pipeline_ in pipeline.repository.get_by_source(source_.name):
         try:
@@ -183,7 +188,7 @@ def disable_destination_logs(pipeline_: Pipeline):
 def build_test_pipeline(source_: Source) -> TestPipeline:
     # creating a new source because otherwise it will mess with the db session
     test_source = source.manager.create_source_obj(source_.name, source_.type, source_.config)
-    test_pipeline = TestPipeline(_get_test_pipeline_id(test_source), test_source, destination.repository.get())
+    test_pipeline = TestPipeline(_get_test_pipeline_id(test_source), test_source)
     test_pipeline.config['uses_schema'] = supports_schema(test_pipeline)
     return test_pipeline
 
@@ -272,9 +277,3 @@ def increase_retry_counter(pipeline_: Pipeline):
         pipeline_.retries = PipelineRetries(pipeline_)
     pipeline_.retries.number_of_error_statuses += 1
     pipeline.repository.save(pipeline_.retries)
-
-
-# todo move
-def create_raw_pipeline(raw_pipeline: RawPipeline):
-    sdc_client.create(raw_pipeline)
-    pipeline.repository.save(raw_pipeline)

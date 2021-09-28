@@ -369,16 +369,18 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return not self.config.get('disable_error_notifications', False)
 
 
-# todo mb self.type is enough and I don't need RawPipeline?
 class RawPipeline(Pipeline):
-    def __init__(self, pipeline_id: str, source_: Source, destination: HttpDestination):
-        super(RawPipeline, self).__init__(pipeline_id, source_, destination)
+    def __init__(self, pipeline_id: str, source_: Source):
+        # pass dummy destination
+        super(RawPipeline, self).__init__(pipeline_id, source_, HttpDestination())
+        # this is needed to distinguish Pipeline and RawPipeline when they're loaded from the db
         self.type = RAW_PIPELINE
 
 
 class TestPipeline(Pipeline):
-    def __init__(self, pipeline_id: str, source_, destination: HttpDestination):
-        super().__init__(pipeline_id, source_, destination)
+    def __init__(self, pipeline_id: str, source_):
+        # pass dummy destination
+        super().__init__(pipeline_id, source_, HttpDestination())
 
 
 class PipelineOffset(Entity):

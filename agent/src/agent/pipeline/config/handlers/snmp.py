@@ -1,4 +1,4 @@
-from .base import BaseConfigHandler
+from .base import BaseConfigHandler, BaseRawConfigHandler
 from agent.modules.logger import get_logger
 from agent.pipeline.config import stages
 
@@ -15,8 +15,7 @@ class SNMPConfigHandler(BaseConfigHandler):
     }
 
 
-class SNMPRawConfigHandler(BaseConfigHandler):
-    # todo надо еще отправлять откуда и как мы эти данные достали
+class SNMPRawConfigHandler(BaseRawConfigHandler):
     stages_to_override = {
         'source': stages.source.snmp.SNMPRaw,
     }

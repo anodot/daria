@@ -124,10 +124,16 @@ class BaseConfigHandler:
                 config['value'] = constants.STREAMSETS_MAX_RETRY_ATTEMPTS
 
     def _get_pipeline_config(self) -> dict:
-        # todo I don't need it in raw
         return {
             'TOKEN': self.pipeline.destination.token,
             'PROTOCOL': self.pipeline.destination.PROTOCOL_20,
             'ANODOT_BASE_URL': self.pipeline.destination.url,
+            'AGENT_URL': self.pipeline.streamsets.agent_external_url,
+        }
+
+
+class BaseRawConfigHandler(BaseConfigHandler):
+    def _get_pipeline_config(self) -> dict:
+        return {
             'AGENT_URL': self.pipeline.streamsets.agent_external_url,
         }

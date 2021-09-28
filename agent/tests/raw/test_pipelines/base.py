@@ -1,0 +1,55 @@
+import os
+import pytest
+
+from ...conftest import DUMMY_DESTINATION_OUTPUT_PATH
+from ...test_pipelines.test_zpipeline_base import TestPipelineBase
+
+
+class TestRawPipelineBase(TestPipelineBase):
+    __test__ = False
+
+    params = {}
+
+    def test_reset(self, cli_runner, name=None):
+        pytest.skip()
+
+    def test_info(self, cli_runner, name=None):
+        pytest.skip()
+
+    def test_stop(self, cli_runner, name=None):
+        pytest.skip()
+
+    def test_output_schema(self, name=None, pipeline_type=None, output=None):
+        pytest.skip()
+
+    def test_start(self, cli_runner, name: str, sleep: int):
+        super(TestRawPipelineBase, self).test_start(cli_runner, name, sleep)
+
+    def test_force_stop(self, cli_runner, name):
+        super(TestRawPipelineBase, self).test_force_stop(cli_runner, name)
+
+    def test_output(self, name, pipeline_type, output_file):
+        expected_output = \
+            read_file(os.path.join(os.path.dirname(os.path.realpath(__file__)), f'expected_output/{output_file}'))
+        actual_output = get_output(f'{name}.json')
+        assert expected_output == actual_output
+
+    def test_delete_pipeline(self, cli_runner, name):
+        super(TestRawPipelineBase, self).test_delete_pipeline(cli_runner, name)
+
+    def test_source_delete(self, cli_runner, name):
+        super(TestRawPipelineBase, self).test_source_delete(cli_runner, name)
+
+
+def get_output(file_name) -> list:
+    for filename in os.listdir(DUMMY_DESTINATION_OUTPUT_PATH):
+        if filename == file_name:
+            return read_file(os.path.join(DUMMY_DESTINATION_OUTPUT_PATH, filename))
+
+
+def read_file(file: str) -> list:
+    lines = []
+    with open(file) as f:
+        for line in f.readlines():
+            lines = line
+    return lines

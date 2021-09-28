@@ -27,7 +27,7 @@ def get_pipeline_config(pipeline_id: str):
 
 
 @pipelines.route('/pipelines', methods=['POST'])
-@routes.check_prerequisites
+@routes.check_pipeline_prerequisites
 def create():
     try:
         pipelines_ = pipeline.json_builder.build_multiple(request.get_json())
@@ -39,7 +39,7 @@ def create():
 
 
 @pipelines.route('/pipelines', methods=['PUT'])
-@routes.check_prerequisites
+@routes.check_pipeline_prerequisites
 def edit():
     try:
         pipelines_ = pipeline.json_builder.edit_multiple(request.get_json())

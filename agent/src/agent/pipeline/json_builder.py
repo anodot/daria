@@ -4,7 +4,7 @@ import traceback
 import jsonschema
 
 from typing import List, Callable
-from agent import source, pipeline, destination
+from agent import source, pipeline
 from agent.data_extractor.snmp import snmp
 from agent.modules.logger import get_logger
 from agent.pipeline import Pipeline
@@ -54,8 +54,7 @@ def build_raw(config: dict) -> Pipeline:
     _validate_config_for_create(config)
     pipeline_ = pipeline.RawPipeline(
         config['pipeline_id'],
-        source.repository.get_by_name(config['source']),
-        destination.repository.get()
+        source.repository.get_by_name(config['source'])
     )
     return _build(config, pipeline_)
 

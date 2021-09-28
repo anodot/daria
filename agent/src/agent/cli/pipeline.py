@@ -4,7 +4,7 @@ import os
 import sdc_client
 
 from typing import Optional
-from agent import pipeline, source, streamsets, check_prerequisites, check_raw_prerequisites
+from agent import pipeline, source, streamsets, check_raw_prerequisites
 from agent.modules.tools import infinite_retry
 from jsonschema import ValidationError
 from texttable import Texttable
@@ -58,8 +58,7 @@ def edit(pipeline_id: str, advanced: bool, file):
 
 
 def _check_prerequisites():
-    errors = check_prerequisites()
-    if errors:
+    if errors := pipeline.check_prerequisites():
         raise click.ClickException("\n".join(errors))
 
 
