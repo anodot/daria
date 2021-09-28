@@ -86,6 +86,9 @@ test-cacti: bootstrap run-mysql sleep
 	$(DOCKER_TEST) tests/test_input/test_cacti.py
 	$(DOCKER_TEST) tests/test_pipelines/test_cacti.py
 
+test-oracle: bootstrap
+	$(DOCKER_TEST) tests/test_input/test_oracle.py
+
 
 
 ##---------------------------
