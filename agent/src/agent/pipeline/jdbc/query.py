@@ -3,7 +3,7 @@ from agent.pipeline import Pipeline
 
 TIMESTAMP_CONDITION = '{TIMESTAMP_CONDITION}'
 LAST_TIMESTAMP = '${record:value("/last_timestamp")}'
-LAST_TIMESTAMP_TEMPLATE = '{LAST_TIMESTAMP}'
+LAST_TIMESTAMP_TEMPLATE = '%last_timestamp%'
 
 
 class Builder:
@@ -46,3 +46,10 @@ class Builder:
 
 class TemplateBuilder(Builder):
     TIMESTAMP_VALUE = LAST_TIMESTAMP_TEMPLATE
+
+
+class SolarWindsBuilder(Builder):
+    def _get_timestamp_condition(self) -> str:
+        date_time = f"DateTime('{LAST_TIMESTAMP_TEMPLATE}')"
+        return f'{self.pipeline.timestamp_path} > {date_time}' \
+               f' AND {self.pipeline.timestamp_path} <= AddSecond({self.pipeline.interval}, {date_time})'
