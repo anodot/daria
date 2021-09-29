@@ -38,13 +38,8 @@ def before_request_func():
 
 @app.teardown_request
 def teardown_request_func(exception):
-    try:
-        if exception:
-            db.Session.rollback()
-        else:
-            db.Session.commit()
-    except Exception:
-        logger_.error(traceback.format_exc())
+    if exception:
+        logger_.error(exception)
 
 
 @app.route('/version', methods=['GET'])

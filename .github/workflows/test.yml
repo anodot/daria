@@ -4,7 +4,7 @@ on:
   push:
     branches:
     - master
-      
+
   pull_request:
     branches:
     - master
@@ -12,7 +12,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v1
 
@@ -27,4 +27,4 @@ jobs:
 
       - name: Show logs
         if: ${{ failure() }}
-        run: docker logs anodot-agent ; echo "\nDC logs\n" ; docker logs dc ; echo "\nDC 2 logs\n" ; docker logs dc2 ; echo "\nKafka logs\n" ; docker logs agent-kafka ; echo "\nDummy logs\n" ; docker logs dummy_destination
+        run: docker logs anodot-agent; echo "\nDC logs\n"; docker logs dc; echo "\nDC 2 logs\n"; docker logs dc2; echo "\nKafka logs\n"; docker logs agent-kafka; echo "\nDummy logs\n"; docker logs dummy_destination; echo "\nAgent logs\n"; docker exec -i anodot-agent cat /var/log/agent/agent.log
