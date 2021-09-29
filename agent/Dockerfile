@@ -19,6 +19,7 @@ RUN chmod +x /custom_entrypoint.sh /uwsgi-nginx-entrypoint.sh
 ENV SDC_CONF_PARSER_LIMIT="20048576" STREAMSETS_USERNAME="admin" STREAMSETS_PASSWORD="admin" \
     STREAMSETS_URL="http://localhost:18630"
 
+# if you change LOG_FILE_PATH you also need to change it in .github/test.yml in Show logs section
 ENV LOG_FILE_PATH="/var/log/agent/agent.log" ANODOT_API_URL="https://api.anodot.com" ENV_PROD='true' VALIDATION_ENABLED="true"
 
 RUN ./install_requirements.sh

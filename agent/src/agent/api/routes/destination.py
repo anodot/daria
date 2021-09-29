@@ -70,6 +70,8 @@ def delete():
 def local_fs(file_name: str):
     data = request.get_json()
     if data and len(data) > 0:
+        if not os.path.isdir(constants.LOCAL_DESTINATION_OUTPUT_DIR):
+            os.mkdir(constants.LOCAL_DESTINATION_OUTPUT_DIR)
         with open(os.path.join(constants.LOCAL_DESTINATION_OUTPUT_DIR, f'{file_name}.json'), 'a') as f:
             for obj in data:
                 json.dump(obj, f)
