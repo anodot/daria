@@ -22,9 +22,6 @@ class TestInputBase(object):
     def test_create_with_file(self, cli_runner, file_name, override_config: dict):
         self._test_create_with_file(cli_runner, file_name, override_config, cli.pipeline.create)
 
-    def test_create_raw_with_file(self, cli_runner, file_name, override_config: dict):
-        self._test_create_with_file(cli_runner, file_name, override_config, cli.pipeline.create_raw)
-
     def _test_create_with_file(self, cli_runner, file_name, override_config: dict, create_function: Callable):
         input_file_path = get_input_file_path(file_name + '.json')
         _replace_config_in_file(input_file_path, override_config)
