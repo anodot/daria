@@ -26,7 +26,7 @@ RUN python setup.py install && echo ". /usr/src/app/agent-complete.sh" >> /root/
 
 RUN groupadd -g 10001 agent && useradd -r -u 10001 -g agent agent
 RUN mkdir /var/log/agent && chown -R agent:agent /var/log/agent /etc/nginx/conf.d /etc/supervisor/conf.d \
-/var/log/supervisor /var/cache/nginx /var/cache/nginx /usr/src/app/tests/input_files
+/var/log/supervisor /var/cache/nginx /var/cache/nginx /usr/src/app
 USER agent
 
 ENTRYPOINT ["/custom_entrypoint.sh"]
