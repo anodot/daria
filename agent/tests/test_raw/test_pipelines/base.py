@@ -2,7 +2,6 @@ import os
 import pytest
 
 from agent.modules.constants import LOCAL_DESTINATION_OUTPUT_DIR
-from ...conftest import DUMMY_DESTINATION_OUTPUT_PATH
 from ...test_pipelines.test_zpipeline_base import TestPipelineBase
 
 
@@ -41,10 +40,9 @@ class TestRawPipelineBase(TestPipelineBase):
 
 
 def get_output(file_name) -> list:
-    # todo change
-    for filename in os.listdir(DUMMY_DESTINATION_OUTPUT_PATH):
+    for filename in os.listdir(LOCAL_DESTINATION_OUTPUT_DIR):
         if filename == file_name:
-            return read_file(os.path.join(DUMMY_DESTINATION_OUTPUT_PATH, filename))
+            return read_file(os.path.join(LOCAL_DESTINATION_OUTPUT_DIR, filename))
 
 
 def read_file(file: str) -> list:

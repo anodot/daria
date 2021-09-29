@@ -1,1 +1,1 @@
-[{"source": "mysql_raw", "pipeline_id": "mysql_raw", "interval": 86400, "days_to_backfill": 1388, "query": "SELECT * FROM test WHERE {TIMESTAMP_CONDITION} AND Country = 'USA'", "timestamp": {"type": "unix_ms", "name": "timestamp_unix_ms"}}]
+[{"source": "mysql_raw", "pipeline_id": "mysql_raw", "interval": 86400, "days_to_backfill": 1389, "query": "SELECT * FROM test WHERE {TIMESTAMP_CONDITION} AND Country = 'USA'", "timestamp": {"type": "unix_ms", "name": "timestamp_unix_ms"}}]
