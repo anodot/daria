@@ -67,7 +67,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
     name = Column(String)
     type = Column(String)
     source_id = Column(Integer, ForeignKey('sources.id'))
-    destination_id = Column(Integer, ForeignKey('destinations.id'))
+    destination_id = Column(Integer, ForeignKey('destinations.id'), nullable=True)
     config = Column(JSON)
     schema = Column(JSON)
     override_source = Column(JSON)
@@ -78,7 +78,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
 
     offset = relationship("PipelineOffset", cascade="delete", uselist=False)
     source_ = relationship('Source', back_populates='pipelines')
-    destination = relationship('HttpDestination')
+    destination = relationship('HttpDestination', cascade="merge")
     streamsets = relationship('StreamSets')
     retries = relationship('PipelineRetries', cascade="delete", uselist=False)
 

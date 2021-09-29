@@ -1,6 +1,7 @@
 from functools import wraps
 from typing import List
 from agent import source, pipeline
+from agent.destination import HttpDestination
 from agent.modules.db import Session, engine, Entity
 from agent.pipeline import PipelineOffset, Pipeline, PipelineRetries
 from sqlalchemy.orm import Query
@@ -100,6 +101,9 @@ def delete_pipeline_retries(pipeline_retries: PipelineRetries):
 
 
 def _construct(pipeline_: Pipeline) -> Pipeline:
+    if not pipeline_.destination:
+        # this is needed for raw pipelines
+        pipeline_.destination = HttpDestination()
     return _construct_pipeline(
         _construct_source(pipeline_)
     )
