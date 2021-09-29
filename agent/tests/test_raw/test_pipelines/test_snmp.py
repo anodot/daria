@@ -1,4 +1,4 @@
-from .base import TestRawPipelineBase
+from .test_base import TestRawPipelineBase
 
 
 class TestRawSNMP(TestRawPipelineBase):
