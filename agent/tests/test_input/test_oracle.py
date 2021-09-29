@@ -17,10 +17,3 @@ class TestOracle(TestInputBase):
 
     def test_create_advanced(self, cli_runner):
         pass
-
-    @classmethod
-    def teardown_class(cls):
-        for _pipeline in pipeline.repository.get_by_type(source.TYPE_ORACLE):
-            pipeline.manager.delete(_pipeline)
-        for _source in source.repository.get_by_type(source.TYPE_ORACLE):
-            source.manager.delete(_source)
