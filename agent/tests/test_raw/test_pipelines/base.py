@@ -1,6 +1,7 @@
 import os
 import pytest
 
+from agent.modules.constants import LOCAL_DESTINATION_OUTPUT_DIR
 from ...conftest import DUMMY_DESTINATION_OUTPUT_PATH
 from ...test_pipelines.test_zpipeline_base import TestPipelineBase
 
@@ -30,8 +31,7 @@ class TestRawPipelineBase(TestPipelineBase):
         expected_output = \
             read_file(os.path.join(os.path.dirname(os.path.realpath(__file__)), f'expected_output/{output_file}'))
         actual_output = get_output(f'{name}.json')
-        if expected_output != actual_output:
-            raise Exception(actual_output)
+        assert expected_output == actual_output
 
     def test_delete_pipeline(self, cli_runner, name):
         super(TestRawPipelineBase, self).test_delete_pipeline(cli_runner, name)
@@ -41,6 +41,7 @@ class TestRawPipelineBase(TestPipelineBase):
 
 
 def get_output(file_name) -> list:
+    # todo change
     for filename in os.listdir(DUMMY_DESTINATION_OUTPUT_PATH):
         if filename == file_name:
             return read_file(os.path.join(DUMMY_DESTINATION_OUTPUT_PATH, filename))

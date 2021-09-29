@@ -112,10 +112,10 @@ test-streamsets:
 	$(DOCKER_TEST) tests/test_streamsets.py
 
 test-raw-input:
-	$(DOCKER_TEST) tests/raw/test_input
+	$(DOCKER_TEST_PARALLEL) tests/test_raw/test_input
 
 test-raw-pipelines:
-	$(DOCKER_TEST) tests/raw/test_pipelines
+	$(DOCKER_TEST_PARALLEL) tests/test_raw/test_pipelines
 
 test-streamsets-2:
 	$(DOCKER_TEST) tests/test_streamsets_2.py
