@@ -29,4 +29,3 @@ class JDBCRawTransformScript(Stage):
                 },
             ],
         }
-# todo я еще не сделал max_number_of_metrics

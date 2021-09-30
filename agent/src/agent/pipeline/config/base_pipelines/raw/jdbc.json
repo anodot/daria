@@ -3,9 +3,9 @@
     "schemaVersion" : 6,
     "version" : 19,
     "pipelineId" : "jdbchttp7bdc1f99-ed91-4c40-b9ef-a7cf05720170",
-    "title" : "test_raw_jdbc",
+    "title" : "mysql_raw",
     "description" : "",
-    "uuid" : "e2ddbbc4-8206-45d7-9d14-ea33ac943c22",
+    "uuid" : "13b78dd9-38f7-4530-8532-278954a531a8",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -30,15 +30,6 @@
     }, {
       "name" : "constants",
       "value" : [ {
-        "key" : "TOKEN",
-        "value" : "correct_token"
-      }, {
-        "key" : "PROTOCOL",
-        "value" : "anodot20"
-      }, {
-        "key" : "ANODOT_BASE_URL",
-        "value" : "http://dummy_destination"
-      }, {
         "key" : "AGENT_URL",
         "value" : "http://anodot-agent"
       } ]
@@ -416,7 +407,7 @@
       "stageVersion" : "1",
       "configuration" : [ {
         "name" : "script",
-        "value" : "global sdc\n\ntry:\n    sdc.importLock()\n    import time\n    from datetime import datetime, timedelta\nfinally:\n    sdc.importUnlock()\n\n\ndef get_interval():\n    return int(sdc.userParams['INTERVAL_IN_SECONDS'])\n\n\ndef get_now_with_delay():\n    return int(time.time()) - int(sdc.userParams['DELAY_IN_SECONDS'])\n\n\ndef to_timestamp(date):\n    epoch = datetime(1970, 1, 1)\n    return int((date - epoch).total_seconds())\n\n\nentityName = ''\ninterval = timedelta(seconds=get_interval())\n\nif sdc.lastOffsets.containsKey(entityName):\n    offset = int(float(sdc.lastOffsets.get(entityName)))\nelif sdc.userParams['INITIAL_OFFSET']:\n    offset = to_timestamp(datetime.strptime(sdc.userParams['INITIAL_OFFSET'], '%d/%m/%Y %H:%M'))\nelse:\n    offset = to_timestamp(datetime.utcnow().replace(second=0, microsecond=0) - interval)\n\nsdc.log.info('OFFSET: ' + str(offset))\n\nwhile True:\n    if sdc.isStopped():\n        break\n    now_with_delay = get_now_with_delay() - interval.total_seconds()\n    if offset > now_with_delay:\n        time.sleep(offset - now_with_delay)\n    cur_batch = sdc.createBatch()\n    record = sdc.createRecord('record created ' + str(datetime.now()))\n    record.value = {'last_timestamp': int(offset)}\n    offset += interval.total_seconds()\n    cur_batch.add(record)\n    cur_batch.process(entityName, str(offset))\n"
+        "value" : "global sdc\n\ntry:\n    sdc.importLock()\n    import time\n    from datetime import datetime, timedelta\nfinally:\n    sdc.importUnlock()\n\n\ndef get_interval():\n    return int(sdc.userParams['INTERVAL_IN_SECONDS'])\n\n\ndef get_now_with_delay():\n    return int(time.time()) - int(sdc.userParams['DELAY_IN_SECONDS'])\n\n\ndef to_timestamp(date):\n    epoch = datetime(1970, 1, 1)\n    return int((date - epoch).total_seconds())\n\n\nentityName = ''\ninterval = timedelta(seconds=get_interval())\n\nif sdc.lastOffsets.containsKey(entityName):\n    offset = int(float(sdc.lastOffsets.get(entityName)))\nelif sdc.userParams['INITIAL_OFFSET']:\n    offset = to_timestamp(datetime.strptime(sdc.userParams['INITIAL_OFFSET'], '%d/%m/%Y %H:%M'))\nelse:\n    offset = to_timestamp(datetime.utcnow().replace(second=0, microsecond=0) - interval)\n\nsdc.log.info('OFFSET: ' + str(offset))\n\nwhile True:\n    if sdc.isStopped():\n        break\n    now_with_delay = get_now_with_delay() - interval.total_seconds()\n    if offset > now_with_delay:\n        time.sleep(offset - now_with_delay)\n    cur_batch = sdc.createBatch()\n    record = sdc.createRecord('record created ' + str(datetime.now()))\n    record.value = sdc.createMap(True)\n    record.value['last_timestamp'] = int(offset)\n    offset += interval.total_seconds()\n    cur_batch.add(record)\n    cur_batch.process(entityName, str(offset))"
       }, {
         "name" : "scriptConf.batchSize",
         "value" : 1000
@@ -582,7 +573,7 @@
         "value" : ""
       }, {
         "name" : "script",
-        "value" : "query = {\n  'query': sdc.userParams['QUERY'].replace(sdc.userParams['LAST_TIMESTAMP_TEMPLATE'], str(records[0].value['last_timestamp']))\n}\n\nrecs = []\nfor record in sdc.records:\n  try:\n    del record.value['last_timestamp']\n    if record.value:\n      recs.append(record)\n  except Exception as e:\n    sdc.error.write(record, str(e))\n\nsent_query = False\nfor record in recs:\n  if not sent_query and sdc.userParams['LOGGING_OF_QUERIES_ENABLED']:\n    rec = sdc.createRecord('record query')\n    rec.value = query\n    sdc.output.write(rec)\n    sent_query = True\n  sdc.output.write(record)"
+        "value" : "query = sdc.userParams['QUERY'].replace(sdc.userParams['LAST_TIMESTAMP_TEMPLATE'], str(records[0].value['last_timestamp']))\n\nrecs = []\nfor record in sdc.records:\n  try:\n    del record.value['last_timestamp']\n    if record.value:\n      recs.append(record)\n  except Exception as e:\n    sdc.error.write(record, str(e))\n\nsent_query = False\nfor record in recs:\n  sdc.output.write(record)\nif recs and not sent_query and sdc.userParams['LOGGING_OF_QUERIES_ENABLED']:\n  rec = sdc.createRecord('record query')\n  rec.value = sdc.createMap(True)\n  rec.value['query'] = query\n  sdc.output.write(rec)\n  sent_query = True"
       }, {
         "name" : "destroyScript",
         "value" : ""
@@ -593,10 +584,13 @@
         "name" : "userParams",
         "value" : [ {
           "key" : "QUERY",
-          "value" : "SELECT * FROM test WHERE timestamp_unix_ms/1000 > {LAST_TIMESTAMP} AND timestamp_unix_ms/1000 <= {LAST_TIMESTAMP} + 86400 AND Country = 'USA' ORDER BY timestamp_unix_ms"
+          "value" : "SELECT * FROM test WHERE timestamp_unix_ms/1000 > %last_timestamp% AND timestamp_unix_ms/1000 <= %last_timestamp% + 86400 AND Country = 'USA' ORDER BY timestamp_unix_ms"
         }, {
           "key" : "LAST_TIMESTAMP_TEMPLATE",
-          "value" : "{LAST_TIMESTAMP}"
+          "value" : "%last_timestamp%"
+        }, {
+          "key" : "LOGGING_OF_QUERIES_ENABLED",
+          "value" : "true"
         } ]
       }, {
         "name" : "stageOnRecordError",
@@ -634,7 +628,7 @@
         "value" : "CSV"
       }, {
         "name" : "conf.dataGeneratorFormatConfig.csvHeader",
-        "value" : "NO_HEADER"
+        "value" : "WITH_HEADER"
       }, {
         "name" : "conf.dataGeneratorFormatConfig.csvReplaceNewLines",
         "value" : true
@@ -739,7 +733,7 @@
         "value" : null
       }, {
         "name" : "conf.dataFormat",
-        "value" : "JSON"
+        "value" : "DELIMITED"
       }, {
         "name" : "conf.resourceUrl",
         "value" : "${AGENT_URL}/destination/local_fs/${pipeline:id()}"
@@ -975,22 +969,22 @@
       "services" : [ ]
     },
     "info" : {
-      "pipelineId" : "test_raw_jdbc",
-      "title" : "test_raw_jdbc",
+      "pipelineId" : "mysql_raw",
+      "title" : "mysql_raw",
       "description" : "",
-      "created" : 1632481061260,
-      "lastModified" : 1632483579906,
+      "created" : 1633013597413,
+      "lastModified" : 1633014030324,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "e2ddbbc4-8206-45d7-9d14-ea33ac943c22",
+      "uuid" : "13b78dd9-38f7-4530-8532-278954a531a8",
       "valid" : true,
       "metadata" : {
         "labels" : [ "mysql", "http" ]
       },
-      "name" : "test_raw_jdbc",
+      "name" : "mysql_raw",
       "sdcVersion" : "3.18.0",
-      "sdcId" : "20eb09c9-1ba9-11ec-985e-2bbd797ed172"
+      "sdcId" : "50401131-21d1-11ec-ad5a-b13bf517f2c5"
     },
     "metadata" : {
       "labels" : [ "mysql", "http" ]
@@ -1331,7 +1325,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1632481061322,
+      "timestamp" : 1633013597465,
       "valid" : true
     }, {
       "id" : "stageErrorAlertID",
@@ -1342,7 +1336,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1632481061322,
+      "timestamp" : 1633013597465,
       "valid" : true
     }, {
       "id" : "idleGaugeID",
@@ -1353,7 +1347,7 @@
       "condition" : "${time:now() - value() > 120000}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1632481061322,
+      "timestamp" : 1633013597465,
       "valid" : true
     }, {
       "id" : "batchTimeAlertID",
@@ -1364,12 +1358,12 @@
       "condition" : "${value() > 200}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1632481061322,
+      "timestamp" : 1633013597465,
       "valid" : true
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "7bfb6a2a-987f-4c93-b334-426e3d690289",
+    "uuid" : "26999d94-487f-406c-910e-e34f6767d531",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : null

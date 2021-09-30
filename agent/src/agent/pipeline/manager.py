@@ -30,12 +30,11 @@ def supports_schema(pipeline_: Pipeline):
 
 
 def create_object(pipeline_id: str, source_name: str) -> Pipeline:
-    pipeline_ = Pipeline(
+    return Pipeline(
         pipeline_id,
         source.repository.get_by_name(source_name),
         destination.repository.get(),
     )
-    return pipeline_
 
 
 def check_pipeline_id(pipeline_id: str):

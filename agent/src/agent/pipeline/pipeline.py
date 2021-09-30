@@ -316,7 +316,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
         self.streamsets = None
 
     def get_schema(self) -> dict:
-        return self.schema if self.schema else {}
+        return self.schema or {}
 
     def has_schema(self) -> bool:
         return bool(self.schema)

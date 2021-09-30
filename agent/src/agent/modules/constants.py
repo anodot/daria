@@ -41,4 +41,4 @@ SEND_WATERMARKS_BY_CRON = os.environ.get('SEND_WATERMARKS_BY_CRON', 'true') == '
 
 TLS_VERSION = ssl.PROTOCOL_TLSv1_1 if os.environ.get('TLS_VERSION', '1.2') == '1.1' else ssl.PROTOCOL_TLSv1_2
 
-LOCAL_DESTINATION_OUTPUT_DIR = os.environ.get('LOCAL_DESTINATION_OUTPUT_DIR', '/usr/src/app/agent-output')
+LOCAL_DESTINATION_OUTPUT_DIR = os.environ.get('LOCAL_DESTINATION_OUTPUT_DIR', '/usr/src/app/output')

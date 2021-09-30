@@ -18,4 +18,5 @@ class SNMPConfigHandler(BaseConfigHandler):
 class SNMPRawConfigHandler(BaseRawConfigHandler):
     stages_to_override = {
         'source': stages.source.snmp.SNMPRaw,
+        'HTTPClient_01': stages.destination.HttpDestination,
     }

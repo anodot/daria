@@ -5,7 +5,7 @@
     "pipelineId" : "cacti6cbb199b-50f2-49ae-9e04-065960040de3",
     "title" : "snmp_raw",
     "description" : "",
-    "uuid" : "8b0906d2-cb2c-4014-be68-81a66dc4fb9d",
+    "uuid" : "a86e7cc2-80b4-4589-ae8d-025a3e9779fa",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -42,15 +42,6 @@
     }, {
       "name" : "constants",
       "value" : [ {
-        "key" : "TOKEN",
-        "value" : "correct_token"
-      }, {
-        "key" : "PROTOCOL",
-        "value" : "anodot20"
-      }, {
-        "key" : "ANODOT_BASE_URL",
-        "value" : "http://dummy_destination"
-      }, {
         "key" : "AGENT_URL",
         "value" : "http://anodot-agent"
       } ]
@@ -416,7 +407,7 @@
       "stageVersion" : "1",
       "configuration" : [ {
         "name" : "script",
-        "value" : "global sdc\n\nMAX_TRIES = 3\n\ntry:\n    sdc.importLock()\n    import sys\n    import os\n    import time\n    from datetime import datetime, timedelta\n\n    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))\n    import requests\nfinally:\n    sdc.importUnlock()\n\n\ndef to_timestamp(date):\n    epoch = datetime(1970, 1, 1)\n    return int((date - epoch).total_seconds())\n\n\ndef get_interval():\n    return int(sdc.userParams['INTERVAL_IN_SECONDS'])\n\n\ndef get_now():\n    return int(time.time())\n\n\nentityName = ''\n\nif sdc.lastOffsets.containsKey(entityName):\n    offset = int(float(sdc.lastOffsets.get(entityName)))\nelse:\n    offset = to_timestamp(datetime.now().replace(second=0, microsecond=0))\n\nwhile True:\n    if sdc.isStopped():\n        break\n    if offset > get_now():\n        time.sleep(offset - get_now())\n\n    batch = sdc.createBatch()\n\n    res = requests.get(sdc.userParams['SNMP_SOURCE_URL'], timeout=60)\n    res.raise_for_status()\n    record = sdc.createRecord('record created ' + str(datetime.now()))\n    record.value = {}\n    for k, v in res.json().items():\n        record.value[k] = v\n    batch.add(record)\n\n    batch.process(entityName, str(offset))\n    offset += get_interval()"
+        "value" : "global sdc\n\nMAX_TRIES = 3\n\ntry:\n    sdc.importLock()\n    import sys\n    import os\n    import time\n    from datetime import datetime, timedelta\n\n    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))\n    import requests\nfinally:\n    sdc.importUnlock()\n\n\ndef to_timestamp(date):\n    epoch = datetime(1970, 1, 1)\n    return int((date - epoch).total_seconds())\n\n\ndef get_interval():\n    return int(sdc.userParams['INTERVAL_IN_SECONDS'])\n\n\ndef get_now():\n    return int(time.time())\n\n\nentityName = ''\n\nif sdc.lastOffsets.containsKey(entityName):\n    offset = int(float(sdc.lastOffsets.get(entityName)))\nelse:\n    offset = to_timestamp(datetime.now().replace(second=0, microsecond=0))\n\nwhile True:\n    if sdc.isStopped():\n        break\n    if offset > get_now():\n        time.sleep(offset - get_now())\n\n    batch = sdc.createBatch()\n\n    res = requests.get(sdc.userParams['SNMP_SOURCE_URL'], timeout=60)\n    res.raise_for_status()\n    record = sdc.createRecord('record created ' + str(datetime.now()))\n    record.value = sdc.createMap(True)\n    for k, v in res.json().items():\n        record.value[k] = v\n    batch.add(record)\n\n    batch.process(entityName, str(offset))\n    offset += get_interval()"
       }, {
         "name" : "scriptConf.batchSize",
         "value" : 1000
@@ -433,7 +424,7 @@
           "value" : "http://anodot-agent/data_extractor/snmp/raw/${pipeline:id()}"
         }, {
           "key" : "INTERVAL_IN_SECONDS",
-          "value" : "300"
+          "value" : "10"
         } ]
       }, {
         "name" : "stageOnRecordError",
@@ -465,7 +456,7 @@
         "value" : "CSV"
       }, {
         "name" : "conf.dataGeneratorFormatConfig.csvHeader",
-        "value" : "NO_HEADER"
+        "value" : "WITH_HEADER"
       }, {
         "name" : "conf.dataGeneratorFormatConfig.csvReplaceNewLines",
         "value" : true
@@ -570,7 +561,7 @@
         "value" : null
       }, {
         "name" : "conf.dataFormat",
-        "value" : "JSON"
+        "value" : "DELIMITED"
       }, {
         "name" : "conf.resourceUrl",
         "value" : "${AGENT_URL}/destination/local_fs/${pipeline:id()}"
@@ -810,19 +801,19 @@
       "pipelineId" : "snmp_raw",
       "title" : "snmp_raw",
       "description" : "",
-      "created" : 1632743822774,
-      "lastModified" : 1632745495508,
+      "created" : 1633007751174,
+      "lastModified" : 1633013482085,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "8b0906d2-cb2c-4014-be68-81a66dc4fb9d",
+      "uuid" : "a86e7cc2-80b4-4589-ae8d-025a3e9779fa",
       "valid" : true,
       "metadata" : {
         "labels" : [ "snmp", "http" ]
       },
       "name" : "snmp_raw",
       "sdcVersion" : "3.18.0",
-      "sdcId" : "a14fa7b3-1d4a-11ec-8934-2f8a1d1c2920"
+      "sdcId" : "50401131-21d1-11ec-ad5a-b13bf517f2c5"
     },
     "metadata" : {
       "labels" : [ "snmp", "http" ]
@@ -1165,7 +1156,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1632743822834,
+      "timestamp" : 1633007751236,
       "valid" : true
     }, {
       "id" : "stageErrorAlertID",
@@ -1176,7 +1167,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1632743822834,
+      "timestamp" : 1633007751236,
       "valid" : true
     }, {
       "id" : "idleGaugeID",
@@ -1187,7 +1178,7 @@
       "condition" : "${time:now() - value() > 120000}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1632743822834,
+      "timestamp" : 1633007751236,
       "valid" : true
     }, {
       "id" : "batchTimeAlertID",
@@ -1198,12 +1189,12 @@
       "condition" : "${value() > 200}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1632743822834,
+      "timestamp" : 1633007751236,
       "valid" : true
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "101b78e2-8902-4ab2-bed3-7921182111e7",
+    "uuid" : "1f12db97-7964-4dce-8809-2ea1d57d239a",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : null

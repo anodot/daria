@@ -7,6 +7,7 @@
     "delay": {"type": "integer"},
     "max_number_of_metrics": {"type": "integer"},
     "logging_of_queries_enabled": {"type": "boolean"},
+    "send_data_format": {"type": "string", "enum": ["JSON", "DELIMITED"]},
     "timestamp": {
       "type":  "object", "properties": {
         "name": {"type": "string", "minLength": 1},
