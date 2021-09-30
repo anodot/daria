@@ -13,7 +13,7 @@
   },
   {
     "source": "test_jdbc",
-    "pipeline_id": "test_jdbc_file_full_myesql",
+    "pipeline_id": "test_jdbc_file_full_mysql",
     "values": {"clicks": "gauge", "impressions": "gauge"},
     "count_records": true,
     "count_records_measurement_name": "test",
