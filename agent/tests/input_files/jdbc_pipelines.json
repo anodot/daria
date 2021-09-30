@@ -1,7 +1,7 @@
 [
   {
     "source": "test_jdbc",
-    "pipeline_id": "test_jdbc_file_short",
+    "pipeline_id": "test_jdbc_file_short_mysql",
     "values": {"clicks": "gauge", "impressions": "gauge"},
     "dimensions": ["adsize", "country"],
     "interval": 86400,
@@ -13,7 +13,7 @@
   },
   {
     "source": "test_jdbc",
-    "pipeline_id": "test_jdbc_file_full",
+    "pipeline_id": "test_jdbc_file_full_myesql",
     "values": {"clicks": "gauge", "impressions": "gauge"},
     "count_records": true,
     "count_records_measurement_name": "test",
