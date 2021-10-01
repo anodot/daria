@@ -21,4 +21,4 @@ def upgrade():
 
 
 def downgrade():
-    op.drop_column('streamsets', 'type')
+    op.drop_column('pipelines', 'type')
