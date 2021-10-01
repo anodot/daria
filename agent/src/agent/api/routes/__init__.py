@@ -1,15 +1,23 @@
 import agent
-import agent.destination
-import agent.pipeline
 
 from functools import wraps
 from flask import jsonify
 
 
-def check_prerequisites(func):
+def check_source_prerequisites(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        errors = agent.check_prerequisites()
+        errors = agent.source.check_prerequisites()
+        if errors:
+            return jsonify(errors), 400
+        return func(*args, **kwargs)
+    return wrapper
+
+
+def check_pipeline_prerequisites(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        errors = agent.pipeline.check_prerequisites()
         if errors:
             return jsonify(errors), 400
         return func(*args, **kwargs)

@@ -13,7 +13,7 @@ def do(pipeline_: Pipeline):
         logger_.info('Caching Cacti data, please wait..')
         cacti.cacher.cache_pipeline_data(pipeline_, force=True)
         logger_.info('Caching data complete')
-    if pipeline_.source.type == source.TYPE_ZABBIX:
+    elif pipeline_.source.type == source.TYPE_ZABBIX:
         if pipeline_.config.get('query_changed', False) and pipeline_.offset:
             # remove last item id from offset because query changed
             json_offset = json.loads(pipeline_.offset.offset)

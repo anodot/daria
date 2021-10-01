@@ -14,7 +14,7 @@ class TestPromQL(TestInputBase):
         'test_create_source_with_file': [{'file_name': 'promql_sources'}],
         'test_create_with_file': [{
             'file_name': 'promql_pipelines',
-            'config': {'days_to_backfill': _get_days_to_backfill()}
+            'override_config': {'days_to_backfill': _get_days_to_backfill()}
         }],
     }
 

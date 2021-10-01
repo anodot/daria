@@ -18,3 +18,14 @@ class WatermarkDestination(Stage):
 class EventsDestination(Stage):
     def get_config(self) -> dict:
         return self.pipeline.destination.config
+
+
+class HttpDestination(Stage):
+    def get_config(self) -> dict:
+        send_data_format = self.pipeline.config.get('send_data_format', 'DELIMITED')
+        config = {
+            'conf.dataFormat': send_data_format,
+        }
+        if send_data_format == 'DELIMITED':
+            config['conf.dataGeneratorFormatConfig.csvHeader'] = 'WITH_HEADER'
+        return config

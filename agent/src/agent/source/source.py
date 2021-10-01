@@ -72,8 +72,6 @@ class JDBCSource(Source):
     CONFIG_USERNAME = 'hikariConfigBean.username'
     CONFIG_PASSWORD = 'hikariConfigBean.password'
 
-    TIMESTAMP_CONDITION = '{TIMESTAMP_CONDITION}'
-
 
 class MongoSource(Source):
     CONFIG_CONNECTION_STRING = 'configBean.mongoConfig.connectionString'

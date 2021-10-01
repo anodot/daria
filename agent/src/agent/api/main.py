@@ -1,4 +1,3 @@
-import traceback
 import wtforms_json
 
 from flask import Flask, jsonify
@@ -6,7 +5,7 @@ from agent import di
 from agent.api.routes.alerts import alerts
 from agent.api.routes.data_extractors.cacti import cacti
 from agent.api.routes.data_extractors.snmp import snmp
-from agent.modules import db, logger
+from agent.modules import logger
 from agent.api.routes.monitoring import monitoring_bp
 from agent.api.routes.streamsets import streamsets
 from agent.api.routes.destination import destination_
@@ -38,13 +37,8 @@ def before_request_func():
 
 @app.teardown_request
 def teardown_request_func(exception):
-    try:
-        if exception:
-            db.Session.rollback()
-        else:
-            db.Session.commit()
-    except Exception:
-        logger_.error(traceback.format_exc())
+    if exception:
+        logger_.error(exception)
 
 
 @app.route('/version', methods=['GET'])

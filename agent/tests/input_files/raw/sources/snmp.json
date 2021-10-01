@@ -1,0 +1,11 @@
+[
+  {
+    "type": "snmp",
+    "name": "snmp_raw",
+    "config": {
+      "url": "http://snmpsim:1161",
+      "read_community": "public",
+      "query_timeout": 30
+    }
+  }
+]
