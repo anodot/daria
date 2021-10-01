@@ -76,7 +76,7 @@ def local_fs(file_name: str):
 
 
 def _write_csv(file_name: str):
-    file_path = os.path.join(constants.LOCAL_DESTINATION_OUTPUT_DIR, f'{file_name}.json')
+    file_path = os.path.join(constants.LOCAL_DESTINATION_OUTPUT_DIR, f'{file_name}.csv')
     skip_header = os.path.isfile(file_path)
     if request.data and len(request.data) > 0:
         if not os.path.isdir(constants.LOCAL_DESTINATION_OUTPUT_DIR):
