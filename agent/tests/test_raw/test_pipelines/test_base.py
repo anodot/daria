@@ -26,10 +26,10 @@ class TestRawPipelineBase(TestPipelineBase):
     def test_force_stop(self, cli_runner, name):
         super(TestRawPipelineBase, self).test_force_stop(cli_runner, name)
 
-    def test_output(self, name, pipeline_type, output_file):
+    def test_output(self, file_name, pipeline_type, output_file):
         expected_output = \
             read_file(os.path.join(os.path.dirname(os.path.realpath(__file__)), f'expected_output/{output_file}'))
-        actual_output = get_output(f'{name}.json')
+        actual_output = get_output(file_name)
         assert expected_output == actual_output
 
     def test_delete_pipeline(self, cli_runner, name):
