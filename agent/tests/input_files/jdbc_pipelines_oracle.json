@@ -1,0 +1,14 @@
+[
+  {
+    "source": "test_oracle",
+    "pipeline_id": "test_jdbc_file_short_oracle",
+    "values": {"CLICKS": "gauge", "IMPRESSIONS": "gauge"},
+    "dimensions": ["ADSIZE", "COUNTRY"],
+    "interval": 300,
+    "query": "SELECT * FROM TEST WHERE {TIMESTAMP_CONDITION}",
+    "timestamp": {
+      "type": "datetime",
+      "name": "TIMESTAMP"
+    }
+  }
+]

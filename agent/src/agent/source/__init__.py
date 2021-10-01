@@ -17,6 +17,7 @@ TYPE_INFLUX_2 = 'influx2'
 TYPE_KAFKA = 'kafka'
 TYPE_MONGO = 'mongo'
 TYPE_MYSQL = 'mysql'
+TYPE_ORACLE = 'oracle'
 TYPE_POSTGRES = 'postgres'
 TYPE_SAGE = 'sage'
 TYPE_SNMP = 'snmp'
@@ -36,6 +37,7 @@ types = {
     TYPE_KAFKA: KafkaSource,
     TYPE_MONGO: MongoSource,
     TYPE_MYSQL: JDBCSource,
+    TYPE_ORACLE: JDBCSource,
     TYPE_POSTGRES: JDBCSource,
     TYPE_SAGE: SageSource,
     TYPE_SNMP: SNMPSource,

@@ -9,14 +9,14 @@ class TestMySQL(TestPipelineBase):
     params = {
         'test_start': [{'name': 'test_mysql'}, {'name': 'test_mysql_timestamp_ms'},
                        {'name': 'test_mysql_timestamp_datetime'},
-                       {'name': 'test_mysql_advanced'}, {'name': 'test_jdbc_file_short'},
-                       {'name': 'test_jdbc_file_full'}, {'name': 'test_mysql_timezone_datetime'},
+                       {'name': 'test_mysql_advanced'}, {'name': 'test_jdbc_file_short_mysql'},
+                       {'name': 'test_jdbc_file_full_mysql'}, {'name': 'test_mysql_timezone_datetime'},
                        {'name': 'test_mysql_no_schema'}],
         'test_reset': [{'name': 'test_mysql'}],
         'test_force_stop': [{'name': 'test_mysql'}, {'name': 'test_mysql_timestamp_ms'},
                             {'name': 'test_mysql_timestamp_datetime'},
-                            {'name': 'test_mysql_advanced'}, {'name': 'test_jdbc_file_short'},
-                            {'name': 'test_jdbc_file_full'}, {'name': 'test_mysql_timezone_datetime'},
+                            {'name': 'test_mysql_advanced'}, {'name': 'test_jdbc_file_short_mysql'},
+                            {'name': 'test_jdbc_file_full_mysql'}, {'name': 'test_mysql_timezone_datetime'},
                             {'name': 'test_mysql_no_schema'}],
         'test_output': [
             {'name': 'test_mysql_no_schema', 'output': 'jdbc_file_full_no_schema.json', 'pipeline_type': 'mysql'},
@@ -30,8 +30,8 @@ class TestMySQL(TestPipelineBase):
         ],
         'test_delete_pipeline': [{'name': 'test_mysql'}, {'name': 'test_mysql_timestamp_ms'},
                                  {'name': 'test_mysql_timestamp_datetime'},
-                                 {'name': 'test_mysql_advanced'}, {'name': 'test_jdbc_file_short'},
-                                 {'name': 'test_jdbc_file_full'}, {'name': 'test_mysql_timezone_datetime'},
+                                 {'name': 'test_mysql_advanced'}, {'name': 'test_jdbc_file_short_mysql'},
+                                 {'name': 'test_jdbc_file_full_mysql'}, {'name': 'test_mysql_timezone_datetime'},
                                  {'name': 'test_mysql_no_schema'}],
         'test_source_delete': [{'name': 'test_jdbc'}, {'name': 'test_mysql_1'}]
     }

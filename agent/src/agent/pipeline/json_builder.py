@@ -391,6 +391,7 @@ def _get_loader(pipeline_: Pipeline, is_edit: bool) -> LoadClientData:
         source.TYPE_KAFKA: KafkaLoadClientData,
         source.TYPE_MONGO: MongoLoadClientData,
         source.TYPE_MYSQL: JDBCLoadClientData,
+        source.TYPE_ORACLE: JDBCLoadClientData,
         source.TYPE_POSTGRES: JDBCLoadClientData,
         source.TYPE_SAGE: SageLoadClientData,
         source.TYPE_SNMP: SNMPLoadClientData,

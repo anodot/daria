@@ -24,7 +24,8 @@ def supports_schema(pipeline_: Pipeline):
         source.TYPE_INFLUX,
         source.TYPE_KAFKA,
         source.TYPE_MYSQL,
-        source.TYPE_POSTGRES,
+        source.TYPE_ORACLE,
+        source.TYPE_POSTGRES
     ]
     return pipeline_.source.type in supported
 

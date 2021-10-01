@@ -7,10 +7,12 @@ function configure_sql_drivers() {
   local  JDBC_DRIVER_DIR=/opt/sdc-extras/streamsets-datacollector-jdbc-lib/lib/
   local  MYSQL_CONNECTOR_VERSION=8.0.18
   local  CLICKHOUSE_DRIVER_VERSION=0.3.0
+  local  ORACLE_DRIVER_VERSION=19.11.0.0
 
   sudo mkdir -p ${JDBC_DRIVER_DIR}
   sudo chown -R sdc:sdc /opt/sdc-extras
   wget https://repo1.maven.org/maven2/mysql/mysql-connector-java/${MYSQL_CONNECTOR_VERSION}/mysql-connector-java-${MYSQL_CONNECTOR_VERSION}.jar -O ${JDBC_DRIVER_DIR}/${MYSQL_CONNECTOR_VERSION}.jar
+  wget https://repo1.maven.org/maven2/com/oracle/database/jdbc/ojdbc8/${ORACLE_DRIVER_VERSION}/ojdbc8-${ORACLE_DRIVER_VERSION}.jar -O ${JDBC_DRIVER_DIR}/${ORACLE_DRIVER_VERSION}.jar
 
   # clickhouse dependencies
   wget https://repo1.maven.org/maven2/ru/yandex/clickhouse/clickhouse-jdbc/${CLICKHOUSE_DRIVER_VERSION}/clickhouse-jdbc-${CLICKHOUSE_DRIVER_VERSION}.jar -O ${JDBC_DRIVER_DIR}/clickhouse-jdbc-${CLICKHOUSE_DRIVER_VERSION}.jar

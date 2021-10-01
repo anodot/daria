@@ -7,6 +7,8 @@ import inject
 
 from abc import ABC, abstractmethod
 from datetime import datetime
+from urllib.parse import urlparse
+
 from pysnmp.entity.engine import SnmpEngine
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 from agent import source
@@ -138,13 +140,24 @@ class JDBCValidator(Validator):
             validator.validate_url_format_with_port(self.source.config[source.JDBCSource.CONFIG_CONNECTION_STRING])
         except validator.ValidationException as e:
             raise ValidationException(str(e))
-        result = urllib.parse.urlparse(self.source.config[source.JDBCSource.CONFIG_CONNECTION_STRING])
+        result = urlparse(self.source.config[source.JDBCSource.CONFIG_CONNECTION_STRING])
         if self.source.type == source.TYPE_MYSQL and result.scheme != 'mysql':
             raise ValidationException('Wrong url scheme. Use `mysql`')
         if self.source.type == source.TYPE_POSTGRES and result.scheme != 'postgresql':
             raise ValidationException('Wrong url scheme. Use `postgresql`')
         if self.source.type == source.TYPE_CLICKHOUSE and result.scheme != 'clickhouse':
             raise ValidationException('Wrong url scheme. Use `clickhouse`')
+
+
+class OracleValidator(JDBCValidator):
+    @if_validation_enabled
+    def validate_connection_string(self):
+        url = self.source.config[source.JDBCSource.CONFIG_CONNECTION_STRING]
+        if not url.startswith('oracle:thin:@'):
+            raise ValidationException(f"{url} - invalid url, please provide url in format `oracle:thin:@<host>:<port>:<sid>`")
+        url_split = url.split('@')[1].split(':')
+        if len(url_split) != 3:
+            raise ValidationException(f"{url} - invalid url, please provide url in format `oracle:thin:@<host>:<port>:<sid>`")
 
 
 class MongoValidator(Validator):
@@ -340,6 +353,7 @@ def get_validator(source_: Source) -> Validator:
         source.TYPE_KAFKA: KafkaValidator,
         source.TYPE_MONGO: MongoValidator,
         source.TYPE_MYSQL: JDBCValidator,
+        source.TYPE_ORACLE: OracleValidator,
         source.TYPE_POSTGRES: JDBCValidator,
         source.TYPE_SAGE: SageValidator,
         source.TYPE_SNMP: SNMPValidator,
