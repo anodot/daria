@@ -9,15 +9,6 @@ class TestOracle(TestInputBase):
         'test_create_with_file': [{'file_name': 'jdbc_pipelines_oracle'}],
     }
 
-    def test_source_create(self, cli_runner):
-        pass
-
-    def test_create(self, cli_runner):
-        pass
-
-    def test_create_advanced(self, cli_runner):
-        pass
-
     @classmethod
     def teardown_class(cls):
         for _pipeline in pipeline.repository.get_by_type(source.TYPE_ORACLE):
