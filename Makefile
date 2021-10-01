@@ -1,6 +1,6 @@
 NAP = 25
 SLEEP = 60
-THREADS = 6
+THREADS = 4
 DOCKER_COMPOSE_DEV_FILE = docker-compose-dev.yml
 DOCKER_COMPOSE_DEV = docker-compose -f $(DOCKER_COMPOSE_DEV_FILE)
 DOCKER_TEST = docker exec -i anodot-agent pytest -x -vv --disable-pytest-warnings
@@ -13,7 +13,7 @@ all: build-all test-all
 
 build-all: get-streamsets-libs build-docker sleep setup-all
 
-test-all: run-unit-tests test-flask-app test-streamsets test-destination test-apply test-api test-api-scripts test-input test-streamsets-2 test-send-to-bc test-pipelines test-send-to-watermark
+test-all: run-unit-tests test-flask-app test-streamsets test-raw-input test-raw-pipelines test-destination test-apply test-api test-api-scripts test-input test-streamsets-2 test-send-to-bc test-pipelines test-send-to-watermark
 
 ##-------------
 ## DEVELOPMENT
@@ -113,6 +113,12 @@ test-destination:
 
 test-streamsets:
 	$(DOCKER_TEST) tests/test_streamsets.py
+
+test-raw-input:
+	$(DOCKER_TEST_PARALLEL) tests/test_raw/test_input
+
+test-raw-pipelines:
+	$(DOCKER_TEST_PARALLEL) tests/test_raw/test_pipelines
 
 test-streamsets-2:
 	$(DOCKER_TEST) tests/test_streamsets_2.py

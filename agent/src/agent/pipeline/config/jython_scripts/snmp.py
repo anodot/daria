@@ -28,10 +28,6 @@ def get_now():
     return int(time.time())
 
 
-def get_step():
-    return int(sdc.userParams['STEP_IN_SECONDS'])
-
-
 entityName = ''
 
 if sdc.lastOffsets.containsKey(entityName):

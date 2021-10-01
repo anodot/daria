@@ -1,3 +1,5 @@
+import agent
+
 from .source import *
 from .source import Source
 from . import repository
@@ -55,3 +57,10 @@ json_schema = {
     },
     'required': ['type', 'name', 'config']
 }
+
+
+def check_prerequisites() -> list:
+    errors = []
+    if e := agent.check_streamsets():
+        errors.append(e)
+    return errors

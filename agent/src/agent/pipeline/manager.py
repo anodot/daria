@@ -5,7 +5,7 @@ import sdc_client
 
 from agent import source, pipeline, destination, streamsets
 from agent.modules import tools, constants
-from agent.pipeline import Pipeline, TestPipeline, schema, extra_setup, PipelineRetries
+from agent.pipeline import Pipeline, TestPipeline, schema, extra_setup, PipelineRetries, RawPipeline
 from agent.modules.logger import get_logger
 from agent.pipeline.config.handlers.factory import get_config_handler
 from agent.source import Source
@@ -25,19 +25,17 @@ def supports_schema(pipeline_: Pipeline):
         source.TYPE_KAFKA,
         source.TYPE_MYSQL,
         source.TYPE_ORACLE,
-        source.TYPE_POSTGRES,
-        source.TYPE_SNMP
+        source.TYPE_POSTGRES
     ]
     return pipeline_.source.type in supported
 
 
 def create_object(pipeline_id: str, source_name: str) -> Pipeline:
-    pipeline_ = Pipeline(
+    return Pipeline(
         pipeline_id,
         source.repository.get_by_name(source_name),
         destination.repository.get(),
     )
-    return pipeline_
 
 
 def check_pipeline_id(pipeline_id: str):
@@ -53,7 +51,7 @@ def start(pipeline_: Pipeline):
 def reset_pipeline_retries(pipeline_: Pipeline):
     if pipeline_.retries:
         pipeline_.retries.number_of_error_statuses = 0
-        pipeline.repository.save_pipeline_retries(pipeline_.retries)
+        pipeline.repository.save(pipeline_.retries)
 
 
 def _delete_pipeline_retries(pipeline_: Pipeline):
@@ -81,6 +79,11 @@ def create(pipeline_: Pipeline):
     pipeline.repository.save(pipeline_)
 
 
+def create_raw_pipeline(raw_pipeline: RawPipeline):
+    sdc_client.create(raw_pipeline)
+    pipeline.repository.save(raw_pipeline)
+
+
 def update_source_pipelines(source_: Source):
     for pipeline_ in pipeline.repository.get_by_source(source_.name):
         try:
@@ -100,7 +103,7 @@ def update_pipeline_offset(pipeline_: Pipeline, timestamp: float):
         pipeline_.offset.timestamp = timestamp
     else:
         pipeline_.offset = pipeline.PipelineOffset(pipeline_.id, offset, timestamp)
-    pipeline.repository.save_offset(pipeline_.offset)
+    pipeline.repository.save(pipeline_.offset)
 
 
 def reset(pipeline_: Pipeline):
@@ -185,7 +188,7 @@ def disable_destination_logs(pipeline_: Pipeline):
 def build_test_pipeline(source_: Source) -> TestPipeline:
     # creating a new source because otherwise it will mess with the db session
     test_source = source.manager.create_source_obj(source_.name, source_.type, source_.config)
-    test_pipeline = TestPipeline(_get_test_pipeline_id(test_source), test_source, destination.repository.get())
+    test_pipeline = TestPipeline(_get_test_pipeline_id(test_source), test_source)
     test_pipeline.config['uses_schema'] = supports_schema(test_pipeline)
     return test_pipeline
 
@@ -273,4 +276,4 @@ def increase_retry_counter(pipeline_: Pipeline):
     if not pipeline_.retries:
         pipeline_.retries = PipelineRetries(pipeline_)
     pipeline_.retries.number_of_error_statuses += 1
-    pipeline.repository.save_pipeline_retries(pipeline_.retries)
+    pipeline.repository.save(pipeline_.retries)

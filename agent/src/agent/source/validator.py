@@ -8,7 +8,6 @@ import inject
 from abc import ABC, abstractmethod
 from datetime import datetime
 from urllib.parse import urlparse
-from copy import deepcopy
 
 from pysnmp.entity.engine import SnmpEngine
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
@@ -150,17 +149,10 @@ class JDBCValidator(Validator):
             raise ValidationException('Wrong url scheme. Use `clickhouse`')
 
 
-class OracleValidator(Validator):
-    VALIDATION_SCHEMA_FILE = 'jdbc.json'
-
-    def validate(self):
-        self.validate_json()
-        self.validate_connection_string()
-        self.validate_connection()
-
+class OracleValidator(JDBCValidator):
     @if_validation_enabled
     def validate_connection_string(self):
-        url = deepcopy(self.source.config[source.JDBCSource.CONFIG_CONNECTION_STRING])
+        url = self.source.config[source.JDBCSource.CONFIG_CONNECTION_STRING]
         if not url.startswith('oracle:thin:@'):
             raise ValidationException(f"{url} - invalid url, please provide url in format `oracle:thin:@<host>:<port>:<sid>`")
         url_split = url.split('@')[1].split(':')

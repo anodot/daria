@@ -3,7 +3,7 @@ import os
 import traceback
 import jsonschema
 
-from typing import List
+from typing import List, Callable
 from agent import source, pipeline
 from agent.data_extractor.snmp import snmp
 from agent.modules.logger import get_logger
@@ -11,8 +11,6 @@ from agent.pipeline import Pipeline
 from agent.pipeline.config import expression_parser
 
 logger_ = get_logger(__name__, stdout=True)
-
-definitions_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'json_schema_definitions')
 
 
 def build_using_file(file):
@@ -24,13 +22,21 @@ def edit_using_file(file):
 
 
 def build_multiple(configs: list) -> List[Pipeline]:
+    return _build_multiple(configs, build)
+
+
+def build_multiple_raw(configs: list) -> List[Pipeline]:
+    return _build_multiple(configs, build_raw)
+
+
+def _build_multiple(configs: list, build_func: Callable) -> List[Pipeline]:
     _validate_configs_for_create(configs)
     exceptions = {}
     pipelines = []
     for config in configs:
         try:
             pipeline.manager.check_pipeline_id(config['pipeline_id'])
-            pipelines.append(build(config))
+            pipelines.append(build_func(config))
         except Exception as e:
             exceptions[config['pipeline_id']] = f'{type(e).__name__}: {traceback.format_exc()}'
     if exceptions:
@@ -41,9 +47,20 @@ def build_multiple(configs: list) -> List[Pipeline]:
 def build(config: dict) -> Pipeline:
     _validate_config_for_create(config)
     pipeline_ = pipeline.manager.create_object(config['pipeline_id'], config['source'])
+    return _build(config, pipeline_)
 
+
+def build_raw(config: dict) -> Pipeline:
+    _validate_config_for_create(config)
+    pipeline_ = pipeline.RawPipeline(
+        config['pipeline_id'],
+        source.repository.get_by_name(config['source'])
+    )
+    return _build(config, pipeline_)
+
+
+def _build(config: dict, pipeline_: Pipeline) -> Pipeline:
     _load_config(pipeline_, config)
-
     pipeline.manager.create(pipeline_)
     logger_.info(f'Pipeline {pipeline_.name} created')
     return pipeline_
@@ -119,7 +136,9 @@ def _validate_config_for_create(config: dict):
 
 
 def _load_config(pipeline_: Pipeline, config: dict, is_edit=False):
-    if 'uses_schema' not in config:
+    if isinstance(pipeline_, pipeline.RawPipeline):
+        config['uses_schema'] = False
+    elif 'uses_schema' not in config:
         if is_edit:
             config['uses_schema'] = pipeline_.config.get('uses_schema', False)
         else:
@@ -134,6 +153,7 @@ def _load_config(pipeline_: Pipeline, config: dict, is_edit=False):
 
 class LoadClientData:
     VALIDATION_SCHEMA_FILE_NAME = ''
+    VALIDATION_SCHEMA_DIR_NAME = 'json_schema_definitions'
 
     def __init__(self, pipeline_: Pipeline, is_edit: bool):
         self.client_config = {}
@@ -154,8 +174,12 @@ class LoadClientData:
 
         return self.client_config
 
+    @property
+    def definitions_dir(self):
+        return os.path.join(os.path.dirname(os.path.realpath(__file__)), self.VALIDATION_SCHEMA_DIR_NAME)
+
     def _validate_json_schema(self):
-        with open(os.path.join(definitions_dir, self.VALIDATION_SCHEMA_FILE_NAME + '.json')) as f:
+        with open(os.path.join(self.definitions_dir, self.VALIDATION_SCHEMA_FILE_NAME + '.json')) as f:
             schema = json.load(f)
         if self.edit:
             schema['required'] = []
@@ -253,6 +277,11 @@ class JDBCLoadClientData(LoadClientData):
     VALIDATION_SCHEMA_FILE_NAME = 'jdbc'
 
 
+class JDBCRawLoadClientData(LoadClientData):
+    VALIDATION_SCHEMA_FILE_NAME = 'jdbc'
+    VALIDATION_SCHEMA_DIR_NAME = 'json_schema_definitions/raw'
+
+
 class ElasticLoadClientData(LoadClientData):
     VALIDATION_SCHEMA_FILE_NAME = 'elastic'
 
@@ -313,6 +342,17 @@ class SNMPLoadClientData(LoadClientData):
         self.client_config['dimensions'].append(snmp.HOSTNAME_OID)
 
 
+class SNMPRawLoadClientData(LoadClientData):
+    VALIDATION_SCHEMA_FILE_NAME = 'snmp'
+    VALIDATION_SCHEMA_DIR_NAME = 'json_schema_definitions/raw'
+
+    def load(self, client_config):
+        super().load(client_config)
+        self.client_config['timestamp'] = {}
+        self.client_config['timestamp']['type'] = 'unix'
+        return self.client_config
+
+
 class SolarWindsClientData(LoadClientData):
     VALIDATION_SCHEMA_FILE_NAME = 'solarwinds'
 
@@ -335,6 +375,12 @@ class ZabbixLoadClientData(LoadClientData):
 
 
 def get_file_loader(pipeline_: Pipeline, is_edit=False) -> LoadClientData:
+    if isinstance(pipeline_, pipeline.RawPipeline):
+        return _get_raw_loader(pipeline_, is_edit)
+    return _get_loader(pipeline_, is_edit)
+
+
+def _get_loader(pipeline_: Pipeline, is_edit: bool) -> LoadClientData:
     loaders = {
         source.TYPE_CACTI: CactiLoadClientData,
         source.TYPE_CLICKHOUSE: JDBCLoadClientData,
@@ -354,5 +400,16 @@ def get_file_loader(pipeline_: Pipeline, is_edit=False) -> LoadClientData:
         source.TYPE_THANOS: PromQLLoadClientData,
         source.TYPE_VICTORIA: PromQLLoadClientData,
         source.TYPE_ZABBIX: ZabbixLoadClientData,
+    }
+    return loaders[pipeline_.source.type](pipeline_, is_edit)
+
+
+def _get_raw_loader(pipeline_: Pipeline, is_edit: bool) -> LoadClientData:
+    # todo do all they support?
+    loaders = {
+        source.TYPE_CLICKHOUSE: JDBCRawLoadClientData,
+        source.TYPE_MYSQL: JDBCRawLoadClientData,
+        source.TYPE_POSTGRES: JDBCRawLoadClientData,
+        source.TYPE_SNMP: SNMPRawLoadClientData,
     }
     return loaders[pipeline_.source.type](pipeline_, is_edit)

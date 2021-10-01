@@ -2,7 +2,7 @@ import json
 import os
 import click
 
-from agent import source, check_prerequisites
+from agent import source
 from agent.modules.tools import infinite_retry
 from jsonschema import ValidationError, SchemaError
 from agent.cli import prompt
@@ -52,8 +52,7 @@ def edit(name, advanced, file):
 
 
 def _check_prerequisites():
-    errors = check_prerequisites()
-    if errors:
+    if errors := source.check_prerequisites():
         raise click.ClickException("\n".join(errors))
 
 

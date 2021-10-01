@@ -14,9 +14,47 @@ delta_calculator = DeltaCalculator()
 HOSTNAME_OID = '1.3.6.1.2.1.1.5.0'
 
 
+# todo do I need to rename oids to readable names?
 def extract_metrics(pipeline_: Pipeline) -> list:
+    metrics = []
+    for response in _fetch_data(pipeline_):
+        var_binds = _get_var_binds(response)
+        metric = _create_metric(pipeline_, var_binds)
+        metrics.append(metric)
+    return metrics
+
+
+def fetch_raw_data(pipeline_: Pipeline) -> dict:
+    data = {}
+    for response in _fetch_data(pipeline_):
+        var_binds = _get_var_binds(response)
+        for var_bind in var_binds:
+            k = str(var_bind[0])
+            v = str(var_bind[1])
+            if k in data:
+                raise Exception(f'`{k}` already exists')
+            data[k] = v
+    return data
+
+
+def _get_var_binds(response):
+    error_indication, error_status, error_index, var_binds = response
+    if error_indication:
+        logger_.error(error_indication)
+        raise SNMPError(error_indication)
+    elif error_status:
+        message = '%s at %s' % (
+            error_status.prettyPrint(),
+            error_index and var_binds[int(error_index) - 1][0] or '?'
+        )
+        logger_.error(message)
+        raise SNMPError(message)
+    return var_binds
+
+
+def _fetch_data(pipeline_: Pipeline):
     url = urlparse(pipeline_.source.url)
-    iterator = getCmd(
+    return getCmd(
         SnmpEngine(),
         CommunityData(pipeline_.source.read_community, mpModel=0),
         UdpTransportTarget((url.hostname, url.port), timeout=pipeline_.source.query_timeout, retries=0),
@@ -25,22 +63,6 @@ def extract_metrics(pipeline_: Pipeline) -> list:
         lookupNames=True,
         lookupMib=True
     )
-
-    metrics = []
-    for response in iterator:
-        error_indication, error_status, error_index, var_binds = response
-        if error_indication:
-            logger_.error(error_indication)
-            raise SNMPError(error_indication)
-        elif error_status:
-            message = '%s at %s' % (
-                error_status.prettyPrint(),
-                error_index and var_binds[int(error_index) - 1][0] or '?'
-            )
-            logger_.error(message)
-            raise SNMPError(message)
-        metrics.append(_create_metric(pipeline_, var_binds))
-    return metrics
 
 
 def _create_metric(pipeline_: Pipeline, var_binds: list) -> dict:

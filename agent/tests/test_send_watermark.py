@@ -1,6 +1,3 @@
-import os
-import subprocess
-
 from .conftest import get_output
 from .test_pipelines.test_zpipeline_base import get_schema_id
 

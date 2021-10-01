@@ -12,7 +12,7 @@ def list_sources():
 
 
 @sources.route('/sources', methods=['POST'])
-@routes.check_prerequisites
+@routes.check_source_prerequisites
 def create():
     try:
         sources_ = source.json_builder.build_multiple(request.get_json())
@@ -22,7 +22,7 @@ def create():
 
 
 @sources.route('/sources', methods=['PUT'])
-@routes.check_prerequisites
+@routes.check_source_prerequisites
 def edit():
     try:
         sources_ = source.json_builder.edit_multiple(request.get_json())

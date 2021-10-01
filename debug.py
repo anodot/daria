@@ -13,7 +13,6 @@ def api_client():
 
 
 di.init()
-
 # res = api_client().get('/alerts?status=CLOSE&startTime=1623321686')
 # res = api_client().get('/alert/status?alertName=Drop%20in%20Device_uptime%20for%20All%20equipments&host=eNodeBbaicells180&startTime=-300')
 

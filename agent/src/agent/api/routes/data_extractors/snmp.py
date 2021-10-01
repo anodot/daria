@@ -15,3 +15,14 @@ def read(pipeline_id: str):
     except SNMPError as e:
         return jsonify(str(e)), 500
     return jsonify(metrics)
+
+
+@snmp.route('/data_extractor/snmp/raw/<pipeline_id>', methods=['GET'])
+@needs_pipeline
+def read_raw(pipeline_id: str):
+    pipeline_ = pipeline.repository.get_by_id(pipeline_id)
+    try:
+        data = data_extractor.snmp.fetch_raw_data(pipeline_)
+    except SNMPError as e:
+        return jsonify(str(e)), 500
+    return jsonify(data)
