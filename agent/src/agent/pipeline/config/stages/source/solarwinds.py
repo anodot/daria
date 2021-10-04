@@ -1,12 +1,11 @@
 import urllib.parse
 
-from agent import source
+from agent import source, pipeline
 from agent.pipeline.config.stages.source.jdbc import JDBCSource
 
 
 class SolarWindsScript(JDBCSource):
     JYTHON_SCRIPT = 'solarwinds.py'
-    LAST_TIMESTAMP = '%last_timestamp%'
     SOLARWINDS_API_ADDRESS = '/SolarWinds/InformationService/v3/Json/Query'
 
     def get_config(self) -> dict:
@@ -14,7 +13,7 @@ class SolarWindsScript(JDBCSource):
             return {
                 'scriptConf.params': [
                     {'key': 'PIPELINE_NAME', 'value': self.pipeline.name},
-                    {'key': 'QUERY', 'value': self.get_query()},
+                    {'key': 'QUERY', 'value': pipeline.jdbc.query.SolarWindsBuilder(self.pipeline).build()},
                     {
                         'key': 'SOLARWINDS_API_URL',
                         'value': urllib.parse.urljoin(
@@ -39,8 +38,3 @@ class SolarWindsScript(JDBCSource):
                 ],
                 'script': f.read()
             }
-
-    def _get_timestamp_condition(self) -> str:
-        date_time = f"DateTime('{self.LAST_TIMESTAMP}')"
-        return f'{self.pipeline.timestamp_path} > {date_time}' \
-               f' AND {self.pipeline.timestamp_path} <= AddSecond({self.pipeline.interval}, {date_time})'

@@ -1,0 +1,11 @@
+[
+  {
+    "type": "oracle",
+    "name": "test_oracle",
+    "config": {
+      "connection_string": "oracle:thin:@host:1521:ORCL",
+      "hikariConfigBean.username": "admin",
+      "hikariConfigBean.password": "admin"
+    }
+  }
+]

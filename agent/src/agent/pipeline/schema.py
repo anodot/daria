@@ -8,7 +8,7 @@ def build(pipeline: Pipeline) -> dict:
     measurements = {}
     for idx, value in enumerate(pipeline.value_names):
         measurements[pipeline.measurement_names[idx]] = {
-            'aggregation': 'sum' if pipeline.target_types[idx] == 'counter' else 'average',
+            'aggregation': 'sum' if pipeline.target_types[idx] in [Pipeline.COUNTER, Pipeline.RUNNING_COUNTER] else 'average',
             'countBy': 'none'
         }
     if pipeline.count_records:

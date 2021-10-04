@@ -1,4 +1,4 @@
-from .base import BaseConfigHandler
+from .base import BaseConfigHandler, BaseRawConfigHandler
 from agent.modules.logger import get_logger
 from agent.pipeline.config import stages
 
@@ -12,4 +12,11 @@ class SNMPConfigHandler(BaseConfigHandler):
         'FieldRenamer_01': stages.field_renamer.SchemaDimensionsRenamer,
         'ExpressionEvaluator_01': stages.expression_evaluator.AddProperties,
         'destination': stages.destination.Destination,
+    }
+
+
+class SNMPRawConfigHandler(BaseRawConfigHandler):
+    stages_to_override = {
+        'source': stages.source.snmp.SNMPRaw,
+        'HTTPClient_01': stages.destination.HttpDestination,
     }

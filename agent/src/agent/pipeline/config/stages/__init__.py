@@ -4,5 +4,5 @@ from . import source
 from . import expression_evaluator
 from . import destination
 from . import influx
-from . import jdbc_offset
+from . import jdbc
 from . import field_renamer

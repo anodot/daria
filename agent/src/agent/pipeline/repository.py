@@ -1,19 +1,20 @@
 from functools import wraps
 from typing import List
-from agent import source
-from agent.modules.db import Session, engine
-from agent.pipeline import PipelineOffset, Pipeline
+from agent import source, pipeline
+from agent.destination import HttpDestination
+from agent.modules.db import Session, engine, Entity
+from agent.pipeline import PipelineOffset, Pipeline, PipelineRetries
 from sqlalchemy.orm import Query
 
 
-def typed_source(func):
+def typed(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         res = func(*args, **kwargs)
         if isinstance(res, list):
-            return [_construct_source(pipeline) for pipeline in res]
+            return [_construct(pipeline_) for pipeline_ in res]
         else:
-            return _construct_source(res)
+            return _construct(res)
     return wrapper
 
 
@@ -23,7 +24,7 @@ def exists(pipeline_id: str) -> bool:
     ).scalar())
 
 
-@typed_source
+@typed
 def get_by_id(pipeline_id: str) -> Pipeline:
     pipeline_ = Session.query(Pipeline).filter(Pipeline.name == pipeline_id).first()
     if not pipeline_:
@@ -44,19 +45,19 @@ def get_by_type(type_: str) -> List[Pipeline]:
     return list(filter(lambda x: x.source.type == type_, get_all()))
 
 
-@typed_source
+@typed
 def get_by_source(source_name: str) -> List[Pipeline]:
     return list(filter(lambda x: x.source.name == source_name, get_all()))
 
 
-@typed_source
+@typed
 def get_all() -> List[Pipeline]:
     return Session.query(Pipeline).all()
 
 
-def save(pipeline_: Pipeline):
-    if not Session.object_session(pipeline_):
-        Session.add(pipeline_)
+def save(entity: Entity):
+    if not Session.object_session(entity):
+        Session.add(entity)
     Session.commit()
 
 
@@ -65,23 +66,17 @@ def delete(pipeline_: Pipeline):
     Session.commit()
 
 
-def save_offset(pipeline_offset: PipelineOffset):
-    if not Session.object_session(pipeline_offset):
-        Session.add(pipeline_offset)
-    Session.commit()
-
-
 def delete_offset(pipeline_offset: PipelineOffset):
     Session.delete(pipeline_offset)
     Session.commit()
 
 
-@typed_source
+@typed
 def get_by_streamsets_id(streamsets_id: int) -> List[Pipeline]:
     return Session.query(Pipeline).filter(Pipeline.streamsets_id == streamsets_id).all()
 
 
-@typed_source
+@typed
 def get_by_streamsets_url(streamsets_url: str) -> List[Pipeline]:
     return Session.query(Pipeline).filter(Pipeline.streamsets.has(url=streamsets_url)).all()
 
@@ -100,9 +95,28 @@ def get_deleted_pipeline_ids() -> list:
     return Session.execute('SELECT * FROM deleted_pipelines')
 
 
-def _construct_source(pipeline: Pipeline) -> Pipeline:
-    pipeline.source.__class__ = source.types[pipeline.source.type]
-    return pipeline
+def delete_pipeline_retries(pipeline_retries: PipelineRetries):
+    Session.delete(pipeline_retries)
+    Session.commit()
+
+
+def _construct(pipeline_: Pipeline) -> Pipeline:
+    if not pipeline_.destination:
+        # this is needed for raw pipelines
+        pipeline_.destination = HttpDestination()
+    return _construct_pipeline(
+        _construct_source(pipeline_)
+    )
+
+
+def _construct_source(pipeline_: Pipeline) -> Pipeline:
+    pipeline_.source.__class__ = source.types[pipeline_.source.type]
+    return pipeline_
+
+
+def _construct_pipeline(pipeline_: Pipeline) -> Pipeline:
+    pipeline_.__class__ = pipeline.TYPES[pipeline_.type]
+    return pipeline_
 
 
 class PipelineNotExistsException(Exception):

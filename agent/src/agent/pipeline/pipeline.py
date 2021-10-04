@@ -8,12 +8,16 @@ from agent.modules.constants import HOSTNAME
 from agent.modules.db import Entity
 from agent.destination import HttpDestination
 from enum import Enum
-from sqlalchemy import Column, Integer, String, JSON, ForeignKey, func
+from sqlalchemy import Column, Integer, String, JSON, ForeignKey, func, Float
 from copy import deepcopy
 from agent import source, pipeline
 from agent.modules.time import Interval
 from agent.source import Source
 from agent.streamsets import StreamSets
+
+
+REGULAR_PIPELINE = 'regular_pipeline'
+RAW_PIPELINE = 'raw_pipeline'
 
 
 class PipelineException(Exception):
@@ -61,8 +65,9 @@ class Pipeline(Entity, sdc_client.IPipeline):
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
+    type = Column(String)
     source_id = Column(Integer, ForeignKey('sources.id'))
-    destination_id = Column(Integer, ForeignKey('destinations.id'))
+    destination_id = Column(Integer, ForeignKey('destinations.id'), nullable=True)
     config = Column(JSON)
     schema = Column(JSON)
     override_source = Column(JSON)
@@ -73,8 +78,9 @@ class Pipeline(Entity, sdc_client.IPipeline):
 
     offset = relationship("PipelineOffset", cascade="delete", uselist=False)
     source_ = relationship('Source', back_populates='pipelines')
-    destination = relationship('HttpDestination')
+    destination = relationship('HttpDestination', cascade="merge")
     streamsets = relationship('StreamSets')
+    retries = relationship('PipelineRetries', cascade="delete", uselist=False)
 
     def __init__(self, pipeline_id: str, source_: Source, destination: HttpDestination):
         self.name = pipeline_id
@@ -88,6 +94,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
         self.override_source = {}
         self.streamsets_id = None
         self.streamsets = None
+        self.type = REGULAR_PIPELINE
 
     def config_changed(self) -> bool:
         if not hasattr(self, '_previous_config'):
@@ -107,6 +114,14 @@ class Pipeline(Entity, sdc_client.IPipeline):
     @property
     def static_dimensions(self) -> dict:
         return self.config.get('properties', {})
+
+    @property
+    def periodic_watermark_config(self) -> dict:
+        return self.config.get('periodic_watermark')
+
+    @property
+    def watermark_delay(self) -> int:
+        return self.config.get('periodic_watermark', {}).get('delay', 0)
 
     @property
     def flush_bucket_size(self) -> FlushBucketSize:
@@ -268,7 +283,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
 
     @property
     def uses_schema(self) -> bool:
-        return self.config.get('uses_schema')
+        return bool(self.config.get('uses_schema'))
 
     @property
     def histories_batch_size(self) -> str:
@@ -301,7 +316,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
         self.streamsets = None
 
     def get_schema(self) -> dict:
-        return self.schema if self.schema else {}
+        return self.schema or {}
 
     def has_schema(self) -> bool:
         return bool(self.schema)
@@ -350,10 +365,22 @@ class Pipeline(Entity, sdc_client.IPipeline):
             **self.tags
         }
 
+    def error_notification_enabled(self) -> bool:
+        return not self.config.get('disable_error_notifications', False)
+
+
+class RawPipeline(Pipeline):
+    def __init__(self, pipeline_id: str, source_: Source):
+        # pass dummy destination
+        super(RawPipeline, self).__init__(pipeline_id, source_, HttpDestination())
+        # this is needed to distinguish Pipeline and RawPipeline when they're loaded from the db
+        self.type = RAW_PIPELINE
+
 
 class TestPipeline(Pipeline):
-    def __init__(self, pipeline_id: str, source_, destination: HttpDestination):
-        super().__init__(pipeline_id, source_, destination)
+    def __init__(self, pipeline_id: str, source_):
+        # pass dummy destination
+        super().__init__(pipeline_id, source_, HttpDestination())
 
 
 class PipelineOffset(Entity):
@@ -362,10 +389,12 @@ class PipelineOffset(Entity):
     id = Column(Integer, primary_key=True)
     pipeline_id = Column(Integer, ForeignKey('pipelines.id'))
     offset = Column(String)
+    timestamp = Column(Float)
 
-    def __init__(self, pipeline_id: int, offset: str):
+    def __init__(self, pipeline_id: int, offset: str, timestamp: float):
         self.pipeline_id = pipeline_id
         self.offset = offset
+        self.timestamp = timestamp
 
 
 class Provider(sdc_client.IPipelineProvider):
@@ -374,3 +403,14 @@ class Provider(sdc_client.IPipelineProvider):
 
     def save(self, pipeline_: Pipeline):
         pipeline.repository.save(pipeline_)
+
+
+class PipelineRetries(Entity):
+    __tablename__ = 'pipeline_retries'
+
+    pipeline_id = Column(String, ForeignKey('pipelines.name'), primary_key=True)
+    number_of_error_statuses = Column(Integer)
+
+    def __init__(self, pipeline_: Pipeline):
+        self.pipeline_id = pipeline_.name
+        self.number_of_error_statuses = 0

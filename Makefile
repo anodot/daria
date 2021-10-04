@@ -1,6 +1,6 @@
 NAP = 25
 SLEEP = 60
-THREADS = 6
+THREADS = 4
 DOCKER_COMPOSE_DEV_FILE = docker-compose-dev.yml
 DOCKER_COMPOSE_DEV = docker-compose -f $(DOCKER_COMPOSE_DEV_FILE)
 DOCKER_TEST = docker exec -i anodot-agent pytest -x -vv --disable-pytest-warnings
@@ -13,7 +13,7 @@ all: build-all test-all
 
 build-all: get-streamsets-libs build-docker sleep setup-all
 
-test-all: run-unit-tests test-flask-app test-streamsets test-destination test-apply test-api test-api-scripts test-input test-streamsets-2 test-send-to-bc test-pipelines
+test-all: run-unit-tests test-flask-app test-streamsets test-raw-input test-raw-pipelines test-destination test-apply test-api test-api-scripts test-input test-streamsets-2 test-send-to-bc test-pipelines test-send-to-watermark
 
 ##-------------
 ## DEVELOPMENT
@@ -86,12 +86,16 @@ test-cacti: bootstrap run-mysql sleep
 	$(DOCKER_TEST) tests/test_input/test_cacti.py
 	$(DOCKER_TEST) tests/test_pipelines/test_cacti.py
 
+test-oracle: bootstrap
+	$(DOCKER_TEST) tests/test_input/test_oracle.py
+
 
 
 ##---------------------------
 ## RELEASE DEPENDENCY TARGETS
 ##---------------------------
 build-docker:
+	docker-compose down -v
 	docker-compose build --build-arg GIT_SHA1="$(git describe --tags --dirty --always)"
 	docker-compose up -d
 
@@ -101,11 +105,20 @@ test-apply:
 test-send-to-bc:
 	$(DOCKER_TEST) tests/test_send_to_bc.py
 
+test-send-to-watermark:
+	$(DOCKER_TEST) tests/test_send_watermark.py
+
 test-destination:
 	$(DOCKER_TEST) tests/test_destination.py
 
 test-streamsets:
 	$(DOCKER_TEST) tests/test_streamsets.py
+
+test-raw-input:
+	$(DOCKER_TEST_PARALLEL) tests/test_raw/test_input
+
+test-raw-pipelines:
+	$(DOCKER_TEST_PARALLEL) tests/test_raw/test_pipelines
 
 test-streamsets-2:
 	$(DOCKER_TEST) tests/test_streamsets_2.py
@@ -132,8 +145,8 @@ run-unit-tests:
 	$(DOCKER_TEST_PARALLEL) tests/unit/
 
 get-streamsets-libs: install-streamsets-requirements
-	rm -rf containers/streamsets/lib/*
-	curl -L https://github.com/anodot/anodot-sdc-stage/releases/download/v1.1.2/anodot-1.1.2.tar.gz -o /tmp/sdc.tar.gz && tar xvfz /tmp/sdc.tar.gz -C containers/streamsets/lib
+	rm -rf containers/streamsets/lib/anodot
+	curl -L https://github.com/anodot/anodot-sdc-stage/releases/download/v2.0.4/anodot-2.0.4.tar.gz -o /tmp/sdc.tar.gz && tar xvfz /tmp/sdc.tar.gz -C containers/streamsets/lib
 
 install-streamsets-requirements:
 	rm -rf containers/streamsets/python-libs/*

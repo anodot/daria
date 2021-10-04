@@ -1,3 +1,5 @@
+import agent
+
 from .source import *
 from .source import Source
 from . import repository
@@ -15,6 +17,7 @@ TYPE_INFLUX_2 = 'influx2'
 TYPE_KAFKA = 'kafka'
 TYPE_MONGO = 'mongo'
 TYPE_MYSQL = 'mysql'
+TYPE_ORACLE = 'oracle'
 TYPE_OBSERVIUM = 'observium'
 TYPE_POSTGRES = 'postgres'
 TYPE_SAGE = 'sage'
@@ -35,6 +38,7 @@ types = {
     TYPE_KAFKA: KafkaSource,
     TYPE_MONGO: MongoSource,
     TYPE_MYSQL: JDBCSource,
+    TYPE_ORACLE: JDBCSource,
     TYPE_POSTGRES: JDBCSource,
     TYPE_OBSERVIUM: ObserviumSource,
     TYPE_SAGE: SageSource,
@@ -55,3 +59,10 @@ json_schema = {
     },
     'required': ['type', 'name', 'config']
 }
+
+
+def check_prerequisites() -> list:
+    errors = []
+    if e := agent.check_streamsets():
+        errors.append(e)
+    return errors

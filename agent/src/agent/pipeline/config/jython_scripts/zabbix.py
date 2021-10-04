@@ -95,7 +95,7 @@ def query_history(item_ids, value_type_):
             'sortfield': 'clock',
             'sortorder': 'ASC',
             'time_from': end - interval,
-            'time_till': end
+            'time_till': end - 1
         }
         histories = client.post('history.get', history_params)
         # add fields from item to every history record
@@ -200,7 +200,8 @@ def replace_item_macros(items_):
         for k, v in item.items():
             if isinstance(v, unicode) and re.search('({\$.*})', v):
                 for macro_name in list(re.findall('({\$[^\}]+})', v)):
-                    v = v.replace(macro_name, macros[item['hostid']][macro_name])
+                    if macro_name in macros[item['hostid']]:
+                        v = v.replace(macro_name, macros[item['hostid']][macro_name])
                 item[k] = v
     return items_
 

@@ -33,7 +33,7 @@ pyparsing==2.3.1
 pyrsistent==0.15.1
 pytest==4.1.1
 pytest-mock==1.10.0
-python-anodot==2.0.0
+python-anodot==2.0.3
 python-dateutil==2.8.0
 pytz==2018.9
 PyYAML==5.4
@@ -58,6 +58,6 @@ alembic==1.4.2
 regex==2020.11.13
 inject==4.3.1
 prometheus-client==0.9.0
-git+https://github.com/anodot/sdc-client.git@1.1.11
+git+https://github.com/anodot/sdc-client.git@1.1.12
 rrdtool==0.1.15
 pysnmp==4.4.12

@@ -27,7 +27,7 @@ def get_pipeline_config(pipeline_id: str):
 
 
 @pipelines.route('/pipelines', methods=['POST'])
-@routes.check_prerequisites
+@routes.check_pipeline_prerequisites
 def create():
     try:
         pipelines_ = pipeline.json_builder.build_multiple(request.get_json())
@@ -39,7 +39,7 @@ def create():
 
 
 @pipelines.route('/pipelines', methods=['PUT'])
-@routes.check_prerequisites
+@routes.check_pipeline_prerequisites
 def edit():
     try:
         pipelines_ = pipeline.json_builder.edit_multiple(request.get_json())
@@ -67,7 +67,7 @@ def force_delete(pipeline_id: str):
 @needs_pipeline
 def start(pipeline_id: str):
     try:
-        sdc_client.start(pipeline.repository.get_by_id(pipeline_id))
+        pipeline.manager.start(pipeline.repository.get_by_id(pipeline_id))
     except sdc_client.PipelineFreezeException as e:
         return jsonify(str(e)), 400
     return jsonify('')
@@ -149,8 +149,13 @@ def reset(pipeline_id: str):
 @pipelines.route('/pipeline-status-change/<pipeline_id>', methods=['POST'])
 def pipeline_status_change(pipeline_id: str):
     data = request.get_json()
+    status = data['pipeline_status']
     pipeline_ = pipeline.repository.get_by_id(pipeline_id)
-    pipeline_.status = data['pipeline_status']
+
+    if status == pipeline.Pipeline.STATUS_RUNNING_ERROR:
+        pipeline.manager.increase_retry_counter(pipeline_)
+
+    pipeline_.status = status
     pipeline.repository.save(pipeline_)
     labels = (pipeline_.streamsets.url, pipeline_.name, pipeline_.source.type)
     monitoring.metrics.PIPELINE_STATUS.labels(*labels).state(pipeline_.status)
@@ -160,5 +165,8 @@ def pipeline_status_change(pipeline_id: str):
 @pipelines.route('/pipeline-offset/<pipeline_id>', methods=['POST'])
 @needs_pipeline
 def pipeline_offset_changed(pipeline_id: str):
-    pipeline.manager.update_pipeline_offset(pipeline.repository.get_by_id(pipeline_id))
+    pipeline.manager.update_pipeline_offset(
+        pipeline.repository.get_by_id(pipeline_id),
+        float(request.get_json()['offset'])
+    )
     return jsonify('')

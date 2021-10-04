@@ -7,6 +7,7 @@ import inject
 
 from abc import ABC, abstractmethod
 from datetime import datetime
+from urllib.parse import urlparse
 from pysnmp.entity.engine import SnmpEngine
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 from agent import source
@@ -75,7 +76,7 @@ class InfluxValidator(Validator):
             self.source.config.get('username'),
             self.source.config.get('password')
         )
-        if not any([db['name'] == self.source.config['db'] for db in client.get_list_database()]):
+        if all(db['name'] == self.source.config['db'] for db in client.get_list_database()):
             raise ValidationException(
                 f"Database {self.source.config['db']} not found. Please check your credentials again"
             )
@@ -138,13 +139,23 @@ class JDBCValidator(Validator):
             validator.validate_url_format_with_port(self.source.config[source.JDBCSource.CONFIG_CONNECTION_STRING])
         except validator.ValidationException as e:
             raise ValidationException(str(e))
-        result = urllib.parse.urlparse(self.source.config[source.JDBCSource.CONFIG_CONNECTION_STRING])
+        result = urlparse(self.source.config[source.JDBCSource.CONFIG_CONNECTION_STRING])
         if self.source.type == source.TYPE_MYSQL and result.scheme != 'mysql':
             raise ValidationException('Wrong url scheme. Use `mysql`')
         if self.source.type == source.TYPE_POSTGRES and result.scheme != 'postgresql':
             raise ValidationException('Wrong url scheme. Use `postgresql`')
         if self.source.type == source.TYPE_CLICKHOUSE and result.scheme != 'clickhouse':
             raise ValidationException('Wrong url scheme. Use `clickhouse`')
+
+
+class OracleValidator(JDBCValidator):
+    @if_validation_enabled
+    def validate_connection_string(self):
+        url = self.source.config[source.JDBCSource.CONFIG_CONNECTION_STRING]
+        if not url.startswith('oracle:thin:@') or len(url.split('@')[1].split(':')) != 3:
+            raise ValidationException(
+                f'{url} - invalid url, please provide url in format `oracle:thin:@<host>:<port>:<sid>`'
+            )
 
 
 class MongoValidator(Validator):
@@ -361,6 +372,7 @@ def get_validator(source_: Source) -> Validator:
         source.TYPE_MONGO: MongoValidator,
         source.TYPE_MYSQL: JDBCValidator,
         source.TYPE_OBSERVIUM: ObserviumValidator,
+        source.TYPE_ORACLE: OracleValidator,
         source.TYPE_POSTGRES: JDBCValidator,
         source.TYPE_SAGE: SageValidator,
         source.TYPE_SNMP: SNMPValidator,

@@ -56,9 +56,9 @@ class TestZabbix(TestInputBase):
         result = cli_runner.invoke(cli.pipeline.create, ['-f', input_file_path], catch_exceptions=False)
         assert result.exit_code == 0
         pipeline_ = pipeline.repository.get_by_id('test_zabbix_edit_query')
-        pipeline_.offset = PipelineOffset(pipeline_.id, '{"version": 2, "offsets": {"": "1611320000_30590"}}')
+        pipeline_.offset = PipelineOffset(pipeline_.id, '{"version": 2, "offsets": {"": "1611320000_30590"}}', 1611320000.0)
         sdc_client.update(pipeline_)
-        pipeline.repository.save_offset(pipeline_.offset)
+        pipeline.repository.save(pipeline_.offset)
 
     def test_edit_advanced(self, cli_runner, pipeline_id: str):
         days_to_backfill = (datetime.now() - datetime(year=2021, month=1, day=22)).days

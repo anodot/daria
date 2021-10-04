@@ -2,6 +2,7 @@ import json
 import os
 
 from agent import source
+from agent.modules import constants
 from agent.modules.logger import get_logger
 from agent.modules.constants import ROOT_DIR
 from agent.pipeline import Pipeline
@@ -28,14 +29,15 @@ class BaseConfigLoader:
     def _get_config_file(cls, pipeline: Pipeline) -> str:
         name = {
             source.TYPE_CACTI: 'cacti',
-            source.TYPE_CLICKHOUSE: 'jdbc_http',
+            source.TYPE_CLICKHOUSE: 'jdbc',
             source.TYPE_ELASTIC: 'elastic_http',
             source.TYPE_INFLUX: 'influx_http',
             source.TYPE_KAFKA: 'kafka_http',
             source.TYPE_MONGO: 'mongo_http',
-            source.TYPE_MYSQL: 'jdbc_http',
-            source.TYPE_POSTGRES: 'jdbc_http',
+            source.TYPE_MYSQL: 'jdbc',
+            source.TYPE_POSTGRES: 'jdbc',
             source.TYPE_SAGE: 'sage_http',
+            source.TYPE_SNMP: 'snmp',
             source.TYPE_SPLUNK: 'tcp_server_http',
             source.TYPE_SOLARWINDS: 'solarwinds',
             source.TYPE_THANOS: 'promql_http',
@@ -45,18 +47,23 @@ class BaseConfigLoader:
         return name + '.json'
 
 
+class RawConfigLoader(BaseConfigLoader):
+    BASE_PIPELINE_CONFIGS_PATH = 'base_pipelines/raw'
+
+
 class SchemaBaseConfigLoader(BaseConfigLoader):
     @classmethod
     def _get_config_file(cls, pipeline: Pipeline) -> str:
         name = {
-            source.TYPE_CLICKHOUSE: 'jdbc_http',
+            source.TYPE_CLICKHOUSE: 'jdbc',
             source.TYPE_DIRECTORY: 'directory_http',
             source.TYPE_INFLUX: 'influx',
             source.TYPE_INFLUX_2: 'influx2',
             source.TYPE_KAFKA: 'kafka_http',
-            source.TYPE_MYSQL: 'jdbc_http',
+            source.TYPE_MYSQL: 'jdbc',
+            source.TYPE_ORACLE: 'jdbc',
             source.TYPE_OBSERVIUM: 'observium',
-            source.TYPE_POSTGRES: 'jdbc_http',
+            source.TYPE_POSTGRES: 'jdbc',
             source.TYPE_SNMP: 'snmp',
         }[pipeline.source.type]
         return name + '_schema.json'
@@ -76,6 +83,7 @@ class TestPipelineBaseConfigLoader(BaseConfigLoader):
             source.TYPE_KAFKA: 'test_kafka_kjeu4334',
             source.TYPE_MYSQL: 'test_jdbc_pdsf4587',
             source.TYPE_POSTGRES: 'test_jdbc_pdsf4587',
+            source.TYPE_ORACLE: 'test_jdbc_pdsf4587',
             source.TYPE_SAGE: 'test_sage_jfhdkj',
             source.TYPE_SPLUNK: 'test_tcp_server_jksrj322',
             source.TYPE_SOLARWINDS: 'test_solarwinds_jksrj322',
@@ -115,11 +123,20 @@ class BaseConfigHandler:
         for config in self.config['configuration']:
             if config['name'] == 'constants':
                 config['value'] = [{'key': key, 'value': val} for key, val in self._get_pipeline_config().items()]
+            if config['name'] == 'retryAttempts':
+                config['value'] = constants.STREAMSETS_MAX_RETRY_ATTEMPTS
 
     def _get_pipeline_config(self) -> dict:
         return {
             'TOKEN': self.pipeline.destination.token,
             'PROTOCOL': self.pipeline.destination.PROTOCOL_20,
             'ANODOT_BASE_URL': self.pipeline.destination.url,
+            'AGENT_URL': self.pipeline.streamsets.agent_external_url,
+        }
+
+
+class BaseRawConfigHandler(BaseConfigHandler):
+    def _get_pipeline_config(self) -> dict:
+        return {
             'AGENT_URL': self.pipeline.streamsets.agent_external_url,
         }
