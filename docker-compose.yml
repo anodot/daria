@@ -201,7 +201,7 @@ services:
     volumes:
       - /usr/share/elasticsearch/data
     ports:
-      - 9200:9200
+      - "9200:9200"
 
   dummy_destination:
     build: containers/dummy_destination
@@ -216,7 +216,7 @@ services:
     container_name: victoriametrics
     image: victoriametrics/victoria-metrics:v1.43.0
     ports:
-      - 8428:8428
+      - "8428:8428"
     volumes:
       - /storage
     command:
@@ -237,7 +237,7 @@ services:
   zabbix-web:
     image: zabbix/zabbix-web-nginx-mysql:alpine-4.4.10
     ports:
-      - 8888:8080
+      - "8888:8080"
     depends_on:
       - zabbix-server
     environment:
@@ -261,7 +261,7 @@ services:
     build: containers/snmpsim
     container_name: snmpsim
     ports:
-      - 1161:1161/udp
+      - "1161:1161/udp"
 
 volumes:
   sdc-data:

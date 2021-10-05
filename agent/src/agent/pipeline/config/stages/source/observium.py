@@ -3,7 +3,7 @@ import urllib.parse
 from agent import source
 from agent.pipeline.config.stages.source import Source
 
-
+# todo как работает ports в пайплайн конфиге? добавить их в schema definitions
 ALLOWED_PORTS_PARAMS = ["location", "device_id", "group", "disable", "deleted", "ignore", "ifSpeed",
                         "ifType", "hostname", "ifAlias", "ifDescr", "port_descr_type", "errors",
                         "alerted", "state", "cbqos", "mac_accounting"]

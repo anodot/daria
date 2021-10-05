@@ -73,13 +73,10 @@ def get_devices():
             if i == N_REQUESTS_TRIES:
                 raise
             time.sleep(2 ** i)
-    devices = {}
-    for device in res.values():
-        devices[device['device_id']] = device
-    return devices
+    return {device['device_id']: device for device in res.values()}
 
 
-def add_sys_name_and_locaion(ports_data, devices):
+def add_sys_name_and_location(ports_data, devices):
     for port in ports_data.values():
         # todo probably log or kind of if there's no such device?
         if port['device_id'] in devices:
@@ -120,7 +117,7 @@ while True:
         if end > get_now_with_delay():
             time.sleep(end - get_now_with_delay())
 
-        data = add_sys_name_and_locaion(get_ports(), get_devices())
+        data = add_sys_name_and_location(get_ports(), get_devices())
         metrics = create_metrics(data)
 
         for metric in metrics:
