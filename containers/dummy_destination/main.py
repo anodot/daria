@@ -373,5 +373,105 @@ def observium_ports():
     })
 
 
+@app.route('/api/v0/mempools', methods=['GET'])
+def observium_mempools():
+    # basic auth admin:admin
+    if request.headers.get('Authorization') != 'Basic YWRtaW46YWRtaW4=':
+        return json.dumps({'error': 'Wrong user or pass'}), 401
+    return json.dumps({
+        "vars": [],
+        "query": "SELECT *, `mempools`.`mempool_id` AS `mempool_id` FROM `mempools` WHERE 1 AND (( `device_id` IS NOT NULL))  ORDER BY `mempool_descr` ASC",
+        "status": "ok",
+        "count": 1,
+        "entries": {
+            "1": {
+                "mempool_id": "1",
+                "mempool_index": "1253.1",
+                "entPhysicalIndex": None,
+                "hrDeviceIndex": None,
+                "mempool_mib": "CISCO-ENHANCED-MEMPOOL-MIB",
+                "mempool_multiplier": "1.00000",
+                "mempool_hc": "0",
+                "mempool_descr": "Module 1 (Processor)",
+                "device_id": "1",
+                "mempool_deleted": "0",
+                "mempool_warn_limit": None,
+                "mempool_crit_limit": None,
+                "mempool_ignore": None,
+                "mempool_table": "",
+                "mempool_polled": "1628160603",
+                "mempool_perc": "21",
+                "mempool_used": "43289060",
+                "mempool_free": "163147772",
+                "mempool_total": "206436832"
+            }
+        }
+    })
+
+
+@app.route('/api/v0/processors', methods=['GET'])
+def observium_processors():
+    # basic auth admin:admin
+    if request.headers.get('Authorization') != 'Basic YWRtaW46YWRtaW4=':
+        return json.dumps({'error': 'Wrong user or pass'}), 401
+    return json.dumps({
+        "status": "ok",
+        "count": 1,
+        "entries": {
+            "1": {
+                "processor_id": "1",
+                "entPhysicalIndex": "187073",
+                "hrDeviceIndex": None,
+                "device_id": "1",
+                "processor_oid": ".1.3.6.1.4.1.9.9.109.1.1.1.1.8.2082",
+                "processor_index": "202",
+                "processor_type": "cpm",
+                "processor_descr": "description",
+                "processor_returns_idle": "0",
+                "processor_precision": "1",
+                "processor_warn_limit": None,
+                "processor_warn_count": None,
+                "processor_crit_limit": None,
+                "processor_crit_count": None,
+                "processor_usage": "3",
+                "processor_polled": "1633517705",
+                "processor_ignore": "0"
+            }
+        }
+    })
+
+
+@app.route('/api/v0/storage', methods=['GET'])
+def observium_storage():
+    # basic auth admin:admin
+    if request.headers.get('Authorization') != 'Basic YWRtaW46YWRtaW4=':
+        return json.dumps({'error': 'Wrong user or pass'}), 401
+    return json.dumps({
+        "status": "ok",
+        "count": 20,
+        "storage": {
+            "1": {
+                "storage_id": "1",
+                "device_id": "1",
+                "storage_mib": "HOST-RESOURCES-MIB",
+                "storage_index": "1",
+                "storage_type": "flashMemory",
+                "storage_descr": "description",
+                "storage_hc": "0",
+                "storage_deleted": "0",
+                "storage_warn_limit": None,
+                "storage_crit_limit": None,
+                "storage_ignore": "0",
+                "storage_polled": "1633518002",
+                "storage_size": "92762112",
+                "storage_units": "2048",
+                "storage_used": "47782296",
+                "storage_free": "44979816",
+                "storage_perc": "52"
+            }
+        }
+    })
+
+
 if __name__ == '__main__':
     app.run()

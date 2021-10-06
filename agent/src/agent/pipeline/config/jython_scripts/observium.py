@@ -33,67 +33,89 @@ def get_interval():
     return int(sdc.userParams['INTERVAL_IN_SECONDS'])
 
 
-def get_ports():
+def _get(url, params, response_key):
     for i in range(1, N_REQUESTS_TRIES + 1):
         try:
             res = requests.get(
-                sdc.userParams['PORTS_URL'],
+                url,
                 auth=HTTPBasicAuth(sdc.userParams['API_USER'], sdc.userParams['API_PASSWORD']),
-                params=sdc.userParams['PORTS_PARAMS'],
+                params=params,
                 verify=bool(sdc.userParams['VERIFY_SSL']),
                 timeout=sdc.userParams['QUERY_TIMEOUT'],
             )
             res.raise_for_status()
-            return res.json()['ports']
+            return res.json()[response_key]
         except requests.HTTPError as e:
             requests.post(sdc.userParams['MONITORING_URL'] + str(res.status_code))
             sdc.log.error(str(e))
             if i == N_REQUESTS_TRIES:
                 raise
             time.sleep(2 ** i)
+
+
+def get_ports():
+    return _get(
+        sdc.userParams['PORTS_URL'],
+        sdc.userParams['PORTS_PARAMS'],
+        'ports'
+    )
+
+
+def _transform(dict_, key):
+    return {obj[key]: obj for obj in dict_.values()}
 
 
 def get_devices():
-    for i in range(1, N_REQUESTS_TRIES + 1):
-        try:
-            res = requests.get(
-                sdc.userParams['DEVICES_URL'],
-                auth=HTTPBasicAuth(sdc.userParams['API_USER'], sdc.userParams['API_PASSWORD']),
-                # todo add or remove
-                # params=params,
-                verify=bool(sdc.userParams['VERIFY_SSL']),
-                timeout=sdc.userParams['QUERY_TIMEOUT'],
-            )
-            res.raise_for_status()
-            res = res.json()['devices']
-            break
-        except requests.HTTPError as e:
-            requests.post(sdc.userParams['MONITORING_URL'] + str(res.status_code))
-            sdc.log.error(str(e))
-            if i == N_REQUESTS_TRIES:
-                raise
-            time.sleep(2 ** i)
-    return {device['device_id']: device for device in res.values()}
+    devices = _get(
+        sdc.userParams['DEVICES_URL'],
+        {},
+        'devices'
+    )
+    return _transform(devices, 'device_id')
 
 
-def add_sys_name_and_location(ports_data, devices):
-    for port in ports_data.values():
-        # todo probably log or kind of if there's no such device?
-        if port['device_id'] in devices:
-            port['sysName'] = devices[port['device_id']]['sysName']
-            port['location'] = devices[port['device_id']]['location']
-    return ports_data
+def get_mempools():
+    mempools = _get(
+        sdc.userParams['MEMPOOLS_URL'],
+        sdc.userParams['MEMPOOLS_PARAMS'],
+        'entries'
+    )
+    return _transform(mempools, 'mempool_id')
 
 
-def create_metrics(ports_data):
-    return [transform_port(port_data, sdc.userParams['DIMENSIONS'], sdc.userParams['MEASUREMENTS']) for port_data in ports_data.values()]
+def get_processors():
+    processors = _get(
+        sdc.userParams['PROCESSORS_URL'],
+        sdc.userParams['PROCESSOR_PARAMS'],
+        'entries'
+    )
+    return _transform(processors, 'processor_id')
 
 
-def transform_port(port_data, dimensions, measurements):
+def get_storage():
+    return _get(
+        sdc.userParams['STORAGE_URL'],
+        sdc.userParams['STORAGE_PARAMS'],
+        'storage'
+    )
+
+
+def add_sys_name_and_location(metrics_, devices):
+    for obj in metrics_:
+        obj['dimensions']['sysName'] = devices[obj['device_id']]['sysName']
+        obj['dimensions']['location'] = devices[obj['device_id']]['location']
+    return metrics_
+
+
+def create_metrics(data_, poll_time_key, dimensions, measurements):
+    return [transform(obj, poll_time_key, dimensions, measurements) for obj in data_.values()]
+
+
+def transform(data_, poll_time_key, dimensions, measurements):
     return {
-        "timestamp": port_data['poll_time'],
-        "dimensions": {k: v for k, v in port_data.items() if k in dimensions},
-        "measurements": {k: float(v) for k, v in port_data.items() if k in measurements},
+        "timestamp": data_[poll_time_key],
+        "dimensions": {k: v for k, v in data_.items() if k in dimensions},
+        "measurements": {k: float(v) for k, v in data_.items() if k in measurements},
         "schemaId": sdc.userParams['SCHEMA_ID'],
     }
 
@@ -117,8 +139,23 @@ while True:
         if end > get_now_with_delay():
             time.sleep(end - get_now_with_delay())
 
-        data = add_sys_name_and_location(get_ports(), get_devices())
-        metrics = create_metrics(data)
+        metrics = []
+        devices_data = get_devices()
+        ports_metrics = create_metrics(get_ports(), 'poll_time', sdc.userParams['PORTS_DIMENSIONS'], sdc.userParams['PORTS_MEASUREMENTS'])
+        ports_metrics = add_sys_name_and_location(ports_metrics, devices_data)
+        metrics.append(ports_metrics)
+
+        mempools_metrics = create_metrics(get_mempools(), 'mempool_polled', sdc.userParams['MEMPOOLS_DIMENSIONS'], sdc.userParams['MEMPOOLS_MEASUREMENTS'])
+        mempools_metrics = add_sys_name_and_location(mempools_metrics, devices_data)
+        metrics.append(mempools_metrics)
+
+        processors_metrics = create_metrics(get_processors(), 'processor_polled', sdc.userParams['PROCESSORS_DIMENSIONS'], sdc.userParams['PROCESSORS_MEASUREMENTS'])
+        processors_metrics = add_sys_name_and_location(processors_metrics, devices_data)
+        metrics.append(processors_metrics)
+
+        storage_metrics = create_metrics(get_storage(), 'storage_polled', sdc.userParams['STORAGE_DIMENSIONS'], sdc.userParams['STORAGE_MEASUREMENTS'])
+        storage_metrics = add_sys_name_and_location(storage_metrics, devices_data)
+        metrics.append(storage_metrics)
 
         for metric in metrics:
             record = sdc.createRecord('record created ' + str(datetime.now()))
@@ -141,5 +178,4 @@ while True:
 if cur_batch.size() + cur_batch.errorCount() + cur_batch.eventCount() > 0:
     cur_batch.process(entityName, str(offset))
 
-
-# BIG TODO how to be with intervals?
+# todo run it locally to debug

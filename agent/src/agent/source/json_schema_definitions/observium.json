@@ -2,6 +2,7 @@
   "type": "object",
   "properties": {
     "url": {"type": "string"},
+    "endpoint": {"type": "string", "enum": ["ports", "mempools", "processors", "storage"]},
     "username": {"type": "string"},
     "password": {"type": "string"},
     "verify_ssl": {"type": "boolean"},

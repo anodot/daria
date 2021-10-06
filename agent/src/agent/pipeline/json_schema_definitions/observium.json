@@ -3,21 +3,11 @@
   "properties": {
     "source": {"type": "string"},
     "pipeline_id": {"type": "string"},
-    "delay": {"type": "integer"},
-    "days_to_backfill": {"type": "integer"},
     "interval": {"type": "integer"},
-    "timestamp": {
-      "type":  "object",
-      "properties": {
-        "name": {"type": "string", "minLength": 1},
-        "type": {"type":  "string", "enum": ["string", "unix", "unix_ms"]},
-        "format": {"type": "string", "minLength": 1}
-      }
-    },
     "count_records": {"type": "boolean"},
-    "values": {"type": "object"},
-    "measurement_names": {"type": "object"},
     "dimensions": {"type": "array", "items": {"type": "string"}},
+    "values": {"type": "object"},
+    "params": {"type": "object"},
     "rename_dimensions_mapping": {"type": "object"},
     "tags": {
       "type": "object",
@@ -25,5 +15,5 @@
     },
     "properties": {"type": "object"}
   },
-  "required": ["interval", "timestamp", "values", "measurement_names"]
+  "required": ["interval"]
 }

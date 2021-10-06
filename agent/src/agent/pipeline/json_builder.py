@@ -75,7 +75,7 @@ def edit_multiple(configs: list) -> List[Pipeline]:
         try:
             pipelines.append(edit(config))
         except Exception as e:
-            exceptions[config['pipeline_id']] = f'{type(e).__name__}: {str(e)}'
+            exceptions[config['pipeline_id']] = f'{type(e).__name__}: {e}'
         if exceptions:
             raise pipeline.PipelineException(json.dumps(exceptions))
     return pipelines
@@ -300,9 +300,7 @@ class ObserviumLoadClientData(LoadClientData):
 
     def load(self, client_config):
         super().load(client_config)
-        self.client_config['timestamp'] = {}
-        self.client_config['timestamp']['type'] = 'unix'
-        self.client_config['timestamp']['name'] = 'poll_time'
+        self.client_config['timestamp'] = {'type': 'unix'}
         self.client_config['uses_schema'] = True
         return self.client_config
 
