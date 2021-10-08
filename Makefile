@@ -7,9 +7,11 @@ DOCKER_TEST_PARALLEL = $(DOCKER_TEST) -n $(THREADS) --dist=loadfile
 ##---------
 ## RELEASE
 ##---------
-all: build-all run-first sleep-1 setup-first test-first stop-first run-second sleep-2 setup-second test-second
+all: build-all test-all
 
 build-all: get-streamsets-libs build-docker
+
+test-all: run-first sleep-1 setup-first test-first stop-first run-second sleep-2 setup-second test-second
 
 run-first:
 	docker-compose -f docker-compose-dev.yml up -d dc dc2 agent squid dummy_destination kafka influx influx-2 postgres mysql snmpsim
