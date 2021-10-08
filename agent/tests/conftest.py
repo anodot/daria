@@ -6,7 +6,7 @@ from click.testing import CliRunner
 from agent import di
 from agent.api import main
 
-DUMMY_DESTINATION_OUTPUT_PATH = '/output'
+DUMMY_DESTINATION_OUTPUT_PATH = '/usr/src/app/output'
 TEST_DATASETS_PATH = '/home'
 
 INPUT_FILES_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'input_files')
