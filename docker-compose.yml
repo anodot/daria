@@ -190,19 +190,6 @@ services:
       - /var/lib/postgresql/data
       - ./volumes/postgres-initdb:/docker-entrypoint-initdb.d
 
-  es:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
-    container_name: agent-es
-    environment:
-      - node.name=es01
-      - cluster.name=es-docker-cluster
-      - cluster.initial_master_nodes=es01
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    volumes:
-      - /usr/share/elasticsearch/data
-    ports:
-      - 9200:9200
-
   dummy_destination:
     build: containers/dummy_destination
     container_name: dummy_destination
