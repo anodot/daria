@@ -1,6 +1,5 @@
 THREADS = 4
-DOCKER_COMPOSE_DEV_FILE = docker-compose-dev.yml
-DOCKER_COMPOSE_DEV = docker-compose -f $(DOCKER_COMPOSE_DEV_FILE)
+DOCKER_COMPOSE_DEV = docker-compose -f docker-compose-dev.yml
 DOCKER_TEST = docker exec -i anodot-agent pytest -x -vv --disable-pytest-warnings
 DOCKER_TEST_PARALLEL = $(DOCKER_TEST) -n $(THREADS) --dist=loadfile
 
@@ -33,7 +32,7 @@ test-second: test-api-2 test-apply test-input-2 test-pipelines-2 test-send-to-wa
 ##-------------
 ## DEVELOPMENT
 ##-------------
-all-dev: clean-docker-volumes build-all-dev sleep-2 test-first
+all-dev: clean-docker-volumes build-all-dev sleep-2 test-all
 
 build-all-dev: build-dev sleep-2 setup-all
 
