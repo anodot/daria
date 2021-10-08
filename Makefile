@@ -152,7 +152,7 @@ install-streamsets-requirements:
 	rm -rf containers/streamsets/python-libs/*
 	pip install --upgrade pip && pip install --target containers/streamsets/python-libs -r containers/streamsets/python_requirements.txt
 
-setup-all: setup-victoria setup-kafka setup-elastic setup-zabbix
+setup-all: setup-victoria setup-kafka setup-zabbix
 
 ##-----------------------
 ## DEV DEPENDENCY TARGETS
