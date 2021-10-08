@@ -276,7 +276,7 @@ setup-zabbix:
 
 
 sleep-1:
-	sleep 70
+	sleep 90
 
 sleep-2:
 	sleep 60
