@@ -28,3 +28,4 @@ t = 1
 # cli.destination()
 # cli.pipeline.create()
 # cli.streamsets.delete(["asdfa"])
+# d
