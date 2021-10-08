@@ -58,7 +58,7 @@ services:
       - db
     volumes:
       - ./agent/backup-data:/usr/src/app/backup-data
-      - ./agent/output:/usr/src/app/output
+      - ./agent/output:/output
       - ./agent:/usr/src/app
 #      - ./scripts:/usr/src/app/scripts
       - ./test-datasets:/home
