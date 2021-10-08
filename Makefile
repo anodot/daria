@@ -14,7 +14,7 @@ build-all: get-streamsets-libs build-docker
 test-all: run-first sleep-1 setup-first test-first stop-first run-second sleep-2 setup-second test-second
 
 run-first:
-	docker-compose -f docker-compose-dev.yml up -d dc dc2 agent squid dummy_destination kafka influx influx-2 postgres mysql snmpsim
+	docker-compose up -d dc dc2 agent squid dummy_destination kafka influx influx-2 postgres mysql snmpsim
 
 setup-first: setup-kafka
 
@@ -24,7 +24,7 @@ stop-first:
 	docker-compose stop kafka influx influx-2 postgres snmpsim
 
 run-second:
-	docker-compose -f docker-compose-dev.yml up -d es sage victoriametrics zabbix-server zabbix-web zabbix-agent mongo
+	docker-compose up -d es sage victoriametrics zabbix-server zabbix-web zabbix-agent mongo
 
 setup-second: setup-elastic setup-victoria setup-zabbix
 
