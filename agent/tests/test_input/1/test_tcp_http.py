@@ -1,7 +1,7 @@
 import traceback
 
-from .test_zpipeline_base import TestInputBase
-from ..conftest import get_input_file_path
+from ..test_zpipeline_base import TestInputBase
+from agent.tests.conftest import get_input_file_path
 from agent import source, cli
 
 

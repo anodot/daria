@@ -9,11 +9,26 @@ DOCKER_TEST_PARALLEL = $(DOCKER_TEST) -n $(THREADS) --dist=loadfile
 ##---------
 ## RELEASE
 ##---------
-all: build-all test-all
+all: build-all run-first sleep setup-first test-first stop-first run-second sleep setup-second test-second
 
-build-all: get-streamsets-libs build-docker sleep setup-all
+build-all: get-streamsets-libs build-docker
 
-test-all: run-unit-tests test-flask-app test-streamsets test-raw-input test-raw-pipelines test-destination test-apply test-api test-api-scripts test-input test-streamsets-2 test-send-to-bc test-pipelines test-send-to-watermark
+run-first:
+	docker-compose up -d dc dc2 agent squid dummy_destination kafka influx influx-2 postgres mysql snmpsim
+
+setup-first: setup-kafka
+
+test-first: run-unit-tests test-flask-app test-streamsets test-raw-input test-raw-pipelines test-destination test-apply test-api test-api-scripts test-input-1 test-streamsets-2 test-send-to-bc test-pipelines-1
+
+stop-first:
+	docker-compose down -v kafka influx influx-2 postgres snmpsim
+
+run-second:
+	docker-compose up -d es sage victoriametrics zabbix-server zabbix-web zabbix-agent mongo
+
+setup-second: setup-elastic setup-victoria setup-zabbix
+
+test-first: test-input-2 test-streamsets-2 test-pipelines-2 test-send-to-watermark
 
 ##-------------
 ## DEVELOPMENT
@@ -97,7 +112,6 @@ test-oracle: bootstrap
 build-docker:
 	docker-compose down -v
 	docker-compose build --build-arg GIT_SHA1="$(git describe --tags --dirty --always)"
-	docker-compose up -d
 
 test-apply:
 	$(DOCKER_TEST) tests/test_apply.py
@@ -123,11 +137,17 @@ test-raw-pipelines:
 test-streamsets-2:
 	$(DOCKER_TEST) tests/test_streamsets_2.py
 
-test-input:
-	$(DOCKER_TEST_PARALLEL) tests/test_input/
+test-input-1:
+	$(DOCKER_TEST_PARALLEL) tests/test_input/1/
 
-test-pipelines:
-	$(DOCKER_TEST_PARALLEL) tests/test_pipelines/
+test-input-2:
+	$(DOCKER_TEST_PARALLEL) tests/test_input/2/
+
+test-pipelines-1:
+	$(DOCKER_TEST_PARALLEL) tests/test_pipelines/1/
+
+test-pipelines-2:
+	$(DOCKER_TEST_PARALLEL) tests/test_pipelines/2/
 
 test-api:
 	$(DOCKER_TEST) tests/api/test_destination.py

@@ -1,7 +1,7 @@
 from agent import cli
 from agent import source
-from .test_zpipeline_base import TestInputBase
-from ..conftest import get_input_file_path, generate_input
+from ..test_zpipeline_base import TestInputBase
+from agent.tests.conftest import get_input_file_path, generate_input
 
 
 class TestInflux(TestInputBase):

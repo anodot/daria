@@ -1,6 +1,6 @@
 from datetime import datetime
-from .test_zpipeline_base import TestInputBase
-from ..conftest import generate_input
+from ..test_zpipeline_base import TestInputBase
+from agent.tests.conftest import generate_input
 from agent import cli, source, pipeline
 
 

@@ -1,8 +1,8 @@
 from datetime import datetime
 from agent import pipeline, source
 from agent import cli
-from .test_zpipeline_base import TestInputBase
-from ..conftest import generate_input
+from ..test_zpipeline_base import TestInputBase
+from agent.tests.conftest import generate_input
 
 
 def _get_days_to_backfill():

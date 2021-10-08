@@ -1,4 +1,4 @@
-from .test_zpipeline_base import TestInputBase
+from ..test_zpipeline_base import TestInputBase
 
 
 class TestSNMP(TestInputBase):
