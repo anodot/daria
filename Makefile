@@ -24,7 +24,7 @@ stop-first:
 	docker-compose stop kafka influx influx-2 postgres snmpsim
 
 run-second:
-	docker-compose up -d es sage victoriametrics zabbix-server zabbix-web zabbix-agent mongo
+	docker-compose up -d es sage victoriametrics zabbix-server zabbix-web zabbix-agent mongo clickhouse
 
 setup-second: setup-elastic setup-victoria setup-zabbix
 
