@@ -61,7 +61,7 @@ services:
     volumes:
       - ./agent/backup-data:/usr/src/app/backup-data
       #      - ./scripts:/usr/src/app/scripts
-      - dummy-destination-data:/output
+      - dummy-destination-data:/usr/src/output
       - ./test-datasets:/home
 
   db:
