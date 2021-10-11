@@ -8,6 +8,7 @@ Create Date: 2021-10-11 17:58:30.671514
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.sql import text
+from agent import pipeline
 
 
 # revision identifiers, used by Alembic.
@@ -18,7 +19,7 @@ depends_on = None
 
 
 def upgrade():
-    op.get_bind().execute(text("UPDATE pipelines SET type = 'regular_pipeline' WHERE type IS NULL"))
+    op.get_bind().execute(text(f"UPDATE pipelines SET type = {pipeline.REGULAR_PIPELINE} WHERE type IS NULL"))
 
 
 def downgrade():
