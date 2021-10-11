@@ -1,4 +1,6 @@
 import os
+import time
+
 import pytest
 
 from agent.modules.constants import LOCAL_DESTINATION_OUTPUT_DIR
@@ -25,6 +27,8 @@ class TestRawPipelineBase(TestPipelineBase):
 
     def test_force_stop(self, cli_runner, name):
         super(TestRawPipelineBase, self).test_force_stop(cli_runner, name)
+        # give Streamsets time to send status change to agent
+        time.sleep(1)
 
     def test_output(self, file_name, pipeline_type, output_file):
         expected_output = \
