@@ -8,7 +8,6 @@ import inject
 from abc import ABC, abstractmethod
 from datetime import datetime
 from urllib.parse import urlparse
-
 from pysnmp.entity.engine import SnmpEngine
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 from agent import source

@@ -44,7 +44,7 @@ def main():
     num_of_errors = 0
     for pipeline_ in pipelines:
         if pipeline_.uses_schema \
-                and pipeline_.periodic_watermark_config \
+                and pipeline_.periodic_watermark_config and pipeline_.offset \
                 and pipeline_.offset.timestamp + pipeline_.watermark_delay <= time.time():
             try:
                 watermark = _get_next_bucket_start(pipeline_)
