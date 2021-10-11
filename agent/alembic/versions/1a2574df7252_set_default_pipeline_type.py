@@ -19,7 +19,7 @@ depends_on = None
 
 
 def upgrade():
-    op.get_bind().execute(text(f"UPDATE pipelines SET type = {pipeline.REGULAR_PIPELINE} WHERE type IS NULL"))
+    op.get_bind().execute(text(f"UPDATE pipelines SET type = '{pipeline.REGULAR_PIPELINE}' WHERE type IS NULL"))
 
 
 def downgrade():
