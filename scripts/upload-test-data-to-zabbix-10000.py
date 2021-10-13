@@ -2,9 +2,10 @@ from sqlalchemy import create_engine
 from agent.modules import zabbix
 
 
-HOSTNAME = 'zabbixagent'
+HOSTNAME = 'zabbixagent6'
+N_RECORDS = 1000
 
-client = zabbix.Client('http://localhost:8888', 'Admin', 'zabbix')
+client = zabbix.Client('http://zabbix-web:8080', 'Admin', 'zabbix')
 print('Auth successful')
 
 host = client.post('host.create', {
@@ -36,7 +37,7 @@ for j in range(0, 2):
     memory_item = client.post('item.create', {
         'hostid': host_id,
         'name': 'agent - Memory - anodot',
-        'key_': 'vm.memory.size_' + str(j),
+        'key_': 'vm.memory.size_aa' + str(j),
         'type': 0,
         'value_type': 3,
         'delay': '30s',
@@ -45,10 +46,10 @@ for j in range(0, 2):
     memory_item_id = memory_item['itemids'][0]
     print(str(j) + ' Memory item created')
 
-    mysql_conn = create_engine(f'mysql+mysqlconnector://root@127.0.0.1:3308/zabbix')
+    mysql_conn = create_engine(f'mysql+mysqlconnector://root@agent-mysql:3306/zabbix')
     cpu_values = []
     memory_values = []
-    for i in range(0, 10):
+    for i in range(0, N_RECORDS):
         # cpu_values.append((cpu_item_id, str(1611322479 + i), '0.1', '257117700'))
         # cpu_values.append((cpu_item_id, str(1611322529 + i), '0.23', '267117877'))
         # cpu_values.append((cpu_item_id, str(1611322559 + i), '0.15', '267237777'))
