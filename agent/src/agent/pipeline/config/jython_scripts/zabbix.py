@@ -15,32 +15,43 @@ finally:
 
 entityName = ''
 N_REQUESTS_TRIES = 3
+SLEEP_INTERVAL_SECONDS = 30
+LOG_EVERYTHING = sdc.userParams['LOG_EVERYTHING']
+
+
+def extra_log(text):
+    if LOG_EVERYTHING:
+        sdc.log.info(str(text))
 
 
 class Client:
     def __init__(self, url, user, password):
         self.url = url + '/api_jsonrpc.php'
         self.auth_token = None
+        self.session = requests.Session()
         self._authenticate(user, password)
 
     def post(self, method, params):
         for i in range(1, N_REQUESTS_TRIES + 1):
             try:
-                res = requests.post(
+                request = {
+                    'jsonrpc': '2.0',
+                    'method': method,
+                    'params': params,
+                    'id': 1,
+                    'auth': self.auth_token
+                }
+                extra_log(request)
+                res = self.session.post(
                     self.url,
-                    json={
-                        'jsonrpc': '2.0',
-                        'method': method,
-                        'params': params,
-                        'id': 1,
-                        'auth': self.auth_token
-                    },
+                    json=request,
                     headers={
                         'Content-Type': 'application/json-rpc'
                     },
                     timeout=sdc.userParams['QUERY_TIMEOUT'],
                     verify=bool(sdc.userParams.get('VERIFY_SSL', True))
                 )
+                extra_log(res.text)
                 res.raise_for_status()
                 result = res.json()
                 if 'error' in result:
@@ -225,8 +236,17 @@ sdc.log.info('TIME_TO: ' + str(end))
 
 while True:
     try:
+        while end - get_now_with_delay() > SLEEP_INTERVAL_SECONDS:
+            extra_log('Sleeping ' + str(SLEEP_INTERVAL_SECONDS))
+            time.sleep(SLEEP_INTERVAL_SECONDS)
+            if sdc.isStopped():
+                break
+
         if end > get_now_with_delay():
-            time.sleep(end - get_now_with_delay())
+            tts = end - get_now_with_delay()
+            extra_log('Sleeping ' + str(tts))
+            time.sleep(tts)
+
         if sdc.isStopped():
             break
 

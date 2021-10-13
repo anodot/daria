@@ -93,8 +93,8 @@ test-sage: bootstrap run-sage
 	$(DOCKER_TEST) tests/test_pipelines/test_sage_http.py
 
 test-zabbix: bootstrap run-zabbix
-	$(DOCKER_TEST) tests/test_input/test_zabbix_http.py
-	$(DOCKER_TEST) tests/test_pipelines/test_zabbix_http.py
+	$(DOCKER_TEST) tests/test_input/test_2/test_zabbix_http.py
+	$(DOCKER_TEST) tests/test_pipelines/test_2/test_zabbix_http.py
 
 test-cacti: bootstrap run-mysql sleep-2
 	$(DOCKER_TEST) tests/test_input/test_cacti.py
@@ -193,7 +193,7 @@ clean-docker-volumes:
 	rm -rf agent/output
 	$(DOCKER_COMPOSE_DEV) down -v --remove-orphans
 
-run-base-services: _run-base-services nap
+run-base-services: _run-base-services sleep-1
 
 _run-base-services:
 	$(DOCKER_COMPOSE_DEV) up -d agent dc squid dummy_destination
