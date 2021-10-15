@@ -293,6 +293,10 @@ class Pipeline(Entity, sdc_client.IPipeline):
     def header_attributes(self):
         return self.config.get('header_attributes', [])
 
+    @property
+    def log_everything(self) -> int:
+        return self.config.get('log_everything', False)
+
     def get_streamsets_config(self) -> dict:
         return pipeline.manager.create_streamsets_pipeline_config(self)
 

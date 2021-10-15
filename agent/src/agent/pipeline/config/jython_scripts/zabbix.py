@@ -15,7 +15,7 @@ finally:
 
 entityName = ''
 N_REQUESTS_TRIES = 3
-SLEEP_INTERVAL_SECONDS = 30
+SLEEP_INTERVAL_SECONDS = 10
 LOG_EVERYTHING = sdc.userParams['LOG_EVERYTHING']
 
 
@@ -241,6 +241,9 @@ while True:
             time.sleep(SLEEP_INTERVAL_SECONDS)
             if sdc.isStopped():
                 break
+
+        if sdc.isStopped():
+            break
 
         if end > get_now_with_delay():
             tts = end - get_now_with_delay()

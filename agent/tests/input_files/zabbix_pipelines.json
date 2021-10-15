@@ -15,6 +15,7 @@
       "name",
       "hostid"
     ],
-    "delay": 0
+    "delay": 0,
+    "log_everything": true
   }
 ]

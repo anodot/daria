@@ -45,10 +45,6 @@ class Source(Entity):
     def query_timeout(self) -> int:
         return int(self.config.get('query_timeout', 300))
 
-    @property
-    def log_everything(self) -> int:
-        return int(self.config.get('log_everything', False))
-
 
 class ElasticSource(Source):
     CONFIG_INDEX = 'conf.index'
