@@ -44,16 +44,18 @@ def main():
     num_of_errors = 0
     for pipeline_ in pipelines:
         if pipeline_.uses_schema \
-                and pipeline_.periodic_watermark_config \
+                and pipeline_.periodic_watermark_config and pipeline_.offset \
                 and pipeline_.offset.timestamp + pipeline_.watermark_delay <= time.time():
             try:
+                watermark = _get_next_bucket_start(pipeline_)
                 destination_ = destination.repository.get()
                 api_client.send_watermark(
-                    anodot.Watermark(pipeline_.get_schema_id(), _get_next_bucket_start(pipeline_)),
+                    anodot.Watermark(pipeline_.get_schema_id(), watermark),
                     destination_.token,
                     logger,
                     destination_.url
                 )
+                logger.info(f'Sent watermark for `{pipeline_.name}`, value: {watermark.timestamp()}')
             except Exception:
                 num_of_errors = _update_errors_count(num_of_errors)
                 logger.error(f'Error sending pipeline watermark {pipeline_.name}')

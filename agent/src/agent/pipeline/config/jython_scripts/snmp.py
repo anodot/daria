@@ -40,10 +40,8 @@ sdc.log.info('OFFSET: ' + str(offset))
 while True:
     if sdc.isStopped():
         break
-    while offset > get_now():
-        time.sleep(2)
-        if sdc.isStopped():
-            exit()
+    if offset > get_now():
+        time.sleep(offset - get_now())
 
     batch = sdc.createBatch()
 

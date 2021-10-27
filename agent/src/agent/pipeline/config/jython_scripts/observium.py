@@ -128,14 +128,13 @@ N_REQUESTS_TRIES = 3
 
 while True:
     try:
-        if sdc.isStopped():
-            break
         while offset > get_now_with_delay():
             time.sleep(2)
             if sdc.isStopped():
                 exit()
 
-        data = add_sys_name_and_location(get_data())
+        data = get_data()
+        data = add_sys_name_and_location(data)
         metrics = create_metrics(data)
 
         for metric in metrics:

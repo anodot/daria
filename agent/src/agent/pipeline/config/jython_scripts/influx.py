@@ -37,10 +37,8 @@ while True:
     if sdc.isStopped():
         break
     now_with_delay = get_now_with_delay() - interval.total_seconds()
-    while offset > now_with_delay:
-        time.sleep(2)
-        if sdc.isStopped():
-            exit()
+    if offset > now_with_delay:
+        time.sleep(offset - now_with_delay)
     cur_batch = sdc.createBatch()
     record = sdc.createRecord('record created ' + str(datetime.now()))
     record.value = {'last_timestamp': int(offset) * int(1e9)}

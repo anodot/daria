@@ -138,10 +138,8 @@ url = sdc.userParams['URL'] + '/api/v1/query?' + urllib.urlencode({
 while True:
     try:
         curr_url = url + '&' + urllib.urlencode({'time': end})
-        while end > get_now_with_delay():
-            time.sleep(2)
-            if sdc.isStopped():
-                exit()
+        if end > get_now_with_delay():
+            time.sleep(end - get_now_with_delay())
         if sdc.isStopped():
             break
         sdc.log.debug(curr_url)

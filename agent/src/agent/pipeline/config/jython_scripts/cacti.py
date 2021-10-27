@@ -48,10 +48,8 @@ while True:
     if sdc.isStopped():
         break
     end = offset + get_interval()
-    while end > get_now_with_delay():
-        time.sleep(2)
-        if sdc.isStopped():
-            exit()
+    if end > get_now_with_delay():
+        time.sleep(end - get_now_with_delay())
 
     batch = sdc.createBatch()
 
