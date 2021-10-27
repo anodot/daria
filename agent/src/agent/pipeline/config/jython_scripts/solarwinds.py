@@ -59,8 +59,10 @@ N_REQUESTS_TRIES = 3
 while True:
     try:
         end = offset + get_interval()
-        if end > get_now_with_delay():
-            time.sleep(end - get_now_with_delay())
+        while end > get_now_with_delay():
+            time.sleep(2)
+            if sdc.isStopped():
+                exit()
         query = sdc.userParams['QUERY'].replace(LAST_TIMESTAMP, date_to_str(datetime.fromtimestamp(offset)))
 
         for i in range(1, N_REQUESTS_TRIES + 1):

@@ -225,8 +225,10 @@ sdc.log.info('TIME_TO: ' + str(end))
 
 while True:
     try:
-        if end > get_now_with_delay():
-            time.sleep(end - get_now_with_delay())
+        while end > get_now_with_delay():
+            time.sleep(2)
+            if sdc.isStopped():
+                exit()
         if sdc.isStopped():
             break
 

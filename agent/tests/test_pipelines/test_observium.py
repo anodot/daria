@@ -7,13 +7,42 @@ from ..conftest import get_output
 class TestObservium(TestPipelineBase):
     __test__ = True
     params = {
-        'test_start': [{'name': 'observium'}],
-        'test_force_stop': [{'name': 'observium'}],
-        'test_output_schema': [
-            {'name': 'observium', 'output': 'observium_schema.json', 'pipeline_type': 'observium'},
+        'test_start': [
+            {'name': 'observium_ports'},
+            {'name': 'observium_mempools'},
+            {'name': 'observium_processors'},
+            {'name': 'observium_storage'},
         ],
-        'test_delete_pipeline': [{'name': 'observium'}],
-        'test_source_delete': [{'name': 'observium'}],
+        'test_force_stop': [
+            {'name': 'observium_ports'},
+            {'name': 'observium_mempools'},
+            {'name': 'observium_processors'},
+            {'name': 'observium_storage'},
+        ],
+        'test_output_schema': [
+            {'name': 'observium_ports', 'output': 'observium_ports_schema.json', 'pipeline_type': 'observium'},
+            {'name': 'observium_mempools', 'output': 'observium_mempools_schema.json', 'pipeline_type': 'observium'},
+            {'name': 'observium_processors', 'output': 'observium_processors_schema.json', 'pipeline_type': 'observium'},
+            {'name': 'observium_storage', 'output': 'observium_storage_schema.json', 'pipeline_type': 'observium'},
+        ],
+        'test_watermark': [
+            {'name': 'observium_ports', 'timestamp': 1628160620},
+            {'name': 'observium_mempools', 'timestamp': 1628160603},
+            {'name': 'observium_processors', 'timestamp': 1633517705},
+            {'name': 'observium_storage', 'timestamp': 1633518002},
+        ],
+        'test_delete_pipeline': [
+            {'name': 'observium_ports'},
+            {'name': 'observium_mempools'},
+            {'name': 'observium_processors'},
+            {'name': 'observium_storage'},
+        ],
+        'test_source_delete': [
+            {'name': 'observium_ports'},
+            {'name': 'observium_mempools'},
+            {'name': 'observium_processors'},
+            {'name': 'observium_storage'},
+        ],
     }
 
     def test_info(self, cli_runner, name=None):
@@ -33,8 +62,3 @@ class TestObservium(TestPipelineBase):
 
     def test_force_stop(self, cli_runner, name):
         super().test_force_stop(cli_runner, name)
-
-    def test_watermark(self, name):
-        schema_id = get_schema_id(name)
-        watermark = get_output(f'{schema_id}_watermark.json')
-        assert schema_id == watermark['schemaId']

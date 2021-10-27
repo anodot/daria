@@ -1,0 +1,31 @@
+[
+  {
+    "schemaId": "observium_storage-1234",
+    "timestamp": 1633518002,
+    "dimensions": {
+      "storage_size": "92762112",
+      "sysName": "sys1",
+      "location": "SOME-LOC"
+    },
+    "measurements": {
+      "storage_perc": 52.0
+    },
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "observium_storage"
+      ],
+      "pipeline_type": [
+        "observium"
+      ]
+    }
+  }
+]

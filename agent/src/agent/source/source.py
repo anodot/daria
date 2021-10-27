@@ -208,6 +208,11 @@ class SNMPSource(APISource):
 class ObserviumSource(APISource):
     DEVICES_API_PATH = '/api/v0/devices'
 
+    PORTS = 'ports'
+    MEMPOOLS = 'mempools'
+    PROCESSORS = 'processors'
+    STORAGE = 'storage'
+
 
 class PromQLSource(APISource):
     pass

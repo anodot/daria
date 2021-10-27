@@ -290,7 +290,7 @@ class SolarWindsValidator(Validator):
 
 
 class ObserviumValidator(Validator):
-    VALIDATION_SCHEMA_FILE = 'solarwinds.json'
+    VALIDATION_SCHEMA_FILE = 'observium.json'
 
     def validate_connection(self):
         session = http.Session()

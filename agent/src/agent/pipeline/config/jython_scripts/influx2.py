@@ -62,8 +62,10 @@ while True:
     if sdc.isStopped():
         break
     now_with_delay = get_now_with_delay() - interval.total_seconds()
-    if offset > now_with_delay:
-        time.sleep(offset - now_with_delay)
+    while offset > now_with_delay:
+        time.sleep(2)
+        if sdc.isStopped():
+            exit()
     start = int(offset)
     stop = int(offset + interval.total_seconds())
 

@@ -1,11 +1,42 @@
 [
   {
     "type": "observium",
-    "name": "observium",
+    "name": "observium_ports",
     "config": {
       "url": "http://dummy_destination:80",
       "username": "admin",
-      "password": "admin"
+      "password": "admin",
+      "endpoint": "ports"
+    }
+  },
+  {
+    "type": "observium",
+    "name": "observium_mempools",
+    "config": {
+      "url": "http://dummy_destination:80",
+      "username": "admin",
+      "password": "admin",
+      "endpoint": "mempools"
+    }
+  },
+  {
+    "type": "observium",
+    "name": "observium_processors",
+    "config": {
+      "url": "http://dummy_destination:80",
+      "username": "admin",
+      "password": "admin",
+      "endpoint": "processors"
+    }
+  },
+  {
+    "type": "observium",
+    "name": "observium_storage",
+    "config": {
+      "url": "http://dummy_destination:80",
+      "username": "admin",
+      "password": "admin",
+      "endpoint": "storage"
     }
   }
 ]

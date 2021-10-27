@@ -8,5 +8,5 @@
     "verify_ssl": {"type": "boolean"},
     "query_timeout": {"type": "boolean"}
   },
-  "required": ["url", "username", "password"]
+  "required": ["url", "username", "password", "endpoint"]
 }

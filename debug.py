@@ -22,9 +22,7 @@ di.init()
 # r.raise_for_status()
 # r = snmp.extract_metrics(pipeline.repository.get_by_id('snmp'))
 
-t = 1
-
-cli.source.create(["-f", "/Users/antonzelenin/Workspace/daria/agent/obs_sources.json"])
+# cli.source.create()
 # cli.destination()
 # cli.pipeline.create()
 # cli.streamsets.delete(["asdfa"])

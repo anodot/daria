@@ -1,8 +1,24 @@
 [
   {
-    "source": "observium",
-    "pipeline_id": "observium",
+    "source": "observium_ports",
+    "pipeline_id": "observium_ports",
+    "interval": 6000
+  },
+  {
+    "source": "observium_mempools",
+    "pipeline_id": "observium_mempools",
+    "interval": 6000
+  },
+  {
+    "source": "observium_processors",
+    "pipeline_id": "observium_processors",
+    "interval": 6000
+  },
+  {
+    "source": "observium_storage",
+    "pipeline_id": "observium_storage",
     "interval": 6000,
-    "count_records": false
+    "dimensions": ["storage_size"],
+    "values": {"storage_perc": "gauge"}
   }
 ]

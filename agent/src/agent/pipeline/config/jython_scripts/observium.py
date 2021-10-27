@@ -20,6 +20,21 @@ entityName = ''
 LAST_TIMESTAMP = '%last_timestamp%'
 
 
+POLL_TIME_KEYS = {
+    'ports': 'poll_time',
+    'mempools': 'mempool_polled',
+    'processors': 'processor_polled',
+    'storage': 'storage_polled'
+}
+
+DATA_KEYS = {
+    'ports': 'ports',
+    'mempools': 'entries',
+    'processors': 'entries',
+    'storage': 'storage'
+}
+
+
 def get_now_with_delay():
     return int(time.time()) - int(sdc.userParams['DELAY_IN_SECONDS'])
 
@@ -53,11 +68,11 @@ def _get(url, params, response_key):
             time.sleep(2 ** i)
 
 
-def get_ports():
+def get_data():
     return _get(
-        sdc.userParams['PORTS_URL'],
-        sdc.userParams['PORTS_PARAMS'],
-        'ports'
+        sdc.userParams['URL'],
+        sdc.userParams['PARAMS'],
+        DATA_KEYS[sdc.userParams['ENDPOINT']]
     )
 
 
@@ -74,55 +89,33 @@ def get_devices():
     return _transform(devices, 'device_id')
 
 
-def get_mempools():
-    mempools = _get(
-        sdc.userParams['MEMPOOLS_URL'],
-        sdc.userParams['MEMPOOLS_PARAMS'],
-        'entries'
-    )
-    return _transform(mempools, 'mempool_id')
+def add_sys_name_and_location(data):
+    devices = get_devices()
+    for obj in data.values():
+        obj['sysName'] = devices[obj['device_id']]['sysName']
+        obj['location'] = devices[obj['device_id']]['location']
+    return data
 
 
-def get_processors():
-    processors = _get(
-        sdc.userParams['PROCESSORS_URL'],
-        sdc.userParams['PROCESSOR_PARAMS'],
-        'entries'
-    )
-    return _transform(processors, 'processor_id')
+def create_metrics(data_):
+    return [transform(datum) for datum in data_.values()]
 
 
-def get_storage():
-    return _get(
-        sdc.userParams['STORAGE_URL'],
-        sdc.userParams['STORAGE_PARAMS'],
-        'storage'
-    )
-
-
-def add_sys_name_and_location(metrics_, devices):
-    for obj in metrics_:
-        obj['dimensions']['sysName'] = devices[obj['device_id']]['sysName']
-        obj['dimensions']['location'] = devices[obj['device_id']]['location']
-    return metrics_
-
-
-def create_metrics(data_, poll_time_key, dimensions, measurements):
-    return [transform(obj, poll_time_key, dimensions, measurements) for obj in data_.values()]
-
-
-def transform(data_, poll_time_key, dimensions, measurements):
-    return {
-        "timestamp": data_[poll_time_key],
-        "dimensions": {k: v for k, v in data_.items() if k in dimensions},
-        "measurements": {k: float(v) for k, v in data_.items() if k in measurements},
+def transform(datum):
+    metric = {
+        "timestamp": datum[POLL_TIME_KEYS[sdc.userParams['ENDPOINT']]],
+        "dimensions": {k: v for k, v in datum.items() if k in sdc.userParams['DIMENSIONS']},
+        "measurements": {k: float(v) for k, v in datum.items() if k in sdc.userParams['MEASUREMENTS']},
         "schemaId": sdc.userParams['SCHEMA_ID'],
     }
+    metric['dimensions']['sysName'] = datum['sysName']
+    metric['dimensions']['location'] = datum['location']
+    return metric
 
 
 if sdc.lastOffsets.containsKey(entityName):
     offset = int(float(sdc.lastOffsets.get(entityName)))
-elif sdc.userParams['DAYS_TO_BACKFILL']:
+elif sdc.userParams['DAYS_TO_BACKFILL'] and int(sdc.userParams['DAYS_TO_BACKFILL']) > 0:
     offset = to_timestamp(datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=int(sdc.userParams['DAYS_TO_BACKFILL'])))
 else:
     offset = to_timestamp(datetime.now().replace(second=0, microsecond=0))
@@ -135,27 +128,15 @@ N_REQUESTS_TRIES = 3
 
 while True:
     try:
-        end = offset + get_interval()
-        if end > get_now_with_delay():
-            time.sleep(end - get_now_with_delay())
+        if sdc.isStopped():
+            break
+        while offset > get_now_with_delay():
+            time.sleep(2)
+            if sdc.isStopped():
+                exit()
 
-        metrics = []
-        devices_data = get_devices()
-        ports_metrics = create_metrics(get_ports(), 'poll_time', sdc.userParams['PORTS_DIMENSIONS'], sdc.userParams['PORTS_MEASUREMENTS'])
-        ports_metrics = add_sys_name_and_location(ports_metrics, devices_data)
-        metrics.append(ports_metrics)
-
-        mempools_metrics = create_metrics(get_mempools(), 'mempool_polled', sdc.userParams['MEMPOOLS_DIMENSIONS'], sdc.userParams['MEMPOOLS_MEASUREMENTS'])
-        mempools_metrics = add_sys_name_and_location(mempools_metrics, devices_data)
-        metrics.append(mempools_metrics)
-
-        processors_metrics = create_metrics(get_processors(), 'processor_polled', sdc.userParams['PROCESSORS_DIMENSIONS'], sdc.userParams['PROCESSORS_MEASUREMENTS'])
-        processors_metrics = add_sys_name_and_location(processors_metrics, devices_data)
-        metrics.append(processors_metrics)
-
-        storage_metrics = create_metrics(get_storage(), 'storage_polled', sdc.userParams['STORAGE_DIMENSIONS'], sdc.userParams['STORAGE_MEASUREMENTS'])
-        storage_metrics = add_sys_name_and_location(storage_metrics, devices_data)
-        metrics.append(storage_metrics)
+        data = add_sys_name_and_location(get_data())
+        metrics = create_metrics(data)
 
         for metric in metrics:
             record = sdc.createRecord('record created ' + str(datetime.now()))
@@ -163,19 +144,15 @@ while True:
             cur_batch.add(record)
 
             if cur_batch.size() == sdc.batchSize:
-                cur_batch.process(entityName, str(offset))
+                cur_batch.process(entityName, str(offset + get_interval()))
                 cur_batch = sdc.createBatch()
 
-        offset = end
-        cur_batch.process(entityName, str(offset))
+        cur_batch.process(entityName, str(offset + get_interval()))
         cur_batch = sdc.createBatch()
-        if sdc.isStopped():
-            break
+        offset += get_interval()
     except Exception as e:
         sdc.log.error(traceback.format_exc())
         raise
 
 if cur_batch.size() + cur_batch.errorCount() + cur_batch.eventCount() > 0:
-    cur_batch.process(entityName, str(offset))
-
-# todo run it locally to debug
+    cur_batch.process(entityName, str(offset + get_interval()))
