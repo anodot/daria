@@ -5,13 +5,12 @@ class DimensionsRenamer(Stage):
     DIMENSIONS_PATH = '/properties/'
 
     def get_config(self) -> dict:
-        return self._get_config(self.pipeline.config.get('rename_dimensions_mapping', {}))
-
-    def _get_config(self, rename_mapping: dict):
-        renameMapping = [{
-                'fromFieldExpression': f'{self.DIMENSIONS_PATH}{field}',
-                'toFieldExpression': f'{self.DIMENSIONS_PATH}{alias}',
-            } for field, alias in rename_mapping.items()]
+        renameMapping = []
+        for field, alias in self.pipeline.config.get('rename_dimensions_mapping', {}).items():
+            renameMapping.append({
+                "fromFieldExpression": f"{self.DIMENSIONS_PATH}{field}",
+                "toFieldExpression": f"{self.DIMENSIONS_PATH}{alias}",
+            })
         return {'renameMapping': renameMapping}
 
 

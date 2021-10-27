@@ -22,7 +22,9 @@ di.init()
 # r.raise_for_status()
 # r = snmp.extract_metrics(pipeline.repository.get_by_id('snmp'))
 
-# cli.source.create()
+t = 1
+
+# cli.source.edit(["solarwinds"])
 # cli.destination()
 # cli.pipeline.create()
 # cli.streamsets.delete(["asdfa"])
