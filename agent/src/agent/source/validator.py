@@ -76,7 +76,7 @@ class InfluxValidator(Validator):
             self.source.config.get('username'),
             self.source.config.get('password')
         )
-        if all(db['name'] == self.source.config['db'] for db in client.get_list_database()):
+        if all(db['name'] != self.source.config['db'] for db in client.get_list_database()):
             raise ValidationException(
                 f"Database {self.source.config['db']} not found. Please check your credentials again"
             )
