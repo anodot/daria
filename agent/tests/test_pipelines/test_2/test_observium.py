@@ -1,7 +1,6 @@
 import pytest
 
-from .test_zpipeline_base import TestPipelineBase, get_schema_id
-from ..conftest import get_output
+from ..test_zpipeline_base import TestPipelineBase
 
 
 class TestObservium(TestPipelineBase):
