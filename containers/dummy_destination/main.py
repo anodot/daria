@@ -11,9 +11,8 @@ app.secret_key = b"\xf9\x19\x8d\xd2\xb7N\x84\xae\x16\x0f'`U\x88x&\nF\xa2\xe9\xa1
 
 @app.route('/api/v1/metrics', methods=['POST'])
 def to_file():
-    if request.args.get('token'):
-        if request.args.get('token') == 'incorrect_token':
-            return json.dumps({'errors': ['Data collection token is invalid']}), 401
+    if request.args.get('token') and request.args.get('token') == 'incorrect_token':
+        return json.dumps({'errors': ['Data collection token is invalid']}), 401
     data = request.json
     if data and len(data) > 0:
         file_path = os.path.join(OUTPUT_DIR, _extract_file_name(data) + '.json')

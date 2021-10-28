@@ -36,6 +36,14 @@ class StreamSets(Entity, sdc_client.IStreamSets):
     def get_password(self) -> str:
         return self.password
 
+    def to_dict(self) -> dict:
+        return {
+            'url': self.url,
+            'username': self.username,
+            'password': self.password,
+            'agent_external_url': self.agent_external_url,
+        }
+
 
 class Provider(sdc_client.IStreamSetsProvider):
     def get(self, id_: int) -> StreamSets:

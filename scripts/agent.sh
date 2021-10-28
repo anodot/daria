@@ -35,6 +35,34 @@ elif [[ $1 == 'apply' ]]; then
   docker cp ./agent-data anodot-agent:/agent-data
   docker exec --user root anodot-agent chown -R agent:agent /agent-data
   docker exec -i anodot-agent agent apply -d /agent-data
+elif [[ $1 == 'diagnostics-info' ]]; then
+  # todo plain text creds
+  dest_path="./agent-diagnostics-info"
+  [ ! -d $dest_path ] && mkdir $dest_path
+
+  echo "Exporting configs"
+  docker exec anodot-agent agent streamsets export --dir-path=/tmp/streamsets
+  docker cp anodot-agent:/tmp/streamsets $dest_path/ && docker exec anodot-agent rm -r /tmp/streamsets
+  echo "Deleted '/tmp/streamsets'"
+  docker exec anodot-agent agent source export --dir-path=/tmp/sources
+  docker cp anodot-agent:/tmp/sources $dest_path/ && docker exec anodot-agent rm -r /tmp/sources
+  echo "Deleted '/tmp/sources'"
+  docker exec anodot-agent agent pipeline export --dir-path=/tmp/pipelines
+  docker cp anodot-agent:/tmp/pipelines $dest_path/ && docker exec anodot-agent rm -r /tmp/pipelines
+  echo "Deleted '/tmp/pipelines'"
+
+  echo "Exporting logs"
+  log_path=$(docker exec anodot-agent bash -c 'echo "$LOG_FILE_PATH"') && docker cp anodot-agent:$log_path $dest_path
+  docker logs anodot-agent >& $dest_path/agent-container.log
+  echo "Exported anodot-agent logs"
+  docker logs anodot-sdc >& $dest_path/sdc-container.log
+  echo "Exported anodot-sdc logs"
+
+  echo "Archiving"
+  tar -cvf agent-diagnostics-info.tar $dest_path
+  rm -r $dest_path
+
+  echo "Exported anodot-agent diagnostics info to the $dest_path directory"
 else
   echo "Wrong command supplied. Please use ./agent [install|run|upgrade|set-heap-size|set-thread-pool-size|apply]"
 fi
