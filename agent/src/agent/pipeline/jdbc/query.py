@@ -38,7 +38,8 @@ class Builder:
             if self.pipeline.source.type == source.TYPE_CLICKHOUSE:
                 return f"toUnixTimestamp({self.pipeline.timestamp_path})"
             if self.pipeline.source.type == source.TYPE_ORACLE:
-                return f"(cast(sys_extract_utc({self.pipeline.timestamp_path}) as date) - TO_DATE('1970-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS')) * 86400"
+                return f"""(cast(sys_extract_utc(from_tz(cast({self.pipeline.timestamp_path} as TIMESTAMP), 
+'{self.pipeline.timezone}')) as date) - TO_DATE('1970-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS')) * 86400"""
     
         if self.pipeline.timestamp_type == pipeline.TimestampType.UNIX_MS:
             return self.pipeline.timestamp_path + '/1000'
