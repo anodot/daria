@@ -1,3 +1,5 @@
+import json
+import os
 import traceback
 import click
 import requests
@@ -78,13 +80,27 @@ def delete(url):
 def balance():
     streamsets_ = streamsets.repository.get_all()
     if len(streamsets_) == 1:
-        logger.info(f'You have only one streamsets instance, can\'t balance')
+        logger.info('You have only one streamsets instance, can\'t balance')
         return
     elif len(streamsets_) == 0:
-        logger.info(f'You don\'t have any streamsets instances, can\'t balance')
+        logger.info('You don\'t have any streamsets instances, can\'t balance')
         return
     sdc_client.StreamsetsBalancer().balance()
     click.secho('Done', fg='green')
+
+
+@click.command()
+@click.option('-d', '--dir-path', type=click.Path())
+def export(dir_path):
+    if not dir_path:
+        dir_path = 'streamsets'
+    if not os.path.isdir(dir_path):
+        os.mkdir(dir_path)
+
+    with open(os.path.join(dir_path, 'streamsets.json'), 'w+') as f:
+        json.dump([ss.to_dict() for ss in streamsets.repository.get_all()], f)
+
+    click.echo(f'All streamsets exported to the `{dir_path}` directory')
 
 
 def _validate_streamsets(streamsets_: StreamSets):
@@ -135,7 +151,7 @@ def _validate_agent_external_url(url):
 
 @infinite_retry
 def _prompt_agent_external_url(streamsets_: StreamSets) -> str:
-    default = streamsets_.agent_external_url if streamsets_.agent_external_url else constants.AGENT_DEFAULT_URL
+    default = streamsets_.agent_external_url or constants.AGENT_DEFAULT_URL
     url = click.prompt('Agent external URL', default)
     _validate_agent_external_url(url)
     return url
@@ -146,3 +162,4 @@ streamsets_group.add_command(add)
 streamsets_group.add_command(edit)
 streamsets_group.add_command(delete)
 streamsets_group.add_command(balance)
+streamsets_group.add_command(export)
