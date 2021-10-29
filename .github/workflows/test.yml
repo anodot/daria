@@ -27,4 +27,11 @@ jobs:
 
       - name: Show logs
         if: ${{ failure() }}
-        run: docker logs anodot-agent; echo "\nDC logs\n"; docker logs dc; echo "\nDC 2 logs\n"; docker logs dc2; echo "\nKafka logs\n"; docker logs agent-kafka; echo "\nDummy logs\n"; docker logs dummy_destination; echo "\nAgent logs\n"; docker exec -i anodot-agent cat /var/log/agent/agent.log
+        run: >
+          docker logs anodot-agent;
+          echo "DC logs"; docker logs dc;
+          echo "DC 2 logs"; docker logs dc2;
+          echo "Kafka logs"; docker logs agent-kafka;
+          echo "Dummy logs"; docker logs dummy_destination;
+          echo "Agent logs"; docker exec -i anodot-agent cat /var/log/agent/agent.log;
+          echo "VictoriaMetrics logs"; docker logs victoriametrics;
