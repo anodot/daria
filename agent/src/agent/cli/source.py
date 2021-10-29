@@ -65,7 +65,7 @@ def delete(name):
 
 @click.command()
 @click.option('-d', '--dir-path', type=click.Path())
-@click.option('-r', '--plain-text-credentials', is_flag=True, default=False)
+@click.option('-p', '--plain-text-credentials', is_flag=True, default=False)
 def export(dir_path, plain_text_credentials):
     if not dir_path:
         dir_path = 'sources'

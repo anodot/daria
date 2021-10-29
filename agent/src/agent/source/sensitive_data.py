@@ -4,9 +4,9 @@ from agent import source
 
 def mask(config: dict):
     keywords = _get_keywords(config['type'])
-    for k, v in config.items():
+    for k in config['config']:
         if k in keywords:
-            config[k] = '******'
+            config['config'][k] = '******'
 
 
 def _get_keywords(source_type: str) -> List[str]:
