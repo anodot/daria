@@ -62,6 +62,17 @@ elif [[ $1 == 'diagnostics-info' ]]; then
   docker logs anodot-sdc >& $dest_path/sdc-container.log
   echo "Exported anodot-sdc logs $dest_path/sdc-container.log"
 
+  echo "Exporting system info"
+  info_file=$dest_path/system_info.txt
+  touch $info_file
+  echo "Average load" >> $info_file
+  docker exec anodot-agent cat /proc/loadavg >> $info_file
+  echo "" >> $info_file
+  docker exec anodot-agent lscpu | grep 'CPU(s):' >> $info_file
+  echo "" >> $info_file
+  echo "Memory usage in MB" >> $info_file
+  docker exec anodot-agent free -m >> $info_file
+
   echo "Archiving"
   tar -cvf agent-diagnostics-info.tar $dest_path
   rm -r $dest_path
