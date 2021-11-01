@@ -62,7 +62,7 @@ elif [[ $1 == 'diagnostics-info' ]]; then
   docker logs anodot-agent >& $dest_path/agent-container.log
   echo "Exported anodot-agent logs to the $dest_path/agent-container.log"
   docker logs anodot-sdc >& $dest_path/sdc-container.log
-  echo "Exported anodot-sdc logs to the $dest_path/sdc-container.log" && echo "anton"
+  echo "Exported anodot-sdc logs to the $dest_path/sdc-container.log"
 
   info_file=$dest_path/system_info.txt
   touch $info_file
