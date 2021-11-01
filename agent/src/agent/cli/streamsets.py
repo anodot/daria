@@ -97,8 +97,9 @@ def export(dir_path):
     if not os.path.isdir(dir_path):
         os.mkdir(dir_path)
 
-    with open(os.path.join(dir_path, 'streamsets.json'), 'w+') as f:
-        json.dump([ss.to_dict() for ss in streamsets.repository.get_all()], f)
+    if streamsets.repository.get_all():
+        with open(os.path.join(dir_path, 'streamsets.json'), 'w+') as f:
+            json.dump([ss.to_dict() for ss in streamsets.repository.get_all()], f)
 
     click.echo(f'All streamsets exported to the `{dir_path}` directory')
 

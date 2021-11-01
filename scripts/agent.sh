@@ -46,25 +46,24 @@ elif [[ $1 == 'diagnostics-info' ]]; then
   echo "Exporting configs"
   docker exec anodot-agent agent streamsets export --dir-path=/tmp/streamsets
   docker cp anodot-agent:/tmp/streamsets $dest_path/ && docker exec anodot-agent rm -r /tmp/streamsets
-  echo "Copied to $dest_path"
-  echo "Deleted '/tmp/streamsets'"
+  echo "Copied to the $dest_path"
+  echo "Deleted /tmp/streamsets"
   docker exec anodot-agent agent source export --dir-path=/tmp/sources $flags
   docker cp anodot-agent:/tmp/sources $dest_path/ && docker exec anodot-agent rm -r /tmp/sources
-  echo "Copied to $dest_path"
-  echo "Deleted '/tmp/sources'"
+  echo "Copied to the $dest_path"
+  echo "Deleted /tmp/sources"
   docker exec anodot-agent agent pipeline export --dir-path=/tmp/pipelines
   docker cp anodot-agent:/tmp/pipelines $dest_path/ && docker exec anodot-agent rm -r /tmp/pipelines
-  echo "Copied to $dest_path"
-  echo "Deleted '/tmp/pipelines'"
+  echo "Copied to the $dest_path"
+  echo "Deleted /tmp/pipelines"
 
   echo "Exporting logs"
   log_path=$(docker exec anodot-agent bash -c 'echo "$LOG_FILE_PATH"') && docker cp anodot-agent:$log_path $dest_path
   docker logs anodot-agent >& $dest_path/agent-container.log
-  echo "Exported anodot-agent logs to $dest_path/agent-container.log"
+  echo "Exported anodot-agent logs to the $dest_path/agent-container.log"
   docker logs anodot-sdc >& $dest_path/sdc-container.log
-  echo "Exported anodot-sdc logs $dest_path/sdc-container.log"
+  echo "Exported anodot-sdc logs to the $dest_path/sdc-container.log" && echo "anton"
 
-  echo "Exporting system info"
   info_file=$dest_path/system_info.txt
   touch $info_file
   echo "Average load" >> $info_file
@@ -74,11 +73,13 @@ elif [[ $1 == 'diagnostics-info' ]]; then
   echo "" >> $info_file
   echo "Memory usage in MB" >> $info_file
   docker exec anodot-agent free -m >> $info_file
+  echo "Exported system info to the $info_file"
 
-  echo "Exporting agent container info"
-  container_info_file=$dest_path/agent-container-info.txt
-  touch $container_info_file
-  docker inspect anodot-agent >& $container_info_file
+  echo "Exporting containers info"
+  docker inspect anodot-agent >& $dest_path/agent-container-info.txt
+  echo "Exported agent container info to the $dest_path/agent-container-info.txt"
+  docker inspect anodot-sdc >& $dest_path/streamsets-container-info.txt
+  echo "Exported streamsets container info to the $dest_path/streamsets-container-info.txt"
 
   echo "Archiving"
   tar -cvf agent-diagnostics-info.tar $dest_path
@@ -95,25 +96,27 @@ elif [[ $1 == 'kuber-diagnostics-info' ]]; then
   echo "Exporting configs"
   kubectl exec $POD -- agent streamsets export --dir-path=/tmp/streamsets
   kubectl cp $POD:/tmp/streamsets $dest_path/ && kubectl exec $POD -- rm -r /tmp/streamsets
-  echo "Copied to $dest_path"
-  echo "Deleted '/tmp/streamsets'"
+  echo "Copied to the $dest_path"
+  echo "Deleted /tmp/streamsets"
   kubectl exec $POD -- agent source export --dir-path=/tmp/sources $flags
   kubectl cp $POD:/tmp/sources $dest_path/ && kubectl exec $POD -- rm -r /tmp/sources
-  echo "Copied to $dest_path"
-  echo "Deleted '/tmp/sources'"
+  echo "Copied to the $dest_path"
+  echo "Deleted /tmp/sources"
   kubectl exec $POD -- agent pipeline export --dir-path=/tmp/pipelines
   kubectl cp $POD:/tmp/pipelines $dest_path/ && kubectl exec $POD -- rm -r /tmp/pipelines
-  echo "Copied to $dest_path"
-  echo "Deleted '/tmp/pipelines'"
+  echo "Copied to the $dest_path"
+  echo "Deleted /tmp/pipelines"
 
   echo "Exporting logs"
-  log_path=$(kubectl exec $POD -- bash -c 'echo "$LOG_FILE_PATH"') && kubectl cp $POD:$log_path $dest_path
+  log_path=$(kubectl exec $POD -- bash -c 'echo "$LOG_FILE_PATH"') && kubectl cp $POD:$log_path $dest_path/agent.log
+  echo "Exported agent application logs to the $dest_path/agent.log"
   kubectl logs $POD >& $dest_path/agent-container.log
-  echo "Exported anodot-agent logs to $dest_path/agent-container.log"
-  kubectl logs $POD >& $dest_path/sdc-container.log
-  echo "Exported anodot-sdc logs $dest_path/sdc-container.log"
+  echo "Exported anodot-agent logs to the $dest_path/agent-container.log"
+  kubectl get pods -o custom-columns=":metadata.name" | grep streamsets-agent | while read -r pod ; do
+    kubectl logs $pod >& $dest_path/$pod.log
+  done
+  echo "Exported streamsets logs to the ./agent-diagnostics-info/ directory"
 
-  echo "Exporting system info"
   info_file=$dest_path/system_info.txt
   touch $info_file
   echo "Average load" >> $info_file
@@ -123,12 +126,15 @@ elif [[ $1 == 'kuber-diagnostics-info' ]]; then
   echo "" >> $info_file
   echo "Memory usage in MB" >> $info_file
   kubectl exec $POD -- free -m >> $info_file
+  echo "Exported system info to the $info_file"
 
-  echo "Exporting agent container info"
-  container_info_file=$dest_path/agent-container-info.txt
-  touch $container_info_file
-  docker inspect anodot-agent >& $container_info_file
-  
+  kubectl get pod $POD -o yaml > $dest_path/agent-container-info.txt
+  echo "Exported agent pod info to the $dest_path/agent-container-info.txt"
+  echo "Exporting streamsets pods info"
+  kubectl get pods -o custom-columns=":metadata.name" | grep streamsets-agent | while read -r pod ; do
+    kubectl get pod $pod -o yaml > $dest_path/$pod-container-info.txt
+  done
+
   echo "Archiving"
   tar -cvf agent-diagnostics-info.tar $dest_path
   rm -r $dest_path
