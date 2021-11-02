@@ -133,6 +133,7 @@ def fetch_itemids_value_types():
 
     query = json.loads(sdc.userParams['QUERY'])
     query['output'] = ['itemid', 'value_type']
+    query['sortfield'] = 'itemid'
 
     start = time.time()
     itemids_value_types = client.post('item.get', query)
