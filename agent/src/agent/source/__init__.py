@@ -7,6 +7,7 @@ from . import manager
 from . import validator
 from . import db
 from . import json_builder
+from . import sensitive_data
 
 TYPE_CACTI = 'cacti'
 TYPE_CLICKHOUSE = 'clickhouse'

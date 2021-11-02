@@ -27,7 +27,7 @@ run-second:
 
 setup-second: setup-elastic setup-victoria setup-zabbix
 
-test-second: test-api-2 test-apply test-input-2 test-pipelines-2 test-send-to-watermark
+test-second: test-api-2 test-apply test-input-2 test-export-sources test-pipelines-2 test-send-to-watermark
 
 ##-------------
 ## DEVELOPMENT
@@ -141,6 +141,9 @@ test-input-1:
 
 test-input-2:
 	$(DOCKER_TEST_PARALLEL) tests/test_input/test_2/
+
+test-export-sources:
+	$(DOCKER_TEST_PARALLEL) tests/test_export_sources.py
 
 test-pipelines-1:
 	$(DOCKER_TEST_PARALLEL) tests/test_pipelines/test_1/

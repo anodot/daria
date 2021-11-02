@@ -7,5 +7,14 @@
       "hikariConfigBean.username": "admin",
       "hikariConfigBean.password": "admin"
     }
+  },
+  {
+    "type": "oracle",
+    "name": "test_oracle_servicename",
+    "config": {
+      "connection_string": "oracle:thin:@host:1521/servicename",
+      "hikariConfigBean.username": "admin",
+      "hikariConfigBean.password": "admin"
+    }
   }
 ]

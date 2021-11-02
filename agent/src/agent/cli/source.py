@@ -64,20 +64,23 @@ def delete(name):
 
 
 @click.command()
-@click.option('-d', '--dir-path', type=click.Path(exists=True))
-def export(dir_path):
+@click.option('-d', '--dir-path', type=click.Path())
+@click.option('-p', '--plain-text-credentials', is_flag=True, default=False)
+def export(dir_path, plain_text_credentials):
     if not dir_path:
         dir_path = 'sources'
-        if not os.path.exists(dir_path):
-            os.mkdir(dir_path)
+    if not os.path.isdir(dir_path):
+        os.mkdir(dir_path)
 
     sources = source.repository.get_all()
     for source_ in sources:
-        config = [source_.to_dict()]
+        config = source_.to_dict()
+        if not plain_text_credentials:
+            source.sensitive_data.mask(config)
         with open(os.path.join(dir_path, source_.name + '.json'), 'w+') as f:
-            json.dump(config, f)
+            json.dump([config], f)
 
-    click.echo(f'All sources exported to {dir_path} directory')
+    click.echo(f'All sources exported to the `{dir_path}` directory')
 
 
 @infinite_retry

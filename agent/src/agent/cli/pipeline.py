@@ -248,19 +248,18 @@ def update(pipeline_id: str):
 
 
 @click.command()
-@click.option('-d', '--dir-path', type=click.Path(exists=True))
+@click.option('-d', '--dir-path', type=click.Path())
 def export(dir_path):
     if not dir_path:
         dir_path = 'pipelines'
-        if not os.path.exists(dir_path):
-            os.mkdir(dir_path)
+    if not os.path.isdir(dir_path):
+        os.mkdir(dir_path)
 
-    pipelines = pipeline.repository.get_all()
-    for pipeline_ in pipelines:
+    for pipeline_ in pipeline.repository.get_all():
         with open(os.path.join(dir_path, pipeline_.name + '.json'), 'w+') as f:
             json.dump([pipeline_.export()], f)
 
-    click.echo(f'All pipelines exported to {dir_path} directory')
+    click.echo(f'All pipelines exported to the `{dir_path}` directory')
 
 
 @click.group(name='pipeline')
