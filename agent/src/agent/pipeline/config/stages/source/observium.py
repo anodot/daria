@@ -26,7 +26,6 @@ class ObserviumScript(Source):
                 {'key': 'DIMENSIONS', 'value': self.pipeline.dimensions},
                 {'key': 'INTERVAL_IN_SECONDS', 'value': str(self.pipeline.interval)},
                 {'key': 'DELAY_IN_SECONDS', 'value': str(self.pipeline.delay)},
-                {'key': 'DAYS_TO_BACKFILL', 'value': self.pipeline.days_to_backfill},
                 {'key': 'QUERY_TIMEOUT', 'value': str(self.pipeline.source.query_timeout)},
                 {'key': 'VERIFY_SSL', 'value': '1' if self.pipeline.source.config.get('verify_ssl', True) else ''},
                 {'key': 'SCHEMA_ID', 'value': self.pipeline.get_schema_id()},

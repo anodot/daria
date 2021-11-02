@@ -68,49 +68,29 @@ def _get(url, params, response_key):
             time.sleep(2 ** i)
 
 
-def get_data():
-    return _get(
-        sdc.userParams['URL'],
-        sdc.userParams['PARAMS'],
-        DATA_KEYS[sdc.userParams['ENDPOINT']]
-    )
-
-
-def _transform(dict_, key):
-    return {obj[key]: obj for obj in dict_.values()}
-
-
 def get_devices():
     devices = _get(
         sdc.userParams['DEVICES_URL'],
         {},
         'devices'
     )
-    return _transform(devices, 'device_id')
+    return {obj['device_id']: obj for obj in devices.values()}
 
 
-def add_sys_name_and_location(data):
+def create_metrics(data):
+    metrics = []
     devices = get_devices()
     for obj in data.values():
-        obj['sysName'] = devices[obj['device_id']]['sysName']
-        obj['location'] = devices[obj['device_id']]['location']
-    return data
-
-
-def create_metrics(data_):
-    return [transform(datum) for datum in data_.values()]
-
-
-def transform(datum):
-    metric = {
-        "timestamp": datum[POLL_TIME_KEYS[sdc.userParams['ENDPOINT']]],
-        "dimensions": {k: v for k, v in datum.items() if k in sdc.userParams['DIMENSIONS']},
-        "measurements": {k: float(v) for k, v in datum.items() if k in sdc.userParams['MEASUREMENTS']},
-        "schemaId": sdc.userParams['SCHEMA_ID'],
-    }
-    metric['dimensions']['sysName'] = datum['sysName']
-    metric['dimensions']['location'] = datum['location']
-    return metric
+        metric = {
+            "timestamp": obj[POLL_TIME_KEYS[sdc.userParams['ENDPOINT']]],
+            "dimensions": {k: v for k, v in obj.items() if k in sdc.userParams['DIMENSIONS']},
+            "measurements": {k: float(v) for k, v in obj.items() if k in sdc.userParams['MEASUREMENTS']},
+            "schemaId": sdc.userParams['SCHEMA_ID'],
+        }
+        metric['dimensions']['sysName'] = devices[obj['device_id']]['sysName']
+        metric['dimensions']['location'] = devices[obj['device_id']]['location']
+        metrics.append(metric)
+    return metrics
 
 
 if sdc.lastOffsets.containsKey(entityName):
@@ -133,8 +113,11 @@ while True:
             if sdc.isStopped():
                 exit()
 
-        data = get_data()
-        data = add_sys_name_and_location(data)
+        data = _get(
+            sdc.userParams['URL'],
+            sdc.userParams['PARAMS'],
+            DATA_KEYS[sdc.userParams['ENDPOINT']]
+        )
         metrics = create_metrics(data)
 
         for metric in metrics:
