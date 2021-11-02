@@ -21,7 +21,7 @@ class ObserviumScript(Source):
                 {'key': 'URL', 'value': urllib.parse.urljoin(base_url, self.pipeline.source.config['endpoint'])},
                 {'key': 'API_USER', 'value': self.pipeline.source.config[source.ObserviumSource.USERNAME]},
                 {'key': 'API_PASSWORD', 'value': self.pipeline.source.config[source.ObserviumSource.PASSWORD]},
-                {'key': 'PARAMS', 'value': self.pipeline.config.get('params', {})},
+                {'key': 'REQUEST_PARAMS', 'value': self.pipeline.config.get('request_params', {})},
                 {'key': 'MEASUREMENTS', 'value': list(self.pipeline.values.keys())},
                 {'key': 'DIMENSIONS', 'value': self.pipeline.dimensions},
                 {'key': 'INTERVAL_IN_SECONDS', 'value': str(self.pipeline.interval)},

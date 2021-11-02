@@ -370,7 +370,7 @@ class ObserviumLoadClientData(LoadClientData):
         self.client_config['rename_dimensions_mapping'] = self._rename_dimensions_mapping()
         self.client_config['dimensions'] = self._dimensions()
         self.client_config['values'] = self._measurements()
-        self.client_config['params'] = self._params()
+        self.client_config['request_params'] = self._request_params()
         return self.client_config
 
     def _measurements(self) -> dict:
@@ -382,7 +382,7 @@ class ObserviumLoadClientData(LoadClientData):
     def endpoint(self) -> str:
         return self.pipeline.source.config['endpoint']
 
-    def _params(self) -> dict:
+    def _request_params(self) -> dict:
         params = self.client_config.get('params')
         if params:
             return {k: v for k, v in params.items() if v and (k in self.ALLOWED_PARAMS[self.endpoint()])}

@@ -27,7 +27,7 @@ POLL_TIME_KEYS = {
     'storage': 'storage_polled'
 }
 
-DATA_KEYS = {
+RESPONSE_DATA_KEYS = {
     'ports': 'ports',
     'mempools': 'entries',
     'processors': 'entries',
@@ -115,8 +115,8 @@ while True:
 
         data = _get(
             sdc.userParams['URL'],
-            sdc.userParams['PARAMS'],
-            DATA_KEYS[sdc.userParams['ENDPOINT']]
+            sdc.userParams['REQUEST_PARAMS'],
+            RESPONSE_DATA_KEYS[sdc.userParams['ENDPOINT']]
         )
         metrics = create_metrics(data)
 

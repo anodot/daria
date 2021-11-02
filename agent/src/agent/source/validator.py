@@ -159,7 +159,6 @@ class OracleValidator(JDBCValidator):
         url_split = url.split('@')[1]
         if len(url_split.split(':')) == 3:
             return True
-
         if len(url_split.split(':')) != 2 or len(url_split.split('/')) != 2:
             raise ValidationException(error_msg)
 
