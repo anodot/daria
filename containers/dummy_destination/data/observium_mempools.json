@@ -1,0 +1,29 @@
+{
+  "vars": [],
+  "query": "SELECT *, `mempools`.`mempool_id` AS `mempool_id` FROM `mempools` WHERE 1 AND (( `device_id` IS NOT NULL))  ORDER BY `mempool_descr` ASC",
+  "status": "ok",
+  "count": 1,
+  "entries": {
+    "1": {
+      "mempool_id": "1",
+      "mempool_index": "1253.1",
+      "entPhysicalIndex": null,
+      "hrDeviceIndex": null,
+      "mempool_mib": "CISCO-ENHANCED-MEMPOOL-MIB",
+      "mempool_multiplier": "1.00000",
+      "mempool_hc": "0",
+      "mempool_descr": "Module 1 (Processor)",
+      "device_id": "1",
+      "mempool_deleted": "0",
+      "mempool_warn_limit": null,
+      "mempool_crit_limit": null,
+      "mempool_ignore": null,
+      "mempool_table": "",
+      "mempool_polled": "1628160603",
+      "mempool_perc": "21",
+      "mempool_used": "43289060",
+      "mempool_free": "163147772",
+      "mempool_total": "206436832"
+    }
+  }
+}

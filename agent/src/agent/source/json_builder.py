@@ -53,7 +53,7 @@ def edit_multiple(configs: list) -> List[Source]:
             print(f"Source {config['name']} updated")
             sources.append(source_)
         except Exception as e:
-            exceptions[config['name']] = f'{type(e).__name__}: {str(e)}'
+            exceptions[config['name']] = f'{type(e).__name__}: {e}'
     if exceptions:
         raise source.SourceException(json.dumps(exceptions))
     return sources
