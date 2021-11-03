@@ -136,3 +136,9 @@ class AuthenticationToken(Entity):
     def is_expired(self) -> bool:
         # leave 100 sec gap just to be sure we're not using expired token
         return (datetime.now() - self.created_at).total_seconds() > self.EXPIRATION_PERIOD_IN_SECONDS - 100
+
+
+class DummyHttpDestination(HttpDestination):
+    def __init__(self):
+        super().__init__()
+        self.token = 'dummy_token'

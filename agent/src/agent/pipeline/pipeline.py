@@ -6,7 +6,7 @@ from sqlalchemy.orm import relationship
 from agent.modules import tools
 from agent.modules.constants import HOSTNAME
 from agent.modules.db import Entity
-from agent.destination import HttpDestination
+from agent.destination import HttpDestination, DummyHttpDestination
 from enum import Enum
 from sqlalchemy import Column, Integer, String, JSON, ForeignKey, func, Float
 from copy import deepcopy
@@ -375,16 +375,17 @@ class Pipeline(Entity, sdc_client.IPipeline):
 
 class RawPipeline(Pipeline):
     def __init__(self, pipeline_id: str, source_: Source):
-        # pass dummy destination
-        super(RawPipeline, self).__init__(pipeline_id, source_, HttpDestination())
+        super(RawPipeline, self).__init__(pipeline_id, source_, DummyHttpDestination())
         # this is needed to distinguish Pipeline and RawPipeline when they're loaded from the db
         self.type = RAW_PIPELINE
 
 
 class TestPipeline(Pipeline):
     def __init__(self, pipeline_id: str, source_):
-        # pass dummy destination
-        super().__init__(pipeline_id, source_, HttpDestination())
+        super().__init__(pipeline_id, source_, DummyHttpDestination())
+
+    def get_schema_id(self) -> str:
+        return 'dummy_schema_id'
 
 
 class PipelineOffset(Entity):

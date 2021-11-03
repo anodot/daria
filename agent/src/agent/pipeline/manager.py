@@ -243,7 +243,7 @@ def get_sample_records(pipeline_: Pipeline) -> (list, list):
     finally:
         sdc_client.delete(pipeline_)
 
-    if not preview_data:
+    if not preview_data or errors:
         return preview_data, errors
 
     try:
