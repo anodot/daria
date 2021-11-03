@@ -11,6 +11,22 @@ FAIL = '\033[91m'
 ENDC = '\033[0m'
 
 
+@click.command()
+@click.option('-d', '--work-dir', type=click.Path(exists=True), required=True)
+@click.option('--keep-not-existing/--remove-not-existing', default=True)
+def apply(work_dir, keep_not_existing):
+    logger_.info('Run in ' + work_dir)
+    sources_dir = os.path.join(work_dir, 'sources')
+    pipelines_dir = os.path.join(work_dir, 'pipelines')
+
+    process(sources_dir, populate_source_from_file)
+    process(pipelines_dir, populate_pipeline_from_file)
+
+    if not keep_not_existing:
+        delete_not_existing(pipelines_dir, pipeline, 'Pipeline')
+        delete_not_existing(sources_dir, source, 'Source')
+
+
 def populate_source_from_file(file):
     source.check_prerequisites()
     exceptions = []
@@ -67,7 +83,7 @@ def process(directory, create):
             except Exception as e:
                 if not constants.ENV_PROD:
                     raise
-                logger_.exception(f'{FAIL}EXCEPTION: {type(e).__name__}: {str(e)}\n{ENDC}')
+                logger_.exception(f'{FAIL}EXCEPTION: {type(e).__name__}: {e}\n{ENDC}')
                 failed = True
                 continue
     if failed:
@@ -98,19 +114,3 @@ def _extract_all_names(directory, module, type_):
                         raise Exception(f'{type_} config must contain a `{name_key}`, check {file.name}')
                     names.append(config[name_key])
     return names
-
-
-@click.command()
-@click.option('-d', '--work-dir', type=click.Path(exists=True), required=True)
-@click.option('--keep-not-existing/--remove-not-existing', default=True)
-def apply(work_dir, keep_not_existing):
-    logger_.info('Run in ' + work_dir)
-    sources_dir = os.path.join(work_dir, 'sources')
-    pipelines_dir = os.path.join(work_dir, 'pipelines')
-
-    process(sources_dir, populate_source_from_file)
-    process(pipelines_dir, populate_pipeline_from_file)
-
-    if not keep_not_existing:
-        delete_not_existing(pipelines_dir, pipeline, 'Pipeline')
-        delete_not_existing(sources_dir, source, 'Source')

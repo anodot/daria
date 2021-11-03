@@ -50,9 +50,8 @@ def monitoring_api_mock():
 
 @app.route('/api/v1/metrics/watermark', methods=['POST'])
 def watermark_mock():
-    if request.args.get('token'):
-        if request.args.get('token') != 'correct_token':
-            return json.dumps({'errors': ['Data collection token is invalid']}), 401
+    if request.args.get('token') and request.args.get('token') != 'correct_token':
+        return json.dumps({'errors': ['Data collection token is invalid']}), 401
     data = request.json
     with open(os.path.join(OUTPUT_DIR, data['schemaId'] + '_watermark.json'), 'w') as f:
         json.dump(data, f)
@@ -118,12 +117,56 @@ def solarwinds_data_example():
                        ' MinMemoryUsed, MaxMemoryUsed, AvgMemoryUsed, AvgPercentMemoryUsed FROM Orion.CPULoad' \
                        ' WHERE DateTime > DateTime(\'2021-03-30T00:00:00Z\')' \
                        ' AND DateTime <= AddSecond(86400, DateTime(\'2021-03-30T00:00:00Z\')) ORDER BY DateTime'
-
     if "query" in request.args and request.args["query"] == predefined_query:
         with open('data/solarwinds_data_example.json') as f:
             return json.load(f)
     # request is not correct
     return json.dumps({'results': []})
+
+
+@app.route('/api/v0/devices', methods=['GET'])
+def observium_devices():
+    # basic auth admin:admin
+    if request.headers.get('Authorization') != 'Basic YWRtaW46YWRtaW4=':
+        return json.dumps({'error': 'Wrong user or pass'}), 401
+    with open('data/observium_devices.json') as f:
+        return json.load(f)
+
+
+@app.route('/api/v0/ports', methods=['GET'])
+def observium_ports():
+    # basic auth admin:admin
+    if request.headers.get('Authorization') != 'Basic YWRtaW46YWRtaW4=':
+        return json.dumps({'error': 'Wrong user or pass'}), 401
+    with open('data/observium_ports.json') as f:
+        return json.load(f)
+
+
+@app.route('/api/v0/mempools', methods=['GET'])
+def observium_mempools():
+    # basic auth admin:admin
+    if request.headers.get('Authorization') != 'Basic YWRtaW46YWRtaW4=':
+        return json.dumps({'error': 'Wrong user or pass'}), 401
+    with open('data/observium_mempools.json') as f:
+        return json.load(f)
+
+
+@app.route('/api/v0/processors', methods=['GET'])
+def observium_processors():
+    # basic auth admin:admin
+    if request.headers.get('Authorization') != 'Basic YWRtaW46YWRtaW4=':
+        return json.dumps({'error': 'Wrong user or pass'}), 401
+    with open('data/observium_processors.json') as f:
+        return json.load(f)
+
+
+@app.route('/api/v0/storage', methods=['GET'])
+def observium_storage():
+    # basic auth admin:admin
+    if request.headers.get('Authorization') != 'Basic YWRtaW46YWRtaW4=':
+        return json.dumps({'error': 'Wrong user or pass'}), 401
+    with open('data/observium_storage.json') as f:
+        return json.load(f)
 
 
 if __name__ == '__main__':

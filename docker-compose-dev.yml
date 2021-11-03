@@ -63,7 +63,7 @@ services:
 #      - ./scripts:/usr/src/app/scripts
       - ./test-datasets:/home
     ports:
-      - 80:80
+      - "80:80"
 
   db:
     container_name: db
@@ -74,7 +74,7 @@ services:
       POSTGRES_PASSWORD: agent
       POSTGRES_DB: agent
     ports:
-      - 5432:5432
+      - "5432:5432"
     volumes:
       - /var/lib/postgresql/data
 
@@ -206,7 +206,7 @@ services:
     volumes:
       - /usr/share/elasticsearch/data
     ports:
-      - 9200:9200
+      - "9200:9200"
 
   dummy_destination:
     build: containers/dummy_destination
@@ -215,7 +215,7 @@ services:
       - ./agent/output:/app/log
       - ./containers/dummy_destination:/app/
     ports:
-      - 8080:80
+      - "8080:80"
 
   sage:
     build: containers/sage_mock
@@ -224,7 +224,7 @@ services:
     container_name: victoriametrics
     image: victoriametrics/victoria-metrics:v1.43.0
     ports:
-      - 8428:8428
+      - "8428:8428"
     volumes:
       - /storage
     command:
@@ -249,7 +249,7 @@ services:
   zabbix-web:
     image: zabbix/zabbix-web-nginx-mysql:alpine-4.4.10
     ports:
-      - 8888:8080
+      - "8888:8080"
     depends_on:
       - zabbix-server
     environment:
@@ -269,14 +269,14 @@ services:
       - /var/lib/clickhouse
       - ./volumes/clickhouse-initdb:/docker-entrypoint-initdb.d
     ports:
-      - 8123:8123
-      - 9000:9000
+      - "8123:8123"
+      - "9000:9000"
 
   snmpsim:
     build: containers/snmpsim
     container_name: snmpsim
     ports:
-      - 1161:1161/udp
+      - "1161:1161/udp"
 
 volumes:
   agent-data:

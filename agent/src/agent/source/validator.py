@@ -75,7 +75,7 @@ class InfluxValidator(Validator):
             self.source.config.get('username'),
             self.source.config.get('password')
         )
-        if not any([db['name'] == self.source.config['db'] for db in client.get_list_database()]):
+        if all(db['name'] != self.source.config['db'] for db in client.get_list_database()):
             raise ValidationException(
                 f"Database {self.source.config['db']} not found. Please check your credentials again"
             )
@@ -159,7 +159,6 @@ class OracleValidator(JDBCValidator):
         url_split = url.split('@')[1]
         if len(url_split.split(':')) == 3:
             return True
-
         if len(url_split.split(':')) != 2 or len(url_split.split('/')) != 2:
             raise ValidationException(error_msg)
 
@@ -295,6 +294,26 @@ class SolarWindsValidator(Validator):
             )
 
 
+class ObserviumValidator(Validator):
+    VALIDATION_SCHEMA_FILE = 'observium.json'
+
+    def validate_connection(self):
+        session = http.Session()
+        session.auth = (
+            self.source.config[source.ObserviumSource.USERNAME],
+            self.source.config[source.ObserviumSource.PASSWORD]
+        )
+        try:
+            url = urllib.parse.urljoin(self.source.config['url'], source.ObserviumSource.DEVICES_API_PATH)
+            res = session.get(url, verify=self.source.config.get('verify_ssl', True), timeout=self.source.query_timeout)
+            res.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            raise ValidationException(
+                'Failed to connect to Observium API. Make sure you provided correct url, API username and password:\n'
+                + str(e)
+            )
+
+
 class ZabbixValidator(Validator):
     VALIDATION_SCHEMA_FILE = 'zabbix.json'
 
@@ -357,6 +376,7 @@ def get_validator(source_: Source) -> Validator:
         source.TYPE_KAFKA: KafkaValidator,
         source.TYPE_MONGO: MongoValidator,
         source.TYPE_MYSQL: JDBCValidator,
+        source.TYPE_OBSERVIUM: ObserviumValidator,
         source.TYPE_ORACLE: OracleValidator,
         source.TYPE_POSTGRES: JDBCValidator,
         source.TYPE_SAGE: SageValidator,

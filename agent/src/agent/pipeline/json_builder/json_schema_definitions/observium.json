@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "properties": {
+    "source": {"type": "string"},
+    "pipeline_id": {"type": "string"},
+    "interval": {"type": "integer"},
+    "count_records": {"type": "boolean"},
+    "dimensions": {"type": "array", "items": {"type": "string"}},
+    "values": {"type": "object"},
+    "params": {"type": "object"},
+    "rename_dimensions_mapping": {"type": "object"},
+    "tags": {
+      "type": "object",
+      "patternProperties":  {"[^ \\.]+": {"type": "array", "items": {"type": "string"}}}
+    },
+    "properties": {"type": "object"}
+  },
+  "required": ["interval"]
+}

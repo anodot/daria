@@ -41,7 +41,7 @@ def create(advanced: bool, file):
 def create_raw(file):
     _check_raw_prerequisites()
     try:
-        pipeline.json_builder.build_multiple_raw(pipeline.json_builder.extract_configs(file))
+        pipeline.json_builder.build_raw_using_file(file)
     except (sdc_client.ApiClientException, ValidationError, pipeline.PipelineException) as e:
         raise click.ClickException(str(e))
 
@@ -73,10 +73,7 @@ def _check_raw_prerequisites():
 def start(pipeline_id: str, file):
     if not file and not pipeline_id:
         raise click.UsageError('Specify pipeline id or file')
-
-    pipeline_ids = [item['pipeline_id'] for item in pipeline.json_builder.extract_configs(file)] if file else [pipeline_id]
-
-    for pipeline_id in pipeline_ids:
+    for pipeline_id in _get_pipeline_ids(pipeline_id, file):
         try:
             click.echo(f'Pipeline {pipeline_id} is starting...')
             pipeline.manager.start(pipeline.repository.get_by_id(pipeline_id))
@@ -91,16 +88,17 @@ def start(pipeline_id: str, file):
 def stop(pipeline_id: str, file):
     if not file and not pipeline_id:
         raise click.UsageError('Specify pipeline id or file')
-
-    pipeline_ids = [item['pipeline_id'] for item in pipeline.json_builder.extract_configs(file)] if file else [pipeline_id]
-
-    for pipeline_id in pipeline_ids:
+    for pipeline_id in _get_pipeline_ids(pipeline_id, file):
         try:
             sdc_client.stop(pipeline.repository.get_by_id(pipeline_id))
             click.secho(f'Pipeline {pipeline_id} is stopped', fg='green')
         except (sdc_client.ApiClientException, pipeline.PipelineException) as e:
             click.secho(str(e), err=True, fg='red')
             continue
+
+
+def _get_pipeline_ids(pipeline_id, file):
+    return [item['pipeline_id'] for item in pipeline.json_builder.extract_configs(file)] if file else [pipeline_id]
 
 
 @click.command()
@@ -121,10 +119,7 @@ def force_stop(pipeline_id: str):
 def delete(pipeline_id: str, file):
     if not file and not pipeline_id:
         raise click.UsageError('Specify pipeline id or file')
-
-    pipeline_ids = [item['pipeline_id'] for item in pipeline.json_builder.extract_configs(file)] if file else [pipeline_id]
-
-    for pipeline_id in pipeline_ids:
+    for pipeline_id in _get_pipeline_ids(pipeline_id, file):
         try:
             pipeline.manager.delete_by_id(pipeline_id)
             click.echo(f'Pipeline {pipeline_id} deleted')
@@ -144,6 +139,7 @@ def force_delete(pipeline_id: str):
     click.echo('Finished')
 
 
+# todo severity is not working
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
 @click.option('-l', '--lines', type=click.INT, default=10)
@@ -242,7 +238,7 @@ def update(pipeline_id: str):
             sdc_client.update(p)
             click.secho(f'Pipeline {p.name} updated', fg='green')
         except streamsets.manager.StreamsetsException as e:
-            print(str(e))
+            click.echo(str(e))
             continue
 
 
@@ -315,7 +311,7 @@ def _result_preview(pipeline_: Pipeline):
     if _should_prompt_preview(pipeline_):
         if click.confirm('Would you like to see the result data preview?', default=True):
             preview.show_preview(pipeline_)
-            print('To change the config use `agent pipeline edit`')
+            click.echo('To change the config use `agent pipeline edit`')
 
 
 def _get_previous_pipeline_config(source_type: str) -> dict:

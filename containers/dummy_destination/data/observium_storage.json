@@ -1,0 +1,25 @@
+{
+  "status": "ok",
+  "count": 20,
+  "storage": {
+    "1": {
+      "storage_id": "1",
+      "device_id": "1",
+      "storage_mib": "HOST-RESOURCES-MIB",
+      "storage_index": "1",
+      "storage_type": "flashMemory",
+      "storage_descr": "description",
+      "storage_hc": "0",
+      "storage_deleted": "0",
+      "storage_warn_limit": null,
+      "storage_crit_limit": null,
+      "storage_ignore": "0",
+      "storage_polled": "1633518002",
+      "storage_size": "92762112",
+      "storage_units": "2048",
+      "storage_used": "47782296",
+      "storage_free": "44979816",
+      "storage_perc": "52"
+    }
+  }
+}

@@ -19,6 +19,7 @@ TYPE_KAFKA = 'kafka'
 TYPE_MONGO = 'mongo'
 TYPE_MYSQL = 'mysql'
 TYPE_ORACLE = 'oracle'
+TYPE_OBSERVIUM = 'observium'
 TYPE_POSTGRES = 'postgres'
 TYPE_SAGE = 'sage'
 TYPE_SNMP = 'snmp'
@@ -40,6 +41,7 @@ types = {
     TYPE_MYSQL: JDBCSource,
     TYPE_ORACLE: JDBCSource,
     TYPE_POSTGRES: JDBCSource,
+    TYPE_OBSERVIUM: ObserviumSource,
     TYPE_SAGE: SageSource,
     TYPE_SNMP: SNMPSource,
     TYPE_SOLARWINDS: SolarWindsSource,

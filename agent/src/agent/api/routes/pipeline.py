@@ -15,10 +15,7 @@ logger = logger.get_logger(__name__)
 
 @pipelines.route('/pipelines', methods=['GET'])
 def list_pipelines():
-    configs = []
-    for p in pipeline.repository.get_all():
-        configs.append(p.to_dict())
-    return jsonify(configs)
+    return jsonify([p.to_dict() for p in pipeline.repository.get_all()])
 
 
 @pipelines.route('/pipelines/<pipeline_id>', methods=['GET'])

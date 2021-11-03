@@ -5,7 +5,7 @@ from agent import di
 from agent.api.routes.alerts import alerts
 from agent.api.routes.data_extractors.cacti import cacti
 from agent.api.routes.data_extractors.snmp import snmp
-from agent.modules import logger
+from agent.modules import logger, db
 from agent.api.routes.monitoring import monitoring_bp
 from agent.api.routes.streamsets import streamsets
 from agent.api.routes.destination import destination_
@@ -37,6 +37,7 @@ def before_request_func():
 
 @app.teardown_request
 def teardown_request_func(exception):
+    db.Session.close()
     if exception:
         logger_.error(exception)
 

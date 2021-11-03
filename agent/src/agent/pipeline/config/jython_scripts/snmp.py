@@ -54,7 +54,7 @@ while True:
         batch.add(record)
 
         if batch.size() == sdc.batchSize:
-            batch.process(entityName, str(offset))
+            batch.process(entityName, str(offset + get_interval()))
             batch = sdc.createBatch()
 
     event = sdc.createEvent('interval_processed', 1)
@@ -63,5 +63,5 @@ while True:
         'schemaId': sdc.userParams['SCHEMA_ID']
     }
     batch.addEvent(event)
-    batch.process(entityName, str(offset))
+    batch.process(entityName, str(offset + get_interval()))
     offset += get_interval()

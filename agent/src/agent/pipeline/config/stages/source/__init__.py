@@ -3,6 +3,7 @@ from . import cacti
 from . import influx
 from . import influx2
 from . import jdbc
+from . import observium
 from . import sage
 from . import snmp
 from . import solarwinds
