@@ -40,7 +40,7 @@ kubectl exec $POD -- free -m >>$info_file
 echo "Exported system info to the $info_file"
 
 kubectl get pod $POD -o yaml >$dest_path/agent-container-info.yaml
-echo "Exported agent pod info to the $dest_path/agent-container-info.txt"
+echo "Exported agent pod info to the $dest_path/agent-container-info.yaml"
 echo "Exporting streamsets pods info"
 kubectl get pods -o custom-columns=":metadata.name" | grep streamsets-agent | while read -r pod; do
   kubectl get pod $pod -o yaml >$dest_path/$pod-container-info.yaml
