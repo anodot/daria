@@ -2,7 +2,7 @@ from agent import source
 from agent.source import sensitive_data
 
 
-def test_timestamp_validation():
+def test_masking_supports_all_sources():
     dummy_config = {
         'bla': 'bla-bla',
         'config': {
