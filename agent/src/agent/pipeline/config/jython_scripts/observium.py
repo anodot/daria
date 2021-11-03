@@ -95,8 +95,6 @@ def create_metrics(data):
 
 if sdc.lastOffsets.containsKey(entityName):
     offset = int(float(sdc.lastOffsets.get(entityName)))
-elif sdc.userParams['DAYS_TO_BACKFILL'] and int(sdc.userParams['DAYS_TO_BACKFILL']) > 0:
-    offset = to_timestamp(datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=int(sdc.userParams['DAYS_TO_BACKFILL'])))
 else:
     offset = to_timestamp(datetime.now().replace(second=0, microsecond=0))
 
