@@ -85,7 +85,7 @@ def export(dir_path, plain_text_credentials):
 
 @infinite_retry
 def _prompt_source_name():
-    source_name = click.prompt('Enter unique name for this source config', type=click.STRING).strip()
+    source_name = click.prompt('Enter a unique source name', type=click.STRING).strip()
     source.manager.check_source_name(source_name)
     return source_name
 

@@ -19,8 +19,12 @@ class TestPromQL(TestInputBase):
     }
 
     def test_source_create(self, cli_runner):
-        result = cli_runner.invoke(cli.source.create, catch_exceptions=False,
-                                   input=f"victoria\ntest_victoria\nhttp://victoriametrics:8428\n\n\n")
+        result = cli_runner.invoke(
+            cli.source.create,
+            catch_exceptions=False,
+            input='victoria\ntest_victoria\nhttp://victoriametrics:8428\n\n\n',
+        )
+
         assert result.exit_code == 0
         assert source.repository.exists('test_victoria')
 
@@ -47,5 +51,10 @@ class TestPromQL(TestInputBase):
         assert result.exit_code == 0
 
     def test_edit(self, cli_runner):
-        result = cli_runner.invoke(cli.pipeline.edit, ['test_victoria'], catch_exceptions=False, input=f"\n\n\n\n")
+        result = cli_runner.invoke(
+            cli.pipeline.edit,
+            ['test_victoria'],
+            catch_exceptions=False,
+            input='\n\n\n\n',
+        )
         assert result.exit_code == 0

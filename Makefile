@@ -10,7 +10,7 @@ all: build-all test-all
 
 build-all: get-streamsets-libs build-docker
 
-test-all: run-first sleep-1 setup-first test-first stop-first run-second sleep-2 setup-second test-second
+test-all: run-first sleep-1 setup-first test-first stop-first run-second sleep-2 setup-second test-second stop-second run-third setup-third test-third
 
 run-first:
 	docker-compose up -d dc dc2 agent squid dummy_destination kafka influx influx-2 postgres mysql snmpsim
@@ -23,11 +23,28 @@ stop-first:
 	docker-compose stop kafka influx influx-2 postgres snmpsim
 
 run-second:
-	docker-compose up -d es sage victoriametrics zabbix-server zabbix-web zabbix-agent mongo clickhouse
+	docker-compose up -d es sage zabbix-server zabbix-web zabbix-agent mongo clickhouse
 
-setup-second: setup-elastic setup-victoria setup-zabbix
+setup-second: setup-elastic setup-zabbix
 
 test-second: test-api-2 test-apply test-input-2 test-export-sources test-pipelines-2 test-send-to-watermark
+
+stop-second:
+	docker-compose stop es sage zabbix-server zabbix-web zabbix-agent mongo clickhouse
+
+run-third:
+	docker compose up -d victoriametrics && sleep 40
+
+setup-third: setup-victoria
+
+test-third: test-input-3 test-pipelines-3
+
+test-input-3:
+	$(DOCKER_TEST_PARALLEL) tests/test_input/test_3/
+
+test-pipelines-3:
+	$(DOCKER_TEST_PARALLEL) tests/test_pipelines/test_3/
+
 
 ##-------------
 ## DEVELOPMENT

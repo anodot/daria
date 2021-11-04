@@ -36,6 +36,7 @@ class BaseConfigLoader:
             source.TYPE_MONGO: 'mongo_http',
             source.TYPE_MYSQL: 'jdbc',
             source.TYPE_POSTGRES: 'jdbc',
+            source.TYPE_PROMETHEUS: 'promql_http',
             source.TYPE_SAGE: 'sage_http',
             source.TYPE_SNMP: 'snmp',
             source.TYPE_SPLUNK: 'tcp_server_http',

@@ -379,6 +379,7 @@ def get_validator(source_: Source) -> Validator:
         source.TYPE_OBSERVIUM: ObserviumValidator,
         source.TYPE_ORACLE: OracleValidator,
         source.TYPE_POSTGRES: JDBCValidator,
+        source.TYPE_PROMETHEUS: PromQLValidator,
         source.TYPE_SAGE: SageValidator,
         source.TYPE_SNMP: SNMPValidator,
         source.TYPE_SPLUNK: SplunkValidator,
