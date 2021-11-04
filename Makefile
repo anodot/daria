@@ -25,7 +25,7 @@ stop-first:
 run-second:
 	docker-compose up -d es sage zabbix-server zabbix-web zabbix-agent mongo clickhouse
 
-setup-second: setup-elastic setup-victoria setup-zabbix
+setup-second: setup-elastic setup-zabbix
 
 test-second: test-api-2 test-apply test-input-2 test-export-sources test-pipelines-2 test-send-to-watermark
 
