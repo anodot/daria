@@ -38,6 +38,7 @@ def _get_builder(pipeline_: Pipeline, config: dict, is_edit: bool) -> Builder:
         source.TYPE_MYSQL: JDBCBuilder,
         source.TYPE_ORACLE: JDBCBuilder,
         source.TYPE_POSTGRES: JDBCBuilder,
+        source.TYPE_PROMETHEUS: PromQLBuilder,
         source.TYPE_OBSERVIUM: ObserviumBuilder,
         source.TYPE_SAGE: SageBuilder,
         source.TYPE_SNMP: SNMPBuilder,

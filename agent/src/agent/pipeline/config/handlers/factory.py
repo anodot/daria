@@ -23,6 +23,7 @@ def _get_handler(pipeline_: Pipeline, base_config: dict) -> BaseConfigHandler:
         source.TYPE_MONGO: pipeline.config.handlers.mongo.MongoConfigHandler,
         source.TYPE_MYSQL: pipeline.config.handlers.jdbc.JDBCConfigHandler,
         source.TYPE_POSTGRES: pipeline.config.handlers.jdbc.JDBCConfigHandler,
+        source.TYPE_PROMETHEUS: pipeline.config.handlers.promql.PromQLConfigHandler,
         source.TYPE_SAGE: pipeline.config.handlers.sage.SageConfigHandler,
         source.TYPE_SOLARWINDS: pipeline.config.handlers.solarwinds.SolarWindsConfigHandler,
         source.TYPE_SPLUNK: pipeline.config.handlers.tcp.TCPConfigHandler,
