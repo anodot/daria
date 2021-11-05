@@ -1,6 +1,6 @@
 alabaster==0.7.12
 atomicwrites==1.2.1
-attrs==18.2.0
+attrs==19.2.0
 Babel==2.9.1
 certifi==2018.11.29
 chardet==3.0.4
@@ -21,7 +21,7 @@ mysqlclient==1.4.6
 ordered-set==3.1
 packaging==19.0
 pbr==5.1.3
-pluggy==0.8.1
+pluggy==0.12
 protobuf==3.9.0
 psycopg2==2.8.3
 py==1.10.0
@@ -31,7 +31,7 @@ PyLaTeX==1.3.0
 pymongo==3.11.2
 pyparsing==2.3.1
 pyrsistent==0.15.1
-pytest==4.1.1
+pytest==6.2.5
 pytest-mock==1.10.0
 python-anodot==2.0.3
 python-dateutil==2.8.0
@@ -45,7 +45,7 @@ sphinx-click==2.0.1
 sphinx-rtd-theme==0.4.3
 sphinxcontrib-websupport==1.1.0
 SQLAlchemy==1.3.17
-tabulate==0.8.5
+tabulate==0.8.9
 texttable==1.6.0
 urllib3==1.26.5
 pytest-xdist==1.27
