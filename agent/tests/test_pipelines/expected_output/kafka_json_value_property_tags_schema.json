@@ -80,7 +80,7 @@
       "topic": "test_csv"
     },
     "measurements": {
-      "clicks": 6909993404034934004
+      "clicks": 6.909993404034934e+18
     },
     "schemaId": "test_csv-1234",
     "tags": {
