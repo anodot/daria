@@ -51,6 +51,7 @@ urllib3==1.26.5
 pytest-xdist==1.27
 flask==1.1.2
 Flask-WTF==0.14
+wtforms==2.3.3
 werkzeug==0.16.1
 result==0.5.0
 wtforms-json==0.3.3
