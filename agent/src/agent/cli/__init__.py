@@ -1,6 +1,8 @@
+import os
+import shutil
 import click
 
-from agent import di
+from agent import di, source as source_m, pipeline as pipeline_m
 from agent.cli.apply import apply
 from agent.cli.backup import backup, restore
 from agent.cli.destination import destination
@@ -33,11 +35,32 @@ def agent(version):
         click.echo('Git commit: ' + __git_sha1__)
 
 
+@click.command()
+def clean():
+    if not click.confirm('You\'re going to DELETE ALL SOURCES AND PIPELINES, continue?'):
+        return
+    for pipeline_ in pipeline_m.repository.get_all():
+        pipeline_m.manager.delete(pipeline_)
+    for source_ in source_m.repository.get_all():
+        source_m.manager.delete(source_)
+    folder = '../../../output/'
+    for filename in os.listdir(folder):
+        file_path = os.path.join(folder, filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)
+        except Exception as e:
+            print('Failed to delete %s. Reason: %s' % (file_path, e))
+
+
 def agent_entry_point():
     di.init()
     agent()
 
 
+agent.add_command(clean)
 agent.add_command(source_group)
 agent.add_command(pipeline_group)
 agent.add_command(backup)

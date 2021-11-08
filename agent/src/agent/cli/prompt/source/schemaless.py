@@ -84,17 +84,22 @@ class SchemalessPrompter(Prompter, metaclass=ABCMeta):
                          default=default_config.get(source.SchemalessSource.CONFIG_GROK_PATTERN))
 
     def prompt_data_format(self, default_config):
-        self.source.config[source.SchemalessSource.CONFIG_DATA_FORMAT] = \
-            click.prompt('Data format', type=click.Choice(source.SchemalessSource.data_formats),
-                         default=default_config.get(source.SchemalessSource.CONFIG_DATA_FORMAT,
-                                                             source.SchemalessSource.DATA_FORMAT_JSON))
-        if self.source.config[source.SchemalessSource.CONFIG_DATA_FORMAT] == source.SchemalessSource.DATA_FORMAT_CSV:
+        data_format = click.prompt(
+            'Data format',
+            type=click.Choice(source.SchemalessSource.data_formats),
+            default=default_config.get(
+                source.SchemalessSource.CONFIG_DATA_FORMAT,
+                source.SchemalessSource.DATA_FORMAT_JSON
+            )
+        )
+        if data_format == source.SchemalessSource.DATA_FORMAT_CSV:
             self.prompt_csv(default_config)
-        elif self.source.config[source.SchemalessSource.CONFIG_DATA_FORMAT] == source.SchemalessSource.DATA_FORMAT_AVRO:
+        elif data_format == source.SchemalessSource.DATA_FORMAT_AVRO:
             self.prompt_avro(default_config)
-        elif self.source.config[source.SchemalessSource.CONFIG_DATA_FORMAT] == source.SchemalessSource.DATA_FORMAT_LOG:
+        elif data_format == source.SchemalessSource.DATA_FORMAT_LOG:
             self.prompt_log(default_config)
 
+        self.source.config[source.SchemalessSource.CONFIG_DATA_FORMAT] = data_format
         self.source.set_config(self.source.config)
         return self.source
 
@@ -122,8 +127,12 @@ class SchemalessPrompter(Prompter, metaclass=ABCMeta):
 
     @infinite_retry
     def prompt_field_mapping(self, records, previous_val):
-        new_names = click.prompt('Change fields names (format - key:val,key2:val2,key3:val3)', type=click.STRING,
-                                 default=','.join([f'{idx}:{item}' for idx, item in previous_val.items()])).strip()
+        new_names = click.prompt(
+            'Change fields names (format - key:val,key2:val2,key3:val3)',
+            type=click.STRING,
+            default=','.join(f'{idx}:{item}' for idx, item in previous_val.items()),
+        ).strip()
+
         if not new_names:
             self.source.config[source.SchemalessSource.CONFIG_CSV_MAPPING] = {}
             print('Saved default mapping')

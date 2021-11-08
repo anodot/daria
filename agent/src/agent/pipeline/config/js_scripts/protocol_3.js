@@ -17,17 +17,6 @@ function replace_illegal_chars(str) {
     return str.replace(/[\. \<]+/g, '_')
 }
 
-function get_measurement_name(record, value_idx) {
-    // if (!state['STATIC_WHAT']) {
-    //     var meas_name = extract_value(record, state['MEASUREMENT_NAMES'][value_idx])
-    //     if (typeof meas_name !== 'string') {
-    //         throw state['MEASUREMENT_NAMES'][value_idx] + ' property should be string instead of ' + (typeof meas_name)
-    //     }
-    //     return replace_illegal_chars(meas_name);
-    // }
-    return state['MEASUREMENT_NAMES'][value_idx]
-}
-
 function get_dimensions(record) {
     var dimensions = {};
     for (var j = 0; j < state['DIMENSIONS'].length; j++) {
@@ -67,9 +56,7 @@ function get_measurements(record) {
         if (typeof value === 'string' || value instanceof String) {
             value = parseFloat(value)
         }
-        var measurement = get_measurement_name(record, j);
-
-        measurements[measurement] = value;
+        measurements[state['MEASUREMENT_NAMES'][j]] = value;
     }
     if (state['COUNT_RECORDS']) {
         measurements[state['COUNT_RECORDS_MEASUREMENT_NAME']] = 1;

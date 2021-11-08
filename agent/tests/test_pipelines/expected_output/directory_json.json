@@ -1,12 +1,11 @@
 [
   {
     "schemaId": "111111-22222-3333-4444",
-    "measurements": {"clicks": 6784.6904, "count_records": 1},
+    "measurements": {"clicks": 6784.6904},
     "dimensions": {
       "ver": "1",
       "Country": "USA",
-      "Exchange": "DoubleClick",
-      "version": "1"
+      "Exchange": "DoubleClick"
     },
     "tags": {
       "source": ["anodot-agent"],
@@ -15,16 +14,15 @@
       "pipeline_id": ["pipeline_id"],
       "pipeline_type": ["type"]
     },
-    "timestamp": 1512864000.0
+    "timestamp": 1512867600
   },
   {
     "schemaId": "111111-22222-3333-4444",
-    "measurements": {"clicks": 6839.0, "count_records": 1},
+    "measurements": {"clicks": 6839},
     "dimensions": {
       "ver": "1",
       "Country": "USA",
-      "Exchange": "DoubleClick",
-      "version": "1"
+      "Exchange": "DoubleClick"
     },
     "tags": {
       "source": ["anodot-agent"],
@@ -33,16 +31,15 @@
       "pipeline_id": ["pipeline_id"],
       "pipeline_type": ["type"]
     },
-    "timestamp": 1512864000.0
+    "timestamp": 1512871200
   },
   {
     "schemaId": "111111-22222-3333-4444",
-    "measurements": {"clicks": 6909993404034934004, "count_records": 1},
+    "measurements": {"clicks": 6909993404034934004},
     "dimensions": {
       "ver": "1",
       "Country": "USA",
-      "Exchange": "DoubleClick",
-      "version": "1"
+      "Exchange": "DoubleClick"
     },
     "tags": {
       "source": ["anodot-agent"],
@@ -51,16 +48,15 @@
       "pipeline_id": ["pipeline_id"],
       "pipeline_type": ["type"]
     },
-    "timestamp": 1512864000.0
+    "timestamp": 1512874800
   },
   {
     "schemaId": "111111-22222-3333-4444",
-    "measurements": {"clicks": 7158.972598273843, "count_records": 1},
+    "measurements": {"clicks": 7158.972598273843},
     "dimensions": {
       "ver": "1",
       "Country": "USA",
-      "Exchange": "DoubleClick",
-      "version": "1"
+      "Exchange": "DoubleClick"
     },
     "tags": {
       "source": ["anodot-agent"],
@@ -69,16 +65,15 @@
       "pipeline_id": ["pipeline_id"],
       "pipeline_type": ["type"]
     },
-    "timestamp": 1512864000.0
+    "timestamp": 1512878400
   },
   {
     "schemaId": "111111-22222-3333-4444",
-    "measurements": {"clicks": 7235.7574, "count_records": 1},
+    "measurements": {"clicks": 7235.7574},
     "dimensions": {
       "ver": "1",
       "Country": "USA",
-      "Exchange": "DoubleClick",
-      "version": "1"
+      "Exchange": "DoubleClick"
     },
     "tags": {
       "source": ["anodot-agent"],
@@ -87,16 +82,14 @@
       "pipeline_id": ["pipeline_id"],
       "pipeline_type": ["type"]
     },
-    "timestamp": 1512864000.0
+    "timestamp": 1512882000
   },
   {
     "schemaId": "111111-22222-3333-4444",
-    "measurements": {"count_records": 1},
+    "measurements": {"clicks": 7427.7744},
     "dimensions": {
       "ver": "1",
-      "Country": "USA",
-      "Exchange": "DoubleClick",
-      "version": "1"
+      "Exchange": "DoubleClick"
     },
     "tags": {
       "source": ["anodot-agent"],
@@ -105,23 +98,6 @@
       "pipeline_id": ["pipeline_id"],
       "pipeline_type": ["type"]
     },
-    "timestamp": 1512864000.0
-  },
-  {
-    "schemaId": "111111-22222-3333-4444",
-    "measurements": {"clicks": 7427.7744, "count_records": 1},
-    "dimensions": {
-      "ver": "1",
-      "Exchange": "DoubleClick",
-      "version": "1"
-    },
-    "tags": {
-      "source": ["anodot-agent"],
-      "source_host_id": ["ABCDEF"],
-      "source_host_name": ["agent"],
-      "pipeline_id": ["pipeline_id"],
-      "pipeline_type": ["type"]
-    },
-    "timestamp": 1512864000.0
+    "timestamp": 1512889200
   }
 ]
