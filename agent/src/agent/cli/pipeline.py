@@ -31,9 +31,10 @@ def list_pipelines():
 @click.command()
 @click.option('-a', '--advanced', is_flag=True)
 @click.option('-f', '--file', type=click.File())
-def create(advanced: bool, file):
+@click.option('-p', '--result-preview', is_flag=True)
+def create(advanced: bool, file, result_preview: bool):
     _check_prerequisites()
-    _create_from_file(file) if file else _prompt(advanced)
+    _create_from_file(file, result_preview) if file else _prompt(advanced)
 
 
 @click.command(name='create-raw')
@@ -50,11 +51,12 @@ def create_raw(file):
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, required=False)
 @click.option('-a', '--advanced', is_flag=True)
 @click.option('-f', '--file', type=click.File())
-def edit(pipeline_id: str, advanced: bool, file):
+@click.option('-p', '--result-preview', is_flag=True)
+def edit(pipeline_id: str, advanced: bool, file, result_preview: bool):
     _check_prerequisites()
     if not file and not pipeline_id:
         raise click.UsageError('Specify pipeline id or file')
-    _edit_using_file(file) if file else _prompt_edit(advanced, pipeline_id)
+    _edit_using_file(file, result_preview) if file else _prompt_edit(advanced, pipeline_id)
 
 
 def _check_prerequisites():
@@ -262,9 +264,12 @@ def pipeline_group():
     pass
 
 
-def _create_from_file(file):
+def _create_from_file(file, result_preview: bool):
     try:
-        pipeline.json_builder.build_using_file(file)
+        pipelines = pipeline.json_builder.build_using_file(file)
+        if result_preview:
+            for pipeline_ in pipelines:
+                _result_preview(pipeline_)
     except (sdc_client.ApiClientException, ValidationError, pipeline.PipelineException) as e:
         raise click.ClickException(str(e))
 
@@ -290,9 +295,12 @@ def _should_prompt_preview(pipeline_: Pipeline) -> bool:
     return pipeline_.source.type not in [source.TYPE_VICTORIA]
 
 
-def _edit_using_file(file):
+def _edit_using_file(file, result_preview: bool):
     try:
-        pipeline.json_builder.edit_using_file(file)
+        pipelines = pipeline.json_builder.edit_using_file(file)
+        if result_preview:
+            for pipeline_ in pipelines:
+                _result_preview(pipeline_)
     except (pipeline.PipelineException, streamsets.manager.StreamsetsException) as e:
         raise click.UsageError(str(e))
 
@@ -309,7 +317,7 @@ def _prompt_edit(advanced: bool, pipeline_id: str):
 
 def _result_preview(pipeline_: Pipeline):
     if _should_prompt_preview(pipeline_):
-        if click.confirm('Would you like to see the result data preview?', default=True):
+        if click.confirm(f'Would you like to see the result data preview for {pipeline_}?', default=True):
             preview.show_preview(pipeline_)
             click.echo('To change the config use `agent pipeline edit`')
 

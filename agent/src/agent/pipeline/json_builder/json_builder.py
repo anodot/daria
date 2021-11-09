@@ -12,12 +12,12 @@ from agent.pipeline.config import expression_parser
 logger_ = get_logger(__name__, stdout=True)
 
 
-def build_using_file(file):
-    build_multiple(extract_configs(file))
+def build_using_file(file) -> List[Pipeline]:
+    return build_multiple(extract_configs(file))
 
 
-def edit_using_file(file):
-    edit_multiple(extract_configs(file))
+def edit_using_file(file) -> List[Pipeline]:
+    return edit_multiple(extract_configs(file))
 
 
 def build_multiple(configs: list) -> List[Pipeline]:

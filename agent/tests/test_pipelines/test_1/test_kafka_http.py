@@ -3,7 +3,6 @@ import pytest
 from ..test_zpipeline_base import TestPipelineBase
 
 
-# todo why test_kfk_running_counter is not testint output?
 class TestKafka(TestPipelineBase):
     __test__ = True
     params = {
