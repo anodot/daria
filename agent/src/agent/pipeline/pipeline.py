@@ -301,6 +301,10 @@ class Pipeline(Entity, sdc_client.IPipeline):
     def log_everything(self) -> int:
         return self.config.get('log_everything', False)
 
+    @property
+    def transform_script_config(self) -> Optional[str]:
+        return self.config.get('transform_script', {}).get('config')
+
     def get_streamsets_config(self) -> dict:
         return pipeline.manager.create_streamsets_pipeline_config(self)
 

@@ -77,4 +77,5 @@ def main():
             error.write(record, str(e))
 
 
+'%TRANSFORM_SCRIPT_PLACEHOLDER%'
 main()

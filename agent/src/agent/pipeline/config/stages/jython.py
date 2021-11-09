@@ -5,8 +5,6 @@ class ConvertToMetrics30(base.Stage):
     JYTHON_SCRIPT = 'convert_to_metrics_30.py'
 
     def get_config(self) -> dict:
-        with open(self.get_jython_file_path()) as f:
-            script = f.read()
         return {
             'stageRequiredFields': self._get_required_fields(),
             'userParams': [
@@ -23,8 +21,13 @@ class ConvertToMetrics30(base.Stage):
                 {'key': 'HEADER_ATTRIBUTES', 'value': self.pipeline.header_attributes},
                 {'key': 'metrics', 'value': {}},
             ],
-            'script': script,
+            'script': self._get_script(),
         }
 
     def _get_required_fields(self) -> list:
         return [f'/{f}' for f in [*self.pipeline.required_dimensions_paths, self.pipeline.timestamp_path]]
+
+    def _get_script(self) -> str:
+        with open(self.get_jython_file_path()) as f:
+            script = f.read()
+        return script.replace("'%TRANSFORM_SCRIPT_PLACEHOLDER%'", self.pipeline.transform_script_config or '')

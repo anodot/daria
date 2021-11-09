@@ -9,7 +9,10 @@
       "type": "unix",
       "name": "timestamp_unix"
     },
-    "flush_bucket_size": "1h"
+    "flush_bucket_size": "1h",
+    "transform_script": {
+      "file": "tests/input_files/transform_scripts/directory.py"
+    }
   },
   {
     "source": "test_dir_log",

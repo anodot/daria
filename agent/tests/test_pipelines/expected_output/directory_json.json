@@ -3,7 +3,7 @@
     "schemaId": "111111-22222-3333-4444",
     "measurements": {"clicks": 6784.6904},
     "dimensions": {
-      "ver": "1",
+      "ver": "2",
       "Country": "USA",
       "Exchange": "DoubleClick"
     },
@@ -20,7 +20,7 @@
     "schemaId": "111111-22222-3333-4444",
     "measurements": {"clicks": 6839},
     "dimensions": {
-      "ver": "1",
+      "ver": "2",
       "Country": "USA",
       "Exchange": "DoubleClick"
     },
@@ -37,7 +37,7 @@
     "schemaId": "111111-22222-3333-4444",
     "measurements": {"clicks": 6909993404034934004},
     "dimensions": {
-      "ver": "1",
+      "ver": "2",
       "Country": "USA",
       "Exchange": "DoubleClick"
     },
@@ -54,7 +54,7 @@
     "schemaId": "111111-22222-3333-4444",
     "measurements": {"clicks": 7158.972598273843},
     "dimensions": {
-      "ver": "1",
+      "ver": "2",
       "Country": "USA",
       "Exchange": "DoubleClick"
     },
@@ -71,7 +71,7 @@
     "schemaId": "111111-22222-3333-4444",
     "measurements": {"clicks": 7235.7574},
     "dimensions": {
-      "ver": "1",
+      "ver": "2",
       "Country": "USA",
       "Exchange": "DoubleClick"
     },
@@ -88,7 +88,7 @@
     "schemaId": "111111-22222-3333-4444",
     "measurements": {"clicks": 7427.7744},
     "dimensions": {
-      "ver": "1",
+      "ver": "2",
       "Exchange": "DoubleClick"
     },
     "tags": {
