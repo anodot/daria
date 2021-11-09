@@ -213,6 +213,10 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return [tools.replace_illegal_chars(self.config.get('measurement_names', {}).get(key, key)) for key in self.value_names]
 
     @property
+    def measurement_names_paths(self):
+        return [self._get_property_path(value) for value in self.measurement_names]
+
+    @property
     def values_paths_with_names(self) -> dict:
         return dict(zip(self.values_paths, self.measurement_names))
 
