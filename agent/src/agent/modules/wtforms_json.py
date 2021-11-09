@@ -1,8 +1,38 @@
+# Copyright (c) 2012-2014, Konsta Vesterinen
+#
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# * Redistributions of source code must retain the above copyright notice, this
+#   list of conditions and the following disclaimer.
+#
+# * Redistributions in binary form must reproduce the above copyright notice,
+#   this list of conditions and the following disclaimer in the documentation
+#   and/or other materials provided with the distribution.
+#
+# * The names of the contributors may not be used to endorse or promote products
+#   derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY DIRECT,
+# INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+# LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+# OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+# ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
 import collections
 import six
 
 from wtforms import Form
 from wtforms.validators import DataRequired, Optional
+from wtforms.ext.sqlalchemy.fields import QuerySelectField, QuerySelectMultipleField
 from wtforms.fields import (
     _unset_value,
     BooleanField,
@@ -27,7 +57,7 @@ def flatten_json(
 ):
     """Flattens given JSON dict to cope with WTForms dict structure.
 
-    :form form: WTForms Form object
+    :param form: WTForms Form object
     :param json: json to be converted into flat WTForms style dict
     :param parent_key: this argument is used internally be recursive calls
     :param separator: default separator
@@ -252,6 +282,13 @@ def init():
     Form.from_json = from_json
     Form.patch_data = patch_data
     FieldList.patch_data = patch_data
+    QuerySelectField.process_formdata = monkey_patch_process_formdata(
+        QuerySelectField.process_formdata
+    )
+    QuerySelectMultipleField.process_formdata = \
+        monkey_patch_process_formdata(
+            QuerySelectMultipleField.process_formdata
+        )
     Field.process = monkey_patch_field_process(Field.process)
     FormField.process = monkey_patch_field_process(FormField.process)
     BooleanField.false_values += False,
