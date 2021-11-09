@@ -160,7 +160,6 @@ class Pipeline(Entity, sdc_client.IPipeline):
 
     @property
     def dimensions_names(self) -> list:
-        # todo remove this method, pipeline shouldn't know external details
         return [tools.replace_illegal_chars(d.replace('/', '_')) for d in self.dimensions]
 
     @property

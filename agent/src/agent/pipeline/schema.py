@@ -6,9 +6,8 @@ from agent.pipeline import Pipeline
 
 def build(pipeline: Pipeline) -> dict:
     measurements = {}
-    # todo should be measurement_names
-    for idx, value in enumerate(pipeline.value_names):
-        measurements[pipeline.measurement_names[idx]] = {
+    for idx, measurement_name in enumerate(pipeline.measurement_names):
+        measurements[measurement_name] = {
             'aggregation': 'sum' if pipeline.target_types[idx] in [Pipeline.COUNTER, Pipeline.RUNNING_COUNTER] else 'average',
             'countBy': 'none'
         }

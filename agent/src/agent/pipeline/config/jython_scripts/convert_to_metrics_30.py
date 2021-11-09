@@ -6,9 +6,6 @@ def extract_value(obj, path):
         obj = obj.get(part)
         if not obj:
             return None
-    # todo how could it be?
-    if not obj:
-        return None
     return obj
 
 
