@@ -1,11 +1,9 @@
-import wtforms_json
-
 from flask import Flask, jsonify
 from agent import di
 from agent.api.routes.alerts import alerts
 from agent.api.routes.data_extractors.cacti import cacti
 from agent.api.routes.data_extractors.snmp import snmp
-from agent.modules import logger, db
+from agent.modules import logger, db, wtforms_json
 from agent.api.routes.monitoring import monitoring_bp
 from agent.api.routes.streamsets import streamsets
 from agent.api.routes.destination import destination_

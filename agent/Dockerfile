@@ -1,4 +1,4 @@
-FROM tiangolo/uwsgi-nginx-flask:python3.9
+FROM tiangolo/uwsgi-nginx-flask:python3.10
 
 #defined in jenklins build, so for any local build it should be explicitly set as following:
 #docker build --build-arg GIT_SHA1=$(git describe --tags --dirty --always)
