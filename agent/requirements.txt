@@ -4,7 +4,7 @@ attrs==19.2.0
 Babel==2.9.1
 certifi==2018.11.29
 chardet==3.0.4
-Click==8.0.3
+Click==7.1.2
 docutils==0.14
 idna==2.8
 imagesize==1.1.0
