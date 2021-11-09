@@ -358,7 +358,6 @@ class Pipeline(Entity, sdc_client.IPipeline):
         }
 
     def _get_property_path(self, property_value: str) -> str:
-        # todo if it's only for csv it probably shouldn't be in pipeline?
         mapping = self.source.config.get('csv_mapping', {})
         for idx, item in mapping.items():
             if item == property_value:

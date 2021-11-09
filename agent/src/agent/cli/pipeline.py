@@ -317,7 +317,7 @@ def _prompt_edit(advanced: bool, pipeline_id: str):
 
 def _result_preview(pipeline_: Pipeline):
     if _should_prompt_preview(pipeline_):
-        if click.confirm(f'Would you like to see the result data preview for `{pipeline_}`?', default=True):
+        if click.confirm(f'Would you like to see the result data preview for `{pipeline_.name}`?', default=True):
             preview.show_preview(pipeline_)
             click.echo('To change the config use `agent pipeline edit`')
 
