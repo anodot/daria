@@ -3,7 +3,6 @@ import six
 
 from wtforms import Form
 from wtforms.validators import DataRequired, Optional
-from wtforms.ext.sqlalchemy.fields import QuerySelectField, QuerySelectMultipleField
 from wtforms.fields import (
     _unset_value,
     BooleanField,
@@ -65,33 +64,32 @@ def flatten_json(
                 raise InvalidData(u"Key '%s' is not valid field class." % key)
 
         new_key = parent_key + separator + key if parent_key else key
-        if isinstance(value, collections.abc.MutableMapping):
-            if issubclass(field_class, FormField):
-                nested_form_class = unbound_field.bind(Form(), '').form_class
-                items.extend(
-                    flatten_json(nested_form_class, value, new_key)
-                    .items()
-                )
-            else:
-                items.append((new_key, value))
-        elif isinstance(value, list):
-            if issubclass(field_class, FieldList):
-                nested_unbound_field = unbound_field.bind(
-                    Form(),
-                    ''
-                ).unbound_field
-                items.extend(
-                    flatten_json_list(
-                        nested_unbound_field,
-                        value,
-                        new_key,
-                        separator
-                    )
-                )
-            else:
-                items.append((new_key, value))
-        else:
+        if isinstance(value, collections.abc.MutableMapping) and issubclass(field_class, FormField):
+            nested_form_class = unbound_field.bind(Form(), '').form_class
+            items.extend(
+                flatten_json(nested_form_class, value, new_key)
+                .items()
+            )
+        elif (
+            isinstance(value, collections.abc.MutableMapping)
+            or isinstance(value, list)
+            and not issubclass(field_class, FieldList)
+            or not isinstance(value, list)
+        ):
             items.append((new_key, value))
+        else:
+            nested_unbound_field = unbound_field.bind(
+                Form(),
+                ''
+            ).unbound_field
+            items.extend(
+                flatten_json_list(
+                    nested_unbound_field,
+                    value,
+                    new_key,
+                    separator
+                )
+            )
     return dict(items)
 
 
@@ -214,7 +212,7 @@ def from_json(
     skip_unknown_keys=True,
     **kwargs
 ):
-    form = cls(
+    return cls(
         formdata=MultiDict(
             flatten_json(cls, formdata, skip_unknown_keys=skip_unknown_keys)
         ) if formdata else None,
@@ -224,25 +222,20 @@ def from_json(
         meta=meta,
         **kwargs
     )
-    return form
 
 
 @property
 def is_missing(self):
     if hasattr(self, '_is_missing'):
         return self._is_missing
-
-    for name, field in self._fields.items():
-        if not field.is_missing:
-            return False
-    return True
+    return any(not field.is_missing for field in self._fields.values())
 
 
 @property
 def field_list_is_missing(self):
     if hasattr(self, '_is_missing'):
         return self._is_missing
-    return all([field.is_missing for field in self.entries])
+    return all(field.is_missing for field in self.entries)
 
 
 def monkey_patch_process_formdata(func):
@@ -259,13 +252,6 @@ def init():
     Form.from_json = from_json
     Form.patch_data = patch_data
     FieldList.patch_data = patch_data
-    QuerySelectField.process_formdata = monkey_patch_process_formdata(
-        QuerySelectField.process_formdata
-    )
-    QuerySelectMultipleField.process_formdata = \
-        monkey_patch_process_formdata(
-            QuerySelectMultipleField.process_formdata
-        )
     Field.process = monkey_patch_field_process(Field.process)
     FormField.process = monkey_patch_field_process(FormField.process)
     BooleanField.false_values += False,
