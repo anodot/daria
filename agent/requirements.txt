@@ -57,3 +57,4 @@ rrdtool==0.1.15
 pysnmp==4.4.12
 psycopg2==2.8.3
 mysqlclient==1.4.6
+WTForms-SQLAlchemy==0.3

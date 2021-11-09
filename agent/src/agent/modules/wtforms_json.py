@@ -32,7 +32,7 @@ import six
 
 from wtforms import Form
 from wtforms.validators import DataRequired, Optional
-from wtforms.ext.sqlalchemy.fields import QuerySelectField, QuerySelectMultipleField
+from wtforms_sqlalchemy.fields import QuerySelectField, QuerySelectMultipleField
 from wtforms.fields import (
     _unset_value,
     BooleanField,
