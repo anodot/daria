@@ -1,5 +1,6 @@
 import os
 import sqlalchemy
+import subprocess
 
 from urllib.parse import urlparse
 from agent.modules.tools import if_validation_enabled
@@ -33,6 +34,15 @@ def validate_mysql_connection(connection_string: str):
     # todo raise validation exception
     eng = sqlalchemy.create_engine(connection_string)
     eng.connect()
+
+
+def validate_python_file(file: str):
+    if not os.path.isfile(file):
+        raise ValidationException(f'No such file `{file}`')
+    try:
+        subprocess.check_output(['python', '-m', 'py_compile', file], stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError as e:
+        raise ValidationException(e.output)
 
 
 class ValidationException(Exception):
