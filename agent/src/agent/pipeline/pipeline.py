@@ -159,21 +159,24 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return dimensions['optional']
 
     @property
-    def dimensions_names(self):
+    def dimensions_names(self) -> list:
         return [tools.replace_illegal_chars(d.replace('/', '_')) for d in self.dimensions]
 
     @property
-    def dimensions_paths(self):
-        return [self.get_property_path(value) for value in self.dimensions]
+    def dimensions_paths(self) -> list:
+        return [self._get_property_path(value) for value in self.dimensions]
 
     @property
     def required_dimensions_paths(self) -> list:
-        # todo replace chars
-        return [self.get_property_path(value) for value in self.required_dimensions]
+        return [self._get_property_path(value) for value in self.required_dimensions]
+
+    @property
+    def dimensions_with_names(self) -> dict:
+        return dict(zip(self.dimensions_paths, self.dimensions_names))
 
     @property
     def timestamp_path(self) -> str:
-        return self.get_property_path(self.config['timestamp']['name'])
+        return self._get_property_path(self.config['timestamp']['name'])
 
     @property
     def timezone(self) -> str:
@@ -197,7 +200,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
 
     @property
     def values_paths(self):
-        return [self.get_property_path(value) for value in self.value_names]
+        return [self._get_property_path(value) for value in self.value_names]
 
     @property
     def target_types(self) -> list:
@@ -206,16 +209,20 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return list(self.config['values'].values())
 
     @property
-    def measurement_names(self):
+    def measurement_names(self) -> list:
         return [tools.replace_illegal_chars(self.config.get('measurement_names', {}).get(key, key)) for key in self.value_names]
 
     @property
     def measurement_names_paths(self):
-        return [self.get_property_path(value) for value in self.measurement_names]
+        return [self._get_property_path(value) for value in self.measurement_names]
+
+    @property
+    def values_paths_with_names(self) -> dict:
+        return dict(zip(self.values_paths, self.measurement_names))
 
     @property
     def target_types_paths(self):
-        return [self.get_property_path(t_type) for t_type in self.target_types]
+        return [self._get_property_path(t_type) for t_type in self.target_types]
 
     @property
     def count_records(self) -> bool:
@@ -297,6 +304,10 @@ class Pipeline(Entity, sdc_client.IPipeline):
     def log_everything(self) -> int:
         return self.config.get('log_everything', False)
 
+    @property
+    def transform_script_config(self) -> Optional[str]:
+        return self.config.get('transform_script', {}).get('config')
+
     def get_streamsets_config(self) -> dict:
         return pipeline.manager.create_streamsets_pipeline_config(self)
 
@@ -346,7 +357,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
             'destination': self.destination.config,
         }
 
-    def get_property_path(self, property_value: str) -> str:
+    def _get_property_path(self, property_value: str) -> str:
         mapping = self.source.config.get('csv_mapping', {})
         for idx, item in mapping.items():
             if item == property_value:

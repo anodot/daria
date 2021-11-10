@@ -5,6 +5,7 @@ import jsonschema
 
 from typing import List, Callable
 from agent import source, pipeline
+from agent.modules import validator
 from agent.modules.logger import get_logger
 from agent.pipeline import Pipeline, json_builder
 from agent.pipeline.config import expression_parser
@@ -12,12 +13,12 @@ from agent.pipeline.config import expression_parser
 logger_ = get_logger(__name__, stdout=True)
 
 
-def build_using_file(file):
-    build_multiple(extract_configs(file))
+def build_using_file(file) -> List[Pipeline]:
+    return build_multiple(extract_configs(file))
 
 
-def edit_using_file(file):
-    edit_multiple(extract_configs(file))
+def edit_using_file(file) -> List[Pipeline]:
+    return edit_multiple(extract_configs(file))
 
 
 def build_multiple(configs: list) -> List[Pipeline]:
@@ -186,13 +187,14 @@ class Builder:
             expression_parser.condition.validate(condition)
 
     def _load_transformations(self):
-        transformation_file = self.config.get('transform', {}).get('file')
-        if not transformation_file:
-            return
-
-        expression_parser.transformation.validate_file(transformation_file)
-        with open(transformation_file) as f:
-            self.config['transform']['config'] = f.read()
+        if transformation_file := self.config.get('transform', {}).get('file'):
+            expression_parser.transformation.validate_file(transformation_file)
+            with open(transformation_file) as f:
+                self.config['transform']['config'] = f.read()
+        if transformation_script_file := self.config.get('transform_script', {}).get('file'):
+            validator.validate_python_file(transformation_script_file)
+            with open(transformation_script_file) as f:
+                self.config['transform_script']['config'] = f.read()
 
     def _load_dimensions(self):
         if type(self.config.get('dimensions')) == list:

@@ -6,22 +6,36 @@
     "measurement_names": {"type": "object"},
     "dimensions": {"oneOf": [
       {"type": "array", "items": {"type": "string"}},
-      {"type": "object", "properties": {
-        "required": {"type": "array", "items": {"type": "string"}},
-        "optional": {"type": "array", "items": {"type": "string"}}
-      }}
+      {
+        "type": "object",
+        "properties": {
+          "required": {"type": "array", "items": {"type": "string"}},
+          "optional": {"type": "array", "items": {"type": "string"}}
+        }
+      }
     ]},
-    "timestamp": {"type":  "object", "properties": {
-      "name": {"type": "string", "minLength": 1},
-      "type": {"type":  "string", "enum": ["string", "unix", "unix_ms"]},
-      "format": {"type": "string", "minLength": 1}
-    }, "required": ["name", "type"]},
+    "timestamp": {
+      "type":  "object",
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "type": {"type":  "string", "enum": ["string", "unix", "unix_ms"]},
+        "format": {"type": "string", "minLength": 1}
+      },
+      "required": ["name", "type"]
+    },
     "properties": {"type": "object"},
     "tags": {
       "type": "object",
       "patternProperties":  {"[^ \\.]+": {"type": "array", "items": {"type": "string"}}}
     },
-    "flush_bucket_size": {"type":  "string", "enum": ["1m", "5m", "1h", "1d", "1w"]}
+    "flush_bucket_size": {"type":  "string", "enum": ["1m", "5m", "1h", "1d", "1w"]},
+    "transform_script": {
+      "type": "object",
+      "properties": {
+        "file": {"type": "string"},
+        "config": {"type": "string"}
+      }
+    }
   },
   "required": ["values", "dimensions", "timestamp", "flush_bucket_size"]
 }
