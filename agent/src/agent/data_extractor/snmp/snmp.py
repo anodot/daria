@@ -87,7 +87,7 @@ def _is_value(key: str, pipeline_: Pipeline) -> bool:
 
 
 def _is_dimension(key: str, pipeline_: Pipeline) -> bool:
-    return key in pipeline_.dimensions
+    return key in pipeline_.all_dimensions
 
 
 def _get_measurement_name(oid: ObjectIdentity, pipeline_: Pipeline) -> str:

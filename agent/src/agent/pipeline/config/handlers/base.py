@@ -96,6 +96,10 @@ class BaseConfigHandler:
     def __init__(self, pipeline: Pipeline, base_config: dict):
         self.config = base_config
         self.pipeline = pipeline
+        self._check_pipeline()
+
+    def _check_pipeline(self):
+        assert not self.pipeline.uses_schema
 
     def override_base_config(self):
         self._override_pipeline_config()

@@ -5,28 +5,36 @@ from agent.pipeline import Pipeline
 
 
 def build(pipeline: Pipeline) -> dict:
-    measurements = {}
-    for idx, measurement_name in enumerate(pipeline.measurement_names):
-        measurements[measurement_name] = {
-            'aggregation': 'sum' if pipeline.target_types[idx] in [Pipeline.COUNTER, Pipeline.RUNNING_COUNTER] else 'average',
-            'countBy': 'none'
-        }
-    if pipeline.count_records:
-        measurements[pipeline.count_records_measurement_name] = {
-            'aggregation': 'sum',
-            'countBy': 'none'
-        }
-
     return {
         'version': '1',
         'name': pipeline.name,
-        'dimensions': pipeline.dimensions_names + list(pipeline.static_dimension_names),
-        'measurements': measurements,
+        'dimensions': pipeline.all_dimensions_final_names,
+        'measurements': _get_measurements(pipeline),
         'missingDimPolicy': {
             'action': 'fill',
             'fill': 'NULL'
         }
     }
+
+
+def _get_measurements(pipeline):
+    measurements = {
+        measurement_name: {
+            'aggregation': _get_aggregation_type(target_type),
+            'countBy': 'none',
+        }
+        for measurement_name, target_type in pipeline.measurement_names_with_target_types.items()
+    }
+    if pipeline.count_records:
+        measurements[pipeline.count_records_measurement_name] = {
+            'aggregation': 'sum',
+            'countBy': 'none'
+        }
+    return measurements
+
+
+def _get_aggregation_type(target_type: str) -> str:
+    return 'sum' if target_type in [Pipeline.COUNTER, Pipeline.RUNNING_COUNTER] else 'average'
 
 
 def equal(old_schema, new_schema) -> bool:

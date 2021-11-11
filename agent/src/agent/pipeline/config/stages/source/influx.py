@@ -28,7 +28,7 @@ class InfluxSource(Stage):
         if isinstance(self.pipeline, pipeline.TestPipeline):
             return f"select+%2A+from+{self.pipeline.config['measurement_name']}+limit+{pipeline.manager.MAX_SAMPLE_RECORDS}"
 
-        dimensions_to_select = [f'"{d}"::tag' for d in self.pipeline.dimensions_names]
+        dimensions_to_select = [f'"{d}"::tag' for d in self.pipeline.dimension_paths]
         values_to_select = ['*::field' if v == '*' else f'"{v}"::field' for v in self.pipeline.value_names]
         delay = self.pipeline.config.get('delay', '0s')
         columns = quote_plus(','.join(dimensions_to_select + values_to_select))

@@ -84,7 +84,13 @@ class ObserviumBuilder(Builder):
         return self.config.get('values') or self.DEFAULT_MEASUREMENTS[self.endpoint()]
 
     def _dimensions(self) -> list:
-        return self.config.get('dimensions') or self.DEFAULT_DIMENSIONS[self.endpoint()]
+        dims = self.config.get('dimensions') or self.DEFAULT_DIMENSIONS[self.endpoint()]
+        # all observium pipelines by default have these dimensions, they are added in the observium jython script
+        if 'sysName' not in dims:
+            dims.append('sysName')
+        if 'location' not in dims:
+            dims.append('location')
+        return dims
 
     def endpoint(self) -> str:
         return self.pipeline.source.config['endpoint']
@@ -101,11 +107,11 @@ class ObserviumBuilder(Builder):
         # if there are no dimensions we'll use the default ones so need to use default rename as well
         if self.endpoint() == source.ObserviumSource.PORTS:
             return {
-                'ifName': 'Interface Name',
-                'ifAlias': 'Interface Alias',
-                'ifDescr': 'Interface Description',
+                'ifName': 'Interface_Name',
+                'ifAlias': 'Interface_Alias',
+                'ifDescr': 'Interface_Description',
                 'ifSpeed': 'Bandwidth',
-                'sysName': 'Host Name',
+                'sysName': 'Host_Name',
                 'location': 'Location',
             }
         if self.endpoint() == source.ObserviumSource.MEMPOOLS:
@@ -113,18 +119,18 @@ class ObserviumBuilder(Builder):
                 'mempool_id': 'Memory_Pool_ID',
                 'mempool_descr': 'Memory_Pool_Description',
                 'mempool_mib': 'Memory_Pool_Vendor',
-                'sysName': 'Host Name',
+                'sysName': 'Host_Name',
                 'location': 'Location',
             }
         if self.endpoint() == source.ObserviumSource.PROCESSORS:
             return {
                 'processor_descr': 'processor_name',
-                'sysName': 'Host Name',
+                'sysName': 'Host_Name',
                 'location': 'Location',
             }
         if self.endpoint() == source.ObserviumSource.STORAGE:
             return {
                 'storage_descr': 'storage_description',
-                'sysName': 'Host Name',
+                'sysName': 'Host_Name',
                 'location': 'Location',
             }

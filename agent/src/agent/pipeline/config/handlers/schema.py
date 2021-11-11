@@ -12,3 +12,6 @@ class SchemaConfigHandler(BaseConfigHandler):
             'PROTOCOL': self.pipeline.destination.PROTOCOL_30
         })
         return pipeline_config
+
+    def _check_pipeline(self):
+        assert self.pipeline.uses_schema

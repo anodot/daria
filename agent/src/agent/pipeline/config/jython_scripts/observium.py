@@ -18,6 +18,7 @@ finally:
 # single threaded - no entityName because we need only one offset
 entityName = ''
 LAST_TIMESTAMP = '%last_timestamp%'
+N_REQUESTS_TRIES = 3
 
 
 POLL_TIME_KEYS = {
@@ -87,52 +88,54 @@ def create_metrics(data):
             "measurements": {k: float(v) for k, v in obj.items() if k in sdc.userParams['MEASUREMENTS']},
             "schemaId": sdc.userParams['SCHEMA_ID'],
         }
+        # todo move to a separate function, merge with data first
         metric['dimensions']['sysName'] = devices[obj['device_id']]['sysName']
         metric['dimensions']['location'] = devices[obj['device_id']]['location']
         metrics.append(metric)
     return metrics
 
 
-if sdc.lastOffsets.containsKey(entityName):
-    offset = int(float(sdc.lastOffsets.get(entityName)))
-else:
-    offset = to_timestamp(datetime.now().replace(second=0, microsecond=0))
+def main():
+    if sdc.lastOffsets.containsKey(entityName):
+        offset = int(float(sdc.lastOffsets.get(entityName)))
+    else:
+        offset = to_timestamp(datetime.now().replace(second=0, microsecond=0))
 
-sdc.log.info('Start offset: ' + str(offset))
+    sdc.log.info('Start offset: ' + str(offset))
 
-cur_batch = sdc.createBatch()
+    cur_batch = sdc.createBatch()
 
-N_REQUESTS_TRIES = 3
+    while True:
+        try:
+            while offset > get_now_with_delay():
+                time.sleep(2)
+                if sdc.isStopped():
+                    return cur_batch, offset
 
-while True:
-    try:
-        while offset > get_now_with_delay():
-            time.sleep(2)
-            if sdc.isStopped():
-                exit()
+            data = _get(
+                sdc.userParams['URL'],
+                sdc.userParams['REQUEST_PARAMS'],
+                RESPONSE_DATA_KEYS[sdc.userParams['ENDPOINT']]
+            )
+            metrics = create_metrics(data)
 
-        data = _get(
-            sdc.userParams['URL'],
-            sdc.userParams['REQUEST_PARAMS'],
-            RESPONSE_DATA_KEYS[sdc.userParams['ENDPOINT']]
-        )
-        metrics = create_metrics(data)
+            for metric in metrics:
+                record = sdc.createRecord('record created ' + str(datetime.now()))
+                record.value = metric
+                cur_batch.add(record)
 
-        for metric in metrics:
-            record = sdc.createRecord('record created ' + str(datetime.now()))
-            record.value = metric
-            cur_batch.add(record)
+                if cur_batch.size() == sdc.batchSize:
+                    cur_batch.process(entityName, str(offset + get_interval()))
+                    cur_batch = sdc.createBatch()
 
-            if cur_batch.size() == sdc.batchSize:
-                cur_batch.process(entityName, str(offset + get_interval()))
-                cur_batch = sdc.createBatch()
+            cur_batch.process(entityName, str(offset + get_interval()))
+            cur_batch = sdc.createBatch()
+            offset += get_interval()
+        except Exception:
+            sdc.log.error(traceback.format_exc())
+            raise
 
-        cur_batch.process(entityName, str(offset + get_interval()))
-        cur_batch = sdc.createBatch()
-        offset += get_interval()
-    except Exception as e:
-        sdc.log.error(traceback.format_exc())
-        raise
 
-if cur_batch.size() + cur_batch.errorCount() + cur_batch.eventCount() > 0:
-    cur_batch.process(entityName, str(offset + get_interval()))
+batch, offset = main()
+if batch.size() + batch.errorCount() + batch.eventCount() > 0:
+    batch.process(entityName, str(offset + get_interval()))
