@@ -10,7 +10,7 @@ class ConvertToMetrics30(base.Stage):
             'userParams': [
                 {'key': 'TIMESTAMP_COLUMN', 'value': self.pipeline.timestamp_path},
                 {'key': 'DIMENSIONS', 'value': self.pipeline.dimensions_with_names},
-                {'key': 'MEASUREMENTS', 'value': self.pipeline.values_with_names},
+                {'key': 'MEASUREMENTS', 'value': self.pipeline.value_paths_with_names},
                 {'key': 'COUNT_RECORDS', 'value': int(self.pipeline.count_records)},
                 {'key': 'COUNT_RECORDS_MEASUREMENT_NAME', 'value': self.pipeline.count_records_measurement_name},
                 {'key': 'HEADER_ATTRIBUTES', 'value': self.pipeline.header_attributes},

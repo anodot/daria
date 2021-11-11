@@ -231,9 +231,10 @@ class Pipeline(Entity, sdc_client.IPipeline):
 
     @property
     def measurement_names(self) -> list:
-        # todo it's temporary
-        measurement_names = self.config.get('measurement_names', {})
-        return [tools.replace_illegal_chars(measurement_names.get(key, key)) for key in self.value_names]
+        return [
+            tools.replace_illegal_chars(self.config.get('measurement_names', {}).get(key, key))
+            for key in self.value_names
+        ]
 
     @property
     def measurement_names_with_target_types(self) -> dict:
@@ -250,13 +251,14 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return [self._get_property_path(value) for value in self.measurement_names]
 
     @property
-    def values_with_names(self) -> dict:
+    def value_paths_with_names(self) -> dict:
         # value_paths should work the same as value_names that were here
         # value_paths are needed for directory and kafka and mb something else
         return dict(zip(self.values_paths, self.measurement_names))
 
     @property
     def target_types_paths(self):
+        # todo why do we need paths? is it possible that target type will be in a field?
         return [self._get_property_path(t_type) for t_type in self.target_types]
 
     @property
