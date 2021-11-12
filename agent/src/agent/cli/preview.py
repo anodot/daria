@@ -63,7 +63,6 @@ class SchemalessPreview(Preview):
                     source.SchemalessSource.CONFIG_DATA_FORMAT) == source.SchemalessSource.DATA_FORMAT_CSV:
                 if pipeline_.source.config.get(
                         source.SchemalessSource.CONFIG_CSV_HEADER_LINE) == source.SchemalessSource.CONFIG_CSV_HEADER_LINE_NO_HEADER:
-                    # todo csv mapping is used for preview, don't forget about it
                     pipeline_.source.sample_data = \
                         tools.map_keys(records, pipeline_.source.config.get(source.SchemalessSource.CONFIG_CSV_MAPPING, {}))
                 else:

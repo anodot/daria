@@ -7,7 +7,7 @@ class JSConvertMetrics(base.Stage):
     def get_js_vars(self):
         return f"""
 state['TIMESTAMP_COLUMN'] = '{self.pipeline.timestamp_path}';
-state['DIMENSIONS'] = {self.pipeline.dimensions_with_names};
+state['DIMENSIONS'] = {self.pipeline.dimension_paths_with_names};
 state['MEASUREMENTS'] = {self.pipeline.value_paths_with_names};
 state['TARGET_TYPES'] = {self.pipeline.target_types_paths};
 state['COUNT_RECORDS'] = {int(self.pipeline.count_records)};
@@ -25,7 +25,7 @@ state['metrics'] = {{}}
         return {
             'initScript': self.get_js_vars(),
             'script': script,
-            'stageRequiredFields': [f'/{f}' for f in [*self.pipeline.required_dimensions_paths, self.pipeline.timestamp_path]]
+            'stageRequiredFields': [f'/{f}' for f in [*self.pipeline.required_dimension_paths, self.pipeline.timestamp_path]]
         }
 
 
@@ -35,7 +35,7 @@ class JSConvertMetrics30(JSConvertMetrics):
     def get_js_vars(self):
         return f"""
 state['TIMESTAMP_COLUMN'] = '{self.pipeline.timestamp_path}';
-state['DIMENSIONS'] = {self.pipeline.dimensions_with_names};
+state['DIMENSIONS'] = {self.pipeline.dimension_paths_with_names};
 state['MEASUREMENTS'] = {self.pipeline.value_paths_with_names};
 state['COUNT_RECORDS'] = {int(self.pipeline.count_records)};
 state['COUNT_RECORDS_MEASUREMENT_NAME'] = '{self.pipeline.count_records_measurement_name}';

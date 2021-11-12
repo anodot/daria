@@ -136,8 +136,28 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return [tools.replace_illegal_chars(s_dim) for s_dim in self.static_dimensions.keys()]
 
     @property
-    def dimensions(self) -> list|dict:
+    def dimensions(self) -> list | dict:
         return self.config.get('dimensions', [])
+
+    @property
+    def dimension_paths(self) -> list:
+        return [self._get_property_path(value) for value in self.all_dimensions]
+
+    @property
+    def required_dimensions(self) -> list:
+        if type(self.dimensions) is list:
+            return []
+        return self.dimensions.get('required', [])
+
+    @property
+    def required_dimension_paths(self) -> list:
+        return [self._get_property_path(value) for value in self.required_dimensions]
+
+    @property
+    def optional_dimensions(self) -> list:
+        if type(self.dimensions) is list:
+            return []
+        return self.dimensions.get('optional', [])
 
     @property
     def all_dimensions(self) -> list:
@@ -150,24 +170,11 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return tools.replace_illegal_chars(self.all_dimensions)
 
     @property
-    def required_dimensions(self) -> list:
-        if type(self.dimensions) is list:
-            return []
-        return self.dimensions.get('required', [])
-
-    @property
-    def optional_dimensions(self) -> list:
-        if type(self.dimensions) is list:
-            return []
-        return self.dimensions.get('optional', [])
-
-    @property
     def dimension_names(self) -> list:
-        # todo it replaces chars but in all places it takes dim value by it
-        # todo so it might be query_result['dimension_name'] when result contains 'dimension name'
         return [tools.replace_illegal_chars(d.replace('/', '_')) for d in self.all_dimensions]
 
-    # todo improve
+    # todo improve, it says all dims and has static, all_dimensions also says all and doesn't have static
+    # todo mb it should be only in schema?
     @property
     def all_dimensions_final_names(self) -> list:
         return self._rename_dimensions(self.all_dimension_names + self.static_dimension_names)
@@ -184,15 +191,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return self.config.get('rename_dimensions_mapping', {})
 
     @property
-    def dimension_paths(self) -> list:
-        return [self._get_property_path(value) for value in self.all_dimensions]
-
-    @property
-    def required_dimensions_paths(self) -> list:
-        return [self._get_property_path(value) for value in self.required_dimensions]
-
-    @property
-    def dimensions_with_names(self) -> dict:
+    def dimension_paths_with_names(self) -> dict:
         return dict(zip(self.dimension_paths, self.dimension_names))
 
     @property
@@ -248,6 +247,8 @@ class Pipeline(Entity, sdc_client.IPipeline):
 
     @property
     def measurement_names_paths(self):
+        # todo this method was used in kafka, I replaced it with a wrong one
+        # todo то есть это еще имя может лежать в какой-то колонке? и на это нет теста?
         return [self._get_property_path(value) for value in self.measurement_names]
 
     @property
@@ -302,7 +303,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return self.config.get('query')
 
     @query.setter
-    def query(self, query):
+    def query(self, query: str):
         self.config['query'] = query
 
     @property
@@ -319,11 +320,11 @@ class Pipeline(Entity, sdc_client.IPipeline):
 
     @property
     def delay(self) -> str:
-        return self.config.get('delay', 0)
+        return self.config.get('delay', '0')
 
     @property
     def batch_size(self) -> str:
-        return self.config.get('batch_size', 1000)
+        return self.config.get('batch_size', '1000')
 
     @property
     def uses_schema(self) -> bool:
@@ -331,15 +332,15 @@ class Pipeline(Entity, sdc_client.IPipeline):
 
     @property
     def histories_batch_size(self) -> str:
-        return self.config.get('histories_batch_size', 100)
+        return self.config.get('histories_batch_size', '100')
 
     @property
-    def header_attributes(self):
+    def header_attributes(self) -> list:
         return self.config.get('header_attributes', [])
 
     @property
-    def log_everything(self) -> int:
-        return self.config.get('log_everything', False)
+    def log_everything(self) -> bool:
+        return bool(self.config.get('log_everything'))
 
     @property
     def transform_script_config(self) -> Optional[str]:

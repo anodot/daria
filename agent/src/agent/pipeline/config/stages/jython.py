@@ -9,7 +9,7 @@ class ConvertToMetrics30(base.Stage):
             'stageRequiredFields': self._get_required_fields(),
             'userParams': [
                 {'key': 'TIMESTAMP_COLUMN', 'value': self.pipeline.timestamp_path},
-                {'key': 'DIMENSIONS', 'value': self.pipeline.dimensions_with_names},
+                {'key': 'DIMENSIONS', 'value': self.pipeline.dimension_paths_with_names},
                 {'key': 'MEASUREMENTS', 'value': self.pipeline.value_paths_with_names},
                 {'key': 'COUNT_RECORDS', 'value': int(self.pipeline.count_records)},
                 {'key': 'COUNT_RECORDS_MEASUREMENT_NAME', 'value': self.pipeline.count_records_measurement_name},
@@ -19,7 +19,7 @@ class ConvertToMetrics30(base.Stage):
         }
 
     def _get_required_fields(self) -> list:
-        return [f'/{f}' for f in [*self.pipeline.required_dimensions_paths, self.pipeline.timestamp_path]]
+        return [f'/{f}' for f in [*self.pipeline.required_dimension_paths, self.pipeline.timestamp_path]]
 
     def _get_script(self) -> str:
         with open(self.get_jython_file_path()) as f:
