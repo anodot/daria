@@ -92,8 +92,7 @@ def _is_dimension(key: str, pipeline_: Pipeline) -> bool:
 
 def _get_measurement_name(oid: ObjectIdentity, pipeline_: Pipeline) -> str:
     if str(oid) in pipeline_.measurement_names:
-        # todo it can't work correctly, measurement_names is and array
-        # todo потестить
+        # todo it can't work correctly, measurement_names is and array, test it
         return pipeline_.measurement_names[str(oid)]
     return oid.getMibNode().label
 

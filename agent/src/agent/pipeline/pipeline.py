@@ -174,14 +174,12 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return [tools.replace_illegal_chars(d.replace('/', '_')) for d in self.all_dimensions]
 
     # todo improve, it says all dims and has static, all_dimensions also says all and doesn't have static
-    # todo mb it should be only in schema?
     @property
     def all_dimensions_final_names(self) -> list:
         return self._rename_dimensions(self.all_dimension_names + self.static_dimension_names)
 
-    # todo should pipeline do this?
     def _rename_dimensions(self, dimensions: list) -> list:
-        # todo as I understood we don't need csv_mapping here because dimensions are already renamed
+        # todo it should be applied before. Dimensions should be final dimensions that user wants to see in anodot
         if self.rename_dimensions_mapping:
             return [self.rename_dimensions_mapping[dim] for dim in dimensions if dim in self.rename_dimensions_mapping]
         return dimensions
@@ -247,8 +245,6 @@ class Pipeline(Entity, sdc_client.IPipeline):
 
     @property
     def measurement_names_paths(self):
-        # todo this method was used in kafka, I replaced it with a wrong one
-        # todo то есть это еще имя может лежать в какой-то колонке? и на это нет теста?
         return [self._get_property_path(value) for value in self.measurement_names]
 
     @property
@@ -259,7 +255,6 @@ class Pipeline(Entity, sdc_client.IPipeline):
 
     @property
     def target_types_paths(self):
-        # todo why do we need paths? is it possible that target type will be in a field?
         return [self._get_property_path(t_type) for t_type in self.target_types]
 
     @property
