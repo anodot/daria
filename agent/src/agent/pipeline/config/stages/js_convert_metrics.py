@@ -2,13 +2,14 @@ from . import base
 
 
 class JSConvertMetrics(base.Stage):
-    JS_SCRIPT_NAME = 'protocol_2.js'
-
     def get_js_vars(self):
         return f"""
 state['TIMESTAMP_COLUMN'] = '{self.pipeline.timestamp_path}';
-state['DIMENSIONS'] = {self.pipeline.dimension_paths_with_names};
-state['MEASUREMENTS'] = {self.pipeline.value_paths_with_names};
+state['DIMENSIONS'] = {self.pipeline.dimension_paths};
+state['DIMENSIONS_NAMES'] = {self.pipeline.dimension_names};
+state['VALUES_COLUMNS'] = {self.pipeline.values_paths};
+// it's used in kafka js metric 2.0
+state['MEASUREMENT_NAMES'] = {self.pipeline.measurement_names_paths};
 state['TARGET_TYPES'] = {self.pipeline.target_types_paths};
 state['COUNT_RECORDS'] = {int(self.pipeline.count_records)};
 state['COUNT_RECORDS_MEASUREMENT_NAME'] = '{self.pipeline.count_records_measurement_name}';
@@ -19,13 +20,10 @@ state['metrics'] = {{}}
     """
 
     def get_config(self) -> dict:
-        with open(self._get_js_file_path(self.JS_SCRIPT_NAME)) as f:
-            script = f.read()
-
+        required_fields = [*self.pipeline.required_dimension_paths, self.pipeline.timestamp_path]
         return {
             'initScript': self.get_js_vars(),
-            'script': script,
-            'stageRequiredFields': [f'/{f}' for f in [*self.pipeline.required_dimension_paths, self.pipeline.timestamp_path]]
+            'stageRequiredFields': [f'/{f}' for f in required_fields],
         }
 
 
@@ -42,3 +40,13 @@ state['COUNT_RECORDS_MEASUREMENT_NAME'] = '{self.pipeline.count_records_measurem
 state['INTERVAL'] = {self.pipeline.interval if self.pipeline.interval is not None else 'null'};
 state['HEADER_ATTRIBUTES'] = {self.pipeline.header_attributes};
         """
+
+    def get_config(self) -> dict:
+        required_fields = [*self.pipeline.required_dimension_paths, self.pipeline.timestamp_path]
+        with open(self._get_js_file_path(self.JS_SCRIPT_NAME)) as f:
+            script = f.read()
+        return {
+            'initScript': self.get_js_vars(),
+            'script': script,
+            'stageRequiredFields': [f'/{f}' for f in required_fields]
+        }
