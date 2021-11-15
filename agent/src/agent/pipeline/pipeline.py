@@ -167,6 +167,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
 
     @property
     def all_dimension_names(self) -> list:
+        # todo why do I have 2 similar methods?
         return tools.replace_illegal_chars(self.all_dimensions)
 
     @property
