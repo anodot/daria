@@ -5,7 +5,8 @@
     "dimensions": {
       "ver": "2",
       "Country": "USA",
-      "Exchange": "DoubleClick"
+      "Exchange": "DoubleClick",
+      "metric": "clicks_display"
     },
     "tags": {
       "source": ["anodot-agent"],
@@ -22,7 +23,8 @@
     "dimensions": {
       "ver": "2",
       "Country": "USA",
-      "Exchange": "DoubleClick"
+      "Exchange": "DoubleClick",
+      "metric": "clicks_display"
     },
     "tags": {
       "source": ["anodot-agent"],
@@ -39,7 +41,8 @@
     "dimensions": {
       "ver": "2",
       "Country": "USA",
-      "Exchange": "DoubleClick"
+      "Exchange": "DoubleClick",
+      "metric": "clicks_search"
     },
     "tags": {
       "source": ["anodot-agent"],
@@ -56,7 +59,8 @@
     "dimensions": {
       "ver": "2",
       "Country": "USA",
-      "Exchange": "DoubleClick"
+      "Exchange": "DoubleClick",
+      "metric": "clicks_display"
     },
     "tags": {
       "source": ["anodot-agent"],
@@ -73,7 +77,8 @@
     "dimensions": {
       "ver": "2",
       "Country": "USA",
-      "Exchange": "DoubleClick"
+      "Exchange": "DoubleClick",
+      "metric": "clicks_search"
     },
     "tags": {
       "source": ["anodot-agent"],
@@ -89,7 +94,8 @@
     "measurements": {"clicks": 7427.7744},
     "dimensions": {
       "ver": "2",
-      "Exchange": "DoubleClick"
+      "Exchange": "DoubleClick",
+      "metric": "clicks_display"
     },
     "tags": {
       "source": ["anodot-agent"],

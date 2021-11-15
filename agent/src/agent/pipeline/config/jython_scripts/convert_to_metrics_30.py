@@ -1,5 +1,11 @@
 global sdc, output, error
 
+try:
+    sdc.importLock()
+    import re
+finally:
+    sdc.importUnlock()
+
 
 def extract_value(obj, path):
     for part in path.split('/'):
@@ -9,21 +15,22 @@ def extract_value(obj, path):
     return obj
 
 
-def replace_illegal_chars(s):
-    return s.replace('[\. \<]+', '_')
+def replace_illegal_chars(value):
+    value = str(value).strip().replace(".", "_")
+    return re.sub('\s+', '_', value)
 
 
 def get_dimensions(record):
     dimensions = {}
-    for dimension, name in sdc.userParams['DIMENSIONS'].items():
-        dimension = extract_value(record.value, replace_illegal_chars(dimension))
-        if not dimension:
+    for dimension_path, name in sdc.userParams['DIMENSIONS'].items():
+        dimension_value = extract_value(record.value, dimension_path)
+        if not dimension_value:
             continue
-        dimension = str(dimension).strip()
-        if dimension == '':
+        dimension_value = replace_illegal_chars(dimension_value)
+        if dimension_value == '':
             continue
         name = replace_illegal_chars(name).replace('[\/]+', '_')
-        dimensions[name] = dimension
+        dimensions[name] = dimension_value
 
     for header_attribute in sdc.userParams['HEADER_ATTRIBUTES']:
         attribute_value = record.attributes[header_attribute]

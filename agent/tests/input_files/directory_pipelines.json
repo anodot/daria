@@ -4,7 +4,7 @@
     "pipeline_id": "test_dir_json",
     "measurement_names": {"Clicks":  "clicks"},
     "values": {"Clicks":  "gauge"},
-    "dimensions": ["ver", "Country", "Exchange"],
+    "dimensions": ["ver", "Country", "Exchange", "metric"],
     "timestamp": {
       "type": "unix",
       "name": "timestamp_unix"
