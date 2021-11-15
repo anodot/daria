@@ -11,5 +11,6 @@ class DirectoryConfigHandler(SchemaConfigHandler):
         'process_finish_file_event': stages.expression_evaluator.SendWatermark,
         'FieldTypeConverter_01': stages.field_type_converter.FieldTypeConverter,
         'destination': stages.destination.Destination,
+        'JythonEvaluator_02': stages.jython.Sleep,
         'destination_watermark': stages.destination.WatermarkDestination,
     }
