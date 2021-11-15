@@ -5,7 +5,7 @@
     "pipelineId" : "cacti6cbb199b-50f2-49ae-9e04-065960040de3",
     "title" : "snmp",
     "description" : "",
-    "uuid" : "2e4c663b-fe40-4f0d-bcaf-b27661baeed1",
+    "uuid" : "e7441790-b948-459b-8f2d-d770bc593445",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -23,7 +23,7 @@
       "value" : 2000
     }, {
       "name" : "retryAttempts",
-      "value" : -1
+      "value" : 5
     }, {
       "name" : "ludicrousMode",
       "value" : false
@@ -46,13 +46,16 @@
         "value" : "correct_token"
       }, {
         "key" : "PROTOCOL",
-        "value" : "anodot20"
+        "value" : "anodot30"
       }, {
         "key" : "ANODOT_BASE_URL",
         "value" : "http://dummy_destination"
       }, {
         "key" : "AGENT_URL",
         "value" : "http://anodot-agent"
+      }, {
+        "key" : "SCHEMA_ID",
+        "value" : "snmp-1234"
       } ]
     }, {
       "name" : "errorRecordPolicy",
@@ -416,7 +419,7 @@
       "stageVersion" : "1",
       "configuration" : [ {
         "name" : "script",
-        "value" : "global sdc\n\nMAX_TRIES = 3\n\ntry:\n    sdc.importLock()\n    import sys\n    import os\n    import time\n    from datetime import datetime, timedelta\n\n    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))\n    import requests\nfinally:\n    sdc.importUnlock()\n\n\ndef to_timestamp(date):\n    epoch = datetime(1970, 1, 1)\n    return int((date - epoch).total_seconds())\n\n\ndef get_interval():\n    return int(sdc.userParams['INTERVAL_IN_SECONDS'])\n\n\ndef get_now():\n    return int(time.time())\n\n\ndef get_step():\n    return int(sdc.userParams['STEP_IN_SECONDS'])\n\n\nentityName = ''\n\nif sdc.lastOffsets.containsKey(entityName):\n    offset = int(float(sdc.lastOffsets.get(entityName)))\nelse:\n    offset = to_timestamp(datetime.now().replace(second=0, microsecond=0)) - get_interval()\n\nsdc.log.info('OFFSET: ' + str(offset))\n\nwhile True:\n    if sdc.isStopped():\n        break\n    end = offset + get_interval()\n    if end > get_now():\n        time.sleep(end - get_now())\n\n    batch = sdc.createBatch()\n\n    res = requests.get(sdc.userParams['SNMP_SOURCE_URL'])\n    res.raise_for_status()\n    for metric in res.json():\n        record = sdc.createRecord('record created ' + str(datetime.now()))\n        record.value = metric\n        batch.add(record)\n\n        if batch.size() == sdc.batchSize:\n            batch.process(entityName, str(end))\n            batch = sdc.createBatch()\n\n    event = sdc.createEvent('sage_error', 1)\n    event.value = {\n        'watermark': end,\n        'schemaId': sdc.userParams['SCHEMA_ID']\n    }\n    batch.addEvent(event)\n    batch.process(entityName, str(offset))\n    offset = end"
+        "value" : "global sdc\n\nMAX_TRIES = 3\n\ntry:\n    sdc.importLock()\n    import sys\n    import os\n    import time\n    from datetime import datetime, timedelta\n\n    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))\n    import requests\nfinally:\n    sdc.importUnlock()\n\n\ndef to_timestamp(date):\n    epoch = datetime(1970, 1, 1)\n    return int((date - epoch).total_seconds())\n\n\ndef get_interval():\n    return int(sdc.userParams['INTERVAL_IN_SECONDS'])\n\n\ndef get_now():\n    return int(time.time())\n\n\nentityName = ''\n\nif sdc.lastOffsets.containsKey(entityName):\n    offset = int(float(sdc.lastOffsets.get(entityName)))\nelse:\n    offset = to_timestamp(datetime.now().replace(second=0, microsecond=0))\n\nsdc.log.info('OFFSET: ' + str(offset))\n\nwhile True:\n    if sdc.isStopped():\n        break\n    if offset > get_now():\n        time.sleep(offset - get_now())\n\n    batch = sdc.createBatch()\n\n    res = requests.get(sdc.userParams['SNMP_SOURCE_URL'], timeout=60)\n    res.raise_for_status()\n    for metric in res.json():\n        metric['timestamp'] = offset\n        record = sdc.createRecord('record created ' + str(datetime.now()))\n        record.value = metric\n        batch.add(record)\n\n        if batch.size() == sdc.batchSize:\n            batch.process(entityName, str(offset + get_interval()))\n            batch = sdc.createBatch()\n\n    event = sdc.createEvent('interval_processed', 1)\n    event.value = {\n        'watermark': offset,\n        'schemaId': sdc.userParams['SCHEMA_ID']\n    }\n    batch.addEvent(event)\n    batch.process(entityName, str(offset + get_interval()))\n    offset += get_interval()\n"
       }, {
         "name" : "scriptConf.batchSize",
         "value" : 1000
@@ -498,52 +501,6 @@
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
-      "instanceName" : "FieldRenamer_01",
-      "library" : "streamsets-datacollector-basic-lib",
-      "stageName" : "com_streamsets_pipeline_stage_processor_fieldrenamer_FieldRenamerDProcessor",
-      "stageVersion" : "2",
-      "configuration" : [ {
-        "name" : "renameMapping",
-        "value" : [ {
-          "fromFieldExpression" : "/dimensions/sysDescr",
-          "toFieldExpression" : "/dimensions/system_description"
-        }, {
-          "fromFieldExpression" : "/dimensions/sysName",
-          "toFieldExpression" : "/dimensions/host_name"
-        } ]
-      }, {
-        "name" : "errorHandler.nonExistingFromFieldHandling",
-        "value" : "CONTINUE"
-      }, {
-        "name" : "errorHandler.existingToFieldHandling",
-        "value" : "TO_ERROR"
-      }, {
-        "name" : "errorHandler.multipleFromFieldsMatching",
-        "value" : "TO_ERROR"
-      }, {
-        "name" : "stageOnRecordError",
-        "value" : "TO_ERROR"
-      }, {
-        "name" : "stageRequiredFields",
-        "value" : [ ]
-      }, {
-        "name" : "stageRecordPreconditions",
-        "value" : [ ]
-      } ],
-      "uiInfo" : {
-        "yPos" : 149,
-        "stageType" : "PROCESSOR",
-        "icon" : "edit.png",
-        "description" : "",
-        "label" : "Rename dimensions",
-        "xPos" : 721,
-        "displayMode" : "ADVANCED"
-      },
-      "inputLanes" : [ "ExpressionEvaluator_02OutputLane16166668829170" ],
-      "outputLanes" : [ "FieldRenamer_01OutputLane16165887647400" ],
-      "eventLanes" : [ ],
-      "services" : [ ]
-    }, {
       "instanceName" : "ExpressionEvaluator_01",
       "library" : "streamsets-datacollector-basic-lib",
       "stageName" : "com_streamsets_pipeline_stage_processor_expression_ExpressionDProcessor",
@@ -606,15 +563,15 @@
         "value" : [ ]
       } ],
       "uiInfo" : {
-        "yPos" : 149,
+        "yPos" : 147.9881591796875,
         "stageType" : "PROCESSOR",
         "icon" : "expression.png",
         "description" : "",
         "label" : "Add tags and static dimensions, convert timestamp to long",
-        "xPos" : 955,
+        "xPos" : 721.2631225585938,
         "displayMode" : "BASIC"
       },
-      "inputLanes" : [ "FieldRenamer_01OutputLane16165887647400" ],
+      "inputLanes" : [ "ExpressionEvaluator_02OutputLane16166668829170" ],
       "outputLanes" : [ "ExpressionEvaluator_01OutputLane16152955352740" ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -917,14 +874,29 @@
       }, {
         "name" : "stageRecordPreconditions",
         "value" : [ ]
+      }, {
+        "name" : "conf.parallelSendersNumber",
+        "value" : 1
+      }, {
+        "name" : "conf.maxBatchSize",
+        "value" : 1000
+      }, {
+        "name" : "conf.propertiesPath",
+        "value" : null
+      }, {
+        "name" : "conf.partitioningKeyPath",
+        "value" : null
+      }, {
+        "name" : "conf.maxSendResponseWait",
+        "value" : 60000
       } ],
       "uiInfo" : {
-        "yPos" : 149,
+        "yPos" : 147.98814392089844,
         "stageType" : "TARGET",
         "icon" : "anodot_logo.png",
         "description" : "",
         "label" : "Anodot",
-        "xPos" : 1183,
+        "xPos" : 951.2867431640625,
         "displayMode" : "BASIC"
       },
       "inputLanes" : [ "ExpressionEvaluator_01OutputLane16152955352740" ],
@@ -1230,6 +1202,21 @@
       }, {
         "name" : "stageRecordPreconditions",
         "value" : [ ]
+      }, {
+        "name" : "conf.parallelSendersNumber",
+        "value" : 1
+      }, {
+        "name" : "conf.maxBatchSize",
+        "value" : 1000
+      }, {
+        "name" : "conf.propertiesPath",
+        "value" : null
+      }, {
+        "name" : "conf.partitioningKeyPath",
+        "value" : null
+      }, {
+        "name" : "conf.maxSendResponseWait",
+        "value" : 60000
       } ],
       "uiInfo" : {
         "yPos" : 297,
@@ -1268,19 +1255,19 @@
       "pipelineId" : "snmp",
       "title" : "snmp",
       "description" : "",
-      "created" : 1626943829742,
-      "lastModified" : 1626944367840,
+      "created" : 1636980824136,
+      "lastModified" : 1636982303754,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "2e4c663b-fe40-4f0d-bcaf-b27661baeed1",
+      "uuid" : "e7441790-b948-459b-8f2d-d770bc593445",
       "valid" : true,
       "metadata" : {
         "labels" : [ "snmp", "http" ]
       },
       "name" : "snmp",
       "sdcVersion" : "3.18.0",
-      "sdcId" : "71a6d5f1-eac8-11eb-b64e-dd3347959f5a"
+      "sdcId" : "e899b0c8-4610-11ec-b28e-d10e89255cf3"
     },
     "metadata" : {
       "labels" : [ "snmp", "http" ]
@@ -1623,7 +1610,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1626943829803,
+      "timestamp" : 1636980824339,
       "valid" : true
     }, {
       "id" : "stageErrorAlertID",
@@ -1634,7 +1621,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1626943829803,
+      "timestamp" : 1636980824339,
       "valid" : true
     }, {
       "id" : "idleGaugeID",
@@ -1645,7 +1632,7 @@
       "condition" : "${time:now() - value() > 120000}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1626943829803,
+      "timestamp" : 1636980824339,
       "valid" : true
     }, {
       "id" : "batchTimeAlertID",
@@ -1656,12 +1643,12 @@
       "condition" : "${value() > 200}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1626943829803,
+      "timestamp" : 1636980824339,
       "valid" : true
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "f753b8df-d542-44ac-9536-df9bb2db7e60",
+    "uuid" : "71f86c78-199d-4ba5-8b87-249eebfcaa15",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : null

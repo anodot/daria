@@ -61,20 +61,18 @@ class ObserviumBuilder(Builder):
     }
 
     DEFAULT_DIMENSIONS = {
-        source.ObserviumSource.PORTS: [
-            "ifName", "ifAlias", "ifDescr", "ifSpeed", "sysName", "location", "processor_type", "processor_name",
-            "Memory_Pool_ID", "Memory_Pool_Description", "Memory_Pool_Vendor", "storage_description", "storage_type"
-        ],
-        source.ObserviumSource.MEMPOOLS: ["mempool_id", "mempool_descr", "mempool_mib"],
-        source.ObserviumSource.PROCESSORS: ["processor_type", "processor_descr"],
-        source.ObserviumSource.STORAGE: ["storage_descr", "storage_type"],
+        # todo add Host_Name and Location somewhere in one place
+        source.ObserviumSource.PORTS: ['Interface_Name', 'Interface_Alias', 'Interface_Description', 'Bandwidth'],
+        source.ObserviumSource.MEMPOOLS: ['Memory_Pool_ID', 'Memory_Pool_Description', 'Memory_Pool_Vendor'],
+        source.ObserviumSource.PROCESSORS: ["processor_type", "processor_name"],
+        source.ObserviumSource.STORAGE: ["storage_description", "storage_type"],
     }
 
     def _load_config(self):
         super()._load_config()
         self.config['timestamp'] = {'type': 'unix'}
         self.config['uses_schema'] = True
-        self.config['rename_dimensions_mapping'] = self._rename_dimensions_mapping()
+        self.config['dimension_paths'] = self._default_dimension_paths()
         self.config['dimensions'] = self._dimensions()
         self.config['values'] = self._measurements()
         self.config['request_params'] = self._request_params()
@@ -101,36 +99,36 @@ class ObserviumBuilder(Builder):
             return {k: v for k, v in params.items() if v and (k in self.ALLOWED_PARAMS[self.endpoint()])}
         return {}
 
-    def _rename_dimensions_mapping(self):
+    def _default_dimension_paths(self):
         if self.config.get('dimensions'):
             return self.pipeline.config.get('rename_dimensions_mapping', {})
         # if there are no dimensions we'll use the default ones so need to use default rename as well
         if self.endpoint() == source.ObserviumSource.PORTS:
             return {
-                'ifName': 'Interface_Name',
-                'ifAlias': 'Interface_Alias',
-                'ifDescr': 'Interface_Description',
-                'ifSpeed': 'Bandwidth',
-                'sysName': 'Host_Name',
-                'location': 'Location',
+                'Interface_Name': 'ifName',
+                'Interface_Alias': 'ifAlias',
+                'Interface_Description': 'ifDescr',
+                'Bandwidth': 'ifSpeed',
+                'Host_Name': 'sysName',
+                'Location': 'location',
             }
         if self.endpoint() == source.ObserviumSource.MEMPOOLS:
             return {
-                'mempool_id': 'Memory_Pool_ID',
-                'mempool_descr': 'Memory_Pool_Description',
-                'mempool_mib': 'Memory_Pool_Vendor',
-                'sysName': 'Host_Name',
-                'location': 'Location',
+                'Memory_Pool_ID': 'mempool_id',
+                'Memory_Pool_Description': 'mempool_descr',
+                'Memory_Pool_Vendor': 'mempool_mib',
+                'Host_Name': 'sysName',
+                'Location': 'location',
             }
         if self.endpoint() == source.ObserviumSource.PROCESSORS:
             return {
-                'processor_descr': 'processor_name',
-                'sysName': 'Host_Name',
-                'location': 'Location',
+                'processor_name': 'processor_descr',
+                'Host_Name': 'sysName',
+                'Location': 'location',
             }
         if self.endpoint() == source.ObserviumSource.STORAGE:
             return {
-                'storage_descr': 'storage_description',
-                'sysName': 'Host_Name',
-                'location': 'Location',
+                'storage_description': 'storage_descr',
+                'Host_Name': 'sysName',
+                'Location': 'location',
             }

@@ -84,7 +84,7 @@ def create_metrics(data):
     for obj in data.values():
         metric = {
             "timestamp": obj[POLL_TIME_KEYS[sdc.userParams['ENDPOINT']]],
-            "dimensions": {k: v for k, v in obj.items() if k in sdc.userParams['DIMENSIONS']},
+            "dimensions": {sdc.userParams['DIMENSIONS'][k]: v for k, v in obj.items() if k in sdc.userParams['DIMENSIONS']},
             "measurements": {k: float(v) for k, v in obj.items() if k in sdc.userParams['MEASUREMENTS']},
             "schemaId": sdc.userParams['SCHEMA_ID'],
         }
@@ -95,6 +95,7 @@ def create_metrics(data):
     return metrics
 
 
+# todo we don't replace illegal chars? add test
 def main():
     if sdc.lastOffsets.containsKey(entityName):
         offset = int(float(sdc.lastOffsets.get(entityName)))
@@ -117,9 +118,8 @@ def main():
                 sdc.userParams['REQUEST_PARAMS'],
                 RESPONSE_DATA_KEYS[sdc.userParams['ENDPOINT']]
             )
-            metrics = create_metrics(data)
 
-            for metric in metrics:
+            for metric in create_metrics(data):
                 record = sdc.createRecord('record created ' + str(datetime.now()))
                 record.value = metric
                 cur_batch.add(record)

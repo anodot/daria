@@ -12,6 +12,8 @@ logger_ = logger.get_logger(__name__, stdout=True)
 delta_calculator = DeltaCalculator()
 
 HOSTNAME_OID = '1.3.6.1.2.1.1.5.0'
+HOSTNAME_NAME = 'host_name'
+HOSTNAME_PATH = 'sysName'
 
 
 # todo do I need to rename oids to readable names?
@@ -76,8 +78,8 @@ def _create_metric(pipeline_: Pipeline, var_binds: list) -> dict:
     for var_bind in var_binds:
         if _is_value(str(var_bind[0]), pipeline_):
             metric['measurements'][_get_measurement_name(var_bind[0], pipeline_)] = _get_value(var_bind, pipeline_)
-        elif _is_dimension(str(var_bind[0]), pipeline_):
-            metric['dimensions'][var_bind[0].getMibNode().label] = str(var_bind[1])
+        elif _is_dimension(str(var_bind[0].getMibNode().label), pipeline_):
+            metric['dimensions'][_get_dimension_name(var_bind[0].getMibNode().label, pipeline_)] = str(var_bind[1])
     metric['timestamp'] = int(time.time())
     return metric
 
@@ -87,7 +89,11 @@ def _is_value(key: str, pipeline_: Pipeline) -> bool:
 
 
 def _is_dimension(key: str, pipeline_: Pipeline) -> bool:
-    return key in pipeline_.all_dimensions
+    return key in pipeline_.dimension_paths
+
+
+def _get_dimension_name(dim_path: str, pipeline_: Pipeline) -> str:
+    return pipeline_.dimension_paths_with_names[dim_path]
 
 
 def _get_measurement_name(oid: ObjectIdentity, pipeline_: Pipeline) -> str:

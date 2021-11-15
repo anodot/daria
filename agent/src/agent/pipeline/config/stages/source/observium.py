@@ -24,7 +24,7 @@ class ObserviumScript(Source):
                 {'key': 'REQUEST_PARAMS', 'value': self.pipeline.config.get('request_params', {})},
                 # todo is it correct?
                 {'key': 'MEASUREMENTS', 'value': list(self.pipeline.value_names)},
-                {'key': 'DIMENSIONS', 'value': self.pipeline.all_dimensions},
+                {'key': 'DIMENSIONS', 'value': self.pipeline.dimension_paths_with_names},
                 {'key': 'INTERVAL_IN_SECONDS', 'value': str(self.pipeline.interval)},
                 {'key': 'DELAY_IN_SECONDS', 'value': str(self.pipeline.delay)},
                 {'key': 'QUERY_TIMEOUT', 'value': str(self.pipeline.source.query_timeout)},

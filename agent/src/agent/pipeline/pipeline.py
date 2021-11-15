@@ -395,6 +395,9 @@ class Pipeline(Entity, sdc_client.IPipeline):
         for idx, item in self.source.config.get('csv_mapping', {}).items():
             if item == property_value:
                 return str(idx)
+        for idx, item in self.config.get('dimension_paths', {}).items():
+            if item == property_value:
+                return str(idx)
         return str(property_value)
 
     def meta_tags(self) -> dict:
