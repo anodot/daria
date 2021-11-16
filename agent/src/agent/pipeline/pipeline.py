@@ -369,7 +369,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return {
             'source': ['anodot-agent'],
             'source_host_id': [self.destination.host_id],
-            'source_host_name': [HOSTNAME],
+            'source_host_name': [tools.replace_illegal_chars(HOSTNAME)],
             'pipeline_id': [self.name],
             'pipeline_type': [self.source.type]
         }
