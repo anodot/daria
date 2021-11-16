@@ -1,7 +1,15 @@
+from abc import ABC
+
 from . import base
 
 
-class ConvertToMetrics30(base.Stage):
+class Base(base.Stage, ABC):
+    def _get_script(self) -> str:
+        with open(self.get_jython_file_path()) as f:
+            return f.read()
+
+
+class ConvertToMetrics30(Base):
     JYTHON_SCRIPT = 'convert_to_metrics_30.py'
 
     def get_config(self) -> dict:
@@ -28,6 +36,16 @@ class ConvertToMetrics30(base.Stage):
         return [f'/{f}' for f in [*self.pipeline.required_dimensions_paths, self.pipeline.timestamp_path]]
 
     def _get_script(self) -> str:
-        with open(self.get_jython_file_path()) as f:
-            script = f.read()
-        return script.replace("'%TRANSFORM_SCRIPT_PLACEHOLDER%'", self.pipeline.transform_script_config or '')
+        return super()._get_script().replace("'%TRANSFORM_SCRIPT_PLACEHOLDER%'", self.pipeline.transform_script_config or '')
+
+
+class Sleep(Base):
+    JYTHON_SCRIPT = 'sleep.py'
+
+    def get_config(self) -> dict:
+        return {
+            'userParams': [
+                {'key': 'SLEEP_TIME', 'value': self.pipeline.watermark_sleep_time},
+            ],
+            'script': self._get_script(),
+        }

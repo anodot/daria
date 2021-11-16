@@ -308,6 +308,10 @@ class Pipeline(Entity, sdc_client.IPipeline):
     def transform_script_config(self) -> Optional[str]:
         return self.config.get('transform_script', {}).get('config')
 
+    @property
+    def watermark_sleep_time(self) -> int:
+        return self.config.get('watermark_sleep_time', 10)
+
     def get_streamsets_config(self) -> dict:
         return pipeline.manager.create_streamsets_pipeline_config(self)
 
