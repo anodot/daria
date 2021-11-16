@@ -1,3 +1,5 @@
+import json
+
 from agent.data_extractor.snmp import snmp
 from agent import cli, source, destination, pipeline, streamsets, di
 from agent.api import main
@@ -11,6 +13,9 @@ def api_client():
         di.init()
         return client
 
+for p in pipeline.repository.get_all():
+    pipeline.manager.delete(p)
+    source.manager.delete(p.source_)
 
 di.init()
 # res = api_client().get('/alerts?status=CLOSE&startTime=1623321686')
