@@ -45,7 +45,7 @@ class Sleep(Base):
     def get_config(self) -> dict:
         return {
             'userParams': [
-                {'key': 'SLEEP_TIME', 'value': self.pipeline.watermark_sleep_time},
+                {'key': 'SLEEP_TIME', 'value': str(self.pipeline.watermark_sleep_time)},
             ],
             'script': self._get_script(),
         }
