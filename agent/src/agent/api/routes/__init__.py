@@ -1,4 +1,5 @@
-import agent
+import agent.pipeline
+import agent.source
 
 from functools import wraps
 from flask import jsonify

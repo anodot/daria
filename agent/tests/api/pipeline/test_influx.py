@@ -175,7 +175,7 @@ class TestInflux:
     def test_pipeline_failed(self, api_client):
         pipeline_id = 'test_influx'
         pipeline_status = 'RUN_ERROR'
-        res = api_client.post(f'/pipeline-status-change/{pipeline_id}', json={
+        res = api_client.post(f'/pipelines/{pipeline_id}/status', json={
             "pipeline_status": pipeline_status,
             "time": "1970-01-01 00:00:00"
         })

@@ -77,7 +77,7 @@
         "httpMethod" : "POST",
         "contentType" : "application/json",
         "authType" : "NONE",
-        "webhookUrl" : "${AGENT_URL}/pipeline-status-change/${pipeline:id()}"
+        "webhookUrl" : "${AGENT_URL}/pipelines/${pipeline:id()}/status"
       } ]
     }, {
       "name" : "sparkConfigs",

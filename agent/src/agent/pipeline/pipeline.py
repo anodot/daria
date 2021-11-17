@@ -312,6 +312,10 @@ class Pipeline(Entity, sdc_client.IPipeline):
     def watermark_sleep_time(self) -> int:
         return self.config.get('watermark_sleep_time', 10)
 
+    @property
+    def offset_timestamp(self) -> Optional[float]:
+        return self.offset.timestamp if self.offset else None
+
     def get_streamsets_config(self) -> dict:
         return pipeline.manager.create_streamsets_pipeline_config(self)
 
@@ -340,10 +344,10 @@ class Pipeline(Entity, sdc_client.IPipeline):
     def has_schema(self) -> bool:
         return bool(self.schema)
 
-    def get_schema_id(self):
+    def get_schema_id(self) -> Optional[str]:
         return self.get_schema().get('id')
 
-    def export(self):
+    def export(self) -> dict:
         return {
             **self.config,
             self.OVERRIDE_SOURCE: self.override_source,
@@ -351,7 +355,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
             'source': self.source.name,
         }
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         return {
             'id': self.name,
             'config': self.config,

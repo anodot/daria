@@ -13,16 +13,20 @@ def _escape_quotes(s: str) -> str:
     return s.replace("'", "\\'")
 
 
-def get_convert_timestamp_to_unix_expression(timestamp_type: pipeline.TimestampType, value, timestamp_format, timezone):
+def get_convert_timestamp_to_unix_expression(
+        timestamp_type: pipeline.TimestampType,
+        timestamp_value: str,
+        timestamp_format, timezone
+):
     if timestamp_type == pipeline.TimestampType.STRING:
-        return f"time:dateTimeToMilliseconds(time:createDateFromStringTZ({value}, '{timezone}', '{_escape_quotes(timestamp_format)}'))/1000"
+        return f"time:dateTimeToMilliseconds(time:createDateFromStringTZ({timestamp_value}, '{timezone}', '{_escape_quotes(timestamp_format)}'))/1000"
     elif timestamp_type == pipeline.TimestampType.UTC_STRING:
-        return f"time:dateTimeToMilliseconds(time:createDateFromStringTZ({value}, 'Etc/UTC', 'yyyy-MM-dd\\'T\\'HH:mm:ss\\'Z\\''))/1000"
+        return f"time:dateTimeToMilliseconds(time:createDateFromStringTZ({timestamp_value}, 'Etc/UTC', 'yyyy-MM-dd\\'T\\'HH:mm:ss\\'Z\\''))/1000"
     elif timestamp_type == pipeline.TimestampType.DATETIME:
-        return f"(time:dateTimeToMilliseconds({value}) - time:dateTimeZoneOffset({value}, '{timezone}'))/1000"
+        return f"(time:dateTimeToMilliseconds({timestamp_value}) - time:dateTimeZoneOffset({timestamp_value}, '{timezone}'))/1000"
     elif timestamp_type == pipeline.TimestampType.UNIX_MS:
-        return f"{value}/1000"
-    return value
+        return f"{timestamp_value}/1000"
+    return timestamp_value
 
 
 def get_tags_expressions(tags: dict) -> list:
@@ -86,21 +90,6 @@ class AddProperties30(AddProperties):
     @classmethod
     def _get_dimension_field_path(cls, key):
         return '/dimensions/' + key
-
-
-class SendWatermark(Stage):
-    def get_config(self) -> dict:
-        extract_timestamp = "str:regExCapture(record:value('/filepath'), '.*/(.+)_.*', 1)"
-        timestamp_to_unix = get_convert_timestamp_to_unix_expression(self.pipeline.timestamp_type,
-                                                                     extract_timestamp,
-                                                                     self.pipeline.timestamp_format,
-                                                                     self.pipeline.timezone)
-        bucket_size = self.pipeline.flush_bucket_size.total_seconds()
-        watermark = f'math:floor(({timestamp_to_unix} + {bucket_size})/{bucket_size}) * {bucket_size}'
-        return {
-            'expressionProcessorConfigs': [get_value('/watermark', watermark),
-                                           get_value('/schemaId', f'"{self.pipeline.get_schema_id()}"')]
-        }
 
 
 class AddMetadataTags(Stage):

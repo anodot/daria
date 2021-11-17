@@ -1,5 +1,6 @@
-from abc import ABC
+import urllib.parse
 
+from abc import ABC
 from . import base
 
 
@@ -39,13 +40,22 @@ class ConvertToMetrics30(Base):
         return super()._get_script().replace("'%TRANSFORM_SCRIPT_PLACEHOLDER%'", self.pipeline.transform_script_config or '')
 
 
-class Sleep(Base):
-    JYTHON_SCRIPT = 'sleep.py'
+class CreateWatermark(Base):
+    JYTHON_SCRIPT = 'create_watermark.py'
 
     def get_config(self) -> dict:
         return {
             'userParams': [
                 {'key': 'SLEEP_TIME', 'value': str(self.pipeline.watermark_sleep_time)},
+                {'key': 'BUCKET_SIZE_IN_SECONDS', 'value': str(self.pipeline.flush_bucket_size.total_seconds())},
+                {'key': 'SCHEMA_ID', 'value': self.pipeline.get_schema_id()},
+                {
+                    'key': 'PIPELINE_OFFSET_URL',
+                    'value': urllib.parse.urljoin(
+                        self.pipeline.streamsets.agent_external_url,
+                        f'/pipelines/{self.pipeline.name}/offset'
+                    )
+                },
             ],
             'script': self._get_script(),
         }
