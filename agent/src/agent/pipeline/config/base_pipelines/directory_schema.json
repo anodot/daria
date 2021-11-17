@@ -1348,7 +1348,7 @@
         "stageType" : "PROCESSOR",
         "icon" : "jython.png",
         "description" : "",
-        "label" : "Sleep",
+        "label" : "Create watermark",
         "xPos" : 278,
         "displayMode" : "ADVANCED"
       },

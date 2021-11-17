@@ -16,7 +16,8 @@ def _escape_quotes(s: str) -> str:
 def get_convert_timestamp_to_unix_expression(
         timestamp_type: pipeline.TimestampType,
         timestamp_value: str,
-        timestamp_format, timezone
+        timestamp_format: str,
+        timezone: str
 ):
     if timestamp_type == pipeline.TimestampType.STRING:
         return f"time:dateTimeToMilliseconds(time:createDateFromStringTZ({timestamp_value}, '{timezone}', '{_escape_quotes(timestamp_format)}'))/1000"

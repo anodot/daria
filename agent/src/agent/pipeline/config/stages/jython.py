@@ -49,11 +49,26 @@ class CreateWatermark(Base):
                 {'key': 'SLEEP_TIME', 'value': str(self.pipeline.watermark_sleep_time)},
                 {'key': 'BUCKET_SIZE_IN_SECONDS', 'value': str(self.pipeline.flush_bucket_size.total_seconds())},
                 {'key': 'SCHEMA_ID', 'value': self.pipeline.get_schema_id()},
+                {'key': 'TIMEZONE', 'value': self.pipeline.timezone},
                 {
                     'key': 'PIPELINE_OFFSET_URL',
                     'value': urllib.parse.urljoin(
                         self.pipeline.streamsets.agent_external_url,
                         f'/pipelines/{self.pipeline.name}/offset'
+                    )
+                },
+                {
+                    'key': 'FILE_PROCESSED_MONITORING_ENDPOINT',
+                    'value': urllib.parse.urljoin(
+                        self.pipeline.streamsets.agent_external_url,
+                        f'/monitoring/directory_file_processed/{self.pipeline.name}'
+                    )
+                },
+                {
+                    'key': 'WATERMARK_DELTA_MONITORING_ENDPOINT',
+                    'value': urllib.parse.urljoin(
+                        self.pipeline.streamsets.agent_external_url,
+                        f'/monitoring/watermark_delta/{self.pipeline.name}/'
                     )
                 },
             ],
