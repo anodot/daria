@@ -89,7 +89,7 @@
         "httpMethod" : "POST",
         "contentType" : "application/json",
         "authType" : "NONE",
-        "webhookUrl" : "${AGENT_URL}/pipelines/${pipeline:id()}/status"
+        "webhookUrl" : "${AGENT_URL}/pipeline-status-change/${pipeline:id()}"
       } ]
     }, {
       "name" : "sparkConfigs",
@@ -984,7 +984,7 @@
         "value" : "CSV"
       }, {
         "name" : "conf.agentOffsetUrl",
-        "value" : "http://anodot-agent/pipelines/test_dir_json/offset"
+        "value" : "http://anodot-agent/pipeline-offset/test_dir_json"
       }, {
         "name" : "conf.dataGeneratorFormatConfig.csvHeader",
         "value" : "NO_HEADER"
@@ -1331,7 +1331,7 @@
           "value" : "test_dir_json-1234"
         }, {
           "key" : "PIPELINE_OFFSET_URL",
-          "value" : "http://anodot-agent/pipelines/test_dir_json/offset"
+          "value" : "http://anodot-agent/pipeline-offset/test_dir_json"
         } ]
       }, {
         "name" : "stageOnRecordError",

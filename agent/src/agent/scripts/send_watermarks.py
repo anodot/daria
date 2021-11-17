@@ -20,6 +20,7 @@ def _update_errors_count(num_of_errors):
     return num_of_errors + 1
 
 
+# ckeck if there's a test for it
 def _get_next_bucket_start(pipeline_: Pipeline) -> datetime:
     bs = pipeline_.periodic_watermark_config['bucket_size']
     dt = datetime.fromtimestamp(pipeline_.offset.timestamp).replace(tzinfo=timezone.utc)

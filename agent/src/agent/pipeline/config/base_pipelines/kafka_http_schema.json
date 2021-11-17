@@ -74,7 +74,7 @@
         "httpMethod" : "POST",
         "contentType" : "application/json",
         "authType" : "NONE",
-        "webhookUrl" : "${AGENT_URL}/pipelines/${pipeline:id()}/status"
+        "webhookUrl" : "${AGENT_URL}/pipeline-status-change/${pipeline:id()}"
       } ]
     }, {
       "name" : "sparkConfigs",
@@ -1541,7 +1541,7 @@
         "level" : "PIPELINE_CONFIG",
         "configGroup" : "",
         "configName" : "webhookUrl",
-        "message" : "CREATION_005 - Could not resolve implicit EL expression '${AGENT_URL}/pipelines/${pipeline:id()}/status': com.streamsets.pipeline.api.el.ELEvalException: CTRCMN_0100 - Error evaluating expression ${AGENT_URL}/pipelines/${pipeline:id()}/status: javax.servlet.jsp.el.ELException: Constants/Variable 'AGENT_URL' cannot be resolved",
+        "message" : "CREATION_005 - Could not resolve implicit EL expression '${AGENT_URL}/pipeline-status-change/${pipeline:id()}': com.streamsets.pipeline.api.el.ELEvalException: CTRCMN_0100 - Error evaluating expression ${AGENT_URL}/pipeline-status-change/${pipeline:id()}: javax.servlet.jsp.el.ELException: Constants/Variable 'AGENT_URL' cannot be resolved",
         "count" : 1,
         "additionalInfo" : null,
         "antennaDoctorMessages" : null

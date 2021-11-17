@@ -143,7 +143,7 @@ def reset(pipeline_id: str):
     return jsonify('')
 
 
-@pipelines.route('/pipelines/<pipeline_id>/status', methods=['POST'])
+@pipelines.route('/pipeline-status-change//<pipeline_id>', methods=['POST'])
 def pipeline_status_change(pipeline_id: str):
     data = request.get_json()
     status = data['pipeline_status']
@@ -159,7 +159,7 @@ def pipeline_status_change(pipeline_id: str):
     return jsonify('')
 
 
-@pipelines.route('/pipelines/<pipeline_id>/offset', methods=['POST'])
+@pipelines.route('/pipeline-offset/<pipeline_id>', methods=['POST'])
 @needs_pipeline
 def pipeline_offset_changed(pipeline_id: str):
     pipeline.manager.update_pipeline_offset(
