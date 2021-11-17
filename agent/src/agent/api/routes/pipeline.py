@@ -143,7 +143,7 @@ def reset(pipeline_id: str):
     return jsonify('')
 
 
-@pipelines.route('/pipeline-status-change//<pipeline_id>', methods=['POST'])
+@pipelines.route('/pipeline-status-change/<pipeline_id>', methods=['POST'])
 def pipeline_status_change(pipeline_id: str):
     data = request.get_json()
     status = data['pipeline_status']
@@ -169,7 +169,15 @@ def pipeline_offset_changed(pipeline_id: str):
     return jsonify('')
 
 
-@pipelines.route('/pipelines/<pipeline_id>/offset', methods=['GET'])
+@pipelines.route('/pipelines/<pipeline_id>/watermark', methods=['GET'])
 @needs_pipeline
-def get_pipeline_offset(pipeline_id: str):
-    return jsonify(pipeline.repository.get_by_id(pipeline_id).offset_timestamp)
+def calculate_watermark(pipeline_id: str):
+    pipeline_ = pipeline.repository.get_by_id(pipeline_id)
+    if not pipeline_.offset:
+        return jsonify('')
+    return jsonify(
+        pipeline.manager.get_next_bucket_start(
+            pipeline_.flush_bucket_size.value,
+            pipeline_.offset.timestamp
+        ).timestamp()
+    )

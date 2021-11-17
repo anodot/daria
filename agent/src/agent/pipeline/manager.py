@@ -3,6 +3,7 @@ import random
 import string
 import sdc_client
 
+from datetime import datetime, timedelta, timezone
 from agent import source, pipeline, destination, streamsets
 from agent.modules import tools, constants
 from agent.pipeline import Pipeline, TestPipeline, schema, extra_setup, PipelineRetries, RawPipeline
@@ -277,3 +278,18 @@ def increase_retry_counter(pipeline_: Pipeline):
         pipeline_.retries = PipelineRetries(pipeline_)
     pipeline_.retries.number_of_error_statuses += 1
     pipeline.repository.save(pipeline_.retries)
+
+
+# check if there's a test for it
+# let's have a unit test for it
+def get_next_bucket_start(bs: str, offset: float) -> datetime:
+    dt = datetime.fromtimestamp(offset).replace(tzinfo=timezone.utc)
+    if bs == pipeline.FlushBucketSize.MIN_1:
+        return dt.replace(second=0, microsecond=0) + timedelta(minutes=1)
+    elif bs == pipeline.FlushBucketSize.MIN_5:
+        return dt.replace(second=0, microsecond=0) + timedelta(minutes=5 - dt.minute % 5)
+    elif bs == pipeline.FlushBucketSize.HOUR_1:
+        return dt.replace(minute=0, second=0, microsecond=0) + timedelta(hours=1)
+    elif bs == pipeline.FlushBucketSize.DAY_1:
+        return dt.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
+    raise Exception('Invalid bucket size provided')
