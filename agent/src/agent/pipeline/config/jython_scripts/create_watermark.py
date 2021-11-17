@@ -11,12 +11,13 @@ try:
 
     sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))
     import requests
+    import pytz
 finally:
     sdc.importUnlock()
 
 
 def _get_watermark_delta(watermark):
-    return str(calendar.timegm(datetime.utcnow().timetuple()) - watermark)
+    return str(calendar.timegm(datetime.now(pytz.utc).timetuple()) - watermark)
 
 
 slept = False

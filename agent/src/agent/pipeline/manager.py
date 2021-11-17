@@ -1,6 +1,8 @@
 import logging
 import random
 import string
+
+import pytz
 import sdc_client
 
 from datetime import datetime, timedelta, timezone
@@ -280,10 +282,8 @@ def increase_retry_counter(pipeline_: Pipeline):
     pipeline.repository.save(pipeline_.retries)
 
 
-# check if there's a test for it
-# let's have a unit test for it
 def get_next_bucket_start(bs: str, offset: float) -> datetime:
-    dt = datetime.fromtimestamp(offset).replace(tzinfo=timezone.utc)
+    dt = datetime.fromtimestamp(offset, tz=pytz.utc)
     if bs == pipeline.FlushBucketSize.MIN_1:
         return dt.replace(second=0, microsecond=0) + timedelta(minutes=1)
     elif bs == pipeline.FlushBucketSize.MIN_5:
