@@ -32,7 +32,7 @@ class TestDirectory(TestPipelineBase):
 
     def test_watermark(self):
         schema_id = get_schema_id('test_dir_json')
-        assert get_output(f'{schema_id}_watermark.json') == {'watermark':   1512892800.0, 'schemaId': schema_id}
+        assert get_output(f'{schema_id}_watermark.json') == {'watermark': 1512889200.0 + 3600, 'schemaId': schema_id}
 
     def test_force_stop(self, cli_runner, name=None):
         pytest.skip()

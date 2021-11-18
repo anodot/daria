@@ -12,7 +12,7 @@ class Interval:
             raise Exception("Invalid value supplied")
         self.value = value
 
-    def total_seconds(self):
+    def total_seconds(self) -> int:
         if self.value == self.MIN_1:
             return 60
         if self.value == self.MIN_5:

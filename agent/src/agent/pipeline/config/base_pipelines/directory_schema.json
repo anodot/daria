@@ -5,7 +5,7 @@
     "pipelineId" : "directory9f19cdfe-f36c-4c6e-8783-231e6b4218ef",
     "title" : "test_dir_json",
     "description" : "",
-    "uuid" : "3ccc6d04-a020-46e1-bad1-eab000d036ad",
+    "uuid" : "d63d72ca-eae0-4b9b-90bc-86bdd831dc26",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -984,7 +984,7 @@
         "value" : "CSV"
       }, {
         "name" : "conf.agentOffsetUrl",
-        "value" : "http://anodot-agent/pipeline-offset/${pipeline:id()}"
+        "value" : "http://anodot-agent/pipeline-offset/test_dir_json"
       }, {
         "name" : "conf.dataGeneratorFormatConfig.csvHeader",
         "value" : "NO_HEADER"
@@ -1308,13 +1308,13 @@
         "value" : "BATCH"
       }, {
         "name" : "initScript",
-        "value" : "# Available Objects:\n#\n#  sdc.state: a dict that is preserved between invocations of this script.\n#         Useful for caching bits of data e.g. counters.\n#  sdc.log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n#                               loglevel is any log4j level: e.g. info, error, warn, trace.\n#  sdc.getFieldNull(Record, 'field path'): Receive a constant defined above\n#                                  to check if the field is typed field with value null\n#  sdc.createMap(boolean listMap): Create a map for use as a field in a record.\n#                            Pass True to this function to create a list map (ordered map).\n#  sdc.createEvent(String type, int version): Creates a new event.\n#                            Create new empty event with standard headers.\n#  sdc.createMap(boolean listMap): Create a map for use as a field in a record.\n#                            Pass True to this function to create a list map (ordered map).\n#\n\n# sdc.state['connection'] = new Connection().open()"
+        "value" : ""
       }, {
         "name" : "script",
-        "value" : "try:\n    sdc.importLock()\n    import time\nfinally:\n    sdc.importUnlock()\n\ntime.sleep(sdc.userParams('SLEEP_TIME'))\n\nfor record in sdc.records:\n    sdc.output.write(record)"
+        "value" : "global sdc\n\ntry:\n    sdc.importLock()\n    import time\n    import os\n    import sys\n\n    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))\n    import requests\nfinally:\n    sdc.importUnlock()\n# todo will dirs break after update?\nslept = False\nfor record in sdc.records:\n    if record.attributes['sdc.event.type'] == 'finished-file':\n        if not slept:\n            time.sleep(int(sdc.userParams['SLEEP_TIME']))\n            slept = True\n        res = requests.get(sdc.userParams['PIPELINE_OFFSET_URL'])\n        res.raise_for_status()\n        record.value['watermark'] = float(res.json()) + float(sdc.userParams['BUCKET_SIZE_IN_SECONDS'])\n        record.value['schemaId'] = sdc.userParams['SCHEMA_ID']\n        # send monitoring metric with file_processed 1 and now() - watermark\n    sdc.output.write(record)"
       }, {
         "name" : "destroyScript",
-        "value" : "# Available Objects:\n#\n#  sdc.state: a dict that is preserved between invocations of this script.\n#         Useful for caching bits of data e.g. counters.\n#  sdc.log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n#                               loglevel is any log4j level: e.g. info, error, warn, trace.\n#  sdc.getFieldNull(Record, 'field path'): Receive a constant defined above \n#                                  to check if the field is typed field with value null.\n#  sdc.createMap(boolean listMap): Create a map for use as a field in a record.\n#                            Pass True to this function to create a list map (ordered map).\n#  sdc.createEvent(String type, int version): Creates a new event.\n#                            Create new empty event with standard headers.\n#  sdc.toEvent(Record): Send event to event stream.\n#                            Only events created with sdcFunctions.createEvent are supported.\n#\n\n# sdc.state['connection'].close()"
+        "value" : ""
       }, {
         "name" : "scriptRecordType",
         "value" : "NATIVE_OBJECTS"
@@ -1322,7 +1322,16 @@
         "name" : "userParams",
         "value" : [ {
           "key" : "SLEEP_TIME",
-          "value" : ""
+          "value" : "10"
+        }, {
+          "key" : "BUCKET_SIZE_IN_SECONDS",
+          "value" : "3600"
+        }, {
+          "key" : "SCHEMA_ID",
+          "value" : "test_dir_json-1234"
+        }, {
+          "key" : "PIPELINE_OFFSET_URL",
+          "value" : "http://anodot-agent/pipeline-offset/test_dir_json"
         } ]
       }, {
         "name" : "stageOnRecordError",
@@ -1339,56 +1348,12 @@
         "stageType" : "PROCESSOR",
         "icon" : "jython.png",
         "description" : "",
-        "label" : "Sleep",
+        "label" : "Create watermark",
         "xPos" : 278,
         "displayMode" : "ADVANCED"
       },
       "inputLanes" : [ "Directory_01_EventLane" ],
       "outputLanes" : [ "JythonEvaluator_02OutputLane16369944050210" ],
-      "eventLanes" : [ ],
-      "services" : [ ]
-    }, {
-      "instanceName" : "process_finish_file_event",
-      "library" : "streamsets-datacollector-basic-lib",
-      "stageName" : "com_streamsets_pipeline_stage_processor_expression_ExpressionDProcessor",
-      "stageVersion" : "2",
-      "configuration" : [ {
-        "name" : "expressionProcessorConfigs",
-        "value" : [ {
-          "fieldToSet" : "/watermark",
-          "expression" : "${math:floor((str:regExCapture(record:value('/filepath'), '.*/(.+)_.*', 1) + 3600)/3600) * 3600}"
-        }, {
-          "fieldToSet" : "/schemaId",
-          "expression" : "${\"test_dir_json-1234\"}"
-        } ]
-      }, {
-        "name" : "headerAttributeConfigs",
-        "value" : [ { } ]
-      }, {
-        "name" : "fieldAttributeConfigs",
-        "value" : [ {
-          "fieldToSet" : "/"
-        } ]
-      }, {
-        "name" : "stageOnRecordError",
-        "value" : "DISCARD"
-      }, {
-        "name" : "stageRequiredFields",
-        "value" : [ ]
-      }, {
-        "name" : "stageRecordPreconditions",
-        "value" : [ "${record:attribute('sdc.event.type') == 'finished-file'}" ]
-      } ],
-      "uiInfo" : {
-        "yPos" : 190,
-        "stageType" : "PROCESSOR",
-        "description" : "",
-        "label" : "Process finish file event",
-        "xPos" : 492,
-        "displayMode" : "BASIC"
-      },
-      "inputLanes" : [ "JythonEvaluator_02OutputLane16369944050210" ],
-      "outputLanes" : [ "process_finish_file_eventOutputLane15886798753860" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -1413,15 +1378,15 @@
         "value" : [ ]
       } ],
       "uiInfo" : {
-        "yPos" : 191,
+        "yPos" : 188,
         "stageType" : "PROCESSOR",
         "icon" : "filter.png",
         "description" : "",
         "label" : "Remove unused fields",
-        "xPos" : 720,
+        "xPos" : 504,
         "displayMode" : "BASIC"
       },
-      "inputLanes" : [ "process_finish_file_eventOutputLane15886798753860" ],
+      "inputLanes" : [ "JythonEvaluator_02OutputLane16369944050210" ],
       "outputLanes" : [ "FieldRemover_01OutputLane15888371365220" ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -1741,11 +1706,11 @@
         "value" : 60000
       } ],
       "uiInfo" : {
-        "yPos" : 190,
+        "yPos" : 187,
         "stageType" : "TARGET",
         "description" : "",
         "label" : "Anodot Watermark",
-        "xPos" : 947,
+        "xPos" : 722,
         "displayMode" : "BASIC"
       },
       "inputLanes" : [ "FieldRemover_01OutputLane15888371365220" ],
@@ -1775,19 +1740,19 @@
       "pipelineId" : "test_dir_json",
       "title" : "test_dir_json",
       "description" : "",
-      "created" : 1636994373438,
-      "lastModified" : 1636994594830,
+      "created" : 1637078060639,
+      "lastModified" : 1637078138626,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "3ccc6d04-a020-46e1-bad1-eab000d036ad",
+      "uuid" : "d63d72ca-eae0-4b9b-90bc-86bdd831dc26",
       "valid" : true,
       "metadata" : {
         "labels" : [ "directory", "http" ]
       },
       "name" : "test_dir_json",
       "sdcVersion" : "3.18.0",
-      "sdcId" : "07f42b6e-4621-11ec-864a-4369f3406504"
+      "sdcId" : "9a677dce-4634-11ec-a987-81ab2a0d5be5"
     },
     "metadata" : {
       "labels" : [ "directory", "http" ]
@@ -2128,7 +2093,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1636994373482,
+      "timestamp" : 1637078060696,
       "valid" : true
     }, {
       "id" : "stageErrorAlertID",
@@ -2139,7 +2104,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1636994373482,
+      "timestamp" : 1637078060696,
       "valid" : true
     }, {
       "id" : "idleGaugeID",
@@ -2150,7 +2115,7 @@
       "condition" : "${time:now() - value() > 120000}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1636994373482,
+      "timestamp" : 1637078060696,
       "valid" : true
     }, {
       "id" : "batchTimeAlertID",
@@ -2161,12 +2126,12 @@
       "condition" : "${value() > 200}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1636994373482,
+      "timestamp" : 1637078060696,
       "valid" : true
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "77d66f4c-a2e3-4ccd-a30f-1d854e34158a",
+    "uuid" : "736ae4f5-ac39-4746-883b-1f9c55e77acd",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : null

@@ -38,8 +38,8 @@ def monitoring():
         return jsonify('')
 
     data = monitoring_.latest_to_anodot()
-    monitoring_url = constants.MONITORING_URL if constants.MONITORING_URL else destination_.url
-    monitoring_token = constants.MONITORING_TOKEN if constants.MONITORING_TOKEN else destination_.token
+    monitoring_url = constants.MONITORING_URL or destination_.url
+    monitoring_token = constants.MONITORING_TOKEN or destination_.token
 
     errors = []
     if constants.MONITORING_SEND_TO_CLIENT:
@@ -75,4 +75,24 @@ def scheduled_script_error(script_name):
 @monitoring_bp.route('/monitoring/scheduled_script_execution_time/<script_name>', methods=['POST'])
 def scheduled_script_execution_time(script_name):
     monitoring_.metrics.SCHEDULED_SCRIPT_EXECUTION_TIME.labels(script_name).set(request.json['duration'])
+    return jsonify('')
+
+
+@monitoring_bp.route('/monitoring/directory_file_processed/<pipeline_id>', methods=['POST'])
+def directory_file_processed(pipeline_id):
+    pipeline_ = pipeline.repository.get_by_id(pipeline_id)
+    monitoring_.metrics.DIRECTORY_FILE_PROCESSED\
+        .labels(pipeline_.streamsets.url, pipeline_.name)\
+        .inc(1)
+    return jsonify('')
+
+
+@monitoring_bp.route('/monitoring/watermark_delta/<pipeline_id>', methods=['POST'])
+def watermark_delta(pipeline_id):
+    delta = request.args.get('delta')
+    assert delta or delta == 0
+    pipeline_ = pipeline.repository.get_by_id(pipeline_id)
+    monitoring_.metrics.WATERMARK_DELTA\
+        .labels(pipeline_.streamsets.url, pipeline_.name, pipeline_.source.type)\
+        .set(delta)
     return jsonify('')

@@ -167,3 +167,18 @@ def pipeline_offset_changed(pipeline_id: str):
         float(request.get_json()['offset'])
     )
     return jsonify('')
+
+
+@pipelines.route('/pipelines/<pipeline_id>/watermark', methods=['GET'])
+@needs_pipeline
+def calculate_watermark(pipeline_id: str):
+    WATERMARK = 'watermark'
+    pipeline_ = pipeline.repository.get_by_id(pipeline_id)
+    if not pipeline_.offset:
+        return jsonify({WATERMARK: None})
+    return jsonify({
+        WATERMARK: pipeline.manager.get_next_bucket_start(
+            pipeline_.flush_bucket_size.value,
+            pipeline_.offset.timestamp
+        ).timestamp()
+    })
