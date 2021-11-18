@@ -7,7 +7,7 @@
     "measurement_names": {"1.3.6.1.2.1.2.1.0": "my_salary"},
     "dimensions": ["system_description"],
     "interval": "5m",
-    "dimension_paths": {"sysDescr": "system_description", "sysName": "host_name"},
+    "dimension_paths": {"system_description": "sysDescr", "host_name": "sysName"},
     "transform": {
       "config": "dimensions/host_name,zeus.snmplabs.com,'dimensions/host_name' == 'value=zeus.snmplabs.com (you can change this!)'"
     }
