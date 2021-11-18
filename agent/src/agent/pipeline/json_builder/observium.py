@@ -62,7 +62,7 @@ class ObserviumBuilder(Builder):
 
     DEFAULT_DIMENSIONS = {
         # todo add Host_Name and Location somewhere in one place
-        source.ObserviumSource.PORTS: ['Interface_Name', 'Interface_Alias', 'Interface_Description', 'Bandwidth'],
+        source.ObserviumSource.PORTS: ['Interface Name', 'Interface Alias', 'Interface Description', 'Bandwidth'],
         source.ObserviumSource.MEMPOOLS: ['Memory_Pool_ID', 'Memory_Pool_Description', 'Memory_Pool_Vendor'],
         source.ObserviumSource.PROCESSORS: ["processor_type", "processor_name"],
         source.ObserviumSource.STORAGE: ["storage_description", "storage_type"],
@@ -83,11 +83,12 @@ class ObserviumBuilder(Builder):
 
     def _dimensions(self) -> list:
         dims = self.config.get('dimensions') or self.DEFAULT_DIMENSIONS[self.endpoint()]
-        # all observium pipelines by default have these dimensions, they are added in the observium jython script
-        if 'sysName' not in dims:
-            dims.append('sysName')
-        if 'location' not in dims:
-            dims.append('location')
+        # all observium pipelines by default have these dimensions
+        # they are added in the observium jython script from the `devices` endpoint
+        if 'Host Name' not in dims:
+            dims.append('Host Name')
+        if 'Location' not in dims:
+            dims.append('Location')
         return dims
 
     def endpoint(self) -> str:
@@ -100,16 +101,22 @@ class ObserviumBuilder(Builder):
         return {}
 
     def _default_dimension_paths(self):
+        # todo if I edit a pipeline, will it work fine? make a test
         if self.config.get('dimensions'):
-            return self.pipeline.config.get('rename_dimensions_mapping', {})
+            dim_paths = self.config.get('dimension_paths', {})
+            if 'sysName' not in dim_paths:
+                dim_paths['Host Name'] = 'sysName'
+            if 'Location' not in dim_paths:
+                dim_paths['Location'] = 'location'
+            return dim_paths
         # if there are no dimensions we'll use the default ones so need to use default rename as well
         if self.endpoint() == source.ObserviumSource.PORTS:
             return {
-                'Interface_Name': 'ifName',
-                'Interface_Alias': 'ifAlias',
-                'Interface_Description': 'ifDescr',
+                'Interface Name': 'ifName',
+                'Interface Alias': 'ifAlias',
+                'Interface Description': 'ifDescr',
                 'Bandwidth': 'ifSpeed',
-                'Host_Name': 'sysName',
+                'Host Name': 'sysName',
                 'Location': 'location',
             }
         if self.endpoint() == source.ObserviumSource.MEMPOOLS:
@@ -117,18 +124,18 @@ class ObserviumBuilder(Builder):
                 'Memory_Pool_ID': 'mempool_id',
                 'Memory_Pool_Description': 'mempool_descr',
                 'Memory_Pool_Vendor': 'mempool_mib',
-                'Host_Name': 'sysName',
+                'Host Name': 'sysName',
                 'Location': 'location',
             }
         if self.endpoint() == source.ObserviumSource.PROCESSORS:
             return {
                 'processor_name': 'processor_descr',
-                'Host_Name': 'sysName',
+                'Host Name': 'sysName',
                 'Location': 'location',
             }
         if self.endpoint() == source.ObserviumSource.STORAGE:
             return {
                 'storage_description': 'storage_descr',
-                'Host_Name': 'sysName',
+                'Host Name': 'sysName',
                 'Location': 'location',
             }

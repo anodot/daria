@@ -20,11 +20,13 @@ state['metrics'] = {{}}
     """
 
     def get_config(self) -> dict:
-        required_fields = [*self.pipeline.required_dimension_paths, self.pipeline.timestamp_path]
         return {
             'initScript': self.get_js_vars(),
-            'stageRequiredFields': [f'/{f}' for f in required_fields],
+            'stageRequiredFields': self._required_fields(),
         }
+
+    def _required_fields(self) -> list:
+        return [f'/{f}' for f in [*self.pipeline.required_dimension_paths, self.pipeline.timestamp_path]]
 
 
 class JSConvertMetrics30(JSConvertMetrics):
@@ -42,11 +44,10 @@ state['HEADER_ATTRIBUTES'] = {self.pipeline.header_attributes};
         """
 
     def get_config(self) -> dict:
-        required_fields = [*self.pipeline.required_dimension_paths, self.pipeline.timestamp_path]
         with open(self._get_js_file_path(self.JS_SCRIPT_NAME)) as f:
             script = f.read()
         return {
             'initScript': self.get_js_vars(),
             'script': script,
-            'stageRequiredFields': [f'/{f}' for f in required_fields]
+            'stageRequiredFields': self._required_fields()
         }

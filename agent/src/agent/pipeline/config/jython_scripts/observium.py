@@ -69,6 +69,18 @@ def _get(url, params, response_key):
             time.sleep(2 ** i)
 
 
+def _add_default_dimensions(data):
+    devices = get_devices()
+    for obj in data.values():
+        if 'sysName' in obj:
+            raise Exception('Data already contains the key `sysName` which should have been added to it from devices')
+        if 'location' in obj:
+            raise Exception('Data already contains the key `location` which should have been added to it from devices')
+        obj['sysName'] = devices[obj['device_id']]['sysName']
+        obj['location'] = devices[obj['device_id']]['location']
+    return data
+
+
 def get_devices():
     devices = _get(
         sdc.userParams['DEVICES_URL'],
@@ -80,7 +92,6 @@ def get_devices():
 
 def create_metrics(data):
     metrics = []
-    devices = get_devices()
     for obj in data.values():
         metric = {
             "timestamp": obj[POLL_TIME_KEYS[sdc.userParams['ENDPOINT']]],
@@ -88,9 +99,6 @@ def create_metrics(data):
             "measurements": {k: float(v) for k, v in obj.items() if k in sdc.userParams['MEASUREMENTS']},
             "schemaId": sdc.userParams['SCHEMA_ID'],
         }
-        # todo move to a separate function, merge with data first
-        metric['dimensions']['sysName'] = devices[obj['device_id']]['sysName']
-        metric['dimensions']['location'] = devices[obj['device_id']]['location']
         metrics.append(metric)
     return metrics
 
@@ -118,6 +126,7 @@ def main():
                 sdc.userParams['REQUEST_PARAMS'],
                 RESPONSE_DATA_KEYS[sdc.userParams['ENDPOINT']]
             )
+            data = _add_default_dimensions(data)
 
             for metric in create_metrics(data):
                 record = sdc.createRecord('record created ' + str(datetime.now()))

@@ -10,6 +10,11 @@
     "interval": 6000
   },
   {
+    "source": "observium_mempools",
+    "pipeline_id": "observium_mempools_edit",
+    "interval": 6000
+  },
+  {
     "source": "observium_processors",
     "pipeline_id": "observium_processors",
     "interval": 6000

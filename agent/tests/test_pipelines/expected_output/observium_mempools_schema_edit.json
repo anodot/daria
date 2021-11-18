@@ -1,14 +1,14 @@
 [
   {
-    "schemaId": "observium_storage-1234",
-    "timestamp": 1633518002,
+    "schemaId": "observium_mempools-1234",
+    "timestamp": 1628160603,
     "dimensions": {
-      "storage_size": "92762112",
       "Host_Name": "sys1",
-      "Location": "SOME-LOC"
+      "Location": "SOME-LOC",
+      "mempool_descr": "Module 1 (Processor)"
     },
     "measurements": {
-      "storage_perc": 52.0
+      "mempool_perc": 21.0
     },
     "tags": {
       "source": [
@@ -21,7 +21,7 @@
         "agent"
       ],
       "pipeline_id": [
-        "observium_storage"
+        "observium_mempools"
       ],
       "pipeline_type": [
         "observium"
