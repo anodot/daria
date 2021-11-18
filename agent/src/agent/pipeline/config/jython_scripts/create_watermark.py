@@ -30,10 +30,11 @@ for record in sdc.records:
 
         res = requests.get(sdc.userParams['CALCULATE_DIRECTORY_WATERMARK_URL'])
         res.raise_for_status()
-        if not res.json():
-            # we need it in the case of the first preview, when the pipeline didn't run yet
+        watermark = res.json()['watermark']
+        if watermark is None:
+            sdc.log.info('The pipeline doesn\'t have offset, skipping sending watermark')
             continue
-        record.value['watermark'] = float(res.json())
+        record.value['watermark'] = float(watermark)
         record.value['schemaId'] = sdc.userParams['SCHEMA_ID']
 
         requests.post(sdc.userParams['FILE_PROCESSED_MONITORING_ENDPOINT'])
