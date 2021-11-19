@@ -8,7 +8,7 @@ def build(pipeline: Pipeline) -> dict:
     return {
         'version': '1',
         'name': pipeline.name,
-        'dimensions': pipeline.all_dimensions_final_names,
+        'dimensions': pipeline.dimension_names,
         'measurements': _get_measurements(pipeline),
         'missingDimPolicy': {
             'action': 'fill',

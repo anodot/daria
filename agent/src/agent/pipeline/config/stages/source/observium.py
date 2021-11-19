@@ -22,8 +22,7 @@ class ObserviumScript(Source):
                 {'key': 'API_USER', 'value': self.pipeline.source.config[source.ObserviumSource.USERNAME]},
                 {'key': 'API_PASSWORD', 'value': self.pipeline.source.config[source.ObserviumSource.PASSWORD]},
                 {'key': 'REQUEST_PARAMS', 'value': self.pipeline.config.get('request_params', {})},
-                # todo add tests for schema
-                {'key': 'MEASUREMENTS', 'value': list(self.pipeline.value_names)},
+                {'key': 'MEASUREMENTS', 'value': list(self.pipeline.value_paths)},
                 {'key': 'DIMENSIONS', 'value': self.pipeline.dimension_paths_with_names},
                 {'key': 'INTERVAL_IN_SECONDS', 'value': str(self.pipeline.interval)},
                 {'key': 'DELAY_IN_SECONDS', 'value': str(self.pipeline.delay)},

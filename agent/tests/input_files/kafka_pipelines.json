@@ -46,6 +46,7 @@
     "periodic_watermark": {
       "bucket_size": "5m",
       "delay": 0
-    }
+    },
+    "properties": {"static": "dimension"}
   }
 ]

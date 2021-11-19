@@ -5,7 +5,8 @@
       "ver": "1",
       "Country": "USA",
       "Exchange": "DoubleClick",
-      "topic": "test_csv"
+      "topic": "test_csv",
+      "static": "dimension"
     },
     "measurements": {
       "clicks": 6784.6904
@@ -41,7 +42,8 @@
       "ver": "1",
       "Country": "USA",
       "Exchange": "DoubleClick",
-      "topic": "test_csv"
+      "topic": "test_csv",
+      "static": "dimension"
     },
     "measurements": {
       "clicks": 6839.0
@@ -77,7 +79,8 @@
       "ver": "1",
       "Country": "USA",
       "Exchange": "DoubleClick",
-      "topic": "test_csv"
+      "topic": "test_csv",
+      "static": "dimension"
     },
     "measurements": {
       "clicks": 6.909993404034934e+18
@@ -113,7 +116,8 @@
       "ver": "1",
       "Country": "USA",
       "Exchange": "DoubleClick",
-      "topic": "test_csv"
+      "topic": "test_csv",
+      "static": "dimension"
     },
     "measurements": {
       "clicks": 7158.972598273843
@@ -149,7 +153,8 @@
       "ver": "1",
       "Country": "USA",
       "Exchange": "DoubleClick",
-      "topic": "test_csv"
+      "topic": "test_csv",
+      "static": "dimension"
     },
     "measurements": {
       "clicks": 7235.7574
@@ -184,7 +189,8 @@
     "dimensions": {
       "ver": "1",
       "Exchange": "DoubleClick",
-      "topic": "test_csv"
+      "topic": "test_csv",
+      "static": "dimension"
     },
     "measurements": {
       "clicks": 7427.7744

@@ -29,7 +29,7 @@ class InfluxSource(Stage):
             return f"select+%2A+from+{self.pipeline.config['measurement_name']}+limit+{pipeline.manager.MAX_SAMPLE_RECORDS}"
 
         dimensions_to_select = [f'"{d}"::tag' for d in self.pipeline.dimension_paths]
-        values_to_select = ['*::field' if v == '*' else f'"{v}"::field' for v in self.pipeline.value_names]
+        values_to_select = ['*::field' if v == '*' else f'"{v}"::field' for v in self.pipeline.value_paths]
         columns = quote_plus(','.join(dimensions_to_select + values_to_select))
 
         where = self.pipeline.config.get('filtering')

@@ -7,7 +7,7 @@ class JSConvertMetrics(base.Stage):
 state['TIMESTAMP_COLUMN'] = '{self.pipeline.timestamp_path}';
 state['DIMENSIONS'] = {self.pipeline.dimension_paths};
 state['DIMENSIONS_NAMES'] = {self.pipeline.dimension_names};
-state['VALUES_COLUMNS'] = {self.pipeline.values_paths};
+state['VALUES_COLUMNS'] = {self.pipeline.value_paths};
 // it's used in kafka js metric 2.0
 state['MEASUREMENT_NAMES'] = {self.pipeline.measurement_names_paths};
 state['TARGET_TYPES'] = {self.pipeline.target_types_paths};

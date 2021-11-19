@@ -162,22 +162,13 @@ class Pipeline(Entity, sdc_client.IPipeline):
     @property
     def all_dimensions(self) -> list:
         if not self.dimensions or type(self.dimensions) is list:
-            return self.dimensions
-        return self.required_dimensions + self.optional_dimensions
-
-    @property
-    def all_dimension_names(self) -> list:
-        # todo why do I have 2 similar methods?
-        return tools.replace_illegal_chars(self.all_dimensions)
+            return self.dimensions + self.static_dimension_names
+        return self.required_dimensions + self.optional_dimensions + self.static_dimension_names
 
     @property
     def dimension_names(self) -> list:
+        # todo why replace / ? are you sure we need to replace it?
         return [tools.replace_illegal_chars(d.replace('/', '_')) for d in self.all_dimensions]
-
-    # todo improve, it says all dims and has static, all_dimensions also says all and doesn't have static
-    @property
-    def all_dimensions_final_names(self) -> list:
-        return self.all_dimension_names + self.static_dimension_names
 
     @property
     def dimension_paths_with_names(self) -> dict:
@@ -204,17 +195,13 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return self.config.get('values', {})
 
     @property
-    def value_names(self) -> list:
-        return list(self.values.keys())
-
-    @property
-    def values_paths(self) -> list:
-        return [self._get_property_path(value) for value in self.value_names]
+    def value_paths(self) -> list:
+        return [self._get_property_path(value) for value in list(self.values.keys())]
 
     @property
     def target_types(self) -> list:
         if self.source.type == source.TYPE_INFLUX:
-            return [self.config.get('target_type', 'gauge')] * len(self.value_names)
+            return [self.config.get('target_type', 'gauge')] * len(self.value_paths)
         return list(self.values.values())
 
     @property
@@ -225,7 +212,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
     def measurement_names(self) -> list:
         return [
             tools.replace_illegal_chars(self.config.get('measurement_names', {}).get(key, key))
-            for key in self.value_names
+            for key in self.values.keys()
         ]
 
     @property
@@ -246,7 +233,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
     def value_paths_with_names(self) -> dict:
         # value_paths should work the same as value_names that were here
         # value_paths are needed for directory and kafka and mb something else
-        return dict(zip(self.values_paths, self.measurement_names))
+        return dict(zip(self.value_paths, self.measurement_names))
 
     @property
     def target_types_paths(self):
