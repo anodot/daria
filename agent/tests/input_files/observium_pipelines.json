@@ -25,6 +25,6 @@
     "interval": 6000,
     "dimensions": ["Storage size"],
     "dimension_paths": {"Storage size":  "storage_size"},
-    "values": {"storage_perc": "gauge"}
+    "values": {"my own field": "gauge", "storage_perc": "gauge"}
   }
 ]

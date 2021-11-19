@@ -6,7 +6,7 @@
       "Host_Name": "sys1",
       "Location": "SOME-LOC",
       "Memory_Pool_ID": "1",
-      "Memory_Pool_Description": "Module 1 (Processor)",
+      "Memory_Pool_Description": "Module_1_(Processor)",
       "Memory_Pool_Vendor": "CISCO-ENHANCED-MEMPOOL-MIB"
     },
     "measurements": {

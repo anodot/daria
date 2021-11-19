@@ -6,6 +6,7 @@ try:
     import os
     import time
     import traceback
+    import re
 
     sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))
     import requests
@@ -34,6 +35,11 @@ RESPONSE_DATA_KEYS = {
     'processors': 'entries',
     'storage': 'storage'
 }
+
+
+def _replace_illegal_chars(value):
+    value = value.strip().replace(".", "_")
+    return re.sub('\s+', '_', value)
 
 
 def get_now_with_delay():
@@ -95,15 +101,19 @@ def create_metrics(data):
     for obj in data.values():
         metric = {
             "timestamp": obj[POLL_TIME_KEYS[sdc.userParams['ENDPOINT']]],
-            "dimensions": {sdc.userParams['DIMENSIONS'][k]: v for k, v in obj.items() if k in sdc.userParams['DIMENSIONS']},
-            "measurements": {k: float(v) for k, v in obj.items() if k in sdc.userParams['MEASUREMENTS']},
+            "dimensions": {
+                sdc.userParams['DIMENSIONS'][k]: _replace_illegal_chars(v)
+                for k, v in obj.items() if k in sdc.userParams['DIMENSIONS']
+            },
+            "measurements": {
+                _replace_illegal_chars(k): float(v) for k, v in obj.items() if k in sdc.userParams['MEASUREMENTS']
+            },
             "schemaId": sdc.userParams['SCHEMA_ID'],
         }
         metrics.append(metric)
     return metrics
 
 
-# todo we don't replace illegal chars? add test
 def main():
     if sdc.lastOffsets.containsKey(entityName):
         offset = int(float(sdc.lastOffsets.get(entityName)))
@@ -145,6 +155,6 @@ def main():
             raise
 
 
-batch, offset = main()
+batch, offset_ = main()
 if batch.size() + batch.errorCount() + batch.eventCount() > 0:
-    batch.process(entityName, str(offset + get_interval()))
+    batch.process(entityName, str(offset_ + get_interval()))

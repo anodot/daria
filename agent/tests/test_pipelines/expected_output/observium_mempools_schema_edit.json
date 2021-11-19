@@ -5,7 +5,7 @@
     "dimensions": {
       "Host_Name": "sys1",
       "Location": "SOME-LOC",
-      "mempool_descr": "Module 1 (Processor)"
+      "mempool_descr": "Module_1_(Processor)"
     },
     "measurements": {
       "mempool_perc": 21.0

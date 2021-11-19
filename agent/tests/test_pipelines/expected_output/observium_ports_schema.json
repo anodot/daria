@@ -5,7 +5,7 @@
     "dimensions": {
       "Interface_Name": "fxp0",
       "Interface_Alias": "",
-      "Interface_Description": "fxp0",
+      "Interface_Description": "fxp0_300",
       "Bandwidth": "10000000",
       "Host_Name": "sys1",
       "Location": "SOME-LOC"

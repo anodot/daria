@@ -16,7 +16,6 @@ HOSTNAME_NAME = 'host_name'
 HOSTNAME_PATH = 'sysName'
 
 
-# todo do I need to rename oids to readable names?
 def extract_metrics(pipeline_: Pipeline) -> list:
     metrics = []
     for response in _fetch_data(pipeline_):
@@ -97,9 +96,8 @@ def _get_dimension_name(dim_path: str, pipeline_: Pipeline) -> str:
 
 
 def _get_measurement_name(oid: ObjectIdentity, pipeline_: Pipeline) -> str:
-    if str(oid) in pipeline_.measurement_names:
-        # todo it can't work correctly, measurement_names is and array, test it
-        return pipeline_.measurement_names[str(oid)]
+    if str(oid) in pipeline_.measurement_paths_with_names:
+        return pipeline_.measurement_paths_with_names[str(oid)]
     return oid.getMibNode().label
 
 

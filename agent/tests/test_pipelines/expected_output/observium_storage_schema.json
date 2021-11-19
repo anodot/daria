@@ -8,7 +8,8 @@
       "Location": "SOME-LOC"
     },
     "measurements": {
-      "storage_perc": 52.0
+      "storage_perc": 52.0,
+      "my_own_field": 42.0
     },
     "tags": {
       "source": [

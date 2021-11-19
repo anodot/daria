@@ -1,4 +1,4 @@
-from agent import cli
+from agent import cli, pipeline
 from ..test_zpipeline_base import TestInputBase
 from ...conftest import get_input_file_path
 
@@ -21,3 +21,15 @@ class TestObservium(TestInputBase):
     def test_edit_with_file(self, cli_runner, file_name):
         result = cli_runner.invoke(cli.pipeline.edit, ['-f', get_input_file_path(file_name)], catch_exceptions=False)
         assert result.exit_code == 0
+
+    def test_schema(self):
+        assert pipeline.repository.get_by_id('observium_storage').schema == {
+            "version": "1",
+            "name": "observium_storage",
+            "dimensions": ["Storage_size", "Host_Name", "Location"],
+            "measurements": {
+                "my_own_field": {"aggregation": "average", "countBy": "none"},
+                "storage_perc": {"aggregation": "average", "countBy": "none"},
+            },
+            "missingDimPolicy": {"action": "fill", "fill": "NULL"}, "id": "observium_storage-1234"
+        }

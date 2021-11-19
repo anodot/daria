@@ -19,7 +19,8 @@
       "storage_units": "2048",
       "storage_used": "47782296",
       "storage_free": "44979816",
-      "storage_perc": "52"
+      "storage_perc": "52",
+      "my own field": "42"
     }
   }
 }
