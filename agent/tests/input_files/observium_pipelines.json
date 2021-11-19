@@ -23,7 +23,8 @@
     "source": "observium_storage",
     "pipeline_id": "observium_storage",
     "interval": 6000,
-    "dimensions": ["storage_size"],
+    "dimensions": ["Storage size"],
+    "dimension_paths": {"Storage size":  "storage_size"},
     "values": {"storage_perc": "gauge"}
   }
 ]

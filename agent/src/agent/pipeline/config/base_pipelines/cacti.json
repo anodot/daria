@@ -3,9 +3,9 @@
     "schemaVersion" : 6,
     "version" : 19,
     "pipelineId" : "cacti6cbb199b-50f2-49ae-9e04-065960040de3",
-    "title" : "cacti_file",
+    "title" : "cacti",
     "description" : "",
-    "uuid" : "58558a02-08d3-4f46-a88e-7f958a834380",
+    "uuid" : "d5598abe-7d96-40f2-bf4a-9a04be2f0acc",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -23,7 +23,7 @@
       "value" : 2000
     }, {
       "name" : "retryAttempts",
-      "value" : 5
+      "value" : -1
     }, {
       "name" : "ludicrousMode",
       "value" : false
@@ -416,7 +416,7 @@
       "stageVersion" : "1",
       "configuration" : [ {
         "name" : "script",
-        "value" : "global sdc\n\nMAX_TRIES = 3\n\ntry:\n    sdc.importLock()\n    import sys\n    import os\n    import time\n    from datetime import datetime, timedelta\n\n    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))\n    import requests\nfinally:\n    sdc.importUnlock()\n\n\ndef to_timestamp(date):\n    epoch = datetime(1970, 1, 1)\n    return int((date - epoch).total_seconds())\n\n\ndef get_interval():\n    return int(sdc.userParams['INTERVAL_IN_SECONDS'])\n\n\ndef get_now_with_delay():\n    return int(time.time()) - int(sdc.userParams['DELAY_IN_MINUTES']) * 60\n\n\ndef get_step():\n    return int(sdc.userParams['STEP_IN_SECONDS'])\n\n\nentityName = ''\n\nif sdc.lastOffsets.containsKey(entityName):\n    offset = int(float(sdc.lastOffsets.get(entityName)))\nelif sdc.userParams['DAYS_TO_BACKFILL']:\n    offset = to_timestamp(datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=int(sdc.userParams['DAYS_TO_BACKFILL'])))\nelse:\n    offset = to_timestamp(datetime.now().replace(second=0, microsecond=0))\n\nsdc.log.info('OFFSET: ' + str(offset))\n\ntries = 0\nwhile True:\n    if sdc.isStopped():\n        break\n    end = offset + get_interval()\n    if end > get_now_with_delay():\n        time.sleep(end - get_now_with_delay())\n\n    batch = sdc.createBatch()\n\n    res = requests.get(\n        sdc.userParams['RRD_SOURCE_URL'],\n        params={\n            'start': offset,\n            'end': offset + get_interval(),\n            'step': get_step(),\n        }\n    )\n    if res.status_code == 204:\n        # this means the rrd archive has been removed by the script that copies it via scp\n        # and we should wait until a new version of the file is uploaded and try again\n        tries += 1\n        if tries == MAX_TRIES:\n            raise Exception('extract_metrics endpoint returned 204 status code %s times in a row. The archive with rrd files does not exist' % MAX_TRIES)\n        time.sleep(30)\n        continue\n    tries = 0\n    res.raise_for_status()\n    for metric in res.json():\n        record = sdc.createRecord('record created ' + str(datetime.now()))\n        record.value = metric\n        batch.add(record)\n\n        if batch.size() == sdc.batchSize:\n            batch.process(entityName, str(end))\n            batch = sdc.createBatch()\n            if sdc.isStopped():\n                break\n\n    offset += get_interval()\n    batch.process(entityName, str(offset))\n"
+        "value" : "global sdc\n\ntry:\n    sdc.importLock()\n    import sys\n    import os\n    import time\n    from datetime import datetime, timedelta\n\n    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))\n    import requests\nfinally:\n    sdc.importUnlock()\n\n\ndef to_timestamp(date):\n    epoch = datetime(1970, 1, 1)\n    return int((date - epoch).total_seconds())\n\n\ndef get_interval():\n    return int(sdc.userParams['INTERVAL_IN_SECONDS'])\n\n\ndef get_now_with_delay():\n    return int(time.time()) - int(sdc.userParams['DELAY_IN_MINUTES']) * 60\n\n\ndef get_step():\n    return int(sdc.userParams['STEP_IN_SECONDS'])\n\n\nentityName = ''\n\nif sdc.lastOffsets.containsKey(entityName):\n    offset = int(float(sdc.lastOffsets.get(entityName)))\nelif sdc.userParams['DAYS_TO_BACKFILL']:\n    offset = to_timestamp(datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=int(sdc.userParams['DAYS_TO_BACKFILL'])))\nelse:\n    offset = to_timestamp(datetime.now().replace(second=0, microsecond=0))\n\nsdc.log.info('OFFSET: ' + str(offset))\n\nwhile True:\n    if sdc.isStopped():\n        break\n    end = offset + get_interval()\n    if end > get_now_with_delay():\n        time.sleep(end - get_now_with_delay())\n\n    batch = sdc.createBatch()\n\n    res = requests.get(\n        sdc.userParams['RRD_SOURCE_URL'],\n        params={\n            'start': offset,\n            'end': offset + get_interval(),\n            'step': get_step(),\n        }\n    )\n    res.raise_for_status()\n    for metric in res.json():\n        record = sdc.createRecord('record created ' + str(datetime.now()))\n        record.value = metric\n        batch.add(record)\n\n        if batch.size() == sdc.batchSize:\n            batch.process(entityName, str(end))\n            batch = sdc.createBatch()\n            if sdc.isStopped():\n                break\n\n    offset += get_interval()\n    batch.process(entityName, str(offset))\n"
       }, {
         "name" : "scriptConf.batchSize",
         "value" : 1000
@@ -430,16 +430,16 @@
         "name" : "scriptConf.params",
         "value" : [ {
           "key" : "RRD_SOURCE_URL",
-          "value" : "http://anodot-agent/data_extractor/cacti/${pipeline:id()}"
+          "value" : "http://anodot-agent/rrd_source/fetch_data/${pipeline:id()}"
         }, {
           "key" : "INTERVAL_IN_SECONDS",
-          "value" : "3600"
+          "value" : "300"
         }, {
           "key" : "DELAY_IN_MINUTES",
           "value" : "0"
         }, {
           "key" : "DAYS_TO_BACKFILL",
-          "value" : "207"
+          "value" : "9"
         }, {
           "key" : "STEP_IN_SECONDS",
           "value" : "300"
@@ -454,7 +454,7 @@
         "icon" : "jython.png",
         "description" : "",
         "label" : "Jython get metrics",
-        "xPos" : 328,
+        "xPos" : 254,
         "displayMode" : "BASIC"
       },
       "inputLanes" : [ ],
@@ -468,7 +468,10 @@
       "stageVersion" : "2",
       "configuration" : [ {
         "name" : "expressionProcessorConfigs",
-        "value" : [ ]
+        "value" : [ {
+          "fieldToSet" : "/",
+          "expression" : "${record:value('/')}"
+        } ]
       }, {
         "name" : "headerAttributeConfigs",
         "value" : [ { } ]
@@ -493,11 +496,54 @@
         "icon" : "expression.png",
         "description" : "",
         "label" : "Transformations",
-        "xPos" : 564,
+        "xPos" : 492,
         "displayMode" : "BASIC"
       },
       "inputLanes" : [ "destination_OutputLane" ],
       "outputLanes" : [ "ExpressionEvaluator_02OutputLane16166668829170" ],
+      "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
+      "instanceName" : "FieldRenamer_01",
+      "library" : "streamsets-datacollector-basic-lib",
+      "stageName" : "com_streamsets_pipeline_stage_processor_fieldrenamer_FieldRenamerDProcessor",
+      "stageVersion" : "2",
+      "configuration" : [ {
+        "name" : "renameMapping",
+        "value" : [ {
+          "fromFieldExpression" : "/properties/query_ifAlias",
+          "toFieldExpression" : "/properties/alias"
+        } ]
+      }, {
+        "name" : "errorHandler.nonExistingFromFieldHandling",
+        "value" : "CONTINUE"
+      }, {
+        "name" : "errorHandler.existingToFieldHandling",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "errorHandler.multipleFromFieldsMatching",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "yPos" : 149,
+        "stageType" : "PROCESSOR",
+        "icon" : "edit.png",
+        "description" : "",
+        "label" : "Rename dimensions",
+        "xPos" : 721,
+        "displayMode" : "ADVANCED"
+      },
+      "inputLanes" : [ "ExpressionEvaluator_02OutputLane16166668829170" ],
+      "outputLanes" : [ "FieldRenamer_01OutputLane16165887647400" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -533,7 +579,7 @@
           "expression" : "${emptyList()}"
         }, {
           "fieldToSet" : "/tags/pipeline_id[0]",
-          "expression" : "${\"cacti_file\"}"
+          "expression" : "${\"cacti\"}"
         }, {
           "fieldToSet" : "/tags/pipeline_type",
           "expression" : "${emptyList()}"
@@ -563,15 +609,15 @@
         "value" : [ ]
       } ],
       "uiInfo" : {
-        "yPos" : 147,
+        "yPos" : 149,
         "stageType" : "PROCESSOR",
         "icon" : "expression.png",
         "description" : "",
         "label" : "Add tags and static dimensions, convert timestamp to long",
-        "xPos" : 799,
+        "xPos" : 955,
         "displayMode" : "BASIC"
       },
-      "inputLanes" : [ "ExpressionEvaluator_02OutputLane16166668829170" ],
+      "inputLanes" : [ "FieldRenamer_01OutputLane16165887647400" ],
       "outputLanes" : [ "ExpressionEvaluator_01OutputLane16152955352740" ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -777,10 +823,10 @@
         "value" : ""
       }, {
         "name" : "conf.client.useProxy",
-        "value" : true
+        "value" : false
       }, {
         "name" : "conf.client.proxy.uri",
-        "value" : "http://squid:3128"
+        "value" : null
       }, {
         "name" : "conf.client.proxy.username",
         "value" : ""
@@ -874,29 +920,14 @@
       }, {
         "name" : "stageRecordPreconditions",
         "value" : [ ]
-      }, {
-        "name" : "conf.parallelSendersNumber",
-        "value" : 1
-      }, {
-        "name" : "conf.maxBatchSize",
-        "value" : 1000
-      }, {
-        "name" : "conf.propertiesPath",
-        "value" : null
-      }, {
-        "name" : "conf.partitioningKeyPath",
-        "value" : null
-      }, {
-        "name" : "conf.maxSendResponseWait",
-        "value" : 60000
       } ],
       "uiInfo" : {
-        "yPos" : 147,
+        "yPos" : 149,
         "stageType" : "TARGET",
         "icon" : "anodot_logo.png",
         "description" : "",
         "label" : "Anodot",
-        "xPos" : 1029,
+        "xPos" : 1183,
         "displayMode" : "BASIC"
       },
       "inputLanes" : [ "ExpressionEvaluator_01OutputLane16152955352740" ],
@@ -924,22 +955,22 @@
       "services" : [ ]
     },
     "info" : {
-      "pipelineId" : "cacti_file",
-      "title" : "cacti_file",
+      "pipelineId" : "cacti",
+      "title" : "cacti",
       "description" : "",
-      "created" : 1636980852900,
-      "lastModified" : 1636983459340,
+      "created" : 1616588646496,
+      "lastModified" : 1616595974154,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "58558a02-08d3-4f46-a88e-7f958a834380",
+      "uuid" : "d5598abe-7d96-40f2-bf4a-9a04be2f0acc",
       "valid" : true,
       "metadata" : {
         "labels" : [ "cacti", "http" ]
       },
-      "name" : "cacti_file",
+      "name" : "cacti",
       "sdcVersion" : "3.18.0",
-      "sdcId" : "e899b0c8-4610-11ec-b28e-d10e89255cf3"
+      "sdcId" : "62a3bf96-8c9b-11eb-a6d9-f39b95790165"
     },
     "metadata" : {
       "labels" : [ "cacti", "http" ]
@@ -1282,7 +1313,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1636980853049,
+      "timestamp" : 1616588646608,
       "valid" : true
     }, {
       "id" : "stageErrorAlertID",
@@ -1293,7 +1324,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1636980853049,
+      "timestamp" : 1616588646608,
       "valid" : true
     }, {
       "id" : "idleGaugeID",
@@ -1304,7 +1335,7 @@
       "condition" : "${time:now() - value() > 120000}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1636980853049,
+      "timestamp" : 1616588646608,
       "valid" : true
     }, {
       "id" : "batchTimeAlertID",
@@ -1315,12 +1346,12 @@
       "condition" : "${value() > 200}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1636980853049,
+      "timestamp" : 1616588646608,
       "valid" : true
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "fa6ee20d-acd3-4e34-a11d-9a973f89fd74",
+    "uuid" : "9aa698fe-c646-4aec-9337-07fc5d43bf28",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : null

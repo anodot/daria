@@ -177,17 +177,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
     # todo improve, it says all dims and has static, all_dimensions also says all and doesn't have static
     @property
     def all_dimensions_final_names(self) -> list:
-        return self._rename_dimensions(self.all_dimension_names + self.static_dimension_names)
-
-    def _rename_dimensions(self, dimensions: list) -> list:
-        # todo it should be applied before. Dimensions should be final dimensions that user wants to see in anodot
-        if self.rename_dimensions_mapping:
-            return [self.rename_dimensions_mapping[dim] for dim in dimensions if dim in self.rename_dimensions_mapping]
-        return dimensions
-
-    @property
-    def rename_dimensions_mapping(self) -> dict:
-        return self.config.get('rename_dimensions_mapping', {})
+        return self.all_dimension_names + self.static_dimension_names
 
     @property
     def dimension_paths_with_names(self) -> dict:

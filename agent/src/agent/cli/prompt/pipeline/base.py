@@ -165,16 +165,16 @@ class Prompter:
 
         self.config['uses_schema'] = pipeline.manager.supports_schema(self.pipeline) and static_what
 
-    def prompt_rename_dimensions(self):
-        rename_dimensions_mapping = self.get_default_object_value('rename_dimensions_mapping')
+    def prompt_dimension_paths(self):
+        dimension_paths = self.get_default_object_value('dimension_paths')
         if self.advanced:
-            rename_dimensions_mapping = self.prompt_object(
-                'Dimensions to rename in format name1:alias1 name2:alias2',
-                rename_dimensions_mapping
+            dimension_paths = self.prompt_object(
+                'Dimension paths in format dim_name1:dim_path1 dim_name2:dim_path2',
+                dimension_paths
             )
         else:
-            rename_dimensions_mapping = str_to_object(rename_dimensions_mapping)
-        self.config['rename_dimensions_mapping'] = rename_dimensions_mapping
+            dimension_paths = str_to_object(dimension_paths)
+        self.config['dimension_paths'] = dimension_paths
 
 
 def str_to_object(s: str) -> dict:

@@ -61,7 +61,6 @@ class ObserviumBuilder(Builder):
     }
 
     DEFAULT_DIMENSIONS = {
-        # todo add Host_Name and Location somewhere in one place
         source.ObserviumSource.PORTS: ['Interface Name', 'Interface Alias', 'Interface Description', 'Bandwidth'],
         source.ObserviumSource.MEMPOOLS: ['Memory_Pool_ID', 'Memory_Pool_Description', 'Memory_Pool_Vendor'],
         source.ObserviumSource.PROCESSORS: ["processor_type", "processor_name"],
@@ -101,41 +100,34 @@ class ObserviumBuilder(Builder):
         return {}
 
     def _default_dimension_paths(self):
-        # todo if I edit a pipeline, will it work fine? make a test
         if self.config.get('dimensions'):
             dim_paths = self.config.get('dimension_paths', {})
-            if 'sysName' not in dim_paths:
-                dim_paths['Host Name'] = 'sysName'
-            if 'Location' not in dim_paths:
-                dim_paths['Location'] = 'location'
-            return dim_paths
-        # if there are no dimensions we'll use the default ones so need to use default rename as well
-        if self.endpoint() == source.ObserviumSource.PORTS:
-            return {
+        # if there are no dimensions we'll use the default ones so need to use default paths as well
+        elif self.endpoint() == source.ObserviumSource.PORTS:
+            dim_paths = {
                 'Interface Name': 'ifName',
                 'Interface Alias': 'ifAlias',
                 'Interface Description': 'ifDescr',
                 'Bandwidth': 'ifSpeed',
-                'Host Name': 'sysName',
-                'Location': 'location',
             }
-        if self.endpoint() == source.ObserviumSource.MEMPOOLS:
-            return {
+        elif self.endpoint() == source.ObserviumSource.MEMPOOLS:
+            dim_paths = {
                 'Memory_Pool_ID': 'mempool_id',
                 'Memory_Pool_Description': 'mempool_descr',
                 'Memory_Pool_Vendor': 'mempool_mib',
-                'Host Name': 'sysName',
-                'Location': 'location',
             }
-        if self.endpoint() == source.ObserviumSource.PROCESSORS:
-            return {
+        elif self.endpoint() == source.ObserviumSource.PROCESSORS:
+            dim_paths = {
                 'processor_name': 'processor_descr',
-                'Host Name': 'sysName',
-                'Location': 'location',
             }
-        if self.endpoint() == source.ObserviumSource.STORAGE:
-            return {
+        elif self.endpoint() == source.ObserviumSource.STORAGE:
+            dim_paths = {
                 'storage_description': 'storage_descr',
-                'Host Name': 'sysName',
-                'Location': 'location',
             }
+        else:
+            raise Exception('Wrong Observium endpoint provided')
+        if 'sysName' not in dim_paths:
+            dim_paths['Host Name'] = 'sysName'
+        if 'Location' not in dim_paths:
+            dim_paths['Location'] = 'location'
+        return dim_paths
