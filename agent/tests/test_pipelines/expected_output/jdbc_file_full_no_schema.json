@@ -173,7 +173,7 @@
   {
     "timestamp": 1512878400,
     "properties": {
-      "adsize": "Sma_ll",
+      "adsize": "null",
       "country": "USA",
       "what": "clicks",
       "target_type": "gauge",
@@ -192,7 +192,7 @@
   {
     "timestamp": 1512878400,
     "properties": {
-      "adsize": "Sma_ll",
+      "adsize": "null",
       "country": "USA",
       "what": "impressions",
       "target_type": "gauge",
@@ -211,7 +211,7 @@
   {
     "timestamp": 1512878400,
     "properties": {
-      "adsize": "Sma_ll",
+      "adsize": "null",
       "country": "USA",
       "what": "test",
       "target_type": "counter",

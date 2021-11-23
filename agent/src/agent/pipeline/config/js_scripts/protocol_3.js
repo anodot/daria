@@ -20,12 +20,16 @@ function replace_illegal_chars(str) {
 function get_dimensions(record) {
     var dimensions = {};
     for (var dimension_path in state['DIMENSIONS']) {
-        var dimension_value = extract_value(record.value, replace_illegal_chars(dimension_path))
-        dimension_value = String(dimension_value).trim()
-        if (dimension_value !== '' && dimension_value !== 'null') {
-            var dimension_name = replace_illegal_chars(state['DIMENSIONS'][dimension_path]).replace(/[\/]+/g, '_')
-            dimensions[dimension_name] = replace_illegal_chars(dimension_value)
+        var dimension_value = extract_value(record.value, dimension_path)
+        if (dimension_value === null) {
+            continue;
         }
+        dimension_value = String(dimension_value).trim()
+        if (dimension_value === '') {
+            continue;
+        }
+        var dimension_name = replace_illegal_chars(state['DIMENSIONS'][dimension_path]).replace(/[\/]+/g, '_')
+        dimensions[dimension_name] = replace_illegal_chars(dimension_value)
     }
 
     for (var k = 0; k < state['HEADER_ATTRIBUTES'].length; k++) {

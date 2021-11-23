@@ -26,7 +26,7 @@ INSERT INTO test.test (timestamp_unix,timestamp_unix_ms,ver,adsize,country,adtyp
 VALUES (1512874800,1512874800000,'AD200','Sma.ll','USA','Display','DoubleClick',690999,15,'2017-12-10 03:00:00','12/10/2017 3:00:00');
 
 INSERT INTO test.test (timestamp_unix,timestamp_unix_ms,ver,adsize,country,adtype,exchange,clicks,impressions,timestamp_datetime,timestamp_string)
-VALUES (1512878400,1512878400000,'AD200','Sma.ll','USA','Display','DoubleClick',7158.97,3,'2017-12-10 04:00:00','12/10/2017 4:00:00');
+VALUES (1512878400,1512878400000,'AD200','null','USA','Display','DoubleClick',7158.97,3,'2017-12-10 04:00:00','12/10/2017 4:00:00');
 
 INSERT INTO test.test (timestamp_unix,timestamp_unix_ms,ver,adsize,country,adtype,exchange,clicks,impressions,timestamp_datetime,timestamp_string)
 VALUES (1512885600,1512885600000,'AD200','Sma ll','USA','Display','DoubleClick',NULL,4,'2017-12-10 06:00:00','12/10/2017 6:00:00');

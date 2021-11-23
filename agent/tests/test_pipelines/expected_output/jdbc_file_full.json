@@ -98,7 +98,7 @@
   {
     "timestamp": 1512878400,
     "dimensions": {
-      "adsize": "Sma_ll",
+      "adsize": "null",
       "country": "USA",
       "key1": "val1",
       "key2": "val2"

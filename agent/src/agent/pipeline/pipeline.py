@@ -167,7 +167,6 @@ class Pipeline(Entity, sdc_client.IPipeline):
 
     @property
     def dimension_names(self) -> list:
-        # todo why replace / ? are you sure we need to replace it?
         return [tools.replace_illegal_chars(d.replace('/', '_')) for d in self.all_dimensions]
 
     @property
