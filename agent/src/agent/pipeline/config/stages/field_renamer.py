@@ -2,6 +2,7 @@ from agent.pipeline.config.stages.base import Stage
 
 
 class DimensionsRenamer(Stage):
+    # deprecated, used only in cacti
     DIMENSIONS_PATH = '/properties/'
 
     def get_config(self) -> dict:
@@ -15,4 +16,5 @@ class DimensionsRenamer(Stage):
 
 
 class SchemaDimensionsRenamer(DimensionsRenamer):
+    # deprecated, used only in cacti
     DIMENSIONS_PATH = '/dimensions/'

@@ -5,11 +5,11 @@
     "oids": ["1.3.6.1.2.1.2.1.0", "1.3.6.1.2.1.1.1.0"],
     "values": {"1.3.6.1.2.1.2.1.0": "gauge"},
     "measurement_names": {"1.3.6.1.2.1.2.1.0": "my_salary"},
-    "dimensions": ["1.3.6.1.2.1.1.1.0"],
+    "dimensions": ["system_description"],
     "interval": "5m",
-    "rename_dimensions_mapping": {"sysDescr": "system_description", "sysName": "host_name"},
+    "dimension_value_paths": {"system_description": "sysDescr", "host_name": "sysName"},
     "transform": {
-      "config": "dimensions/sysName,zeus.snmplabs.com,'dimensions/sysName' == 'value=zeus.snmplabs.com (you can change this!)'"
+      "config": "dimensions/host_name,zeus.snmplabs.com,'dimensions/host_name' == 'value=zeus.snmplabs.com (you can change this!)'"
     }
   }
 ]

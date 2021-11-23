@@ -1,6 +1,7 @@
 import json
 import os
 
+from abc import ABC, abstractmethod
 from agent import source
 from agent.modules import constants
 from agent.modules.logger import get_logger
@@ -11,8 +12,12 @@ from agent.pipeline.config.stages.base import Stage
 logger = get_logger(__name__)
 
 
-class BaseConfigLoader:
+class BaseConfigLoader(ABC):
     BASE_PIPELINE_CONFIGS_PATH = 'base_pipelines'
+
+    @abstractmethod
+    def _check_pipeline(self, pipeline_: Pipeline):
+        pass
 
     @classmethod
     def load_base_config(cls, pipeline: Pipeline) -> dict:
@@ -47,11 +52,15 @@ class BaseConfigLoader:
         }[pipeline.source.type]
 
 
-class RawConfigLoader(BaseConfigLoader):
-    BASE_PIPELINE_CONFIGS_PATH = 'base_pipelines/raw'
+class NoSchemaConfigLoader(BaseConfigLoader):
+    def _check_pipeline(self, pipeline_: Pipeline):
+        assert not pipeline_.uses_schema
 
 
 class SchemaBaseConfigLoader(BaseConfigLoader):
+    def _check_pipeline(self, pipeline_: Pipeline):
+        assert pipeline_.uses_schema
+
     @classmethod
     def _get_config_file(cls, pipeline: Pipeline) -> str:
         return {
@@ -68,8 +77,18 @@ class SchemaBaseConfigLoader(BaseConfigLoader):
         }[pipeline.source.type]
 
 
+class RawConfigLoader(BaseConfigLoader):
+    BASE_PIPELINE_CONFIGS_PATH = 'base_pipelines/raw'
+
+    def _check_pipeline(self, pipeline_: Pipeline):
+        pass
+
+
 class TestPipelineBaseConfigLoader(BaseConfigLoader):
     BASE_PIPELINE_CONFIGS_PATH = 'test_pipelines'
+
+    def _check_pipeline(self, pipeline_: Pipeline):
+        pass
 
     @classmethod
     def _get_config_file(cls, pipeline: Pipeline) -> str:
@@ -90,12 +109,17 @@ class TestPipelineBaseConfigLoader(BaseConfigLoader):
         }[pipeline.source.type]
 
 
-class BaseConfigHandler:
+class BaseConfigHandler(ABC):
     stages_to_override = {}
 
     def __init__(self, pipeline: Pipeline, base_config: dict):
         self.config = base_config
         self.pipeline = pipeline
+        self._check_pipeline()
+
+    @abstractmethod
+    def _check_pipeline(self):
+        pass
 
     def override_base_config(self):
         self._override_pipeline_config()
@@ -134,7 +158,28 @@ class BaseConfigHandler:
         }
 
 
+class NoSchemaConfigHandler(BaseConfigHandler):
+    def _check_pipeline(self):
+        assert not self.pipeline.uses_schema
+
+
+class SchemaConfigHandler(BaseConfigHandler):
+    def _get_pipeline_config(self) -> dict:
+        pipeline_config = super()._get_pipeline_config()
+        pipeline_config.update({
+            'SCHEMA_ID': self.pipeline.get_schema_id(),
+            'PROTOCOL': self.pipeline.destination.PROTOCOL_30
+        })
+        return pipeline_config
+
+    def _check_pipeline(self):
+        assert self.pipeline.uses_schema
+
+
 class BaseRawConfigHandler(BaseConfigHandler):
+    def _check_pipeline(self):
+        pass
+
     def _get_pipeline_config(self) -> dict:
         return {
             'AGENT_URL': self.pipeline.streamsets.agent_external_url,

@@ -112,10 +112,6 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return self.source_
 
     @property
-    def static_dimensions(self) -> dict:
-        return self.config.get('properties', {})
-
-    @property
     def periodic_watermark_config(self) -> dict:
         return self.config.get('periodic_watermark')
 
@@ -132,47 +128,50 @@ class Pipeline(Entity, sdc_client.IPipeline):
         self.config[self.FLUSH_BUCKET_SIZE] = FlushBucketSize(value).value
 
     @property
-    def static_dimension_names(self):
-        return self.static_dimensions.keys()
+    def static_dimensions(self) -> dict:
+        return self.config.get('properties', {})
 
     @property
-    def dimensions(self) -> list:
-        dimensions = self.config.get('dimensions')
-        if not dimensions:
-            return []
-        if type(self.config['dimensions']) is dict:
-            dimensions = self.required_dimensions + self.optional_dimensions
-        return dimensions
+    def static_dimension_names(self) -> list:
+        return [tools.replace_illegal_chars(s_dim) for s_dim in self.static_dimensions.keys()]
+
+    @property
+    def dimensions(self) -> list | dict:
+        return self.config.get('dimensions', [])
+
+    @property
+    def dimension_paths(self) -> list:
+        return [self._get_property_path(value) for value in self.all_dimensions]
 
     @property
     def required_dimensions(self) -> list:
-        dimensions = self.config.get('dimensions')
-        if type(dimensions) is not dict or 'required' not in dimensions:
+        if type(self.dimensions) is list:
             return []
-        return dimensions['required']
+        return self.dimensions.get('required', [])
 
     @property
-    def optional_dimensions(self) -> list:
-        dimensions = self.config.get('dimensions')
-        if type(dimensions) is not dict or 'optional' not in dimensions:
-            return []
-        return dimensions['optional']
-
-    @property
-    def dimensions_names(self) -> list:
-        return [tools.replace_illegal_chars(d.replace('/', '_')) for d in self.dimensions]
-
-    @property
-    def dimensions_paths(self) -> list:
-        return [self._get_property_path(value) for value in self.dimensions]
-
-    @property
-    def required_dimensions_paths(self) -> list:
+    def required_dimension_paths(self) -> list:
         return [self._get_property_path(value) for value in self.required_dimensions]
 
     @property
-    def dimensions_with_names(self) -> dict:
-        return dict(zip(self.dimensions_paths, self.dimensions_names))
+    def optional_dimensions(self) -> list:
+        if type(self.dimensions) is list:
+            return []
+        return self.dimensions.get('optional', [])
+
+    @property
+    def all_dimensions(self) -> list:
+        if not self.dimensions or type(self.dimensions) is list:
+            return self.dimensions + self.static_dimension_names
+        return self.required_dimensions + self.optional_dimensions + self.static_dimension_names
+
+    @property
+    def dimension_names(self) -> list:
+        return [tools.replace_illegal_chars(d.replace('/', '_')) for d in self.all_dimensions]
+
+    @property
+    def dimension_paths_with_names(self) -> dict:
+        return dict(zip(self.dimension_paths, self.dimension_names))
 
     @property
     def timestamp_path(self) -> str:
@@ -195,30 +194,45 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return self.config.get('values', {})
 
     @property
-    def value_names(self) -> list:
-        return list(self.config.get('values', {}).keys())
-
-    @property
-    def values_paths(self):
-        return [self._get_property_path(value) for value in self.value_names]
+    def value_paths(self) -> list:
+        return [self._get_property_path(value) for value in list(self.values.keys())]
 
     @property
     def target_types(self) -> list:
         if self.source.type == source.TYPE_INFLUX:
-            return [self.config.get('target_type', 'gauge')] * len(self.value_names)
-        return list(self.config['values'].values())
+            return [self.config.get('target_type', 'gauge')] * len(self.value_paths)
+        return list(self.values.values())
+
+    @property
+    def measurement_paths_with_names(self) -> dict:
+        return dict(zip(self.config.get('measurement_names', {}).keys(), self.measurement_names))
 
     @property
     def measurement_names(self) -> list:
-        return [tools.replace_illegal_chars(self.config.get('measurement_names', {}).get(key, key)) for key in self.value_names]
+        return [
+            tools.replace_illegal_chars(self.config.get('measurement_names', {}).get(key, key))
+            for key in self.values.keys()
+        ]
+
+    @property
+    def measurement_names_with_target_types(self) -> dict:
+        result = {}
+        measurement_names = self.config.get('measurement_names', {})
+        for measurement, target_type in self.values.items():
+            measurement_name = measurement_names.get(measurement, measurement)
+            measurement_name = tools.replace_illegal_chars(measurement_name)
+            result[measurement_name] = target_type
+        return result
 
     @property
     def measurement_names_paths(self):
         return [self._get_property_path(value) for value in self.measurement_names]
 
     @property
-    def values_paths_with_names(self) -> dict:
-        return dict(zip(self.values_paths, self.measurement_names))
+    def value_paths_with_names(self) -> dict:
+        # value_paths should work the same as value_names that were here
+        # value_paths are needed for directory and kafka and mb something else
+        return dict(zip(self.value_paths, self.measurement_names))
 
     @property
     def target_types_paths(self):
@@ -265,7 +279,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return self.config.get('query')
 
     @query.setter
-    def query(self, query):
+    def query(self, query: str):
         self.config['query'] = query
 
     @property
@@ -282,11 +296,11 @@ class Pipeline(Entity, sdc_client.IPipeline):
 
     @property
     def delay(self) -> str:
-        return self.config.get('delay', 0)
+        return self.config.get('delay', '0')
 
     @property
     def batch_size(self) -> str:
-        return self.config.get('batch_size', 1000)
+        return self.config.get('batch_size', '1000')
 
     @property
     def uses_schema(self) -> bool:
@@ -294,15 +308,15 @@ class Pipeline(Entity, sdc_client.IPipeline):
 
     @property
     def histories_batch_size(self) -> str:
-        return self.config.get('histories_batch_size', 100)
+        return self.config.get('histories_batch_size', '100')
 
     @property
-    def header_attributes(self):
+    def header_attributes(self) -> list:
         return self.config.get('header_attributes', [])
 
     @property
-    def log_everything(self) -> int:
-        return self.config.get('log_everything', False)
+    def log_everything(self) -> bool:
+        return bool(self.config.get('log_everything'))
 
     @property
     def transform_script_config(self) -> Optional[str]:
@@ -362,11 +376,11 @@ class Pipeline(Entity, sdc_client.IPipeline):
         }
 
     def _get_property_path(self, property_value: str) -> str:
-        mapping = self.source.config.get('csv_mapping', {})
-        for idx, item in mapping.items():
+        for idx, item in self.source.config.get('csv_mapping', {}).items():
             if item == property_value:
                 return str(idx)
-
+        if property_value in self.config.get('dimension_value_paths', {}):
+            return str(self.config.get('dimension_value_paths', {})[property_value])
         return str(property_value)
 
     def meta_tags(self) -> dict:

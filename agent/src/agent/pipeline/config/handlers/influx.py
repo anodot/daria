@@ -1,16 +1,15 @@
 import json
 
 from agent.modules import tools
-from . import base
 from agent.modules.logger import get_logger
 from agent.modules.constants import HOSTNAME
 from agent.pipeline.config import stages
-from .schema import SchemaConfigHandler
+from agent.pipeline.config.handlers.base import NoSchemaConfigHandler, SchemaConfigHandler
 
 logger = get_logger(__name__)
 
 
-class InfluxConfigHandler(base.BaseConfigHandler):
+class InfluxConfigHandler(NoSchemaConfigHandler):
     stages_to_override = {
         'offset': stages.influx.InfluxScript,
         'source': stages.source.influx.InfluxSource,

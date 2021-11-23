@@ -22,7 +22,7 @@
       "host_name": "zeus.snmplabs.com"
     },
     "measurements": {
-      "mib-2": 2.0
+      "my_salary": 2.0
     }
   }
 ]

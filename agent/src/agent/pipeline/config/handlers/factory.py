@@ -1,7 +1,6 @@
 from agent import source, pipeline
 from agent.pipeline import Pipeline
-from agent.pipeline.config.handlers.base import BaseConfigHandler
-from agent.pipeline.config.handlers.schema import SchemaConfigHandler
+from agent.pipeline.config.handlers.base import BaseConfigHandler, SchemaConfigHandler, NoSchemaConfigHandler
 
 
 def get_config_handler(pipeline_: Pipeline) -> BaseConfigHandler:
@@ -10,10 +9,10 @@ def get_config_handler(pipeline_: Pipeline) -> BaseConfigHandler:
         return _get_raw_handler(pipeline_, base_config)
     if pipeline_.uses_schema:
         return _get_schema_handler(pipeline_, base_config)
-    return _get_handler(pipeline_, base_config)
+    return _get_no_schema_handler(pipeline_, base_config)
 
 
-def _get_handler(pipeline_: Pipeline, base_config: dict) -> BaseConfigHandler:
+def _get_no_schema_handler(pipeline_: Pipeline, base_config: dict) -> NoSchemaConfigHandler:
     handlers_protocol20 = {
         source.TYPE_CACTI: pipeline.config.handlers.cacti.CactiConfigHandler,
         source.TYPE_CLICKHOUSE: pipeline.config.handlers.jdbc.JDBCConfigHandler,
@@ -68,4 +67,4 @@ def _get_config_loader(pipeline_: Pipeline):
         return pipeline.config.handlers.base.RawConfigLoader
     if pipeline_.uses_schema:
         return pipeline.config.handlers.base.SchemaBaseConfigLoader
-    return pipeline.config.handlers.base.BaseConfigLoader
+    return pipeline.config.handlers.base.NoSchemaConfigLoader

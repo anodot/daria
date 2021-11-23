@@ -3,12 +3,13 @@
     "schemaId": "observium_storage-1234",
     "timestamp": 1633518002,
     "dimensions": {
-      "storage_size": "92762112",
-      "sysName": "sys1",
-      "location": "SOME-LOC"
+      "Storage_size": "92762112",
+      "Host_Name": "sys1",
+      "Location": "SOME-LOC"
     },
     "measurements": {
-      "storage_perc": 52.0
+      "storage_perc": 52.0,
+      "my_own_field": 42.0
     },
     "tags": {
       "source": [

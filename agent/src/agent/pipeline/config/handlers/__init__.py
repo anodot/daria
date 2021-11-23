@@ -8,10 +8,9 @@ from . import jdbc
 from . import kafka
 from . import mongo
 from . import observium
-from . import schema
+from . import sage
 from . import snmp
 from . import solarwinds
 from . import tcp
 from . import promql
 from . import zabbix
-from .sage import SageConfigHandler

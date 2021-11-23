@@ -1,0 +1,8 @@
+[
+  {
+    "pipeline_id": "observium_mempools_edit",
+    "values": {"mempool_perc": "gauge"},
+    "dimensions": ["mempool_descr"],
+    "interval": 6000
+  }
+]

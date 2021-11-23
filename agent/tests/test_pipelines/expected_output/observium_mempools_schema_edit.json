@@ -5,15 +5,10 @@
     "dimensions": {
       "Host_Name": "sys1",
       "Location": "SOME-LOC",
-      "Memory_Pool_ID": "1",
-      "Memory_Pool_Description": "Module_1_(Processor)",
-      "Memory_Pool_Vendor": "CISCO-ENHANCED-MEMPOOL-MIB"
+      "mempool_descr": "Module_1_(Processor)"
     },
     "measurements": {
-      "mempool_used": 43289060.0,
-      "mempool_perc": 21.0,
-      "mempool_total": 206436832.0,
-      "mempool_free": 163147772.0
+      "mempool_perc": 21.0
     },
     "tags": {
       "source": [

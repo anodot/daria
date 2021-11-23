@@ -15,7 +15,7 @@
       "port_descr_circuit": null,
       "port_descr_speed": null,
       "port_descr_notes": null,
-      "ifDescr": "fxp0",
+      "ifDescr": "fxp0.300",
       "ifName": "fxp0",
       "ifIndex": "1",
       "ifSpeed": "10000000",

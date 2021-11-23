@@ -1,12 +1,12 @@
 from agent import pipeline
-from .base import BaseConfigHandler
 from agent.modules.logger import get_logger
 from agent.pipeline.config import stages
+from agent.pipeline.config.handlers.base import NoSchemaConfigHandler
 
 logger = get_logger(__name__)
 
 
-class PromQLConfigHandler(BaseConfigHandler):
+class PromQLConfigHandler(NoSchemaConfigHandler):
     stages_to_override = {
         'source': stages.source.promql.PromQLScript,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties,
