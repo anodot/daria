@@ -33,7 +33,7 @@ stop-second:
 	docker-compose stop es sage zabbix-server zabbix-web zabbix-agent mongo clickhouse
 
 run-third:
-	docker compose up -d victoriametrics && sleep 40
+	docker-compose up -d victoriametrics && sleep 40
 
 setup-third: setup-victoria
 
