@@ -166,7 +166,7 @@ class Prompter:
         self.config['uses_schema'] = pipeline.manager.supports_schema(self.pipeline) and static_what
 
     def prompt_dimension_paths(self):
-        dimension_paths = self.get_default_object_value('dimension_paths')
+        dimension_paths = self.get_default_object_value('dimension_value_paths')
         if self.advanced:
             dimension_paths = self.prompt_object(
                 'Dimension paths in format dim_name1:dim_path1 dim_name2:dim_path2',
@@ -174,7 +174,7 @@ class Prompter:
             )
         else:
             dimension_paths = str_to_object(dimension_paths)
-        self.config['dimension_paths'] = dimension_paths
+        self.config['dimension_value_paths'] = dimension_paths
 
 
 def str_to_object(s: str) -> dict:

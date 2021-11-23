@@ -71,7 +71,7 @@ class ObserviumBuilder(Builder):
         super()._load_config()
         self.config['timestamp'] = {'type': 'unix'}
         self.config['uses_schema'] = True
-        self.config['dimension_paths'] = self._default_dimension_paths()
+        self.config['dimension_value_paths'] = self._default_dimension_paths()
         self.config['dimensions'] = self._dimensions()
         self.config['values'] = self._measurements()
         self.config['request_params'] = self._request_params()
@@ -101,7 +101,7 @@ class ObserviumBuilder(Builder):
 
     def _default_dimension_paths(self):
         if self.config.get('dimensions'):
-            dim_paths = self.config.get('dimension_paths', {})
+            dim_paths = self.config.get('dimension_value_paths', {})
         # if there are no dimensions we'll use the default ones so need to use default paths as well
         elif self.endpoint() == source.ObserviumSource.PORTS:
             dim_paths = {
