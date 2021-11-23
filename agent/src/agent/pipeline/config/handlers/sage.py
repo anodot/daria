@@ -1,12 +1,12 @@
-from .base import BaseConfigHandler
 from agent.modules.logger import get_logger
 from agent.pipeline.config import stages
 from agent.pipeline import pipeline
+from agent.pipeline.config.handlers.base import NoSchemaConfigHandler
 
 logger = get_logger(__name__)
 
 
-class SageConfigHandler(BaseConfigHandler):
+class SageConfigHandler(NoSchemaConfigHandler):
     stages_to_override = {
         'source': stages.source.sage.SageScript,
         'JavaScriptEvaluator_01': stages.js_convert_metrics.JSConvertMetrics,

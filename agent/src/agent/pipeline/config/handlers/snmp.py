@@ -1,7 +1,6 @@
-from .base import BaseRawConfigHandler
 from agent.modules.logger import get_logger
 from agent.pipeline.config import stages
-from .schema import SchemaConfigHandler
+from agent.pipeline.config.handlers.base import SchemaConfigHandler, BaseRawConfigHandler
 
 logger = get_logger(__name__)
 

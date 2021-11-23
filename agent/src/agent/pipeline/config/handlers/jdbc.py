@@ -1,7 +1,7 @@
 from agent.modules.logger import get_logger
 from agent.pipeline.config import stages
-from agent.pipeline.config.handlers.base import BaseConfigHandler, BaseRawConfigHandler
-from agent.pipeline.config.handlers.schema import SchemaConfigHandler
+from agent.pipeline.config.handlers.base import NoSchemaConfigHandler, BaseRawConfigHandler
+from agent.pipeline.config.handlers.base import SchemaConfigHandler
 
 logger = get_logger(__name__)
 
@@ -16,7 +16,7 @@ class JDBCSchemaConfigHandler(SchemaConfigHandler):
     }
 
 
-class JDBCConfigHandler(BaseConfigHandler):
+class JDBCConfigHandler(NoSchemaConfigHandler):
     stages_to_override = {
         'offset': stages.jdbc.JDBCOffsetScript,
         'source': stages.source.jdbc.JDBCSource,

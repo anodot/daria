@@ -1,8 +1,8 @@
 from agent.pipeline.config import stages
-from agent.pipeline.config.handlers.base import BaseConfigHandler
+from agent.pipeline.config.handlers.base import NoSchemaConfigHandler
 
 
-class CactiConfigHandler(BaseConfigHandler):
+class CactiConfigHandler(NoSchemaConfigHandler):
     stages_to_override = {
         'source': stages.source.cacti.Cacti,
         'ExpressionEvaluator_02': stages.expression_evaluator.Filtering,

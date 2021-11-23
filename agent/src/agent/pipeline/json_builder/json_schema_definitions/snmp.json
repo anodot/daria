@@ -12,7 +12,7 @@
     "oids": {"type": "array", "items": {"type": "string"}},
     "values": {"type": "object"},
     "measurement_names": {"type": "object"},
-    "dimension_paths": {"type": "object"},
+    "dimension_value_paths": {"type": "object"},
     "dimensions": {"type": "array", "items": {"type": "string"}},
     "transform": {
       "type": "object",

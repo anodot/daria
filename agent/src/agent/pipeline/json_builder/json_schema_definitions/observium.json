@@ -8,7 +8,7 @@
     "dimensions": {"type": "array", "items": {"type": "string"}},
     "values": {"type": "object"},
     "params": {"type": "object"},
-    "dimension_paths": {"type": "object"},
+    "dimension_value_paths": {"type": "object"},
     "tags": {
       "type": "object",
       "patternProperties":  {"[^ \\.]+": {"type": "array", "items": {"type": "string"}}}

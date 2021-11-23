@@ -1,11 +1,11 @@
-from .base import BaseConfigHandler
 from agent.modules.logger import get_logger
 from agent.pipeline.config import stages
+from agent.pipeline.config.handlers.base import NoSchemaConfigHandler
 
 logger = get_logger(__name__)
 
 
-class ZabbixConfigHandler(BaseConfigHandler):
+class ZabbixConfigHandler(NoSchemaConfigHandler):
     stages_to_override = {
         'source': stages.source.zabbix.ZabbixScript,
         'ExpressionEvaluator_03': stages.expression_evaluator.Filtering,

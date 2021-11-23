@@ -24,7 +24,7 @@
     "pipeline_id": "observium_storage",
     "interval": 6000,
     "dimensions": ["Storage size"],
-    "dimension_paths": {"Storage size":  "storage_size"},
+    "dimension_value_paths": {"Storage size":  "storage_size"},
     "values": {"my own field": "gauge", "storage_perc": "gauge"}
   }
 ]

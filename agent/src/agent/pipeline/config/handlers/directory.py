@@ -1,5 +1,5 @@
 from agent.pipeline.config import stages
-from agent.pipeline.config.handlers.schema import SchemaConfigHandler
+from agent.pipeline.config.handlers.base import SchemaConfigHandler
 
 
 class DirectoryConfigHandler(SchemaConfigHandler):
