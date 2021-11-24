@@ -42,8 +42,8 @@ def _replace_illegal_chars(value):
     return re.sub('\s+', '_', value)
 
 
-def get_now_with_delay():
-    return int(time.time()) - int(sdc.userParams['DELAY_IN_SECONDS'])
+def get_now():
+    return int(time.time())
 
 
 def to_timestamp(date):
@@ -118,7 +118,7 @@ def main():
     if sdc.lastOffsets.containsKey(entityName):
         offset = int(float(sdc.lastOffsets.get(entityName)))
     else:
-        offset = to_timestamp(datetime.now().replace(second=0, microsecond=0))
+        offset = to_timestamp(datetime.now())
 
     sdc.log.info('Start offset: ' + str(offset))
 
@@ -126,10 +126,11 @@ def main():
 
     while True:
         try:
-            while offset > get_now_with_delay():
+            while offset > get_now():
                 time.sleep(2)
                 if sdc.isStopped():
                     return cur_batch, offset
+            offset = get_now() + get_interval()
 
             data = _get(
                 sdc.userParams['URL'],
@@ -144,12 +145,11 @@ def main():
                 cur_batch.add(record)
 
                 if cur_batch.size() == sdc.batchSize:
-                    cur_batch.process(entityName, str(offset + get_interval()))
+                    cur_batch.process(entityName, str(offset))
                     cur_batch = sdc.createBatch()
 
-            cur_batch.process(entityName, str(offset + get_interval()))
+            cur_batch.process(entityName, str(offset))
             cur_batch = sdc.createBatch()
-            offset += get_interval()
         except Exception:
             sdc.log.error(traceback.format_exc())
             raise
