@@ -3,11 +3,11 @@ name: Run tests
 on:
   push:
     branches:
-    - self-hosted-runner
+    - feature-self-hosted-runner
 
   pull_request:
     branches:
-    - self-hosted-runner
+    - feature-self-hosted-runner
 
 jobs:
   start-runner:
@@ -30,7 +30,7 @@ jobs:
           mode: start
           github-token: ${{ secrets.TOKEN_GH }}
           ec2-image-id: ami-0a37bd595acad3c01
-          ec2-instance-type: t3.large
+          ec2-instance-type: t3.2xlarge
           subnet-id: subnet-0e7811da2dc0b7fc7
           security-group-id: sg-0db7cdfa3dd74fbce
   test:
