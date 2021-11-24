@@ -103,7 +103,7 @@ def create_metrics(data):
             "timestamp": obj[POLL_TIME_KEYS[sdc.userParams['ENDPOINT']]],
             "dimensions": {
                 sdc.userParams['DIMENSIONS'][k]: _replace_illegal_chars(v)
-                for k, v in obj.items() if k in sdc.userParams['DIMENSIONS']
+                for k, v in obj.items() if k in sdc.userParams['DIMENSIONS'] and v is not None
             },
             "measurements": {
                 _replace_illegal_chars(k): float(v) for k, v in obj.items() if k in sdc.userParams['MEASUREMENTS']
