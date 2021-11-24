@@ -94,7 +94,7 @@ class ObserviumBuilder(Builder):
         return self.pipeline.source.config['endpoint']
 
     def _request_params(self) -> dict:
-        params = self.config.get('params')
+        params = self.config.get('request_params')
         if params:
             return {k: v for k, v in params.items() if v and (k in self.ALLOWED_PARAMS[self.endpoint()])}
         return {}
