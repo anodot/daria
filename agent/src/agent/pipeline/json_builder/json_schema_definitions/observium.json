@@ -7,7 +7,7 @@
     "count_records": {"type": "boolean"},
     "dimensions": {"type": "array", "items": {"type": "string"}},
     "values": {"type": "object"},
-    "params": {"type": "object"},
+    "request_params": {"type": "object"},
     "dimension_value_paths": {"type": "object"},
     "tags": {
       "type": "object",

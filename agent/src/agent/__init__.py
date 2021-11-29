@@ -1,4 +1,4 @@
-from agent import destination, streamsets
+from agent import streamsets
 
 
 def check_streamsets() -> str:
