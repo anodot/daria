@@ -6,11 +6,32 @@ on:
       - created
 
 jobs:
-
-  build:
-
+  start-runner:
+    name: Start self-hosted EC2 runner
     runs-on: ubuntu-latest
-
+    outputs:
+      label: ${{ steps.start-ec2-runner.outputs.label }}
+      ec2-instance-id: ${{ steps.start-ec2-runner.outputs.ec2-instance-id }}
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: 'us-east-2'
+      - name: Start EC2 runner
+        id: start-ec2-runner
+        uses: machulav/ec2-github-runner@v2
+        with:
+          mode: start
+          github-token: ${{ secrets.TOKEN_GH }}
+          ec2-image-id: ami-0a37bd595acad3c01
+          ec2-instance-type: t3.2xlarge
+          subnet-id: subnet-0e7811da2dc0b7fc7
+          security-group-id: sg-0db7cdfa3dd74fbce
+  build:
+    runs-on: ${{ needs.start-runner.outputs.label }}
+    needs: start-runner
     steps:
     - uses: actions/checkout@v1
 
@@ -42,3 +63,24 @@ jobs:
 
     - name: Push images
       run: VERSION=${GITHUB_REF/refs\/tags\//} && docker push anodot/daria:$VERSION && docker push anodot/streamsets:$VERSION
+  stop-runner:
+    name: Stop self-hosted EC2 runner
+    needs:
+      - start-runner
+      - build 
+    runs-on: ubuntu-latest
+    if: ${{ always() }} 
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: 'us-east-2'
+      - name: Stop EC2 runner
+        uses: machulav/ec2-github-runner@v2
+        with:
+          mode: stop
+          github-token: ${{ secrets.TOKEN_GH }}
+          label: ${{ needs.start-runner.outputs.label }}
+          ec2-instance-id: ${{ needs.start-runner.outputs.ec2-instance-id }}
