@@ -10,6 +10,8 @@ class CactiBuilder(Builder):
             self.config['timestamp'] = {'type': 'unix'}
         if 'add_graph_name_dimension' not in self.config and not self.edit:
             self.config['add_graph_name_dimension'] = False
+        if 'add_graph_id_dimension' not in self.config and not self.edit:
+            self.config['add_graph_id_dimension'] = False
         if 'convert_bytes_into_bits' not in self.config and not self.edit:
             self.config['convert_bytes_into_bits'] = False
         return self.config
