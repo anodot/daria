@@ -12,12 +12,10 @@ from .directory import DirectoryPrompter
 from .sage import SagePrompter
 from .victoria import VictoriaPrompter
 from .zabbix import ZabbixPrompter
-from .cacti import CactiPrompter
 
 
 def get_prompter(pipeline_: Pipeline, default_config: dict, advanced: bool) -> Prompter:
     prompters = {
-        source.TYPE_CACTI: CactiPrompter,
         source.TYPE_CLICKHOUSE: JDBCPrompter,
         source.TYPE_DIRECTORY: DirectoryPrompter,
         source.TYPE_ELASTIC: ElasticPrompter,

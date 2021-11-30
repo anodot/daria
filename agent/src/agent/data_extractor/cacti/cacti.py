@@ -40,8 +40,14 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
 
             base_metric = {
                 'target_type': 'gauge',
-                'properties': _extract_dimensions(item, graph, cache.hosts,
-                                                  pipeline_.config['add_graph_name_dimension']),
+                'properties': _extract_dimensions(
+                    item,
+                    graph,
+                    cache.hosts,
+                    str(local_graph_id),
+                    pipeline_.config['add_graph_name_dimension'],
+                    pipeline_.config['add_graph_id_dimension'],
+                ),
             }
             if _should_sum_similar_items(item):
                 metrics_to_sum[item['data_source_name']] = base_metric
@@ -187,15 +193,24 @@ def _get_metric_values_for_item(
     return values
 
 
-def _extract_dimensions(item: dict, graph: dict, hosts: dict, add_graph_name_dimension=False) -> dict:
-    graph_title = graph['title']
+def _extract_dimensions(
+        item: dict,
+        graph: dict,
+        hosts: dict,
+        local_graph_id: str,
+        add_graph_name_dimension=False,
+        add_graph_id_dimension=False,
+) -> dict:
     host = _get_host(graph, hosts)
+    dimensions = _extract_title_dimensions(graph['title'], graph, host)
 
-    dimensions = _extract_title_dimensions(graph_title, graph, host)
     if add_graph_name_dimension:
-        dimensions = _add_graph_name_dimension(dimensions, graph_title)
+        dimensions = _add_graph_name_dimension(dimensions, graph['title'])
+    if add_graph_id_dimension:
+        dimensions['graph_id'] = local_graph_id
     if 'host_description' not in dimensions and 'description' in host:
         dimensions['host_description'] = host['description']
+
     dimensions = {**dimensions, **_extract_item_dimensions(item)}
 
     return tools.replace_illegal_chars(dimensions)
@@ -279,9 +294,8 @@ def _extract_item_dimensions(item: dict) -> dict:
 def _should_convert_to_bits(item: dict, pipeline_: Pipeline) -> bool:
     # the table cdef_items contains a list of functions that will be applied to a graph item
     # we need to find if there's a function that converts values to bits. We can find it out by checking two things:
-    # 1. Either function description, which is a string, contains "8,*", that means multiply by 8
-    # 2. Or the function will have two sequential items with values 8 and 3. In this case 3 will also mean
-    # multiplication
+    # 1. Either a function description, which is a string, contains "8,*", which means multiply by 8
+    # 2. Or the function will have two sequential items with values 8 and 3. In this case 3 also means multiplication
     # also we assume cdef_items are ordered by `sequence`
 
     if not pipeline_.config['convert_bytes_into_bits'] or 'cdef_items' not in item:
@@ -293,19 +307,19 @@ def _should_convert_to_bits(item: dict, pipeline_: Pipeline) -> bool:
             return True
         if str(value) == '8':
             contains_8 = True
+        elif contains_8 and str(value) == '3':
+            return True
         else:
-            if contains_8 and str(value) == '3':
-                return True
             contains_8 = False
 
 
 def _should_sum_similar_items(item: dict) -> bool:
     if 'cdef_items' not in item:
         return False
-    for value in item['cdef_items'].values():
-        if 'SIMILAR_DATA_SOURCES_NODUPS' in value:
-            return True
-    return False
+    return any(
+        'SIMILAR_DATA_SOURCES_NODUPS' in value
+        for value in item['cdef_items'].values()
+    )
 
 
 class ArchiveNotExistsException(Exception):
