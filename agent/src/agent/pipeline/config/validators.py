@@ -31,8 +31,16 @@ class JDBCValidator(BaseValidator):
 
 
 def get_config_validator(source_type: str) -> BaseValidator:
+    jdbc_sources = [
+        source.TYPE_DATABRICKS,
+        source.TYPE_MYSQL,
+        source.TYPE_POSTGRES,
+        source.TYPE_CLICKHOUSE,
+        source.TYPE_ORACLE
+    ]
+
     if source_type == source.TYPE_ELASTIC:
         return ElasticValidator()
-    elif source_type in [source.TYPE_MYSQL, source.TYPE_POSTGRES, source.TYPE_CLICKHOUSE, source.TYPE_ORACLE]:
+    elif source_type in jdbc_sources:
         return JDBCValidator()
     return BaseValidator()

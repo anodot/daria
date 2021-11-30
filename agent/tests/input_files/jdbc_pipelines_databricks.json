@@ -1,0 +1,14 @@
+[
+  {
+    "source": "test_bricks",
+    "pipeline_id": "test_jdbc_file_short_databricks",
+    "values": {"clicks": "gauge", "impressions": "gauge"},
+    "dimensions": ["adsize", "country"],
+    "interval": 300,
+    "query": "SELECT * FROM test WHERE {TIMESTAMP_CONDITION}",
+    "timestamp": {
+      "type": "datetime",
+      "name": "timestamp"
+    }
+  }
+]

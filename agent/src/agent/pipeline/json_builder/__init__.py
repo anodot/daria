@@ -30,6 +30,7 @@ def _get_builder(pipeline_: Pipeline, config: dict, is_edit: bool) -> Builder:
         source.TYPE_CACTI: CactiBuilder,
         source.TYPE_CLICKHOUSE: JDBCBuilder,
         source.TYPE_DIRECTORY: DirectoryBuilder,
+        source.TYPE_DATABRICKS: JDBCBuilder,
         source.TYPE_ELASTIC: ElasticBuilder,
         source.TYPE_INFLUX: InfluxBuilder,
         source.TYPE_INFLUX_2: Influx2Builder,
@@ -54,6 +55,7 @@ def _get_builder(pipeline_: Pipeline, config: dict, is_edit: bool) -> Builder:
 def _get_raw_builder(pipeline_: Pipeline, config: dict, is_edit: bool) -> Builder:
     loaders = {
         source.TYPE_CLICKHOUSE: JDBCRawBuilder,
+        source.TYPE_DATABRICKS: JDBCRawBuilder,
         source.TYPE_MYSQL: JDBCRawBuilder,
         source.TYPE_POSTGRES: JDBCRawBuilder,
         source.TYPE_SNMP: SNMPRawBuilder,

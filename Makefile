@@ -118,7 +118,10 @@ test-cacti: bootstrap run-mysql sleep-2
 	$(DOCKER_TEST) tests/test_pipelines/test_cacti.py
 
 test-oracle: bootstrap
-	$(DOCKER_TEST) tests/test_input/test_oracle.py
+	$(DOCKER_TEST) tests/test_input/test_2/test_oracle.py
+
+test-databricks: bootstrap
+	$(DOCKER_TEST) tests/test_input/test_2/test_databricks.py
 
 
 

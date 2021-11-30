@@ -22,6 +22,7 @@ def supports_schema(pipeline_: Pipeline):
     supported = [
         source.TYPE_CLICKHOUSE,
         source.TYPE_DIRECTORY,
+        source.TYPE_DATABRICKS,
         source.TYPE_INFLUX,
         source.TYPE_KAFKA,
         source.TYPE_MYSQL,
