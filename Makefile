@@ -1,4 +1,4 @@
-THREADS = 4
+THREADS = 8
 DOCKER_COMPOSE_DEV = docker-compose -f docker-compose-dev.yml
 DOCKER_TEST = docker exec -i anodot-agent pytest -x -vv --disable-pytest-warnings
 DOCKER_TEST_PARALLEL = $(DOCKER_TEST) -n $(THREADS) --dist=loadfile
@@ -295,10 +295,10 @@ setup-zabbix:
 
 
 sleep-1:
-	sleep 40
+	sleep 20
 
 sleep-2:
-	sleep 60
+	sleep 30
 
 nap:
 	sleep 15
