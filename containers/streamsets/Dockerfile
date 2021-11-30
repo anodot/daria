@@ -12,7 +12,7 @@ COPY custom_entrypoint.sh /
 RUN sudo chmod +x /tmp/configure_image.sh && /tmp/configure_image.sh
 
 # TODO: сделать нормально
-COPY jdbc/SparkJDBC42.jar /opt/sdc-extras/streamsets-datacollector-jdbc-lib/lib/SparkJDBC42.jar
+#COPY jdbc/SparkJDBC42.jar /opt/sdc-extras/streamsets-datacollector-jdbc-lib/lib/SparkJDBC42.jar
 
 ## This build uses variable sasl.kerberos.domain.name
 COPY kafka-clients-2.2.2.jar ${SDC_DIST}/streamsets-libs/streamsets-datacollector-apache-kafka_2_0-lib/lib/kafka-clients-2.0.1.jar
