@@ -1,6 +1,6 @@
 from agent import cli, pipeline
 from .test_zpipeline_base import TestInputBase
-from agent.tests.conftest import get_input_file_path
+from ..conftest import get_input_file_path
 
 
 # todo we have wrong docs, they say when editing via file all fields are optional, though all fields are required

@@ -4,7 +4,7 @@ from datetime import datetime
 from agent import cli
 from agent import source, pipeline
 from .test_zpipeline_base import TestInputBase
-from agent.tests.conftest import generate_input, get_input_file_path
+from ..conftest import generate_input, get_input_file_path
 from agent.pipeline import PipelineOffset
 
 

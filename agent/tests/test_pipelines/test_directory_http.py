@@ -1,7 +1,7 @@
 import json
 import pytest
 
-from agent.tests.conftest import get_output
+from ..conftest import get_output
 from .test_zpipeline_base import TestPipelineBase, get_schema_id
 from agent import source, pipeline
 

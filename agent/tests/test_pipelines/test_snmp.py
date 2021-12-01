@@ -2,7 +2,7 @@ import time
 import pytest
 
 from .test_zpipeline_base import TestPipelineBase, get_expected_schema_output, get_schema_id
-from agent.tests.conftest import get_output
+from ..conftest import get_output
 
 
 class TestSNMP(TestPipelineBase):

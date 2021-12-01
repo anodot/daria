@@ -1,7 +1,7 @@
 from datetime import datetime
 from agent import source, cli
 from .test_zpipeline_base import TestInputBase
-from agent.tests.conftest import generate_input
+from ..conftest import generate_input
 
 
 class TestClickhouse(TestInputBase):
