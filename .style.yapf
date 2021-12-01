@@ -75,7 +75,7 @@ blank_line_before_nested_class_or_def=False
 #        'key1': 'value1',
 #        'key2': 'value2',
 #    })
-coalesce_brackets=False
+coalesce_brackets=True
 
 # The column limit.
 column_limit=100
@@ -113,7 +113,7 @@ continuation_indent_width=4
 #       start_ts=now()-timedelta(days=3),
 #       end_ts=now(),
 #   )        # <--- this bracket is dedented and on a separate line
-dedent_closing_brackets=False
+dedent_closing_brackets=True
 
 # Disable the heuristic which places each list element on a separate line
 # if the list is comma-terminated.
@@ -219,7 +219,7 @@ split_arguments_when_comma_terminated=False
 
 # Set to True to prefer splitting before '+', '-', '*', '/', '//', or '@'
 # rather than after.
-split_before_arithmetic_operator=False
+split_before_arithmetic_operator=True
 
 # Set to True to prefer splitting before '&', '|' or '^' rather than
 # after.
@@ -280,7 +280,7 @@ split_before_named_assigns=True
 split_complex_comprehension=False
 
 # The penalty for splitting right after the opening bracket.
-split_penalty_after_opening_bracket=300
+split_penalty_after_opening_bracket=30
 
 # The penalty for splitting the line after a unary operator.
 split_penalty_after_unary_operator=10000
