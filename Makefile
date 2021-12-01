@@ -1,5 +1,8 @@
-THREADS = 4
-DOCKER_COMPOSE_DEV = docker-compose -f docker-compose-dev.yml
+NAP = 15
+SLEEP = 60
+THREADS = 8
+DOCKER_COMPOSE_DEV_FILE = docker-compose-dev.yml
+DOCKER_COMPOSE_DEV = docker-compose -f $(DOCKER_COMPOSE_DEV_FILE)
 DOCKER_TEST = docker exec -i anodot-agent pytest -x -vv --disable-pytest-warnings
 DOCKER_TEST_PARALLEL = $(DOCKER_TEST) -n $(THREADS) --dist=loadfile
 
@@ -8,52 +11,18 @@ DOCKER_TEST_PARALLEL = $(DOCKER_TEST) -n $(THREADS) --dist=loadfile
 ##---------
 all: build-all test-all
 
-build-all: get-streamsets-libs build-docker
+build-all: get-streamsets-libs build-docker sleep setup-all
 
-test-all: run-first sleep-1 setup-first test-first stop-first run-second sleep-2 setup-second test-second stop-second run-third setup-third test-third
-
-run-first:
-	docker-compose up -d dc dc2 agent squid dummy_destination kafka influx influx-2 postgres mysql snmpsim
-
-setup-first: setup-kafka
-
-test-first: run-unit-tests test-flask-app test-streamsets test-raw-input test-raw-pipelines test-destination test-api-1 test-api-scripts test-input-1 test-streamsets-2 test-send-to-bc test-pipelines-1
-
-stop-first:
-	docker-compose stop kafka influx influx-2 postgres snmpsim
-
-run-second:
-	docker-compose up -d es sage zabbix-server zabbix-web zabbix-agent mongo clickhouse
-
-setup-second: setup-elastic setup-zabbix
-
-test-second: test-api-2 test-apply test-input-2 test-export-sources test-pipelines-2 test-send-to-watermark
-
-stop-second:
-	docker-compose stop es sage zabbix-server zabbix-web zabbix-agent mongo clickhouse
-
-run-third:
-	docker-compose up -d victoriametrics && sleep 40
-
-setup-third: setup-victoria
-
-test-third: test-input-3 test-pipelines-3
-
-test-input-3:
-	$(DOCKER_TEST_PARALLEL) tests/test_input/test_3/
-
-test-pipelines-3:
-	$(DOCKER_TEST_PARALLEL) tests/test_pipelines/test_3/
-
+test-all: run-unit-tests test-flask-app test-streamsets test-raw-input test-raw-pipelines test-destination test-apply test-api test-api-scripts test-input test-export-sources test-streamsets-2 test-send-to-bc test-pipelines test-send-to-watermark
 
 ##-------------
 ## DEVELOPMENT
 ##-------------
-all-dev: clean-docker-volumes build-all-dev sleep-2 test-all
+all-dev: clean-docker-volumes build-all-dev sleep test-all
 
-build-all-dev: build-dev sleep-2 setup-all
+build-all-dev: build-dev sleep setup-all
 
-run-all-dev: clean-docker-volumes run-dev sleep-2 setup-all
+run-all-dev: clean-docker-volumes run-dev sleep setup-all
 
 rerun: bootstrap
 
@@ -89,15 +58,15 @@ test-mongo: bootstrap run-mongo
 	$(DOCKER_TEST) tests/test_input/test_mongo_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_mongo_http.py
 
-test-mysql: bootstrap run-mysql sleep-2
+test-mysql: bootstrap run-mysql sleep
 	$(DOCKER_TEST) tests/test_input/test_mysql_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_mysql_http.py
 
-test-postgres: bootstrap run-postgres sleep-2
+test-postgres: bootstrap run-postgres sleep
 	$(DOCKER_TEST) tests/test_input/test_postgres_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_postgres_http.py
 
-test-clickhouse: bootstrap run-clickhouse sleep-2
+test-clickhouse: bootstrap run-clickhouse sleep
 	$(DOCKER_TEST) tests/test_input/test_clickhouse.py
 	$(DOCKER_TEST) tests/test_pipelines/test_clickhouse.py
 
@@ -110,10 +79,10 @@ test-sage: bootstrap run-sage
 	$(DOCKER_TEST) tests/test_pipelines/test_sage_http.py
 
 test-zabbix: bootstrap run-zabbix
-	$(DOCKER_TEST) tests/test_input/test_2/test_zabbix_http.py
-	$(DOCKER_TEST) tests/test_pipelines/test_2/test_zabbix_http.py
+	$(DOCKER_TEST) tests/test_input/test_zabbix_http.py
+	$(DOCKER_TEST) tests/test_pipelines/test_zabbix_http.py
 
-test-cacti: bootstrap run-mysql sleep-2
+test-cacti: bootstrap run-mysql sleep
 	$(DOCKER_TEST) tests/test_input/test_cacti.py
 	$(DOCKER_TEST) tests/test_pipelines/test_cacti.py
 
@@ -128,6 +97,7 @@ test-oracle: bootstrap
 build-docker:
 	docker-compose down -v
 	docker-compose build --build-arg GIT_SHA1="$(git describe --tags --dirty --always)"
+	docker-compose up -d
 
 test-apply:
 	$(DOCKER_TEST) tests/test_apply.py
@@ -153,29 +123,20 @@ test-raw-pipelines:
 test-streamsets-2:
 	$(DOCKER_TEST) tests/test_streamsets_2.py
 
-test-input-1:
-	$(DOCKER_TEST_PARALLEL) tests/test_input/test_1/
-
-test-input-2:
-	$(DOCKER_TEST_PARALLEL) tests/test_input/test_2/
+test-input:
+	$(DOCKER_TEST_PARALLEL) tests/test_input/
 
 test-export-sources:
 	$(DOCKER_TEST_PARALLEL) tests/test_export_sources.py
 
-test-pipelines-1:
-	$(DOCKER_TEST_PARALLEL) tests/test_pipelines/test_1/
+test-pipelines:
+	$(DOCKER_TEST_PARALLEL) tests/test_pipelines/
 
-test-pipelines-2:
-	$(DOCKER_TEST_PARALLEL) tests/test_pipelines/test_2/
-
-test-api-1:
+test-api:
 	$(DOCKER_TEST) tests/api/test_destination.py
 	$(DOCKER_TEST) tests/api/test_streamsets.py
-	$(DOCKER_TEST) tests/api/source/test_1/
+	$(DOCKER_TEST) tests/api/source
 	$(DOCKER_TEST) tests/api/pipeline
-
-test-api-2:
-	$(DOCKER_TEST) tests/api/source/test_2
 
 test-api-scripts:
 	$(DOCKER_TEST) tests/api/test_scripts.py
@@ -228,7 +189,7 @@ _build-base-services:
 run-dc2:
 	$(DOCKER_COMPOSE_DEV) up -d dc2
 
-run-elastic: _run-elastic sleep-2 setup-elastic
+run-elastic: _run-elastic sleep setup-elastic
 
 _run-elastic:
 	$(DOCKER_COMPOSE_DEV) up -d es
@@ -247,7 +208,7 @@ run-victoria: _run-victoria nap setup-victoria
 _run-victoria:
 	$(DOCKER_COMPOSE_DEV) up -d victoriametrics
 
-run-kafka: run-zookeeper _run-kafka sleep-2 setup-kafka
+run-kafka: run-zookeeper _run-kafka sleep setup-kafka
 
 _run-kafka:
 	$(DOCKER_COMPOSE_DEV) up -d kafka
@@ -272,7 +233,7 @@ run-clickhouse:
 run-sage:
 	$(DOCKER_COMPOSE_DEV) up -d --build sage
 
-run-zabbix: _run-zabbix sleep-2 setup-zabbix
+run-zabbix: _run-zabbix sleep setup-zabbix
 
 _run-zabbix:
 	$(DOCKER_COMPOSE_DEV) up -d mysql zabbix-server zabbix-web zabbix-agent
@@ -294,11 +255,8 @@ setup-zabbix:
 	docker exec anodot-agent python /tmp/upload-test-data-to-zabbix.py
 
 
-sleep-1:
-	sleep 40
-
-sleep-2:
-	sleep 60
+sleep:
+	sleep $(SLEEP)
 
 nap:
-	sleep 15
+	sleep $(NAP)
