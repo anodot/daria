@@ -354,7 +354,14 @@ class CactiValidator(Validator):
 
     def validate(self):
         super().validate()
-        validator.file_exists(self.source.config[source.CactiSource.RRD_ARCHIVE_PATH])
+        if source.CactiSource.RRD_ARCHIVE_PATH in self.source.config:
+            validator.file_exists(self.source.config[source.CactiSource.RRD_ARCHIVE_PATH])
+        elif source.CactiSource.RRD_DIR_PATH in self.source.config:
+            validator.dir_exists(self.source.config[source.CactiSource.RRD_DIR_PATH])
+        else:
+            raise ValidationException(
+                f'The source `{self.source.config["name"]}` doesn\'t contain neither `{source.CactiSource.RRD_ARCHIVE_PATH}` nor `{source.CactiSource.RRD_DIR_PATH}` keys'
+            )
 
     @if_validation_enabled
     def validate_connection(self):
