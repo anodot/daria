@@ -298,7 +298,7 @@ sleep-1:
 	sleep 20
 
 sleep-2:
-	sleep 30
+	sleep 40
 
 nap:
 	sleep 15
