@@ -3,7 +3,7 @@ global sdc
 try:
     sdc.importLock()
     import time
-    from datetime import datetime, timedelta, timezone
+    from datetime import datetime, timedelta
 finally:
     sdc.importUnlock()
 
