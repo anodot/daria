@@ -4,8 +4,7 @@
     "name": "test_bricks",
     "config": {
       "connection_string": "spark://host:443/schema;transportMode=http;ssl=1;httpPath=sql/protocolv1/o/111/1128-32423;AuthMech=3;UID=token;PWD=token",
-      "hikariConfigBean.username": "admin",
-      "hikariConfigBean.password": "admin"
+      "hikariConfigBean.autoCommit": true
     }
   }
 ]

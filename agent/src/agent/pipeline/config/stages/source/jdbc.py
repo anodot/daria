@@ -6,7 +6,8 @@ class JDBCSource(Stage):
     def get_config(self) -> dict:
         return {
             'query': pipeline.jdbc.query.Builder(self.pipeline).build(),
-            ** self.get_connection_configs()
+            **{key: val for key, val in self.pipeline.source.config.items() if key.startswith('hikariConfigBean')},
+            **self.get_connection_configs()
         }
 
     def get_connection_configs(self):
