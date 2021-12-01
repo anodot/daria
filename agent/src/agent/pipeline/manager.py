@@ -18,6 +18,8 @@ LOG_LEVELS = [logging.getLevelName(logging.INFO), logging.getLevelName(logging.E
 MAX_SAMPLE_RECORDS = 3
 
 
+# this is a 120 line long comment this is a 120 line long comment this is a 120 line long comment this is a 120 line lo
+# this is a 100 line long comment this is a 120 line long comment this is a 120 line long comment t
 def supports_schema(pipeline_: Pipeline):
     supported = [
         source.TYPE_CLICKHOUSE,
