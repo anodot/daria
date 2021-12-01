@@ -7,7 +7,7 @@ try:
     import sys
     import os
     import time
-    from datetime import datetime, timedelta
+    from datetime import datetime
 
     sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))
     import requests
@@ -15,11 +15,6 @@ finally:
     sdc.importUnlock()
 
 entityName = ''
-
-
-def to_timestamp(date):
-    epoch = datetime(1970, 1, 1)
-    return int((date - epoch).total_seconds())
 
 
 def get_interval():
@@ -34,7 +29,7 @@ def main():
     if sdc.lastOffsets.containsKey(entityName):
         offset = int(float(sdc.lastOffsets.get(entityName)))
     else:
-        offset = to_timestamp(datetime.now())
+        offset = get_now()
 
     sdc.log.info('OFFSET: ' + str(offset))
 

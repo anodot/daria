@@ -11,7 +11,7 @@ try:
     sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))
     import requests
 
-    from datetime import datetime, timedelta, tzinfo
+    from datetime import datetime, timedelta
 finally:
     sdc.importUnlock()
 
