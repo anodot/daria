@@ -1,5 +1,4 @@
 import pytest
-import time
 
 from agent import source
 from .test_zpipeline_base import TestPipelineBase
@@ -16,7 +15,7 @@ class TestCacti(TestPipelineBase):
             {'name': 'cacti_file', 'output': 'cacti_filtered.json', 'pipeline_type': source.TYPE_CACTI},
         ],
         'test_delete_pipeline': [{'name': 'cacti_archive'}, {'name': 'cacti_dir'}, {'name': 'cacti_file'}],
-        'test_source_delete': [{'name': 'cacti_archive'}, {'name': 'cacti_dir'}, {'name': 'cacti_file'}],
+        'test_source_delete': [{'name': 'cacti_archive'}, {'name': 'cacti_dir'}],
     }
 
     def test_info(self, cli_runner, name=None):

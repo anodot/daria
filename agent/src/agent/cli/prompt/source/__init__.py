@@ -11,12 +11,10 @@ from .solarwinds import SolarWindsPrompter
 from .tcp import TCPPrompter
 from .victoria import VictoriaPrompter
 from .zabbix import ZabbixPrompter
-from .cacti import CactiPrompter
 
 
 def get_prompter(source_: source.Source) -> Prompter:
     types = {
-        source.TYPE_CACTI: CactiPrompter,
         source.TYPE_CLICKHOUSE: JDBCPrompter,
         source.TYPE_DIRECTORY: DirectoryPrompter,
         source.TYPE_ELASTIC: ElasticPrompter,

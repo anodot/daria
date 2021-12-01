@@ -1,9 +1,20 @@
-[{
-  "type": "cacti",
-  "name": "cacti_file",
-  "config": {
-    "mysql_connection_string": "mysql://root@mysql:3306/cacti",
-    "rrd_archive_path": "/usr/src/app/tests/input_files/cacti_rrd.tar.gz",
-    "cache_ttl": 3600
+[
+  {
+    "type": "cacti",
+    "name": "cacti_archive",
+    "config": {
+      "mysql_connection_string": "mysql://root@mysql:3306/cacti",
+      "rrd_archive_path": "/usr/src/app/tests/input_files/cacti_rrd.tar.gz",
+      "cache_ttl": 3600
+    }
+  },
+  {
+    "type": "cacti",
+    "name": "cacti_dir",
+    "config": {
+      "mysql_connection_string": "mysql://root@mysql:3306/cacti",
+      "rrd_dir_path": "/usr/src/app/tests/input_files",
+      "cache_ttl": 3600
+    }
   }
-}]
+]
