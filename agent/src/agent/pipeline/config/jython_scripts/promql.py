@@ -80,13 +80,13 @@ def create_base_metric(metric_name):
 def process_matrix(result_, end_):
     i = 0
     cur_batch = sdc.createBatch()
-    for result_ in result_['data']['result']:
-        base_metric = create_base_metric(get_metric_name(result_))
-        for dimension, value in result_['metric'].items():
+    for res in result_['data']['result']:
+        base_metric = create_base_metric(get_metric_name(res))
+        for dimension, value in res['metric'].items():
             dimension = re.sub('\s+', '_', dimension.strip()).replace('.', '_')
             value = re.sub('\s+', '_', value.strip()).replace('.', '_')
             base_metric['properties'][dimension] = value
-        for timestamp, value in result_[get_result_key(res)]:
+        for timestamp, value in res[get_result_key(result_)]:
             metric = base_metric
             metric['timestamp'] = int(timestamp)
             metric['value'] = value
@@ -106,13 +106,13 @@ def process_matrix(result_, end_):
 def process_vector(result_, end_):
     i = 0
     cur_batch = sdc.createBatch()
-    for result_ in result_['data']['result']:
-        base_metric = create_base_metric(get_metric_name(result_))
-        for dimension, value in result_['metric'].items():
+    for res in result_['data']['result']:
+        base_metric = create_base_metric(get_metric_name(res))
+        for dimension, value in res['metric'].items():
             dimension = re.sub('\s+', '_', dimension.strip()).replace('.', '_')
             value = re.sub('\s+', '_', value).replace('.', '_')
             base_metric['properties'][dimension] = value
-        timestamp, value = result_[get_result_key(res)]
+        timestamp, value = res[get_result_key(result_)]
         metric = base_metric
         metric['timestamp'] = end_
         metric['value'] = value
