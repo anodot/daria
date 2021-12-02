@@ -128,25 +128,31 @@ def process_vector(result_, end_):
         cur_batch.process(entityName, str(end_))
 
 
-interval = get_interval()
-end = get_backfill_offset() + interval
-url = sdc.userParams['URL'] + '/api/v1/query?' + urllib.urlencode({
-    'query': sdc.userParams['QUERY'].encode('utf-8'),
-    'timeout': sdc.userParams['QUERY_TIMEOUT'],
-})
+def main():
+    interval = get_interval()
+    end = get_backfill_offset() + interval
+    url = sdc.userParams['URL'] + '/api/v1/query?' + urllib.urlencode({
+        'query': sdc.userParams['QUERY'].encode('utf-8'),
+        'timeout': sdc.userParams['QUERY_TIMEOUT'],
+    })
 
-while True:
-    try:
-        curr_url = url + '&' + urllib.urlencode({'time': end})
-        if end > get_now_with_delay():
-            time.sleep(end - get_now_with_delay())
-        if sdc.isStopped():
-            break
-        sdc.log.debug(curr_url)
-        res = make_request(curr_url).json()
-        sdc.log.debug(str(res))
-        process_matrix(res, end) if res['data']['resultType'] == 'matrix' else process_vector(res, end)
-        end += interval
-    except Exception as e:
-        sdc.log.error(traceback.format_exc())
-        raise
+    while True:
+        try:
+            curr_url = url + '&' + urllib.urlencode({'time': end})
+            while end > get_now_with_delay():
+                time.sleep(2)
+                if sdc.isStopped():
+                    return
+            if sdc.isStopped():
+                break
+            sdc.log.debug(curr_url)
+            res = make_request(curr_url).json()
+            sdc.log.debug(str(res))
+            process_matrix(res, end) if res['data']['resultType'] == 'matrix' else process_vector(res, end)
+            end += interval
+        except Exception as e:
+            sdc.log.error(traceback.format_exc())
+            raise
+
+
+main()
