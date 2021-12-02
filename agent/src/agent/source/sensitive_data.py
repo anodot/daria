@@ -14,6 +14,7 @@ def _get_keywords(source_type: str) -> List[str]:
         source.TYPE_CACTI: ['mysql_connection_string'],
         source.TYPE_CLICKHOUSE: ['connection_string', 'hikariConfigBean.username', 'hikariConfigBean.password'],
         source.TYPE_DIRECTORY: [],
+        source.TYPE_DATABRICKS: ['connection_string', 'hikariConfigBean.username', 'hikariConfigBean.password'],
         source.TYPE_ELASTIC: [],
         source.TYPE_INFLUX: ['username', 'password'],
         source.TYPE_INFLUX_2: ['token'],

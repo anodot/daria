@@ -12,6 +12,7 @@ from . import sensitive_data
 TYPE_CACTI = 'cacti'
 TYPE_CLICKHOUSE = 'clickhouse'
 TYPE_DIRECTORY = 'directory'
+TYPE_DATABRICKS = 'databricks'
 TYPE_ELASTIC = 'elastic'
 TYPE_INFLUX = 'influx'
 TYPE_INFLUX_2 = 'influx2'
@@ -34,6 +35,7 @@ types = {
     TYPE_CACTI: CactiSource,
     TYPE_CLICKHOUSE: JDBCSource,
     TYPE_DIRECTORY: DirectorySource,
+    TYPE_DATABRICKS: JDBCSource,
     TYPE_ELASTIC: ElasticSource,
     TYPE_INFLUX: InfluxSource,
     TYPE_INFLUX_2: Influx2Source,

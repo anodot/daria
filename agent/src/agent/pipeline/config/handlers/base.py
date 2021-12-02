@@ -66,6 +66,7 @@ class SchemaBaseConfigLoader(BaseConfigLoader):
         return {
             source.TYPE_CLICKHOUSE: 'jdbc_schema.json',
             source.TYPE_DIRECTORY: 'directory_schema.json',
+            source.TYPE_DATABRICKS: 'jdbc_schema.json',
             source.TYPE_INFLUX: 'influx_schema.json',
             source.TYPE_INFLUX_2: 'influx2_schema.json',
             source.TYPE_KAFKA: 'kafka_http_schema.json',
@@ -95,6 +96,7 @@ class TestPipelineBaseConfigLoader(BaseConfigLoader):
         return {
             source.TYPE_CLICKHOUSE: 'test_jdbc_pdsf4587.json',
             source.TYPE_DIRECTORY: 'test_directory_ksdjfjk21.json',
+            source.TYPE_DATABRICKS: 'test_jdbc_pdsf4587.json',
             source.TYPE_ELASTIC: 'test_elastic_asdfs3245.json',
             source.TYPE_INFLUX: 'test_influx_qwe093.json',
             source.TYPE_MONGO: 'test_mongo_rand847.json',

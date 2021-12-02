@@ -36,6 +36,7 @@ def _get_no_schema_handler(pipeline_: Pipeline, base_config: dict) -> NoSchemaCo
 def _get_raw_handler(pipeline_: Pipeline, base_config: dict) -> BaseConfigHandler:
     handlers = {
         source.TYPE_CLICKHOUSE: pipeline.config.handlers.jdbc.JDBCRawConfigHandler,
+        source.TYPE_DATABRICKS: pipeline.config.handlers.jdbc.JDBCRawConfigHandler,
         source.TYPE_MYSQL: pipeline.config.handlers.jdbc.JDBCRawConfigHandler,
         source.TYPE_ORACLE: pipeline.config.handlers.jdbc.JDBCRawConfigHandler,
         source.TYPE_POSTGRES: pipeline.config.handlers.jdbc.JDBCRawConfigHandler,
@@ -48,6 +49,7 @@ def _get_schema_handler(pipeline_: Pipeline, base_config: dict) -> SchemaConfigH
     handlers_protocol30 = {
         source.TYPE_CLICKHOUSE: pipeline.config.handlers.jdbc.JDBCSchemaConfigHandler,
         source.TYPE_DIRECTORY: pipeline.config.handlers.directory.DirectoryConfigHandler,
+        source.TYPE_DATABRICKS: pipeline.config.handlers.jdbc.JDBCSchemaConfigHandler,
         source.TYPE_INFLUX: pipeline.config.handlers.influx.InfluxSchemaConfigHandler,
         source.TYPE_INFLUX_2: pipeline.config.handlers.influx.Influx2SchemaConfigHandler,
         source.TYPE_KAFKA: pipeline.config.handlers.kafka.KafkaSchemaConfigHandler,

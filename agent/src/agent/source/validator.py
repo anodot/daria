@@ -377,6 +377,7 @@ def get_validator(source_: Source) -> Validator:
         source.TYPE_CACTI: CactiValidator,
         source.TYPE_CLICKHOUSE: JDBCValidator,
         source.TYPE_DIRECTORY: DirectoryValidator,
+        source.TYPE_DATABRICKS: JDBCValidator,
         source.TYPE_ELASTIC: ElasticValidator,
         source.TYPE_INFLUX: InfluxValidator,
         source.TYPE_INFLUX_2: Influx2Validator,

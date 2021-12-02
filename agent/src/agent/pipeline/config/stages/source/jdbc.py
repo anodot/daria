@@ -6,15 +6,13 @@ class JDBCSource(Stage):
     def get_config(self) -> dict:
         return {
             'query': pipeline.jdbc.query.Builder(self.pipeline).build(),
-            ** self.get_connection_configs()
+            'hikariConfigBean.connectionString': self._get_connection_string(),
+            source.JDBCSource.CONFIG_USE_CREDENTIALS: self._config_contains_username(),
+            **{key: val for key, val in self.pipeline.source.config.items() if key.startswith('hikariConfigBean')}
         }
 
-    def get_connection_configs(self):
-        conf = {'hikariConfigBean.connectionString': 'jdbc:' + self.pipeline.source.config[
-            source.JDBCSource.CONFIG_CONNECTION_STRING]}
-        if self.pipeline.source.config.get(source.JDBCSource.CONFIG_USERNAME):
-            conf['hikariConfigBean.useCredentials'] = True
-            conf['hikariConfigBean.username'] = self.pipeline.source.config[source.JDBCSource.CONFIG_USERNAME]
-            conf['hikariConfigBean.password'] = self.pipeline.source.config[source.JDBCSource.CONFIG_PASSWORD]
+    def _config_contains_username(self) -> bool:
+        return bool(self.pipeline.source.config.get(source.JDBCSource.CONFIG_USERNAME))
 
-        return conf
+    def _get_connection_string(self) -> str:
+        return 'jdbc:' + self.pipeline.source.config[source.JDBCSource.CONFIG_CONNECTION_STRING]

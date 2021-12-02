@@ -24,6 +24,11 @@ function configure_sql_drivers() {
   wget https://repo1.maven.org/maven2/org/slf4j/slf4j-api/1.7.30/slf4j-api-1.7.30.jar -O ${JDBC_DRIVER_DIR}/slf4j-api-1.7.30.jar
   wget https://repo1.maven.org/maven2/org/apache/httpcomponents/httpcore/4.4.13/httpcore-4.4.13.jar -O ${JDBC_DRIVER_DIR}/httpcore-4.4.13.jar
   wget https://repo1.maven.org/maven2/commons-logging/commons-logging/1.2/commons-logging-1.2.jar -O ${JDBC_DRIVER_DIR}/commons-logging-1.2.jar
+
+  # databricks
+  local SIMBA_DRIVER_VERSION=2.6.19
+  wget https://databricks-bi-artifacts.s3.us-east-2.amazonaws.com/simbaspark-drivers/jdbc/${SIMBA_DRIVER_VERSION}/SimbaSparkJDBC42-${SIMBA_DRIVER_VERSION}.1030.zip -O ${JDBC_DRIVER_DIR}/SimbaSparkJDBC42-${SIMBA_DRIVER_VERSION}.1030.zip
+  unzip ${JDBC_DRIVER_DIR}/SimbaSparkJDBC42-${SIMBA_DRIVER_VERSION}.1030.zip -d ${JDBC_DRIVER_DIR}
 }
 
 function install_stage_libs() {

@@ -1,0 +1,15 @@
+[
+  {
+    "source": "test_bricks",
+    "pipeline_id": "test_jdbc_file_short_databricks",
+    "values": {"Сlicks": "gauge", "Impressions": "gauge"},
+    "dimensions": ["AdSize", "Country"],
+    "interval": 3600,
+    "query": "SELECT * FROM test2_csv2 WHERE {TIMESTAMP_CONDITION}",
+    "timestamp": {
+      "type": "datetime",
+      "name": "timestamp"
+    },
+    "days_to_backfill": 1452
+  }
+]
