@@ -1,5 +1,5 @@
 from agent import source, pipeline
-from ..test_zpipeline_base import TestInputBase
+from .test_zpipeline_base import TestInputBase
 
 
 class TestDatabricks(TestInputBase):
