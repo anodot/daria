@@ -21,11 +21,6 @@ DATEFORMAT = '%Y-%m-%dT%H:%M:%SZ'
 LAST_TIMESTAMP = '%last_timestamp%'
 
 
-# Jython converts datetime objects to java.sql.Timestamp when assigning it to a variable
-def date_from_str(date):
-    return datetime.strptime(date, DATEFORMAT)
-
-
 def date_to_str(date):
     return date.strftime(DATEFORMAT)
 
@@ -48,7 +43,7 @@ if sdc.lastOffsets.containsKey(entityName):
 elif sdc.userParams['DAYS_TO_BACKFILL']:
     offset = to_timestamp(datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=int(sdc.userParams['DAYS_TO_BACKFILL'])))
 else:
-    offset = to_timestamp(datetime.now().replace(second=0, microsecond=0))
+    offset = to_timestamp(datetime.utcnow().replace(second=0, microsecond=0))
 
 sdc.log.info('Start offset: ' + str(offset))
 
