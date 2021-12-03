@@ -46,6 +46,16 @@ def get_now():
     return int(time.time())
 
 
+def get_next_offset():
+    bs = sdc.userParams['BUCKET_SIZE']
+    dt = datetime.utcnow().replace(second=0, microsecond=0)
+    if bs == '5m':
+        dt = dt + timedelta(minutes=5 - dt.minute % 5)
+    else:
+        dt = dt + timedelta(seconds=get_interval())
+    return to_timestamp(dt)
+
+
 def get_offset_with_delay(offset):
     return offset + int(sdc.userParams['DELAY_IN_MINUTES']) * 60
 
@@ -134,7 +144,7 @@ def main():
                 time.sleep(2)
                 if sdc.isStopped():
                     return cur_batch, offset
-            offset = get_now() + get_interval()
+            offset = get_next_offset()
 
             data = _get(
                 sdc.userParams['URL'],
