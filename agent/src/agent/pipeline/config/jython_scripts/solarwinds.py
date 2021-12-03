@@ -38,58 +38,63 @@ def get_interval():
     return int(sdc.userParams['INTERVAL_IN_SECONDS'])
 
 
-if sdc.lastOffsets.containsKey(entityName):
-    offset = int(float(sdc.lastOffsets.get(entityName)))
-elif sdc.userParams['DAYS_TO_BACKFILL']:
-    offset = to_timestamp(datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=int(sdc.userParams['DAYS_TO_BACKFILL'])))
-else:
-    offset = to_timestamp(datetime.utcnow().replace(second=0, microsecond=0))
+def main():
+    if sdc.lastOffsets.containsKey(entityName):
+        offset = int(float(sdc.lastOffsets.get(entityName)))
+    elif sdc.userParams['DAYS_TO_BACKFILL']:
+        offset = to_timestamp(datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=int(sdc.userParams['DAYS_TO_BACKFILL'])))
+    else:
+        offset = to_timestamp(datetime.utcnow().replace(second=0, microsecond=0))
 
-sdc.log.info('Start offset: ' + str(offset))
+    sdc.log.info('Start offset: ' + str(offset))
 
-cur_batch = sdc.createBatch()
+    cur_batch = sdc.createBatch()
 
-N_REQUESTS_TRIES = 3
+    N_REQUESTS_TRIES = 3
 
-while True:
-    try:
-        end = offset + get_interval()
-        if end > get_now_with_delay():
-            time.sleep(end - get_now_with_delay())
-        query = sdc.userParams['QUERY'].replace(LAST_TIMESTAMP, date_to_str(datetime.fromtimestamp(offset)))
+    while True:
+        try:
+            end = offset + get_interval()
+            while end > get_now_with_delay():
+                time.sleep(2)
+                if sdc.isStopped():
+                    return cur_batch, offset
+            query = sdc.userParams['QUERY'].replace(LAST_TIMESTAMP, date_to_str(datetime.fromtimestamp(offset)))
 
-        for i in range(1, N_REQUESTS_TRIES + 1):
-            try:
-                res = requests.get(
-                    sdc.userParams['SOLARWINDS_API_URL'],
-                    auth=HTTPBasicAuth(sdc.userParams['API_USER'], sdc.userParams['API_PASSWORD']),
-                    params={'query': query},
-                    verify=bool(sdc.userParams['VERIFY_SSL']),
-                    timeout=sdc.userParams['QUERY_TIMEOUT'],
-                )
-                res.raise_for_status()
+            for i in range(1, N_REQUESTS_TRIES + 1):
+                try:
+                    res = requests.get(
+                        sdc.userParams['SOLARWINDS_API_URL'],
+                        auth=HTTPBasicAuth(sdc.userParams['API_USER'], sdc.userParams['API_PASSWORD']),
+                        params={'query': query},
+                        verify=bool(sdc.userParams['VERIFY_SSL']),
+                        timeout=sdc.userParams['QUERY_TIMEOUT'],
+                    )
+                    res.raise_for_status()
+                    break
+                except requests.HTTPError as e:
+                    requests.post(sdc.userParams['MONITORING_URL'] + str(res.status_code))
+                    sdc.log.error(str(e))
+                    if i == N_REQUESTS_TRIES:
+                        raise
+                    time.sleep(2 ** i)
+
+            for row in res.json()['results']:
+                record = sdc.createRecord('record created ' + str(datetime.now()))
+                record.value = row
+                cur_batch.add(record)
+
+            # send batch and save offset
+            offset = end
+            cur_batch.process(entityName, str(offset))
+            cur_batch = sdc.createBatch()
+            if sdc.isStopped():
                 break
-            except requests.HTTPError as e:
-                requests.post(sdc.userParams['MONITORING_URL'] + str(res.status_code))
-                sdc.log.error(str(e))
-                if i == N_REQUESTS_TRIES:
-                    raise
-                time.sleep(2 ** i)
+        except Exception as e:
+            sdc.log.error(traceback.format_exc())
+            raise
 
-        for row in res.json()['results']:
-            record = sdc.createRecord('record created ' + str(datetime.now()))
-            record.value = row
-            cur_batch.add(record)
 
-        # send batch and save offset
-        offset = end
-        cur_batch.process(entityName, str(offset))
-        cur_batch = sdc.createBatch()
-        if sdc.isStopped():
-            break
-    except Exception as e:
-        sdc.log.error(traceback.format_exc())
-        raise
-
+cur_batch, offset_ = main()
 if cur_batch.size() + cur_batch.errorCount() + cur_batch.eventCount() > 0:
-    cur_batch.process(entityName, str(offset))
+    cur_batch.process(entityName, str(offset_))

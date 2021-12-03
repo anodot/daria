@@ -45,54 +45,61 @@ def csv_to_json(csv_data, last_timestamp):
 
 
 entityName = ''
-interval = timedelta(seconds=get_interval())
 
-if sdc.lastOffsets.containsKey(entityName):
-    offset = int(float(sdc.lastOffsets.get(entityName)))
-elif sdc.userParams['INITIAL_OFFSET']:
-    offset = to_timestamp(datetime.strptime(sdc.userParams['INITIAL_OFFSET'], '%d/%m/%Y %H:%M'))
-else:
-    offset = to_timestamp(datetime.utcnow().replace(second=0, microsecond=0) - interval)
 
-sdc.log.info('OFFSET: ' + str(offset))
+def main():
+    interval = timedelta(seconds=get_interval())
 
-N_REQUESTS_TRIES = 3
+    if sdc.lastOffsets.containsKey(entityName):
+        offset = int(float(sdc.lastOffsets.get(entityName)))
+    elif sdc.userParams['INITIAL_OFFSET']:
+        offset = to_timestamp(datetime.strptime(sdc.userParams['INITIAL_OFFSET'], '%d/%m/%Y %H:%M'))
+    else:
+        offset = to_timestamp(datetime.utcnow().replace(second=0, microsecond=0) - interval)
 
-while True:
-    if sdc.isStopped():
-        break
-    now_with_delay = get_now_with_delay() - interval.total_seconds()
-    if offset > now_with_delay:
-        time.sleep(offset - now_with_delay)
-    start = int(offset)
-    stop = int(offset + interval.total_seconds())
+    sdc.log.info('OFFSET: ' + str(offset))
 
-    session = requests.Session()
-    session.headers = sdc.userParams['HEADERS']
-    for i in range(1, N_REQUESTS_TRIES + 1):
-        try:
-            res = session.post(
-                sdc.userParams['URL'],
-                data=sdc.userParams['QUERY'].format(start, stop),
-                timeout=sdc.userParams['TIMEOUT']
-            )
-            res.raise_for_status()
-        except requests.HTTPError as e:
-            requests.post(sdc.userParams['MONITORING_URL'] + str(res.status_code))
-            sdc.log.error(str(e))
-            if i == N_REQUESTS_TRIES:
-                raise
-            time.sleep(2 ** i)
+    N_REQUESTS_TRIES = 3
 
-    cur_batch = sdc.createBatch()
-    for obj in csv_to_json(res.text, int(offset)):
-        record = sdc.createRecord('record created ' + str(datetime.now()))
-        record.value = obj
-        cur_batch.add(record)
-        if cur_batch.size() == sdc.batchSize:
-            cur_batch.process(entityName, str(offset))
-            cur_batch = sdc.createBatch()
+    while True:
+        if sdc.isStopped():
+            break
+        while offset > get_now_with_delay() - interval.total_seconds():
+            time.sleep(2)
             if sdc.isStopped():
-                break
-    cur_batch.process(entityName, str(offset))
-    offset += interval.total_seconds()
+                return
+        start = int(offset)
+        stop = int(offset + interval.total_seconds())
+
+        session = requests.Session()
+        session.headers = sdc.userParams['HEADERS']
+        for i in range(1, N_REQUESTS_TRIES + 1):
+            try:
+                res = session.post(
+                    sdc.userParams['URL'],
+                    data=sdc.userParams['QUERY'].format(start, stop),
+                    timeout=sdc.userParams['TIMEOUT']
+                )
+                res.raise_for_status()
+            except requests.HTTPError as e:
+                requests.post(sdc.userParams['MONITORING_URL'] + str(res.status_code))
+                sdc.log.error(str(e))
+                if i == N_REQUESTS_TRIES:
+                    raise
+                time.sleep(2 ** i)
+
+        cur_batch = sdc.createBatch()
+        for obj in csv_to_json(res.text, int(offset)):
+            record = sdc.createRecord('record created ' + str(datetime.now()))
+            record.value = obj
+            cur_batch.add(record)
+            if cur_batch.size() == sdc.batchSize:
+                cur_batch.process(entityName, str(offset))
+                cur_batch = sdc.createBatch()
+                if sdc.isStopped():
+                    break
+        cur_batch.process(entityName, str(offset))
+        offset += interval.total_seconds()
+
+
+main()
