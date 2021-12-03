@@ -80,13 +80,13 @@ def create_base_metric(metric_name):
 def process_matrix(result_, end_):
     i = 0
     cur_batch = sdc.createBatch()
-    for result_ in result_['data']['result']:
-        base_metric = create_base_metric(get_metric_name(result_))
-        for dimension, value in result_['metric'].items():
+    for res in result_['data']['result']:
+        base_metric = create_base_metric(get_metric_name(res))
+        for dimension, value in res['metric'].items():
             dimension = re.sub('\s+', '_', dimension.strip()).replace('.', '_')
             value = re.sub('\s+', '_', value.strip()).replace('.', '_')
             base_metric['properties'][dimension] = value
-        for timestamp, value in result_[get_result_key(res)]:
+        for timestamp, value in res[get_result_key(result_)]:
             metric = base_metric
             metric['timestamp'] = int(timestamp)
             metric['value'] = value
@@ -106,13 +106,13 @@ def process_matrix(result_, end_):
 def process_vector(result_, end_):
     i = 0
     cur_batch = sdc.createBatch()
-    for result_ in result_['data']['result']:
-        base_metric = create_base_metric(get_metric_name(result_))
-        for dimension, value in result_['metric'].items():
+    for res in result_['data']['result']:
+        base_metric = create_base_metric(get_metric_name(res))
+        for dimension, value in res['metric'].items():
             dimension = re.sub('\s+', '_', dimension.strip()).replace('.', '_')
             value = re.sub('\s+', '_', value).replace('.', '_')
             base_metric['properties'][dimension] = value
-        timestamp, value = result_[get_result_key(res)]
+        timestamp, value = res[get_result_key(result_)]
         metric = base_metric
         metric['timestamp'] = end_
         metric['value'] = value
@@ -128,25 +128,31 @@ def process_vector(result_, end_):
         cur_batch.process(entityName, str(end_))
 
 
-interval = get_interval()
-end = get_backfill_offset() + interval
-url = sdc.userParams['URL'] + '/api/v1/query?' + urllib.urlencode({
-    'query': sdc.userParams['QUERY'].encode('utf-8'),
-    'timeout': sdc.userParams['QUERY_TIMEOUT'],
-})
+def main():
+    interval = get_interval()
+    end = get_backfill_offset() + interval
+    url = sdc.userParams['URL'] + '/api/v1/query?' + urllib.urlencode({
+        'query': sdc.userParams['QUERY'].encode('utf-8'),
+        'timeout': sdc.userParams['QUERY_TIMEOUT'],
+    })
 
-while True:
-    try:
-        curr_url = url + '&' + urllib.urlencode({'time': end})
-        if end > get_now_with_delay():
-            time.sleep(end - get_now_with_delay())
-        if sdc.isStopped():
-            break
-        sdc.log.debug(curr_url)
-        res = make_request(curr_url).json()
-        sdc.log.debug(str(res))
-        process_matrix(res, end) if res['data']['resultType'] == 'matrix' else process_vector(res, end)
-        end += interval
-    except Exception as e:
-        sdc.log.error(traceback.format_exc())
-        raise
+    while True:
+        try:
+            curr_url = url + '&' + urllib.urlencode({'time': end})
+            while end > get_now_with_delay():
+                time.sleep(2)
+                if sdc.isStopped():
+                    return
+            if sdc.isStopped():
+                break
+            sdc.log.debug(curr_url)
+            res = make_request(curr_url).json()
+            sdc.log.debug(str(res))
+            process_matrix(res, end) if res['data']['resultType'] == 'matrix' else process_vector(res, end)
+            end += interval
+        except Exception as e:
+            sdc.log.error(traceback.format_exc())
+            raise
+
+
+main()
