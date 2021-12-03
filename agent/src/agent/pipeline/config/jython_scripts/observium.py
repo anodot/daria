@@ -46,6 +46,10 @@ def get_now():
     return int(time.time())
 
 
+def get_offset_with_delay(offset):
+    return offset + int(sdc.userParams['DELAY_IN_MINUTES']) * 60
+
+
 def to_timestamp(date):
     epoch = datetime(1970, 1, 1)
     return int((date - epoch).total_seconds())
@@ -118,7 +122,11 @@ def main():
     if sdc.lastOffsets.containsKey(entityName):
         offset = int(float(sdc.lastOffsets.get(entityName)))
     else:
-        offset = to_timestamp(datetime.utcnow())
+        offset = datetime.utcnow()
+        if get_interval() == 300:
+            # round to the previous 5 min 14:12 -> 14:10
+            offset = offset.replace(second=0, microsecond=0) - timedelta(minutes=offset.minute % 5)
+        offset = to_timestamp(offset)
 
     sdc.log.info('Start offset: ' + str(offset))
 
@@ -126,7 +134,7 @@ def main():
 
     while True:
         try:
-            while offset > get_now():
+            while get_offset_with_delay(offset) > get_now():
                 time.sleep(2)
                 if sdc.isStopped():
                     return cur_batch, offset
