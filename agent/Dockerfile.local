@@ -21,7 +21,5 @@ RUN python setup.py develop
 RUN groupadd -g 10001 agent && useradd -r -u 10001 -g agent agent
 RUN mkdir /var/log/agent
 
-RUN echo "alias clean='python /usr/src/app/src/agent/scripts/clean.py'" >> /usr/src/app/.bashrc
-
 ENTRYPOINT ["/custom_entrypoint.sh"]
 CMD flask run --host=0.0.0.0 --port=80

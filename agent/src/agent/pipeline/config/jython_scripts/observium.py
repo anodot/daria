@@ -46,6 +46,19 @@ def get_now():
     return int(time.time())
 
 
+def get_next_offset():
+    dt = datetime.utcnow().replace(second=0, microsecond=0)
+    if sdc.userParams['BUCKET_SIZE'] == '5m':
+        dt = dt + timedelta(minutes=5 - dt.minute % 5)
+    else:
+        dt = dt + timedelta(seconds=get_interval())
+    return to_timestamp(dt)
+
+
+def get_offset_with_delay(offset):
+    return offset + int(sdc.userParams['DELAY_IN_MINUTES']) * 60
+
+
 def to_timestamp(date):
     epoch = datetime(1970, 1, 1)
     return int((date - epoch).total_seconds())
@@ -118,7 +131,7 @@ def main():
     if sdc.lastOffsets.containsKey(entityName):
         offset = int(float(sdc.lastOffsets.get(entityName)))
     else:
-        offset = to_timestamp(datetime.utcnow())
+        offset = to_timestamp(datetime.utcnow().replace(minute=0, second=0, microsecond=0))
 
     sdc.log.info('Start offset: ' + str(offset))
 
@@ -126,11 +139,11 @@ def main():
 
     while True:
         try:
-            while offset > get_now():
+            while get_offset_with_delay(offset) > get_now():
                 time.sleep(2)
                 if sdc.isStopped():
                     return cur_batch, offset
-            offset = get_now() + get_interval()
+            offset = get_next_offset()
 
             data = _get(
                 sdc.userParams['URL'],

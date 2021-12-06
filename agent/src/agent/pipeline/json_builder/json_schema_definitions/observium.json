@@ -3,7 +3,7 @@
   "properties": {
     "source": {"type": "string"},
     "pipeline_id": {"type": "string"},
-    "interval": {"type": "integer"},
+    "delay": {"type": "integer"},
     "count_records": {"type": "boolean"},
     "dimensions": {"type": "array", "items": {"type": "string"}},
     "values": {"type": "object"},
