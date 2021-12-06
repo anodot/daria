@@ -257,6 +257,9 @@ setup-zabbix:
 	docker cp ./scripts/upload-test-data-to-zabbix.py anodot-agent:/tmp/
 	docker exec anodot-agent python /tmp/upload-test-data-to-zabbix.py
 
+setup-pre-commit:
+	pip install pre-commit
+	pre-commit install
 
 sleep:
 	sleep $(SLEEP)

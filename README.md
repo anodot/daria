@@ -6,7 +6,8 @@ With this CLI tool you can create pipelines in Streamsets Data collector which w
 pull data from different sources and push it to anodot
 
 ## How to install
-[How to install](https://github.com/anodot/daria/wiki#how-to-install)
+* [How to install](https://github.com/anodot/daria/wiki#how-to-install)
+* [Set up dev environment](https://github.com/anodot/daria/wiki/Setting-Up-The-Development-Environment)
 
 ## Build from source code
 To use the CLI you need to build and run docker containers and then attach to the agent container.
