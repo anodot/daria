@@ -1,6 +1,6 @@
 [
   {
-    "name":"test_pipeline_source",
+    "name":"run_test_pipeline",
     "type":"directory",
     "config":{
       "conf.spoolDir":"/home/sdc/tmp/",
