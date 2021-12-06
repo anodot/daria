@@ -47,9 +47,8 @@ def get_now():
 
 
 def get_next_offset():
-    bs = sdc.userParams['BUCKET_SIZE']
     dt = datetime.utcnow().replace(second=0, microsecond=0)
-    if bs == '5m':
+    if sdc.userParams['BUCKET_SIZE'] == '5m':
         dt = dt + timedelta(minutes=5 - dt.minute % 5)
     else:
         dt = dt + timedelta(seconds=get_interval())
