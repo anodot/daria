@@ -17,7 +17,7 @@ COPY streamsets-datacollector-kafka_multisource-protolib-3.18.0.jar  ${SDC_DIST}
 
 ## This is neede for run-test-pipeline command
 CMD mkdir -p /home/sdc/tmp/
-COPY ../../test-datasets/daily-website-visitors.csv /home/sdc/tmp/daily-website-visitors.csv
+COPY daily-website-visitors.csv /home/sdc/tmp/daily-website-visitors.csv
 
 COPY python-libs ${SDC_DIST}/python-libs
 

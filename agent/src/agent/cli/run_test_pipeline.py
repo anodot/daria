@@ -11,7 +11,10 @@ logger = get_logger(__name__, stdout=True)
 
 
 @click.command(name='run-test-pipeline')
-def run_test_pipeline():
+@click.option('--url', type=click.STRING, default=constants.ANODOT_API_URL)
+@click.option('-t', '--token', type=click.STRING, default=None, required=True)
+@click.option('--access-key', type=click.STRING, default=None)
+def run_test_pipeline(url, token, access_key):
     """
     Test if everything works.
     """
@@ -21,7 +24,7 @@ def run_test_pipeline():
     try:
         _add_streamset()
         _add_source()
-        _add_destination()
+        _add_destination(token, url, access_key)
         _add_pipeline()
         _run_pipeline()
     except Exception as e:
@@ -64,11 +67,11 @@ def _add_source():
     click.secho('TMP Source added to the agent', fg='green')
 
 
-def _add_destination():
+def _add_destination(token, url, access_key):
     """
     Creates temporary destination for run-test-pipeline command
     """
-    result = destination.manager.create(token, url, access_key, proxy_host, proxy_user, proxy_password, host_id)
+    result = destination.manager.create(token, url, access_key)
     if result.is_err():
         raise click.ClickException(result.value)
 
@@ -79,11 +82,11 @@ def _add_pipeline():
     """
     pipeline_file = os.path.join(constants.LOCAL_RUN_TESTPIPELINE_DIR, "pipelines", "test_pipeline.json")
     try:
-        logger.info(f"pipeline_file: {pipeline_file}")
-        # with open(pipeline_file, "r") as file:
-        # pipeline.json_builder.build_raw_using_file(file)
+        # logger.info(f"pipeline_file: {pipeline_file}")
+        with open(pipeline_file, "r") as file:
+            pipeline.json_builder.build_raw_using_file(file)
     except (FileNotFoundError, ValidationError, pipeline.PipelineException) as e:
-        raise click.ClickException(str(e))
+        raise e
     click.secho('TMP PipeLine added to the agent', fg='green')
 
 
@@ -98,8 +101,8 @@ def _run_pipeline():
 
 def perform_cleanup():
     # delete tmp pipeline
-    # pipeline.manager.force_delete(constants.LOCAL_RUN_TESTPIPELINE_NAME)
-    # click.echo(f'TMP Pipeline {constants.LOCAL_RUN_TESTPIPELINE_NAME} deleted')
+    pipeline.manager.force_delete(constants.LOCAL_RUN_TESTPIPELINE_NAME)
+    click.echo(f'TMP Pipeline {constants.LOCAL_RUN_TESTPIPELINE_NAME} deleted')
 
     # delete tmp source
     source.repository.delete_by_name(constants.LOCAL_RUN_TESTPIPELINE_NAME)
