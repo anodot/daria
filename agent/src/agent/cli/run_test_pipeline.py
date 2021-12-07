@@ -1,5 +1,6 @@
 import os
 import click
+import sdc_client
 
 from jsonschema import ValidationError, SchemaError
 
@@ -64,12 +65,14 @@ def _add_pipeline():
 
 
 def _run_pipeline():
-    # TODO
-    # agent pipeline start PIPELINE_ID
-
-    # TODO
-    # agent pipeline info PIPELINE_ID
-    pass
+    try:
+        click.echo(f'Pipeline {constants.LOCAL_RUN_TESTPIPELINE_NAME} is starting...')
+        pipeline.manager.start(pipeline.repository.get_by_id(constants.LOCAL_RUN_TESTPIPELINE_NAME))
+        info_ = sdc_client.get_pipeline_info(pipeline.repository.get_by_id(constants.LOCAL_RUN_TESTPIPELINE_NAME), 10)
+        click.secho(f'Pipeline {constants.LOCAL_RUN_TESTPIPELINE_NAME} status: {info_["status"]}', fg='green')
+        click.echo()
+    except (sdc_client.ApiClientException, pipeline.PipelineException) as e:
+        raise e
 
 
 def perform_cleanup():
