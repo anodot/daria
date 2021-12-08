@@ -1,8 +1,8 @@
 import os
+
 import click
 import sdc_client
-
-from jsonschema import ValidationError, SchemaError
+from jsonschema import SchemaError, ValidationError
 
 from agent import destination, pipeline, source
 from agent.modules import constants
@@ -55,9 +55,7 @@ def _add_pipeline():
     """
     Creates temporary pipeline for run-test-pipeline command
     """
-    pipeline_file = os.path.join(
-        constants.LOCAL_RUN_TESTPIPELINE_DIR, "pipelines", "test_pipeline.json"
-    )
+    pipeline_file = os.path.join(constants.LOCAL_RUN_TESTPIPELINE_DIR, "pipelines", "test_pipeline.json")
     try:
         with open(pipeline_file, "r") as file:
             pipeline.json_builder.build_using_file(file)
@@ -70,13 +68,8 @@ def _run_pipeline():
     try:
         click.echo(f'Pipeline {constants.LOCAL_RUN_TESTPIPELINE_NAME} is starting...')
         pipeline.manager.start(pipeline.repository.get_by_id(constants.LOCAL_RUN_TESTPIPELINE_NAME))
-        info_ = sdc_client.get_pipeline_info(
-            pipeline.repository.get_by_id(constants.LOCAL_RUN_TESTPIPELINE_NAME), 10
-        )
-        click.secho(
-            f'Pipeline {constants.LOCAL_RUN_TESTPIPELINE_NAME} status: {info_["status"]}',
-            fg='green'
-        )
+        info_ = sdc_client.get_pipeline_info(pipeline.repository.get_by_id(constants.LOCAL_RUN_TESTPIPELINE_NAME), 10)
+        click.secho(f'Pipeline {constants.LOCAL_RUN_TESTPIPELINE_NAME} status: {info_["status"]}', fg='green')
         click.echo()
     except (sdc_client.ApiClientException, pipeline.PipelineException) as e:
         raise e
@@ -93,9 +86,7 @@ def perform_cleanup():
     except (destination.repository.DestinationNotExists, pipeline.PipelineException) as e:
         click.secho(f'Some exc occurred in pipeline deletion: {e}', fg='red')
     else:
-        click.secho(
-            f'Temporary Pipeline {constants.LOCAL_RUN_TESTPIPELINE_NAME} deleted', fg='green'
-        )
+        click.secho(f'Temporary Pipeline {constants.LOCAL_RUN_TESTPIPELINE_NAME} deleted', fg='green')
 
     # delete temporary source
     try:
