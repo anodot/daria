@@ -99,7 +99,7 @@ class AnodotApiClient:
         return self.session.delete(
             self._build_url('bc', 'agents'),
             proxies=self.proxies,
-            params={'pipelineId': pipeline_id}
+            params={'pipelineId': pipeline_id},
         )
 
     def _get_schemas_old_api(self):
@@ -115,7 +115,7 @@ class AnodotApiClient:
             res = self.session.get(
                 self._build_url('stream-schemas', 'schemas'),
                 params={'excludeCubes': True},
-                proxies=self.proxies
+                proxies=self.proxies,
             )
             res.raise_for_status()
             return res
@@ -129,5 +129,5 @@ class AnodotApiClient:
         return self.session.get(
             self._build_url('alerts', 'triggered'),
             params=params,
-            proxies=self.proxies
+            proxies=self.proxies,
         )
