@@ -1,5 +1,5 @@
 import os
-
+import time
 import click
 import sdc_client
 from jsonschema import SchemaError, ValidationError
@@ -47,8 +47,8 @@ def _add_source():
         with open(source_file, "r") as file:
             source.json_builder.create_from_file(file)
     except (ValidationError, SchemaError) as e:
-        raise e
-    click.secho(f'Temporary Source {constants.LOCAL_RUN_TESTPIPELINE_NAME} added', fg='green')
+        logger.error(e)
+        raise Exception("Error during test Source creation. See error log for details")
 
 
 def _add_pipeline():
@@ -60,17 +60,26 @@ def _add_pipeline():
         with open(pipeline_file, "r") as file:
             pipeline.json_builder.build_using_file(file)
     except (FileNotFoundError, ValidationError, pipeline.PipelineException) as e:
-        raise e
-    click.secho(f'Temporary Pipeline {constants.LOCAL_RUN_TESTPIPELINE_NAME} added', fg='green')
+        logger.error(e)
+        raise Exception("Error during test Pipeline creation. See error log for details")
 
 
 def _run_pipeline():
     try:
         click.echo(f'Pipeline {constants.LOCAL_RUN_TESTPIPELINE_NAME} is starting...')
         pipeline.manager.start(pipeline.repository.get_by_id(constants.LOCAL_RUN_TESTPIPELINE_NAME))
+        time.sleep(20)
         info_ = sdc_client.get_pipeline_info(pipeline.repository.get_by_id(constants.LOCAL_RUN_TESTPIPELINE_NAME), 10)
-        click.secho(f'Pipeline {constants.LOCAL_RUN_TESTPIPELINE_NAME} status: {info_["status"]}', fg='green')
-        click.echo()
+        info_status = info_["status"].split(" ", 1)[0]
+        click.echo(
+            f'Pipeline {constants.LOCAL_RUN_TESTPIPELINE_NAME} info: '
+            f'status: {info_status} '
+            f'metrics: {info_["metrics"]}'
+        )
+        if info_status != pipeline.Pipeline.STATUS_RUNNING:
+            raise pipeline.PipelineException("Error in Pipeline running. See error log for details")
+        sdc_client.stop(pipeline.repository.get_by_id(constants.LOCAL_RUN_TESTPIPELINE_NAME))
+        click.echo(f'Pipeline {constants.LOCAL_RUN_TESTPIPELINE_NAME} is stopped')
     except (sdc_client.ApiClientException, pipeline.PipelineException) as e:
         raise e
 
@@ -83,15 +92,11 @@ def perform_cleanup():
     try:
         if e := pipeline.manager.force_delete(constants.LOCAL_RUN_TESTPIPELINE_NAME):
             raise pipeline.PipelineException(str(e))
-    except (destination.repository.DestinationNotExists, pipeline.PipelineException) as e:
-        click.secho(f'Some exc occurred in pipeline deletion: {e}', fg='red')
-    else:
-        click.secho(f'Temporary Pipeline {constants.LOCAL_RUN_TESTPIPELINE_NAME} deleted', fg='green')
+    except (destination.repository.DestinationNotExists, pipeline.PipelineException):
+        pass
 
     # delete temporary source
     try:
         source.repository.delete_by_name(constants.LOCAL_RUN_TESTPIPELINE_NAME)
-    except source.SourceException as e:
-        click.secho(f'Some exc occurred in pipeline deletion: {e}', fg='red')
-    else:
-        click.secho(f'Temporary Source {constants.LOCAL_RUN_TESTPIPELINE_NAME} deleted', fg='green')
+    except (source.SourceException, source.repository.SourceNotExists):
+        pass

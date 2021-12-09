@@ -28,7 +28,7 @@
       "type": "object",
       "patternProperties":  {"[^ \\.]+": {"type": "array", "items": {"type": "string"}}}
     },
-    "flush_bucket_size": {"type":  "string", "enum": ["1m", "5m", "1h", "1d", "1w"]},
+    "flush_bucket_size": {"type":  "string", "enum": ["1m", "5m", "1h", "1d"]},
     "transform_script": {
       "type": "object",
       "properties": {

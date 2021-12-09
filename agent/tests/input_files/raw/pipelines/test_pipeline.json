@@ -36,7 +36,7 @@
     "override_source":{
 
     },
-    "flush_bucket_size": "1w",
+    "flush_bucket_size": "1m",
     "pipeline_id":"run_test_pipeline",
     "source":"run_test_pipeline"
   }
