@@ -92,9 +92,6 @@ test-oracle: bootstrap
 test-databricks: bootstrap
 	$(DOCKER_TEST) tests/test_input/test_2/test_databricks.py
 
-test-run-test-pipeline: bootstrap
-	$(DOCKER_TEST) tests/test_run_test_pipeline.py
-
 ##---------------------------
 ## RELEASE DEPENDENCY TARGETS
 ##---------------------------
@@ -135,6 +132,9 @@ test-export-sources:
 
 test-pipelines:
 	$(DOCKER_TEST_PARALLEL) tests/test_pipelines/
+
+test-run-test-pipeline:
+	$(DOCKER_TEST) tests/test_run_test_pipeline.py
 
 test-api:
 	$(DOCKER_TEST) tests/api/test_destination.py
