@@ -5,7 +5,7 @@ import sdc_client
 
 from jsonschema import SchemaError, ValidationError
 from agent import destination, pipeline, source
-from agent.cli.pipeline import check_prerequisites
+from agent.cli.pipeline import check_prerequisites, get_info
 from agent.modules import constants
 from agent.modules.logger import get_logger
 
@@ -25,7 +25,7 @@ def run_test_pipeline():
     except click.ClickException as e:
         click.secho(f'Test run failed: {e}', fg='red')
     else:
-        click.secho('Test run OK', fg='green')
+        click.secho('Test run completed', fg='green')
     finally:
         perform_cleanup()
 
@@ -62,19 +62,11 @@ def _run_pipeline():
     """
     try:
         click.echo(f'Pipeline `{constants.LOCAL_RUN_TESTPIPELINE_NAME}` is starting...')
-        _pipeline = pipeline.repository.get_by_id(constants.LOCAL_RUN_TESTPIPELINE_NAME)
-        pipeline.manager.start(_pipeline)
+        pipeline_id = pipeline.repository.get_by_id(constants.LOCAL_RUN_TESTPIPELINE_NAME)
+        pipeline.manager.start(pipeline_id)
         time.sleep(20)
-        info_ = sdc_client.get_pipeline_info(_pipeline, 10)
-        info_status = info_["status"].split(" ", 1)[0]
-        click.echo(
-            f'Pipeline `{constants.LOCAL_RUN_TESTPIPELINE_NAME}` info: '
-            f'status: {info_status} '
-            f'metrics: {info_["metrics"]}'
-        )
-        if info_status != pipeline.Pipeline.STATUS_RUNNING:
-            raise pipeline.PipelineException("Error in Pipeline running. See error log for details")
-        sdc_client.stop(_pipeline)
+        get_info(constants.LOCAL_RUN_TESTPIPELINE_NAME, 10)
+        sdc_client.stop(pipeline_id)
         click.echo(f'Pipeline `{constants.LOCAL_RUN_TESTPIPELINE_NAME}` is stopped')
     except (sdc_client.ApiClientException, pipeline.PipelineException) as e:
         raise click.ClickException(e)
