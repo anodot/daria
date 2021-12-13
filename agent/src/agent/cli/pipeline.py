@@ -21,10 +21,10 @@ def get_pipelines_ids_complete(ctx, args, incomplete):
 def list_pipelines():
     pipelines = pipeline.repository.get_all()
     statuses = sdc_client.get_all_pipeline_statuses()
-    table = _build_table(
-        ['Name', 'Type', 'Status', 'Streamsets URL'],
-        [[p.name, p.source.type, statuses[p.name]['status'] if p.name in statuses else 'DOES NOT EXIST IN STREAMSETS', p.streamsets.url] for p in pipelines]
-    )
+    table = _build_table(['Name', 'Type', 'Status', 'Streamsets URL'], [[
+        p.name, p.source.type, statuses[p.name]['status'] if p.name in statuses else 'DOES NOT EXIST IN STREAMSETS',
+        p.streamsets.url
+    ] for p in pipelines])
     click.echo(table.draw())
 
 
@@ -33,7 +33,7 @@ def list_pipelines():
 @click.option('-f', '--file', type=click.File())
 @click.option('-p', '--result-preview', is_flag=True)
 def create(advanced: bool, file, result_preview: bool):
-    _check_prerequisites()
+    check_prerequisites()
     _create_from_file(file, result_preview) if file else _prompt(advanced)
 
 
@@ -53,13 +53,13 @@ def create_raw(file):
 @click.option('-f', '--file', type=click.File())
 @click.option('-p', '--result-preview', is_flag=True)
 def edit(pipeline_id: str, advanced: bool, file, result_preview: bool):
-    _check_prerequisites()
+    check_prerequisites()
     if not file and not pipeline_id:
         raise click.UsageError('Specify pipeline id or file')
     _edit_using_file(file, result_preview) if file else _prompt_edit(advanced, pipeline_id)
 
 
-def _check_prerequisites():
+def check_prerequisites():
     if errors := pipeline.check_prerequisites():
         raise click.ClickException("\n".join(errors))
 

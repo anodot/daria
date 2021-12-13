@@ -15,7 +15,7 @@ RUN sudo chmod +x /tmp/configure_image.sh && /tmp/configure_image.sh
 COPY kafka-clients-2.2.2.jar ${SDC_DIST}/streamsets-libs/streamsets-datacollector-apache-kafka_2_0-lib/lib/kafka-clients-2.0.1.jar
 COPY streamsets-datacollector-kafka_multisource-protolib-3.18.0.jar  ${SDC_DIST}/streamsets-libs/streamsets-datacollector-apache-kafka_2_0-lib/lib/streamsets-datacollector-kafka_multisource-protolib-3.18.0.jar
 
-## This is neede for run-test-pipeline command
+## This is needed for run-test-pipeline command
 CMD mkdir -p /home/sdc/tmp/
 COPY daily-website-visitors.csv /home/sdc/tmp/daily-website-visitors.csv
 

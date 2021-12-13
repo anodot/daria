@@ -28,8 +28,7 @@ def apply(work_dir, keep_not_existing):
 
 
 def populate_source_from_file(file):
-    source.check_prerequisites()
-    exceptions = []
+    exceptions = source.check_prerequisites()
     for config in source.json_builder.extract_configs(file):
         try:
             if 'name' not in config:
@@ -47,8 +46,7 @@ def populate_source_from_file(file):
 
 
 def populate_pipeline_from_file(file):
-    pipeline.check_prerequisites()
-    exceptions = []
+    exceptions = pipeline.check_prerequisites()
     for config in pipeline.json_builder.extract_configs(file):
         try:
             if 'pipeline_id' not in config:
@@ -56,9 +54,7 @@ def populate_pipeline_from_file(file):
             if pipeline.repository.exists(config['pipeline_id']):
                 pipeline.json_builder.edit(config)
             else:
-                pipeline.manager.start(
-                    pipeline.json_builder.build(config)
-                )
+                pipeline.manager.start(pipeline.json_builder.build(config))
         except Exception as e:
             if not constants.ENV_PROD:
                 raise
