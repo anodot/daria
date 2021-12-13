@@ -3,7 +3,7 @@ import time
 import click
 import sdc_client
 
-from jsonschema import SchemaError, ValidationError
+from jsonschema import ValidationError
 from agent import destination, pipeline, source
 from agent.cli.pipeline import check_prerequisites, get_info
 from agent.modules import constants
@@ -38,7 +38,7 @@ def _add_source():
     try:
         with open(source_file, "r") as file:
             source.json_builder.create_from_file(file)
-    except (ValidationError, SchemaError) as e:
+    except (FileNotFoundError, ValidationError, source.SourceException) as e:
         logger.error(e)
         raise click.ClickException("Error during test Source creation. See error log for details")
 
