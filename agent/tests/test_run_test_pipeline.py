@@ -6,4 +6,3 @@ def test_run_pipeline(cli_runner):
     print(f"run_test_pipeline: {result.exit_code} {result.output}")
 
     assert result.exit_code == 0
-    assert "Test run completed" in result.output

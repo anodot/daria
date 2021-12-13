@@ -4,8 +4,7 @@ import click
 import sdc_client
 
 from jsonschema import ValidationError
-from agent import destination, pipeline, source
-from agent.cli.pipeline import check_prerequisites, get_info
+from agent import cli, destination, pipeline, source
 from agent.modules import constants
 from agent.modules.logger import get_logger
 
@@ -18,12 +17,13 @@ def run_test_pipeline():
     Creates temporary source and pipeline to check the destination is accessible.
     """
     try:
-        check_prerequisites()
+        cli.pipeline.check_prerequisites()
         _add_source()
         _add_pipeline()
         _run_pipeline()
     except click.ClickException as e:
         click.secho(f'Test run failed: {e}', fg='red')
+        exit(1)
     else:
         click.secho('Test run completed', fg='green')
     finally:
@@ -62,11 +62,11 @@ def _run_pipeline():
     """
     try:
         click.echo(f'Pipeline `{constants.LOCAL_RUN_TESTPIPELINE_NAME}` is starting...')
-        pipeline_id = pipeline.repository.get_by_id(constants.LOCAL_RUN_TESTPIPELINE_NAME)
-        pipeline.manager.start(pipeline_id)
+        pipeline_ = pipeline.repository.get_by_id(constants.LOCAL_RUN_TESTPIPELINE_NAME)
+        pipeline.manager.start(pipeline_)
         time.sleep(20)
-        get_info(constants.LOCAL_RUN_TESTPIPELINE_NAME, 10)
-        sdc_client.stop(pipeline_id)
+        cli.pipeline.get_info(constants.LOCAL_RUN_TESTPIPELINE_NAME, 10)
+        sdc_client.stop(pipeline_)
         click.echo(f'Pipeline `{constants.LOCAL_RUN_TESTPIPELINE_NAME}` is stopped')
     except (sdc_client.ApiClientException, pipeline.PipelineException) as e:
         raise click.ClickException(e)

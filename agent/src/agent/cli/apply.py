@@ -2,7 +2,7 @@ import click
 import json
 import os
 
-from agent import pipeline, source
+from agent import cli, pipeline, source
 from agent.modules import logger, constants
 
 logger_ = logger.get_logger(__name__, stdout=True)
@@ -28,7 +28,8 @@ def apply(work_dir, keep_not_existing):
 
 
 def populate_source_from_file(file):
-    exceptions = source.check_prerequisites()
+    cli.source.check_prerequisites()
+    exceptions = []
     for config in source.json_builder.extract_configs(file):
         try:
             if 'name' not in config:
@@ -46,7 +47,8 @@ def populate_source_from_file(file):
 
 
 def populate_pipeline_from_file(file):
-    exceptions = pipeline.check_prerequisites()
+    cli.pipeline.check_prerequisites()
+    exceptions = []
     for config in pipeline.json_builder.extract_configs(file):
         try:
             if 'pipeline_id' not in config:
