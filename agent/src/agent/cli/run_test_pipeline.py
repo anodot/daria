@@ -37,39 +37,28 @@ def _add_source():
     """
     Creates temporary source for run-test-pipeline command
     """
+    if source.repository.exists(constants.LOCAL_RUN_TESTPIPELINE_NAME):
+        return
     source_file = os.path.join(constants.LOCAL_RUN_TESTPIPELINE_DIR, "sources", "test_source.json")
     try:
         with open(source_file, "r") as file:
             source.json_builder.create_from_file(file)
-    except source.SourceException as e:
-        _check_exist(e)
-    except (FileNotFoundError, ValidationError):
-        raise click.ClickException(f"Error during Source creation. File not found or invalid: {source_file}")
+    except (FileNotFoundError, ValidationError, source.SourceException):
+        raise click.ClickException(f"Error during Source creation. See error log for details")
 
 
 def _add_pipeline():
     """
     Creates temporary pipeline for run-test-pipeline command
     """
+    if pipeline.repository.exists(constants.LOCAL_RUN_TESTPIPELINE_NAME):
+        return
     pipeline_file = os.path.join(constants.LOCAL_RUN_TESTPIPELINE_DIR, "pipelines", "test_pipeline.json")
     try:
         with open(pipeline_file, "r") as file:
             pipeline.json_builder.build_using_file(file)
-    except pipeline.PipelineException as e:
-        _check_exist(e)
-    except (FileNotFoundError, ValidationError):
-        raise click.ClickException(f"Error during Pipeline creation. File not found or invalid: {pipeline_file}")
-
-
-def _check_exist(e):
-    """
-    Checks if specific message about Source or Pipeline existence in a dumped error string
-    """
-    dict_err = json.loads(str(e))
-    if 'already exist' not in dict_err[constants.LOCAL_RUN_TESTPIPELINE_NAME]:
-        raise click.ClickException("Error during Source or Pipeline creation. See error log for details")
-    else:
-        logger.debug("Either Source or Pipeline already exists")
+    except (FileNotFoundError, ValidationError, pipeline.PipelineException):
+        raise click.ClickException(f"Error during Pipeline creation. See error log for details")
 
 
 def _run_pipeline():
