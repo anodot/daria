@@ -26,7 +26,7 @@ RUN ./install_requirements.sh
 RUN python setup.py install && echo ". /usr/src/app/agent-complete.sh" >> /root/.bashrc
 
 RUN groupadd -g 10001 agent && useradd -r -u 10001 -g agent agent
-RUN mkdir /var/log/agent && chown -R agent:agent /var/log/agent /etc/nginx/conf.d /etc/supervisor/conf.d \
+RUN mkdir /var/log/agent /opt/metrics && chown -R agent:agent /var/log/agent /etc/nginx/conf.d /etc/supervisor/conf.d \
 /var/log/supervisor /var/cache/nginx /var/cache/nginx /usr/src/app /opt/metrics
 USER agent
 
