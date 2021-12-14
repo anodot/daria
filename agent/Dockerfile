@@ -17,7 +17,7 @@ COPY uwsgi.ini /etc/uwsgi/uwsgi.ini
 RUN chmod +x /custom_entrypoint.sh /uwsgi-nginx-entrypoint.sh
 
 ENV SDC_CONF_PARSER_LIMIT="20048576" STREAMSETS_USERNAME="admin" STREAMSETS_PASSWORD="admin" \
-    STREAMSETS_URL="http://localhost:18630"
+    STREAMSETS_URL="http://localhost:18630" PROMETHEUS_MULTIPROC_DIR=/opt/metrics
 
 # if you change LOG_FILE_PATH you also need to change it in .github/test.yml in Show logs section
 ENV LOG_FILE_PATH="/var/log/agent/agent.log" ANODOT_API_URL="https://api.anodot.com" ENV_PROD='true' VALIDATION_ENABLED="true"
@@ -27,7 +27,7 @@ RUN python setup.py install && echo ". /usr/src/app/agent-complete.sh" >> /root/
 
 RUN groupadd -g 10001 agent && useradd -r -u 10001 -g agent agent
 RUN mkdir /var/log/agent && chown -R agent:agent /var/log/agent /etc/nginx/conf.d /etc/supervisor/conf.d \
-/var/log/supervisor /var/cache/nginx /var/cache/nginx /usr/src/app
+/var/log/supervisor /var/cache/nginx /var/cache/nginx /usr/src/app /opt/metrics
 USER agent
 
 ENTRYPOINT ["/custom_entrypoint.sh"]

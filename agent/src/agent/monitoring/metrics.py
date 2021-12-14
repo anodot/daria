@@ -1,8 +1,9 @@
-from prometheus_client import Info, Gauge, Enum, Counter, CollectorRegistry
+from prometheus_client import multiprocess, Info, Gauge, Enum, Counter, CollectorRegistry
 from agent import version
 from agent.pipeline import Pipeline
 
 registry = CollectorRegistry()
+multiprocess.MultiProcessCollector(registry)
 
 VERSION = Info('version', 'Agent version', registry=registry)
 VERSION.info({'version': version.__version__})
