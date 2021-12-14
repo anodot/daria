@@ -1,9 +1,10 @@
+import json
 import os
 import time
 import click
 import sdc_client
 
-from jsonschema import ValidationError
+from jsonschema.exceptions import ValidationError
 from agent import cli, destination, pipeline, source
 from agent.modules import constants
 from agent.modules.logger import get_logger
@@ -12,7 +13,8 @@ logger = get_logger(__name__, stdout=True)
 
 
 @click.command(name='run-test-pipeline')
-def run_test_pipeline():
+@click.option('--no-delete', is_flag=True, help='Delete test Source and Pipeline.')
+def run_test_pipeline(no_delete):
     """
     Creates temporary source and pipeline to check the destination is accessible.
     """
@@ -27,7 +29,8 @@ def run_test_pipeline():
     else:
         click.secho('Test run completed', fg='green')
     finally:
-        perform_cleanup()
+        if not no_delete:
+            perform_cleanup()
 
 
 def _add_source():
@@ -38,9 +41,10 @@ def _add_source():
     try:
         with open(source_file, "r") as file:
             source.json_builder.create_from_file(file)
-    except (FileNotFoundError, ValidationError, source.SourceException) as e:
-        logger.error(e)
-        raise click.ClickException("Error during test Source creation. See error log for details")
+    except source.SourceException as e:
+        _check_exist(e)
+    except (FileNotFoundError, ValidationError):
+        raise click.ClickException(f"Error during Source creation. File not found or invalid: {source_file}")
 
 
 def _add_pipeline():
@@ -51,9 +55,21 @@ def _add_pipeline():
     try:
         with open(pipeline_file, "r") as file:
             pipeline.json_builder.build_using_file(file)
-    except (FileNotFoundError, ValidationError, pipeline.PipelineException) as e:
-        logger.error(e)
-        raise click.ClickException("Error during temporary Pipeline creation. See error log for details")
+    except pipeline.PipelineException as e:
+        _check_exist(e)
+    except (FileNotFoundError, ValidationError):
+        raise click.ClickException(f"Error during Pipeline creation. File not found or invalid: {pipeline_file}")
+
+
+def _check_exist(e):
+    """
+    Checks if specific message about Source or Pipeline existence in a dumped error string
+    """
+    dict_err = json.loads(str(e))
+    if 'already exist' not in dict_err[constants.LOCAL_RUN_TESTPIPELINE_NAME]:
+        raise click.ClickException("Error during Source or Pipeline creation. See error log for details")
+    else:
+        logger.debug("Either Source or Pipeline already exists")
 
 
 def _run_pipeline():
