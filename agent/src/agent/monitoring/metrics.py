@@ -1,9 +1,15 @@
-from prometheus_client import multiprocess, Info, Gauge, Enum, Counter, CollectorRegistry
+from prometheus_client import Info, Gauge, Enum, Counter, CollectorRegistry
 from agent import version
 from agent.pipeline import Pipeline
 
+from prometheus_client import multiprocess
+
+
+def child_exit(server, worker):
+    multiprocess.mark_process_dead(worker.pid)
+
+
 registry = CollectorRegistry()
-multiprocess.MultiProcessCollector(registry)
 
 VERSION = Info('version', 'Agent version', registry=registry)
 VERSION.info({'version': version.__version__})

@@ -4,6 +4,7 @@ import requests
 from . import metrics, streamsets
 from agent.modules import constants, logger
 from datetime import datetime
+from prometheus_client import multiprocess
 
 logger_ = logger.get_logger(__name__)
 
@@ -13,8 +14,8 @@ def pull_latest():
 
 
 def latest_to_anodot():
+    multiprocess.MultiProcessCollector(metrics.registry)
     pull_latest()
-
     data = []
     for metric in metrics.registry.collect():
         target_type = anodot.TargetType.COUNTER if metric.type == 'counter' else anodot.TargetType.GAUGE
