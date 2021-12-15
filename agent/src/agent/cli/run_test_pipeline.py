@@ -1,4 +1,3 @@
-import json
 import os
 import time
 import click
@@ -65,11 +64,10 @@ def _run_pipeline():
     """
     Runs the pipeline, get an info about delivery and stops pipeline
     """
+    pipeline_ = pipeline.repository.get_by_id(constants.LOCAL_RUN_TESTPIPELINE_NAME)
     try:
         click.echo(f'Pipeline `{constants.LOCAL_RUN_TESTPIPELINE_NAME}` is starting...')
-        pipeline_ = pipeline.repository.get_by_id(constants.LOCAL_RUN_TESTPIPELINE_NAME)
-        pipeline.manager.start(pipeline_)
-        time.sleep(20)
+        pipeline.manager.start(pipeline_, True)
         cli.pipeline.get_info(constants.LOCAL_RUN_TESTPIPELINE_NAME, 10)
         sdc_client.stop(pipeline_)
         click.echo(f'Pipeline `{constants.LOCAL_RUN_TESTPIPELINE_NAME}` is stopped')

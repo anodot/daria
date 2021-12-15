@@ -11,7 +11,6 @@ from agent.modules.logger import get_logger
 from agent.pipeline.config.handlers.factory import get_config_handler
 from agent.source import Source
 
-
 logger_ = get_logger(__name__, stdout=True)
 
 LOG_LEVELS = [logging.getLevelName(logging.INFO), logging.getLevelName(logging.ERROR)]
@@ -27,7 +26,7 @@ def supports_schema(pipeline_: Pipeline):
         source.TYPE_KAFKA,
         source.TYPE_MYSQL,
         source.TYPE_ORACLE,
-        source.TYPE_POSTGRES
+        source.TYPE_POSTGRES,
     ]
     return pipeline_.source.type in supported
 
@@ -45,9 +44,9 @@ def check_pipeline_id(pipeline_id: str):
         raise pipeline.PipelineException(f"Pipeline {pipeline_id} already exists")
 
 
-def start(pipeline_: Pipeline):
+def start(pipeline_: Pipeline, wait_for_sending_data: bool = False):
     reset_pipeline_retries(pipeline_)
-    sdc_client.start(pipeline_)
+    sdc_client.start(pipeline_, wait_for_sending_data)
 
 
 def reset_pipeline_retries(pipeline_: Pipeline):
