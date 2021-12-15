@@ -6,13 +6,12 @@ from agent import monitoring as monitoring_, destination, pipeline
 from agent.modules import constants, proxy
 from prometheus_client import generate_latest, multiprocess
 
-
+multiprocess.MultiProcessCollector(monitoring_.metrics.registry)
 monitoring_bp = Blueprint('monitoring', __name__)
 
 
 @monitoring_bp.route('/metrics', methods=['GET'])
 def metrics():
-    multiprocess.MultiProcessCollector(monitoring_.metrics.registry)
     monitoring_.pull_latest()
     return generate_latest(registry=monitoring_.metrics.registry)
 

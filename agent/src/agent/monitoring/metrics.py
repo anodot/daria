@@ -11,118 +11,111 @@ STREAMSETS_CPU = Gauge(
     'streamsets_cpu',
     'Streamsets CPU utilization',
     ['streamsets_url'],
-    registry=registry
+    multiprocess_mode='max'
 )
 STREAMSETS_HEAP_MEMORY = Gauge(
     'streamsets_heap_memory_used_bytes',
     'Streamsets Heap memory utilization',
     ['streamsets_url'],
-    registry=registry
+    multiprocess_mode='max'
 )
 STREAMSETS_NON_HEAP_MEMORY = Gauge(
     'streamsets_non_heap_memory_used_bytes',
     'Streamsets Non-heap memory utilization',
     ['streamsets_url'],
-    registry=registry
+    multiprocess_mode='max'
 )
 
 PIPELINE_INCOMING_RECORDS = Counter(
     'pipeline_incoming_records',
     'Pipeline incoming records',
-    ['streamsets_url', 'pipeline_id', 'pipeline_type'],
-    registry=registry
+    ['streamsets_url', 'pipeline_id', 'pipeline_type']
 )
 PIPELINE_OUTGOING_RECORDS = Counter(
     'pipeline_outgoing_records',
     'Pipeline outgoing records',
-    ['streamsets_url', 'pipeline_id', 'pipeline_type'],
-    registry=registry
+    ['streamsets_url', 'pipeline_id', 'pipeline_type']
 )
 PIPELINE_ERROR_RECORDS = Counter(
     'pipeline_error_records',
     'Pipeline error records',
-    ['streamsets_url', 'pipeline_id', 'pipeline_type'],
-    registry=registry
+    ['streamsets_url', 'pipeline_id', 'pipeline_type']
 )
 PIPELINE_DESTINATION_LATENCY = Gauge(
     'pipeline_destination_latency_seconds',
     'Pipeline destination latency',
     ['streamsets_url', 'pipeline_id', 'pipeline_type'],
-    registry=registry
+    multiprocess_mode='max'
 )
 PIPELINE_SOURCE_LATENCY = Gauge(
     'pipeline_source_latency_seconds',
     'Pipeline source latency',
     ['streamsets_url', 'pipeline_id', 'pipeline_type'],
-    registry=registry
+    multiprocess_mode='max'
 )
 PIPELINE_STAGE_BATCH_PROCESSING_TIME_AVG = Gauge(
     'pipeline_stage_patch_processing_time_avg_seconds',
     'Pipeline stage batch processing time avg',
     ['streamsets_url', 'pipeline_id', 'pipeline_type', 'stage'],
-    registry=registry
+    multiprocess_mode='max'
 )
 
 PIPELINE_STAGE_BATCH_PROCESSING_TIME_50th = Gauge(
     'pipeline_stage_patch_processing_time_50th_seconds',
     'Pipeline stage batch processing time 50th percentile',
     ['streamsets_url', 'pipeline_id', 'pipeline_type', 'stage'],
-    registry=registry
+    multiprocess_mode='max'
 )
 
 PIPELINE_STAGE_BATCH_PROCESSING_TIME_999th = Gauge(
     'pipeline_stage_patch_processing_time_999th_seconds',
     'Pipeline stage batch processing time 999th percentile',
     ['streamsets_url', 'pipeline_id', 'pipeline_type', 'stage'],
-    registry=registry
+    multiprocess_mode='max'
 )
 
 PIPELINE_STATUS = Enum(
     'pipeline_status',
     'Pipeline status',
     ['streamsets_url', 'pipeline_id', 'pipeline_type'],
-    states=Pipeline.statuses,
-    registry=registry
+    states=Pipeline.statuses
 )
 
 KAFKA_CONSUMER_LAG = Gauge(
     'kafka_consumer_lag',
     'Kafka consumer lag',
     ['topic'],
-    registry=registry
+    multiprocess_mode='max'
 )
 
 SOURCE_HTTP_ERRORS = Counter(
     'source_http_errors',
     'Source HTTP errors',
-    ['streamsets_url', 'pipeline_id', 'pipeline_type', 'code'],
-    registry=registry
+    ['streamsets_url', 'pipeline_id', 'pipeline_type', 'code']
 )
 SCHEDULED_SCRIPTS_ERRORS = Counter(
     'scheduled_scripts_errors',
     'Scheduled scripts errors',
-    ['script_name'],
-    registry=registry
+    ['script_name']
 )
 SCHEDULED_SCRIPT_EXECUTION_TIME = Gauge(
     'scheduled_script_execution_time',
     'Time to execute a scheduled script',
     ['script_name'],
-    registry=registry
+    multiprocess_mode='max'
 )
 
 DIRECTORY_FILE_PROCESSED = Counter(
     'directory_file_processed',
     'Finished processing one file',
-    ['streamsets_url', 'pipeline_id'],
-    registry=registry,
+    ['streamsets_url', 'pipeline_id']
 )
 
 WATERMARK_DELTA = Gauge(
     'watermark_delta',
     'Difference between time.now() and watermark timestamp',
     ['streamsets_url', 'pipeline_id', 'pipeline_type'],
-    registry=registry,
+    multiprocess_mode='max'
 )
 
 # # Not for every endpoint
