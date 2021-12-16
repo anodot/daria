@@ -6,7 +6,7 @@ import sdc_client
 from datetime import datetime, timedelta, timezone
 from agent import source, pipeline, destination, streamsets
 from agent.modules import tools, constants
-from agent.pipeline import Pipeline, TestPipeline, schema, extra_setup, PipelineRetries, RawPipeline
+from agent.pipeline import Pipeline, TestPipeline, schema, extra_setup, PipelineMetric, PipelineRetries, RawPipeline
 from agent.modules.logger import get_logger
 from agent.pipeline.config.handlers.factory import get_config_handler
 from agent.source import Source
@@ -47,6 +47,27 @@ def check_pipeline_id(pipeline_id: str):
 def start(pipeline_: Pipeline, wait_for_sending_data: bool = False):
     reset_pipeline_retries(pipeline_)
     sdc_client.start(pipeline_, wait_for_sending_data)
+
+
+def stop(pipeline_: Pipeline):
+    try:
+        sdc_client.stop(pipeline_)
+    except (sdc_client.ApiClientException, sdc_client.StreamsetsException) as e:
+        raise pipeline.PipelineException(str(e))
+
+
+def get_info(pipeline_: Pipeline, lines: int) -> dict:
+    try:
+        return sdc_client.get_pipeline_info(pipeline_, lines)
+    except (sdc_client.ApiClientException, sdc_client.StreamsetsException) as e:
+        raise pipeline.PipelineException(str(e))
+
+
+def get_metrics(pipeline_: Pipeline) -> PipelineMetric:
+    try:
+        return PipelineMetric(sdc_client.get_pipeline_metrics(pipeline_))
+    except (sdc_client.ApiClientException, sdc_client.StreamsetsException) as e:
+        raise pipeline.PipelineException(str(e))
 
 
 def reset_pipeline_retries(pipeline_: Pipeline):

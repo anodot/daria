@@ -1,7 +1,5 @@
 import os
-import time
 import click
-import sdc_client
 
 from jsonschema.exceptions import ValidationError
 from agent import cli, destination, pipeline, source
@@ -62,16 +60,22 @@ def _add_pipeline():
 
 def _run_pipeline():
     """
-    Runs the pipeline, get an info about delivery and stops pipeline
+    Runs the pipeline, gets an info about delivery and stops pipeline
     """
     pipeline_ = pipeline.repository.get_by_id(constants.LOCAL_RUN_TESTPIPELINE_NAME)
     try:
         click.echo(f'Pipeline `{constants.LOCAL_RUN_TESTPIPELINE_NAME}` is starting...')
         pipeline.manager.start(pipeline_, True)
-        cli.pipeline.get_info(constants.LOCAL_RUN_TESTPIPELINE_NAME, 10)
-        sdc_client.stop(pipeline_)
+        info = pipeline.manager.get_info(pipeline_, 10)
+        stat = pipeline.manager.get_metrics(pipeline_)
+        cli.pipeline.print_info(info)
+        pipeline.manager.stop(pipeline_)
         click.echo(f'Pipeline `{constants.LOCAL_RUN_TESTPIPELINE_NAME}` is stopped')
-    except (sdc_client.ApiClientException, pipeline.PipelineException) as e:
+        if stat.has_error():
+            raise click.ClickException(f'Pipeline `{constants.LOCAL_RUN_TESTPIPELINE_NAME}` has errors')
+        if stat.has_undelivered():
+            raise click.ClickException(f'Pipeline `{constants.LOCAL_RUN_TESTPIPELINE_NAME}` has undelivered data')
+    except pipeline.PipelineException as e:
         raise click.ClickException(e)
 
 

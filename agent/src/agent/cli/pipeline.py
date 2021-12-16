@@ -178,17 +178,17 @@ def info(pipeline_id: str, lines: int):
     Show pipeline status, errors if any, statistics about amount of records sent
     """
     try:
-        get_info(pipeline_id, lines)
+        pipeline_ = pipeline.repository.get_by_id(pipeline_id)
+        info_ = pipeline.manager.get_info(pipeline_, lines)
+        print_info(info_)
     except sdc_client.ApiClientException as e:
         raise click.ClickException(str(e))
 
 
-def get_info(pipeline_id: str, lines: int):
+def print_info(info_: dict):
     """
-    Requests and prints out to console pipeline status, errors if any, statistics about amount of records sent
+    Prints out to console pipeline status, errors if any, statistics about amount of records sent
     """
-    info_ = sdc_client.get_pipeline_info(pipeline.repository.get_by_id(pipeline_id), lines)
-
     click.secho('=== STATUS ===', fg='green')
     click.echo(info_['status'])
 
