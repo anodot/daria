@@ -36,12 +36,12 @@ def _add_source():
     """
     if source.repository.exists(constants.LOCAL_RUN_TESTPIPELINE_NAME):
         return
-    source_file = os.path.join(constants.LOCAL_RUN_TESTPIPELINE_DIR, "sources", "test_source.json")
+    source_file = os.path.join(constants.LOCAL_RUN_TESTPIPELINE_DIR, 'sources', 'test_source.json')
     try:
-        with open(source_file, "r") as file:
+        with open(source_file, 'r') as file:
             source.json_builder.create_from_file(file)
     except (FileNotFoundError, ValidationError, source.SourceException):
-        raise click.ClickException(f"Error during Source creation. See error log for details")
+        raise click.ClickException(f'Error during Source creation. See error log for details')
 
 
 def _add_pipeline():
@@ -50,12 +50,12 @@ def _add_pipeline():
     """
     if pipeline.repository.exists(constants.LOCAL_RUN_TESTPIPELINE_NAME):
         return
-    pipeline_file = os.path.join(constants.LOCAL_RUN_TESTPIPELINE_DIR, "pipelines", "test_pipeline.json")
+    pipeline_file = os.path.join(constants.LOCAL_RUN_TESTPIPELINE_DIR, 'pipelines', 'test_pipeline.json')
     try:
-        with open(pipeline_file, "r") as file:
+        with open(pipeline_file, 'r') as file:
             pipeline.json_builder.build_using_file(file)
     except (FileNotFoundError, ValidationError, pipeline.PipelineException):
-        raise click.ClickException(f"Error during Pipeline creation. See error log for details")
+        raise click.ClickException(f'Error during Pipeline creation. See error log for details')
 
 
 def _run_pipeline():

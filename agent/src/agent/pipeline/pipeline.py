@@ -58,8 +58,8 @@ class Pipeline(Entity, sdc_client.IPipeline):
     error_statuses = [STATUS_RUN_ERROR, STATUS_START_ERROR, STATUS_STOP_ERROR, STATUS_RUNNING_ERROR]
     # TODO make it enum
     statuses = [
-        STATUS_EDITED, STATUS_STARTING, STATUS_RUNNING, STATUS_STOPPING, STATUS_STOPPED, STATUS_RETRY,
-        STATUS_RUN_ERROR, STATUS_START_ERROR, STATUS_STOP_ERROR, STATUS_RUNNING_ERROR
+        STATUS_EDITED, STATUS_STARTING, STATUS_RUNNING, STATUS_STOPPING, STATUS_STOPPED, STATUS_RETRY, STATUS_RUN_ERROR,
+        STATUS_START_ERROR, STATUS_STOP_ERROR, STATUS_RUNNING_ERROR
     ]
 
     TARGET_TYPES = [COUNTER, GAUGE, RUNNING_COUNTER]
@@ -448,25 +448,24 @@ class PipelineRetries(Entity):
         self.number_of_error_statuses = 0
 
 
-class PipelineMetric(object):
+class PipelineMetric:
     REQUIRED_KEYS = ['counters']
 
     def __init__(self, metrics_: dict):
         for key in self.REQUIRED_KEYS:
             if key not in metrics_:
                 raise KeyError(f'The key `{key}` not in input dict')
-        self.stats = {
-            'in': metrics_['counters']['pipeline.batchInputRecords.counter']['count'],
-            'out': metrics_['counters']['pipeline.batchOutputRecords.counter']['count'],
-            'errors': metrics_['counters']['pipeline.batchErrorRecords.counter']['count'],
-        }
-        self.stats['errors_perc'] = self.stats['errors'] * 100 / self.stats['in'] if self.stats['in'] != 0 else 0
+
+        self.stat_in = metrics_['counters']['pipeline.batchInputRecords.counter']['count']
+        self.stat_out = metrics_['counters']['pipeline.batchOutputRecords.counter']['count']
+        self.errors = metrics_['counters']['pipeline.batchErrorRecords.counter']['count']
+        self.errors_perc = self.errors * 100 / self.stat_in if self.stat_in != 0 else 0
 
     def __str__(self):
-        return 'In: {in} - Out: {out} - Errors {errors} ({errors_perc:.1f}%)'.format(**self.stats)
+        return f'In: {self.stat_in} - Out: {self.stat_out} - Errors {self.errors} ({self.errors_perc:.1f}%)'
 
     def has_error(self):
-        return self.stats['errors'] > 0
+        return self.errors > 0
 
     def has_undelivered(self):
-        return self.stats['out'] == 0 or self.stats['out'] < self.stats['in']
+        return self.stat_out == 0
