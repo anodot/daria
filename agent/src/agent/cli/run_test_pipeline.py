@@ -41,7 +41,7 @@ def _add_source():
         with open(source_file, 'r') as file:
             source.json_builder.create_from_file(file)
     except (FileNotFoundError, ValidationError, source.SourceException):
-        raise click.ClickException(f'Error during Source creation. See error log for details')
+        raise click.ClickException('Error during Source creation. See error log for details')
 
 
 def _add_pipeline():
@@ -55,7 +55,7 @@ def _add_pipeline():
         with open(pipeline_file, 'r') as file:
             pipeline.json_builder.build_using_file(file)
     except (FileNotFoundError, ValidationError, pipeline.PipelineException):
-        raise click.ClickException(f'Error during Pipeline creation. See error log for details')
+        raise click.ClickException('Error during Pipeline creation. See error log for details')
 
 
 def _run_pipeline():
@@ -64,13 +64,11 @@ def _run_pipeline():
     """
     pipeline_ = pipeline.repository.get_by_id(constants.LOCAL_RUN_TESTPIPELINE_NAME)
     try:
-        click.echo(f'Pipeline `{constants.LOCAL_RUN_TESTPIPELINE_NAME}` is starting...')
         pipeline.manager.start(pipeline_, True)
         info = pipeline.manager.get_info(pipeline_, 10)
         stat = pipeline.manager.get_metrics(pipeline_)
         cli.pipeline.print_info(info)
         pipeline.manager.stop(pipeline_)
-        click.echo(f'Pipeline `{constants.LOCAL_RUN_TESTPIPELINE_NAME}` is stopped')
         if stat.has_error():
             raise click.ClickException(f'Pipeline `{constants.LOCAL_RUN_TESTPIPELINE_NAME}` has errors')
         if stat.has_undelivered():
