@@ -74,11 +74,10 @@ PIPELINE_STAGE_BATCH_PROCESSING_TIME_999th = Gauge(
     multiprocess_mode='max'
 )
 
-PIPELINE_STATUS = Enum(
+PIPELINE_STATUS = Counter(
     'pipeline_status',
     'Pipeline status',
-    ['streamsets_url', 'pipeline_id', 'pipeline_type'],
-    states=Pipeline.statuses
+    ['streamsets_url', 'pipeline_id', 'pipeline_type', 'status'],
 )
 
 KAFKA_CONSUMER_LAG = Gauge(
