@@ -4,9 +4,9 @@ import urllib.parse
 from flask import jsonify, Blueprint, request
 from agent import monitoring as monitoring_, destination, pipeline
 from agent.modules import constants, proxy
-from prometheus_client import generate_latest
+from prometheus_client import generate_latest, multiprocess
 
-
+multiprocess.MultiProcessCollector(monitoring_.metrics.registry)
 monitoring_bp = Blueprint('monitoring', __name__)
 
 

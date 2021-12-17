@@ -14,7 +14,6 @@ def pull_latest():
 
 def latest_to_anodot():
     pull_latest()
-
     data = []
     for metric in metrics.registry.collect():
         target_type = anodot.TargetType.COUNTER if metric.type == 'counter' else anodot.TargetType.GAUGE

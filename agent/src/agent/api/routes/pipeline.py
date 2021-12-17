@@ -154,8 +154,8 @@ def pipeline_status_change(pipeline_id: str):
 
     pipeline_.status = status
     pipeline.repository.save(pipeline_)
-    labels = (pipeline_.streamsets.url, pipeline_.name, pipeline_.source.type)
-    monitoring.metrics.PIPELINE_STATUS.labels(*labels).state(pipeline_.status)
+    labels = (pipeline_.streamsets.url, pipeline_.name, pipeline_.source.type, pipeline_.status)
+    monitoring.metrics.PIPELINE_STATUS.labels(*labels).inc(1)
     return jsonify('')
 
 
