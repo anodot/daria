@@ -4,6 +4,7 @@ ENV SDC_CONF_PARSER_LIMIT=5048576 SDC_CONF_RUNNER_THREAD_POOL_SIZE="100" STREAMS
 SDC_LOG="/data/logs"
 
 COPY sdc-security.policy ${SDC_CONF}/sdc-security.policy
+COPY credential-stores.properties ${SDC_CONF}/credential-stores.properties
 
 COPY lib ${USER_LIBRARIES_DIR}
 COPY configure_image.sh /tmp/configure_image.sh
