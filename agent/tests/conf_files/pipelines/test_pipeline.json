@@ -1,0 +1,43 @@
+[
+  {
+    "uses_schema":true,
+    "count_records":true,
+    "values":{
+      "Page.Loads":"gauge",
+      "Unique.Visits":"counter",
+      "First.Time.Visits":"counter",
+      "Returning.Visits":"counter"
+    },
+    "measurement_names":{
+      "Page.Loads":"Page_Loads",
+      "Unique.Visits":"Unique_Visits",
+      "First.Time.Visits":"First_Time_Visits",
+      "Returning.Visits":"Returning_Visits"
+    },
+    "timestamp":{
+      "name":"Date",
+      "type":"string",
+      "format":"%m/%d/%Y"
+    },
+    "dimensions":{
+      "required":[
+        "Day"
+      ],
+      "optional":[
+        "Day.Of.Week"
+      ]
+    },
+    "properties":{
+
+    },
+    "tags":{
+
+    },
+    "override_source":{
+
+    },
+    "flush_bucket_size": "1m",
+    "pipeline_id":"run_test_pipeline",
+    "source":"run_test_pipeline"
+  }
+]

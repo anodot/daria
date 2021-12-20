@@ -30,7 +30,7 @@ def list_sources():
 @click.option('-a', '--advanced', is_flag=True)
 @click.option('-f', '--file', type=click.File())
 def create(advanced, file):
-    _check_prerequisites()
+    check_prerequisites()
     _create_from_file(file) if file else _prompt(advanced)
 
 
@@ -39,7 +39,7 @@ def create(advanced, file):
 @click.option('-a', '--advanced', is_flag=True)
 @click.option('-f', '--file', type=click.File())
 def edit(name, advanced, file):
-    _check_prerequisites()
+    check_prerequisites()
     if not file and not name:
         raise click.UsageError('Specify source name or file path')
     if file:
@@ -51,7 +51,7 @@ def edit(name, advanced, file):
     source.manager.update(source_)
 
 
-def _check_prerequisites():
+def check_prerequisites():
     if errors := source.check_prerequisites():
         raise click.ClickException("\n".join(errors))
 

@@ -7,6 +7,7 @@ from agent.cli.destination import destination
 from agent.cli.pipeline import pipeline_group
 from agent.cli.source import source_group
 from agent.cli.streamsets import streamsets_group
+from agent.cli.run_test_pipeline import run_test_pipeline
 from agent.version import __version__, __build_time__, __git_sha1__
 
 
@@ -45,6 +46,7 @@ agent.add_command(restore)
 agent.add_command(destination)
 agent.add_command(streamsets_group)
 agent.add_command(apply)
+agent.add_command(run_test_pipeline)
 
 if __name__ == '__main__':
     agent_entry_point()

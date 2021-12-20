@@ -13,7 +13,7 @@ all: build-all test-all
 
 build-all: get-streamsets-libs build-docker sleep setup-all
 
-test-all: run-unit-tests test-flask-app test-streamsets test-raw-input test-raw-pipelines test-destination test-apply test-api test-api-scripts test-input test-export-sources test-streamsets-2 test-send-to-bc test-pipelines test-send-to-watermark
+test-all: run-unit-tests test-flask-app test-streamsets test-raw-input test-raw-pipelines test-destination test-run-test-pipeline test-apply test-api test-api-scripts test-input test-export-sources test-streamsets-2 test-send-to-bc test-pipelines test-send-to-watermark
 
 ##-------------
 ## DEVELOPMENT
@@ -92,8 +92,6 @@ test-oracle: bootstrap
 test-databricks: bootstrap
 	$(DOCKER_TEST) tests/test_input/test_2/test_databricks.py
 
-
-
 ##---------------------------
 ## RELEASE DEPENDENCY TARGETS
 ##---------------------------
@@ -134,6 +132,9 @@ test-export-sources:
 
 test-pipelines:
 	$(DOCKER_TEST_PARALLEL) tests/test_pipelines/
+
+test-run-test-pipeline:
+	$(DOCKER_TEST) tests/test_run_test_pipeline.py
 
 test-api:
 	$(DOCKER_TEST) tests/api/test_destination.py

@@ -1,0 +1,15 @@
+[
+  {
+    "name":"run_test_pipeline",
+    "type":"directory",
+    "config":{
+      "conf.spoolDir":"/home/sdc/tmp/",
+      "conf.filePattern":"*.csv",
+      "conf.dataFormatConfig.csvFileFormat":"CSV",
+      "conf.dataFormatConfig.csvHeader":"WITH_HEADER",
+      "conf.dataFormat":"DELIMITED",
+      "conf.maxBatchSize":1000,
+      "conf.batchWaitTime":1000
+    }
+  }
+]

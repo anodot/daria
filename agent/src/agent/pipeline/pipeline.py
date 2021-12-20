@@ -15,7 +15,6 @@ from agent.modules.time import Interval
 from agent.source import Source
 from agent.streamsets import StreamSets
 
-
 REGULAR_PIPELINE = 'regular_pipeline'
 RAW_PIPELINE = 'raw_pipeline'
 
@@ -58,8 +57,10 @@ class Pipeline(Entity, sdc_client.IPipeline):
 
     error_statuses = [STATUS_RUN_ERROR, STATUS_START_ERROR, STATUS_STOP_ERROR, STATUS_RUNNING_ERROR]
     # TODO make it enum
-    statuses = [STATUS_EDITED, STATUS_STARTING, STATUS_RUNNING, STATUS_STOPPING, STATUS_STOPPED, STATUS_RETRY,
-                STATUS_RUN_ERROR, STATUS_START_ERROR, STATUS_STOP_ERROR, STATUS_RUNNING_ERROR]
+    statuses = [
+        STATUS_EDITED, STATUS_STARTING, STATUS_RUNNING, STATUS_STOPPING, STATUS_STOPPED, STATUS_RETRY, STATUS_RUN_ERROR,
+        STATUS_START_ERROR, STATUS_STOP_ERROR, STATUS_RUNNING_ERROR
+    ]
 
     TARGET_TYPES = [COUNTER, GAUGE, RUNNING_COUNTER]
 
@@ -393,10 +394,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
         }
 
     def get_tags(self) -> dict:
-        return {
-            **self.meta_tags(),
-            **self.tags
-        }
+        return {**self.meta_tags(), **self.tags}
 
     def error_notification_enabled(self) -> bool:
         return not self.config.get('disable_error_notifications', False)
@@ -448,3 +446,26 @@ class PipelineRetries(Entity):
     def __init__(self, pipeline_: Pipeline):
         self.pipeline_id = pipeline_.name
         self.number_of_error_statuses = 0
+
+
+class PipelineMetric:
+    REQUIRED_KEYS = ['counters']
+
+    def __init__(self, metrics_: dict):
+        for key in self.REQUIRED_KEYS:
+            if key not in metrics_:
+                raise KeyError(f'The key `{key}` not in input dict')
+
+        self.stat_in = metrics_['counters']['pipeline.batchInputRecords.counter']['count']
+        self.stat_out = metrics_['counters']['pipeline.batchOutputRecords.counter']['count']
+        self.errors = metrics_['counters']['pipeline.batchErrorRecords.counter']['count']
+        self.errors_perc = self.errors * 100 / self.stat_in if self.stat_in != 0 else 0
+
+    def __str__(self):
+        return f'In: {self.stat_in} - Out: {self.stat_out} - Errors {self.errors} ({self.errors_perc:.1f}%)'
+
+    def has_error(self):
+        return self.errors > 0
+
+    def has_undelivered(self):
+        return self.stat_out == 0
