@@ -95,4 +95,8 @@ class MongoPrompter(Prompter):
         self.source.config[source.MongoSource.CONFIG_COLLECTION] = \
             click.prompt('Collection', type=click.STRING,
                          default=default_config.get(source.MongoSource.CONFIG_COLLECTION)).strip()
-        self.source.config[source.MongoSource.CONFIG_IS_CAPPED] = 'capped' in self._get_collection().options()
+        try:
+            self.validator.validate_collection()
+        except source.validator.ValidationException as e:
+            raise click.UsageError(e)
+        # self.source.config[source.MongoSource.CONFIG_IS_CAPPED] = 'capped' in self._get_collection().options()
