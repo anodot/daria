@@ -5,6 +5,7 @@ DOCKER_COMPOSE_DEV_FILE = docker-compose-dev.yml
 DOCKER_COMPOSE_DEV = docker-compose -f $(DOCKER_COMPOSE_DEV_FILE)
 DOCKER_TEST = docker exec -i anodot-agent pytest -x -vv --disable-pytest-warnings
 DOCKER_TEST_PARALLEL = $(DOCKER_TEST) -n $(THREADS) --dist=loadfile
+DOCKER_CRED_STORE = docker exec -i dc /opt/streamsets-datacollector-3.18.0/bin/streamsets stagelib-cli jks-credentialstore
 
 ##---------
 ## RELEASE
@@ -55,8 +56,10 @@ test-kafka: bootstrap run-kafka setup-kafka
 	$(DOCKER_TEST) tests/test_pipelines/test_kafka_http.py
 
 test-mongo: bootstrap run-mongo
+	$(DOCKER_CRED_STORE) add -i jks -n testmongopass -c root
 	$(DOCKER_TEST) tests/test_input/test_mongo_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_mongo_http.py
+	$(DOCKER_CRED_STORE) delete -i jks -n testmongopass
 
 test-mysql: bootstrap run-mysql sleep
 	$(DOCKER_TEST) tests/test_input/test_mysql_http.py
