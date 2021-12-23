@@ -75,7 +75,7 @@ def _get_test_handler(pipeline_: Pipeline, base_config: dict) -> BaseConfigHandl
         source.TYPE_INFLUX_2: pipeline.config.handlers.influx.TestInflux2ConfigHandler,
         source.TYPE_KAFKA: pipeline.config.handlers.kafka.KafkaConfigHandler,
         source.TYPE_MONGO: pipeline.config.handlers.mongo.MongoConfigHandler,
-        source.TYPE_MYSQL: pipeline.config.handlers.jdbc.JDBCConfigHandler,
+        source.TYPE_MYSQL: pipeline.config.handlers.jdbc.JDBCSchemaConfigHandler,
         source.TYPE_OBSERVIUM: pipeline.config.handlers.observium.TestObserviumConfigHandler,
         source.TYPE_ORACLE: pipeline.config.handlers.jdbc.JDBCSchemaConfigHandler,
         source.TYPE_POSTGRES: pipeline.config.handlers.jdbc.JDBCSchemaConfigHandler,
