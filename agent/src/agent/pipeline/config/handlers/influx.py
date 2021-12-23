@@ -72,3 +72,9 @@ class Influx2SchemaConfigHandler(SchemaConfigHandler):
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties30,
         'destination': stages.destination.Destination
     }
+
+
+class TestInflux2ConfigHandler(InfluxConfigHandler):
+    stages_to_override = {
+        'source': stages.source.influx2.TestInflux2Source,
+    }

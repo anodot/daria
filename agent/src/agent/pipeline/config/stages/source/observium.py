@@ -1,3 +1,4 @@
+import os
 import urllib.parse
 
 from agent import source
@@ -40,3 +41,29 @@ class ObserviumScript(Source):
             self.pipeline.streamsets.agent_external_url,
             f'/monitoring/source_http_error/{self.pipeline.name}/'
         )
+
+
+class TestObserviumScript(Source):
+    JYTHON_SCRIPT = 'observium.py'
+    JYTHON_SCRIPTS_PATH = os.path.join(Source.JYTHON_SCRIPTS_PATH, 'tests')
+
+    def get_config(self) -> dict:
+        with open(self.get_jython_file_path()) as f:
+            script = f.read()
+        base_url = urllib.parse.urljoin(
+            self.pipeline.source.config[source.ObserviumSource.URL],
+            '/api/v0/'
+        )
+        return {
+            'scriptConf.params': [
+                # {'key': 'ENDPOINT', 'value': self.pipeline.source.config['endpoint']},
+                {'key': 'DEVICES_URL', 'value': urllib.parse.urljoin(base_url, 'devices')},
+                # {'key': 'URL', 'value': urllib.parse.urljoin(base_url, self.pipeline.source.config['endpoint'])},
+                {'key': 'API_USER', 'value': self.pipeline.source.config[source.ObserviumSource.USERNAME]},
+                {'key': 'API_PASSWORD', 'value': self.pipeline.source.config[source.ObserviumSource.PASSWORD]},
+                # {'key': 'REQUEST_PARAMS', 'value': self.pipeline.config.get('request_params', {})},
+                # {'key': 'VERIFY_SSL', 'value': '1' if self.pipeline.source.config.get('verify_ssl', True) else ''},
+                # {'key': 'SCHEMA_ID', 'value': self.pipeline.get_schema_id()},
+            ],
+            'script': script
+        }

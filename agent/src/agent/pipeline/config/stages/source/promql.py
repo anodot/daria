@@ -1,3 +1,5 @@
+import os
+
 from agent import source
 from agent.pipeline.config.stages.base import Stage
 
@@ -24,6 +26,24 @@ class PromQLScript(Stage):
                     },
                     {'key': 'QUERY_TIMEOUT', 'value': str(self.pipeline.source.query_timeout)},
                     {'key': 'AGGREGATED_METRIC_NAME', 'value': str(self.pipeline.config.get('aggregated_metric_name'))},
+                ],
+                'script': f.read(),
+            }
+
+
+class TestPromQLScript(Stage):
+    JYTHON_SCRIPT = 'promql.py'
+    JYTHON_SCRIPTS_PATH = os.path.join(Stage.JYTHON_SCRIPTS_PATH, 'tests')
+
+    def get_config(self) -> dict:
+        with open(self.get_jython_file_path()) as f:
+            return {
+                'scriptConf.params': [
+                    {'key': 'URL', 'value': self.pipeline.source.config[source.PromQLSource.URL]},
+                    {'key': 'USERNAME',
+                     'value': self.pipeline.source.config.get(source.PromQLSource.USERNAME, '')},
+                    {'key': 'PASSWORD',
+                     'value': self.pipeline.source.config.get(source.PromQLSource.PASSWORD, '')},
                 ],
                 'script': f.read(),
             }

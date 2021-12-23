@@ -1,3 +1,4 @@
+import os
 import urllib.parse
 
 from urllib.parse import urljoin
@@ -45,3 +46,18 @@ class Influx2Source(InfluxScript):
         if custom_filtering:
             filter_condition += f' and {custom_filtering}'
         return filter_condition
+
+
+class TestInflux2Source(Influx2Source):
+    JYTHON_SCRIPT = 'influx2.py'
+    JYTHON_SCRIPTS_PATH = os.path.join(InfluxScript.JYTHON_SCRIPTS_PATH, 'tests')
+
+    def get_config(self) -> dict:
+        with open(self.get_jython_file_path()) as f:
+            return {
+                'scriptConf.params': [
+                    {'key': 'URL', 'value': self._get_url()},
+                    {'key': 'HEADERS', 'value': self._get_headers()},
+                ],
+                'script': f.read(),
+            }

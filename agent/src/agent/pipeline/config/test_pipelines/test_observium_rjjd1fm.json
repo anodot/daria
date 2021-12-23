@@ -2,10 +2,10 @@
   "pipelineConfig" : {
     "schemaVersion" : 6,
     "version" : 19,
-    "pipelineId" : "testinflu50d85887-1f8f-49fb-a093-ee8d9717f071",
-    "title" : "test_influx2_x1ccwlf",
+    "pipelineId" : "testobser61bdc95d-c223-4ee2-a9db-f3078527a21c",
+    "title" : "test_observium_rjjd1fm",
     "description" : "",
-    "uuid" : "3c4f35b5-b32d-4a04-93da-2dfcdda18506",
+    "uuid" : "41a00a81-3cc9-45d7-a198-b76dfde5394c",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -43,7 +43,7 @@
         "value" : "http://anodot-agent"
       }, {
         "key" : "SCHEMA_ID",
-        "value" : "test_influx2_file_full-1234"
+        "value" : "observium_ports-1234"
       } ]
     }, {
       "name" : "errorRecordPolicy",
@@ -84,10 +84,10 @@
     }, {
       "name" : "webhookConfigs",
       "value" : [ {
-        "payload" : "{\n  \"pipeline_status\": \"{{PIPELINE_STATE}}\"\n }",
+        "payload" : "{\n  \"pipeline_status\": \"{{PIPELINE_STATE}}\"}",
         "headers" : [ ],
         "httpMethod" : "POST",
-        "contentType" : "application/on",
+        "contentType" : "application/json",
         "authType" : "NONE",
         "webhookUrl" : "${AGENT_URL}/pipeline-status-change/${pipeline:id()}"
       } ]
@@ -399,10 +399,10 @@
       "value" : null
     } ],
     "uiInfo" : {
-      "displayMode" : "ADVANCED",
+      "displayMode" : "BASIC",
       "previewConfig" : {
         "previewSource" : "CONFIGURED_SOURCE",
-        "batchSize" : "100",
+        "batchSize" : 10,
         "timeout" : 30000,
         "writeToDestinations" : false,
         "executeLifecycleEvents" : false,
@@ -419,10 +419,10 @@
       "stageVersion" : "1",
       "configuration" : [ {
         "name" : "script",
-        "value" : "global sdc\n\ntry:\n    sdc.importLock()\n    import time\n    from datetime import datetime, timedelta\n    import sys\n    import os\n    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))\n    import requests\nfinally:\n    sdc.importUnlock()\n\n\ndef get_interval():\n    return int(sdc.userParams['INTERVAL_IN_SECONDS'])\n\n\ndef get_now_with_delay():\n    return int(time.time()) - int(sdc.userParams['DELAY_IN_SECONDS'])\n\n\ndef to_timestamp(date):\n    epoch = datetime(1970, 1, 1)\n    return int((date - epoch).total_seconds())\n\n\ndef _filter(list_):\n    return list(filter(lambda x: bool(x), list_))\n\n\ndef csv_to_json(csv_data, last_timestamp):\n    if not str(csv_data).strip():\n        return []\n    results = _filter(csv_data.split('\\r\\n\\r\\n'))\n    data = []\n    for result in results:\n        rows = result.split('\\r\\n')\n        header = _filter(rows.pop(0).split(','))\n        for row in rows:\n            rec = dict(zip(header, _filter(row.split(','))))\n            rec['last_timestamp'] = last_timestamp\n            data.append(rec)\n    return data\n\n\nentityName = ''\n\n\ndef main():\n    interval = timedelta(seconds=get_interval())\n\n    if sdc.lastOffsets.containsKey(entityName):\n        offset = int(float(sdc.lastOffsets.get(entityName)))\n    elif sdc.userParams['INITIAL_OFFSET']:\n        offset = to_timestamp(datetime.strptime(sdc.userParams['INITIAL_OFFSET'], '%d/%m/%Y %H:%M'))\n    else:\n        offset = to_timestamp(datetime.utcnow().replace(second=0, microsecond=0) - interval)\n\n    sdc.log.info('OFFSET: ' + str(offset))\n\n    N_REQUESTS_TRIES = 3\n\n    while True:\n        if sdc.isStopped():\n            break\n        while offset > get_now_with_delay() - interval.total_seconds():\n            time.sleep(2)\n            if sdc.isStopped():\n                return\n        start = int(offset)\n        stop = int(offset + interval.total_seconds())\n\n        session = requests.Session()\n        session.headers = sdc.userParams['HEADERS']\n        for i in range(1, N_REQUESTS_TRIES + 1):\n            try:\n                res = session.post(\n                    sdc.userParams['URL'],\n                    data=sdc.userParams['QUERY'].format(start, stop),\n                    timeout=sdc.userParams['TIMEOUT']\n                )\n                res.raise_for_status()\n            except requests.HTTPError as e:\n                requests.post(sdc.userParams['MONITORING_URL'] + str(res.status_code))\n                sdc.log.error(str(e))\n                if i == N_REQUESTS_TRIES:\n                    raise\n                time.sleep(2 ** i)\n\n        cur_batch = sdc.createBatch()\n        for obj in csv_to_json(res.text, int(offset)):\n            record = sdc.createRecord('record created ' + str(datetime.now()))\n            record.value = obj\n            cur_batch.add(record)\n            if cur_batch.size() == sdc.batchSize:\n                cur_batch.process(entityName, str(offset))\n                cur_batch = sdc.createBatch()\n                if sdc.isStopped():\n                    break\n        cur_batch.process(entityName, str(offset))\n        offset += interval.total_seconds()\n\n\nmain()"
+        "value" : "global sdc\n\ntry:\n    sdc.importLock()\n    import sys\n    import os\n    import time\n    import traceback\n    import re\n\n    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))\n    import requests\n\n    from datetime import datetime, timedelta\n    from requests.auth import HTTPBasicAuth\nfinally:\n    sdc.importUnlock()\n\n# single threaded - no entityName because we need only one offset\nentityName = ''\nLAST_TIMESTAMP = '%last_timestamp%'\nN_REQUESTS_TRIES = 3\n\n\nPOLL_TIME_KEYS = {\n    'ports': 'poll_time',\n    'mempools': 'mempool_polled',\n    'processors': 'processor_polled',\n    'storage': 'storage_polled'\n}\n\nRESPONSE_DATA_KEYS = {\n    'ports': 'ports',\n    'mempools': 'entries',\n    'processors': 'entries',\n    'storage': 'storage'\n}\n\n\ndef _replace_illegal_chars(value):\n    value = value.strip().replace(\".\", \"_\")\n    return re.sub('\\s+', '_', value)\n\n\ndef get_now():\n    return int(time.time())\n\n\ndef get_next_offset():\n    dt = datetime.utcnow().replace(second=0, microsecond=0)\n    if sdc.userParams['BUCKET_SIZE'] == '5m':\n        dt = dt + timedelta(minutes=5 - dt.minute % 5)\n    else:\n        dt = dt + timedelta(seconds=get_interval())\n    return to_timestamp(dt)\n\n\ndef get_offset_with_delay(offset):\n    return offset + int(sdc.userParams['DELAY_IN_MINUTES']) * 60\n\n\ndef to_timestamp(date):\n    epoch = datetime(1970, 1, 1)\n    return int((date - epoch).total_seconds())\n\n\ndef get_interval():\n    return int(sdc.userParams['INTERVAL_IN_SECONDS'])\n\n\ndef _get(url, params, response_key):\n    for i in range(1, N_REQUESTS_TRIES + 1):\n        try:\n            res = requests.get(\n                url,\n                auth=HTTPBasicAuth(sdc.userParams['API_USER'], sdc.userParams['API_PASSWORD']),\n                params=params,\n                verify=bool(sdc.userParams['VERIFY_SSL']),\n                timeout=sdc.userParams['QUERY_TIMEOUT'],\n            )\n            res.raise_for_status()\n            return res.json()[response_key]\n        except requests.HTTPError as e:\n            requests.post(sdc.userParams['MONITORING_URL'] + str(res.status_code))\n            sdc.log.error(str(e))\n            if i == N_REQUESTS_TRIES:\n                raise\n            time.sleep(2 ** i)\n\n\ndef _add_default_dimensions(data):\n    devices = get_devices()\n    for obj in data.values():\n        if 'sysName' in obj:\n            raise Exception('Data already contains the key `sysName` which should have been added to it from devices')\n        if 'location' in obj:\n            raise Exception('Data already contains the key `location` which should have been added to it from devices')\n        obj['sysName'] = devices[obj['device_id']]['sysName']\n        obj['location'] = devices[obj['device_id']]['location']\n    return data\n\n\ndef get_devices():\n    devices = _get(\n        sdc.userParams['DEVICES_URL'],\n        {},\n        'devices'\n    )\n    return {obj['device_id']: obj for obj in devices.values()}\n\n\ndef create_metrics(data):\n    metrics = []\n    for obj in data.values():\n        metric = {\n            \"timestamp\": obj[POLL_TIME_KEYS[sdc.userParams['ENDPOINT']]],\n            \"dimensions\": {\n                sdc.userParams['DIMENSIONS'][k]: _replace_illegal_chars(v)\n                for k, v in obj.items() if k in sdc.userParams['DIMENSIONS'] and v is not None\n            },\n            \"measurements\": {\n                _replace_illegal_chars(k): float(v) for k, v in obj.items() if k in sdc.userParams['MEASUREMENTS']\n            },\n            \"schemaId\": sdc.userParams['SCHEMA_ID'],\n        }\n        metrics.append(metric)\n    return metrics\n\n\ndef main():\n    if sdc.lastOffsets.containsKey(entityName):\n        offset = int(float(sdc.lastOffsets.get(entityName)))\n    else:\n        offset = to_timestamp(datetime.utcnow().replace(minute=0, second=0, microsecond=0))\n\n    sdc.log.info('Start offset: ' + str(offset))\n\n    cur_batch = sdc.createBatch()\n\n    while True:\n        try:\n            while get_offset_with_delay(offset) > get_now():\n                time.sleep(2)\n                if sdc.isStopped():\n                    return cur_batch, offset\n            offset = get_next_offset()\n\n            data = _get(\n                sdc.userParams['URL'],\n                sdc.userParams['REQUEST_PARAMS'],\n                RESPONSE_DATA_KEYS[sdc.userParams['ENDPOINT']]\n            )\n            data = _add_default_dimensions(data)\n\n            for metric in create_metrics(data):\n                record = sdc.createRecord('record created ' + str(datetime.now()))\n                record.value = metric\n                cur_batch.add(record)\n\n                if cur_batch.size() == sdc.batchSize:\n                    cur_batch.process(entityName, str(offset))\n                    cur_batch = sdc.createBatch()\n\n            cur_batch.process(entityName, str(offset))\n            cur_batch = sdc.createBatch()\n        except Exception:\n            sdc.log.error(traceback.format_exc())\n            raise\n\n\nbatch, offset_ = main()\nif batch.size() + batch.errorCount() + batch.eventCount() > 0:\n    batch.process(entityName, str(offset_ + get_interval()))"
       }, {
         "name" : "scriptConf.batchSize",
-        "value" : 1000
+        "value" : 1
       }, {
         "name" : "scriptConf.numThreads",
         "value" : 1
@@ -432,31 +432,42 @@
       }, {
         "name" : "scriptConf.params",
         "value" : [ {
-          "key" : "URL",
-          "value" : "http://influx2:8086/api/v2/query?org=test"
+          "key" : "ENDPOINT",
+          "value" : "ports"
         }, {
-          "key" : "HEADERS",
-          "value" : {
-            "Authorization" : "Token token",
-            "Accept" : "application/csv",
-            "Content-type" : "application/vnd.flux"
-          }
+          "key" : "DEVICES_URL",
+          "value" : "http://dummy_destination:80/api/v0/devices"
+        }, {
+          "key" : "URL",
+          "value" : "http://dummy_destination:80/api/v0/ports"
+        }, {
+          "key" : "API_USER",
+          "value" : "admin"
+        }, {
+          "key" : "API_PASSWORD",
+          "value" : "admin"
+        }, {
+          "key" : "REQUEST_PARAMS",
+          "value" : { }
+        }, {
+          "key" : "SCHEMA_ID",
+          "value" : "observium_ports-1234"
         } ]
       }, {
         "name" : "stageOnRecordError",
         "value" : "TO_ERROR"
       } ],
       "uiInfo" : {
-        "yPos" : 115.18173217773438,
+        "yPos" : 157,
         "stageType" : "SOURCE",
         "icon" : "jython.png",
         "description" : "",
-        "label" : "Jython Scripting 1",
-        "xPos" : 331.0808868408203,
+        "label" : "Get metrics",
+        "xPos" : 416,
         "displayMode" : "ADVANCED"
       },
       "inputLanes" : [ ],
-      "outputLanes" : [ "JythonScripting_01OutputLane16013726491540" ],
+      "outputLanes" : [ "JythonScripting_01OutputLane15924840586690" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -466,14 +477,14 @@
       "stageVersion" : "1",
       "configuration" : [ ],
       "uiInfo" : {
-        "yPos" : 113.70816802978516,
+        "yPos" : 155,
         "stageType" : "TARGET",
         "icon" : "trash.png",
         "description" : "",
         "label" : "Trash 1",
-        "xPos" : 556.3414611816406
+        "xPos" : 659
       },
-      "inputLanes" : [ "JythonScripting_01OutputLane16013726491540" ],
+      "inputLanes" : [ "JythonScripting_01OutputLane15924840586690" ],
       "outputLanes" : [ ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -497,25 +508,25 @@
       "services" : [ ]
     },
     "info" : {
-      "pipelineId" : "testinflu50d85887-1f8f-49fb-a093-ee8d9717f071",
-      "title" : "test_influx2_x1ccwlf",
+      "pipelineId" : "testobser61bdc95d-c223-4ee2-a9db-f3078527a21c",
+      "title" : "test_observium_rjjd1fm",
       "description" : "",
-      "created" : 1640269099411,
-      "lastModified" : 1640269159730,
+      "created" : 1640275520326,
+      "lastModified" : 1640275608371,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "3c4f35b5-b32d-4a04-93da-2dfcdda18506",
+      "uuid" : "41a00a81-3cc9-45d7-a198-b76dfde5394c",
       "valid" : true,
       "metadata" : {
-        "labels" : [ "influx2", "http" ]
+        "labels" : [ "observium", "http" ]
       },
-      "name" : "testinflu50d85887-1f8f-49fb-a093-ee8d9717f071",
+      "name" : "testobser61bdc95d-c223-4ee2-a9db-f3078527a21c",
       "sdcVersion" : "3.18.0",
       "sdcId" : "fd60fea2-636d-11ec-8fb2-bb1e7fba2f98"
     },
     "metadata" : {
-      "labels" : [ "influx2", "http" ]
+      "labels" : [ "observium", "http" ]
     },
     "statsAggregatorStage" : {
       "instanceName" : "statsAggregatorStageInstance",
@@ -687,6 +698,9 @@
           "name" : "dataFormatConfig.xmlRecordElement",
           "value" : null
         }, {
+          "name" : "dataFormatConfig.preserveRootElement",
+          "value" : false
+        }, {
           "name" : "dataFormatConfig.includeFieldXpathAttributes",
           "value" : false
         }, {
@@ -747,6 +761,9 @@
           "name" : "dataFormatConfig.schemaRegistryUrls",
           "value" : [ ]
         }, {
+          "name" : "dataFormatConfig.basicAuth",
+          "value" : ""
+        }, {
           "name" : "dataFormatConfig.schemaLookupMode",
           "value" : "SUBJECT"
         }, {
@@ -755,6 +772,9 @@
         }, {
           "name" : "dataFormatConfig.schemaId",
           "value" : null
+        }, {
+          "name" : "dataFormatConfig.avroSkipUnionIndex",
+          "value" : false
         }, {
           "name" : "dataFormatConfig.protoDescriptorFile",
           "value" : null
@@ -813,23 +833,14 @@
           "name" : "dataFormatConfig.excelHeader",
           "value" : null
         }, {
-          "name" : "dataFormatConfig.preserveRootElement",
-          "value" : false
-        }, {
-          "name" : "dataFormatConfig.basicAuth",
-          "value" : null
-        }, {
-          "name" : "dataFormatConfig.avroSkipUnionIndex",
-          "value" : false
-        }, {
           "name" : "dataFormatConfig.excelSkipCellsWithNoHeader",
           "value" : false
         }, {
           "name" : "dataFormatConfig.excelReadAllSheets",
-          "value" : true
+          "value" : false
         }, {
           "name" : "dataFormatConfig.excelSheetNames",
-          "value" : null
+          "value" : [ ]
         } ]
       } ]
     },
@@ -853,7 +864,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1640182378498,
+      "timestamp" : 1640185077103,
       "valid" : true
     }, {
       "id" : "stageErrorAlertID",
@@ -864,7 +875,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1640182378498,
+      "timestamp" : 1640185077103,
       "valid" : true
     }, {
       "id" : "idleGaugeID",
@@ -875,7 +886,7 @@
       "condition" : "${time:now() - value() > 120000}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1640182378498,
+      "timestamp" : 1640185077103,
       "valid" : true
     }, {
       "id" : "batchTimeAlertID",
@@ -886,12 +897,12 @@
       "condition" : "${value() > 200}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1640182378498,
+      "timestamp" : 1640185077103,
       "valid" : true
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "d23dfa0a-5512-4ab8-80b7-cf450c525bc5",
+    "uuid" : "0234e449-27f5-406f-b104-fb5d0c494118",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : null
