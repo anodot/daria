@@ -100,13 +100,13 @@ class InfluxValidator(Validator):
                 raise ValidationException(str(e))
 
 
-class Influx2Validator(InfluxValidator):
+class Influx2Validator(Validator):
     VALIDATION_SCHEMA_FILE = 'influx2.json'
 
-    @if_validation_enabled
-    def validate_connection(self):
-        res = requests.get(self.source.config['host'])
-        res.raise_for_status()
+    # @if_validation_enabled
+    # def validate_connection(self):
+    #     res = requests.get(self.source.config['host'])
+    #     res.raise_for_status()
 
     # @if_validation_enabled
     # def validate_db(self):
@@ -302,6 +302,9 @@ class SolarWindsValidator(Validator):
 
 class ObserviumValidator(Validator):
     VALIDATION_SCHEMA_FILE = 'observium.json'
+
+    def validate_connection(self):
+        pass
 
     # def validate_connection(self):
     #     session = http.Session()
