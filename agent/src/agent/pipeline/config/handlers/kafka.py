@@ -1,6 +1,6 @@
 from agent.modules.logger import get_logger
 from agent.pipeline.config import stages
-from agent.pipeline.config.handlers.base import NoSchemaConfigHandler, SchemaConfigHandler
+from agent.pipeline.config.handlers.base import BaseConfigHandler, NoSchemaConfigHandler, SchemaConfigHandler
 
 logger = get_logger(__name__)
 
@@ -24,3 +24,12 @@ class KafkaSchemaConfigHandler(SchemaConfigHandler):
         'ExpressionEvaluator_03': stages.expression_evaluator.Filtering,
         'destination': stages.destination.Destination
     }
+
+
+class TestKafkaSchemaConfigHandler(BaseConfigHandler):
+    stages_to_override = {
+        'source': stages.source.Source,
+    }
+
+    def _check_pipeline(self):
+        pass
