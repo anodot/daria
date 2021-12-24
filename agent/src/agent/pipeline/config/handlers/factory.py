@@ -67,7 +67,7 @@ def _get_schema_handler(pipeline_: Pipeline, base_config: dict) -> SchemaConfigH
 def _get_test_handler(pipeline_: Pipeline, base_config: dict) -> BaseConfigHandler:
     handlers = {
         source.TYPE_CACTI: pipeline.config.handlers.cacti.CactiConfigHandler,
-        source.TYPE_CLICKHOUSE: pipeline.config.handlers.jdbc.JDBCConfigHandler,
+        source.TYPE_CLICKHOUSE: pipeline.config.handlers.jdbc.JDBCSchemaConfigHandler,
         source.TYPE_DIRECTORY: pipeline.config.handlers.directory.DirectoryConfigHandler,
         source.TYPE_DATABRICKS: pipeline.config.handlers.jdbc.JDBCSchemaConfigHandler,
         source.TYPE_ELASTIC: pipeline.config.handlers.elastic.ElasticConfigHandler,
