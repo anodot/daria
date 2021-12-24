@@ -52,6 +52,15 @@ class TestInflux2Source(Influx2Source):
     JYTHON_SCRIPT = 'influx2.py'
     JYTHON_SCRIPTS_PATH = os.path.join(InfluxScript.JYTHON_SCRIPTS_PATH, 'tests')
 
+    def _get_url(self) -> str:
+        return urljoin(self.pipeline.source.config['host'], '/api/v2/buckets')
+
+    def _get_headers(self) -> dict:
+        return {
+            'Accept': 'application/csv',
+            'Content-type': 'application/vnd.flux',
+        }
+
     def get_config(self) -> dict:
         with open(self.get_jython_file_path()) as f:
             return {

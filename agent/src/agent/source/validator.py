@@ -100,13 +100,12 @@ class InfluxValidator(Validator):
                 raise ValidationException(str(e))
 
 
-class Influx2Validator(Validator):
+class Influx2Validator(InfluxValidator):
     VALIDATION_SCHEMA_FILE = 'influx2.json'
 
-    # @if_validation_enabled
-    # def validate_connection(self):
-    #     res = requests.get(self.source.config['host'])
-    #     res.raise_for_status()
+    @if_validation_enabled
+    def validate_connection(self):
+        Validator.validate_connection(self)
 
     # @if_validation_enabled
     # def validate_db(self):
