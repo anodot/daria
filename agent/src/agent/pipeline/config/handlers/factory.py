@@ -7,10 +7,10 @@ def get_config_handler(pipeline_: Pipeline) -> BaseConfigHandler:
     base_config = _get_config_loader(pipeline_).load_base_config(pipeline_)
     if isinstance(pipeline_, pipeline.RawPipeline):
         return _get_raw_handler(pipeline_, base_config)
-    if pipeline_.uses_schema:
-        return _get_schema_handler(pipeline_, base_config)
     if isinstance(pipeline_, pipeline.TestPipeline):
         return _get_test_handler(pipeline_, base_config)
+    if pipeline_.uses_schema:
+        return _get_schema_handler(pipeline_, base_config)
     return _get_no_schema_handler(pipeline_, base_config)
 
 
@@ -67,7 +67,7 @@ def _get_schema_handler(pipeline_: Pipeline, base_config: dict) -> SchemaConfigH
 def _get_test_handler(pipeline_: Pipeline, base_config: dict) -> BaseConfigHandler:
     handlers = {
         source.TYPE_CACTI: pipeline.config.handlers.cacti.CactiConfigHandler,
-        source.TYPE_CLICKHOUSE: pipeline.config.handlers.jdbc.JDBCSchemaConfigHandler,
+        source.TYPE_CLICKHOUSE: pipeline.config.handlers.jdbc.TestJDBCConfigHandler,
         source.TYPE_DIRECTORY: pipeline.config.handlers.directory.DirectoryConfigHandler,
         source.TYPE_DATABRICKS: pipeline.config.handlers.jdbc.JDBCSchemaConfigHandler,
         source.TYPE_ELASTIC: pipeline.config.handlers.elastic.ElasticConfigHandler,
