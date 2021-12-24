@@ -134,7 +134,9 @@ test-export-sources:
 	$(DOCKER_TEST_PARALLEL) tests/test_export_sources.py
 
 test-pipelines:
+	$(DOCKER_CRED_STORE) add -i jks -n testmongopass -c root
 	$(DOCKER_TEST_PARALLEL) tests/test_pipelines/
+	$(DOCKER_CRED_STORE) delete -i jks -n testmongopass
 
 test-run-test-pipeline:
 	$(DOCKER_TEST) tests/test_run_test_pipeline.py
