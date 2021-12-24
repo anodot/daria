@@ -5,7 +5,7 @@ DOCKER_COMPOSE_DEV_FILE = docker-compose-dev.yml
 DOCKER_COMPOSE_DEV = docker-compose -f $(DOCKER_COMPOSE_DEV_FILE)
 DOCKER_TEST = docker exec -i anodot-agent pytest -x -vv --disable-pytest-warnings
 DOCKER_TEST_PARALLEL = $(DOCKER_TEST) -n $(THREADS) --dist=loadfile
-DOCKER_CRED_STORE = docker exec -i dc /opt/streamsets-datacollector-3.18.0/bin/streamsets stagelib-cli jks-credentialstore
+DOCKER_CRED_STORE = docker exec dc /opt/streamsets-datacollector-3.18.0/bin/streamsets stagelib-cli jks-credentialstore
 
 ##---------
 ## RELEASE
