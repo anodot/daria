@@ -27,8 +27,5 @@ COPY python-libs ${SDC_DIST}/python-libs
 
 VOLUME /data
 
-#RUN rm -vf /opt/./sdc-extras/streamsets-datacollector-jdbc-lib/lib/docs/release-notes.txt
-#           /opt/./sdc-extras/streamsets-datacollector-jdbc-lib/lib/SparkJDBC42.jar
-
 ENTRYPOINT ["/custom_entrypoint.sh"]
 CMD ["dc", "-exec"]
