@@ -79,6 +79,10 @@ class TestInfluxConfigHandler(SchemaConfigHandler):
         'source': stages.source.influx.TestInfluxSource,
     }
 
+    def _check_pipeline(self):
+        pass
+
+
 
 class TestInflux2ConfigHandler(InfluxConfigHandler):
     stages_to_override = {
