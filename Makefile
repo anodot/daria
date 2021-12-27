@@ -136,10 +136,8 @@ test-export-sources:
 test-pipelines:
 	$(DOCKER_CRED_STORE) add -i jks -n testmongopass -c root
 	$(DOCKER_CRED_STORE2) add -i jks -n testmongopass -c root
-	sleep 10
-	$(DOCKER_CRED_STORE) list -i jks
-	$(DOCKER_CRED_STORE2) list -i jks
-	$(DOCKER_TEST) tests/test_pipelines/
+	sleep 15
+	$(DOCKER_TEST_PARALLEL) tests/test_pipelines/
 
 test-run-test-pipeline:
 	$(DOCKER_TEST) tests/test_run_test_pipeline.py
