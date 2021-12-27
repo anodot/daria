@@ -16,9 +16,6 @@ APPLICATION = 'application'
 
 TOPOLOGY_ENTITIES = [REGION, SITE, NODE, CARD, INTERFACE, CELL, LINK, SERVICE, LOGICAL_GROUP, APPLICATION]
 
-# todo it shouldn't be global
-lookup_ = lookup.Cache()
-
 
 def extract_metrics(pipeline_: Pipeline) -> dict:
     lookup.init_sources(pipeline_.source.config.get('lookup', {}))
