@@ -2,7 +2,6 @@ import json
 import os
 import urllib.parse
 import jsonschema
-import requests
 import inject
 
 from abc import ABC, abstractmethod
@@ -11,7 +10,7 @@ from pysnmp.entity.engine import SnmpEngine
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 from agent import source
 from agent.modules.tools import if_validation_enabled
-from agent.modules import validator, zabbix, http
+from agent.modules import validator
 from agent.source import Source
 from pysnmp.hlapi import getCmd, CommunityData, UdpTransportTarget, ContextData
 
@@ -72,18 +71,6 @@ class InfluxValidator(Validator):
         client = source.db.get_influx_client(self.source.config['host'])
         client.ping()
 
-    # @if_validation_enabled
-    # def validate_db(self):
-    #     client = source.db.get_influx_client(
-    #         self.source.config['host'],
-    #         self.source.config.get('username'),
-    #         self.source.config.get('password')
-    #     )
-    #     if all(db['name'] != self.source.config['db'] for db in client.get_list_database()):
-    #         raise ValidationException(
-    #             f"Database {self.source.config['db']} not found. Please check your credentials again"
-    #         )
-
     def validate_offset(self):
         if not self.source.config.get('offset'):
             return
@@ -106,15 +93,6 @@ class Influx2Validator(InfluxValidator):
     @if_validation_enabled
     def validate_connection(self):
         Validator.validate_connection(self)
-
-    # @if_validation_enabled
-    # def validate_db(self):
-    #     session = requests.Session()
-    #     session.headers['Authorization'] = f'Token {self.source.config["token"]}'
-    #     res = session.get(
-    #         urllib.parse.urljoin(self.source.config['host'], '/api/v2/buckets')
-    #     )
-    #     res.raise_for_status()
 
 
 class ElasticValidator(Validator):
@@ -174,42 +152,9 @@ class MongoValidator(Validator):
         self.validate_db()
         self.validate_collection()
 
-    # @if_validation_enabled
-    # def validate_connection(self):
-    #     client = source.db.get_mongo_client(
-    #         self.source.config[source.MongoSource.CONFIG_CONNECTION_STRING],
-    #         self.source.config.get(source.MongoSource.CONFIG_USERNAME),
-    #         self.source.config.get(source.MongoSource.CONFIG_PASSWORD),
-    #         self.source.config.get(source.MongoSource.CONFIG_AUTH_SOURCE)
-    #     )
-    #     client.server_info()
-    #
-    # @if_validation_enabled
-    # def validate_db(self):
-    #     client = source.db.get_mongo_client(
-    #         self.source.config[source.MongoSource.CONFIG_CONNECTION_STRING],
-    #         self.source.config.get(source.MongoSource.CONFIG_USERNAME),
-    #         self.source.config.get(source.MongoSource.CONFIG_PASSWORD),
-    #         self.source.config.get(source.MongoSource.CONFIG_AUTH_SOURCE)
-    #     )
-    #     if self.source.config[source.MongoSource.CONFIG_DATABASE] not in client.list_database_names():
-    #         raise ValidationException(
-    #             f'Database {self.source.config[source.MongoSource.CONFIG_DATABASE]} doesn\'t exist')
-
     @if_validation_enabled
     def validate_collection(self):
         pass
-
-    #     client = source.db.get_mongo_client(
-    #         self.source.config[source.MongoSource.CONFIG_CONNECTION_STRING],
-    #         self.source.config.get(source.MongoSource.CONFIG_USERNAME),
-    #         self.source.config.get(source.MongoSource.CONFIG_PASSWORD),
-    #         self.source.config.get(source.MongoSource.CONFIG_AUTH_SOURCE)
-    #     )
-    #     if self.source.config[source.MongoSource.CONFIG_COLLECTION] \
-    #             not in client[self.source.config[source.MongoSource.CONFIG_DATABASE]].list_collection_names():
-    #         raise ValidationException(
-    #             f'Collection {self.source.config[source.MongoSource.CONFIG_DATABASE]} doesn\'t exist')
 
 
 class SNMPValidator(Validator):
@@ -258,77 +203,17 @@ class SageValidator(Validator):
 class PromQLValidator(Validator):
     VALIDATION_SCHEMA_FILE = 'promql.json'
 
-    # def validate_connection(self):
-    #     url = self.source.config['url'] + '/api/v1/export?match[]={__name__="not_existing_dsger43"}'
-    #     session = requests.Session()
-    #     if self.source.config.get(source.PromQLSource.USERNAME):
-    #         session.auth = (
-    #             self.source.config[source.PromQLSource.USERNAME],
-    #             self.source.config[source.PromQLSource.PASSWORD]
-    #         )
-    #     try:
-    #         res = session.get(url, verify=False)
-    #         res.raise_for_status()
-    #     except requests.exceptions.RequestException as e:
-    #         raise ValidationException(
-    #             'Failed connecting to VictoriaMetrics. Make sure you provided correct url, username and password\n'
-    #             + str(e)
-    #         )
-
 
 class SolarWindsValidator(Validator):
     VALIDATION_SCHEMA_FILE = 'solarwinds.json'
-
-    # def validate_connection(self):
-    #     url = urllib.parse.urljoin(
-    #         self.source.config['url'],
-    #         '/SolarWinds/InformationService/v3/Json/Query?query=SELECT+TOP+1+1+as+test+FROM+Orion.Accounts'
-    #     )
-    #     session = http.Session()
-    #     session.auth = (
-    #         self.source.config[source.APISource.USERNAME],
-    #         self.source.config[source.APISource.PASSWORD]
-    #     )
-    #     try:
-    #         res = session.get(url, verify=False, timeout=20)
-    #         res.raise_for_status()
-    #     except requests.exceptions.RequestException as e:
-    #         raise ValidationException(
-    #             'Failed to connect to SolarWinds. Make sure you provided correct url, API username and password:\n'
-    #             + str(e)
-    #         )
 
 
 class ObserviumValidator(Validator):
     VALIDATION_SCHEMA_FILE = 'observium.json'
 
-    # def validate_connection(self):
-    #     session = http.Session()
-    #     session.auth = (
-    #         self.source.config[source.ObserviumSource.USERNAME],
-    #         self.source.config[source.ObserviumSource.PASSWORD]
-    #     )
-    #     try:
-    #         url = urllib.parse.urljoin(self.source.config['url'], source.ObserviumSource.DEVICES_API_PATH)
-    #         res = session.get(url, verify=self.source.config.get('verify_ssl', True), timeout=self.source.query_timeout)
-    #         res.raise_for_status()
-    #     except requests.exceptions.RequestException as e:
-    #         raise ValidationException(
-    #             'Failed to connect to Observium API. Make sure you provided correct url, API username and password:\n'
-    #             + str(e)
-    #         )
-
 
 class ZabbixValidator(Validator):
     VALIDATION_SCHEMA_FILE = 'zabbix.json'
-
-    # def validate_connection(self):
-    #     zabbix.Client(
-    #         self.source.config[source.ZabbixSource.URL],
-    #         self.source.config[source.ZabbixSource.USER],
-    #         self.source.config[source.ZabbixSource.PASSWORD],
-    #         self.source.config.get(source.ZabbixSource.VERIFY_SSL, True),
-    #     )
 
 
 class SchemalessValidator(Validator):
