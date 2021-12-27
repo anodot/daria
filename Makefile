@@ -134,10 +134,7 @@ test-export-sources:
 	$(DOCKER_TEST_PARALLEL) tests/test_export_sources.py
 
 test-pipelines:
-	$(DOCKER_CRED_STORE) list -i jks
-	sleep 10
 	$(DOCKER_CRED_STORE) add -i jks -n testmongopass -c root
-	sleep 10
 	$(DOCKER_TEST_PARALLEL) tests/test_pipelines/
 
 test-run-test-pipeline:
