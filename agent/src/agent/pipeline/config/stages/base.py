@@ -22,9 +22,11 @@ class Stage(ABC):
     def get_config(self) -> dict:
         pass
 
+    # todo it should be only in jython
     def get_jython_file_path(self):
         return os.path.join(ROOT_DIR, self.JYTHON_SCRIPTS_PATH, self.JYTHON_SCRIPT)
 
+    # todo it should be only in js
     def _get_js_file_path(self, name: str):
         return os.path.join(ROOT_DIR, self.JS_SCRIPTS_PATH, name)
 
@@ -33,19 +35,23 @@ class Stage(ABC):
         return midnight - timedelta(days=int(self.pipeline.days_to_backfill))
 
 
-class JythonSource(Stage):
-    def get_config(self) -> dict:
-        return {'scriptConf.params': self._get_script_params(), 'script': self._get_script()}
-
+class JythonScript(Stage, ABC):
     def _get_script(self) -> str:
+        # todo it might be the same for jython and js scripts
         with open(self.get_jython_file_path()) as f:
             return f.read()
 
     def _get_script_params(self) -> list[dict]:
+        # todo it should be abstract
         return []
 
 
-class JythonDataExtractorSource(JythonSource):
+class JythonSource(JythonScript, ABC):
+    def get_config(self) -> dict:
+        return {'scriptConf.params': self._get_script_params(), 'script': self._get_script()}
+
+
+class JythonDataExtractorSource(JythonSource, ABC):
     DATA_EXTRACTOR_API_PATH = ''
 
     def _get_source_url(self) -> str:
@@ -55,7 +61,6 @@ class JythonDataExtractorSource(JythonSource):
         )
 
 
-# todo think about it
-class JythonProcessor(JythonSource):
+class JythonProcessor(JythonScript, ABC):
     def get_config(self) -> dict:
-        return {'scriptConf.params': self._get_script_params(), 'script': self._get_script()}
+        return {'userParams': self._get_script_params(), 'script': self._get_script()}
