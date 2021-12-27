@@ -59,7 +59,6 @@ test-mongo: bootstrap run-mongo
 	$(DOCKER_CRED_STORE) add -i jks -n testmongopass -c root
 	$(DOCKER_TEST) tests/test_input/test_mongo_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_mongo_http.py
-	$(DOCKER_CRED_STORE) delete -i jks -n testmongopass
 
 test-mysql: bootstrap run-mysql sleep
 	$(DOCKER_TEST) tests/test_input/test_mysql_http.py
