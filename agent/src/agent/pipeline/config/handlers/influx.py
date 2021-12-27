@@ -74,6 +74,12 @@ class Influx2SchemaConfigHandler(SchemaConfigHandler):
     }
 
 
+class TestInfluxConfigHandler(SchemaConfigHandler):
+    stages_to_override = {
+        'source': stages.source.influx.TestInfluxSource,
+    }
+
+
 class TestInflux2ConfigHandler(InfluxConfigHandler):
     stages_to_override = {
         'source': stages.source.influx2.TestInflux2Source,
