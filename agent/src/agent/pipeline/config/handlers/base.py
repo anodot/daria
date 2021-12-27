@@ -27,8 +27,9 @@ class BaseConfigLoader(ABC):
 
     @classmethod
     def _get_config_path(cls, pipeline: Pipeline):
-        return os.path.join(ROOT_DIR, 'pipeline', 'config', cls.BASE_PIPELINE_CONFIGS_PATH,
-                            cls._get_config_file(pipeline))
+        return os.path.join(
+            ROOT_DIR, 'pipeline', 'config', cls.BASE_PIPELINE_CONFIGS_PATH, cls._get_config_file(pipeline)
+        )
 
     @classmethod
     def _get_config_file(cls, pipeline: Pipeline) -> str:
@@ -47,6 +48,7 @@ class BaseConfigLoader(ABC):
             source.TYPE_SPLUNK: 'tcp_server_http.json',
             source.TYPE_SOLARWINDS: 'solarwinds.json',
             source.TYPE_THANOS: 'promql_http.json',
+            source.TYPE_TOPOLOGY: 'topology.json',
             source.TYPE_VICTORIA: 'promql_http.json',
             source.TYPE_ZABBIX: 'zabbix_http.json',
         }[pipeline.source.type]

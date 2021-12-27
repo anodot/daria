@@ -61,8 +61,8 @@ class ElasticSource(Source):
     def set_config(self, config):
         super().set_config(config)
         if 'query_interval_sec' in self.config:
-            self.config[ElasticSource.CONFIG_QUERY_INTERVAL] = '${' + str(
-                self.config['query_interval_sec']) + ' * SECONDS}'
+            self.config[ElasticSource.CONFIG_QUERY_INTERVAL] = \
+                '${' + str(self.config['query_interval_sec']) + ' * SECONDS}'
         self.config[ElasticSource.CONFIG_IS_INCREMENTAL] = True
 
 
@@ -237,6 +237,10 @@ class DirectorySource(SchemalessSource):
 
 
 class TCPSource(SchemalessSource):
+    pass
+
+
+class TopologySource(APISource):
     pass
 
 

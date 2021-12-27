@@ -1,19 +1,16 @@
 import urllib.parse
 
 from agent import source
-from agent.pipeline.config.stages.source import Source
+from agent.pipeline.config.stages.base import Stage
 
 
-class ObserviumScript(Source):
+class ObserviumScript(Stage):
     JYTHON_SCRIPT = 'observium.py'
 
     def get_config(self) -> dict:
         with open(self.get_jython_file_path()) as f:
             script = f.read()
-        base_url = urllib.parse.urljoin(
-            self.pipeline.source.config[source.ObserviumSource.URL],
-            '/api/v0/'
-        )
+        base_url = urllib.parse.urljoin(self.pipeline.source.config[source.ObserviumSource.URL], '/api/v0/')
         return {
             'scriptConf.params': [
                 {'key': 'ENDPOINT', 'value': self.pipeline.source.config['endpoint']},
@@ -37,6 +34,5 @@ class ObserviumScript(Source):
 
     def _monitoring_url(self):
         return urllib.parse.urljoin(
-            self.pipeline.streamsets.agent_external_url,
-            f'/monitoring/source_http_error/{self.pipeline.name}/'
+            self.pipeline.streamsets.agent_external_url, f'/monitoring/source_http_error/{self.pipeline.name}/'
         )

@@ -1,0 +1,11 @@
+{
+  "type": "object",
+  "properties": {
+    "verify_ssl": {"type": "boolean"},
+    "query_timeout": {"type": "integer"},
+    "entities": {
+      "type": "object"
+    }
+  },
+  "required": ["entities"]
+}

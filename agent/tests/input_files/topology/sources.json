@@ -1,0 +1,100 @@
+[
+  {
+    "type": "topology",
+    "name": "topology",
+    "config": {
+      "lookup": {
+        "region": {
+          "type": "file",
+          "path": "/usr/src/app/tests/input_files/topology/region.csv"
+        }
+      },
+      "entities": {
+        "region": {
+          "source": {
+            "type": "file",
+            "format": "CSV",
+            "path": "/usr/src/app/tests/input_files/topology/region.csv"
+          },
+          "fields": {
+            "dimension_id": {
+              "type": "variable",
+              "source_field": "Full Name"
+            },
+            "name": {
+              "type": "variable",
+              "source_field": "Full Name"
+            },
+            "type": {
+              "type": "constant",
+              "value": "Province"
+            }
+          }
+        },
+        "site": {
+          "source": {
+            "type": "API",
+            "url": "http://dummy_destination/api/v1/site",
+            "authentication": {
+              "type": "basic",
+              "username": "admin",
+              "password": "admin"
+            }
+          },
+          "fields": {
+            "dimension_id": {
+              "type": "variable",
+              "source_field": "attributes.name"
+            },
+            "parent_region_dimension_id": {
+              "type": "variable",
+              "source_field": "attributes.name",
+              "transformations": [
+                {
+                  "type": "function",
+                  "value": "substring 0 2"
+                },
+                {
+                  "type": "lookup",
+                  "name": "region",
+                  "key": "Short Name",
+                  "value": "Full Name"
+                }
+              ]
+            },
+            "name": {
+              "type": "variable",
+              "source_field": "attributes.name"
+            },
+            "type": {
+              "type": "constant",
+              "value": "Mobile RAN"
+            },
+            "domain": {
+              "type": "constant",
+              "value": "RAN"
+            },
+            "lat": {
+              "type": "variable",
+              "source_field": "attributes.p_lat"
+            },
+            "lon": {
+              "type": "variable",
+              "source_field": "attributes.p_lon"
+            },
+            "address": {
+              "type": "variable",
+              "source_field": "attributes.street",
+              "transformations": [
+                {
+                  "type": "function",
+                  "value": "concat attributes.house"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+]

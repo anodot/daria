@@ -71,9 +71,7 @@ class InfluxValidator(Validator):
     @if_validation_enabled
     def validate_db(self):
         client = source.db.get_influx_client(
-            self.source.config['host'],
-            self.source.config.get('username'),
-            self.source.config.get('password')
+            self.source.config['host'], self.source.config.get('username'), self.source.config.get('password')
         )
         if all(db['name'] != self.source.config['db'] for db in client.get_list_database()):
             raise ValidationException(
@@ -108,9 +106,7 @@ class Influx2Validator(InfluxValidator):
     def validate_db(self):
         session = requests.Session()
         session.headers['Authorization'] = f'Token {self.source.config["token"]}'
-        res = session.get(
-            urllib.parse.urljoin(self.source.config['host'], '/api/v2/buckets')
-        )
+        res = session.get(urllib.parse.urljoin(self.source.config['host'], '/api/v2/buckets'))
         res.raise_for_status()
 
 
@@ -191,7 +187,8 @@ class MongoValidator(Validator):
         )
         if self.source.config[source.MongoSource.CONFIG_DATABASE] not in client.list_database_names():
             raise ValidationException(
-                f'Database {self.source.config[source.MongoSource.CONFIG_DATABASE]} doesn\'t exist')
+                f'Database {self.source.config[source.MongoSource.CONFIG_DATABASE]} doesn\'t exist'
+            )
 
     @if_validation_enabled
     def validate_collection(self):
@@ -204,7 +201,8 @@ class MongoValidator(Validator):
         if self.source.config[source.MongoSource.CONFIG_COLLECTION] \
                 not in client[self.source.config[source.MongoSource.CONFIG_DATABASE]].list_collection_names():
             raise ValidationException(
-                f'Collection {self.source.config[source.MongoSource.CONFIG_DATABASE]} doesn\'t exist')
+                f'Collection {self.source.config[source.MongoSource.CONFIG_DATABASE]} doesn\'t exist'
+            )
 
 
 class SNMPValidator(Validator):
@@ -258,8 +256,7 @@ class PromQLValidator(Validator):
         session = requests.Session()
         if self.source.config.get(source.PromQLSource.USERNAME):
             session.auth = (
-                self.source.config[source.PromQLSource.USERNAME],
-                self.source.config[source.PromQLSource.PASSWORD]
+                self.source.config[source.PromQLSource.USERNAME], self.source.config[source.PromQLSource.PASSWORD]
             )
         try:
             res = session.get(url, verify=False)
@@ -280,10 +277,7 @@ class SolarWindsValidator(Validator):
             '/SolarWinds/InformationService/v3/Json/Query?query=SELECT+TOP+1+1+as+test+FROM+Orion.Accounts'
         )
         session = http.Session()
-        session.auth = (
-            self.source.config[source.APISource.USERNAME],
-            self.source.config[source.APISource.PASSWORD]
-        )
+        session.auth = (self.source.config[source.APISource.USERNAME], self.source.config[source.APISource.PASSWORD])
         try:
             res = session.get(url, verify=False, timeout=20)
             res.raise_for_status()
@@ -300,8 +294,7 @@ class ObserviumValidator(Validator):
     def validate_connection(self):
         session = http.Session()
         session.auth = (
-            self.source.config[source.ObserviumSource.USERNAME],
-            self.source.config[source.ObserviumSource.PASSWORD]
+            self.source.config[source.ObserviumSource.USERNAME], self.source.config[source.ObserviumSource.PASSWORD]
         )
         try:
             url = urllib.parse.urljoin(self.source.config['url'], source.ObserviumSource.DEVICES_API_PATH)
@@ -332,8 +325,9 @@ class SchemalessValidator(Validator):
         self.validate_grok_file()
 
     def validate_grok_file(self):
-        if self.source.config.get(source.SchemalessSource.CONFIG_GROK_PATTERN_FILE) and not os.path.isfile(
-                self.source.config[source.SchemalessSource.CONFIG_GROK_PATTERN_FILE]):
+        if self.source.config.get(
+            source.SchemalessSource.CONFIG_GROK_PATTERN_FILE
+        ) and not os.path.isfile(self.source.config[source.SchemalessSource.CONFIG_GROK_PATTERN_FILE]):
             raise ValidationException('File does not exist')
 
 
@@ -347,6 +341,15 @@ class SplunkValidator(SchemalessValidator):
 
 class DirectoryValidator(SchemalessValidator):
     VALIDATION_SCHEMA_FILE = 'directory.json'
+
+
+class TopologyValidator(SchemalessValidator):
+    VALIDATION_SCHEMA_FILE = 'topology.json'
+
+    @if_validation_enabled
+    def validate_connection(self):
+        # todo
+        pass
 
 
 class CactiValidator(Validator):
@@ -393,6 +396,7 @@ def get_validator(source_: Source) -> Validator:
         source.TYPE_SPLUNK: SplunkValidator,
         source.TYPE_SOLARWINDS: SolarWindsValidator,
         source.TYPE_THANOS: PromQLValidator,
+        source.TYPE_TOPOLOGY: TopologyValidator,
         source.TYPE_VICTORIA: PromQLValidator,
         source.TYPE_ZABBIX: ZabbixValidator,
     }
