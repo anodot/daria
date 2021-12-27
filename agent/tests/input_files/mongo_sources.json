@@ -13,7 +13,7 @@
   },
     {
     "type": "mongo",
-    "name": "test_mongo_enc",
+    "name": "test_mongo_encrypted_pass",
     "config": {
       "configBean.mongoConfig.connectionString": "mongodb://mongo:27017",
       "configBean.mongoConfig.database": "test",

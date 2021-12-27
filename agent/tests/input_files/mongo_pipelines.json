@@ -11,18 +11,7 @@
     }
   },
   {
-    "source": "test_mongo_enc",
-    "pipeline_id": "test_mongo_enc_file_short",
-    "measurement_names": {"Clicks":  "clicks"},
-    "values": {"Clicks":  "gauge"},
-    "dimensions": ["ver", "Country"],
-    "timestamp": {
-      "type": "unix_ms",
-      "name": "timestamp_unix_ms"
-    }
-  },
-  {
-    "source": "test_mongo",
+    "source": "test_mongo_encrypted_pass",
     "pipeline_id": "test_mongo_file_full",
     "measurement_names": {"Clicks":  "clicks"},
     "values": {"Clicks":  "gauge"},
