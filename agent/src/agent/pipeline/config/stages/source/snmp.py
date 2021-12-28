@@ -3,7 +3,7 @@ from agent.pipeline.config.stages.base import JythonDataExtractorSource
 
 class SNMP(JythonDataExtractorSource):
     JYTHON_SCRIPT = 'snmp.py'
-    DATA_EXTRACTOR_API_PATH = 'data_extractor/snmp/'
+    DATA_EXTRACTOR_API_PATH = 'data_extractors/snmp/'
 
     def get_config(self) -> dict:
         with open(self.get_jython_file_path()) as f:
@@ -27,7 +27,7 @@ class SNMP(JythonDataExtractorSource):
 
 
 class SNMPRaw(JythonDataExtractorSource):
-    DATA_EXTRACTOR_API_PATH = 'data_extractor/snmp/raw/'
+    DATA_EXTRACTOR_API_PATH = 'data_extractors/snmp/raw/'
 
     def get_config(self) -> dict:
         return {

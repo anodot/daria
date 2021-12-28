@@ -3,7 +3,7 @@ from agent.pipeline.config.stages.base import JythonDataExtractorSource
 
 class TopologyScript(JythonDataExtractorSource):
     JYTHON_SCRIPT = 'sources/topology.py'
-    DATA_EXTRACTOR_API_PATH = 'data_extractor/topology/'
+    DATA_EXTRACTOR_API_PATH = 'data_extractors/topology/'
 
     def _get_script_params(self) -> list[dict]:
         return [
