@@ -6,7 +6,7 @@ from agent.data_extractor.snmp.snmp import SNMPError
 snmp = Blueprint('snmp_source', __name__)
 
 
-@snmp.route('/data_extractor/snmp/<pipeline_id>', methods=['GET'])
+@snmp.route('/data_extractors/snmp/<pipeline_id>', methods=['GET'])
 @needs_pipeline
 def read(pipeline_id: str):
     pipeline_ = pipeline.repository.get_by_id(pipeline_id)
@@ -17,7 +17,7 @@ def read(pipeline_id: str):
     return jsonify(metrics)
 
 
-@snmp.route('/data_extractor/snmp/raw/<pipeline_id>', methods=['GET'])
+@snmp.route('/data_extractors/snmp/raw/<pipeline_id>', methods=['GET'])
 @needs_pipeline
 def read_raw(pipeline_id: str):
     pipeline_ = pipeline.repository.get_by_id(pipeline_id)

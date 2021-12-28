@@ -90,7 +90,7 @@ def _get_authentication(config: dict):
         raise Exception(f'Invalid authentication type provided: `{type_}`')
 
 
-def get(source_config: dict) -> Source:
+def build(source_config: dict) -> Source:
     type_ = source_config['type']
     if type_ == FILE_SOURCE_TYPE:
         # todo default value csv is not obvious

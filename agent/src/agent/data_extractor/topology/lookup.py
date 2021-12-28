@@ -35,7 +35,7 @@ def init_sources(lookup_configs: dict):
     for name, conf in lookup_configs.items():
         if name in _sources:
             raise Exception(f'Lookup source `{name}` already exists, lookup name should be unique')
-        _sources[name] = entity.source.get(conf)
+        _sources[name] = entity.source.build(conf)
 
 
 # todo should key field and value_field be in the lookup config? or can they be different for different fields?
@@ -51,3 +51,8 @@ def lookup(lookup_name: str, value, key_field: str, value_field: str):
         if obj[key_field] == value:
             return obj[value_field]
     raise Exception(f'Did not find the value `{value}` in the `{lookup_name}` lookup')
+
+
+def clean_cache():
+    global _cache
+    _cache = Cache()

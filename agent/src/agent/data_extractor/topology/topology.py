@@ -21,14 +21,16 @@ def extract_metrics(pipeline_: Pipeline) -> dict:
     lookup.init_sources(pipeline_.source.config.get('lookup', {}))
     entities = _create_entities(pipeline_.source)
     topology_records = _create_topology_records(entities)
-    return _build_topology_data(topology_records)
+    topology_data = _build_topology_data(topology_records)
+    lookup.clean_cache()
+    return topology_data
 
 
 class Entity(ABC):
     def __init__(self, name: str, config: dict):
         self.name: str = name
         # todo if one source can contain multiple entities then they must be separate
-        self.source: entity.Source = entity.source.get(config['source'])
+        self.source: entity.Source = entity.source.build(config['source'])
         self.fields: list[field.Field] = field.build_fields(config['fields'])
 
 

@@ -98,15 +98,14 @@ def build_fields(fields_conf: dict) -> list[Field]:
 
 def build_transformers(field_conf: dict) -> list:
     transformers = []
-    if TRANSFORMATIONS in field_conf:
-        for transform in field_conf[TRANSFORMATIONS]:
-            type_ = transform['type']
-            if type_ == FUNCTION_TRANSFORMATION:
-                transformers.append(FunctionTransformer(_get_function_name(transform)))
-            elif type_ == LOOKUP_TRANSFORMATION:
-                transformers.append(LookupTransformer(transform['name'], transform['key'], transform['value']))
-            else:
-                raise Exception(f'Invalid type of a transformation provided: `{type_}`')
+    for transform in field_conf.get(TRANSFORMATIONS, []):
+        type_ = transform['type']
+        if type_ == FUNCTION_TRANSFORMATION:
+            transformers.append(FunctionTransformer(_get_function_name(transform)))
+        elif type_ == LOOKUP_TRANSFORMATION:
+            transformers.append(LookupTransformer(transform['name'], transform['key'], transform['value']))
+        else:
+            raise Exception(f'Invalid type of a transformation provided: `{type_}`')
     return transformers
 
 
