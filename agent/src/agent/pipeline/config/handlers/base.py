@@ -124,7 +124,7 @@ class BaseConfigHandler(ABC):
         self.pipeline = pipeline
         self._check_pipeline()
 
-    @abstractmethod
+    # @abstractmethod
     def _check_pipeline(self):
         pass
 

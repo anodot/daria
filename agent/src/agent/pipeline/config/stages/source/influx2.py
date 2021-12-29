@@ -53,12 +53,6 @@ class TestInflux2Source(Influx2Source):
     def _get_url(self) -> str:
         return urljoin(self.pipeline.source.config['host'], '/api/v2/buckets')
 
-    def _get_headers(self) -> dict:
-        return {
-            'Accept': 'application/csv',
-            'Content-type': 'application/vnd.flux',
-        }
-
     def get_config(self) -> dict:
         with open(self.get_jython_test_pipeline_file_path()) as f:
             return {

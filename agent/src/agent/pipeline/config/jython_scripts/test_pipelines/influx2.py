@@ -16,9 +16,7 @@ def main():
     session = requests.Session()
     session.headers = sdc.userParams['HEADERS']
     try:
-        res = session.get(
-            urllib.parse.urljoin(sdc.userParams['HOST'], '/api/v2/buckets')
-        )
+        res = session.get(sdc.userParams['URL'])
         res.raise_for_status()
     except Exception as e:
         sdc.log.error(str(e))
