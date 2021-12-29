@@ -1,7 +1,8 @@
 import os
 import json
 import time
-from flask import Flask, request
+
+from flask import Flask, request, jsonify
 
 OUTPUT_DIR = os.environ.get('OUTPUT_DIR', 'log')
 
@@ -72,7 +73,7 @@ def create_schema_mock():
         'schema': schema,
         'meta': {
             "createdTime": time.time(),
-            "modifiedTime": time.time()
+            "modifiedTime": time.time(),
         }
     }
     response['schema']['id'] = f'{schema["name"]}-1234'
@@ -167,6 +168,15 @@ def observium_storage():
         return json.dumps({'error': 'Wrong user or pass'}), 401
     with open('data/observium_storage.json') as f:
         return json.load(f)
+
+
+@app.route('/api/v1/site', methods=['GET'])
+def topology_site_entity():
+    # basic auth admin:admin
+    if request.headers.get('Authorization') != 'Basic YWRtaW46YWRtaW4=':
+        return json.dumps({'error': 'Wrong user or pass'}), 401
+    with open('data/site_entity.json') as f:
+        return jsonify(json.load(f))
 
 
 if __name__ == '__main__':

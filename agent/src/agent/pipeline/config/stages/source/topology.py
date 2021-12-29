@@ -1,16 +1,17 @@
 from agent.pipeline.config.stages.base import JythonDataExtractorSource
 
 
-class Cacti(JythonDataExtractorSource):
-    JYTHON_SCRIPT = 'cacti.py'
-    DATA_EXTRACTOR_API_ENDPOINT = 'data_extractor/cacti'
+class TopologyScript(JythonDataExtractorSource):
+    JYTHON_SCRIPT = 'topology.py'
+    DATA_EXTRACTOR_API_ENDPOINT = 'data_extractors/topology'
 
     def _get_script_params(self) -> list[dict]:
         return [
             {
-                'key': 'RRD_SOURCE_URL',
+                'key': 'TOPOLOGY_SOURCE_URL',
                 'value': self._get_source_url()
             },
+            # todo doesn't interval depend on the source in this case?
             {
                 'key': 'INTERVAL_IN_SECONDS',
                 'value': str(self.pipeline.interval)
@@ -18,13 +19,5 @@ class Cacti(JythonDataExtractorSource):
             {
                 'key': 'DELAY_IN_MINUTES',
                 'value': str(self.pipeline.delay)
-            },
-            {
-                'key': 'DAYS_TO_BACKFILL',
-                'value': str(self.pipeline.days_to_backfill)
-            },
-            {
-                'key': 'STEP_IN_SECONDS',
-                'value': str(self.pipeline.config['step'])
             },
         ]

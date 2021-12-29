@@ -1,7 +1,7 @@
-from . import base
+from .base import JSScript
 
 
-class JSPivotArray(base.Stage):
+class JSPivotArray(JSScript):
     JS_SCRIPT_NAME = 'pivot.js'
 
     def get_js_vars(self):
@@ -10,11 +10,4 @@ class JSPivotArray(base.Stage):
         """
 
     def get_config(self) -> dict:
-        with open(self._get_js_file_path(self.JS_SCRIPT_NAME)) as f:
-            script = f.read()
-
-        return {
-            'initScript': self.get_js_vars(),
-            'script': script
-        }
-
+        return {'initScript': self.get_js_vars(), 'script': self._get_script()}

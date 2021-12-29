@@ -320,8 +320,8 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return bool(self.config.get('log_everything'))
 
     @property
-    def transform_script_config(self) -> Optional[str]:
-        return self.config.get('transform_script', {}).get('config')
+    def transform_script_config(self) -> str:
+        return self.config.get('transform_script', {}).get('config', '')
 
     @property
     def watermark_sleep_time(self) -> int:

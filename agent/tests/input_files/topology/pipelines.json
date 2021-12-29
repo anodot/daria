@@ -1,0 +1,7 @@
+[
+  {
+    "source": "topology",
+    "pipeline_id": "topology",
+    "interval": 300
+  }
+]

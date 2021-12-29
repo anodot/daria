@@ -3,6 +3,7 @@ venv/
 __pycache__/
 agent/build/
 agent/output/
+agent/local-output/
 dist/
 *.egg-info/
 agent.log
