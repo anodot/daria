@@ -7,22 +7,33 @@ from agent.pipeline.config.stages.influx import InfluxScript
 class Influx2Source(InfluxScript):
     JYTHON_SCRIPT = 'influx2.py'
 
-    def get_config(self) -> dict:
-        config = super().get_config()
-        config['scriptConf.params'].extend([
-            {'key': 'URL', 'value': self._get_url()},
-            {'key': 'HEADERS', 'value': self._get_headers()},
-            {'key': 'QUERY', 'value': self._get_query()},
-            {'key': 'TIMEOUT', 'value': self.pipeline.source.query_timeout},
+    def _get_script_params(self) -> list[dict]:
+        params = super()._get_script_params()
+        params.extend([
+            {
+                'key': 'URL',
+                'value': self._get_url()
+            },
+            {
+                'key': 'HEADERS',
+                'value': self._get_headers()
+            },
+            {
+                'key': 'QUERY',
+                'value': self._get_query()
+            },
+            {
+                'key': 'TIMEOUT',
+                'value': self.pipeline.source.query_timeout
+            },
             {
                 'key': 'MONITORING_URL',
                 'value': urllib.parse.urljoin(
-                    self.pipeline.streamsets.agent_external_url,
-                    f'/monitoring/source_http_error/{self.pipeline.name}/'
+                    self.pipeline.streamsets.agent_external_url, f'/monitoring/source_http_error/{self.pipeline.name}/'
                 )
             },
         ])
-        return config
+        return params
 
     def _get_url(self) -> str:
         return urljoin(self.pipeline.source.config['host'], f'/api/v2/query?org={self.pipeline.source.config["org"]}')

@@ -1,0 +1,23 @@
+[
+  {
+    "attributes.name": "BB001",
+    "attributes.p_lat": "10.005",
+    "attributes.p_lon": "100.01",
+    "attributes.street": "5th Ave",
+    "attributes.house": "122"
+  },
+  {
+    "attributes.name": "BB002",
+    "attributes.p_lat": "10.015",
+    "attributes.p_lon": "100.11",
+    "attributes.street": "6th Ave",
+    "attributes.house": "112"
+  },
+  {
+    "attributes.name": "BB003",
+    "attributes.p_lat": "10.035",
+    "attributes.p_lon": "100.31",
+    "attributes.street": "Brpadway",
+    "attributes.house": "113"
+  }
+]

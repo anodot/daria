@@ -34,9 +34,9 @@ def _add_source():
     """
     Creates temporary source for run-test-pipeline command
     """
-    if source.repository.exists(constants.LOCAL_RUN_TESTPIPELINE_NAME):
+    if source.repository.exists(constants.TEST_RUN_PIPELINE_NAME):
         return
-    source_file = os.path.join(constants.LOCAL_RUN_TESTPIPELINE_DIR, 'sources', 'test_source.json')
+    source_file = os.path.join(constants.TEST_RUN_CONFIGS_DIR, 'sources.json')
     try:
         with open(source_file, 'r') as file:
             source.json_builder.create_from_file(file)
@@ -48,9 +48,9 @@ def _add_pipeline():
     """
     Creates temporary pipeline for run-test-pipeline command
     """
-    if pipeline.repository.exists(constants.LOCAL_RUN_TESTPIPELINE_NAME):
+    if pipeline.repository.exists(constants.TEST_RUN_PIPELINE_NAME):
         return
-    pipeline_file = os.path.join(constants.LOCAL_RUN_TESTPIPELINE_DIR, 'pipelines', 'test_pipeline.json')
+    pipeline_file = os.path.join(constants.TEST_RUN_CONFIGS_DIR, 'pipelines.json')
     try:
         with open(pipeline_file, 'r') as file:
             pipeline.json_builder.build_using_file(file)
@@ -62,7 +62,7 @@ def _run_pipeline():
     """
     Runs the pipeline, gets an info about delivery and stops pipeline
     """
-    pipeline_ = pipeline.repository.get_by_id(constants.LOCAL_RUN_TESTPIPELINE_NAME)
+    pipeline_ = pipeline.repository.get_by_id(constants.TEST_RUN_PIPELINE_NAME)
     try:
         pipeline.manager.start(pipeline_, True)
         info = pipeline.manager.get_info(pipeline_, 10)
@@ -70,11 +70,11 @@ def _run_pipeline():
         cli.pipeline.print_info(info)
         pipeline.manager.stop(pipeline_)
         if stat.has_error():
-            raise click.ClickException(f'Pipeline `{constants.LOCAL_RUN_TESTPIPELINE_NAME}` has errors')
+            raise click.ClickException(f'Pipeline `{constants.TEST_RUN_PIPELINE_NAME}` has errors')
         if stat.has_undelivered():
-            raise click.ClickException(f'Pipeline `{constants.LOCAL_RUN_TESTPIPELINE_NAME}` has undelivered data')
+            raise click.ClickException(f'Pipeline `{constants.TEST_RUN_PIPELINE_NAME}` has undelivered data')
     except pipeline.PipelineException as e:
-        raise click.ClickException(e)
+        raise click.ClickException(str(e))
 
 
 def perform_cleanup():
@@ -82,11 +82,11 @@ def perform_cleanup():
     Performs deletion of temporary source and pipeline
     """
     try:
-        pipeline.manager.force_delete(constants.LOCAL_RUN_TESTPIPELINE_NAME)
+        pipeline.manager.force_delete(constants.TEST_RUN_PIPELINE_NAME)
     except (destination.repository.DestinationNotExists, pipeline.PipelineException):
         pass
 
     try:
-        source.repository.delete_by_name(constants.LOCAL_RUN_TESTPIPELINE_NAME)
+        source.repository.delete_by_name(constants.TEST_RUN_PIPELINE_NAME)
     except source.repository.SourceNotExists:
         pass

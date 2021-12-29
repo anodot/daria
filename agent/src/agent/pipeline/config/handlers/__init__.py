@@ -12,5 +12,6 @@ from . import sage
 from . import snmp
 from . import solarwinds
 from . import tcp
+from . import topology
 from . import promql
 from . import zabbix

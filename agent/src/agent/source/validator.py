@@ -2,6 +2,7 @@ import json
 import os
 import urllib.parse
 import jsonschema
+import requests
 import inject
 
 from abc import ABC, abstractmethod
@@ -10,7 +11,7 @@ from pysnmp.entity.engine import SnmpEngine
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 from agent import source
 from agent.modules.tools import if_validation_enabled
-from agent.modules import validator
+from agent.modules import validator, zabbix, http
 from agent.source import Source
 from pysnmp.hlapi import getCmd, CommunityData, UdpTransportTarget, ContextData
 
@@ -70,6 +71,16 @@ class InfluxValidator(Validator):
             raise ValidationException(str(e))
         client = source.db.get_influx_client(self.source.config['host'])
         client.ping()
+
+    @if_validation_enabled
+    def validate_db(self):
+        client = source.db.get_influx_client(
+            self.source.config['host'], self.source.config.get('username'), self.source.config.get('password')
+        )
+        if all(db['name'] != self.source.config['db'] for db in client.get_list_database()):
+            raise ValidationException(
+                f"Database {self.source.config['db']} not found. Please check your credentials again"
+            )
 
     def validate_offset(self):
         if not self.source.config.get('offset'):
@@ -160,7 +171,8 @@ class MongoValidator(Validator):
         )
         if self.source.config[source.MongoSource.CONFIG_DATABASE] not in client.list_database_names():
             raise ValidationException(
-                f'Database {self.source.config[source.MongoSource.CONFIG_DATABASE]} doesn\'t exist')
+                f'Database {self.source.config[source.MongoSource.CONFIG_DATABASE]} doesn\'t exist'
+            )
 
     @if_validation_enabled
     def validate_collection(self):
@@ -173,7 +185,8 @@ class MongoValidator(Validator):
         if self.source.config[source.MongoSource.CONFIG_COLLECTION] \
                 not in client[self.source.config[source.MongoSource.CONFIG_DATABASE]].list_collection_names():
             raise ValidationException(
-                f'Collection {self.source.config[source.MongoSource.CONFIG_DATABASE]} doesn\'t exist')
+                f'Collection {self.source.config[source.MongoSource.CONFIG_DATABASE]} doesn\'t exist'
+            )
 
 
 class SNMPValidator(Validator):
@@ -222,13 +235,60 @@ class SageValidator(Validator):
 class PromQLValidator(Validator):
     VALIDATION_SCHEMA_FILE = 'promql.json'
 
+    def validate_connection(self):
+        url = self.source.config['url'] + '/api/v1/export?match[]={__name__="not_existing_dsger43"}'
+        session = requests.Session()
+        if self.source.config.get(source.PromQLSource.USERNAME):
+            session.auth = (
+                self.source.config[source.PromQLSource.USERNAME], self.source.config[source.PromQLSource.PASSWORD]
+            )
+        try:
+            res = session.get(url, verify=False)
+            res.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            raise ValidationException(
+                'Failed connecting to VictoriaMetrics. Make sure you provided correct url, username and password\n'
+                + str(e)
+            )
+
 
 class SolarWindsValidator(Validator):
     VALIDATION_SCHEMA_FILE = 'solarwinds.json'
 
+    def validate_connection(self):
+        url = urllib.parse.urljoin(
+            self.source.config['url'],
+            '/SolarWinds/InformationService/v3/Json/Query?query=SELECT+TOP+1+1+as+test+FROM+Orion.Accounts'
+        )
+        session = http.Session()
+        session.auth = (self.source.config[source.APISource.USERNAME], self.source.config[source.APISource.PASSWORD])
+        try:
+            res = session.get(url, verify=False, timeout=20)
+            res.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            raise ValidationException(
+                'Failed to connect to SolarWinds. Make sure you provided correct url, API username and password:\n'
+                + str(e)
+            )
+
 
 class ObserviumValidator(Validator):
     VALIDATION_SCHEMA_FILE = 'observium.json'
+
+    def validate_connection(self):
+        session = http.Session()
+        session.auth = (
+            self.source.config[source.ObserviumSource.USERNAME], self.source.config[source.ObserviumSource.PASSWORD]
+        )
+        try:
+            url = urllib.parse.urljoin(self.source.config['url'], source.ObserviumSource.DEVICES_API_PATH)
+            res = session.get(url, verify=self.source.config.get('verify_ssl', True), timeout=self.source.query_timeout)
+            res.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            raise ValidationException(
+                'Failed to connect to Observium API. Make sure you provided correct url, API username and password:\n'
+                + str(e)
+            )
 
 
 class ZabbixValidator(Validator):
@@ -241,8 +301,9 @@ class SchemalessValidator(Validator):
         self.validate_grok_file()
 
     def validate_grok_file(self):
-        if self.source.config.get(source.SchemalessSource.CONFIG_GROK_PATTERN_FILE) and \
-                not os.path.isfile(self.source.config[source.SchemalessSource.CONFIG_GROK_PATTERN_FILE]):
+        if self.source.config.get(
+            source.SchemalessSource.CONFIG_GROK_PATTERN_FILE
+        ) and not os.path.isfile(self.source.config[source.SchemalessSource.CONFIG_GROK_PATTERN_FILE]):
             raise ValidationException('File does not exist')
 
 
@@ -256,6 +317,15 @@ class SplunkValidator(SchemalessValidator):
 
 class DirectoryValidator(SchemalessValidator):
     VALIDATION_SCHEMA_FILE = 'directory.json'
+
+
+class TopologyValidator(SchemalessValidator):
+    VALIDATION_SCHEMA_FILE = 'topology.json'
+
+    @if_validation_enabled
+    def validate_connection(self):
+        # todo
+        pass
 
 
 class CactiValidator(Validator):
@@ -302,6 +372,7 @@ def get_validator(source_: Source) -> Validator:
         source.TYPE_SPLUNK: SplunkValidator,
         source.TYPE_SOLARWINDS: SolarWindsValidator,
         source.TYPE_THANOS: PromQLValidator,
+        source.TYPE_TOPOLOGY: TopologyValidator,
         source.TYPE_VICTORIA: PromQLValidator,
         source.TYPE_ZABBIX: ZabbixValidator,
     }

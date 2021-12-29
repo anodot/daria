@@ -7,5 +7,6 @@ from . import observium
 from . import sage
 from . import snmp
 from . import solarwinds
+from . import topology
 from . import promql
 from . import zabbix

@@ -1,7 +1,6 @@
 import agent
 
 from .source import *
-from .source import Source
 from . import repository
 from . import manager
 from . import validator
@@ -28,6 +27,7 @@ TYPE_SNMP = 'snmp'
 TYPE_SPLUNK = 'splunk'
 TYPE_SOLARWINDS = 'solarwinds'
 TYPE_THANOS = 'thanos'
+TYPE_TOPOLOGY = 'topology'
 TYPE_VICTORIA = 'victoria'
 TYPE_ZABBIX = 'zabbix'
 
@@ -51,6 +51,7 @@ types = {
     TYPE_SOLARWINDS: SolarWindsSource,
     TYPE_SPLUNK: TCPSource,
     TYPE_THANOS: PromQLSource,
+    TYPE_TOPOLOGY: TopologySource,
     TYPE_VICTORIA: PromQLSource,
     TYPE_ZABBIX: ZabbixSource,
 }
@@ -58,9 +59,18 @@ types = {
 json_schema = {
     'type': 'object',
     'properties': {
-        'type': {'type': 'string', 'enum': list(types.keys())},
-        'name': {'type': 'string', 'minLength': 1, 'maxLength': 100},
-        'config': {'type': 'object'}
+        'type': {
+            'type': 'string',
+            'enum': list(types.keys())
+        },
+        'name': {
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 100
+        },
+        'config': {
+            'type': 'object'
+        }
     },
     'required': ['type', 'name', 'config']
 }

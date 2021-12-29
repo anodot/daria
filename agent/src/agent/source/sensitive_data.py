@@ -19,7 +19,10 @@ def _get_keywords(source_type: str) -> List[str]:
         source.TYPE_INFLUX: ['username', 'password'],
         source.TYPE_INFLUX_2: ['token'],
         source.TYPE_KAFKA: [],
-        source.TYPE_MONGO: ['configBean.mongoConfig.connectionString', 'configBean.mongoConfig.username', 'configBean.mongoConfig.password', 'configBean.mongoConfig.authSource'],
+        source.TYPE_MONGO: [
+            'configBean.mongoConfig.connectionString', 'configBean.mongoConfig.username',
+            'configBean.mongoConfig.password', 'configBean.mongoConfig.authSource'
+        ],
         source.TYPE_MYSQL: ['connection_string', 'hikariConfigBean.username', 'hikariConfigBean.password'],
         source.TYPE_OBSERVIUM: ['username', 'password'],
         source.TYPE_ORACLE: ['connection_string', 'hikariConfigBean.username', 'hikariConfigBean.password'],
@@ -30,6 +33,7 @@ def _get_keywords(source_type: str) -> List[str]:
         source.TYPE_SOLARWINDS: ['username', 'password'],
         source.TYPE_SPLUNK: [],
         source.TYPE_THANOS: ['username', 'password'],
+        source.TYPE_TOPOLOGY: [],
         source.TYPE_VICTORIA: ['username', 'password'],
         source.TYPE_ZABBIX: ['user', 'password'],
     }

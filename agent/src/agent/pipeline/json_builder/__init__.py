@@ -14,6 +14,7 @@ from .sage import SageBuilder
 from .snmp import SNMPBuilder, SNMPRawBuilder
 from .solarwinds import SolarWindsClientData
 from .tcp import TcpBuilder
+from .topology import TopologyBuilder
 from .zabbix import ZabbixBuilder
 from .json_builder import build, build_raw, build_using_file, build_raw_using_file, build_multiple
 from .json_builder import edit, edit_using_file, edit_multiple, extract_configs
@@ -46,6 +47,7 @@ def _get_builder(pipeline_: Pipeline, config: dict, is_edit: bool) -> Builder:
         source.TYPE_SOLARWINDS: SolarWindsClientData,
         source.TYPE_SPLUNK: TcpBuilder,
         source.TYPE_THANOS: PromQLBuilder,
+        source.TYPE_TOPOLOGY: TopologyBuilder,
         source.TYPE_VICTORIA: PromQLBuilder,
         source.TYPE_ZABBIX: ZabbixBuilder,
     }
