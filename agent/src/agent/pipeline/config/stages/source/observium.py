@@ -45,10 +45,9 @@ class ObserviumScript(Source):
 
 class TestObserviumScript(Source):
     JYTHON_SCRIPT = 'observium.py'
-    JYTHON_SCRIPTS_PATH = os.path.join(Source.JYTHON_SCRIPTS_PATH, 'tests')
 
     def get_config(self) -> dict:
-        with open(self.get_jython_file_path()) as f:
+        with open(self.get_jython_test_pipeline_file_path()) as f:
             script = f.read()
         base_url = urllib.parse.urljoin(
             self.pipeline.source.config[source.ObserviumSource.URL],

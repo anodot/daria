@@ -1,5 +1,3 @@
-import os
-
 from agent import source
 from agent.pipeline.config.stages.base import Stage
 
@@ -33,10 +31,9 @@ class PromQLScript(Stage):
 
 class TestPromQLScript(Stage):
     JYTHON_SCRIPT = 'promql.py'
-    JYTHON_SCRIPTS_PATH = os.path.join(Stage.JYTHON_SCRIPTS_PATH, 'tests')
 
     def get_config(self) -> dict:
-        with open(self.get_jython_file_path()) as f:
+        with open(self.get_jython_test_pipeline_file_path()) as f:
             return {
                 'scriptConf.params': [
                     {'key': 'URL', 'value': self.pipeline.source.config[source.PromQLSource.URL]},
