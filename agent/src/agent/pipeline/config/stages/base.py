@@ -65,7 +65,6 @@ class JythonDataExtractorSource(JythonSource, ABC):
     def _get_source_url(self) -> str:
         return urllib.parse.urljoin(
             self.pipeline.streamsets.agent_external_url, '/'.join([
-                'data_extractors',
                 self.DATA_EXTRACTOR_API_ENDPOINT,
                 '${pipeline:id()}',
             ])

@@ -3,7 +3,7 @@ from agent.pipeline.config.stages.base import JythonDataExtractorSource
 
 class Cacti(JythonDataExtractorSource):
     JYTHON_SCRIPT = 'cacti.py'
-    DATA_EXTRACTOR_API_ENDPOINT = 'cacti'
+    DATA_EXTRACTOR_API_ENDPOINT = 'data_extractor/cacti'
 
     def _get_script_params(self) -> list[dict]:
         return [
