@@ -16,6 +16,9 @@ APPLICATION = 'application'
 
 TOPOLOGY_ENTITIES = [REGION, SITE, NODE, CARD, INTERFACE, CELL, LINK, SERVICE, LOGICAL_GROUP, APPLICATION]
 
+# todo add username/password/token/whatever to the agent/source/sensitive_data.py
+# todo add jsonschema definition for topology, now it's almost empty
+
 
 def extract_metrics(pipeline_: Pipeline) -> dict:
     lookup.init_sources(pipeline_.source.config.get('lookup', {}))
