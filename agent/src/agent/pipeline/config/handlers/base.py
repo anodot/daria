@@ -195,10 +195,6 @@ class BaseRawConfigHandler(BaseConfigHandler):
         }
 
 
-class BaseTestConfigHandler(ABC):
+class BaseTestConfigHandler(BaseRawConfigHandler):
     def __init__(self, pipeline: Pipeline, base_config: dict):
         super().__init__(pipeline, base_config)
-
-    def _check_pipeline(self):
-        # intentionally done to skip for TestPipelines
-        pass
