@@ -9,9 +9,7 @@ finally:
 
 def extract_value(obj, path):
     for part in path.split('/'):
-        obj = obj.get(part)
-        if not obj:
-            return None
+        obj = obj[int(part)]if type(obj) == list else obj.get(part, None)
     return obj
 
 
@@ -71,7 +69,7 @@ def main():
                 continue
             new_record = sdc.createRecord(str(i))
             new_record.value = {
-                'timestamp': timestamp,
+                'timestamp': int(timestamp),
                 'dimensions': get_dimensions(record),
                 'measurements': measurements,
                 'schemaId': '${SCHEMA_ID}',
