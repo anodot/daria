@@ -149,12 +149,31 @@ class MongoValidator(Validator):
 
     def validate(self):
         super().validate()
-        self.validate_db()
-        self.validate_collection()
+
+    @if_validation_enabled
+    def validate_db(self):
+        client = source.db.get_mongo_client(
+            self.source.config[source.MongoSource.CONFIG_CONNECTION_STRING],
+            self.source.config.get(source.MongoSource.CONFIG_USERNAME),
+            self.source.config.get(source.MongoSource.CONFIG_PASSWORD),
+            self.source.config.get(source.MongoSource.CONFIG_AUTH_SOURCE)
+        )
+        if self.source.config[source.MongoSource.CONFIG_DATABASE] not in client.list_database_names():
+            raise ValidationException(
+                f'Database {self.source.config[source.MongoSource.CONFIG_DATABASE]} doesn\'t exist')
 
     @if_validation_enabled
     def validate_collection(self):
-        pass
+        client = source.db.get_mongo_client(
+            self.source.config[source.MongoSource.CONFIG_CONNECTION_STRING],
+            self.source.config.get(source.MongoSource.CONFIG_USERNAME),
+            self.source.config.get(source.MongoSource.CONFIG_PASSWORD),
+            self.source.config.get(source.MongoSource.CONFIG_AUTH_SOURCE)
+        )
+        if self.source.config[source.MongoSource.CONFIG_COLLECTION] \
+                not in client[self.source.config[source.MongoSource.CONFIG_DATABASE]].list_collection_names():
+            raise ValidationException(
+                f'Collection {self.source.config[source.MongoSource.CONFIG_DATABASE]} doesn\'t exist')
 
 
 class SNMPValidator(Validator):
