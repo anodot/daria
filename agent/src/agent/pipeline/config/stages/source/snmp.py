@@ -23,7 +23,7 @@ class SNMP(JythonDataExtractorSource):
 
 
 class SNMPRaw(JythonDataExtractorSource):
-    JYTHON_SCRIPT = 'snmp.py'
+    JYTHON_SCRIPT = 'snmp_raw.py'
     DATA_EXTRACTOR_API_ENDPOINT = 'snmp/raw/'
 
     def _get_script_params(self) -> list[dict]:
