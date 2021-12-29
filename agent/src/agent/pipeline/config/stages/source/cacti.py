@@ -1,26 +1,30 @@
-import urllib.parse
-
-from agent.pipeline.config.stages.base import Stage
+from agent.pipeline.config.stages.base import JythonDataExtractorSource
 
 
-class Cacti(Stage):
+class Cacti(JythonDataExtractorSource):
     JYTHON_SCRIPT = 'cacti.py'
+    DATA_EXTRACTOR_API_ENDPOINT = 'cacti'
 
-    def get_config(self) -> dict:
-        with open(self.get_jython_file_path()) as f:
-            return {
-                'scriptConf.params': [
-                    {'key': 'RRD_SOURCE_URL', 'value': self._get_cacti_source_url()},
-                    {'key': 'INTERVAL_IN_SECONDS', 'value': str(self.pipeline.interval)},
-                    {'key': 'DELAY_IN_MINUTES', 'value': str(self.pipeline.delay)},
-                    {'key': 'DAYS_TO_BACKFILL', 'value': str(self.pipeline.days_to_backfill)},
-                    {'key': 'STEP_IN_SECONDS', 'value': str(self.pipeline.config['step'])},
-                ],
-                'script': f.read(),
-            }
-
-    def _get_cacti_source_url(self) -> str:
-        return urllib.parse.urljoin(
-            self.pipeline.streamsets.agent_external_url,
-            '/data_extractor/cacti/${pipeline:id()}'
-        )
+    def _get_script_params(self) -> list[dict]:
+        return [
+            {
+                'key': 'RRD_SOURCE_URL',
+                'value': self._get_source_url()
+            },
+            {
+                'key': 'INTERVAL_IN_SECONDS',
+                'value': str(self.pipeline.interval)
+            },
+            {
+                'key': 'DELAY_IN_MINUTES',
+                'value': str(self.pipeline.delay)
+            },
+            {
+                'key': 'DAYS_TO_BACKFILL',
+                'value': str(self.pipeline.days_to_backfill)
+            },
+            {
+                'key': 'STEP_IN_SECONDS',
+                'value': str(self.pipeline.config['step'])
+            },
+        ]

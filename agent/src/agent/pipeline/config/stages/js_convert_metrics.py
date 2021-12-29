@@ -1,7 +1,7 @@
-from . import base
+from .base import JSScript
 
 
-class JSConvertMetrics(base.Stage):
+class JSConvertMetrics(JSScript):
     def get_js_vars(self):
         return f"""
 state['TIMESTAMP_COLUMN'] = '{self.pipeline.timestamp_path}';
@@ -44,10 +44,8 @@ state['HEADER_ATTRIBUTES'] = {self.pipeline.header_attributes};
         """
 
     def get_config(self) -> dict:
-        with open(self._get_js_file_path(self.JS_SCRIPT_NAME)) as f:
-            script = f.read()
         return {
             'initScript': self.get_js_vars(),
-            'script': script,
+            'script': self._get_script(),
             'stageRequiredFields': self._required_fields()
         }

@@ -26,10 +26,8 @@ def main():
     rows = {}
     base = {
         "type": "SITE",
-        # todo what?
         "rollupId": 27,
         "timestamp": timestamp,
-        # todo
         "bulkSerNumber": 1,
     }
     for record in sdc.records:

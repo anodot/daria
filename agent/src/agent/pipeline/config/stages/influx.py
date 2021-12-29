@@ -1,20 +1,25 @@
-from .base import Stage
+from .base import JythonSource, JythonProcessor
 from datetime import datetime, timedelta
 
 
-class InfluxScript(Stage):
+class InfluxScript(JythonSource):
     JYTHON_SCRIPT = 'influx.py'
 
-    def get_config(self) -> dict:
-        with open(self.get_jython_file_path()) as f:
-            return {
-                'scriptConf.params': [
-                    {'key': 'INITIAL_OFFSET', 'value': self._get_offset()},
-                    {'key': 'INTERVAL_IN_SECONDS', 'value': str(self.pipeline.config.get('interval', ''))},
-                    {'key': 'DELAY_IN_SECONDS', 'value': str(_convert_to_seconds(self.pipeline.config.get('delay', '0s')))},
-                ],
-                'script': f.read(),
-            }
+    def _get_script_params(self) -> list[dict]:
+        return [
+            {
+                'key': 'INITIAL_OFFSET',
+                'value': self._get_offset()
+            },
+            {
+                'key': 'INTERVAL_IN_SECONDS',
+                'value': str(self.pipeline.config.get('interval', ''))
+            },
+            {
+                'key': 'DELAY_IN_SECONDS',
+                'value': str(_convert_to_seconds(self.pipeline.config.get('delay', '0s')))
+            },
+        ]
 
     def _get_offset(self) -> str:
         offset = self.pipeline.source.config.get('offset', '')
@@ -24,17 +29,11 @@ class InfluxScript(Stage):
         return offset
 
 
-class JythonTransformRecords(Stage):
+class JythonTransformRecords(JythonProcessor):
     JYTHON_SCRIPT = 'influx2_transform_records.py'
 
-    def get_config(self) -> dict:
-        with open(self.get_jython_file_path()) as f:
-            return {
-                'scriptConf.params': [
-                    {'key': 'TIMESTAMP_COLUMN', 'value': self.pipeline.config['timestamp']['name']},
-                ],
-                'script': f.read(),
-            }
+    def _get_script_params(self) -> list[dict]:
+        return [{'key': 'TIMESTAMP_COLUMN', 'value': self.pipeline.config['timestamp']['name']}]
 
 
 def _convert_to_seconds(string):
