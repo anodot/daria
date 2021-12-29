@@ -98,7 +98,7 @@ class InfluxValidator(Validator):
                 raise ValidationException(str(e))
 
 
-class Influx2Validator(InfluxValidator):
+class Influx2Validator(Validator):
     VALIDATION_SCHEMA_FILE = 'influx2.json'
 
     @if_validation_enabled

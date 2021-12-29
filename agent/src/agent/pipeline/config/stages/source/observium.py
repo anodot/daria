@@ -1,4 +1,3 @@
-import os
 import urllib.parse
 
 from agent import source
@@ -79,7 +78,7 @@ class ObserviumScript(JythonSource):
         )
 
 
-class TestObserviumScript(Source):
+class TestObserviumScript(JythonSource):
     JYTHON_SCRIPT = 'observium.py'
 
     def get_config(self) -> dict:
