@@ -26,10 +26,7 @@ class KafkaSchemaConfigHandler(SchemaConfigHandler):
     }
 
 
-class TestKafkaSchemaConfigHandler(BaseConfigHandler):
+class TestKafkaConfigHandler(BaseConfigHandler):
     stages_to_override = {
         'source': stages.source.Source,
     }
-
-    def _check_pipeline(self):
-        pass

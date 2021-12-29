@@ -39,6 +39,3 @@ class TestJDBCConfigHandler(BaseConfigHandler):
     stages_to_override = {
         'source': stages.source.jdbc.JDBCSource,
     }
-
-    def _check_pipeline(self):
-        pass

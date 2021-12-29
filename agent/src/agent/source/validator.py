@@ -11,7 +11,7 @@ from pysnmp.entity.engine import SnmpEngine
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 from agent import source
 from agent.modules.tools import if_validation_enabled
-from agent.modules import validator, zabbix, http
+from agent.modules import validator, http
 from agent.source import Source
 from pysnmp.hlapi import getCmd, CommunityData, UdpTransportTarget, ContextData
 
