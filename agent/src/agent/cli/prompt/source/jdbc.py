@@ -19,7 +19,7 @@ class JDBCPrompter(Prompter):
         try:
             self.validator.validate_connection_string()
         except source.validator.ValidationException as e:
-            raise click.UsageError(e)
+            raise click.UsageError(str(e))
 
     @infinite_retry
     def prompt_connection(self, default_config):
