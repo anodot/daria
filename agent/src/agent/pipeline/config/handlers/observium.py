@@ -1,6 +1,6 @@
 from agent.modules.logger import get_logger
 from agent.pipeline.config import stages
-from agent.pipeline.config.handlers.base import NoSchemaConfigHandler, SchemaConfigHandler
+from agent.pipeline.config.handlers.base import BaseTestConfigHandler, SchemaConfigHandler
 
 logger = get_logger(__name__)
 
@@ -13,7 +13,7 @@ class ObserviumConfigHandler(SchemaConfigHandler):
     }
 
 
-class TestObserviumConfigHandler(NoSchemaConfigHandler):
+class TestObserviumConfigHandler(BaseTestConfigHandler):
     stages_to_override = {
         'source': stages.source.observium.TestObserviumScript,
     }

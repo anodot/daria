@@ -126,7 +126,7 @@ class BaseConfigHandler(ABC):
         self.pipeline = pipeline
         self._check_pipeline()
 
-    # @abstractmethod
+    @abstractmethod
     def _check_pipeline(self):
         pass
 
@@ -193,3 +193,12 @@ class BaseRawConfigHandler(BaseConfigHandler):
         return {
             'AGENT_URL': self.pipeline.streamsets.agent_external_url,
         }
+
+
+class BaseTestConfigHandler(ABC):
+    def __init__(self, pipeline: Pipeline, base_config: dict):
+        super().__init__(pipeline, base_config)
+
+    def _check_pipeline(self):
+        # intentionally done to skip for TestPipelines
+        pass

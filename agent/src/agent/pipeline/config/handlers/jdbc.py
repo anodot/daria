@@ -1,7 +1,7 @@
 from agent.modules.logger import get_logger
 from agent.pipeline.config import stages
 from agent.pipeline.config.handlers.base import NoSchemaConfigHandler, BaseRawConfigHandler
-from agent.pipeline.config.handlers.base import BaseConfigHandler, SchemaConfigHandler
+from agent.pipeline.config.handlers.base import BaseTestConfigHandler, SchemaConfigHandler
 
 logger = get_logger(__name__)
 
@@ -35,7 +35,7 @@ class JDBCRawConfigHandler(BaseRawConfigHandler):
     }
 
 
-class TestJDBCConfigHandler(BaseConfigHandler):
+class TestJDBCConfigHandler(BaseTestConfigHandler):
     stages_to_override = {
         'source': stages.source.jdbc.JDBCSource,
     }

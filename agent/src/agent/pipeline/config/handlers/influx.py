@@ -4,7 +4,7 @@ from agent.modules import tools
 from agent.modules.logger import get_logger
 from agent.modules.constants import HOSTNAME
 from agent.pipeline.config import stages
-from agent.pipeline.config.handlers.base import BaseConfigHandler, NoSchemaConfigHandler, SchemaConfigHandler
+from agent.pipeline.config.handlers.base import BaseTestConfigHandler, NoSchemaConfigHandler, SchemaConfigHandler
 
 logger = get_logger(__name__)
 
@@ -74,13 +74,13 @@ class Influx2SchemaConfigHandler(SchemaConfigHandler):
     }
 
 
-class TestInfluxConfigHandler(BaseConfigHandler):
+class TestInfluxConfigHandler(BaseTestConfigHandler):
     stages_to_override = {
         'source': stages.source.influx.TestInfluxSource,
     }
 
 
-class TestInflux2ConfigHandler(BaseConfigHandler):
+class TestInflux2ConfigHandler(BaseTestConfigHandler):
     stages_to_override = {
         'source': stages.source.influx2.TestInflux2Source,
     }
