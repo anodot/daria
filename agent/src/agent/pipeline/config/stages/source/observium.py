@@ -76,23 +76,3 @@ class ObserviumScript(JythonSource):
         return urllib.parse.urljoin(
             self.pipeline.streamsets.agent_external_url, f'/monitoring/source_http_error/{self.pipeline.name}/'
         )
-
-
-class TestObserviumScript(JythonSource):
-    JYTHON_SCRIPT = 'observium.py'
-
-    def get_config(self) -> dict:
-        with open(self.get_jython_test_pipeline_file_path()) as f:
-            script = f.read()
-        base_url = urllib.parse.urljoin(
-            self.pipeline.source.config[source.ObserviumSource.URL],
-            '/api/v0/'
-        )
-        return {
-            'scriptConf.params': [
-                {'key': 'DEVICES_URL', 'value': urllib.parse.urljoin(base_url, 'devices')},
-                {'key': 'API_USER', 'value': self.pipeline.source.config[source.ObserviumSource.USERNAME]},
-                {'key': 'API_PASSWORD', 'value': self.pipeline.source.config[source.ObserviumSource.PASSWORD]},
-            ],
-            'script': script
-        }

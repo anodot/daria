@@ -11,9 +11,3 @@ class ObserviumConfigHandler(SchemaConfigHandler):
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties,
         'destination': stages.destination.Destination
     }
-
-
-class TestObserviumConfigHandler(BaseTestConfigHandler):
-    stages_to_override = {
-        'source': stages.source.observium.TestObserviumScript,
-    }
