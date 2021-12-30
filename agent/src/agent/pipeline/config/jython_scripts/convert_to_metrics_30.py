@@ -69,7 +69,7 @@ def main():
                 continue
             new_record = sdc.createRecord(str(i))
             new_record.value = {
-                'timestamp': int(timestamp),
+                'timestamp': timestamp,
                 'dimensions': get_dimensions(record),
                 'measurements': measurements,
                 'schemaId': '${SCHEMA_ID}',
