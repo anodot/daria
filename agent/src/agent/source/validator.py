@@ -50,10 +50,6 @@ class Validator:
     def validate_connection(self):
         self.connection_validator.validate(self.source)
 
-    @if_validation_enabled
-    def validate_db(self):
-        pass
-
 
 class InfluxValidator(Validator):
     VALIDATION_SCHEMA_FILE = 'influx.json'
@@ -74,13 +70,7 @@ class InfluxValidator(Validator):
 
     @if_validation_enabled
     def validate_db(self):
-        client = source.db.get_influx_client(
-            self.source.config['host'], self.source.config.get('username'), self.source.config.get('password')
-        )
-        if all(db['name'] != self.source.config['db'] for db in client.get_list_database()):
-            raise ValidationException(
-                f"Database {self.source.config['db']} not found. Please check your credentials again"
-            )
+        Validator.validate_connection(self)
 
     def validate_offset(self):
         if not self.source.config.get('offset'):

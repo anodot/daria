@@ -1,9 +1,9 @@
-from agent.pipeline.config.stages.base import Stage
+from agent.pipeline.config.stages.influx import InfluxScript
 from agent import pipeline
 from urllib.parse import urljoin, quote_plus
 
 
-class InfluxSource(Stage):
+class InfluxSource(InfluxScript):
     QUERY_GET_DATA = "SELECT+{dimensions}+FROM+{metric}+WHERE+%28%22time%22+%3E%3D+${{record:value('/last_timestamp')}}+AND+%22time%22+%3C+${{record:value('/last_timestamp')}}%2B{interval}+AND+%22time%22+%3C+now%28%29+-+{delay}%29+{where}"
 
     def get_config(self) -> dict:
@@ -48,3 +48,15 @@ class InfluxSource(Stage):
 class TestInfluxSource(InfluxSource):
     def get_query(self):
         return f"select+%2A+from+{self.pipeline.config['measurement_name']}+limit+{pipeline.manager.MAX_SAMPLE_RECORDS}"
+
+    def get_config(self) -> dict:
+        with open(self.get_jython_test_pipeline_file_path()) as f:
+            return {
+                'scriptConf.params': [
+                    {'key': 'USERNAME', 'value': self.pipeline.config.get('username')},
+                    {'key': 'PASSWORD', 'value': self.pipeline.config.get('password')},
+                    {'key': 'DATABASE', 'value': self.pipeline.source.config.get('db')},
+                    {'key': 'HOST', 'value': self.pipeline.source.config.get('host')},
+                ],
+                'script': f.read(),
+            }
