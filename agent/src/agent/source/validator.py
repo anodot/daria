@@ -225,22 +225,6 @@ class SageValidator(Validator):
 class PromQLValidator(Validator):
     VALIDATION_SCHEMA_FILE = 'promql.json'
 
-    def validate_connection(self):
-        url = self.source.config['url'] + '/api/v1/export?match[]={__name__="not_existing_dsger43"}'
-        session = requests.Session()
-        if self.source.config.get(source.PromQLSource.USERNAME):
-            session.auth = (
-                self.source.config[source.PromQLSource.USERNAME], self.source.config[source.PromQLSource.PASSWORD]
-            )
-        try:
-            res = session.get(url, verify=False)
-            res.raise_for_status()
-        except requests.exceptions.RequestException as e:
-            raise ValidationException(
-                'Failed connecting to VictoriaMetrics. Make sure you provided correct url, username and password\n'
-                + str(e)
-            )
-
 
 class SolarWindsValidator(Validator):
     VALIDATION_SCHEMA_FILE = 'solarwinds.json'

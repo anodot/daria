@@ -21,7 +21,7 @@ class PromQLScript(JythonSource):
             },
             {
                 'key': 'QUERY',
-                'value': self.pipeline.config['query']
+                'value': self.pipeline.config.get('query')
             },
             {
                 'key': 'INITIAL_TIMESTAMP',
@@ -50,18 +50,9 @@ class PromQLScript(JythonSource):
         ]
 
 
-class TestPromQLScript(JythonSource):
+class TestPromQLScript(PromQLScript):
     JYTHON_SCRIPT = 'promql.py'
 
     def get_config(self) -> dict:
         with open(self.get_jython_test_pipeline_file_path()) as f:
-            return {
-                'scriptConf.params': [
-                    {'key': 'URL', 'value': self.pipeline.source.config[source.PromQLSource.URL]},
-                    {'key': 'USERNAME',
-                     'value': self.pipeline.source.config.get(source.PromQLSource.USERNAME, '')},
-                    {'key': 'PASSWORD',
-                     'value': self.pipeline.source.config.get(source.PromQLSource.PASSWORD, '')},
-                ],
-                'script': f.read(),
-            }
+            return {self.PARAMS_KEY: self._get_script_params(), 'script':  f.read()}
