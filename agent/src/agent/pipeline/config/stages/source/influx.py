@@ -1,5 +1,6 @@
+import os
 from agent.pipeline.config.stages.influx import InfluxScript
-from agent import pipeline
+from agent.pipeline.config.stages.base import JythonSource
 from urllib.parse import urljoin, quote_plus
 
 
@@ -45,18 +46,14 @@ class InfluxSource(InfluxScript):
         })
 
 
-class TestInfluxSource(InfluxSource):
-    def get_query(self):
-        return f"select+%2A+from+{self.pipeline.config['measurement_name']}+limit+{pipeline.manager.MAX_SAMPLE_RECORDS}"
+class TestInfluxSource(JythonSource):
+    JYTHON_SCRIPT = 'influx.py'
+    JYTHON_SCRIPTS_PATH = os.path.join(JythonSource.JYTHON_SCRIPTS_PATH, 'test_pipelines')
 
-    def get_config(self) -> dict:
-        with open(self.get_jython_test_pipeline_file_path()) as f:
-            return {
-                'scriptConf.params': [
-                    {'key': 'USERNAME', 'value': self.pipeline.config.get('username')},
-                    {'key': 'PASSWORD', 'value': self.pipeline.config.get('password')},
-                    {'key': 'DATABASE', 'value': self.pipeline.source.config.get('db')},
-                    {'key': 'HOST', 'value': self.pipeline.source.config.get('host')},
-                ],
-                'script': f.read(),
-            }
+    def _get_script_params(self) -> list[dict]:
+        return [
+            {'key': 'USERNAME', 'value': self.pipeline.config.get('username')},
+            {'key': 'PASSWORD', 'value': self.pipeline.config.get('password')},
+            {'key': 'DATABASE', 'value': self.pipeline.source.config.get('db')},
+            {'key': 'HOST', 'value': self.pipeline.source.config.get('host')},
+        ]

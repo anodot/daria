@@ -11,25 +11,23 @@ finally:
     sdc.importUnlock()
 
 
-def main():
-    try:
-        res = requests.post(
-            sdc.userParams['URL'] + '/api_jsonrpc.php',
-            json={
-                'jsonrpc': '2.0',
-                'method': 'user.login',
-                'params': {'user': sdc.userParams['USER'],
-                           'password': sdc.userParams['PASSWORD']},
-                'id': 1,
-                'auth': None,
-            },
-            verify=sdc.userParams['VERIFY_SSL']
-        )
-        res.raise_for_status()
-    except Exception as e:
-        sdc.log.error(str(e))
-        sdc.log.error(traceback.format_exc())
-        raise
-
-
-main()
+try:
+    res = requests.post(
+        sdc.userParams['URL'] + '/api_jsonrpc.php',
+        json={
+            'jsonrpc': '2.0',
+            'method': 'user.login',
+            'params': {'user': sdc.userParams['USER'],
+                       'password': sdc.userParams['PASSWORD']},
+            'id': 1,
+            'auth': None,
+        },
+        verify=sdc.userParams['VERIFY_SSL']
+    )
+    res.raise_for_status()
+    if 'error' in res.json():
+        raise Exception('Authentication error')
+except Exception as e:
+    sdc.log.error(str(e))
+    sdc.log.error(traceback.format_exc())
+    raise

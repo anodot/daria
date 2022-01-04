@@ -35,7 +35,6 @@ class JythonScript(Stage, ABC):
     PARAMS_KEY = ''
     JYTHON_SCRIPT = ''
     JYTHON_SCRIPTS_PATH = os.path.join('pipeline', 'config', 'jython_scripts')
-    JYTHON_TEST_PIPELINE_SCRIPTS_PATH = os.path.join(JYTHON_SCRIPTS_PATH, 'test_pipelines')
 
     @abstractmethod
     def _get_script_params(self) -> list[dict]:
@@ -50,9 +49,6 @@ class JythonScript(Stage, ABC):
 
     def _get_jython_file_path(self):
         return os.path.join(ROOT_DIR, self.JYTHON_SCRIPTS_PATH, self.JYTHON_SCRIPT)
-
-    def get_jython_test_pipeline_file_path(self):
-        return os.path.join(ROOT_DIR, self.JYTHON_TEST_PIPELINE_SCRIPTS_PATH, self.JYTHON_SCRIPT)
 
 
 class JythonSource(JythonScript, ABC):

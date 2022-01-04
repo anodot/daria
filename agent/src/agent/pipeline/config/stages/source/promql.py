@@ -1,3 +1,4 @@
+import os
 from agent import source
 from agent.pipeline.config.stages.base import JythonSource
 
@@ -50,9 +51,26 @@ class PromQLScript(JythonSource):
         ]
 
 
-class TestPromQLScript(PromQLScript):
+class TestPromQLScript(JythonSource):
     JYTHON_SCRIPT = 'promql.py'
+    JYTHON_SCRIPTS_PATH = os.path.join(JythonSource.JYTHON_SCRIPTS_PATH, 'test_pipelines')
 
-    def get_config(self) -> dict:
-        with open(self.get_jython_test_pipeline_file_path()) as f:
-            return {self.PARAMS_KEY: self._get_script_params(), 'script':  f.read()}
+    def _get_script_params(self) -> list[dict]:
+        return [
+            {
+                'key': 'URL',
+                'value': self.pipeline.source.config[source.PromQLSource.URL]
+            },
+            {
+                'key': 'USERNAME',
+                'value': self.pipeline.source.config.get(source.PromQLSource.USERNAME, '')
+            },
+            {
+                'key': 'PASSWORD',
+                'value': self.pipeline.source.config.get(source.PromQLSource.PASSWORD, '')
+            },
+            {
+                'key': 'VERIFY_SSL',
+                'value': '1' if self.pipeline.source.config.get(source.APISource.VERIFY_SSL, True) else ''
+            },
+        ]
