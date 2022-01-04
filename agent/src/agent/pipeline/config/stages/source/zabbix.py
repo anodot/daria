@@ -58,3 +58,9 @@ class ZabbixScript(JythonSource):
                 'value': '1' if self.pipeline.source.config.get(source.APISource.VERIFY_SSL, True) else ''
             },
         ]
+
+
+class TestZabbixScript(ZabbixScript):
+    def get_config(self) -> dict:
+        with open(self.get_jython_test_pipeline_file_path()) as f:
+            return {self.PARAMS_KEY: self._get_script_params(), 'script': f.read()}

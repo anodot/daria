@@ -87,7 +87,7 @@ def _get_test_handler(pipeline_: Pipeline, base_config: dict) -> BaseConfigHandl
         source.TYPE_SPLUNK: pipeline.config.handlers.tcp.TCPConfigHandler,
         source.TYPE_THANOS: pipeline.config.handlers.promql.TestPromQLConfigHandler,
         source.TYPE_VICTORIA: pipeline.config.handlers.promql.TestPromQLConfigHandler,
-        source.TYPE_ZABBIX: pipeline.config.handlers.zabbix.ZabbixConfigHandler,
+        source.TYPE_ZABBIX: pipeline.config.handlers.zabbix.TestZabbixConfigHandler,
     }
     return handlers[pipeline_.source.type](pipeline_, base_config)
 
