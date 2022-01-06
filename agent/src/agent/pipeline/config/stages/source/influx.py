@@ -52,8 +52,8 @@ class TestInfluxSource(JythonSource):
 
     def _get_script_params(self) -> list[dict]:
         return [
-            {'key': 'USERNAME', 'value': self.pipeline.source.config.get('username')},
-            {'key': 'PASSWORD', 'value': self.pipeline.source.config.get('password')},
+            {'key': 'USERNAME', 'value': self.pipeline.source.config.get('username', 'root')},
+            {'key': 'PASSWORD', 'value': self.pipeline.source.config.get('password', 'root')},
             {'key': 'DATABASE', 'value': self.pipeline.source.config.get('db')},
             {'key': 'HOST', 'value': self.pipeline.source.config.get('host')},
         ]
