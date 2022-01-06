@@ -3,12 +3,10 @@
     "schemaId": "observium_ports-1234",
     "timestamp": 1628160620,
     "dimensions": {
-      "Interface_Name": "fxp0",
-      "Interface_Alias": "",
-      "Interface_Description": "fxp0_300",
-      "Bandwidth": "10000000",
-      "Host_Name": "sys1",
-      "Location": "SOME-LOC"
+      "INTERFACE_SPEED": "10000000",
+      "Location": "SOME-LOC",
+      "DEST_STATE": "Iowa",
+      "PARENT_ELEMENT_LOCATION": "Csmacd"
     },
     "measurements": {
       "ifInBroadcastPkts": 0.0,
@@ -69,12 +67,10 @@
     "schemaId": "observium_ports-1234",
     "timestamp": 1628160620,
     "dimensions": {
-      "Interface_Name": "dsc",
-      "Interface_Alias": "",
-      "Interface_Description": "dsc",
-      "Bandwidth": "0",
-      "Host_Name": "sys1",
-      "Location": "SOME-LOC"
+      "INTERFACE_SPEED": "0",
+      "Location": "SOME-LOC",
+      "DEST_STATE": "Nevada",
+      "PARENT_ELEMENT_LOCATION": "other"
     },
     "measurements": {
       "ifInBroadcastPkts": 0.0,

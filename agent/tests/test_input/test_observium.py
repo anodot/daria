@@ -7,9 +7,15 @@ from ..conftest import get_input_file_path
 class TestObservium(TestInputBase):
     __test__ = True
     params = {
-        'test_create_source_with_file': [{'file_name': 'observium_sources'}],
-        'test_create_with_file': [{'file_name': 'observium_pipelines'}],
-        'test_edit_with_file': [{'file_name': 'observium_pipelines_edit.json'}],
+        'test_create_source_with_file': [{
+            'file_name': 'observium/sources'
+        }],
+        'test_create_with_file': [{
+            'file_name': 'observium/pipelines'
+        }],
+        'test_edit_with_file': [{
+            'file_name': 'observium/pipelines_edit.json'
+        }],
     }
 
     def test_create_source_with_file(self, cli_runner, file_name):
@@ -28,8 +34,18 @@ class TestObservium(TestInputBase):
             "name": "observium_storage",
             "dimensions": ["Storage_size", "Host_Name", "Location"],
             "measurements": {
-                "my_own_field": {"aggregation": "average", "countBy": "none"},
-                "storage_perc": {"aggregation": "average", "countBy": "none"},
+                "my_own_field": {
+                    "aggregation": "average",
+                    "countBy": "none"
+                },
+                "storage_perc": {
+                    "aggregation": "average",
+                    "countBy": "none"
+                },
             },
-            "missingDimPolicy": {"action": "fill", "fill": "NULL"}, "id": "observium_storage-1234"
+            "missingDimPolicy": {
+                "action": "fill",
+                "fill": "NULL"
+            },
+            "id": "observium_storage-1234"
         }

@@ -1,0 +1,84 @@
+[
+  {
+    "source": "observium_ports",
+    "pipeline_id": "observium_ports",
+    "interval": 300,
+    "lookup": {
+      "DEST_GROUP_CATEGORY": {
+        "type": "file",
+        "path": "/usr/src/app/tests/input_files/observium/DEST_GROUP_CATEGORY"
+      }
+    },
+    "dimensions": [
+      "INTERFACE_SPEED",
+      "Location",
+      "DEST_STATE",
+      "PARENT_ELEMENT_LOCATION"
+    ],
+    "dimensions_configuration": {
+      "INTERFACE_SPEED": {
+        "value_path": "ifSpeed"
+      },
+      "Location": {
+        "value_path": "location"
+      },
+      "DEST_STATE": {
+        "value_path": "state",
+        "transformations": [
+          {
+            "type": "function",
+            "value": "toUpper"
+          },
+          {
+            "type": "lookup",
+            "compare_function": "like",
+            "name": "DEST_GROUP_CATEGORY",
+            "key": "ABBREVIATION",
+            "value": "STATE",
+            "default": "other"
+          }
+        ]
+      },
+      "PARENT_ELEMENT_LOCATION": {
+        "value_path": "ifType",
+        "transformations": [
+          {
+            "type": "function",
+            "value": "re.sub .+\\.(.+) \\g<1>"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "source": "observium_mempools",
+    "pipeline_id": "observium_mempools",
+    "interval": 300
+  },
+  {
+    "source": "observium_mempools",
+    "pipeline_id": "observium_mempools_edit",
+    "interval": 300
+  },
+  {
+    "source": "observium_processors",
+    "pipeline_id": "observium_processors",
+    "interval": 300,
+    "delay": 1
+  },
+  {
+    "source": "observium_storage",
+    "pipeline_id": "observium_storage",
+    "interval": 300,
+    "dimensions": [
+      "Storage size"
+    ],
+    "dimension_value_paths": {
+      "Storage size": "storage_size"
+    },
+    "values": {
+      "my own field": "gauge",
+      "storage_perc": "gauge"
+    }
+  }
+]

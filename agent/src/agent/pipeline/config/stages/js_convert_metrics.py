@@ -1,7 +1,7 @@
-from .base import JSScript
+from .base import JSProcessor
 
 
-class JSConvertMetrics(JSScript):
+class JSConvertMetrics(JSProcessor):
     def get_js_vars(self):
         return f"""
 state['TIMESTAMP_COLUMN'] = '{self.pipeline.timestamp_path}';

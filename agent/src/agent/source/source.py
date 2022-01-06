@@ -196,6 +196,10 @@ class APISource(Source):
     def url(self) -> str:
         return self.config[self.URL]
 
+    @property
+    def verify_ssl(self) -> bool:
+        return self.config.get('verify_ssl', True)
+
 
 class SNMPSource(APISource):
     READ_COMMUNITY = 'read_community'

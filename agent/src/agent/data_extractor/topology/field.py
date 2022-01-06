@@ -1,44 +1,11 @@
 from abc import ABC, abstractmethod
-from agent.data_extractor.topology import lookup
+from agent.data_extractor.topology import transformer
+from agent.data_extractor.topology.transformer import Transformer
+
+TYPE = 'type'
 
 VARIABLE = 'variable'
 CONSTANT = 'constant'
-
-TRANSFORMATIONS = 'transformations'
-
-FUNCTION_TRANSFORMATION = 'function'
-LOOKUP_TRANSFORMATION = 'lookup'
-
-
-class Transformer(ABC):
-    @abstractmethod
-    def transform(self, data) -> dict:
-        pass
-
-
-class FunctionTransformer(Transformer):
-    SUPPORTED_FUNCTIONS = ['substring', 'concat']
-
-    def __init__(self, func: str, *args):
-        if func not in self.SUPPORTED_FUNCTIONS:
-            # todo exception type
-            raise Exception(f'Transformation function `{func}` is not supported')
-        self.func = func
-
-    def transform(self, value):
-        # todo
-        return value
-
-
-class LookupTransformer(Transformer):
-    def __init__(self, lookup_name: str, lookup_key: str, lookup_value: str):
-        self.lookup_name = lookup_name
-        self.lookup_key = lookup_key
-        self.lookup_value = lookup_value
-
-    # todo str or any?
-    def transform(self, value) -> str:
-        return lookup.lookup(self.lookup_name, value, self.lookup_key, self.lookup_value)
 
 
 class Field(ABC):
@@ -50,11 +17,15 @@ class Field(ABC):
     def get_transformers(self) -> list[Transformer]:
         pass
 
+    @abstractmethod
+    def extract_from(self, data) -> list[Transformer]:
+        pass
+
 
 class Variable(Field):
-    def __init__(self, name: str, source_field: str, transformations: list[Transformer]):
+    def __init__(self, name: str, value_path: str, transformations: list[Transformer]):
         self.name: str = name
-        self.source_field: str = source_field
+        self.value_path: str = value_path
         self.transformers: list = transformations
 
     def get_name(self) -> str:
@@ -62,6 +33,9 @@ class Variable(Field):
 
     def get_transformers(self) -> list[Transformer]:
         return self.transformers
+
+    def extract_from(self, obj: dict) -> list[Transformer]:
+        return obj[self.value_path]
 
 
 class Constant(Field):
@@ -75,39 +49,17 @@ class Constant(Field):
     def get_transformers(self) -> list[Transformer]:
         return []
 
-
-def extract(data: dict, field_: Field):
-    # todo don't you think it looks like a class??? you're passing object into function
-    if type(field_) is Variable:
-        return data[field_.source_field]
-    elif type(field_) is Constant:
-        return field_.value
-    else:
-        raise Exception('Invalid field provided')
+    def extract_from(self, data) -> list[Transformer]:
+        return self.value
 
 
 def build_fields(fields_conf: dict) -> list[Field]:
     fields = []
     for name, field_ in fields_conf.items():
-        if field_['type'] == VARIABLE:
-            fields.append(Variable(name, field_['source_field'], build_transformers(field_)))
-        elif field_['type'] == CONSTANT:
+        type_ = field_.get(TYPE, VARIABLE)
+        if type_ == VARIABLE:
+            # todo think if value_path is a good key
+            fields.append(Variable(name, field_['value_path'], transformer.build_transformers(field_)))
+        elif type_ == CONSTANT:
             fields.append(Constant(name, field_['value']))
     return fields
-
-
-def build_transformers(field_conf: dict) -> list:
-    transformers = []
-    for transform in field_conf.get(TRANSFORMATIONS, []):
-        type_ = transform['type']
-        if type_ == FUNCTION_TRANSFORMATION:
-            transformers.append(FunctionTransformer(_get_function_name(transform)))
-        elif type_ == LOOKUP_TRANSFORMATION:
-            transformers.append(LookupTransformer(transform['name'], transform['key'], transform['value']))
-        else:
-            raise Exception(f'Invalid type of a transformation provided: `{type_}`')
-    return transformers
-
-
-def _get_function_name(transform_conf: dict) -> str:
-    return transform_conf['value'].split(' ')[0]

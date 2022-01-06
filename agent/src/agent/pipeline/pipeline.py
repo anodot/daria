@@ -109,7 +109,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
         self.config = deepcopy(config)
 
     @property
-    def source(self) -> Source:
+    def source(self):
         return self.source_
 
     @property
@@ -173,6 +173,12 @@ class Pipeline(Entity, sdc_client.IPipeline):
     @property
     def dimension_paths_with_names(self) -> dict:
         return dict(zip(self.dimension_paths, self.dimension_names))
+
+    # todo
+    @property
+    def new_dimensions(self):
+        # todo change key
+        return self.config.get('dimensions_configuration')
 
     @property
     def timestamp_path(self) -> str:

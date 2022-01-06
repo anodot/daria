@@ -54,12 +54,22 @@ class ObserviumBuilder(Builder):
             "ifDiscards_rate": "counter"
         },
         source.ObserviumSource.MEMPOOLS: {
-            "mempool_perc": "gauge", "mempool_used": "counter", "mempool_free": "counter", "mempool_total": "counter"
+            "mempool_perc": "gauge",
+            "mempool_used": "counter",
+            "mempool_free": "counter",
+            "mempool_total": "counter"
         },
-        source.ObserviumSource.PROCESSORS: {"processor_usage": "gauge"},
-        source.ObserviumSource.STORAGE: {"storage_free": "counter", "storage_used": "counter", "storage_perc": "gauge"},
+        source.ObserviumSource.PROCESSORS: {
+            "processor_usage": "gauge"
+        },
+        source.ObserviumSource.STORAGE: {
+            "storage_free": "counter",
+            "storage_used": "counter",
+            "storage_perc": "gauge"
+        },
     }
 
+    # todo dimension names changed in requirements
     DEFAULT_DIMENSIONS = {
         source.ObserviumSource.PORTS: ['Interface Name', 'Interface Alias', 'Interface Description', 'Bandwidth'],
         source.ObserviumSource.MEMPOOLS: ['Memory_Pool_ID', 'Memory_Pool_Description', 'Memory_Pool_Vendor'],
@@ -67,11 +77,31 @@ class ObserviumBuilder(Builder):
         source.ObserviumSource.STORAGE: ["storage_description", "storage_type"],
     }
 
+    DEFAULT_DIMENSION_PATHS = {
+        source.ObserviumSource.PORTS: {
+            'Interface Name': 'ifName',
+            'Interface Alias': 'ifAlias',
+            'Interface Description': 'ifDescr',
+            'Bandwidth': 'ifSpeed',
+        },
+        source.ObserviumSource.MEMPOOLS: {
+            'Memory_Pool_ID': 'mempool_id',
+            'Memory_Pool_Description': 'mempool_descr',
+            'Memory_Pool_Vendor': 'mempool_mib',
+        },
+        source.ObserviumSource.PROCESSORS: {
+            'processor_name': 'processor_descr',
+        },
+        source.ObserviumSource.STORAGE: {
+            'storage_description': 'storage_descr',
+        },
+    }
+
     def _load_config(self):
         super()._load_config()
         self.config['timestamp'] = {'type': 'unix'}
         self.config['uses_schema'] = True
-        self.config['dimension_value_paths'] = self._default_dimension_paths()
+        self.config['dimension_value_paths'] = self._dimension_paths()
         self.config['dimensions'] = self._dimensions()
         self.config['values'] = self._measurements()
         self.config['request_params'] = self._request_params()
@@ -99,33 +129,12 @@ class ObserviumBuilder(Builder):
             return {k: v for k, v in params.items() if v and (k in self.ALLOWED_PARAMS[self.endpoint()])}
         return {}
 
-    def _default_dimension_paths(self):
-        if self.config.get('dimensions'):
+    def _dimension_paths(self):
+        if self.config.get('dimensions') or self.config.get('dimension_value_paths'):
             dim_paths = self.config.get('dimension_value_paths', {})
         # if there are no dimensions we'll use the default ones so need to use default paths as well
-        elif self.endpoint() == source.ObserviumSource.PORTS:
-            dim_paths = {
-                'Interface Name': 'ifName',
-                'Interface Alias': 'ifAlias',
-                'Interface Description': 'ifDescr',
-                'Bandwidth': 'ifSpeed',
-            }
-        elif self.endpoint() == source.ObserviumSource.MEMPOOLS:
-            dim_paths = {
-                'Memory_Pool_ID': 'mempool_id',
-                'Memory_Pool_Description': 'mempool_descr',
-                'Memory_Pool_Vendor': 'mempool_mib',
-            }
-        elif self.endpoint() == source.ObserviumSource.PROCESSORS:
-            dim_paths = {
-                'processor_name': 'processor_descr',
-            }
-        elif self.endpoint() == source.ObserviumSource.STORAGE:
-            dim_paths = {
-                'storage_description': 'storage_descr',
-            }
         else:
-            raise Exception('Wrong Observium endpoint provided')
+            dim_paths = self.DEFAULT_DIMENSION_PATHS[self.endpoint()]
         if 'sysName' not in dim_paths:
             dim_paths['Host Name'] = 'sysName'
         if 'Location' not in dim_paths:

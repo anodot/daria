@@ -1,13 +1,15 @@
 import urllib.parse
 
 from agent import source
-from agent.pipeline.config.stages.base import JythonSource
+from agent.pipeline.config.stages.base import JythonDataExtractorSource
 
 
-class ObserviumScript(JythonSource):
+class ObserviumScript(JythonDataExtractorSource):
     JYTHON_SCRIPT = 'observium.py'
 
     def _get_script_params(self) -> list[dict]:
+        # todo remove unneeded
+        # todo monitoring url might be in a separate module
         base_url = urllib.parse.urljoin(self.pipeline.source.config[source.ObserviumSource.URL], '/api/v0/')
         return [
             {

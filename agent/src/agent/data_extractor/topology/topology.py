@@ -1,4 +1,5 @@
 from abc import ABC
+from agent.data_extractor.topology.field import Field
 from agent.pipeline import Pipeline
 from agent.source import Source
 from agent.data_extractor.topology import lookup, field, entity
@@ -41,14 +42,22 @@ def _create_topology_records(entities: list[Entity]) -> list:
     records = []
     for entity_ in entities:
         for row in entity_.source.get_data():
-            record = {}
-            for field_ in entity_.fields:
-                value = field.extract(row, field_)
-                for transformer in field_.get_transformers():
-                    value = transformer.transform(value)
-                record[field_.get_name()] = value
-            records.append(record)
+            records.append(extract_fields(entity_.fields, row))
     return records
+
+
+# todo it's generic
+def extract_fields(fields: list[Field], obj: dict) -> dict:
+    """
+    Returns a dictionary with extracted values
+    """
+    values = {}
+    for field_ in fields:
+        value = field_.extract_from(obj)
+        for transformer in field_.get_transformers():
+            value = transformer.transform(value)
+        values[field_.get_name()] = value
+    return values
 
 
 def _build_topology_data(topology_entities: list) -> dict:
