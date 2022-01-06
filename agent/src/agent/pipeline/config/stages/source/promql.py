@@ -22,7 +22,7 @@ class PromQLScript(JythonSource):
             },
             {
                 'key': 'QUERY',
-                'value': self.pipeline.config.get('query')
+                'value': self.pipeline.config['query']
             },
             {
                 'key': 'INITIAL_TIMESTAMP',

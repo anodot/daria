@@ -1,6 +1,6 @@
 from agent.modules.logger import get_logger
 from agent.pipeline.config import stages
-from agent.pipeline.config.handlers.base import BaseTestConfigHandler, SchemaConfigHandler
+from agent.pipeline.config.handlers.base import SchemaConfigHandler
 
 logger = get_logger(__name__)
 
