@@ -133,6 +133,7 @@ test-export-sources:
 
 test-pipelines:
 	docker exec -i dc bash -c '$$SDC_DIST/bin/streamsets stagelib-cli jks-credentialstore add -i jks -n testmongopass -c root'
+	docker exec -i dc2 bash -c '$$SDC_DIST/bin/streamsets stagelib-cli jks-credentialstore add -i jks -n testmongopass -c root'
 	sleep 15
 	$(DOCKER_TEST_PARALLEL) tests/test_pipelines/
 
