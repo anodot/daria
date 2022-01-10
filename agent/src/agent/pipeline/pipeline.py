@@ -174,11 +174,9 @@ class Pipeline(Entity, sdc_client.IPipeline):
     def dimension_paths_with_names(self) -> dict:
         return dict(zip(self.dimension_paths, self.dimension_names))
 
-    # todo
     @property
-    def new_dimensions(self):
-        # todo change key
-        return self.config.get('dimensions_configuration')
+    def dimension_configurations(self) -> Optional[dict]:
+        return self.config.get('dimension_configurations')
 
     @property
     def timestamp_path(self) -> str:

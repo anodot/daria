@@ -2,7 +2,7 @@
   {
     "source": "observium_ports",
     "pipeline_id": "observium_ports",
-    "interval": 300,
+    "interval": 3600,
     "lookup": {
       "DEST_GROUP_CATEGORY": {
         "type": "file",
@@ -27,14 +27,14 @@
         "transformations": [
           {
             "type": "function",
-            "value": "toUpper"
+            "value": "to_upper"
           },
           {
             "type": "lookup",
-            "compare_function": "like",
+            "value": "STATE",
             "name": "DEST_GROUP_CATEGORY",
             "key": "ABBREVIATION",
-            "value": "STATE",
+            "compare_function": "like",
             "default": "other"
           }
         ]
@@ -53,28 +53,30 @@
   {
     "source": "observium_mempools",
     "pipeline_id": "observium_mempools",
-    "interval": 300
+    "interval": 3600
   },
   {
     "source": "observium_mempools",
     "pipeline_id": "observium_mempools_edit",
-    "interval": 300
+    "interval": 3600
   },
   {
     "source": "observium_processors",
     "pipeline_id": "observium_processors",
-    "interval": 300,
+    "interval": 3600,
     "delay": 1
   },
   {
     "source": "observium_storage",
     "pipeline_id": "observium_storage",
-    "interval": 300,
+    "interval": 3600,
     "dimensions": [
       "Storage size"
     ],
-    "dimension_value_paths": {
-      "Storage size": "storage_size"
+    "dimensions_configuration": {
+      "Storage size": {
+        "value_path": "storage_size"
+      }
     },
     "values": {
       "my own field": "gauge",

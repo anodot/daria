@@ -28,6 +28,8 @@ def get_next_offset():
     dt = datetime.utcnow().replace(second=0, microsecond=0)
     if sdc.userParams['BUCKET_SIZE'] == '5m':
         dt = dt + timedelta(minutes=5 - dt.minute % 5)
+    if sdc.userParams['BUCKET_SIZE'] == '1h':
+        dt = dt.replace(minute=0, second=0, microsecond=0) + timedelta(hours=1)
     else:
         dt = dt + timedelta(seconds=get_interval())
     return to_timestamp(dt)
@@ -63,9 +65,13 @@ def main():
                 if sdc.isStopped():
                     return batch, offset
             offset = get_next_offset()
-
-            res = requests.get(sdc.userParams['RRD_SOURCE_URL'])
-            res.raise_for_status()
+            try:
+                res = requests.get(sdc.userParams['AGENT_DATA_EXTRACTOR_URL'])
+                res.raise_for_status()
+            except requests.HTTPError as e:
+                requests.post(sdc.userParams['MONITORING_URL'] + str(res.status_code))
+                sdc.log.error(str(e))
+                raise
             for metric in res.json():
                 record = sdc.createRecord('record created ' + str(datetime.now()))
                 record.value = metric

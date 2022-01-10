@@ -1,7 +1,9 @@
-from abc import ABC, abstractmethod
-from typing import Callable
+import inspect
 
-from agent.data_extractor.topology import lookup, functions
+from . import lookup
+from . import functions
+from abc import ABC, abstractmethod
+from typing import Callable, Optional, Any
 
 TYPE = 'type'
 
@@ -18,9 +20,8 @@ class Transformer(ABC):
 
 
 class FunctionTransformer(Transformer):
-    def __init__(self, func: str, args: list):
-        # todo validate that args are fine for the func
-        self.func = get_transform_function(func)
+    def __init__(self, func: Callable, args: list):
+        self.func = func
         self.args = args
 
     def transform(self, val):
@@ -28,15 +29,15 @@ class FunctionTransformer(Transformer):
 
 
 class LookupTransformer(Transformer):
-    def __init__(self, lookup_name: str, lookup_key: str, lookup_value: str, compare_func: Callable):
+    def __init__(self, lookup_name: str, lookup_key: str, lookup_value: Any, compare_func_name: Optional[str]):
+        self.compare_func = lookup.get_compare_function(compare_func_name) \
+            if compare_func_name is not None \
+            else functions.compare.equal
         self.lookup_name = lookup_name
         self.lookup_key = lookup_key
         self.lookup_value = lookup_value
-        self.compare_func = compare_func
 
-    # todo str or any?
-    def transform(self, value) -> str:
-        # todo why do I pass all params from an object into a function?
+    def transform(self, value) -> Optional[Any]:
         return lookup.lookup(self.lookup_name, value, self.lookup_key, self.lookup_value, self.compare_func)
 
 
@@ -45,15 +46,17 @@ def build_transformers(field_conf: dict) -> list:
     for transform in field_conf.get(TRANSFORMATIONS, []):
         type_ = transform[TYPE]
         if type_ == FUNCTION_TRANSFORMATION:
-            transformers.append(FunctionTransformer(_get_function_name(transform), _get_function_args(transform)))
+            func = _get_transform_function(transform)
+            args = _get_function_args(transform)
+            _validate_function_args(func, args)
+            transformers.append(FunctionTransformer(func, args))
         elif type_ == LOOKUP_TRANSFORMATION:
             transformers.append(
                 LookupTransformer(
                     transform['name'],
                     transform['key'],
                     transform['value'],
-                    # todo not obvious default value, also duplicate string 'equal', constant better
-                    lookup.get_compare_function(transform.get('compare_function', 'equal'))
+                    transform.get('compare_function'),
                 )
             )
         else:
@@ -61,19 +64,26 @@ def build_transformers(field_conf: dict) -> list:
     return transformers
 
 
-def _get_function_name(transform_conf: dict) -> str:
-    # todo probably value is not the best key
-    return transform_conf['value'].split(' ')[0]
-
-
 def _get_function_args(transform_conf: dict) -> list:
     return transform_conf['value'].split(' ')[1:]
 
 
-def get_transform_function(name: str) -> Callable:
-    if name == 'toUpper':
+def _get_transform_function(transform_conf: dict) -> Callable:
+    name = _get_function_name(transform_conf)
+    if name == 'to_upper':
         return functions.transform.to_upper
     elif name == 're.sub':
         return functions.transform.re_sub
     else:
         raise Exception(f'Transformation function `{name}` is not supported')
+
+
+def _get_function_name(transform_conf: dict) -> str:
+    return transform_conf['value'].split(' ')[0]
+
+
+def _validate_function_args(func: Callable, args):
+    ar = len(args)
+    er = len(inspect.signature(func).parameters)
+    if ar != er:
+        raise Exception(f'Transformation function `{func.__name__}` expects {er} arguments, {ar} provided')

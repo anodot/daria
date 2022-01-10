@@ -1,6 +1,6 @@
 import urllib.parse
 
-from agent import source, pipeline
+from agent import source, pipeline, monitoring
 from agent.pipeline.config.stages.base import JythonSource
 
 
@@ -50,9 +50,7 @@ class SolarWindsScript(JythonSource):
             },
             {
                 'key': 'MONITORING_URL',
-                'value': urllib.parse.urljoin(
-                    self.pipeline.streamsets.agent_external_url, f'/monitoring/source_http_error/{self.pipeline.name}/'
-                )
+                'value': monitoring.get_monitoring_source_error_url(self.pipeline)
             },
             {
                 'key': 'VERIFY_SSL',

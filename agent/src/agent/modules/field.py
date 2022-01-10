@@ -1,6 +1,6 @@
+from . import transformer
+from .transformer import Transformer
 from abc import ABC, abstractmethod
-from agent.data_extractor.topology import transformer
-from agent.data_extractor.topology.transformer import Transformer
 
 TYPE = 'type'
 
@@ -58,8 +58,20 @@ def build_fields(fields_conf: dict) -> list[Field]:
     for name, field_ in fields_conf.items():
         type_ = field_.get(TYPE, VARIABLE)
         if type_ == VARIABLE:
-            # todo think if value_path is a good key
             fields.append(Variable(name, field_['value_path'], transformer.build_transformers(field_)))
         elif type_ == CONSTANT:
             fields.append(Constant(name, field_['value']))
     return fields
+
+
+def extract_fields(fields: list[Field], data: dict) -> dict:
+    """
+    Returns a dictionary with extracted values
+    """
+    values = {}
+    for field_ in fields:
+        value = field_.extract_from(data)
+        for transformer_ in field_.get_transformers():
+            value = transformer_.transform(value)
+        values[field_.get_name()] = value
+    return values

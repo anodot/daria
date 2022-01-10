@@ -6,5 +6,5 @@ def equal(a, b) -> bool:
     return a == b
 
 
-def like(haystack: str, needle: str) -> bool:
+def contains(haystack: str, needle: str) -> bool:
     return needle in haystack

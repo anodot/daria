@@ -1,6 +1,5 @@
-import urllib.parse
-
 from urllib.parse import urljoin
+from agent import monitoring
 from agent.pipeline.config.stages.influx import InfluxScript
 
 
@@ -28,9 +27,7 @@ class Influx2Source(InfluxScript):
             },
             {
                 'key': 'MONITORING_URL',
-                'value': urllib.parse.urljoin(
-                    self.pipeline.streamsets.agent_external_url, f'/monitoring/source_http_error/{self.pipeline.name}/'
-                )
+                'value': monitoring.get_monitoring_source_error_url(self.pipeline)
             },
         ])
         return params
