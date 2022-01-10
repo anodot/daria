@@ -83,4 +83,8 @@ class TestZabbixScript(JythonSource):
                 'key': 'VERIFY_SSL',
                 'value': '1' if self.pipeline.source.config.get(source.APISource.VERIFY_SSL, True) else ''
             },
+            {
+                'key': 'REQUEST_TIMEOUT',
+                'value': 10
+            },
         ]

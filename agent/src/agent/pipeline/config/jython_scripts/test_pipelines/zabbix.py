@@ -22,7 +22,8 @@ try:
             'id': 1,
             'auth': None,
         },
-        verify=sdc.userParams['VERIFY_SSL']
+        verify=sdc.userParams['VERIFY_SSL'],
+        timeout=sdc.userParams['REQUEST_TIMEOUT']
     )
     res.raise_for_status()
     if 'error' in res.json():

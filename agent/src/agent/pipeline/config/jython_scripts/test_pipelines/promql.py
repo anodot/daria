@@ -17,7 +17,7 @@ def main():
     if sdc.userParams['USERNAME']:
         session.auth = (sdc.userParams['USERNAME'], sdc.userParams['PASSWORD'])
     try:
-        res = session.get(url, verify=sdc.userParams['VERIFY_SSL'])
+        res = session.get(url, verify=sdc.userParams['VERIFY_SSL'], timeout=sdc.userParams['REQUEST_TIMEOUT'])
         res.raise_for_status()
     except Exception as e:
         sdc.log.error(str(e))

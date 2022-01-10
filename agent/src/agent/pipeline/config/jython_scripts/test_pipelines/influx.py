@@ -32,6 +32,7 @@ def influx_request(base_url, url, method='GET', params=None, data=None, ssl=Fals
             data=data,
             headers=headers,
             verify=ssl,
+            timeout=sdc.userParams['REQUEST_TIMEOUT']
         )
 
 

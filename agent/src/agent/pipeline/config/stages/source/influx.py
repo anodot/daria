@@ -56,4 +56,5 @@ class TestInfluxSource(JythonSource):
             {'key': 'PASSWORD', 'value': self.pipeline.source.config.get('password', 'root')},
             {'key': 'DATABASE', 'value': self.pipeline.source.config.get('db')},
             {'key': 'HOST', 'value': self.pipeline.source.config.get('host')},
+            {'key': 'REQUEST_TIMEOUT', 'value': 10},
         ]

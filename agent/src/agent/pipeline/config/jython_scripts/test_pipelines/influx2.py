@@ -16,7 +16,7 @@ def main():
     session = requests.Session()
     session.headers = sdc.userParams['HEADERS']
     try:
-        res = session.get(sdc.userParams['URL'])
+        res = session.get(sdc.userParams['URL'], timeout=sdc.userParams['REQUEST_TIMEOUT'])
         res.raise_for_status()
     except Exception as e:
         sdc.log.error(str(e))

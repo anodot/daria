@@ -66,14 +66,9 @@ class TestInflux2Source(JythonSource):
 
     def _get_script_params(self) -> list[dict]:
         return [
-            {
-                'key': 'URL',
-                'value': self._get_url()
-            },
-            {
-                'key': 'HEADERS',
-                'value': self._get_headers()
-            },
+            {'key': 'URL', 'value': self._get_url()},
+            {'key': 'HEADERS', 'value': self._get_headers()},
+            {'key': 'REQUEST_TIMEOUT', 'value': 10},
         ]
 
     def _get_url(self) -> str:
