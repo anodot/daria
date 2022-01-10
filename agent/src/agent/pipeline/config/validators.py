@@ -27,23 +27,6 @@ class JDBCValidator(Validator):
             raise ValidationException(errors)
 
 
-class ObserviumValidator(Validator):
-    @staticmethod
-    def validate(pipeline: Pipeline):
-        errors = []
-        if pipeline.dimension_configurations:
-            diff = pipeline.dimensions - pipeline.dimension_configurations.keys()
-            if diff:
-                errors.append(f'These dimensions don\'t have a configuration: {",".join(diff)}')
-            reverse_diff = pipeline.dimension_configurations.keys() - pipeline.dimensions
-            if reverse_diff:
-                errors.append(
-                    f'Extra dimension configurations provided that are not in the dimensions list: {",".join(reverse_diff)}'
-                )
-        if errors:
-            raise ValidationException(errors)
-
-
 def get_config_validator(source_type: str) -> Validator:
     jdbc_sources = [
         source.TYPE_DATABRICKS, source.TYPE_MYSQL, source.TYPE_POSTGRES, source.TYPE_CLICKHOUSE, source.TYPE_ORACLE
@@ -53,8 +36,6 @@ def get_config_validator(source_type: str) -> Validator:
         return ElasticValidator()
     elif source_type in jdbc_sources:
         return JDBCValidator()
-    elif source_type == source.TYPE_OBSERVIUM:
-        return ObserviumValidator()
     return Validator()
 
 

@@ -25,7 +25,6 @@ RESPONSE_DATA_KEYS = {'ports': 'ports', 'mempools': 'entries', 'processors': 'en
 @lookup.provide
 def extract_metrics(pipeline_: Pipeline) -> list:
     # todo schema definition
-    # todo make dimension configuration optional
     # todo
     base_url = urllib.parse.urljoin(pipeline_.source.config[source.ObserviumSource.URL], '/api/v0/')
     base_url = 'http://localhost:8080/api/v0/ports/'
