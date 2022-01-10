@@ -11,7 +11,7 @@
     }
   },
   {
-    "source": "test_mongo",
+    "source": "test_mongo_encrypted_pass",
     "pipeline_id": "test_mongo_file_full",
     "measurement_names": {"Clicks":  "clicks"},
     "values": {"Clicks":  "gauge"},

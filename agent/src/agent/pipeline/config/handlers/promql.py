@@ -18,3 +18,9 @@ class PromQLConfigHandler(NoSchemaConfigHandler):
             'type': pipeline.TimestampType.UNIX.value
         }
         super()._override_stages()
+
+
+class TestPromQLConfigHandler(PromQLConfigHandler):
+    stages_to_override = {
+        'source': stages.source.promql.TestPromQLScript,
+    }

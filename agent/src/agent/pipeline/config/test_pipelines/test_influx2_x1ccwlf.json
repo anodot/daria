@@ -2,10 +2,10 @@
   "pipelineConfig" : {
     "schemaVersion" : 6,
     "version" : 19,
-    "pipelineId" : "testinflud2de70bb-1fd1-493b-88fd-d33ca897f600",
-    "title" : "test_influx_qwe093",
+    "pipelineId" : "testinflu50d85887-1f8f-49fb-a093-ee8d9717f071",
+    "title" : "test_influx2_x1ccwlf",
     "description" : "",
-    "uuid" : "049bada2-4493-4b9d-85ff-6f93034260dd",
+    "uuid" : "3c4f35b5-b32d-4a04-93da-2dfcdda18506",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -14,22 +14,37 @@
       "value" : "http://localhost:18633"
     }, {
       "name" : "deliveryGuarantee",
-      "value" : "AT_LEAST_ONCE"
+      "value" : "AT_MOST_ONCE"
     }, {
       "name" : "shouldRetry",
       "value" : true
     }, {
       "name" : "retryAttempts",
-      "value" : -1
+      "value" : 5
     }, {
       "name" : "notifyOnStates",
-      "value" : [ "RUN_ERROR", "STOPPED", "FINISHED" ]
+      "value" : [ "RUN_ERROR", "START_ERROR", "STOP_ERROR", "RUNNING_ERROR", "RUNNING", "STOPPED", "FINISHED", "DISCONNECTED", "CONNECTING" ]
     }, {
       "name" : "emailIDs",
       "value" : [ ]
     }, {
       "name" : "constants",
-      "value" : [ ]
+      "value" : [ {
+        "key" : "TOKEN",
+        "value" : "correct_token"
+      }, {
+        "key" : "PROTOCOL",
+        "value" : "anodot30"
+      }, {
+        "key" : "ANODOT_BASE_URL",
+        "value" : "http://dummy_destination"
+      }, {
+        "key" : "AGENT_URL",
+        "value" : "http://anodot-agent"
+      }, {
+        "key" : "SCHEMA_ID",
+        "value" : "test_influx2_file_full-1234"
+      } ]
     }, {
       "name" : "errorRecordPolicy",
       "value" : "ORIGINAL_RECORD"
@@ -69,10 +84,10 @@
     }, {
       "name" : "webhookConfigs",
       "value" : [ {
-        "payload" : "{\n  \"pipeline_status\": \"{{PIPELINE_STATE}}\",\n  \"pipeline_name\": \"{{PIPELINE_TITLE}}\"\n }",
+        "payload" : "{\n  \"pipeline_status\": \"{{PIPELINE_STATE}}\"\n }",
         "headers" : [ ],
         "httpMethod" : "POST",
-        "contentType" : "application/json",
+        "contentType" : "application/on",
         "authType" : "NONE",
         "webhookUrl" : "${AGENT_URL}/pipeline-status-change/${pipeline:id()}"
       } ]
@@ -171,13 +186,13 @@
       "value" : null
     }, {
       "name" : "databricksConfig.username",
-      "value" : null
+      "value" : ""
     }, {
       "name" : "databricksConfig.password",
-      "value" : null
+      "value" : ""
     }, {
       "name" : "databricksConfig.token",
-      "value" : null
+      "value" : ""
     }, {
       "name" : "databricksConfig.clusterConfig",
       "value" : "{\n    \"num_workers\": 8,\n    \"spark_version\": \"5.3.x-scala2.11\",\n    \"node_type_id\": \"i3.xlarge\"\n}"
@@ -186,10 +201,10 @@
       "value" : null
     }, {
       "name" : "livyConfig.username",
-      "value" : null
+      "value" : ""
     }, {
       "name" : "livyConfig.password",
-      "value" : null
+      "value" : ""
     }, {
       "name" : "databricksConfig.provisionNewCluster",
       "value" : true
@@ -273,10 +288,10 @@
       "value" : null
     }, {
       "name" : "transformerEMRConfig.accessKey",
-      "value" : null
+      "value" : ""
     }, {
       "name" : "transformerEMRConfig.secretKey",
-      "value" : null
+      "value" : ""
     }, {
       "name" : "transformerEMRConfig.provisionNewCluster",
       "value" : false
@@ -285,6 +300,24 @@
       "value" : false
     }, {
       "name" : "clusterConfig.callbackUrl",
+      "value" : null
+    }, {
+      "name" : "clusterConfig.sparkAppName",
+      "value" : "${pipeline:title()}"
+    }, {
+      "name" : "clusterConfig.useYarnKerberosKeytab",
+      "value" : false
+    }, {
+      "name" : "clusterConfig.yarnKerberosKeytabSource",
+      "value" : "PROPERTIES_FILE"
+    }, {
+      "name" : "clusterConfig.yarnKerberosKeytab",
+      "value" : null
+    }, {
+      "name" : "clusterConfig.yarnKerberosPrincipal",
+      "value" : "name@DOMAIN"
+    }, {
+      "name" : "transformerEMRConfig.emrVersion",
       "value" : null
     }, {
       "name" : "transformerEMRConfig.serviceAccessSecurityGroup",
@@ -362,32 +395,14 @@
       "name" : "testOriginStage",
       "value" : "streamsets-datacollector-dev-lib::com_streamsets_pipeline_stage_devtest_rawdata_RawDataDSource::3"
     }, {
-      "name" : "clusterConfig.sparkAppName",
-      "value" : "${pipeline:title()}"
-    }, {
-      "name" : "clusterConfig.useYarnKerberosKeytab",
-      "value" : false
-    }, {
-      "name" : "clusterConfig.yarnKerberosKeytabSource",
-      "value" : "PROPERTIES_FILE"
-    }, {
-      "name" : "clusterConfig.yarnKerberosKeytab",
-      "value" : null
-    }, {
       "name" : "clusterConfig.yarnKerberosKeytabBase64Bytes",
-      "value" : null
-    }, {
-      "name" : "clusterConfig.yarnKerberosPrincipal",
-      "value" : "name@DOMAIN"
-    }, {
-      "name" : "transformerEMRConfig.emrVersion",
       "value" : null
     } ],
     "uiInfo" : {
-      "displayMode" : "BASIC",
+      "displayMode" : "ADVANCED",
       "previewConfig" : {
         "previewSource" : "CONFIGURED_SOURCE",
-        "batchSize" : 10,
+        "batchSize" : "100",
         "timeout" : 30000,
         "writeToDestinations" : false,
         "executeLifecycleEvents" : false,
@@ -404,7 +419,7 @@
       "stageVersion" : "1",
       "configuration" : [ {
         "name" : "script",
-        "value" : ""
+        "value" : "global sdc\n\ntry:\n    sdc.importLock()\n    import time\n    from datetime import datetime, timedelta\n    import sys\n    import os\n    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))\n    import requests\nfinally:\n    sdc.importUnlock()\n\n\ndef get_interval():\n    return int(sdc.userParams['INTERVAL_IN_SECONDS'])\n\n\ndef get_now_with_delay():\n    return int(time.time()) - int(sdc.userParams['DELAY_IN_SECONDS'])\n\n\ndef to_timestamp(date):\n    epoch = datetime(1970, 1, 1)\n    return int((date - epoch).total_seconds())\n\n\ndef _filter(list_):\n    return list(filter(lambda x: bool(x), list_))\n\n\ndef csv_to_json(csv_data, last_timestamp):\n    if not str(csv_data).strip():\n        return []\n    results = _filter(csv_data.split('\\r\\n\\r\\n'))\n    data = []\n    for result in results:\n        rows = result.split('\\r\\n')\n        header = _filter(rows.pop(0).split(','))\n        for row in rows:\n            rec = dict(zip(header, _filter(row.split(','))))\n            rec['last_timestamp'] = last_timestamp\n            data.append(rec)\n    return data\n\n\nentityName = ''\n\n\ndef main():\n    interval = timedelta(seconds=get_interval())\n\n    if sdc.lastOffsets.containsKey(entityName):\n        offset = int(float(sdc.lastOffsets.get(entityName)))\n    elif sdc.userParams['INITIAL_OFFSET']:\n        offset = to_timestamp(datetime.strptime(sdc.userParams['INITIAL_OFFSET'], '%d/%m/%Y %H:%M'))\n    else:\n        offset = to_timestamp(datetime.utcnow().replace(second=0, microsecond=0) - interval)\n\n    sdc.log.info('OFFSET: ' + str(offset))\n\n    N_REQUESTS_TRIES = 3\n\n    while True:\n        if sdc.isStopped():\n            break\n        while offset > get_now_with_delay() - interval.total_seconds():\n            time.sleep(2)\n            if sdc.isStopped():\n                return\n        start = int(offset)\n        stop = int(offset + interval.total_seconds())\n\n        session = requests.Session()\n        session.headers = sdc.userParams['HEADERS']\n        for i in range(1, N_REQUESTS_TRIES + 1):\n            try:\n                res = session.post(\n                    sdc.userParams['URL'],\n                    data=sdc.userParams['QUERY'].format(start, stop),\n                    timeout=sdc.userParams['TIMEOUT']\n                )\n                res.raise_for_status()\n            except requests.HTTPError as e:\n                requests.post(sdc.userParams['MONITORING_URL'] + str(res.status_code))\n                sdc.log.error(str(e))\n                if i == N_REQUESTS_TRIES:\n                    raise\n                time.sleep(2 ** i)\n\n        cur_batch = sdc.createBatch()\n        for obj in csv_to_json(res.text, int(offset)):\n            record = sdc.createRecord('record created ' + str(datetime.now()))\n            record.value = obj\n            cur_batch.add(record)\n            if cur_batch.size() == sdc.batchSize:\n                cur_batch.process(entityName, str(offset))\n                cur_batch = sdc.createBatch()\n                if sdc.isStopped():\n                    break\n        cur_batch.process(entityName, str(offset))\n        offset += interval.total_seconds()\n\n\nmain()"
       }, {
         "name" : "scriptConf.batchSize",
         "value" : 1000
@@ -416,22 +431,32 @@
         "value" : "NATIVE_OBJECTS"
       }, {
         "name" : "scriptConf.params",
-        "value" : [ ]
+        "value" : [ {
+          "key" : "URL",
+          "value" : "http://influx2:8086/api/v2/query?org=test"
+        }, {
+          "key" : "HEADERS",
+          "value" : {
+            "Authorization" : "Token token",
+            "Accept" : "application/csv",
+            "Content-type" : "application/vnd.flux"
+          }
+        } ]
       }, {
         "name" : "stageOnRecordError",
         "value" : "TO_ERROR"
       } ],
       "uiInfo" : {
-        "yPos" : 84,
+        "yPos" : 115.18173217773438,
         "stageType" : "SOURCE",
         "icon" : "jython.png",
         "description" : "",
         "label" : "Jython Scripting 1",
-        "xPos" : 165,
+        "xPos" : 331.0808868408203,
         "displayMode" : "ADVANCED"
       },
       "inputLanes" : [ ],
-      "outputLanes" : [ "JythonScripting_01OutputLane16413274349280" ],
+      "outputLanes" : [ "JythonScripting_01OutputLane16013726491540" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -441,13 +466,14 @@
       "stageVersion" : "1",
       "configuration" : [ ],
       "uiInfo" : {
+        "yPos" : 113.70816802978516,
+        "stageType" : "TARGET",
+        "icon" : "trash.png",
         "description" : "",
         "label" : "Trash 1",
-        "xPos" : 389,
-        "yPos" : 83,
-        "stageType" : "TARGET"
+        "xPos" : 556.3414611816406
       },
-      "inputLanes" : [ "JythonScripting_01OutputLane16413274349280" ],
+      "inputLanes" : [ "JythonScripting_01OutputLane16013726491540" ],
       "outputLanes" : [ ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -461,7 +487,7 @@
       "uiInfo" : {
         "description" : "",
         "label" : "Error Records - Discard",
-        "xPos" : 60,
+        "xPos" : 563,
         "yPos" : 50,
         "stageType" : "TARGET"
       },
@@ -471,25 +497,25 @@
       "services" : [ ]
     },
     "info" : {
-      "pipelineId" : "testinflud2de70bb-1fd1-493b-88fd-d33ca897f600",
-      "title" : "test_influx_qwe093",
+      "pipelineId" : "testinflu50d85887-1f8f-49fb-a093-ee8d9717f071",
+      "title" : "test_influx2_x1ccwlf",
       "description" : "",
-      "created" : 1641326941637,
-      "lastModified" : 1641327452094,
+      "created" : 1640269099411,
+      "lastModified" : 1640269159730,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "049bada2-4493-4b9d-85ff-6f93034260dd",
-      "valid" : false,
+      "uuid" : "3c4f35b5-b32d-4a04-93da-2dfcdda18506",
+      "valid" : true,
       "metadata" : {
-        "labels" : [ ]
+        "labels" : [ "influx2", "http" ]
       },
-      "name" : "testinflud2de70bb-1fd1-493b-88fd-d33ca897f600",
+      "name" : "testinflu50d85887-1f8f-49fb-a093-ee8d9717f071",
       "sdcVersion" : "3.18.0",
-      "sdcId" : "d7eea3f1-67c2-11ec-8ea6-a5d201a23c0a"
+      "sdcId" : "fd60fea2-636d-11ec-8fb2-bb1e7fba2f98"
     },
     "metadata" : {
-      "labels" : [ ]
+      "labels" : [ "influx2", "http" ]
     },
     "statsAggregatorStage" : {
       "instanceName" : "statsAggregatorStageInstance",
@@ -499,7 +525,7 @@
       "configuration" : [ ],
       "uiInfo" : {
         "stageType" : "TARGET",
-        "label" : "Stats Aggregator -Write Directly to Control Hub - statistics are not aggregated across Data Collectors"
+        "label" : "Stats Aggregator -Write to Control Hub directly"
       },
       "inputLanes" : [ ],
       "outputLanes" : [ ],
@@ -515,7 +541,7 @@
       "uiInfo" : {
         "description" : "",
         "label" : "Start Event - Discard",
-        "xPos" : 60,
+        "xPos" : 280,
         "yPos" : 50,
         "stageType" : "TARGET"
       },
@@ -533,7 +559,7 @@
       "uiInfo" : {
         "description" : "",
         "label" : "Stop Event - Discard",
-        "xPos" : 60,
+        "xPos" : 280,
         "yPos" : 50,
         "stageType" : "TARGET"
       },
@@ -807,23 +833,13 @@
         } ]
       } ]
     },
-    "valid" : false,
+    "valid" : true,
     "issues" : {
-      "pipelineIssues" : [ {
-        "instanceName" : null,
-        "serviceName" : null,
-        "level" : "PIPELINE_CONFIG",
-        "configGroup" : "",
-        "configName" : "webhookUrl",
-        "message" : "CREATION_005 - Could not resolve implicit EL expression '${AGENT_URL}/pipeline-status-change/${pipeline:id()}': com.streamsets.pipeline.api.el.ELEvalException: CTRCMN_0100 - Error evaluating expression ${AGENT_URL}/pipeline-status-change/${pipeline:id()}: javax.servlet.jsp.el.ELException: Constants/Variable 'AGENT_URL' cannot be resolved",
-        "count" : 1,
-        "additionalInfo" : null,
-        "antennaDoctorMessages" : null
-      } ],
+      "pipelineIssues" : [ ],
       "stageIssues" : { },
-      "issueCount" : 1
+      "issueCount" : 0
     },
-    "previewable" : false
+    "previewable" : true
   },
   "pipelineRules" : {
     "schemaVersion" : 3,
@@ -837,7 +853,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1575475179123,
+      "timestamp" : 1640182378498,
       "valid" : true
     }, {
       "id" : "stageErrorAlertID",
@@ -848,7 +864,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1575475179123,
+      "timestamp" : 1640182378498,
       "valid" : true
     }, {
       "id" : "idleGaugeID",
@@ -859,7 +875,7 @@
       "condition" : "${time:now() - value() > 120000}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1575475179123,
+      "timestamp" : 1640182378498,
       "valid" : true
     }, {
       "id" : "batchTimeAlertID",
@@ -870,18 +886,18 @@
       "condition" : "${value() > 200}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1575475179123,
+      "timestamp" : 1640182378498,
       "valid" : true
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "8b21091c-2f72-4317-9586-3a6b272c68b5",
+    "uuid" : "d23dfa0a-5512-4ab8-80b7-cf450c525bc5",
     "configuration" : [ {
       "name" : "emailIDs",
-      "value" : [ ]
+      "value" : null
     }, {
       "name" : "webhookConfigs",
-      "value" : [ ]
+      "value" : null
     } ],
     "ruleIssues" : [ ],
     "configIssues" : [ ]

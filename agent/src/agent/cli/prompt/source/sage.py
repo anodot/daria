@@ -19,10 +19,12 @@ class SagePrompter(Prompter):
         try:
             self.validator.validate_url()
         except source.validator.ValidationException as e:
-            raise click.UsageError(e)
+            raise click.UsageError(str(e))
 
     @infinite_retry
     def prompt_token(self, default_config):
         self.source.config[source.SageSource.TOKEN] = \
-            click.prompt('Sage API token', type=click.STRING, default=default_config.get(source.SageSource.TOKEN)).strip()
+            click.prompt('Sage API token',
+                         type=click.STRING,
+                         default=default_config.get(source.SageSource.TOKEN)).strip()
         self.validator.validate_token()

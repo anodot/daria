@@ -55,6 +55,7 @@ test-kafka: bootstrap run-kafka setup-kafka
 	$(DOCKER_TEST) tests/test_pipelines/test_kafka_http.py
 
 test-mongo: bootstrap run-mongo
+	docker exec -i dc bash -c '$$SDC_DIST/bin/streamsets stagelib-cli jks-credentialstore add -i jks -n testmongopass -c root'
 	$(DOCKER_TEST) tests/test_input/test_mongo_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_mongo_http.py
 
@@ -131,6 +132,9 @@ test-export-sources:
 	$(DOCKER_TEST_PARALLEL) tests/test_export_sources.py
 
 test-pipelines:
+	docker exec -i dc bash -c '$$SDC_DIST/bin/streamsets stagelib-cli jks-credentialstore add -i jks -n testmongopass -c root'
+	docker exec -i dc2 bash -c '$$SDC_DIST/bin/streamsets stagelib-cli jks-credentialstore add -i jks -n testmongopass -c root'
+	sleep 15
 	$(DOCKER_TEST_PARALLEL) tests/test_pipelines/
 
 test-run-test-pipeline:

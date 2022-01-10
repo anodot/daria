@@ -1,3 +1,4 @@
+import os
 import json
 
 from agent import source
@@ -56,5 +57,34 @@ class ZabbixScript(JythonSource):
             {
                 'key': 'VERIFY_SSL',
                 'value': '1' if self.pipeline.source.config.get(source.APISource.VERIFY_SSL, True) else ''
+            },
+        ]
+
+
+class TestZabbixScript(JythonSource):
+    JYTHON_SCRIPT = 'zabbix.py'
+    JYTHON_SCRIPTS_PATH = os.path.join(JythonSource.JYTHON_SCRIPTS_PATH, 'test_pipelines')
+
+    def _get_script_params(self) -> list[dict]:
+        return [
+            {
+                'key': 'URL',
+                'value': self.pipeline.source.config[source.ZabbixSource.URL]
+            },
+            {
+                'key': 'USER',
+                'value': self.pipeline.source.config[source.ZabbixSource.USER]
+            },
+            {
+                'key': 'PASSWORD',
+                'value': self.pipeline.source.config[source.ZabbixSource.PASSWORD]
+            },
+            {
+                'key': 'VERIFY_SSL',
+                'value': '1' if self.pipeline.source.config.get(source.APISource.VERIFY_SSL, True) else ''
+            },
+            {
+                'key': 'REQUEST_TIMEOUT',
+                'value': 10
             },
         ]

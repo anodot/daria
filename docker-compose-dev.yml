@@ -10,6 +10,7 @@ services:
     restart: on-failure
     volumes:
       - ./sdc-data:/data
+      - ./sdc-conf:/etc/sdc_conf
       - ./certs:/home/certs
       - ./test-datasets/test-directory-collector:/home/test-directory-collector
 #    environment:

@@ -1,9 +1,10 @@
-from agent.pipeline.config.stages.base import Stage
-from agent import pipeline
+import os
+from agent.pipeline.config.stages.influx import InfluxScript
+from agent.pipeline.config.stages.base import JythonSource
 from urllib.parse import urljoin, quote_plus
 
 
-class InfluxSource(Stage):
+class InfluxSource(InfluxScript):
     QUERY_GET_DATA = "SELECT+{dimensions}+FROM+{metric}+WHERE+%28%22time%22+%3E%3D+${{record:value('/last_timestamp')}}+AND+%22time%22+%3C+${{record:value('/last_timestamp')}}%2B{interval}+AND+%22time%22+%3C+now%28%29+-+{delay}%29+{where}"
 
     def get_config(self) -> dict:
@@ -25,9 +26,6 @@ class InfluxSource(Stage):
         }
 
     def get_query(self):
-        if isinstance(self.pipeline, pipeline.TestPipeline):
-            return f"select+%2A+from+{self.pipeline.config['measurement_name']}+limit+{pipeline.manager.MAX_SAMPLE_RECORDS}"
-
         dimensions_to_select = [f'"{d}"::tag' for d in self.pipeline.dimension_paths]
         values_to_select = ['*::field' if v == '*' else f'"{v}"::field' for v in self.pipeline.value_paths]
         columns = quote_plus(','.join(dimensions_to_select + values_to_select))
@@ -46,3 +44,17 @@ class InfluxSource(Stage):
             'interval': str(self.pipeline.config.get('interval', 60)) + 's',
             'where': where
         })
+
+
+class TestInfluxSource(JythonSource):
+    JYTHON_SCRIPT = 'influx.py'
+    JYTHON_SCRIPTS_PATH = os.path.join(JythonSource.JYTHON_SCRIPTS_PATH, 'test_pipelines')
+
+    def _get_script_params(self) -> list[dict]:
+        return [
+            {'key': 'USERNAME', 'value': self.pipeline.source.config.get('username', 'root')},
+            {'key': 'PASSWORD', 'value': self.pipeline.source.config.get('password', 'root')},
+            {'key': 'DATABASE', 'value': self.pipeline.source.config.get('db')},
+            {'key': 'HOST', 'value': self.pipeline.source.config.get('host')},
+            {'key': 'REQUEST_TIMEOUT', 'value': 10},
+        ]
