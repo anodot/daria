@@ -4,7 +4,7 @@ import urllib.parse
 
 from requests.auth import HTTPBasicAuth
 from agent import source
-from agent.modules import logger, tools, field, lookup
+from agent.modules import logger, field, lookup
 from agent.pipeline import Pipeline
 from agent.source import ObserviumSource
 
@@ -16,18 +16,20 @@ POLL_TIME_KEYS = {
     'ports': 'poll_time',
     'mempools': 'mempool_polled',
     'processors': 'processor_polled',
-    'storage': 'storage_polled'
+    'storage': 'storage_polled',
 }
 
-RESPONSE_DATA_KEYS = {'ports': 'ports', 'mempools': 'entries', 'processors': 'entries', 'storage': 'storage'}
+RESPONSE_DATA_KEYS = {
+    'ports': 'ports',
+    'mempools': 'entries',
+    'processors': 'entries',
+    'storage': 'storage',
+}
 
 
 @lookup.provide
 def extract_metrics(pipeline_: Pipeline) -> list:
-    # todo schema definition
-    # todo
     base_url = urllib.parse.urljoin(pipeline_.source.config[source.ObserviumSource.URL], '/api/v0/')
-    # base_url = 'http://localhost:8080/api/v0/'
     endpoint = pipeline_.source.config['endpoint']
     data = _get(
         pipeline_.source,
@@ -74,34 +76,27 @@ def _add_devices_data(data: dict, pipeline_: Pipeline):
             raise Exception(
                 f'Data already contains the key `{LOCATION}` which was going to be added to it from devices'
             )
-        obj[SYS_NAME] = devices[obj['device_id']]['sysName']
-        obj[LOCATION] = devices[obj['device_id']]['location']
+        obj[SYS_NAME] = devices[obj['device_id']][SYS_NAME]
+        obj[LOCATION] = devices[obj['device_id']][LOCATION]
     return data
 
 
 def _get_devices(pipeline_: Pipeline):
     devices = _get(
-        pipeline_.source,
-        urllib.parse.urljoin(pipeline_.source.config[source.ObserviumSource.URL], '/api/v0/devices'),
-        # todo it's temporary
-        # 'http://localhost:8080/api/v0/devices',
-        {},
-        'devices'
+        pipeline_.source, urllib.parse.urljoin(pipeline_.source.config[source.ObserviumSource.URL], '/api/v0/devices'),
+        {}, 'devices'
     )
     return {obj['device_id']: obj for obj in devices.values()}
 
 
 def _create_metrics(data: dict, pipeline_: Pipeline) -> list:
     metrics = []
-    dimensions = field.build_fields(pipeline_.dimension_configurations)
     for obj in data.values():
         metric = {
             "timestamp": obj[POLL_TIME_KEYS[pipeline_.source.config['endpoint']]],
-            "dimensions": field.extract_fields(dimensions, obj),
-            "measurements": {
-                tools.replace_illegal_chars(k): float(v)
-                for k, v in obj.items() if k in list(pipeline_.value_paths)
-            },
+            "dimensions": field.extract_fields(field.build_fields(pipeline_.dimension_configurations), obj),
+            "measurements": {str(k): float(v)
+                             for k, v in obj.items() if k in list(pipeline_.value_paths)},
             "schemaId": pipeline_.get_schema_id(),
         }
         metrics.append(metric)

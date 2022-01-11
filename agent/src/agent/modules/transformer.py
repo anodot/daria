@@ -13,13 +13,12 @@ LOOKUP_TRANSFORMATION = 'lookup'
 
 class Transformer(ABC):
     @abstractmethod
-    def transform(self, data) -> dict:
+    def transform(self, data):
         pass
 
 
 class FunctionTransformer(Transformer):
     def __init__(self, func: Callable, args: list):
-        # todo validate function args?
         self.func = func
         self.args = args
 
@@ -40,17 +39,15 @@ class LookupTransformer(Transformer):
         return lookup.lookup(self.lookup_name, value, self.lookup_key, self.lookup_value, self.compare_func)
 
 
-def build_transformers(field_conf: dict) -> list:
+def build_transformers(field_conf: dict) -> list[Transformer]:
     transformers = []
     for transform in field_conf.get(TRANSFORMATIONS, []):
         type_ = transform[TYPE]
         if type_ == FUNCTION_TRANSFORMATION:
-            transformers.append(
-                FunctionTransformer(
-                    _get_transform_function(transform),
-                    _get_function_args(transform),
-                )
-            )
+            func = functions.transform.get_by_name(transform['name'])
+            args = transform.get('args', [])
+            functions.transform.validate(func, args)
+            transformers.append(FunctionTransformer(func, args))
         elif type_ == LOOKUP_TRANSFORMATION:
             transformers.append(
                 LookupTransformer(
@@ -63,21 +60,3 @@ def build_transformers(field_conf: dict) -> list:
         else:
             raise Exception(f'Invalid type of a transformation provided: `{type_}`')
     return transformers
-
-
-def _get_function_args(transform_conf: dict) -> list:
-    return transform_conf['value'].split(' ')[1:]
-
-
-def _get_transform_function(transform_conf: dict) -> Callable:
-    name = _get_function_name(transform_conf)
-    if name == 'to_upper':
-        return functions.transform.to_upper
-    elif name == 're.sub':
-        return functions.transform.re_sub
-    else:
-        raise Exception(f'Transformation function `{name}` is not supported')
-
-
-def _get_function_name(transform_conf: dict) -> str:
-    return transform_conf['value'].split(' ')[0]

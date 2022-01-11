@@ -1,8 +1,9 @@
-import time
-
 from functools import wraps
-from agent.modules import constants, functions, data_source
+from agent.modules import functions, data_source
 from typing import Callable, Optional, Any
+
+_sources = {}
+_cache = {}
 
 
 def provide(func):
@@ -46,8 +47,6 @@ def lookup(
     res == 'Interfaces_name' // output: True
     """
     global _cache
-    if _cache.expired():
-        _clean_cache()
     if lookup_name not in _cache:
         _cache[lookup_name] = _sources[lookup_name].get_data()
     res = None
@@ -68,55 +67,17 @@ def lookup(
     return res
 
 
-def _get_expiration_time():
-    return time.time() + constants.LOOKUP_CACHE_TTL_SECONDS
-
-
-class Cache:
-    def __init__(self):
-        self.cache = {}
-        self.expiration_timestamp = _get_expiration_time()
-
-    def __getitem__(self, k):
-        return self.cache[k]
-
-    def __setitem__(self, k, v):
-        self.cache[k] = v
-
-    def __contains__(self, key):
-        return key in self.cache
-
-    def expired(self) -> bool:
-        return time.time() >= self.expiration_timestamp
-
-
-_sources = {}
-_cache = Cache()
-
-
 def _init_sources(lookup_configs: dict):
     global _sources
     for name, conf in lookup_configs.items():
-        # todo remove
-        # if '/usr/src/app' in conf['path']:
-        #     conf['path'] = conf['path'].replace('/usr/src/app', '/Users/antonzelenin/Workspace/daria/agent')
         if name in _sources:
-            raise Exception(f'Lookup source `{name}` already exists, lookup name should be unique')
+            raise Exception(f'Lookup source `{name}` already exists, lookup names should be unique')
         _sources[name] = data_source.build(conf)
 
 
 def _clean():
-    _clean_cache()
-    _clean_sources()
-
-
-def _clean_cache():
-    global _cache
-    _cache = Cache()
-
-
-def _clean_sources():
-    global _sources
+    global _cache, _sources
+    _cache = {}
     _sources = {}
 
 

@@ -1,3 +1,5 @@
+from typing import Any
+
 from agent.modules import transformer
 from agent.modules.transformer import Transformer
 from abc import ABC, abstractmethod
@@ -18,7 +20,7 @@ class Field(ABC):
         pass
 
     @abstractmethod
-    def extract_from(self, data) -> list[Transformer]:
+    def extract_from(self, data) -> Any:
         pass
 
 
@@ -36,7 +38,7 @@ class Variable(Field):
     def get_transformers(self) -> list[Transformer]:
         return self.transformers
 
-    def extract_from(self, obj: dict) -> list[Transformer]:
+    def extract_from(self, obj: dict) -> Any:
         return obj[self.value_path]
 
 
@@ -51,7 +53,7 @@ class Constant(Field):
     def get_transformers(self) -> list[Transformer]:
         return []
 
-    def extract_from(self, data) -> list[Transformer]:
+    def extract_from(self, _) -> Any:
         return self.value
 
 

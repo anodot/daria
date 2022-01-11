@@ -28,7 +28,7 @@
         "transformations": [
           {
             "type": "function",
-            "value": "to_upper"
+            "name": "to_upper"
           },
           {
             "type": "lookup",
@@ -45,7 +45,8 @@
         "transformations": [
           {
             "type": "function",
-            "value": "re.sub .+\\.(.+) \\g<1>"
+            "name": "regex_substring",
+            "args": [".+\\.(.+)", "\\g<1>"]
           }
         ]
       }

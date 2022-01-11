@@ -1,4 +1,6 @@
 from abc import ABC
+
+from agent.modules.data_source import DataSource
 from agent.pipeline import Pipeline
 from agent.source import Source
 from agent.modules import field, data_source, lookup
@@ -31,7 +33,7 @@ class Entity(ABC):
     def __init__(self, name: str, config: dict):
         self.name: str = name
         # todo if one source can contain multiple entities then they must be separate
-        self.source: data_source.DataSource = data_source.build(config['source'])
+        self.source: DataSource = data_source.build(config['source'])
         self.fields: list[field.Field] = field.build_fields(config['fields'])
 
 

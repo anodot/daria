@@ -55,21 +55,21 @@ class ObserviumBuilder(Builder):
             "ifInDiscards_rate": "counter",
             "ifOutDiscards": "counter",
             "ifOutDiscards_rate": "counter",
-            "ifDiscards_rate": "counter"
+            "ifDiscards_rate": "counter",
         },
         source.ObserviumSource.MEMPOOLS: {
             "mempool_perc": "gauge",
             "mempool_used": "counter",
             "mempool_free": "counter",
-            "mempool_total": "counter"
+            "mempool_total": "counter",
         },
         source.ObserviumSource.PROCESSORS: {
-            "processor_usage": "gauge"
+            "processor_usage": "gauge",
         },
         source.ObserviumSource.STORAGE: {
             "storage_free": "counter",
             "storage_used": "counter",
-            "storage_perc": "gauge"
+            "storage_perc": "gauge",
         },
     }
 
@@ -110,9 +110,6 @@ class ObserviumBuilder(Builder):
             'processor_name': {
                 'value_path': 'processor_descr'
             },
-            'processor_type': {
-                'value_path': 'processor_type'
-            },
         },
         source.ObserviumSource.STORAGE: {
             'storage_description': {
@@ -137,7 +134,7 @@ class ObserviumBuilder(Builder):
     def _dimensions(self) -> list:
         dims = self.config.get('dimensions') or self.DEFAULT_DIMENSIONS[self.endpoint()]
         # all observium pipelines by default have these dimensions
-        # they are added in the observium jython script from the `devices` endpoint
+        # they are added from the `devices` endpoint
         if HOST_NAME not in dims:
             dims.append(HOST_NAME)
         if LOCATION not in dims:
@@ -156,8 +153,8 @@ class ObserviumBuilder(Builder):
     def _dimensions_configuration(self):
         if self.config.get('dimensions'):
             dim_configurations = self.config.get('dimension_configurations', {})
-        # if there are no dimensions we'll use the default ones so need to use default configs as well
         else:
+            # if there are no dimensions we'll use the default ones so need to use default configs as well
             dim_configurations = self.DEFAULT_DIMENSION_CONFIGURATIONS[self.endpoint()]
         if HOST_NAME not in dim_configurations:
             dim_configurations[HOST_NAME] = {field.Variable.VALUE_PATH: 'sysName'}
