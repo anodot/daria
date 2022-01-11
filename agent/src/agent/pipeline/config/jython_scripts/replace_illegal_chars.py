@@ -13,13 +13,21 @@ def replace_illegal_chars(value):
 
 
 def replace_all(record, key):
-    for k, v in record.value[key]:
-        record.value[key][replace_illegal_chars(k)] = replace_illegal_chars(v)
+    for k, v in record.value[key].items():
+        new_k = replace_illegal_chars(k)
+        new_v = replace_illegal_chars(v)
+        if new_k != k or new_v != v:
+            record.value[key][new_k] = new_v
+        if new_k != k:
+            record.value[key].pop(k)
 
 
 def replace_keys(record, key):
-    for k, v in record.value[key]:
-        record.value[key][replace_illegal_chars(k)] = v
+    for k, v in record.value[key].items():
+        new_k = replace_illegal_chars(k)
+        if new_k != k:
+            record.value[key][new_k] = v
+            record.value[key].pop(k)
 
 
 def main():

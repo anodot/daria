@@ -1,4 +1,3 @@
-from agent.pipeline import Pipeline
 from agent.pipeline.validators import elastic_query, jdbc_query
 from agent import source
 

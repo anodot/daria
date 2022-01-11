@@ -176,7 +176,14 @@ class Pipeline(Entity, sdc_client.IPipeline):
 
     @property
     def dimension_configurations(self) -> Optional[dict]:
-        return self.config.get('dimension_configurations')
+        if not isinstance(self.dimensions, list):
+            raise Exception((
+                'Pipeline dimensions should be a list in order to build dimension_configurations, '
+                f'but {type(self.dimensions).__name__} provided'
+            ))
+        return pipeline.manager.build_dimension_configurations(
+            self.dimensions, self.config.get('dimension_configurations')
+        )
 
     @property
     def timestamp_path(self) -> str:

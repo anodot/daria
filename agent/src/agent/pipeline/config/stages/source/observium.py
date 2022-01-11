@@ -14,7 +14,7 @@ class ObserviumScript(JythonDataExtractorSource):
             },
             {
                 'key': 'INTERVAL_IN_SECONDS',
-                'value': '300'
+                'value': str(self.pipeline.interval)
             },
             {
                 'key': 'BUCKET_SIZE',

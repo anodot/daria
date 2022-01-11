@@ -1,5 +1,5 @@
-from . import transformer
-from .transformer import Transformer
+from agent.modules import transformer
+from agent.modules.transformer import Transformer
 from abc import ABC, abstractmethod
 
 TYPE = 'type'
@@ -23,6 +23,8 @@ class Field(ABC):
 
 
 class Variable(Field):
+    VALUE_PATH = 'value_path'
+
     def __init__(self, name: str, value_path: str, transformations: list[Transformer]):
         self.name: str = name
         self.value_path: str = value_path
@@ -58,16 +60,13 @@ def build_fields(fields_conf: dict) -> list[Field]:
     for name, field_ in fields_conf.items():
         type_ = field_.get(TYPE, VARIABLE)
         if type_ == VARIABLE:
-            fields.append(Variable(name, field_['value_path'], transformer.build_transformers(field_)))
+            fields.append(Variable(name, field_[Variable.VALUE_PATH], transformer.build_transformers(field_)))
         elif type_ == CONSTANT:
             fields.append(Constant(name, field_['value']))
     return fields
 
 
 def extract_fields(fields: list[Field], data: dict) -> dict:
-    """
-    Returns a dictionary with extracted values
-    """
     values = {}
     for field_ in fields:
         value = field_.extract_from(data)

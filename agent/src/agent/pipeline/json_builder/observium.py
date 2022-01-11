@@ -1,4 +1,5 @@
 from agent import source
+from agent.modules import field
 from agent.pipeline.json_builder import Builder
 
 HOST_NAME = 'Host Name'
@@ -159,7 +160,7 @@ class ObserviumBuilder(Builder):
         else:
             dim_configurations = self.DEFAULT_DIMENSION_CONFIGURATIONS[self.endpoint()]
         if HOST_NAME not in dim_configurations:
-            dim_configurations[HOST_NAME] = {'value_path': 'sysName'}
+            dim_configurations[HOST_NAME] = {field.Variable.VALUE_PATH: 'sysName'}
         if LOCATION not in dim_configurations:
-            dim_configurations[LOCATION] = {'value_path': 'location'}
+            dim_configurations[LOCATION] = {field.Variable.VALUE_PATH: 'location'}
         return dim_configurations

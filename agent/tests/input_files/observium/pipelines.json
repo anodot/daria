@@ -6,7 +6,8 @@
     "lookup": {
       "DEST_GROUP_CATEGORY": {
         "type": "file",
-        "path": "/usr/src/app/tests/input_files/observium/DEST_GROUP_CATEGORY"
+        "path": "/usr/src/app/tests/input_files/observium/DEST_GROUP_CATEGORY",
+        "format": "CSV"
       }
     },
     "dimensions": [
@@ -15,7 +16,7 @@
       "DEST_STATE",
       "PARENT_ELEMENT_LOCATION"
     ],
-    "dimensions_configuration": {
+    "dimension_configurations": {
       "INTERFACE_SPEED": {
         "value_path": "ifSpeed"
       },
@@ -73,7 +74,7 @@
     "dimensions": [
       "Storage size"
     ],
-    "dimensions_configuration": {
+    "dimension_configurations": {
       "Storage size": {
         "value_path": "storage_size"
       }

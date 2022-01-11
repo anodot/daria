@@ -1,7 +1,5 @@
-import inspect
-
-from . import lookup
-from . import functions
+from agent.modules import lookup
+from agent.modules import functions
 from abc import ABC, abstractmethod
 from typing import Callable, Optional, Any
 
@@ -21,6 +19,7 @@ class Transformer(ABC):
 
 class FunctionTransformer(Transformer):
     def __init__(self, func: Callable, args: list):
+        # todo validate function args?
         self.func = func
         self.args = args
 
@@ -46,10 +45,12 @@ def build_transformers(field_conf: dict) -> list:
     for transform in field_conf.get(TRANSFORMATIONS, []):
         type_ = transform[TYPE]
         if type_ == FUNCTION_TRANSFORMATION:
-            func = _get_transform_function(transform)
-            args = _get_function_args(transform)
-            _validate_function_args(func, args)
-            transformers.append(FunctionTransformer(func, args))
+            transformers.append(
+                FunctionTransformer(
+                    _get_transform_function(transform),
+                    _get_function_args(transform),
+                )
+            )
         elif type_ == LOOKUP_TRANSFORMATION:
             transformers.append(
                 LookupTransformer(
@@ -80,10 +81,3 @@ def _get_transform_function(transform_conf: dict) -> Callable:
 
 def _get_function_name(transform_conf: dict) -> str:
     return transform_conf['value'].split(' ')[0]
-
-
-def _validate_function_args(func: Callable, args):
-    ar = len(args)
-    er = len(inspect.signature(func).parameters)
-    if ar != er:
-        raise Exception(f'Transformation function `{func.__name__}` expects {er} arguments, {ar} provided')

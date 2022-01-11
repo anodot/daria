@@ -5,7 +5,7 @@ import sdc_client
 
 from datetime import datetime, timedelta, timezone
 from agent import source, pipeline, destination, streamsets
-from agent.modules import tools, constants
+from agent.modules import tools, constants, field
 from agent.pipeline import Pipeline, TestPipeline, schema, extra_setup, PipelineMetric, PipelineRetries, RawPipeline
 from agent.modules.logger import get_logger
 from agent.pipeline.config.handlers.factory import get_config_handler
@@ -312,3 +312,15 @@ def get_next_bucket_start(bs: str, offset: float) -> datetime:
     elif bs == pipeline.FlushBucketSize.DAY_1:
         return dt.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
     raise Exception('Invalid bucket size provided')
+
+
+def build_dimension_configurations(dimensions: list, dimension_configurations: dict) -> dict:
+    """
+    Dimension configurations is optional for a pipeline, this function adds dimensions that are not
+    in the dimension_configurations and sets their value to be the same as the dimension itself
+    Doing so allows working with only one config dimension_configurations instead of using two
+    """
+    for dim in dimensions:
+        if dim not in dimension_configurations:
+            dimension_configurations[dim] = {field.Variable.VALUE_PATH: dim}
+    return dimension_configurations

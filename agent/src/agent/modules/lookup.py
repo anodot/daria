@@ -12,10 +12,10 @@ def provide(func):
     """
     @wraps(func)
     def wrapper(*args, **kwargs):
+        _clean()
         _init_sources(args[0].config.get('lookup', {}))
         res = func(*args, **kwargs)
-        _clean_cache()
-        _clean_sources()
+        _clean()
         return res
 
     return wrapper
@@ -98,11 +98,16 @@ def _init_sources(lookup_configs: dict):
     global _sources
     for name, conf in lookup_configs.items():
         # todo remove
-        if '/usr/src/app' in conf['path']:
-            conf['path'] = conf['path'].replace('/usr/src/app', '/Users/antonzelenin/Workspace/daria/agent')
+        # if '/usr/src/app' in conf['path']:
+        #     conf['path'] = conf['path'].replace('/usr/src/app', '/Users/antonzelenin/Workspace/daria/agent')
         if name in _sources:
             raise Exception(f'Lookup source `{name}` already exists, lookup name should be unique')
         _sources[name] = data_source.build(conf)
+
+
+def _clean():
+    _clean_cache()
+    _clean_sources()
 
 
 def _clean_cache():

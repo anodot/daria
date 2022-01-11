@@ -22,12 +22,13 @@ POLL_TIME_KEYS = {
 RESPONSE_DATA_KEYS = {'ports': 'ports', 'mempools': 'entries', 'processors': 'entries', 'storage': 'storage'}
 
 
+# todo watermark
 @lookup.provide
 def extract_metrics(pipeline_: Pipeline) -> list:
     # todo schema definition
     # todo
     base_url = urllib.parse.urljoin(pipeline_.source.config[source.ObserviumSource.URL], '/api/v0/')
-    base_url = 'http://localhost:8080/api/v0/ports/'
+    # base_url = 'http://localhost:8080/api/v0/'
     endpoint = pipeline_.source.config['endpoint']
     data = _get(
         pipeline_.source,
@@ -36,7 +37,7 @@ def extract_metrics(pipeline_: Pipeline) -> list:
         RESPONSE_DATA_KEYS[endpoint],
     )
     data = _add_devices_data(data, pipeline_)
-    return _create_metrics(data, POLL_TIME_KEYS[endpoint], pipeline_)
+    return _create_metrics(data, pipeline_)
 
 
 def _get(source_: ObserviumSource, url: str, params: dict, response_key: str):
@@ -82,21 +83,21 @@ def _add_devices_data(data: dict, pipeline_: Pipeline):
 def _get_devices(pipeline_: Pipeline):
     devices = _get(
         pipeline_.source,
-        # urllib.parse.urljoin(pipeline_.source.config[source.ObserviumSource.URL], '/api/v0/devices'),
+        urllib.parse.urljoin(pipeline_.source.config[source.ObserviumSource.URL], '/api/v0/devices'),
         # todo it's temporary
-        'http://localhost:8080/api/v0/devices',
+        # 'http://localhost:8080/api/v0/devices',
         {},
         'devices'
     )
     return {obj['device_id']: obj for obj in devices.values()}
 
 
-def _create_metrics(data: dict, poll_time_key: str, pipeline_: Pipeline) -> list:
+def _create_metrics(data: dict, pipeline_: Pipeline) -> list:
     metrics = []
     dimensions = field.build_fields(pipeline_.dimension_configurations)
     for obj in data.values():
         metric = {
-            "timestamp": obj[poll_time_key],
+            "timestamp": obj[POLL_TIME_KEYS[pipeline_.source.config['endpoint']]],
             "dimensions": field.extract_fields(dimensions, obj),
             "measurements": {
                 tools.replace_illegal_chars(k): float(v)
