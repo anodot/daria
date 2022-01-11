@@ -23,7 +23,7 @@ class TestMongo(TestPipelineBase):
                        {'name': 'test_timestamp_string'}, {'name': 'test_timestamp_datetime'},
                                  {'name': 'test_mongo_file_short'},
                        {'name': 'test_mongo_file_full'}],
-        'test_source_delete': [{'name': 'test_mongo'}, {'name': 'test_mongo_1'}]
+        'test_source_delete': [{'name': 'test_mongo'}, {'name': 'test_mongo_1'}, {'name': 'test_mongo_encrypted_pass'}]
     }
 
     def test_info(self, cli_runner, name=None):

@@ -2,10 +2,10 @@
   "pipelineConfig" : {
     "schemaVersion" : 6,
     "version" : 19,
-    "pipelineId" : "testinflud2de70bb-1fd1-493b-88fd-d33ca897f600",
-    "title" : "test_influx_qwe093",
+    "pipelineId" : "testobser61bdc95d-c223-4ee2-a9db-f3078527a21c",
+    "title" : "test_observium_rjjd1fm",
     "description" : "",
-    "uuid" : "049bada2-4493-4b9d-85ff-6f93034260dd",
+    "uuid" : "41a00a81-3cc9-45d7-a198-b76dfde5394c",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -14,22 +14,37 @@
       "value" : "http://localhost:18633"
     }, {
       "name" : "deliveryGuarantee",
-      "value" : "AT_LEAST_ONCE"
+      "value" : "AT_MOST_ONCE"
     }, {
       "name" : "shouldRetry",
       "value" : true
     }, {
       "name" : "retryAttempts",
-      "value" : -1
+      "value" : 5
     }, {
       "name" : "notifyOnStates",
-      "value" : [ "RUN_ERROR", "STOPPED", "FINISHED" ]
+      "value" : [ "RUN_ERROR", "START_ERROR", "STOP_ERROR", "RUNNING_ERROR", "RUNNING", "STOPPED", "FINISHED", "DISCONNECTED", "CONNECTING" ]
     }, {
       "name" : "emailIDs",
       "value" : [ ]
     }, {
       "name" : "constants",
-      "value" : [ ]
+      "value" : [ {
+        "key" : "TOKEN",
+        "value" : "correct_token"
+      }, {
+        "key" : "PROTOCOL",
+        "value" : "anodot30"
+      }, {
+        "key" : "ANODOT_BASE_URL",
+        "value" : "http://dummy_destination"
+      }, {
+        "key" : "AGENT_URL",
+        "value" : "http://anodot-agent"
+      }, {
+        "key" : "SCHEMA_ID",
+        "value" : "observium_ports-1234"
+      } ]
     }, {
       "name" : "errorRecordPolicy",
       "value" : "ORIGINAL_RECORD"
@@ -69,7 +84,7 @@
     }, {
       "name" : "webhookConfigs",
       "value" : [ {
-        "payload" : "{\n  \"pipeline_status\": \"{{PIPELINE_STATE}}\",\n  \"pipeline_name\": \"{{PIPELINE_TITLE}}\"\n }",
+        "payload" : "{\n  \"pipeline_status\": \"{{PIPELINE_STATE}}\"}",
         "headers" : [ ],
         "httpMethod" : "POST",
         "contentType" : "application/json",
@@ -171,13 +186,13 @@
       "value" : null
     }, {
       "name" : "databricksConfig.username",
-      "value" : null
+      "value" : ""
     }, {
       "name" : "databricksConfig.password",
-      "value" : null
+      "value" : ""
     }, {
       "name" : "databricksConfig.token",
-      "value" : null
+      "value" : ""
     }, {
       "name" : "databricksConfig.clusterConfig",
       "value" : "{\n    \"num_workers\": 8,\n    \"spark_version\": \"5.3.x-scala2.11\",\n    \"node_type_id\": \"i3.xlarge\"\n}"
@@ -186,10 +201,10 @@
       "value" : null
     }, {
       "name" : "livyConfig.username",
-      "value" : null
+      "value" : ""
     }, {
       "name" : "livyConfig.password",
-      "value" : null
+      "value" : ""
     }, {
       "name" : "databricksConfig.provisionNewCluster",
       "value" : true
@@ -273,10 +288,10 @@
       "value" : null
     }, {
       "name" : "transformerEMRConfig.accessKey",
-      "value" : null
+      "value" : ""
     }, {
       "name" : "transformerEMRConfig.secretKey",
-      "value" : null
+      "value" : ""
     }, {
       "name" : "transformerEMRConfig.provisionNewCluster",
       "value" : false
@@ -285,6 +300,24 @@
       "value" : false
     }, {
       "name" : "clusterConfig.callbackUrl",
+      "value" : null
+    }, {
+      "name" : "clusterConfig.sparkAppName",
+      "value" : "${pipeline:title()}"
+    }, {
+      "name" : "clusterConfig.useYarnKerberosKeytab",
+      "value" : false
+    }, {
+      "name" : "clusterConfig.yarnKerberosKeytabSource",
+      "value" : "PROPERTIES_FILE"
+    }, {
+      "name" : "clusterConfig.yarnKerberosKeytab",
+      "value" : null
+    }, {
+      "name" : "clusterConfig.yarnKerberosPrincipal",
+      "value" : "name@DOMAIN"
+    }, {
+      "name" : "transformerEMRConfig.emrVersion",
       "value" : null
     }, {
       "name" : "transformerEMRConfig.serviceAccessSecurityGroup",
@@ -362,25 +395,7 @@
       "name" : "testOriginStage",
       "value" : "streamsets-datacollector-dev-lib::com_streamsets_pipeline_stage_devtest_rawdata_RawDataDSource::3"
     }, {
-      "name" : "clusterConfig.sparkAppName",
-      "value" : "${pipeline:title()}"
-    }, {
-      "name" : "clusterConfig.useYarnKerberosKeytab",
-      "value" : false
-    }, {
-      "name" : "clusterConfig.yarnKerberosKeytabSource",
-      "value" : "PROPERTIES_FILE"
-    }, {
-      "name" : "clusterConfig.yarnKerberosKeytab",
-      "value" : null
-    }, {
       "name" : "clusterConfig.yarnKerberosKeytabBase64Bytes",
-      "value" : null
-    }, {
-      "name" : "clusterConfig.yarnKerberosPrincipal",
-      "value" : "name@DOMAIN"
-    }, {
-      "name" : "transformerEMRConfig.emrVersion",
       "value" : null
     } ],
     "uiInfo" : {
@@ -404,10 +419,10 @@
       "stageVersion" : "1",
       "configuration" : [ {
         "name" : "script",
-        "value" : ""
+        "value" : "global sdc\n\ntry:\n    sdc.importLock()\n    import sys\n    import os\n    import time\n    import traceback\n    import re\n\n    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))\n    import requests\n\n    from datetime import datetime, timedelta\n    from requests.auth import HTTPBasicAuth\nfinally:\n    sdc.importUnlock()\n\n# single threaded - no entityName because we need only one offset\nentityName = ''\nLAST_TIMESTAMP = '%last_timestamp%'\nN_REQUESTS_TRIES = 3\n\n\nPOLL_TIME_KEYS = {\n    'ports': 'poll_time',\n    'mempools': 'mempool_polled',\n    'processors': 'processor_polled',\n    'storage': 'storage_polled'\n}\n\nRESPONSE_DATA_KEYS = {\n    'ports': 'ports',\n    'mempools': 'entries',\n    'processors': 'entries',\n    'storage': 'storage'\n}\n\n\ndef _replace_illegal_chars(value):\n    value = value.strip().replace(\".\", \"_\")\n    return re.sub('\\s+', '_', value)\n\n\ndef get_now():\n    return int(time.time())\n\n\ndef get_next_offset():\n    dt = datetime.utcnow().replace(second=0, microsecond=0)\n    if sdc.userParams['BUCKET_SIZE'] == '5m':\n        dt = dt + timedelta(minutes=5 - dt.minute % 5)\n    else:\n        dt = dt + timedelta(seconds=get_interval())\n    return to_timestamp(dt)\n\n\ndef get_offset_with_delay(offset):\n    return offset + int(sdc.userParams['DELAY_IN_MINUTES']) * 60\n\n\ndef to_timestamp(date):\n    epoch = datetime(1970, 1, 1)\n    return int((date - epoch).total_seconds())\n\n\ndef get_interval():\n    return int(sdc.userParams['INTERVAL_IN_SECONDS'])\n\n\ndef _get(url, params, response_key):\n    for i in range(1, N_REQUESTS_TRIES + 1):\n        try:\n            res = requests.get(\n                url,\n                auth=HTTPBasicAuth(sdc.userParams['API_USER'], sdc.userParams['API_PASSWORD']),\n                params=params,\n                verify=bool(sdc.userParams['VERIFY_SSL']),\n                timeout=sdc.userParams['QUERY_TIMEOUT'],\n            )\n            res.raise_for_status()\n            return res.json()[response_key]\n        except requests.HTTPError as e:\n            requests.post(sdc.userParams['MONITORING_URL'] + str(res.status_code))\n            sdc.log.error(str(e))\n            if i == N_REQUESTS_TRIES:\n                raise\n            time.sleep(2 ** i)\n\n\ndef _add_default_dimensions(data):\n    devices = get_devices()\n    for obj in data.values():\n        if 'sysName' in obj:\n            raise Exception('Data already contains the key `sysName` which should have been added to it from devices')\n        if 'location' in obj:\n            raise Exception('Data already contains the key `location` which should have been added to it from devices')\n        obj['sysName'] = devices[obj['device_id']]['sysName']\n        obj['location'] = devices[obj['device_id']]['location']\n    return data\n\n\ndef get_devices():\n    devices = _get(\n        sdc.userParams['DEVICES_URL'],\n        {},\n        'devices'\n    )\n    return {obj['device_id']: obj for obj in devices.values()}\n\n\ndef create_metrics(data):\n    metrics = []\n    for obj in data.values():\n        metric = {\n            \"timestamp\": obj[POLL_TIME_KEYS[sdc.userParams['ENDPOINT']]],\n            \"dimensions\": {\n                sdc.userParams['DIMENSIONS'][k]: _replace_illegal_chars(v)\n                for k, v in obj.items() if k in sdc.userParams['DIMENSIONS'] and v is not None\n            },\n            \"measurements\": {\n                _replace_illegal_chars(k): float(v) for k, v in obj.items() if k in sdc.userParams['MEASUREMENTS']\n            },\n            \"schemaId\": sdc.userParams['SCHEMA_ID'],\n        }\n        metrics.append(metric)\n    return metrics\n\n\ndef main():\n    if sdc.lastOffsets.containsKey(entityName):\n        offset = int(float(sdc.lastOffsets.get(entityName)))\n    else:\n        offset = to_timestamp(datetime.utcnow().replace(minute=0, second=0, microsecond=0))\n\n    sdc.log.info('Start offset: ' + str(offset))\n\n    cur_batch = sdc.createBatch()\n\n    while True:\n        try:\n            while get_offset_with_delay(offset) > get_now():\n                time.sleep(2)\n                if sdc.isStopped():\n                    return cur_batch, offset\n            offset = get_next_offset()\n\n            data = _get(\n                sdc.userParams['URL'],\n                sdc.userParams['REQUEST_PARAMS'],\n                RESPONSE_DATA_KEYS[sdc.userParams['ENDPOINT']]\n            )\n            data = _add_default_dimensions(data)\n\n            for metric in create_metrics(data):\n                record = sdc.createRecord('record created ' + str(datetime.now()))\n                record.value = metric\n                cur_batch.add(record)\n\n                if cur_batch.size() == sdc.batchSize:\n                    cur_batch.process(entityName, str(offset))\n                    cur_batch = sdc.createBatch()\n\n            cur_batch.process(entityName, str(offset))\n            cur_batch = sdc.createBatch()\n        except Exception:\n            sdc.log.error(traceback.format_exc())\n            raise\n\n\nbatch, offset_ = main()\nif batch.size() + batch.errorCount() + batch.eventCount() > 0:\n    batch.process(entityName, str(offset_ + get_interval()))"
       }, {
         "name" : "scriptConf.batchSize",
-        "value" : 1000
+        "value" : 1
       }, {
         "name" : "scriptConf.numThreads",
         "value" : 1
@@ -416,22 +431,43 @@
         "value" : "NATIVE_OBJECTS"
       }, {
         "name" : "scriptConf.params",
-        "value" : [ ]
+        "value" : [ {
+          "key" : "ENDPOINT",
+          "value" : "ports"
+        }, {
+          "key" : "DEVICES_URL",
+          "value" : "http://dummy_destination:80/api/v0/devices"
+        }, {
+          "key" : "URL",
+          "value" : "http://dummy_destination:80/api/v0/ports"
+        }, {
+          "key" : "API_USER",
+          "value" : "admin"
+        }, {
+          "key" : "API_PASSWORD",
+          "value" : "admin"
+        }, {
+          "key" : "REQUEST_PARAMS",
+          "value" : { }
+        }, {
+          "key" : "SCHEMA_ID",
+          "value" : "observium_ports-1234"
+        } ]
       }, {
         "name" : "stageOnRecordError",
         "value" : "TO_ERROR"
       } ],
       "uiInfo" : {
-        "yPos" : 84,
+        "yPos" : 157,
         "stageType" : "SOURCE",
         "icon" : "jython.png",
         "description" : "",
-        "label" : "Jython Scripting 1",
-        "xPos" : 165,
+        "label" : "Get metrics",
+        "xPos" : 416,
         "displayMode" : "ADVANCED"
       },
       "inputLanes" : [ ],
-      "outputLanes" : [ "JythonScripting_01OutputLane16413274349280" ],
+      "outputLanes" : [ "JythonScripting_01OutputLane15924840586690" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -441,13 +477,14 @@
       "stageVersion" : "1",
       "configuration" : [ ],
       "uiInfo" : {
+        "yPos" : 155,
+        "stageType" : "TARGET",
+        "icon" : "trash.png",
         "description" : "",
         "label" : "Trash 1",
-        "xPos" : 389,
-        "yPos" : 83,
-        "stageType" : "TARGET"
+        "xPos" : 659
       },
-      "inputLanes" : [ "JythonScripting_01OutputLane16413274349280" ],
+      "inputLanes" : [ "JythonScripting_01OutputLane15924840586690" ],
       "outputLanes" : [ ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -461,7 +498,7 @@
       "uiInfo" : {
         "description" : "",
         "label" : "Error Records - Discard",
-        "xPos" : 60,
+        "xPos" : 563,
         "yPos" : 50,
         "stageType" : "TARGET"
       },
@@ -471,25 +508,25 @@
       "services" : [ ]
     },
     "info" : {
-      "pipelineId" : "testinflud2de70bb-1fd1-493b-88fd-d33ca897f600",
-      "title" : "test_influx_qwe093",
+      "pipelineId" : "testobser61bdc95d-c223-4ee2-a9db-f3078527a21c",
+      "title" : "test_observium_rjjd1fm",
       "description" : "",
-      "created" : 1641326941637,
-      "lastModified" : 1641327452094,
+      "created" : 1640275520326,
+      "lastModified" : 1640275608371,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "049bada2-4493-4b9d-85ff-6f93034260dd",
-      "valid" : false,
+      "uuid" : "41a00a81-3cc9-45d7-a198-b76dfde5394c",
+      "valid" : true,
       "metadata" : {
-        "labels" : [ ]
+        "labels" : [ "observium", "http" ]
       },
-      "name" : "testinflud2de70bb-1fd1-493b-88fd-d33ca897f600",
+      "name" : "testobser61bdc95d-c223-4ee2-a9db-f3078527a21c",
       "sdcVersion" : "3.18.0",
-      "sdcId" : "d7eea3f1-67c2-11ec-8ea6-a5d201a23c0a"
+      "sdcId" : "fd60fea2-636d-11ec-8fb2-bb1e7fba2f98"
     },
     "metadata" : {
-      "labels" : [ ]
+      "labels" : [ "observium", "http" ]
     },
     "statsAggregatorStage" : {
       "instanceName" : "statsAggregatorStageInstance",
@@ -499,7 +536,7 @@
       "configuration" : [ ],
       "uiInfo" : {
         "stageType" : "TARGET",
-        "label" : "Stats Aggregator -Write Directly to Control Hub - statistics are not aggregated across Data Collectors"
+        "label" : "Stats Aggregator -Write to Control Hub directly"
       },
       "inputLanes" : [ ],
       "outputLanes" : [ ],
@@ -515,7 +552,7 @@
       "uiInfo" : {
         "description" : "",
         "label" : "Start Event - Discard",
-        "xPos" : 60,
+        "xPos" : 280,
         "yPos" : 50,
         "stageType" : "TARGET"
       },
@@ -533,7 +570,7 @@
       "uiInfo" : {
         "description" : "",
         "label" : "Stop Event - Discard",
-        "xPos" : 60,
+        "xPos" : 280,
         "yPos" : 50,
         "stageType" : "TARGET"
       },
@@ -661,6 +698,9 @@
           "name" : "dataFormatConfig.xmlRecordElement",
           "value" : null
         }, {
+          "name" : "dataFormatConfig.preserveRootElement",
+          "value" : false
+        }, {
           "name" : "dataFormatConfig.includeFieldXpathAttributes",
           "value" : false
         }, {
@@ -721,6 +761,9 @@
           "name" : "dataFormatConfig.schemaRegistryUrls",
           "value" : [ ]
         }, {
+          "name" : "dataFormatConfig.basicAuth",
+          "value" : ""
+        }, {
           "name" : "dataFormatConfig.schemaLookupMode",
           "value" : "SUBJECT"
         }, {
@@ -729,6 +772,9 @@
         }, {
           "name" : "dataFormatConfig.schemaId",
           "value" : null
+        }, {
+          "name" : "dataFormatConfig.avroSkipUnionIndex",
+          "value" : false
         }, {
           "name" : "dataFormatConfig.protoDescriptorFile",
           "value" : null
@@ -787,43 +833,24 @@
           "name" : "dataFormatConfig.excelHeader",
           "value" : null
         }, {
-          "name" : "dataFormatConfig.preserveRootElement",
-          "value" : false
-        }, {
-          "name" : "dataFormatConfig.basicAuth",
-          "value" : null
-        }, {
-          "name" : "dataFormatConfig.avroSkipUnionIndex",
-          "value" : false
-        }, {
           "name" : "dataFormatConfig.excelSkipCellsWithNoHeader",
           "value" : false
         }, {
           "name" : "dataFormatConfig.excelReadAllSheets",
-          "value" : true
+          "value" : false
         }, {
           "name" : "dataFormatConfig.excelSheetNames",
-          "value" : null
+          "value" : [ ]
         } ]
       } ]
     },
-    "valid" : false,
+    "valid" : true,
     "issues" : {
-      "pipelineIssues" : [ {
-        "instanceName" : null,
-        "serviceName" : null,
-        "level" : "PIPELINE_CONFIG",
-        "configGroup" : "",
-        "configName" : "webhookUrl",
-        "message" : "CREATION_005 - Could not resolve implicit EL expression '${AGENT_URL}/pipeline-status-change/${pipeline:id()}': com.streamsets.pipeline.api.el.ELEvalException: CTRCMN_0100 - Error evaluating expression ${AGENT_URL}/pipeline-status-change/${pipeline:id()}: javax.servlet.jsp.el.ELException: Constants/Variable 'AGENT_URL' cannot be resolved",
-        "count" : 1,
-        "additionalInfo" : null,
-        "antennaDoctorMessages" : null
-      } ],
+      "pipelineIssues" : [ ],
       "stageIssues" : { },
-      "issueCount" : 1
+      "issueCount" : 0
     },
-    "previewable" : false
+    "previewable" : true
   },
   "pipelineRules" : {
     "schemaVersion" : 3,
@@ -837,7 +864,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1575475179123,
+      "timestamp" : 1640185077103,
       "valid" : true
     }, {
       "id" : "stageErrorAlertID",
@@ -848,7 +875,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1575475179123,
+      "timestamp" : 1640185077103,
       "valid" : true
     }, {
       "id" : "idleGaugeID",
@@ -859,7 +886,7 @@
       "condition" : "${time:now() - value() > 120000}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1575475179123,
+      "timestamp" : 1640185077103,
       "valid" : true
     }, {
       "id" : "batchTimeAlertID",
@@ -870,18 +897,18 @@
       "condition" : "${value() > 200}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1575475179123,
+      "timestamp" : 1640185077103,
       "valid" : true
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "8b21091c-2f72-4317-9586-3a6b272c68b5",
+    "uuid" : "0234e449-27f5-406f-b104-fb5d0c494118",
     "configuration" : [ {
       "name" : "emailIDs",
-      "value" : [ ]
+      "value" : null
     }, {
       "name" : "webhookConfigs",
-      "value" : [ ]
+      "value" : null
     } ],
     "ruleIssues" : [ ],
     "configIssues" : [ ]

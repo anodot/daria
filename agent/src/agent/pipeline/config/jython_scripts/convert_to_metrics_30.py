@@ -9,9 +9,7 @@ finally:
 
 def extract_value(obj, path):
     for part in path.split('/'):
-        obj = obj.get(part)
-        if not obj:
-            return None
+        obj = obj[int(part)]if type(obj) == list else obj.get(part, None)
     return obj
 
 

@@ -25,8 +25,6 @@ class MongoPrompter(Prompter):
         self.source.config[source.MongoSource.CONFIG_CONNECTION_STRING] = \
             click.prompt('Connection string', type=click.STRING,
                          default=default_config.get(source.MongoSource.CONFIG_CONNECTION_STRING)).strip()
-        self.validator.validate_connection()
-        click.echo('Successfully connected to Mongo server')
 
     @infinite_retry
     def prompt_auth(self, default_config: dict):
@@ -75,13 +73,13 @@ class MongoPrompter(Prompter):
         try:
             self.validator.validate_db()
         except source.validator.ValidationException as e:
-            raise click.UsageError(e)
+            raise click.UsageError(str(e))
 
     def _get_collection(self):
         try:
             self.validator.validate_collection()
         except source.validator.ValidationException as e:
-            raise click.UsageError(e)
+            raise click.UsageError(str(e))
         client = source.db.get_mongo_client(
             self.source.config[source.MongoSource.CONFIG_CONNECTION_STRING],
             self.source.config.get(source.MongoSource.CONFIG_USERNAME),

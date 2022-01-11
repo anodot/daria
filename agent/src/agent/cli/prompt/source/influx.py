@@ -21,7 +21,7 @@ class InfluxPrompter(Prompter):
         try:
             self.validator.validate_connection()
         except source.validator.ValidationException as e:
-            raise click.UsageError(e)
+            raise click.UsageError(str(e))
         print('Successfully connected to the source')
 
     @infinite_retry
@@ -30,7 +30,7 @@ class InfluxPrompter(Prompter):
         try:
             self.validator.validate_db()
         except source.validator.ValidationException as e:
-            raise click.UsageError(e)
+            raise click.UsageError(str(e))
         click.secho('Access authorized')
 
     def _prompt_db(self, default_config: dict):
@@ -51,7 +51,7 @@ class InfluxPrompter(Prompter):
         try:
             self.validator.validate_offset()
         except source.validator.ValidationException as e:
-            raise click.UsageError(e)
+            raise click.UsageError(str(e))
 
 
 class Influx2Prompter(InfluxPrompter):

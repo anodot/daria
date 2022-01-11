@@ -2,10 +2,10 @@ from agent.pipeline.config.stages.base import Stage
 
 
 class FieldTypeConverter(Stage):
-    def get_config(self) -> dict:
-        config = {
-            'fields': [],
-            'targetType': 'DECIMAL',
+    def _get_converter_settings(self, fields, target_type):
+        return {
+            'fields': fields,
+            'targetType': target_type,
             'treatInputFieldAsDate': False,
             'dataLocale': 'en,US',
             'scale': -1,
@@ -14,7 +14,13 @@ class FieldTypeConverter(Stage):
             'zonedDateTimeFormat': 'ISO_ZONED_DATE_TIME',
             'encoding': 'UTF-8'
         }
-        config['fields'].append('/timestamp')
-        for measurement_name in self.pipeline.measurement_names:
-            config['fields'].append(f'/measurements/{measurement_name}')
-        return {'fieldTypeConverterConfigs': [config]}
+
+    def get_config(self) -> dict:
+        measurements = [f'/measurements/{measurement_name}' for measurement_name in self.pipeline.measurement_names]
+
+        return {
+            'fieldTypeConverterConfigs': [
+                self._get_converter_settings(measurements, 'DECIMAL'),
+                self._get_converter_settings(['/timestamp'], 'INTEGER'),
+            ],
+        }

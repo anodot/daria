@@ -11,7 +11,7 @@ from pysnmp.entity.engine import SnmpEngine
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 from agent import source
 from agent.modules.tools import if_validation_enabled
-from agent.modules import validator, zabbix, http
+from agent.modules import validator, http
 from agent.source import Source
 from pysnmp.hlapi import getCmd, CommunityData, UdpTransportTarget, ContextData
 
@@ -70,13 +70,7 @@ class InfluxValidator(Validator):
 
     @if_validation_enabled
     def validate_db(self):
-        client = source.db.get_influx_client(
-            self.source.config['host'], self.source.config.get('username'), self.source.config.get('password')
-        )
-        if all(db['name'] != self.source.config['db'] for db in client.get_list_database()):
-            raise ValidationException(
-                f"Database {self.source.config['db']} not found. Please check your credentials again"
-            )
+        Validator.validate_connection(self)
 
     def validate_offset(self):
         if not self.source.config.get('offset'):
@@ -98,16 +92,8 @@ class Influx2Validator(InfluxValidator):
     VALIDATION_SCHEMA_FILE = 'influx2.json'
 
     @if_validation_enabled
-    def validate_connection(self):
-        res = requests.get(self.source.config['host'])
-        res.raise_for_status()
-
-    @if_validation_enabled
     def validate_db(self):
-        session = requests.Session()
-        session.headers['Authorization'] = f'Token {self.source.config["token"]}'
-        res = session.get(urllib.parse.urljoin(self.source.config['host'], '/api/v2/buckets'))
-        res.raise_for_status()
+        Validator.validate_connection(self)
 
 
 class ElasticValidator(Validator):
@@ -164,18 +150,6 @@ class MongoValidator(Validator):
 
     def validate(self):
         super().validate()
-        self.validate_db()
-        self.validate_collection()
-
-    @if_validation_enabled
-    def validate_connection(self):
-        client = source.db.get_mongo_client(
-            self.source.config[source.MongoSource.CONFIG_CONNECTION_STRING],
-            self.source.config.get(source.MongoSource.CONFIG_USERNAME),
-            self.source.config.get(source.MongoSource.CONFIG_PASSWORD),
-            self.source.config.get(source.MongoSource.CONFIG_AUTH_SOURCE)
-        )
-        client.server_info()
 
     @if_validation_enabled
     def validate_db(self):
@@ -251,22 +225,6 @@ class SageValidator(Validator):
 class PromQLValidator(Validator):
     VALIDATION_SCHEMA_FILE = 'promql.json'
 
-    def validate_connection(self):
-        url = self.source.config['url'] + '/api/v1/export?match[]={__name__="not_existing_dsger43"}'
-        session = requests.Session()
-        if self.source.config.get(source.PromQLSource.USERNAME):
-            session.auth = (
-                self.source.config[source.PromQLSource.USERNAME], self.source.config[source.PromQLSource.PASSWORD]
-            )
-        try:
-            res = session.get(url, verify=False)
-            res.raise_for_status()
-        except requests.exceptions.RequestException as e:
-            raise ValidationException(
-                'Failed connecting to VictoriaMetrics. Make sure you provided correct url, username and password\n'
-                + str(e)
-            )
-
 
 class SolarWindsValidator(Validator):
     VALIDATION_SCHEMA_FILE = 'solarwinds.json'
@@ -309,14 +267,6 @@ class ObserviumValidator(Validator):
 
 class ZabbixValidator(Validator):
     VALIDATION_SCHEMA_FILE = 'zabbix.json'
-
-    def validate_connection(self):
-        zabbix.Client(
-            self.source.config[source.ZabbixSource.URL],
-            self.source.config[source.ZabbixSource.USER],
-            self.source.config[source.ZabbixSource.PASSWORD],
-            self.source.config.get(source.ZabbixSource.VERIFY_SSL, True),
-        )
 
 
 class SchemalessValidator(Validator):

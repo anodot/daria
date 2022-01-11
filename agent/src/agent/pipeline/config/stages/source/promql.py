@@ -1,3 +1,4 @@
+import os
 from agent import source
 from agent.pipeline.config.stages.base import JythonSource
 
@@ -46,5 +47,34 @@ class PromQLScript(JythonSource):
             {
                 'key': 'AGGREGATED_METRIC_NAME',
                 'value': str(self.pipeline.config.get('aggregated_metric_name'))
+            },
+        ]
+
+
+class TestPromQLScript(JythonSource):
+    JYTHON_SCRIPT = 'promql.py'
+    JYTHON_SCRIPTS_DIR = os.path.join(JythonSource.JYTHON_SCRIPTS_DIR, 'test_pipelines')
+
+    def _get_script_params(self) -> list[dict]:
+        return [
+            {
+                'key': 'URL',
+                'value': self.pipeline.source.config[source.PromQLSource.URL]
+            },
+            {
+                'key': 'USERNAME',
+                'value': self.pipeline.source.config.get(source.PromQLSource.USERNAME, '')
+            },
+            {
+                'key': 'PASSWORD',
+                'value': self.pipeline.source.config.get(source.PromQLSource.PASSWORD, '')
+            },
+            {
+                'key': 'VERIFY_SSL',
+                'value': '1' if self.pipeline.source.config.get(source.APISource.VERIFY_SSL, True) else ''
+            },
+            {
+                'key': 'REQUEST_TIMEOUT',
+                'value': 10
             },
         ]

@@ -22,7 +22,6 @@ POLL_TIME_KEYS = {
 RESPONSE_DATA_KEYS = {'ports': 'ports', 'mempools': 'entries', 'processors': 'entries', 'storage': 'storage'}
 
 
-# todo watermark
 @lookup.provide
 def extract_metrics(pipeline_: Pipeline) -> list:
     # todo schema definition

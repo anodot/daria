@@ -101,14 +101,19 @@ class TestPipelineBaseConfigLoader(BaseConfigLoader):
             source.TYPE_DATABRICKS: 'test_jdbc_pdsf4587.json',
             source.TYPE_ELASTIC: 'test_elastic_asdfs3245.json',
             source.TYPE_INFLUX: 'test_influx_qwe093.json',
+            source.TYPE_INFLUX_2: 'test_influx2_x1ccwlf.json',
             source.TYPE_MONGO: 'test_mongo_rand847.json',
             source.TYPE_KAFKA: 'test_kafka_kjeu4334.json',
             source.TYPE_MYSQL: 'test_jdbc_pdsf4587.json',
             source.TYPE_POSTGRES: 'test_jdbc_pdsf4587.json',
+            source.TYPE_PROMETHEUS: 'test_promql_m7p99ao.json',
+            source.TYPE_OBSERVIUM: 'test_observium_rjjd1fm.json',
             source.TYPE_ORACLE: 'test_jdbc_pdsf4587.json',
             source.TYPE_SAGE: 'test_sage_jfhdkj.json',
             source.TYPE_SPLUNK: 'test_tcp_server_jksrj322.json',
             source.TYPE_SOLARWINDS: 'test_solarwinds_jksrj322.json',
+            source.TYPE_THANOS: 'test_promql_m7p99ao.json',
+            source.TYPE_VICTORIA: 'test_promql_m7p99ao.json',
             source.TYPE_ZABBIX: 'test_zabbix_jfhdkj.json',
         }[pipeline.source.type]
 
@@ -188,3 +193,8 @@ class BaseRawConfigHandler(BaseConfigHandler):
         return {
             'AGENT_URL': self.pipeline.streamsets.agent_external_url,
         }
+
+
+class BaseTestConfigHandler(BaseRawConfigHandler):
+    def __init__(self, pipeline: Pipeline, base_config: dict):
+        super().__init__(pipeline, base_config)
