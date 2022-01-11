@@ -64,9 +64,22 @@ function get_measurements(record) {
     return measurements
 }
 
+function last_timestamp_only(record) {
+    var record_keys = [];
+    for (var key in record) {
+        record_keys.push(key)
+    }
+    return (record_keys.length === 1 && record_keys[0] === 'last_timestamp');
+}
 
 for (var i = 0; i < records.length; i++) {
     try {
+        var timestamp_from = records[i].value['last_timestamp']
+		var timestamp_to = records[i].value['last_timestamp'] + state['INTERVAL']
+        if (last_timestamp_only(records[i].value)) {
+            sdc.log.info("No data from " + timestamp_from + " to " + timestamp_to)
+            continue;
+        }
         var timestamp = extract_value(records[i].value, state['TIMESTAMP_COLUMN'])
         if (timestamp === null) {
             continue;
