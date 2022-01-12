@@ -64,27 +64,40 @@ function get_measurements(record) {
     return measurements
 }
 
+function last_timestamp_only(record) {
+    var record_keys = [];
+    for (var key in record) {
+        record_keys.push(key)
+    }
+    return (record_keys.length === 1 && record_keys[0] === 'last_timestamp');
+}
 
-for (var i = 0; i < records.length; i++) {
-    try {
-        var timestamp = extract_value(records[i].value, state['TIMESTAMP_COLUMN'])
-        if (timestamp === null) {
-            continue;
+if (records.length === 1 && last_timestamp_only(records[0].value)) {
+    var timestamp_from = records[0].value['last_timestamp']
+    var timestamp_to = records[0].value['last_timestamp'] + state['INTERVAL']
+    sdc.log.info("No data from " + timestamp_from + " to " + timestamp_to)
+} else {
+    for (var i = 0; i < records.length; i++) {
+        try {
+            var timestamp = extract_value(records[i].value, state['TIMESTAMP_COLUMN'])
+            if (timestamp === null) {
+                continue;
+            }
+            var measurements = get_measurements(records[i].value)
+            if (JSON.stringify(measurements) === JSON.stringify({})) {
+                continue;
+            }
+            var newRecord = sdcFunctions.createRecord(i);
+            newRecord.value = {
+                'timestamp': timestamp,
+                'dimensions': get_dimensions(records[i]),
+                'measurements': measurements,
+                'schemaId': "${SCHEMA_ID}"
+            };
+            output.write(newRecord);
+        } catch (e) {
+            error.write(records[i], e);
         }
-        var measurements = get_measurements(records[i].value)
-        if (JSON.stringify(measurements) === JSON.stringify({})) {
-            continue;
-        }
-        var newRecord = sdcFunctions.createRecord(i);
-        newRecord.value = {
-            'timestamp': timestamp,
-            'dimensions': get_dimensions(records[i]),
-            'measurements': measurements,
-            'schemaId': "${SCHEMA_ID}"
-        };
-        output.write(newRecord);
-    } catch (e) {
-        error.write(records[i], e);
     }
 }
 

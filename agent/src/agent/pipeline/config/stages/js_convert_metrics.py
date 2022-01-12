@@ -26,7 +26,7 @@ state['metrics'] = {{}}
         }
 
     def _required_fields(self) -> list:
-        return [f'/{f}' for f in [*self.pipeline.required_dimension_paths, self.pipeline.timestamp_path]]
+        return [f'/{f}' for f in [*self.pipeline.required_dimension_paths]]
 
 
 class JSConvertMetrics30(JSConvertMetrics):
