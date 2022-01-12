@@ -317,7 +317,7 @@ def get_next_bucket_start(bs: str, offset: float) -> datetime:
 def build_dimension_configurations(dimensions: list, dimension_configurations: dict) -> dict:
     """
     Dimension configurations is optional for a pipeline, this function adds dimensions that are not
-    in the dimension_configurations and sets their value to be the same as the dimension itself
+    in the dimension_configurations and sets their value path to be the same as the dimension itself
     Doing so allows working with only one config dimension_configurations instead of using two
     """
     for dim in dimensions:

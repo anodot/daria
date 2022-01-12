@@ -122,7 +122,7 @@ class ObserviumBuilder(Builder):
         super()._load_config()
         self.config['timestamp'] = {'type': 'unix'}
         self.config['uses_schema'] = True
-        self.config['dimension_configurations'] = self._dimensions_configuration()
+        self.config['dimension_configurations'] = self._dimension_configurations()
         self.config['dimensions'] = self._dimensions()
         self.config['values'] = self._measurements()
         self.config['request_params'] = self._request_params()
@@ -150,7 +150,7 @@ class ObserviumBuilder(Builder):
             return {k: v for k, v in params.items() if v and (k in self.ALLOWED_PARAMS[self.endpoint()])}
         return {}
 
-    def _dimensions_configuration(self):
+    def _dimension_configurations(self):
         if self.config.get('dimensions'):
             dim_configurations = self.config.get('dimension_configurations', {})
         else:

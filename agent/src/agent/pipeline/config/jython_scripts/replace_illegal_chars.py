@@ -40,6 +40,10 @@ def main():
             replace_keys(record, 'measurements')
         if 'tags' in record.value:
             replace_keys(record, 'tags')
+            for k, vals in record.value['tags'].items():
+                record.value['tags'][k] = [replace_illegal_chars(v) for v in vals]
+        if 'what' in record.value:
+            record.value['what'] = replace_illegal_chars(record.value['what'])
         sdc.output.write(record)
 
 

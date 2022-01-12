@@ -1,5 +1,5 @@
 from functools import wraps
-from agent.modules import functions, data_source
+from agent.modules import data_source
 from typing import Callable, Optional, Any
 
 _sources = {}
@@ -16,6 +16,7 @@ def provide(func):
         _clean()
         _init_sources(args[0].config.get('lookup', {}))
         res = func(*args, **kwargs)
+        # todo use finally or with
         _clean()
         return res
 
@@ -44,7 +45,7 @@ def lookup(
         value_field='Full_name',
         compare_function=startswith
     )
-    res == 'Interfaces_name' // output: True
+    res == 'Interface_name' // output: True
     """
     global _cache
     if lookup_name not in _cache:
@@ -79,14 +80,3 @@ def _clean():
     global _cache, _sources
     _cache = {}
     _sources = {}
-
-
-def get_compare_function(name: str) -> Callable:
-    if name == 'startswith':
-        return functions.compare.startswith
-    elif name == 'equal':
-        return functions.compare.equal
-    elif name == 'like':
-        return functions.compare.contains
-    else:
-        raise Exception(f'Lookup function `{name}` is not supported')

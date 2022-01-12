@@ -1,4 +1,5 @@
 import re
+
 from typing import Callable
 
 TO_UPPER = 'to_upper'

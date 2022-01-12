@@ -1,5 +1,4 @@
 from abc import ABC
-
 from agent.modules.data_source import DataSource
 from agent.pipeline import Pipeline
 from agent.source import Source
