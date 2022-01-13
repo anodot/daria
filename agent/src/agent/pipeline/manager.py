@@ -27,6 +27,7 @@ def supports_schema(pipeline_: Pipeline):
         source.TYPE_MYSQL,
         source.TYPE_ORACLE,
         source.TYPE_POSTGRES,
+        source.TYPE_SAGE,
     ]
     return pipeline_.source.type in supported
 
