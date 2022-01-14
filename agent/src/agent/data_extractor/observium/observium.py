@@ -3,10 +3,9 @@ import requests
 import urllib.parse
 
 from requests.auth import HTTPBasicAuth
-from agent import source
+from agent import source, monitoring
 from agent.modules import logger, field, lookup
 from agent.pipeline import Pipeline
-from agent.source import ObserviumSource
 
 logger_ = logger.get_logger(__name__)
 
@@ -32,7 +31,7 @@ def extract_metrics(pipeline_: Pipeline) -> list:
     base_url = urllib.parse.urljoin(pipeline_.source.config[source.ObserviumSource.URL], '/api/v0/')
     endpoint = pipeline_.source.config['endpoint']
     data = _get(
-        pipeline_.source,
+        pipeline_,
         urllib.parse.urljoin(base_url, endpoint),
         pipeline_.config.get('request_params', {}),
         RESPONSE_DATA_KEYS[endpoint],
@@ -41,22 +40,24 @@ def extract_metrics(pipeline_: Pipeline) -> list:
     return _create_metrics(data, pipeline_)
 
 
-def _get(source_: ObserviumSource, url: str, params: dict, response_key: str):
+def _get(pipeline_: Pipeline, url: str, params: dict, response_key: str):
     for i in range(1, N_REQUESTS_TRIES + 1):
         try:
             res = requests.get(
                 url,
                 auth=HTTPBasicAuth(
-                    source_.config[source.ObserviumSource.USERNAME],
-                    source_.config[source.ObserviumSource.PASSWORD],
+                    pipeline_.source.config[source.ObserviumSource.USERNAME],
+                    pipeline_.source.config[source.ObserviumSource.PASSWORD],
                 ),
                 params=params,
-                verify=source_.verify_ssl,
-                timeout=source_.query_timeout,
+                verify=pipeline_.source.verify_ssl,
+                timeout=pipeline_.source.query_timeout,
             )
             res.raise_for_status()
             return res.json()[response_key]
         except requests.HTTPError as e:
+            monitoring.metrics.SOURCE_HTTP_ERRORS.labels(pipeline_.name, pipeline_.source.type,
+                                                         e.response.status_code).inc(1)
             logger_.error(str(e))
             if i == N_REQUESTS_TRIES:
                 raise
@@ -83,8 +84,10 @@ def _add_devices_data(data: dict, pipeline_: Pipeline):
 
 def _get_devices(pipeline_: Pipeline):
     devices = _get(
-        pipeline_.source, urllib.parse.urljoin(pipeline_.source.config[source.ObserviumSource.URL], '/api/v0/devices'),
-        {}, 'devices'
+        pipeline_,
+        urllib.parse.urljoin(pipeline_.source.config[source.ObserviumSource.URL], '/api/v0/devices'),
+        {},
+        'devices',
     )
     return {obj['device_id']: obj for obj in devices.values()}
 

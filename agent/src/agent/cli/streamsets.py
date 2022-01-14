@@ -68,9 +68,7 @@ def edit(url):
 @click.argument('url', autocompletion=get_url_complete)
 def delete(url):
     try:
-        streamsets.manager.delete_streamsets(
-            streamsets.repository.get_by_url(url)
-        )
+        streamsets.manager.delete_streamsets(streamsets.repository.get_by_url(url))
     except (streamsets.repository.StreamsetsNotExistsException, streamsets.manager.StreamsetsException) as e:
         raise click.ClickException(str(e))
     click.secho(f'Streamsets `{url}` is deleted from the agent', fg='green')
@@ -129,11 +127,11 @@ def _validate_streamsets_url(url):
     try:
         res = requests.get(url)
         res.raise_for_status()
-    except requests.exceptions.HTTPError:
-        raise click.ClickException(f'Provided url returned {res.status_code} status code')
+    except requests.exceptions.HTTPError as e:
+        raise click.ClickException(f'Provided url returned {e.response.status_code} status code')
     except Exception as e:
         logger.debug(traceback.format_exc())
-        raise click.ClickException(f'ERROR: {str(e)}')
+        raise click.ClickException(f'ERROR: {e}')
 
 
 @infinite_retry

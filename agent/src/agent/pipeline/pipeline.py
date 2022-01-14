@@ -3,7 +3,7 @@ import sdc_client
 from typing import Optional, List
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import relationship
-from agent.modules import tools
+from agent.modules import tools, field
 from agent.modules.constants import HOSTNAME
 from agent.modules.db import Entity
 from agent.destination import HttpDestination, DummyHttpDestination
@@ -109,7 +109,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
         self.config = deepcopy(config)
 
     @property
-    def source(self):
+    def source(self) -> Source:
         return self.source_
 
     @property
@@ -181,9 +181,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
                 'Pipeline dimensions should be a list in order to build dimension_configurations, '
                 f'but {type(self.dimensions).__name__} provided'
             ))
-        return pipeline.manager.build_dimension_configurations(
-            self.dimensions, self.config.get('dimension_configurations')
-        )
+        return _build_dimension_configurations(self.dimensions, self.config.get('dimension_configurations'))
 
     @property
     def timestamp_path(self) -> str:
@@ -480,3 +478,15 @@ class PipelineMetric:
 
     def has_undelivered(self):
         return self.stat_out == 0
+
+
+def _build_dimension_configurations(dimensions: list, dimension_configurations: dict) -> dict:
+    """
+    Dimension configurations is optional for a pipeline, this function adds dimensions that are not
+    in the dimension_configurations and sets their value path to be the same as the dimension itself
+    Doing so allows working with only one config dimension_configurations instead of using two
+    """
+    for dim in dimensions:
+        if dim not in dimension_configurations:
+            dimension_configurations[dim] = {field.Variable.VALUE_PATH: dim}
+    return dimension_configurations

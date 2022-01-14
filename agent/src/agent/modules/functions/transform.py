@@ -1,13 +1,8 @@
+import inspect
 import re
+import sys
 
 from typing import Callable
-
-TO_UPPER = 'to_upper'
-RE_SUB = 'regex_substring'
-
-# this is a number of arguments for each function that must be provided in the pipeline config
-# probably it's not the best place for them, think how to make validation better
-NUM_FUNCTION_ARGS = {TO_UPPER: 0, RE_SUB: 2}
 
 
 def to_upper(s: str) -> str:
@@ -22,18 +17,16 @@ def regex_substring(string: str, pattern: str, repl: str) -> str:
 
 
 def get_by_name(name: str) -> Callable:
-    if name == TO_UPPER:
-        return to_upper
-    elif name == RE_SUB:
-        return regex_substring
-    else:
+    try:
+        return getattr(sys.modules[__name__], name)
+    except AttributeError:
         raise Exception(f'Transformation function `{name}` is not supported')
 
 
 # todo this validation works during a pipeline run, not on creation
 def validate(func: Callable, args: list):
-    name = func.__name__
-    if name not in NUM_FUNCTION_ARGS:
-        raise Exception(f'Function `{name}` is not supported')
-    if NUM_FUNCTION_ARGS[name] != len(args):
-        raise Exception(f'Function `{name}` expects {NUM_FUNCTION_ARGS[name]} arguments, {len(args)} provided')
+    # users need to provide one argument less than a function takes because
+    # the transformed value itself is the first argument, that's why minus 1
+    num_function_args = len(inspect.signature(func).parameters) - 1
+    if num_function_args != len(args):
+        raise Exception(f'Function `{func.__name__}` expects {num_function_args} arguments, {len(args)} provided')

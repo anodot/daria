@@ -3,7 +3,8 @@ from agent.modules import data_source
 from typing import Callable, Optional, Any
 
 _sources = {}
-_cache = {}
+_lookup_cache = {}
+_results_cache = {}
 
 
 def provide(func):
@@ -14,10 +15,11 @@ def provide(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         _clean()
-        _init_sources(args[0].config.get('lookup', {}))
-        res = func(*args, **kwargs)
-        # todo use finally or with
-        _clean()
+        try:
+            _init_sources(args[0].config.get('lookup', {}))
+            res = func(*args, **kwargs)
+        finally:
+            _clean()
         return res
 
     return wrapper
@@ -47,11 +49,18 @@ def lookup(
     )
     res == 'Interface_name' // output: True
     """
-    global _cache
-    if lookup_name not in _cache:
-        _cache[lookup_name] = _sources[lookup_name].get_data()
+    global _lookup_cache
+
+    if lookup_name not in _lookup_cache:
+        _lookup_cache[lookup_name] = _sources[lookup_name].get_data()
+
     res = None
-    for obj in _cache[lookup_name]:
+    result_cache_key = _build_result_cache_key(lookup_name, lookup_value, key_field, value_field, compare_function)
+
+    if result := _results_cache.get(result_cache_key):
+        return result
+
+    for obj in _lookup_cache[lookup_name]:
         if compare_function(obj[key_field], lookup_value):
             if res is not None:
                 raise Exception(
@@ -65,6 +74,9 @@ def lookup(
                     ])
                 )
             res = obj[value_field]
+
+    _results_cache[result_cache_key] = res
+
     return res
 
 
@@ -77,6 +89,17 @@ def _init_sources(lookup_configs: dict):
 
 
 def _clean():
-    global _cache, _sources
-    _cache = {}
+    global _lookup_cache, _results_cache, _sources
+    _lookup_cache = {}
+    _results_cache = {}
     _sources = {}
+
+
+def _build_result_cache_key(
+    lookup_name: str,
+    lookup_value: Any,
+    key_field: str,
+    value_field: str,
+    compare_function: Callable,
+) -> Optional[Any]:
+    return "_".join([lookup_name, str(lookup_value), key_field, value_field, compare_function.__name__])
