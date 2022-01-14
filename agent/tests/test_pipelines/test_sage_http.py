@@ -19,11 +19,11 @@ class TestSage(TestPipelineBase):
             {'name': 'test_sage_schema_file'},
         ],
         'test_reset': [
-            {'name': 'test_sage_value_const'}
+            {'name': 'test_sage_value_const'},
         ],
         'test_output': [
             {'name': 'test_sage_value_const', 'output': 'json_value_const_adv.json', 'pipeline_type': 'sage'},
-            {'name': 'test_sage', 'output': 'json_value_property.json', 'pipeline_type': 'sage'}
+            {'name': 'test_sage', 'output': 'json_value_property.json', 'pipeline_type': 'sage'},
         ],
         'test_delete_pipeline': [
             {'name': 'test_sage_value_const'},
