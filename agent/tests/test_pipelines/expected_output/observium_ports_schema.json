@@ -1,20 +1,84 @@
 [
   {
     "schemaId": "observium_ports-1234",
-    "timestamp": 1628160620,
     "dimensions": {
-      "Interface_Name": "fxp0",
-      "Interface_Alias": "",
-      "Interface_Description": "fxp0_300",
-      "Bandwidth": "10000000",
+      "INTERFACE_SPEED": "10000000",
+      "Location": "SOME-LOC",
       "Host_Name": "sys1",
-      "Location": "SOME-LOC"
+      "DEST_STATE": "Iowa",
+      "PARENT_ELEMENT_LOCATION": "Csmacd"
     },
     "measurements": {
       "ifInBroadcastPkts": 0.0,
       "ifInErrors_rate": 0.0,
       "ifOctets_rate": 0.0,
       "ifOutUcastPkts": 100500.0,
+      "ifInNUcastPkts": 0.0,
+      "ifUcastPkts_rate": 0.0,
+      "ifInDiscards_rate": 0.0,
+      "ifOutNUcastPkts_rate": 0.0,
+      "ifOutBroadcastPkts_rate": 0.0,
+      "ifOutMulticastPkts_rate": 0.0,
+      "ifInUcastPkts": 0.0,
+      "ifDiscards_rate": 0.0,
+      "ifInOctets_rate": 0.0,
+      "ifOutErrors": 0.0,
+      "ifOutNUcastPkts": 0.0,
+      "ifInOctets_perc": 0.0,
+      "ifInNUcastPkts_rate": 0.0,
+      "ifOutUcastPkts_rate": 0.0,
+      "ifInDiscards": 0.0,
+      "ifOutBroadcastPkts": 0.0,
+      "ifInBroadcastPkts_rate": 0.0,
+      "port_mcbc": 1.0,
+      "ifInErrors": 0.0,
+      "ifOutDiscards": 0.0,
+      "ifOutOctets_rate": 0.0,
+      "ifOutMulticastPkts": 0.0,
+      "ifInUcastPkts_rate": 0.0,
+      "ifOutOctets_perc": 0.0,
+      "ifOutDiscards_rate": 0.0,
+      "ifOutOctets": 0.0,
+      "ifInMulticastPkts_rate": 0.0,
+      "ifOutErrors_rate": 0.0,
+      "ifInOctets": 0.0,
+      "ifErrors_rate": 0.0,
+      "ifInMulticastPkts": 0.0
+    },
+    "timestamp": 1628160620,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "observium_ports"
+      ],
+      "pipeline_type": [
+        "observium"
+      ]
+    }
+  },
+  {
+    "schemaId": "observium_ports-1234",
+    "timestamp": 1628160620,
+    "dimensions": {
+      "INTERFACE_SPEED": "0",
+      "Location": "SOME-LOC",
+      "Host_Name": "sys1",
+      "DEST_STATE": "Nevada",
+      "PARENT_ELEMENT_LOCATION": "other"
+    },
+    "measurements": {
+      "ifInBroadcastPkts": 0.0,
+      "ifInErrors_rate": 0.0,
+      "ifOctets_rate": 0.0,
+      "ifOutUcastPkts": 100400.0,
       "ifInNUcastPkts": 0.0,
       "ifUcastPkts_rate": 0.0,
       "ifInDiscards_rate": 0.0,
@@ -69,12 +133,11 @@
     "schemaId": "observium_ports-1234",
     "timestamp": 1628160620,
     "dimensions": {
-      "Interface_Name": "dsc",
-      "Interface_Alias": "",
-      "Interface_Description": "dsc",
-      "Bandwidth": "0",
+      "INTERFACE_SPEED": "0",
+      "Location": "SOME-LOC",
       "Host_Name": "sys1",
-      "Location": "SOME-LOC"
+      "DEST_STATE": "Nevada",
+      "PARENT_ELEMENT_LOCATION": "other"
     },
     "measurements": {
       "ifInBroadcastPkts": 0.0,

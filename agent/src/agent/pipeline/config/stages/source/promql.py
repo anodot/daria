@@ -53,7 +53,7 @@ class PromQLScript(JythonSource):
 
 class TestPromQLScript(JythonSource):
     JYTHON_SCRIPT = 'promql.py'
-    JYTHON_SCRIPTS_PATH = os.path.join(JythonSource.JYTHON_SCRIPTS_PATH, 'test_pipelines')
+    JYTHON_SCRIPTS_DIR = os.path.join(JythonSource.JYTHON_SCRIPTS_DIR, 'test_pipelines')
 
     def _get_script_params(self) -> list[dict]:
         return [
@@ -74,7 +74,7 @@ class TestPromQLScript(JythonSource):
                 'value': '1' if self.pipeline.source.config.get(source.APISource.VERIFY_SSL, True) else ''
             },
             {
-               'key': 'REQUEST_TIMEOUT',
-               'value': 10
+                'key': 'REQUEST_TIMEOUT',
+                'value': 10
             },
         ]

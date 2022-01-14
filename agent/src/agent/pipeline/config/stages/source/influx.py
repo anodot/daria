@@ -1,4 +1,5 @@
 import os
+
 from agent.pipeline.config.stages.influx import InfluxScript
 from agent.pipeline.config.stages.base import JythonSource
 from urllib.parse import urljoin, quote_plus
@@ -37,24 +38,41 @@ class InfluxSource(InfluxScript):
         if '.' not in measurement_name and ' ' not in measurement_name:
             measurement_name = f'%22{measurement_name}%22'
 
-        return self.QUERY_GET_DATA.format(**{
-            'dimensions': columns,
-            'metric': measurement_name,
-            'delay': self.pipeline.config.get('delay', '0s'),
-            'interval': str(self.pipeline.config.get('interval', 60)) + 's',
-            'where': where
-        })
+        return self.QUERY_GET_DATA.format(
+            **{
+                'dimensions': columns,
+                'metric': measurement_name,
+                'delay': self.pipeline.config.get('delay', '0s'),
+                'interval': str(self.pipeline.config.get('interval', 60)) + 's',
+                'where': where
+            }
+        )
 
 
 class TestInfluxSource(JythonSource):
     JYTHON_SCRIPT = 'influx.py'
-    JYTHON_SCRIPTS_PATH = os.path.join(JythonSource.JYTHON_SCRIPTS_PATH, 'test_pipelines')
+    JYTHON_SCRIPTS_DIR = os.path.join(JythonSource.JYTHON_SCRIPTS_DIR, 'test_pipelines')
 
     def _get_script_params(self) -> list[dict]:
         return [
-            {'key': 'USERNAME', 'value': self.pipeline.source.config.get('username', 'root')},
-            {'key': 'PASSWORD', 'value': self.pipeline.source.config.get('password', 'root')},
-            {'key': 'DATABASE', 'value': self.pipeline.source.config.get('db')},
-            {'key': 'HOST', 'value': self.pipeline.source.config.get('host')},
-            {'key': 'REQUEST_TIMEOUT', 'value': 10},
+            {
+                'key': 'USERNAME',
+                'value': self.pipeline.source.config.get('username', 'root')
+            },
+            {
+                'key': 'PASSWORD',
+                'value': self.pipeline.source.config.get('password', 'root')
+            },
+            {
+                'key': 'DATABASE',
+                'value': self.pipeline.source.config.get('db')
+            },
+            {
+                'key': 'HOST',
+                'value': self.pipeline.source.config.get('host')
+            },
+            {
+                'key': 'REQUEST_TIMEOUT',
+                'value': 10
+            },
         ]

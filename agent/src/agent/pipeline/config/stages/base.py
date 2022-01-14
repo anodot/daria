@@ -2,7 +2,6 @@ import os
 import urllib.parse
 import pytz
 
-from functools import reduce
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from agent.modules.constants import ROOT_DIR
@@ -22,7 +21,7 @@ class Stage(ABC):
         return midnight - timedelta(days=int(self.pipeline.days_to_backfill))
 
 
-class JSScript(Stage, ABC):
+class JSProcessor(Stage, ABC):
     JS_SCRIPT_NAME = ''
     JS_SCRIPTS_PATH = os.path.join('pipeline', 'config', 'js_scripts')
 
@@ -31,10 +30,10 @@ class JSScript(Stage, ABC):
             return f.read()
 
 
-class JythonScript(Stage, ABC):
+class _JythonScript(Stage, ABC):
     PARAMS_KEY = ''
     JYTHON_SCRIPT = ''
-    JYTHON_SCRIPTS_PATH = os.path.join('pipeline', 'config', 'jython_scripts')
+    JYTHON_SCRIPTS_DIR = os.path.join('pipeline', 'config', 'jython_scripts')
 
     @abstractmethod
     def _get_script_params(self) -> list[dict]:
@@ -44,18 +43,15 @@ class JythonScript(Stage, ABC):
         return {self.PARAMS_KEY: self._get_script_params(), 'script': self._get_script()}
 
     def _get_script(self) -> str:
-        with open(self._get_jython_file_path()) as f:
+        with open(os.path.join(ROOT_DIR, self.JYTHON_SCRIPTS_DIR, self.JYTHON_SCRIPT)) as f:
             return f.read().replace("'%TRANSFORM_SCRIPT_PLACEHOLDER%'", self.pipeline.transform_script_config or '')
 
-    def _get_jython_file_path(self):
-        return os.path.join(ROOT_DIR, self.JYTHON_SCRIPTS_PATH, self.JYTHON_SCRIPT)
 
-
-class JythonSource(JythonScript, ABC):
+class JythonSource(_JythonScript, ABC):
     PARAMS_KEY = 'scriptConf.params'
 
 
-class JythonProcessor(JythonScript, ABC):
+class JythonProcessor(_JythonScript, ABC):
     PARAMS_KEY = 'userParams'
 
 

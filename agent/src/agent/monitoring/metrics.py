@@ -1,69 +1,51 @@
-from prometheus_client import Info, Gauge, Enum, Counter, CollectorRegistry
+from prometheus_client import Info, Gauge, Counter, CollectorRegistry
 from agent import version
-from agent.pipeline import Pipeline
 
 registry = CollectorRegistry()
 
 VERSION = Info('version', 'Agent version', registry=registry)
 VERSION.info({'version': version.__version__})
 
-STREAMSETS_CPU = Gauge(
-    'streamsets_cpu',
-    'Streamsets CPU utilization',
-    ['streamsets_url'],
-    multiprocess_mode='max'
-)
+STREAMSETS_CPU = Gauge('streamsets_cpu', 'Streamsets CPU utilization', ['streamsets_url'], multiprocess_mode='max')
 STREAMSETS_HEAP_MEMORY = Gauge(
     'streamsets_heap_memory_used_bytes',
-    'Streamsets Heap memory utilization',
-    ['streamsets_url'],
+    'Streamsets Heap memory utilization', ['streamsets_url'],
     multiprocess_mode='max'
 )
 STREAMSETS_NON_HEAP_MEMORY = Gauge(
     'streamsets_non_heap_memory_used_bytes',
-    'Streamsets Non-heap memory utilization',
-    ['streamsets_url'],
+    'Streamsets Non-heap memory utilization', ['streamsets_url'],
     multiprocess_mode='max'
 )
 
 PIPELINE_INCOMING_RECORDS = Counter(
-    'pipeline_incoming_records',
-    'Pipeline incoming records',
-    ['streamsets_url', 'pipeline_id', 'pipeline_type']
+    'pipeline_incoming_records', 'Pipeline incoming records', ['streamsets_url', 'pipeline_id', 'pipeline_type']
 )
 PIPELINE_OUTGOING_RECORDS = Counter(
-    'pipeline_outgoing_records',
-    'Pipeline outgoing records',
-    ['streamsets_url', 'pipeline_id', 'pipeline_type']
+    'pipeline_outgoing_records', 'Pipeline outgoing records', ['streamsets_url', 'pipeline_id', 'pipeline_type']
 )
 PIPELINE_ERROR_RECORDS = Counter(
-    'pipeline_error_records',
-    'Pipeline error records',
-    ['streamsets_url', 'pipeline_id', 'pipeline_type']
+    'pipeline_error_records', 'Pipeline error records', ['streamsets_url', 'pipeline_id', 'pipeline_type']
 )
 PIPELINE_DESTINATION_LATENCY = Gauge(
     'pipeline_destination_latency_seconds',
-    'Pipeline destination latency',
-    ['streamsets_url', 'pipeline_id', 'pipeline_type'],
+    'Pipeline destination latency', ['streamsets_url', 'pipeline_id', 'pipeline_type'],
     multiprocess_mode='max'
 )
 PIPELINE_SOURCE_LATENCY = Gauge(
     'pipeline_source_latency_seconds',
-    'Pipeline source latency',
-    ['streamsets_url', 'pipeline_id', 'pipeline_type'],
+    'Pipeline source latency', ['streamsets_url', 'pipeline_id', 'pipeline_type'],
     multiprocess_mode='max'
 )
 PIPELINE_STAGE_BATCH_PROCESSING_TIME_AVG = Gauge(
     'pipeline_stage_patch_processing_time_avg_seconds',
-    'Pipeline stage batch processing time avg',
-    ['streamsets_url', 'pipeline_id', 'pipeline_type', 'stage'],
+    'Pipeline stage batch processing time avg', ['streamsets_url', 'pipeline_id', 'pipeline_type', 'stage'],
     multiprocess_mode='max'
 )
 
 PIPELINE_STAGE_BATCH_PROCESSING_TIME_50th = Gauge(
     'pipeline_stage_patch_processing_time_50th_seconds',
-    'Pipeline stage batch processing time 50th percentile',
-    ['streamsets_url', 'pipeline_id', 'pipeline_type', 'stage'],
+    'Pipeline stage batch processing time 50th percentile', ['streamsets_url', 'pipeline_id', 'pipeline_type', 'stage'],
     multiprocess_mode='max'
 )
 
@@ -80,40 +62,21 @@ PIPELINE_STATUS = Counter(
     ['streamsets_url', 'pipeline_id', 'pipeline_type', 'status'],
 )
 
-KAFKA_CONSUMER_LAG = Gauge(
-    'kafka_consumer_lag',
-    'Kafka consumer lag',
-    ['topic'],
-    multiprocess_mode='max'
-)
+KAFKA_CONSUMER_LAG = Gauge('kafka_consumer_lag', 'Kafka consumer lag', ['topic'], multiprocess_mode='max')
 
-SOURCE_HTTP_ERRORS = Counter(
-    'source_http_errors',
-    'Source HTTP errors',
-    ['streamsets_url', 'pipeline_id', 'pipeline_type', 'code']
-)
-SCHEDULED_SCRIPTS_ERRORS = Counter(
-    'scheduled_scripts_errors',
-    'Scheduled scripts errors',
-    ['script_name']
-)
+SOURCE_HTTP_ERRORS = Counter('source_http_errors', 'Source HTTP errors', ['pipeline_id', 'pipeline_type', 'code'])
+SCHEDULED_SCRIPTS_ERRORS = Counter('scheduled_scripts_errors', 'Scheduled scripts errors', ['script_name'])
 SCHEDULED_SCRIPT_EXECUTION_TIME = Gauge(
-    'scheduled_script_execution_time',
-    'Time to execute a scheduled script',
-    ['script_name'],
-    multiprocess_mode='max'
+    'scheduled_script_execution_time', 'Time to execute a scheduled script', ['script_name'], multiprocess_mode='max'
 )
 
 DIRECTORY_FILE_PROCESSED = Counter(
-    'directory_file_processed',
-    'Finished processing one file',
-    ['streamsets_url', 'pipeline_id']
+    'directory_file_processed', 'Finished processing one file', ['streamsets_url', 'pipeline_id']
 )
 
 WATERMARK_DELTA = Gauge(
     'watermark_delta',
-    'Difference between time.now() and watermark timestamp',
-    ['streamsets_url', 'pipeline_id', 'pipeline_type'],
+    'Difference between time.now() and watermark timestamp', ['streamsets_url', 'pipeline_id', 'pipeline_type'],
     multiprocess_mode='max'
 )
 

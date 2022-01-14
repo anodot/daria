@@ -1,7 +1,7 @@
-from .base import JSScript
+from .base import JSProcessor
 
 
-class JSPivotArray(JSScript):
+class JSPivotArray(JSProcessor):
     JS_SCRIPT_NAME = 'pivot.js'
 
     def get_js_vars(self):

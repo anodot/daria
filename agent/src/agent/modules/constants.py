@@ -47,5 +47,3 @@ LOCAL_DESTINATION_OUTPUT_DIR = os.environ.get('LOCAL_DESTINATION_OUTPUT_DIR', '/
 
 TEST_RUN_CONFIGS_DIR = os.environ.get('TEST_RUN_CONFIGS_DIR', '/usr/src/app/tests/input_files/test_run')
 TEST_RUN_PIPELINE_NAME = os.environ.get('TEST_RUN_PIPELINE_NAME', 'run_test_pipeline')
-
-LOOKUP_CACHE_TTL_SECONDS = int(os.environ.get('LOOKUP_CACHE_TTL_SECONDS', 86400))

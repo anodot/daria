@@ -1,5 +1,9 @@
 from agent import source
+from agent.modules import field
 from agent.pipeline.json_builder import Builder
+
+HOST_NAME = 'Host Name'
+LOCATION = 'Location'
 
 
 class ObserviumBuilder(Builder):
@@ -51,13 +55,22 @@ class ObserviumBuilder(Builder):
             "ifInDiscards_rate": "counter",
             "ifOutDiscards": "counter",
             "ifOutDiscards_rate": "counter",
-            "ifDiscards_rate": "counter"
+            "ifDiscards_rate": "counter",
         },
         source.ObserviumSource.MEMPOOLS: {
-            "mempool_perc": "gauge", "mempool_used": "counter", "mempool_free": "counter", "mempool_total": "counter"
+            "mempool_perc": "gauge",
+            "mempool_used": "counter",
+            "mempool_free": "counter",
+            "mempool_total": "counter",
         },
-        source.ObserviumSource.PROCESSORS: {"processor_usage": "gauge"},
-        source.ObserviumSource.STORAGE: {"storage_free": "counter", "storage_used": "counter", "storage_perc": "gauge"},
+        source.ObserviumSource.PROCESSORS: {
+            "processor_usage": "gauge",
+        },
+        source.ObserviumSource.STORAGE: {
+            "storage_free": "counter",
+            "storage_used": "counter",
+            "storage_perc": "gauge",
+        },
     }
 
     DEFAULT_DIMENSIONS = {
@@ -67,11 +80,49 @@ class ObserviumBuilder(Builder):
         source.ObserviumSource.STORAGE: ["storage_description", "storage_type"],
     }
 
+    DEFAULT_DIMENSION_CONFIGURATIONS = {
+        source.ObserviumSource.PORTS: {
+            'Interface Name': {
+                'value_path': 'ifName'
+            },
+            'Interface Alias': {
+                'value_path': 'ifAlias'
+            },
+            'Interface Description': {
+                'value_path': 'ifDescr'
+            },
+            'Bandwidth': {
+                'value_path': 'ifSpeed'
+            },
+        },
+        source.ObserviumSource.MEMPOOLS: {
+            'Memory_Pool_ID': {
+                'value_path': 'mempool_id'
+            },
+            'Memory_Pool_Description': {
+                'value_path': 'mempool_descr'
+            },
+            'Memory_Pool_Vendor': {
+                'value_path': 'mempool_mib'
+            },
+        },
+        source.ObserviumSource.PROCESSORS: {
+            'processor_name': {
+                'value_path': 'processor_descr'
+            },
+        },
+        source.ObserviumSource.STORAGE: {
+            'storage_description': {
+                'value_path': 'storage_descr'
+            },
+        },
+    }
+
     def _load_config(self):
         super()._load_config()
         self.config['timestamp'] = {'type': 'unix'}
         self.config['uses_schema'] = True
-        self.config['dimension_value_paths'] = self._default_dimension_paths()
+        self.config['dimension_configurations'] = self._dimension_configurations()
         self.config['dimensions'] = self._dimensions()
         self.config['values'] = self._measurements()
         self.config['request_params'] = self._request_params()
@@ -83,11 +134,11 @@ class ObserviumBuilder(Builder):
     def _dimensions(self) -> list:
         dims = self.config.get('dimensions') or self.DEFAULT_DIMENSIONS[self.endpoint()]
         # all observium pipelines by default have these dimensions
-        # they are added in the observium jython script from the `devices` endpoint
-        if 'Host Name' not in dims:
-            dims.append('Host Name')
-        if 'Location' not in dims:
-            dims.append('Location')
+        # they are added from the `devices` endpoint
+        if HOST_NAME not in dims:
+            dims.append(HOST_NAME)
+        if LOCATION not in dims:
+            dims.append(LOCATION)
         return dims
 
     def endpoint(self) -> str:
@@ -99,35 +150,14 @@ class ObserviumBuilder(Builder):
             return {k: v for k, v in params.items() if v and (k in self.ALLOWED_PARAMS[self.endpoint()])}
         return {}
 
-    def _default_dimension_paths(self):
+    def _dimension_configurations(self):
         if self.config.get('dimensions'):
-            dim_paths = self.config.get('dimension_value_paths', {})
-        # if there are no dimensions we'll use the default ones so need to use default paths as well
-        elif self.endpoint() == source.ObserviumSource.PORTS:
-            dim_paths = {
-                'Interface Name': 'ifName',
-                'Interface Alias': 'ifAlias',
-                'Interface Description': 'ifDescr',
-                'Bandwidth': 'ifSpeed',
-            }
-        elif self.endpoint() == source.ObserviumSource.MEMPOOLS:
-            dim_paths = {
-                'Memory_Pool_ID': 'mempool_id',
-                'Memory_Pool_Description': 'mempool_descr',
-                'Memory_Pool_Vendor': 'mempool_mib',
-            }
-        elif self.endpoint() == source.ObserviumSource.PROCESSORS:
-            dim_paths = {
-                'processor_name': 'processor_descr',
-            }
-        elif self.endpoint() == source.ObserviumSource.STORAGE:
-            dim_paths = {
-                'storage_description': 'storage_descr',
-            }
+            dim_configurations = self.config.get('dimension_configurations', {})
         else:
-            raise Exception('Wrong Observium endpoint provided')
-        if 'sysName' not in dim_paths:
-            dim_paths['Host Name'] = 'sysName'
-        if 'Location' not in dim_paths:
-            dim_paths['Location'] = 'location'
-        return dim_paths
+            # if there are no dimensions we'll use the default ones so need to use default configs as well
+            dim_configurations = self.DEFAULT_DIMENSION_CONFIGURATIONS[self.endpoint()]
+        if HOST_NAME not in dim_configurations:
+            dim_configurations[HOST_NAME] = {field.Variable.VALUE_PATH: 'sysName'}
+        if LOCATION not in dim_configurations:
+            dim_configurations[LOCATION] = {field.Variable.VALUE_PATH: 'location'}
+        return dim_configurations

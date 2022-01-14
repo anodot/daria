@@ -1,7 +1,7 @@
 import os
-import urllib.parse
 
 from urllib.parse import urljoin
+from agent import monitoring
 from agent.pipeline.config.stages.influx import InfluxScript
 from agent.pipeline.config.stages.base import JythonSource
 
@@ -30,9 +30,7 @@ class Influx2Source(InfluxScript):
             },
             {
                 'key': 'MONITORING_URL',
-                'value': urllib.parse.urljoin(
-                    self.pipeline.streamsets.agent_external_url, f'/monitoring/source_http_error/{self.pipeline.name}/'
-                )
+                'value': monitoring.get_monitoring_source_error_url(self.pipeline)
             },
         ])
         return params
@@ -62,13 +60,22 @@ class Influx2Source(InfluxScript):
 
 class TestInflux2Source(JythonSource):
     JYTHON_SCRIPT = 'influx2.py'
-    JYTHON_SCRIPTS_PATH = os.path.join(JythonSource.JYTHON_SCRIPTS_PATH, 'test_pipelines')
+    JYTHON_SCRIPTS_DIR = os.path.join(JythonSource.JYTHON_SCRIPTS_DIR, 'test_pipelines')
 
     def _get_script_params(self) -> list[dict]:
         return [
-            {'key': 'URL', 'value': self._get_url()},
-            {'key': 'HEADERS', 'value': self._get_headers()},
-            {'key': 'REQUEST_TIMEOUT', 'value': 10},
+            {
+                'key': 'URL',
+                'value': self._get_url()
+            },
+            {
+                'key': 'HEADERS',
+                'value': self._get_headers()
+            },
+            {
+                'key': 'REQUEST_TIMEOUT',
+                'value': 10
+            },
         ]
 
     def _get_url(self) -> str:
