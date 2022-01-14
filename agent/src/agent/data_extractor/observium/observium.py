@@ -26,18 +26,18 @@ RESPONSE_DATA_KEYS = {
 }
 
 
-@lookup.provide
 def extract_metrics(pipeline_: Pipeline) -> list:
-    base_url = urllib.parse.urljoin(pipeline_.source.config[source.ObserviumSource.URL], '/api/v0/')
-    endpoint = pipeline_.source.config['endpoint']
-    data = _get(
-        pipeline_,
-        urllib.parse.urljoin(base_url, endpoint),
-        pipeline_.config.get('request_params', {}),
-        RESPONSE_DATA_KEYS[endpoint],
-    )
-    data = _add_devices_data(data, pipeline_)
-    return _create_metrics(data, pipeline_)
+    with lookup.Provide(pipeline_.lookup):
+        base_url = urllib.parse.urljoin(pipeline_.source.config[source.ObserviumSource.URL], '/api/v0/')
+        endpoint = pipeline_.source.config['endpoint']
+        data = _get(
+            pipeline_,
+            urllib.parse.urljoin(base_url, endpoint),
+            pipeline_.config.get('request_params', {}),
+            RESPONSE_DATA_KEYS[endpoint],
+        )
+        data = _add_devices_data(data, pipeline_)
+        return _create_metrics(data, pipeline_)
 
 
 def _get(pipeline_: Pipeline, url: str, params: dict, response_key: str):

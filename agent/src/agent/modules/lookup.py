@@ -1,28 +1,21 @@
-from functools import wraps
 from agent.modules import data_source
 from typing import Callable, Optional, Any
+
+
+class Provide:
+    def __init__(self, lookup_configs: dict):
+        self.lookup_configs = lookup_configs
+
+    def __enter__(self):
+        _init_sources(self.lookup_configs)
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        _clean()
+
 
 _sources = {}
 _lookup_cache = {}
 _results_cache = {}
-
-
-def provide(func):
-    """
-    Initializes lookup sources and cache and cleans them after the function execution
-    Wrapped function must have a pipeline argument of the type Pipeline in the first position
-    """
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        _clean()
-        try:
-            _init_sources(args[0].config.get('lookup', {}))
-            res = func(*args, **kwargs)
-        finally:
-            _clean()
-        return res
-
-    return wrapper
 
 
 def lookup(

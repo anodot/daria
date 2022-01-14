@@ -21,11 +21,11 @@ TOPOLOGY_ENTITIES = [REGION, SITE, NODE, CARD, INTERFACE, CELL, LINK, SERVICE, L
 # todo add jsonschema definition for topology, now it's almost empty
 
 
-@lookup.provide
 def extract_metrics(pipeline_: Pipeline) -> dict:
-    entities = _create_entities(pipeline_.source)
-    topology_records = _create_topology_records(entities)
-    return _build_topology_data(topology_records)
+    with lookup.Provide(pipeline_.lookup):
+        entities = _create_entities(pipeline_.source)
+        topology_records = _create_topology_records(entities)
+        return _build_topology_data(topology_records)
 
 
 class Entity(ABC):
