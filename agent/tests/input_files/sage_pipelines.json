@@ -17,7 +17,7 @@
     "values": {"Clicks":  "gauge"},
     "dimensions": ["ver", "Country"],
     "query_file": "/usr/src/app/tests/input_files/sage_query.txt",
-    "interval": 1400,
-    "days_to_backfill": 1495
+    "interval": 1440,
+    "days_to_backfill": 1499
   }
 ]
