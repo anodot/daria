@@ -205,7 +205,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
 
     @property
     def value_paths(self) -> list:
-        return [self._get_property_path(value) for value in list(self.values.keys())]
+        return [self._get_property_path(value) for value in self.values.keys()]
 
     @property
     def target_types(self) -> list:
@@ -347,9 +347,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return self.name
 
     def get_offset(self) -> Optional[str]:
-        if self.offset:
-            return self.offset.offset
-        return None
+        return self.offset.offset if self.offset else None
 
     def get_streamsets(self) -> Optional[sdc_client.IStreamSets]:
         return self.streamsets

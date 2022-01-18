@@ -94,13 +94,18 @@ def _get_devices(pipeline_: Pipeline):
 
 def _create_metrics(data: dict, pipeline_: Pipeline) -> list:
     metrics = []
+    # these values must be outside the for loop for optimization purposes
+    fields = field.build_fields(pipeline_.dimension_configurations)
+    value_paths = pipeline_.value_paths
+    value_paths = dict(zip(value_paths, value_paths))
+    timestamp_key = POLL_TIME_KEYS[pipeline_.source.config['endpoint']]
+    schema_id = pipeline_.get_schema_id()
     for obj in data.values():
         metric = {
-            "timestamp": obj[POLL_TIME_KEYS[pipeline_.source.config['endpoint']]],
-            "dimensions": field.extract_fields(field.build_fields(pipeline_.dimension_configurations), obj),
-            "measurements": {str(k): float(v)
-                             for k, v in obj.items() if k in list(pipeline_.value_paths)},
-            "schemaId": pipeline_.get_schema_id(),
+            "timestamp": obj[timestamp_key],
+            "dimensions": field.extract_fields(fields, obj),
+            "measurements": {str(k): float(v) for k, v in obj.items() if str(k) in value_paths},
+            "schemaId": schema_id,
         }
         metrics.append(metric)
     return metrics
