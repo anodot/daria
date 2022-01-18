@@ -7,6 +7,17 @@
     "dimensions": ["ver", "Country"],
     "query_file": "/usr/src/app/tests/input_files/sage_query.txt",
     "interval": 60,
-    "days_to_backfill": 933
+    "days_to_backfill": 933,
+    "uses_schema": false
+  },
+  {
+    "source": "test_sage_1",
+    "pipeline_id": "test_sage_schema_file",
+    "measurement_names": {"Clicks":  "clicks"},
+    "values": {"Clicks":  "gauge"},
+    "dimensions": ["ver", "Country"],
+    "query_file": "/usr/src/app/tests/input_files/sage_query.txt",
+    "interval": 1440,
+    "days_to_backfill": 1499
   }
 ]

@@ -76,6 +76,7 @@ class SchemaBaseConfigLoader(BaseConfigLoader):
             source.TYPE_ORACLE: 'jdbc_schema.json',
             source.TYPE_OBSERVIUM: 'observium_schema.json',
             source.TYPE_POSTGRES: 'jdbc_schema.json',
+            source.TYPE_SAGE: 'sage_schema.json',
             source.TYPE_SNMP: 'snmp_schema.json',
         }[pipeline.source.type]
 

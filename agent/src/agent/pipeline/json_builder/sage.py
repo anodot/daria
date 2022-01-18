@@ -9,4 +9,6 @@ class SageBuilder(Builder):
         if 'query_file' in self.config:
             with open(self.config['query_file']) as f:
                 self.config['query'] = f.read()
+        if 'timestamp' not in self.config:
+            self.config['timestamp'] = {'type': 'utc_string', 'name': '@timestamp'}
         return self.config
