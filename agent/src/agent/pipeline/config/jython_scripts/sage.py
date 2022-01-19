@@ -115,13 +115,20 @@ def main():
                     break
 
                 data = res.json()
-                for hit in data["hits"]:
-                    if '@timestamp' not in hit:
-                        hit['@timestamp'] = offset
-                    hit['@timestamp'] = re.sub(r'(\.[0-9]+)', '', hit['@timestamp'])
-                    hit['last_timestamp'] = watermark_ts
+                if data["hits"]:
+                    # records with data
+                    for hit in data["hits"]:
+                        if '@timestamp' not in hit:
+                            hit['@timestamp'] = offset
+                        hit['@timestamp'] = re.sub(r'(\.[0-9]+)', '', hit['@timestamp'])
+                        hit['last_timestamp'] = watermark_ts
+                        record = sdc.createRecord('record created ' + str(datetime.now()))
+                        record.value = hit
+                        cur_batch.add(record)
+                else:
+                    # records with last_timestamp only
                     record = sdc.createRecord('record created ' + str(datetime.now()))
-                    record.value = hit
+                    record.value = {'last_timestamp': watermark_ts}
                     cur_batch.add(record)
                 break
 
