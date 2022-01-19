@@ -341,6 +341,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
     def lookup(self) -> dict:
         return self.config.get('lookup', {})
 
+    @property
     def dvp_config(self) -> dict:
         # return self.config.get('dvpConfig', {})
         return self._get_dvp_config()
@@ -402,7 +403,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
 
     def _get_dvp_config(self) -> dict:
         dvp = PipelineDvpConfig(self.config.get('dvpConfig', {}))
-        if dvp:
+        if not dvp.empty():
             dvp.validate()
         return dvp.dvp_config
 
@@ -512,6 +513,9 @@ class PipelineDvpConfig:
     @property
     def dvp_config(self):
         return self.data
+
+    def empty(self):
+        return self.data == {}
 
     def validate(self):
         # TODO read from file?
