@@ -58,6 +58,7 @@ def main():
         try:
             end_time = date_to_str(date_from_str(offset) + interval)
             latest_date = date_to_str(datetime.utcnow().replace(second=0, microsecond=0) - delay)
+            watermark_ts = (date_from_str(end_time) - datetime(1970, 1, 1)).total_seconds()
             while (date_from_str(end_time) - date_from_str(latest_date)).total_seconds() > time.time() - start_time:
                 time.sleep(2)
                 if sdc.isStopped():
@@ -118,6 +119,7 @@ def main():
                     if '@timestamp' not in hit:
                         hit['@timestamp'] = offset
                     hit['@timestamp'] = re.sub(r'(\.[0-9]+)', '', hit['@timestamp'])
+                    hit['last_timestamp'] = watermark_ts
                     record = sdc.createRecord('record created ' + str(datetime.now()))
                     record.value = hit
                     cur_batch.add(record)
