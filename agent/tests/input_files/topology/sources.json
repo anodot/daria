@@ -19,11 +19,11 @@
           "fields": {
             "dimension_id": {
               "type": "variable",
-              "source_field": "Full Name"
+              "value_path": "Full Name"
             },
             "name": {
               "type": "variable",
-              "source_field": "Full Name"
+              "value_path": "Full Name"
             },
             "type": {
               "type": "constant",
@@ -44,11 +44,11 @@
           "fields": {
             "dimension_id": {
               "type": "variable",
-              "source_field": "attributes.name"
+              "value_path": "attributes.name"
             },
             "parent_region_dimension_id": {
               "type": "variable",
-              "source_field": "attributes.name",
+              "value_path": "attributes.name",
               "transformations": [
                 {
                   "type": "function",
@@ -64,7 +64,7 @@
             },
             "name": {
               "type": "variable",
-              "source_field": "attributes.name"
+              "value_path": "attributes.name"
             },
             "type": {
               "type": "constant",
@@ -76,15 +76,15 @@
             },
             "lat": {
               "type": "variable",
-              "source_field": "attributes.p_lat"
+              "value_path": "attributes.p_lat"
             },
             "lon": {
               "type": "variable",
-              "source_field": "attributes.p_lon"
+              "value_path": "attributes.p_lon"
             },
             "address": {
               "type": "variable",
-              "source_field": "attributes.street",
+              "value_path": "attributes.street",
               "transformations": [
                 {
                   "type": "function",

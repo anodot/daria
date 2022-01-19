@@ -3,9 +3,9 @@
     "schemaVersion" : 6,
     "version" : 19,
     "pipelineId" : "sagehttp3f008d4f-3724-4c23-adc8-525cb97c2332",
-    "title" : "observium_storage",
+    "title" : "observium_ports",
     "description" : "",
-    "uuid" : "2f244ff7-1a5e-435d-ba02-a0518b1ab65f",
+    "uuid" : "042ec67b-415c-4cab-b8b4-57019839b40a",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -43,7 +43,7 @@
         "value" : "http://anodot-agent"
       }, {
         "key" : "SCHEMA_ID",
-        "value" : "observium_storage-1234"
+        "value" : "observium_ports-1234"
       } ]
     }, {
       "name" : "errorRecordPolicy",
@@ -419,7 +419,7 @@
       "stageVersion" : "1",
       "configuration" : [ {
         "name" : "script",
-        "value" : "global sdc\n\ntry:\n    sdc.importLock()\n    import sys\n    import os\n    import time\n    import traceback\n\n    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))\n    import requests\n\n    from datetime import datetime, timedelta\n    from requests.auth import HTTPBasicAuth\nfinally:\n    sdc.importUnlock()\n\n# single threaded - no entityName because we need only one offset\nentityName = ''\nLAST_TIMESTAMP = '%last_timestamp%'\nN_REQUESTS_TRIES = 3\n\n\nPOLL_TIME_KEYS = {\n    'ports': 'poll_time',\n    'mempools': 'mempool_polled',\n    'processors': 'processor_polled',\n    'storage': 'storage_polled'\n}\n\nRESPONSE_DATA_KEYS = {\n    'ports': 'ports',\n    'mempools': 'entries',\n    'processors': 'entries',\n    'storage': 'storage'\n}\n\n\ndef get_now_with_delay():\n    return int(time.time()) - int(sdc.userParams['DELAY_IN_SECONDS'])\n\n\ndef to_timestamp(date):\n    epoch = datetime(1970, 1, 1)\n    return int((date - epoch).total_seconds())\n\n\ndef get_interval():\n    return int(sdc.userParams['INTERVAL_IN_SECONDS'])\n\n\ndef _get(url, params, response_key):\n    for i in range(1, N_REQUESTS_TRIES + 1):\n        try:\n            res = requests.get(\n                url,\n                auth=HTTPBasicAuth(sdc.userParams['API_USER'], sdc.userParams['API_PASSWORD']),\n                params=params,\n                verify=bool(sdc.userParams['VERIFY_SSL']),\n                timeout=sdc.userParams['QUERY_TIMEOUT'],\n            )\n            res.raise_for_status()\n            return res.json()[response_key]\n        except requests.HTTPError as e:\n            requests.post(sdc.userParams['MONITORING_URL'] + str(res.status_code))\n            sdc.log.error(str(e))\n            if i == N_REQUESTS_TRIES:\n                raise\n            time.sleep(2 ** i)\n\n\ndef get_devices():\n    devices = _get(\n        sdc.userParams['DEVICES_URL'],\n        {},\n        'devices'\n    )\n    return {obj['device_id']: obj for obj in devices.values()}\n\n\ndef create_metrics(data):\n    metrics = []\n    devices = get_devices()\n    for obj in data.values():\n        metric = {\n            \"timestamp\": obj[POLL_TIME_KEYS[sdc.userParams['ENDPOINT']]],\n            \"dimensions\": {k: v for k, v in obj.items() if k in sdc.userParams['DIMENSIONS']},\n            \"measurements\": {k: float(v) for k, v in obj.items() if k in sdc.userParams['MEASUREMENTS']},\n            \"schemaId\": sdc.userParams['SCHEMA_ID'],\n        }\n        # todo move to a separate function, merge with data first\n        metric['dimensions']['sysName'] = devices[obj['device_id']]['sysName']\n        metric['dimensions']['location'] = devices[obj['device_id']]['location']\n        metrics.append(metric)\n    return metrics\n\n\ndef main():\n    if sdc.lastOffsets.containsKey(entityName):\n        offset = int(float(sdc.lastOffsets.get(entityName)))\n    else:\n        offset = to_timestamp(datetime.now().replace(second=0, microsecond=0))\n\n    sdc.log.info('Start offset: ' + str(offset))\n\n    cur_batch = sdc.createBatch()\n\n    while True:\n        try:\n            while offset > get_now_with_delay():\n                time.sleep(2)\n                if sdc.isStopped():\n                    return cur_batch, offset\n\n            data = _get(\n                sdc.userParams['URL'],\n                sdc.userParams['REQUEST_PARAMS'],\n                RESPONSE_DATA_KEYS[sdc.userParams['ENDPOINT']]\n            )\n            metrics = create_metrics(data)\n\n            for metric in metrics:\n                record = sdc.createRecord('record created ' + str(datetime.now()))\n                record.value = metric\n                cur_batch.add(record)\n\n                if cur_batch.size() == sdc.batchSize:\n                    cur_batch.process(entityName, str(offset + get_interval()))\n                    cur_batch = sdc.createBatch()\n\n            cur_batch.process(entityName, str(offset + get_interval()))\n            cur_batch = sdc.createBatch()\n            offset += get_interval()\n        except Exception:\n            sdc.log.error(traceback.format_exc())\n            raise\n\n\nbatch, offset = main()\nif batch.size() + batch.errorCount() + batch.eventCount() > 0:\n    batch.process(entityName, str(offset + get_interval()))\n"
+        "value" : "global sdc\n\ntry:\n    sdc.importLock()\n    import sys\n    import os\n    import time\n    import traceback\n    import re\n\n    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))\n    import requests\n\n    from datetime import datetime, timedelta\n    from requests.auth import HTTPBasicAuth\nfinally:\n    sdc.importUnlock()\n\n# single threaded - no entityName because we need only one offset\nentityName = ''\n\n\ndef get_now():\n    return int(time.time())\n\n\ndef get_next_offset():\n    dt = datetime.utcnow().replace(second=0, microsecond=0)\n    if sdc.userParams['BUCKET_SIZE'] == '5m':\n        dt = dt + timedelta(minutes=5 - dt.minute % 5)\n    else:\n        dt = dt + timedelta(seconds=get_interval())\n    return to_timestamp(dt)\n\n\ndef get_offset_with_delay(offset):\n    return offset + int(sdc.userParams['DELAY_IN_MINUTES']) * 60\n\n\ndef to_timestamp(date):\n    epoch = datetime(1970, 1, 1)\n    return int((date - epoch).total_seconds())\n\n\ndef get_interval():\n    return int(sdc.userParams['INTERVAL_IN_SECONDS'])\n\n\ndef main():\n    if sdc.lastOffsets.containsKey(entityName):\n        offset = int(float(sdc.lastOffsets.get(entityName)))\n    else:\n        offset = to_timestamp(datetime.utcnow().replace(minute=0, second=0, microsecond=0))\n\n    sdc.log.info('Start offset: ' + str(offset))\n\n    batch = sdc.createBatch()\n\n    while True:\n        try:\n            while get_offset_with_delay(offset) > get_now():\n                time.sleep(2)\n                if sdc.isStopped():\n                    return batch, offset\n            offset = get_next_offset()\n\n            res = requests.get(sdc.userParams['RRD_SOURCE_URL'])\n            res.raise_for_status()\n            for metric in res.json():\n                record = sdc.createRecord('record created ' + str(datetime.now()))\n                record.value = metric\n                batch.add(record)\n\n                if batch.size() == sdc.batchSize:\n                    batch.process(entityName, str(offset))\n                    batch = sdc.createBatch()\n                    if sdc.isStopped():\n                        break\n\n            batch.process(entityName, str(offset))\n            batch = sdc.createBatch()\n        except Exception:\n            sdc.log.error(traceback.format_exc())\n            raise\n\n\nbatch_, offset_ = main()\nif batch_.size() + batch_.errorCount() + batch_.eventCount() > 0:\n    batch_.process(entityName, str(offset_ + get_interval()))"
       }, {
         "name" : "scriptConf.batchSize",
         "value" : 1
@@ -433,13 +433,13 @@
         "name" : "scriptConf.params",
         "value" : [ {
           "key" : "ENDPOINT",
-          "value" : "storage"
+          "value" : "ports"
         }, {
           "key" : "DEVICES_URL",
           "value" : "http://dummy_destination:80/api/v0/devices"
         }, {
           "key" : "URL",
-          "value" : "http://dummy_destination:80/api/v0/storage"
+          "value" : "http://dummy_destination:80/api/v0/ports"
         }, {
           "key" : "API_USER",
           "value" : "admin"
@@ -451,15 +451,24 @@
           "value" : { }
         }, {
           "key" : "MEASUREMENTS",
-          "value" : [ "storage_perc" ]
+          "value" : [ "ifInUcastPkts", "ifInUcastPkts_rate", "ifOutUcastPkts", "ifOutUcastPkts_rate", "ifInErrors", "ifInErrors_rate", "ifOutErrors", "ifOutErrors_rate", "ifOctets_rate", "ifUcastPkts_rate", "ifErrors_rate", "ifInOctets", "ifInOctets_rate", "ifOutOctets", "ifOutOctets_rate", "ifInOctets_perc", "ifOutOctets_perc", "ifInNUcastPkts", "ifInNUcastPkts_rate", "ifOutNUcastPkts", "ifOutNUcastPkts_rate", "ifInBroadcastPkts", "ifInBroadcastPkts_rate", "ifOutBroadcastPkts", "ifOutBroadcastPkts_rate", "ifInMulticastPkts", "ifInMulticastPkts_rate", "ifOutMulticastPkts", "ifOutMulticastPkts_rate", "port_mcbc", "ifInDiscards", "ifInDiscards_rate", "ifOutDiscards", "ifOutDiscards_rate", "ifDiscards_rate" ]
         }, {
           "key" : "DIMENSIONS",
-          "value" : [ "storage_size", "sysName", "location" ]
+          "value" : {
+            "INTERFACE_SPEED" : "INTERFACE_SPEED",
+            "location" : "Location",
+            "DEST_STATE" : "DEST_STATE",
+            "PARENT_ELEMENT_LOCATION" : "PARENT_ELEMENT_LOCATION",
+            "sysName" : "Host_Name"
+          }
         }, {
           "key" : "INTERVAL_IN_SECONDS",
-          "value" : "6000"
+          "value" : "300"
         }, {
-          "key" : "DELAY_IN_SECONDS",
+          "key" : "BUCKET_SIZE",
+          "value" : "5m"
+        }, {
+          "key" : "DELAY_IN_MINUTES",
           "value" : "0"
         }, {
           "key" : "QUERY_TIMEOUT",
@@ -469,10 +478,10 @@
           "value" : "1"
         }, {
           "key" : "SCHEMA_ID",
-          "value" : "observium_storage-1234"
+          "value" : "observium_ports-1234"
         }, {
           "key" : "MONITORING_URL",
-          "value" : "http://anodot-agent/monitoring/source_http_error/observium_storage/"
+          "value" : "http://anodot-agent/monitoring/source_http_error/observium_ports/"
         } ]
       }, {
         "name" : "stageOnRecordError",
@@ -524,7 +533,7 @@
           "expression" : "${emptyList()}"
         }, {
           "fieldToSet" : "/tags/pipeline_id[0]",
-          "expression" : "${\"observium_storage\"}"
+          "expression" : "${\"observium_ports\"}"
         }, {
           "fieldToSet" : "/tags/pipeline_type",
           "expression" : "${emptyList()}"
@@ -622,6 +631,52 @@
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
+      "instanceName" : "replace_illegal_chars",
+      "library" : "streamsets-datacollector-jython_2_7-lib",
+      "stageName" : "com_streamsets_pipeline_stage_processor_jython_JythonDProcessor",
+      "stageVersion" : "3",
+      "configuration" : [ {
+        "name" : "processingMode",
+        "value" : "BATCH"
+      }, {
+        "name" : "initScript",
+        "value" : ""
+      }, {
+        "name" : "script",
+        "value" : ""
+      }, {
+        "name" : "destroyScript",
+        "value" : ""
+      }, {
+        "name" : "scriptRecordType",
+        "value" : "NATIVE_OBJECTS"
+      }, {
+        "name" : "userParams",
+        "value" : [ ]
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "yPos" : 159,
+        "stageType" : "PROCESSOR",
+        "icon" : "jython.png",
+        "description" : "",
+        "label" : "Replace illegal chars",
+        "xPos" : 1049,
+        "displayMode" : "BASIC"
+      },
+      "inputLanes" : [ "destination_OutputLane" ],
+      "outputLanes" : [ "JythonEvaluator_01OutputLane16418213601430" ],
+      "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
       "instanceName" : "destination",
       "library" : "anodot",
       "stageName" : "anodot_stage_destination_AnodotDTarget",
@@ -631,7 +686,7 @@
         "value" : "UTF-8"
       }, {
         "name" : "conf.agentOffsetUrl",
-        "value" : "http://anodot-agent/pipeline-offset/${pipeline:id()}"
+        "value" : "http://anodot-agent/pipeline-offset/observium_ports"
       }, {
         "name" : "conf.dataGeneratorFormatConfig.csvFileFormat",
         "value" : "CSV"
@@ -937,14 +992,14 @@
         "value" : 60000
       } ],
       "uiInfo" : {
-        "yPos" : 160,
+        "yPos" : 162,
         "stageType" : "TARGET",
         "description" : "",
         "label" : "Anodot",
-        "xPos" : 1069,
+        "xPos" : 1266,
         "displayMode" : "BASIC"
       },
-      "inputLanes" : [ "destination_OutputLane" ],
+      "inputLanes" : [ "JythonEvaluator_01OutputLane16418213601430" ],
       "outputLanes" : [ ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -968,22 +1023,22 @@
       "services" : [ ]
     },
     "info" : {
-      "pipelineId" : "observium_storage",
-      "title" : "observium_storage",
+      "pipelineId" : "observium_ports",
+      "title" : "observium_ports",
       "description" : "",
-      "created" : 1636980830524,
-      "lastModified" : 1636982360443,
+      "created" : 1641666243874,
+      "lastModified" : 1641822116791,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "2f244ff7-1a5e-435d-ba02-a0518b1ab65f",
+      "uuid" : "042ec67b-415c-4cab-b8b4-57019839b40a",
       "valid" : true,
       "metadata" : {
         "labels" : [ "observium", "http" ]
       },
-      "name" : "observium_storage",
+      "name" : "observium_ports",
       "sdcVersion" : "3.18.0",
-      "sdcId" : "e899b0c8-4610-11ec-b28e-d10e89255cf3"
+      "sdcId" : "944035ea-697c-11ec-b89a-e3e24ed987ba"
     },
     "metadata" : {
       "labels" : [ "observium", "http" ]
@@ -1324,7 +1379,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1636980830662,
+      "timestamp" : 1641666243968,
       "valid" : true
     }, {
       "id" : "stageErrorAlertID",
@@ -1335,7 +1390,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1636980830662,
+      "timestamp" : 1641666243968,
       "valid" : true
     }, {
       "id" : "idleGaugeID",
@@ -1346,7 +1401,7 @@
       "condition" : "${time:now() - value() > 120000}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1636980830662,
+      "timestamp" : 1641666243968,
       "valid" : true
     }, {
       "id" : "batchTimeAlertID",
@@ -1357,12 +1412,12 @@
       "condition" : "${value() > 200}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1636980830662,
+      "timestamp" : 1641666243968,
       "valid" : true
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "87566af7-552b-41d6-9951-76441f617336",
+    "uuid" : "3d4b6237-8700-4ae4-bcd8-7b2f9797e93e",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : null

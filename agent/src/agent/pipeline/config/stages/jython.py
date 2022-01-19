@@ -84,3 +84,10 @@ class TopologyDestination(JythonProcessor):
 
     def _get_script_params(self) -> list[dict]:
         return []
+
+
+class ReplaceIllegalChars(JythonProcessor):
+    JYTHON_SCRIPT = 'replace_illegal_chars.py'
+
+    def _get_script_params(self) -> list[dict]:
+        return []

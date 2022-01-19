@@ -4,6 +4,10 @@ from datetime import datetime
 from agent import source, cli
 
 
+def _get_days_to_backfill():
+    return (datetime.now() - datetime(year=2017, month=12, day=10)).days + 1
+
+
 class TestSage(TestInputBase):
     __test__ = True
     params = {
@@ -14,7 +18,10 @@ class TestSage(TestInputBase):
              'advanced_options': '\n\n'}],
         'test_edit': [{'options': ['-a', 'test_sage_value_const'], 'value': 'y\nclicks\n\n\n\n'}],
         'test_create_source_with_file': [{'file_name': 'sage_sources'}],
-        'test_create_with_file': [{'file_name': 'sage_pipelines'}],
+        'test_create_with_file': [{
+            'file_name': 'sage_pipelines',
+            'override_config': {'days_to_backfill': _get_days_to_backfill()},
+        }]
     }
 
     def test_source_create(self, cli_runner):

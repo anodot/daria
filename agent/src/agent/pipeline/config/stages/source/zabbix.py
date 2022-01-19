@@ -63,7 +63,7 @@ class ZabbixScript(JythonSource):
 
 class TestZabbixScript(JythonSource):
     JYTHON_SCRIPT = 'zabbix.py'
-    JYTHON_SCRIPTS_PATH = os.path.join(JythonSource.JYTHON_SCRIPTS_PATH, 'test_pipelines')
+    JYTHON_SCRIPTS_DIR = os.path.join(JythonSource.JYTHON_SCRIPTS_DIR, 'test_pipelines')
 
     def _get_script_params(self) -> list[dict]:
         return [

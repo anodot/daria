@@ -1,78 +1,39 @@
-import urllib.parse
-
-from agent import source
-from agent.pipeline.config.stages.base import JythonSource
+from agent import monitoring
+from agent.pipeline.config.stages.base import JythonDataExtractorSource
 
 
-class ObserviumScript(JythonSource):
+class ObserviumScript(JythonDataExtractorSource):
     JYTHON_SCRIPT = 'observium.py'
+    DATA_EXTRACTOR_API_ENDPOINT = 'data_extractors/observium'
 
     def _get_script_params(self) -> list[dict]:
-        base_url = urllib.parse.urljoin(self.pipeline.source.config[source.ObserviumSource.URL], '/api/v0/')
         return [
             {
-                'key': 'ENDPOINT',
-                'value': self.pipeline.source.config['endpoint']
-            },
-            {
-                'key': 'DEVICES_URL',
-                'value': urllib.parse.urljoin(base_url, 'devices')
-            },
-            {
-                'key': 'URL',
-                'value': urllib.parse.urljoin(base_url, self.pipeline.source.config['endpoint'])
-            },
-            {
-                'key': 'API_USER',
-                'value': self.pipeline.source.config[source.ObserviumSource.USERNAME]
-            },
-            {
-                'key': 'API_PASSWORD',
-                'value': self.pipeline.source.config[source.ObserviumSource.PASSWORD]
-            },
-            {
-                'key': 'REQUEST_PARAMS',
-                'value': self.pipeline.config.get('request_params', {})
-            },
-            {
-                'key': 'MEASUREMENTS',
-                'value': list(self.pipeline.value_paths)
-            },
-            {
-                'key': 'DIMENSIONS',
-                'value': self.pipeline.dimension_paths_with_names
+                'key': 'AGENT_DATA_EXTRACTOR_URL',
+                'value': self._get_source_url()
             },
             {
                 'key': 'INTERVAL_IN_SECONDS',
-                'value': '300'
+                'value': str(self.pipeline.interval)
             },
             {
                 'key': 'BUCKET_SIZE',
-                'value': '5m'
+                'value': self._get_bucket_size(),
             },
             {
                 'key': 'DELAY_IN_MINUTES',
                 'value': str(self.pipeline.delay)
             },
             {
-                'key': 'QUERY_TIMEOUT',
-                'value': str(self.pipeline.source.query_timeout)
-            },
-            {
-                'key': 'VERIFY_SSL',
-                'value': '1' if self.pipeline.source.config.get('verify_ssl', True) else ''
-            },
-            {
-                'key': 'SCHEMA_ID',
-                'value': self.pipeline.get_schema_id()
-            },
-            {
                 'key': 'MONITORING_URL',
-                'value': self._monitoring_url()
+                'value': monitoring.get_monitoring_source_error_url(self.pipeline)
             },
         ]
 
-    def _monitoring_url(self):
-        return urllib.parse.urljoin(
-            self.pipeline.streamsets.agent_external_url, f'/monitoring/source_http_error/{self.pipeline.name}/'
-        )
+    def _get_bucket_size(self) -> str:
+        if self.pipeline.interval == 300:
+            return '5m'
+        elif self.pipeline.interval == 3600:
+            return '1h'
+        else:
+            raise Exception(f'Invalid interval provided for Observium: {self.pipeline.interval}')

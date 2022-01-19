@@ -1,7 +1,7 @@
-from .base import JSScript
+from .base import JSProcessor
 
 
-class JSConvertMetrics(JSScript):
+class JSConvertMetrics(JSProcessor):
     def get_js_vars(self):
         return f"""
 state['TIMESTAMP_COLUMN'] = '{self.pipeline.timestamp_path}';
@@ -26,7 +26,7 @@ state['metrics'] = {{}}
         }
 
     def _required_fields(self) -> list:
-        return [f'/{f}' for f in [*self.pipeline.required_dimension_paths, self.pipeline.timestamp_path]]
+        return [f'/{f}' for f in [*self.pipeline.required_dimension_paths]]
 
 
 class JSConvertMetrics30(JSConvertMetrics):
