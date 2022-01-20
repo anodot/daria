@@ -252,7 +252,7 @@ _run-zabbix:
 setup-kafka:
 	./scripts/upload-test-data-to-kafka.sh
 
-setup-elastic: sleep2
+setup-elastic: half-sleep
 	./scripts/upload-test-data-to-elastic.sh
 
 setup-victoria:
@@ -269,7 +269,7 @@ setup-pre-commit:
 sleep:
 	sleep $(SLEEP)
 
-sleep2:
+half-sleep:
 	sleep 30
 
 nap:
