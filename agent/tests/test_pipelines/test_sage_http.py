@@ -11,12 +11,14 @@ class TestSage(TestPipelineBase):
             {'name': 'test_sage'},
             {'name': 'test_sage_file'},
             {'name': 'test_sage_schema_file'},
+            {'name': 'test_sage_schema_file_fill_gaps'},
         ],
         'test_force_stop': [
             {'name': 'test_sage_value_const'},
             {'name': 'test_sage'},
             {'name': 'test_sage_file'},
             {'name': 'test_sage_schema_file'},
+            {'name': 'test_sage_schema_file_fill_gaps'},
         ],
         'test_reset': [
             {'name': 'test_sage_value_const'},
@@ -33,6 +35,7 @@ class TestSage(TestPipelineBase):
             {'name': 'test_sage'},
             {'name': 'test_sage_file'},
             {'name': 'test_sage_schema_file'},
+            {'name': 'test_sage_schema_file_fill_gaps'},
         ],
         'test_source_delete': [
             {'name': 'test_sage'},

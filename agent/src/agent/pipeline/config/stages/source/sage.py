@@ -39,4 +39,8 @@ class SageScript(JythonSource):
                 'key': 'QUERY_SIZE',
                 'value': str(self.pipeline.batch_size)
             },
+            {
+                'key': 'DVP_ENABLED',
+                'value': str(bool(self.pipeline.dvp_config))
+            },
         ]

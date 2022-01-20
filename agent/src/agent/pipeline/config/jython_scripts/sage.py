@@ -125,7 +125,7 @@ def main():
                         record = sdc.createRecord('record created ' + str(datetime.now()))
                         record.value = hit
                         cur_batch.add(record)
-                else:
+                elif sdc.userParams['DVP_ENABLED'] == 'True':
                     # records with last_timestamp only
                     record = sdc.createRecord('record created ' + str(datetime.now()))
                     record.value = {'last_timestamp': watermark_ts}

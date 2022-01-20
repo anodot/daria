@@ -343,7 +343,6 @@ class Pipeline(Entity, sdc_client.IPipeline):
 
     @property
     def dvp_config(self) -> dict:
-        # return self.config.get('dvpConfig', {})
         return self._get_dvp_config()
 
     def get_streamsets_config(self) -> dict:
@@ -518,7 +517,6 @@ class PipelineDvpConfig:
         return self.data == {}
 
     def validate(self):
-        # TODO read from file?
         json_schema = {
             'type': 'object',
             'properties': {
