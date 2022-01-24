@@ -30,7 +30,7 @@
     "interval": 1440,
     "days_to_backfill": 1499,
     "dvpConfig": {
-      "baseRollup": "1m",
+      "baseRollup": "LONGROLLUP",
       "maxDVPDurationHours": 24,
       "gaugeValue": {"keepLastValue": true},
       "counterValue": {"value": 0}

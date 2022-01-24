@@ -73,7 +73,7 @@ def main():
                     res.raise_for_status()
                     break
                 except requests.HTTPError as e:
-                    requests.post(sdc.userParams['MONITORING_URL'] + str(res.status_code))
+                    requests.post(sdc.userParams['MONITORING_URL'] + str(e.response.status_code))
                     sdc.log.error(str(e))
                     if i == N_REQUESTS_TRIES:
                         raise

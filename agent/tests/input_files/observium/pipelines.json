@@ -32,10 +32,10 @@
           },
           {
             "type": "lookup",
-            "value": "STATE",
             "name": "DEST_GROUP_CATEGORY",
             "key": "ABBREVIATION",
-            "compare_function": "like",
+            "value": "STATE",
+            "compare_function": "contains",
             "default": "other"
           }
         ]

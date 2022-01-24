@@ -1,3 +1,5 @@
+import sys
+
 from typing import Callable
 
 
@@ -14,11 +16,7 @@ def contains(haystack: str, needle: str) -> bool:
 
 
 def get_by_name(name: str) -> Callable:
-    if name == 'startswith':
-        return startswith
-    elif name == 'equal':
-        return equal
-    elif name == 'like':
-        return contains
-    else:
-        raise Exception(f'Lookup function `{name}` is not supported')
+    try:
+        return getattr(sys.modules[__name__], name)
+    except AttributeError:
+        raise Exception(f'Transformation function `{name}` is not supported')
