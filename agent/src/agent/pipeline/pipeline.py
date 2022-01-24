@@ -343,7 +343,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
 
     @property
     def dvp_config(self) -> dict:
-        return self._get_dvp_config()
+        return self.config.get('dvpConfig', {})
 
     def get_streamsets_config(self) -> dict:
         return pipeline.manager.create_streamsets_pipeline_config(self)
@@ -399,12 +399,6 @@ class Pipeline(Entity, sdc_client.IPipeline):
         if property_value in self.config.get('dimension_value_paths', {}):
             return str(self.config.get('dimension_value_paths', {})[property_value])
         return str(property_value)
-
-    def _get_dvp_config(self) -> dict:
-        dvp = PipelineDvpConfig(self.config.get('dvpConfig', {}))
-        if not dvp.empty():
-            dvp.validate()
-        return dvp.dvp_config
 
     def meta_tags(self) -> dict:
         return {
@@ -503,36 +497,3 @@ def _build_dimension_configurations(dimensions: list, dimension_configurations: 
         if dim not in dimension_configurations:
             dimension_configurations[dim] = {field.Variable.VALUE_PATH: dim}
     return dimension_configurations
-
-
-class PipelineDvpConfig:
-    def __init__(self, data: dict):
-        self.data = data
-
-    @property
-    def dvp_config(self):
-        return self.data
-
-    def empty(self):
-        return self.data == {}
-
-    def validate(self):
-        json_schema = {
-            'type': 'object',
-            'properties': {
-                'baseRollup': {'type': 'string', 'enum': Interval.VALUES},
-                'maxDVPDurationHours': {'type': 'number', 'minimum': 1, 'maximum': 24},
-                'gaugeValue': {
-                    'type': 'object', 'maxProperties': 2,
-                    'propertyNames': {'enum': ['keepLastValue', 'value']},
-                    'patternProperties': {'value': {'type': 'number'}, 'keepLastValue': {'type': 'boolean'}}
-                },
-                'counterValue': {
-                    'type': 'object', 'maxProperties': 2,
-                    'propertyNames': {'enum': ['keepLastValue', 'value']},
-                    'patternProperties': {'value': {'type': 'number'}, 'keepLastValue': {'type': 'boolean'}}
-                },
-            },
-            'required': ['baseRollup', 'maxDVPDurationHours']
-        }
-        jsonschema.validate(self.dvp_config, json_schema)

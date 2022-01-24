@@ -175,11 +175,18 @@ class Builder:
         return os.path.join(os.path.dirname(os.path.realpath(__file__)), self.VALIDATION_SCHEMA_DIR_NAME)
 
     def _validate_json_schema(self):
+        if 'dvpConfig' in self.config:
+            self._validate_dvp_config_json_schema()
         with open(os.path.join(self.definitions_dir, self.VALIDATION_SCHEMA_FILE_NAME + '.json')) as f:
             schema = json.load(f)
         if self.edit:
             schema['required'] = []
         jsonschema.validate(self.config, schema)
+
+    def _validate_dvp_config_json_schema(self):
+        with open(os.path.join(self.definitions_dir, 'dvp_config.json')) as f:
+            schema = json.load(f)
+        jsonschema.validate(self.config['dvpConfig'], schema)
 
     def _load_filtering(self):
         condition = self.config.get('filter', {}).get('condition')

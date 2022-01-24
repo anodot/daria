@@ -24,7 +24,7 @@ class SageScript(JythonSource):
                 'value': self.pipeline.query
             },
             {
-                'key': 'INTERVAL',
+                'key': 'INTERVAL_IN_MINUTES',
                 'value': str(self.pipeline.interval)
             },
             {
