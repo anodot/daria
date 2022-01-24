@@ -23,10 +23,10 @@ N_REQUESTS_TRIES = 5
 query_size = int(sdc.userParams.get('QUERY_SIZE', 1000))
 
 # because user specifies the interval in minutes
-interval = timedelta(seconds=int(float(sdc.userParams['INTERVAL']) * 60))
+interval = timedelta(seconds=int(float(sdc.userParams['INTERVAL_IN_MINUTES']) * 60))
 delay = timedelta(minutes=int(sdc.userParams['DELAY']))
 days_to_backfill = timedelta(days=int(sdc.userParams['DAYS_TO_BACKFILL']))
-sdc.log.info('INTERVAL: ' + str(interval))
+sdc.log.info('INTERVAL_IN_MINUTES: ' + str(interval))
 sdc.log.info('DELAY: ' + str(delay))
 sdc.log.info('DAYS_TO_BACKFILL: ' + str(days_to_backfill))
 
@@ -58,7 +58,7 @@ def main():
         try:
             end_time = date_to_str(date_from_str(offset) + interval)
             latest_date = date_to_str(datetime.utcnow().replace(second=0, microsecond=0) - delay)
-            watermark_ts = (date_from_str(end_time) - datetime(1970, 1, 1)).total_seconds()
+            watermark_ts = (date_from_str(offset) - datetime(1970, 1, 1)).total_seconds()
             while (date_from_str(end_time) - date_from_str(latest_date)).total_seconds() > time.time() - start_time:
                 time.sleep(2)
                 if sdc.isStopped():
@@ -140,7 +140,7 @@ def main():
             if sdc.isStopped():
                 return cur_batch, offset
 
-            # sleep_time = int(sdc.userParams['INTERVAL']) * 60 - (time.time() - time_start)
+            # sleep_time = int(sdc.userParams['INTERVAL_IN_MINUTES']) * 60 - (time.time() - time_start)
             # sdc.log.info('Sleep time: ' + str(sleep_time))
             # time.sleep(sleep_time)
         except Exception:
