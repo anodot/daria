@@ -352,7 +352,7 @@
         "value" : ""
       }, {
         "name" : "scriptConf.batchSize",
-        "value" : 1
+        "value" : 1000
       }, {
         "name" : "scriptConf.numThreads",
         "value" : 1
