@@ -41,6 +41,7 @@ state['COUNT_RECORDS'] = {int(self.pipeline.count_records)};
 state['COUNT_RECORDS_MEASUREMENT_NAME'] = '{self.pipeline.count_records_measurement_name}';
 state['INTERVAL'] = {self.pipeline.interval if self.pipeline.interval is not None else 'null'};
 state['HEADER_ATTRIBUTES'] = {self.pipeline.header_attributes};
+state['SEND_WATERMARK_IF_NO_DATA'] = '{str(bool(self.pipeline.dvp_config))}';
         """
 
     def get_config(self) -> dict:

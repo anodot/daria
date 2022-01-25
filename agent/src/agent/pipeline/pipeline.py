@@ -1,5 +1,4 @@
 import sdc_client
-import jsonschema
 
 from typing import Optional, List
 from sqlalchemy.dialects.postgresql import TIMESTAMP
