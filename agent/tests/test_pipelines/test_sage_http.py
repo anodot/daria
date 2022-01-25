@@ -1,7 +1,7 @@
 import pytest
 
-from datetime import datetime
-from .test_zpipeline_base import TestPipelineBase, get_schema_id, get_expected_schema_output
+from datetime import datetime, timedelta, timezone
+from .test_zpipeline_base import TestPipelineBase, get_schema_id
 from ..conftest import get_output
 
 
@@ -13,14 +13,14 @@ class TestSage(TestPipelineBase):
             {'name': 'test_sage'},
             {'name': 'test_sage_file'},
             {'name': 'test_sage_schema_file'},
-            {'name': 'test_sage_schema_file_fill_gaps', 'sleep': 30},
+            {'name': 'test_sage_schema_file_dvp'},
         ],
         'test_force_stop': [
             {'name': 'test_sage_value_const'},
             {'name': 'test_sage'},
             {'name': 'test_sage_file'},
             {'name': 'test_sage_schema_file'},
-            {'name': 'test_sage_schema_file_fill_gaps'},
+            {'name': 'test_sage_schema_file_dvp'},
         ],
         'test_reset': [
             {'name': 'test_sage_value_const'},
@@ -33,14 +33,14 @@ class TestSage(TestPipelineBase):
             {'name': 'test_sage_schema_file', 'output': 'sage_file_schema.json', 'pipeline_type': 'sage'},
         ],
         'test_watermark': [
-            {'name': 'test_sage_schema_file_fill_gaps', 'output': 'sage_file_schema.json', 'pipeline_type': 'sage'},
+            {'name': 'test_sage_schema_file_dvp', 'output': 'sage_file_schema.json', 'pipeline_type': 'sage'},
         ],
         'test_delete_pipeline': [
             {'name': 'test_sage_value_const'},
             {'name': 'test_sage'},
             {'name': 'test_sage_file'},
             {'name': 'test_sage_schema_file'},
-            {'name': 'test_sage_schema_file_fill_gaps'},
+            {'name': 'test_sage_schema_file_dvp'},
         ],
         'test_source_delete': [
             {'name': 'test_sage'},
@@ -59,12 +59,8 @@ class TestSage(TestPipelineBase):
     def test_force_stop(self, cli_runner, name):
         super().test_force_stop(cli_runner, name)
 
-    def test_watermark(self, cli_runner, name, output, pipeline_type):
-        expected_output = get_expected_schema_output(name, output, pipeline_type)
-        real_output = get_output(f'{name}_{pipeline_type}.json')
-        watermark_output = get_output(f'{get_schema_id(name)}_watermark.json')
-        assert real_output == expected_output
-        assert watermark_output['schemaId'] == get_schema_id(name)
-        watermark_ts = datetime.fromtimestamp(watermark_output['watermark'])
-        data_latest_ts = datetime.fromtimestamp(real_output[-1]['timestamp'])
-        assert (watermark_ts - data_latest_ts).days > 500
+    def test_watermark(self):
+        schema_id = get_schema_id('test_sage_schema_file_dvp')
+        day_before = datetime.now(timezone.utc) - timedelta(days=1)
+        last_timestamp = day_before.replace(hour=0, minute=24, second=0, microsecond=0).timestamp()
+        assert get_output(f'{schema_id}_watermark.json') == {'watermark': last_timestamp , 'schemaId': schema_id}
