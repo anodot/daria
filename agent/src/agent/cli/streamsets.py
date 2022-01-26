@@ -49,7 +49,8 @@ def add(url, username, password, agent_ext_url):
 
 @click.command()
 @click.argument('url', autocompletion=get_url_complete)
-def edit(url):
+@click.option('--update-pipelines/--no-update-pipelines', default=False)
+def edit(url, update_pipelines=False):
     try:
         s = streamsets.repository.get_by_url(url)
     except streamsets.repository.StreamsetsNotExistsException as e:
@@ -58,7 +59,7 @@ def edit(url):
     old_external_url = streamsets_.agent_external_url
     streamsets_.agent_external_url = _prompt_agent_external_url(streamsets_)
     streamsets.repository.save(streamsets_)
-    if old_external_url != streamsets_.agent_external_url:
+    if update_pipelines and old_external_url != streamsets_.agent_external_url:
         for pipeline_ in pipeline.repository.get_by_streamsets_id(streamsets_.id):
             sdc_client.update(pipeline_)
     click.secho('Changes saved', fg='green')
