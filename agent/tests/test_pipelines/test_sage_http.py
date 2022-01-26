@@ -44,6 +44,7 @@ class TestSage(TestPipelineBase):
         ],
         'test_source_delete': [
             {'name': 'test_sage'},
+            {'name': 'test_sage_1'},
         ],
     }
 
