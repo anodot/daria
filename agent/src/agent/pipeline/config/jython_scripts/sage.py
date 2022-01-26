@@ -88,20 +88,7 @@ def main():
                         sdc.log.debug(str(res.json()))
                         break
                     except requests.HTTPError as e:
-                        event = sdc.createEvent('sage_error', 1)
-                        event.value = {
-                            'value': 1,
-                            'properties': {
-                                'what': 'sage_http_error',
-                                'target_type': 'counter',
-                                'code': e.response.status_code,
-                                'pipeline_name': sdc.userParams['PIPELINE_NAME']
-                            },
-                            'timestamp': time.time()
-                        }
-                        cur_batch.addEvent(event)
-                        cur_batch.process(entityName, offset)
-                        cur_batch = sdc.createBatch()
+                        requests.post(sdc.userParams['MONITORING_URL'] + str(e.response.status_code))
                         sdc.log.error(str(e))
                         if i == N_REQUESTS_TRIES:
                             if e.response.status_code == 504:
