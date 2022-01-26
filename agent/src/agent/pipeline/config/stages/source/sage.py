@@ -20,6 +20,10 @@ class SageScript(JythonSource):
                 'value': self.pipeline.source.config[source.SageSource.URL]
             },
             {
+                'key': 'SAGE_SOURCE_HEADER',
+                'value': self.pipeline.source.config.get(source.SageSource.SAGE_SOURCE_HEADER, 'anodot')
+            },
+            {
                 'key': 'QUERY',
                 'value': self.pipeline.query
             },

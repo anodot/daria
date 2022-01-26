@@ -2,7 +2,8 @@
   "type": "object",
   "properties": {
     "url": {"type": "string"},
-    "token": {"type": "string"}
+    "token": {"type": "string"},
+    "source_header": {"type": "string"}
   },
   "required": ["url", "token"]
 }

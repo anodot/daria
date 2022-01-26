@@ -17,6 +17,9 @@ def search():
     if token != 'Bearer correct_token':
         return make_response(jsonify({'status': 'fail'}), 401)
 
+    if request.headers.get('Source') != 'anodot':
+        return make_response(jsonify({'status': 'fail'}), 401)
+
     if request.json.get('query') == 'server_error':
         return 'Fake server error', 500
 
