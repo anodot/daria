@@ -1,42 +1,12 @@
 [
   {
     "type": "observium",
-    "name": "observium_ports",
+    "name": "observium",
     "config": {
-      "url": "http://dummy_destination:80",
-      "username": "admin",
-      "password": "admin",
-      "endpoint": "ports"
-    }
-  },
-  {
-    "type": "observium",
-    "name": "observium_mempools",
-    "config": {
-      "url": "http://dummy_destination:80",
-      "username": "admin",
-      "password": "admin",
-      "endpoint": "mempools"
-    }
-  },
-  {
-    "type": "observium",
-    "name": "observium_processors",
-    "config": {
-      "url": "http://dummy_destination:80",
-      "username": "admin",
-      "password": "admin",
-      "endpoint": "processors"
-    }
-  },
-  {
-    "type": "observium",
-    "name": "observium_storage",
-    "config": {
-      "url": "http://dummy_destination:80",
-      "username": "admin",
-      "password": "admin",
-      "endpoint": "storage"
+      "host": "mysql",
+      "port": "3306",
+      "username": "root",
+      "database": "observium"
     }
   }
 ]

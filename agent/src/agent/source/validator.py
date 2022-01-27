@@ -10,6 +10,7 @@ from datetime import datetime
 from pysnmp.entity.engine import SnmpEngine
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 from agent import source
+from agent.modules.mysql import MySQL
 from agent.modules.tools import if_validation_enabled
 from agent.modules import validator, http
 from agent.source import Source
@@ -250,17 +251,17 @@ class ObserviumValidator(Validator):
     VALIDATION_SCHEMA_FILE = 'observium.json'
 
     def validate_connection(self):
-        session = http.Session()
-        session.auth = (
-            self.source.config[source.ObserviumSource.USERNAME], self.source.config[source.ObserviumSource.PASSWORD]
-        )
         try:
-            url = urllib.parse.urljoin(self.source.config['url'], source.ObserviumSource.DEVICES_API_PATH)
-            res = session.get(url, verify=self.source.config.get('verify_ssl', True), timeout=self.source.query_timeout)
-            res.raise_for_status()
-        except requests.exceptions.RequestException as e:
+            MySQL(
+                self.source.config['host'],
+                self.source.config.get('port', 3306),
+                self.source.config.get('username'),
+                self.source.config.get('password'),
+                self.source.config['database'],
+            ).execute('show tables')
+        except Exception as e:
             raise ValidationException(
-                'Failed to connect to Observium API. Make sure you provided correct url, API username and password:\n'
+                'Failed to connect to the Observium MySQL database. Make sure you provided correct configuration\n'
                 + str(e)
             )
 

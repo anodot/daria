@@ -30,7 +30,7 @@ class LookupTransformer(Transformer):
     def __init__(self, lookup_name: str, lookup_key: str, lookup_value: Any, compare_func_name: Optional[str]):
         self.compare_func = functions.compare.get_by_name(compare_func_name) \
             if compare_func_name is not None \
-            else functions.compare.equal
+            else functions.compare.equals
         self.lookup_name = lookup_name
         self.lookup_key = lookup_key
         self.lookup_value = lookup_value

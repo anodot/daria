@@ -7,7 +7,7 @@ def startswith(s: str, prefix: str) -> bool:
     return s.startswith(prefix)
 
 
-def equal(a, b) -> bool:
+def equals(a, b) -> bool:
     return a == b
 
 
