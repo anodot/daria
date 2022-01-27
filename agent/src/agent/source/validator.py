@@ -10,6 +10,7 @@ from datetime import datetime
 from pysnmp.entity.engine import SnmpEngine
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 from agent import source
+from agent.modules.mysql import MySQL
 from agent.modules.tools import if_validation_enabled
 from agent.modules import validator, http
 from agent.source import Source
@@ -250,15 +251,19 @@ class ObserviumValidator(Validator):
     VALIDATION_SCHEMA_FILE = 'observium.json'
 
     def validate_connection(self):
-        pass
-        # todo
-        # try:
-        #
-        # except requests.exceptions.RequestException as e:
-        #     raise ValidationException(
-        #         'Failed to connect to Observium API. Make sure you provided correct url, API username and password:\n'
-        #         + str(e)
-        #     )
+        try:
+            MySQL(
+                self.source.config['host'],
+                self.source.config.get('port', 3306),
+                self.source.config.get('username'),
+                self.source.config.get('password'),
+                self.source.config['database'],
+            ).execute('show databases')
+        except Exception as e:
+            raise ValidationException(
+                'Failed to connect to the Observium MySQL database. Make sure you provided correct configuration\n'
+                + str(e)
+            )
 
 
 class ZabbixValidator(Validator):
