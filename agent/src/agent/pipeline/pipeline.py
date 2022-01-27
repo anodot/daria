@@ -341,7 +341,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return self.config.get('watermark_sleep_time', 10)
 
     @property
-    def lookup(self) -> dict:
+    def lookups(self) -> dict:
         return self.config.get('lookups', {})
 
     @property

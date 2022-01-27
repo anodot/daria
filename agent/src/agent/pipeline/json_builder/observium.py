@@ -161,17 +161,18 @@ class ObserviumBuilder(Builder):
         return dim_configurations
 
     def _validate_dimensions(self):
-        for dim_name in self.config['dimension_configurations'].keys():
-            if dim_name not in self.config['dimensions']:
-                raise Exception(f'`{dim_name}` from dimension_configurations is not specified in dimensions')
+        incorrect_dims = [
+            dim_name for dim_name in self.config['dimension_configurations'].keys()
+            if dim_name not in self.config['dimensions']
+        ]
+        if incorrect_dims:
+            incorrect_dims = ", ".join(map(lambda s: f"`{s}`", incorrect_dims))
+            raise Exception(
+                f'These values from dimension_configurations are not specified in dimensions: {incorrect_dims}'
+            )
 
     def _timestamp(self) -> dict:
         if 'timestamp' in self.config:
-            timestamp_type = self.config['timestamp']['type']
-            if timestamp_type != 'unix':
-                raise Exception(
-                    f"Timestamp type {timestamp_type} is not supported, currently only `unix` type is supported"
-                )
             return self.config['timestamp']
         elif self.default_values_type():
             return {'name': POLL_TIME_KEYS[self.default_values_type()], 'type': 'unix'}

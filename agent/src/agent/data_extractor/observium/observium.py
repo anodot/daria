@@ -9,7 +9,7 @@ N_REQUESTS_TRIES = 3
 
 
 def extract_metrics(pipeline_: Pipeline) -> list:
-    with lookup.Provide(pipeline_.lookup):
+    with lookup.Provide(pipeline_.lookups):
         return _create_metrics(_get(pipeline_), pipeline_)
 
 
