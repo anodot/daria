@@ -184,6 +184,7 @@ class KafkaSource(SchemalessSource):
 class SageSource(Source):
     URL = 'url'
     TOKEN = 'token'
+    SAGE_SOURCE_HEADER = 'source_header'
 
 
 class APISource(Source):
