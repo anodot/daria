@@ -196,6 +196,10 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return TimestampType(self.config['timestamp']['type'])
 
     @property
+    def timestamp_name(self) -> Optional[str]:
+        return self.config.get('timestamp', {}).get('name')
+
+    @property
     def timestamp_format(self) -> str:
         return self.config['timestamp'].get('format')
 
@@ -338,7 +342,11 @@ class Pipeline(Entity, sdc_client.IPipeline):
 
     @property
     def lookup(self) -> dict:
-        return self.config.get('lookup', {})
+        return self.config.get('lookups', {})
+
+    @property
+    def is_strict(self) -> bool:
+        return bool(self.config.get('strict', True))
 
     def get_streamsets_config(self) -> dict:
         return pipeline.manager.create_streamsets_pipeline_config(self)

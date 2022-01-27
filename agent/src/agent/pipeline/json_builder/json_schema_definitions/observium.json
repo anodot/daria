@@ -3,18 +3,20 @@
   "properties": {
     "source": {"type": "string"},
     "pipeline_id": {"type": "string"},
+    "query": {"type": "string"},
+    "default_values_type": {"type": "string", "enum": ["ports", "mempools", "processors", "storage"]},
     "interval": {"type": "integer"},
     "delay": {"type": "integer"},
     "dimensions": {"type": "array", "items": {"type": "string"}},
     "dimension_configurations": {"type": "object"},
     "lookup": {"type": "object"},
     "values": {"type": "object"},
-    "request_params": {"type": "object"},
+    "strict": {"type": "boolean"},
     "tags": {
       "type": "object",
       "patternProperties":  {"[^ \\.]+": {"type": "array", "items": {"type": "string"}}}
     },
     "properties": {"type": "object"}
   },
-  "required": ["interval"]
+  "required": ["interval", "query"]
 }

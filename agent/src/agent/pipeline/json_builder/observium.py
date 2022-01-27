@@ -1,3 +1,4 @@
+from typing import Optional
 from agent import source
 from agent.modules import field
 from agent.pipeline.json_builder import Builder
@@ -5,19 +6,16 @@ from agent.pipeline.json_builder import Builder
 HOST_NAME = 'Host Name'
 LOCATION = 'Location'
 
+POLL_TIME_KEYS = {
+    'ports': 'poll_time',
+    'mempools': 'mempool_polled',
+    'processors': 'processor_polled',
+    'storage': 'storage_polled',
+}
+
 
 class ObserviumBuilder(Builder):
     VALIDATION_SCHEMA_FILE_NAME = 'observium'
-
-    ALLOWED_PARAMS = {
-        source.ObserviumSource.PORTS: [
-            "location", "device_id", "group", "disable", "deleted", "ignore", "ifSpeed", "ifType", "hostname",
-            "ifAlias", "ifDescr", "port_descr_type", "errors", "alerted", "state", "cbqos", "mac_accounting"
-        ],
-        source.ObserviumSource.MEMPOOLS: ["group_id", "device_id", "mempool_descr"],
-        source.ObserviumSource.PROCESSORS: ["group_id", "device_id", "processor_descr"],
-        source.ObserviumSource.STORAGE: ["group_id", "device_id", "storage_descr"],
-    }
 
     DEFAULT_MEASUREMENTS = {
         source.ObserviumSource.PORTS: {
@@ -120,44 +118,62 @@ class ObserviumBuilder(Builder):
 
     def _load_config(self):
         super()._load_config()
-        self.config['timestamp'] = {'type': 'unix'}
         self.config['uses_schema'] = True
+        # _dimensions() should be after _dimension_configurations()
         self.config['dimension_configurations'] = self._dimension_configurations()
         self.config['dimensions'] = self._dimensions()
+        self._validate_dimensions()
         self.config['values'] = self._measurements()
-        self.config['request_params'] = self._request_params()
+        self.config['timestamp'] = self._timestamp()
         return self.config
 
+    def default_values_type(self) -> Optional[str]:
+        return self.config.get('default_values_type')
+
     def _measurements(self) -> dict:
-        return self.config.get('values') or self.DEFAULT_MEASUREMENTS[self.endpoint()]
+        if self.config.get('values') or not self.default_values_type():
+            return self.config.get('values')
+        return self.DEFAULT_MEASUREMENTS[self.default_values_type()]
 
     def _dimensions(self) -> list:
-        dims = self.config.get('dimensions') or self.DEFAULT_DIMENSIONS[self.endpoint()]
+        if self.config.get('dimensions') or not self.default_values_type():
+            dims = self.config.get('dimensions', [])
+        else:
+            dims = self.DEFAULT_DIMENSIONS[self.default_values_type()]
         # all observium pipelines by default have these dimensions
-        # they are added from the `devices` endpoint
+        # they are added from `devices` and `devices_locations` tables
         if HOST_NAME not in dims:
             dims.append(HOST_NAME)
         if LOCATION not in dims:
             dims.append(LOCATION)
         return dims
 
-    def endpoint(self) -> str:
-        return self.pipeline.source.config['endpoint']
-
-    def _request_params(self) -> dict:
-        params = self.config.get('request_params')
-        if params:
-            return {k: v for k, v in params.items() if v and (k in self.ALLOWED_PARAMS[self.endpoint()])}
-        return {}
-
     def _dimension_configurations(self):
-        if self.config.get('dimensions'):
+        if self.config.get('dimensions') or not self.default_values_type():
             dim_configurations = self.config.get('dimension_configurations', {})
         else:
             # if there are no dimensions we'll use the default ones so need to use default configs as well
-            dim_configurations = self.DEFAULT_DIMENSION_CONFIGURATIONS[self.endpoint()]
+            dim_configurations = self.DEFAULT_DIMENSION_CONFIGURATIONS[self.default_values_type()]
         if HOST_NAME not in dim_configurations:
             dim_configurations[HOST_NAME] = {field.Variable.VALUE_PATH: 'sysName'}
         if LOCATION not in dim_configurations:
             dim_configurations[LOCATION] = {field.Variable.VALUE_PATH: 'location'}
         return dim_configurations
+
+    def _validate_dimensions(self):
+        for dim_name in self.config['dimension_configurations'].keys():
+            if dim_name not in self.config['dimensions']:
+                raise Exception(f'`{dim_name}` from dimension_configurations is not specified in dimensions')
+
+    def _timestamp(self) -> dict:
+        if 'timestamp' in self.config:
+            timestamp_type = self.config['timestamp']['type']
+            if timestamp_type != 'unix':
+                raise Exception(
+                    f"Timestamp type {timestamp_type} is not supported, currently only `unix` type is supported"
+                )
+            return self.config['timestamp']
+        elif self.default_values_type():
+            return {'name': POLL_TIME_KEYS[self.default_values_type()], 'type': 'unix'}
+        else:
+            raise Exception('Neither `timestamp` nor `default_values_type` are specified')

@@ -209,8 +209,12 @@ class SNMPSource(APISource):
         return self.config[self.READ_COMMUNITY]
 
 
-class ObserviumSource(APISource):
-    DEVICES_API_PATH = '/api/v0/devices'
+class ObserviumSource(Source):
+    HOST = 'host'
+    PORT = 'port'
+    USERNAME = 'username'
+    PASSWORD = 'password'
+    DATABASE = 'database'
 
     PORTS = 'ports'
     MEMPOOLS = 'mempools'

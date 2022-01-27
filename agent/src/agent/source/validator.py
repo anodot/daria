@@ -250,19 +250,15 @@ class ObserviumValidator(Validator):
     VALIDATION_SCHEMA_FILE = 'observium.json'
 
     def validate_connection(self):
-        session = http.Session()
-        session.auth = (
-            self.source.config[source.ObserviumSource.USERNAME], self.source.config[source.ObserviumSource.PASSWORD]
-        )
-        try:
-            url = urllib.parse.urljoin(self.source.config['url'], source.ObserviumSource.DEVICES_API_PATH)
-            res = session.get(url, verify=self.source.config.get('verify_ssl', True), timeout=self.source.query_timeout)
-            res.raise_for_status()
-        except requests.exceptions.RequestException as e:
-            raise ValidationException(
-                'Failed to connect to Observium API. Make sure you provided correct url, API username and password:\n'
-                + str(e)
-            )
+        pass
+        # todo
+        # try:
+        #
+        # except requests.exceptions.RequestException as e:
+        #     raise ValidationException(
+        #         'Failed to connect to Observium API. Make sure you provided correct url, API username and password:\n'
+        #         + str(e)
+        #     )
 
 
 class ZabbixValidator(Validator):
