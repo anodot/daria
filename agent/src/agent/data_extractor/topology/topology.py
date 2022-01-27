@@ -22,7 +22,7 @@ TOPOLOGY_ENTITIES = [REGION, SITE, NODE, CARD, INTERFACE, CELL, LINK, SERVICE, L
 
 
 def extract_metrics(pipeline_: Pipeline) -> dict:
-    with lookup.Provide(pipeline_.lookup):
+    with lookup.Provide(pipeline_.lookups):
         entities = _create_entities(pipeline_.source)
         topology_records = _create_topology_records(entities)
         return _build_topology_data(topology_records)

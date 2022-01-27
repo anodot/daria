@@ -3,7 +3,7 @@
     "schemaId": "observium_storage-1234",
     "timestamp": 1633518002,
     "dimensions": {
-      "Storage_size": "92762112",
+      "Storage_size": "9223372036854775807",
       "Host_Name": "sys1",
       "Location": "SOME-LOC"
     },

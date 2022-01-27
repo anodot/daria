@@ -7,45 +7,109 @@ class TestObservium(TestPipelineBase):
     __test__ = True
     params = {
         'test_start': [
-            {'name': 'observium_ports'},
-            {'name': 'observium_mempools'},
-            {'name': 'observium_mempools_edit'},
-            {'name': 'observium_processors'},
-            {'name': 'observium_storage'},
+            {
+                'name': 'observium_ports'
+            },
+            {
+                'name': 'observium_mempools'
+            },
+            {
+                'name': 'observium_mempools_edit'
+            },
+            {
+                'name': 'observium_processors'
+            },
+            {
+                'name': 'observium_storage'
+            },
         ],
         'test_force_stop': [
-            {'name': 'observium_ports'},
-            {'name': 'observium_mempools'},
-            {'name': 'observium_mempools_edit'},
-            {'name': 'observium_processors'},
-            {'name': 'observium_storage'},
+            {
+                'name': 'observium_ports'
+            },
+            {
+                'name': 'observium_mempools'
+            },
+            {
+                'name': 'observium_mempools_edit'
+            },
+            {
+                'name': 'observium_processors'
+            },
+            {
+                'name': 'observium_storage'
+            },
         ],
         'test_output_schema': [
-            {'name': 'observium_ports', 'output': 'observium_ports_schema.json', 'pipeline_type': 'observium'},
-            {'name': 'observium_mempools', 'output': 'observium_mempools_schema.json', 'pipeline_type': 'observium'},
-            {'name': 'observium_mempools_edit', 'output': 'observium_mempools_schema_edit.json', 'pipeline_type': 'observium'},
-            {'name': 'observium_processors', 'output': 'observium_processors_schema.json', 'pipeline_type': 'observium'},
-            {'name': 'observium_storage', 'output': 'observium_storage_schema.json', 'pipeline_type': 'observium'},
+            {
+                'name': 'observium_ports',
+                'output': 'observium_ports_schema.json',
+                'pipeline_type': 'observium'
+            },
+            {
+                'name': 'observium_mempools',
+                'output': 'observium_mempools_schema.json',
+                'pipeline_type': 'observium'
+            },
+            {
+                'name': 'observium_mempools_edit',
+                'output': 'observium_mempools_schema_edit.json',
+                'pipeline_type': 'observium'
+            },
+            {
+                'name': 'observium_processors',
+                'output': 'observium_processors_schema.json',
+                'pipeline_type': 'observium'
+            },
+            {
+                'name': 'observium_storage',
+                'output': 'observium_storage_schema.json',
+                'pipeline_type': 'observium'
+            },
         ],
         'test_watermark': [
-            {'name': 'observium_ports', 'timestamp': 1628160620},
-            {'name': 'observium_mempools', 'timestamp': 1628160603},
-            {'name': 'observium_mempools_edit', 'timestamp': 1628160603},
-            {'name': 'observium_processors', 'timestamp': 1633517705},
-            {'name': 'observium_storage', 'timestamp': 1633518002},
+            {
+                'name': 'observium_ports',
+                'timestamp': 1628160620
+            },
+            {
+                'name': 'observium_mempools',
+                'timestamp': 1628160603
+            },
+            {
+                'name': 'observium_mempools_edit',
+                'timestamp': 1628160603
+            },
+            {
+                'name': 'observium_processors',
+                'timestamp': 1633517705
+            },
+            {
+                'name': 'observium_storage',
+                'timestamp': 1633518002
+            },
         ],
         'test_delete_pipeline': [
-            {'name': 'observium_ports'},
-            {'name': 'observium_mempools'},
-            {'name': 'observium_mempools_edit'},
-            {'name': 'observium_processors'},
-            {'name': 'observium_storage'},
+            {
+                'name': 'observium_ports'
+            },
+            {
+                'name': 'observium_mempools'
+            },
+            {
+                'name': 'observium_mempools_edit'
+            },
+            {
+                'name': 'observium_processors'
+            },
+            {
+                'name': 'observium_storage'
+            },
         ],
         'test_source_delete': [
-            {'name': 'observium_ports'},
-            {'name': 'observium_mempools'},
-            {'name': 'observium_processors'},
-            {'name': 'observium_storage'},
+            {
+                'name': 'observium'
+            },
         ],
     }
 

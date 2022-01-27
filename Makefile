@@ -232,6 +232,8 @@ run-cacti: run-mysql
 run-mysql:
 	$(DOCKER_COMPOSE_DEV) up -d mysql
 
+run-observium: run-mysql
+
 run-postgres:
 	$(DOCKER_COMPOSE_DEV) up -d postgres
 

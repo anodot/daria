@@ -65,6 +65,7 @@ PIPELINE_STATUS = Counter(
 KAFKA_CONSUMER_LAG = Gauge('kafka_consumer_lag', 'Kafka consumer lag', ['topic'], multiprocess_mode='max')
 
 SOURCE_HTTP_ERRORS = Counter('source_http_errors', 'Source HTTP errors', ['pipeline_id', 'pipeline_type', 'code'])
+SOURCE_MYSQL_ERRORS = Counter('source_mysql_errors', 'Source MySQL errors', ['pipeline_id'])
 SCHEDULED_SCRIPTS_ERRORS = Counter('scheduled_scripts_errors', 'Scheduled scripts errors', ['script_name'])
 SCHEDULED_SCRIPT_EXECUTION_TIME = Gauge(
     'scheduled_script_execution_time', 'Time to execute a scheduled script', ['script_name'], multiprocess_mode='max'
