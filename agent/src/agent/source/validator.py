@@ -258,7 +258,7 @@ class ObserviumValidator(Validator):
                 self.source.config.get('username'),
                 self.source.config.get('password'),
                 self.source.config['database'],
-            ).execute('show databases')
+            ).execute('show tables')
         except Exception as e:
             raise ValidationException(
                 'Failed to connect to the Observium MySQL database. Make sure you provided correct configuration\n'

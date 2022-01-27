@@ -161,11 +161,7 @@ class ObserviumBuilder(Builder):
         return dim_configurations
 
     def _validate_dimensions(self):
-        incorrect_dims = [
-            dim_name for dim_name in self.config['dimension_configurations'].keys()
-            if dim_name not in self.config['dimensions']
-        ]
-        if incorrect_dims:
+        if incorrect_dims := self.config['dimension_configurations'].keys() - self.config['dimensions']:
             incorrect_dims = ", ".join(map(lambda s: f"`{s}`", incorrect_dims))
             raise Exception(
                 f'These values from dimension_configurations are not specified in dimensions: {incorrect_dims}'

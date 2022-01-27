@@ -22,7 +22,7 @@ CREATE TABLE `devices_locations` (
 
 LOCK TABLES `devices_locations` WRITE;
 INSERT INTO `devices_locations`
-VALUES (2, 1, 'SOME-LOC', NULL, NULL, NULL, NULL, NULL, NULL, 'geocode', 'Geocoding ENABLED...', 0, '2021-08-08 00:00:00');
+VALUES (2, 1, 'SOME-LOC', NULL, NULL, NULL, NULL, NULL, NULL, 'geocode', 'Geocoding ENABLED', 0, '2021-01-01 00:00:00');
 UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `devices`;
@@ -94,7 +94,7 @@ DROP TABLE IF EXISTS `devices`;
 
 LOCK TABLES `devices` WRITE;
 INSERT INTO `devices`
-VALUES (1, 0, 'host1', 'sys1', 'lable', '192.168.0.1', 'public', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'v2c', '161', NULL, NULL, NULL, 22, NULL, 'udp', 65505, '234789798FG43', '.1.3.6.1.4.1.1.1.2.29', 'Juniper Networks, Inc.', 'Operation Data Team', '14.1R7.4', 'HJ73E', 'Juniper', 'Internet Router', 'SOME-LOC', 'alpine', 1, 'ok', 0, NULL, NULL, 0, 1000, 1607830000, 0, '2021-08-08 00:00:00', '2021-08-08 00:00:00', '2021-08-08 00:00:00', 22.11, 80.21, NULL, 'network', 'HSNC749SKN', NULL, NULL, NULL, NULL, NULL, NULL);
+VALUES (1, 0, 'host1', 'sys1', 'lable', '192.168.0.1', 'public', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'v2c', '161', NULL, NULL, NULL, 22, NULL, 'udp', 65505, '234789798FG43', '.1.3.6.1.4.1.1.12.29', 'Juniper Networks, Inc.', 'Some Team', '10.0', 'HJ73E', 'Juniper', 'Internet Router', 'SOME-LOC', 'alpine', 1, 'ok', 0, NULL, NULL, 0, 1000, 1607830000, 0, '2021-01-01 00:00:00', '2021-01-01 00:00:00', '2021-01-01 00:00:00', 22.11, 80.21, NULL, 'network', 'HSNC749SKN', NULL, NULL, NULL, NULL, NULL, NULL);
 UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `ports`;
@@ -183,9 +183,9 @@ CREATE TABLE `ports` (
 
 LOCK TABLES `ports` WRITE;
 INSERT INTO `ports`
-VALUES (1, 1, 1, 'ia', 'fxp', 0, 'fxp0', NULL, NULL, NULL, NULL, NULL, 'fxp0.300', 'fxp0', 1, 10000000, 'true', 'false', 10, 'down', 'up', NULL, 1514, 'ethernet.Csmacd', '', '00a0a5744682', NULL, '2021-03-31 22:57:53', NULL, NULL, NULL, 0, 0, 0, 0, 0, 0, 0, 100500, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1628160620, 299, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0),
-         (2, 1, 1, 'nv', 'dsc', NULL, 'dsc', NULL, NULL, NULL, NULL, NULL, 'dsc', 'dsc', 5, 0, 'false', 'false', 0, 'up', 'up', NULL, 2147483647, 'other', '', NULL, NULL, '2021-03-31 22:57:53', NULL, NULL, NULL, 0, 0, 0, 0, 0, 0, 0, 100400, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1628160620, 299, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0),
-         (3, 1, 1, 'nv', 'fxp', 0, 'fxp0', NULL, NULL, NULL, NULL, NULL, 'fxp0.300', 'fxp0', 6, 0, 'true', 'false', 10, 'down', 'up', NULL, 1514, 'other', '', '00a0a5744682', NULL, '2021-03-31 22:57:53', NULL, NULL, NULL, 0, 0, 0, 0, 0, 0, 0, 100400, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1628160620, 299, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
+VALUES (1, 1, 1, 'ia', 'gst', 0, 'gst0', NULL, NULL, NULL, NULL, NULL, 'gst0.300', 'gst0', 1, 10000000, 'true', 'false', 10, 'down', 'up', NULL, 1514, 'ethernet.Anodot', '', '00fd665sd', NULL, '2021-01-01 00:00:00', NULL, NULL, NULL, 0, 0, 0, 0, 0, 0, 0, 100500, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1628160620, 299, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0),
+         (2, 1, 1, 'nv', 'grm', NULL, 'mrm', NULL, NULL, NULL, NULL, NULL, 'dsc', 'dsc', 5, 0, 'false', 'false', 0, 'up', 'up', NULL, 89524542, 'other', '', NULL, NULL, '2021-01-01 00:00:00', NULL, NULL, NULL, 0, 0, 0, 0, 0, 0, 0, 100400, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1628160620, 299, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0),
+         (3, 1, 1, 'nv', 'gst', 0, 'gst0', NULL, NULL, NULL, NULL, NULL, 'gst0.300', 'gst0', 6, 0, 'true', 'false', 10, 'down', 'up', NULL, 1514, 'other', '', '00adf0fsd7', NULL, '2021-01-01 00:00:00', NULL, NULL, NULL, 0, 0, 0, 0, 0, 0, 0, 100400, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1628160620, 299, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
 UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `mempools`;
@@ -273,7 +273,7 @@ DROP TABLE IF EXISTS `processors`;
 
 LOCK TABLES `processors` WRITE;
 INSERT INTO `processors`
-VALUES (1, 187073, NULL, 1, '.1.3.6.1.4.1.9.9.109.1.1.1.1.8.2082', 202, 'cpm', 'description', 0, 1, NULL, NULL, NULL, NULL, 3, 1633517705, 0);
+VALUES (1, 187073, NULL, 1, '.1.3.6.1.9.1.1.1.1.1.1.1', 202, 'cpm', 'description', 0, 1, NULL, NULL, NULL, NULL, 3, 1633517705, 0);
 UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `mempools_lookup`;
