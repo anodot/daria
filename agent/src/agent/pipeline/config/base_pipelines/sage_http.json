@@ -438,9 +438,6 @@
           "key" : "SAGE_URL",
           "value" : "http://sage/api/search"
         }, {
-          "key" : "QUERY",
-          "value" : "group = test"
-        }, {
           "key" : "INTERVAL_IN_MINUTES",
           "value" : "1440"
         }, {
