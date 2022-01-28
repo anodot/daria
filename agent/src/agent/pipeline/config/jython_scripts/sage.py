@@ -138,5 +138,5 @@ def main():
 
 
 cur_batch_, offset_ = main()
-if cur_batch_.size() + cur_batch_.errorCount() + cur_batch_.eventCount() > 0:
+if cur_batch_.size() + cur_batch_.errorCount() > 0:
     cur_batch_.process(entityName, str(offset_))
