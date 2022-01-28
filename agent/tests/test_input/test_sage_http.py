@@ -18,10 +18,10 @@ class TestSage(TestInputBase):
              'advanced_options': '\n\n'}],
         'test_edit': [{'options': ['-a', 'test_sage_value_const'], 'value': 'y\nclicks\n\n\n\n'}],
         'test_create_source_with_file': [{'file_name': 'sage_sources'}],
-        'test_create_with_file': [{
-            'file_name': 'sage_pipelines',
-            'override_config': {'days_to_backfill': _get_days_to_backfill()},
-        }]
+        'test_create_with_file': [
+            {'file_name': 'sage_pipelines', 'override_config': {'days_to_backfill': _get_days_to_backfill()}},
+            {'file_name': 'sage_pipelines_dvp'},
+        ]
     }
 
     def test_source_create(self, cli_runner):

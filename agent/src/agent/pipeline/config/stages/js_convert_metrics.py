@@ -1,4 +1,5 @@
 from .base import JSProcessor
+from typing import Optional
 
 
 class JSConvertMetrics(JSProcessor):
@@ -39,8 +40,9 @@ state['DIMENSIONS'] = {self.pipeline.dimension_paths_with_names};
 state['MEASUREMENTS'] = {self.pipeline.value_paths_with_names};
 state['COUNT_RECORDS'] = {int(self.pipeline.count_records)};
 state['COUNT_RECORDS_MEASUREMENT_NAME'] = '{self.pipeline.count_records_measurement_name}';
-state['INTERVAL'] = {self.pipeline.interval if self.pipeline.interval is not None else 'null'};
+state['INTERVAL'] = {self._get_interval()};
 state['HEADER_ATTRIBUTES'] = {self.pipeline.header_attributes};
+state['SEND_WATERMARK_IF_NO_DATA'] = '{str(bool(self.pipeline.dvp_config))}';
         """
 
     def get_config(self) -> dict:
@@ -49,3 +51,12 @@ state['HEADER_ATTRIBUTES'] = {self.pipeline.header_attributes};
             'script': self._get_script(),
             'stageRequiredFields': self._required_fields()
         }
+
+    def _get_interval(self) -> Optional[int]:
+        return self.pipeline.interval if self.pipeline.interval is not None else 'null'
+
+
+class SageJSConvertMetrics30(JSConvertMetrics30):
+    def _get_interval(self) -> Optional[int]:
+        # This workaround is needed because 'interval' value in Sage's pipeline configuration set in minutes
+        return self.pipeline.interval * 60 if self.pipeline.interval is not None else 'null'

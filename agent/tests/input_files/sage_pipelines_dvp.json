@@ -1,0 +1,18 @@
+[
+  {
+    "source": "test_sage_1",
+    "pipeline_id": "test_sage_schema_file_dvp",
+    "measurement_names": {"Clicks":  "clicks"},
+    "values": {"Clicks":  "gauge"},
+    "dimensions": ["ver", "Country"],
+    "query_file": "/usr/src/app/tests/input_files/sage_query.txt",
+    "interval": 1440,
+    "days_to_backfill": 1,
+    "dvpConfig": {
+      "baseRollup": "LONGROLLUP",
+      "maxDVPDurationHours": 24,
+      "gaugeValue": {"keepLastValue": true},
+      "counterValue": {"value": 0}
+    }
+  }
+]

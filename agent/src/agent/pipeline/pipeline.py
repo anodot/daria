@@ -348,6 +348,10 @@ class Pipeline(Entity, sdc_client.IPipeline):
     def is_strict(self) -> bool:
         return bool(self.config.get('strict', True))
 
+    @property
+    def dvp_config(self) -> dict:
+        return self.config.get('dvpConfig', {})
+
     def get_streamsets_config(self) -> dict:
         return pipeline.manager.create_streamsets_pipeline_config(self)
 

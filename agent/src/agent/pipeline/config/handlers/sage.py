@@ -27,7 +27,7 @@ class SageConfigHandler(NoSchemaConfigHandler):
 class SageSchemaConfigHandler(SchemaConfigHandler):
     stages_to_override = {
         'source': stages.source.sage.SageScript,
-        'JavaScriptEvaluator_01': stages.js_convert_metrics.JSConvertMetrics30,
+        'JavaScriptEvaluator_01': stages.js_convert_metrics.SageJSConvertMetrics30,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties30,
         'event_add_metadata_tags': stages.expression_evaluator.AddMetadataTags,
         'destination': stages.destination.Destination

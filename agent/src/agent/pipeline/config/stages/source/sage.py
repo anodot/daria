@@ -28,7 +28,7 @@ class SageScript(JythonSource):
                 'value': self.pipeline.query
             },
             {
-                'key': 'INTERVAL',
+                'key': 'INTERVAL_IN_MINUTES',
                 'value': str(self.pipeline.interval)
             },
             {
@@ -42,5 +42,9 @@ class SageScript(JythonSource):
             {
                 'key': 'QUERY_SIZE',
                 'value': str(self.pipeline.batch_size)
+            },
+            {
+                'key': 'DVP_ENABLED',
+                'value': str(bool(self.pipeline.dvp_config))
             },
         ]

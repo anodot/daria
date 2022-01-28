@@ -13,11 +13,12 @@ def build(pipeline: Pipeline) -> dict:
         'missingDimPolicy': {
             'action': 'fill',
             'fill': 'NULL'
-        }
+        },
+        'dvpConfig': pipeline.dvp_config,
     }
 
 
-def _get_measurements(pipeline):
+def _get_measurements(pipeline: Pipeline) -> dict:
     measurements = {
         measurement_name: {
             'aggregation': _get_aggregation_type(target_type),
