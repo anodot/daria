@@ -2,10 +2,10 @@
   "pipelineConfig" : {
     "schemaVersion" : 6,
     "version" : 19,
-    "pipelineId" : "sagehttp3f008d4f-3724-4c23-adc8-525cb97c2332",
+    "pipelineId" : "sagehttp5cd21f79-98a7-472b-9036-e8b47f965457",
     "title" : "sage_http",
     "description" : "",
-    "uuid" : "84e434b2-292f-442c-9627-c6d4b8e6b645",
+    "uuid" : "d1e78ebe-9434-4184-9317-c8f25fa47c6a",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -416,7 +416,7 @@
       "stageVersion" : "1",
       "configuration" : [ {
         "name" : "script",
-        "value" : "global sdc\n\ntry:\n    sdc.importLock()\n    import sys\n    import os\n    import time\n    import traceback\n    import re\n\n    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))\n    import requests\n\n    from datetime import datetime, timedelta\nfinally:\n    sdc.importUnlock()\n\n# single threaded - no entityName because we need only one offset\nentityName = ''\nDATEFORMAT = '%Y-%m-%dT%H:%M:%SZ'\nN_REQUESTS_TRIES = 5\n\nquery_size = int(sdc.userParams.get('QUERY_SIZE', 1000))\n\n# because user specifies the interval in minutes\ninterval = timedelta(seconds=int(float(sdc.userParams['INTERVAL_IN_MINUTES']) * 60))\ndelay = timedelta(minutes=int(sdc.userParams['DELAY']))\ndays_to_backfill = timedelta(days=int(sdc.userParams['DAYS_TO_BACKFILL']))\nsdc.log.info('INTERVAL_IN_MINUTES: ' + str(interval))\nsdc.log.info('DELAY: ' + str(delay))\nsdc.log.info('DAYS_TO_BACKFILL: ' + str(days_to_backfill))\n\n\n# Jython converts datetime objects to java.sql.Timestamp when assigning it to a variable\ndef date_from_str(date):\n    return datetime.strptime(date, DATEFORMAT)\n\n\ndef date_to_str(date):\n    return date.strftime(DATEFORMAT)\n\n\ndef main():\n    # get previously committed offset or use 0\n    if sdc.lastOffsets.containsKey(entityName):\n        offset = sdc.lastOffsets.get(entityName)\n    elif days_to_backfill.total_seconds() > 0:\n        offset = date_to_str(datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0) - days_to_backfill)\n    else:\n        offset = date_to_str(datetime.utcnow().replace(second=0, microsecond=0) - interval)\n\n    sdc.log.info('Start offset: ' + str(offset))\n\n    cur_batch = sdc.createBatch()\n\n    while True:\n        start_time = time.time()\n        try:\n            end_time = date_to_str(date_from_str(offset) + interval)\n            latest_date = date_to_str(datetime.utcnow().replace(second=0, microsecond=0) - delay)\n            watermark_ts = (date_from_str(offset) - datetime(1970, 1, 1)).total_seconds()\n            while (date_from_str(end_time) - date_from_str(latest_date)).total_seconds() > time.time() - start_time:\n                time.sleep(2)\n                if sdc.isStopped():\n                    return cur_batch, offset\n\n            last = None\n            while True:\n                body = {\n                    \"query\": sdc.userParams['QUERY'],\n                    \"startTime\": offset,\n                    \"endTime\": end_time,\n                    \"size\": query_size,\n                    \"after\": last\n                }\n                skip = False\n                for i in range(1, N_REQUESTS_TRIES + 1):\n                    try:\n                        sdc.log.debug(str(body))\n                        res = requests.post(\n                            sdc.userParams['SAGE_URL'],\n                            headers={\n                                'Authorization': 'Bearer ' + sdc.userParams['SAGE_TOKEN'],\n                                'Source':  sdc.userParams.get('SAGE_SOURCE_HEADER', 'anodot')},\n                            json=body,\n                            verify=False,\n                            timeout=180\n                        )\n                        res.raise_for_status()\n                        sdc.log.debug(str(res.json()))\n                        break\n                    except requests.HTTPError as e:\n                        requests.post(sdc.userParams['MONITORING_URL'] + str(e.response.status_code))\n                        sdc.log.error(str(e))\n                        if i == N_REQUESTS_TRIES:\n                            if e.response.status_code == 504:\n                                sdc.log.info(str(body))\n                                skip = True\n                                break\n                            raise\n                        time.sleep(3 ** i)\n\n                if skip:\n                    break\n\n                data = res.json()\n                if data[\"hits\"]:\n                    # records with data\n                    for hit in data[\"hits\"]:\n                        if '@timestamp' not in hit:\n                            hit['@timestamp'] = offset\n                        hit['@timestamp'] = re.sub(r'(\\.[0-9]+)', '', hit['@timestamp'])\n                        hit['last_timestamp'] = watermark_ts\n                        record = sdc.createRecord('record created ' + str(datetime.now()))\n                        record.value = hit\n                        cur_batch.add(record)\n                elif sdc.userParams['DVP_ENABLED'] == 'True':\n                    # records with last_timestamp only\n                    record = sdc.createRecord('record created ' + str(datetime.now()))\n                    record.value = {'last_timestamp': watermark_ts}\n                    cur_batch.add(record)\n                break\n\n            # send batch and save offset\n            offset = end_time\n            cur_batch.process(entityName, offset)\n            cur_batch = sdc.createBatch()\n            # if the pipeline has been stopped, we should end the script\n            if sdc.isStopped():\n                return cur_batch, offset\n\n            # sleep_time = int(sdc.userParams['INTERVAL_IN_MINUTES']) * 60 - (time.time() - time_start)\n            # sdc.log.info('Sleep time: ' + str(sleep_time))\n            # time.sleep(sleep_time)\n        except Exception:\n            sdc.log.error(traceback.format_exc())\n            raise\n\n\ncur_batch_, offset_ = main()\nif cur_batch_.size() + cur_batch_.eventCount() > 0:\n    cur_batch_.process(entityName, str(offset_))"
+        "value" : "global sdc\n\ntry:\n    sdc.importLock()\n    import sys\n    import os\n    import time\n    import traceback\n    import re\n\n    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))\n    import requests\n\n    from datetime import datetime, timedelta\nfinally:\n    sdc.importUnlock()\n\n# single threaded - no entityName because we need only one offset\nentityName = ''\nDATEFORMAT = '%Y-%m-%dT%H:%M:%SZ'\nN_REQUESTS_TRIES = 5\n\nquery_size = int(sdc.userParams.get('QUERY_SIZE', 1000))\n\n# because user specifies the interval in minutes\ninterval = timedelta(seconds=int(float(sdc.userParams['INTERVAL_IN_MINUTES']) * 60))\ndelay = timedelta(minutes=int(sdc.userParams['DELAY']))\ndays_to_backfill = timedelta(days=int(sdc.userParams['DAYS_TO_BACKFILL']))\nsdc.log.info('INTERVAL_IN_MINUTES: ' + str(interval))\nsdc.log.info('DELAY: ' + str(delay))\nsdc.log.info('DAYS_TO_BACKFILL: ' + str(days_to_backfill))\n\n\n# Jython converts datetime objects to java.sql.Timestamp when assigning it to a variable\ndef date_from_str(date):\n    return datetime.strptime(date, DATEFORMAT)\n\n\ndef date_to_str(date):\n    return date.strftime(DATEFORMAT)\n\n\ndef main():\n    # get previously committed offset or use 0\n    if sdc.lastOffsets.containsKey(entityName):\n        offset = sdc.lastOffsets.get(entityName)\n    elif days_to_backfill.total_seconds() > 0:\n        offset = date_to_str(datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0) - days_to_backfill)\n    else:\n        offset = date_to_str(datetime.utcnow().replace(second=0, microsecond=0) - interval)\n\n    sdc.log.info('Start offset: ' + str(offset))\n\n    cur_batch = sdc.createBatch()\n\n    while True:\n        start_time = time.time()\n        try:\n            end_time = date_to_str(date_from_str(offset) + interval)\n            latest_date = date_to_str(datetime.utcnow().replace(second=0, microsecond=0) - delay)\n            watermark_ts = (date_from_str(offset) - datetime(1970, 1, 1)).total_seconds()\n            while (date_from_str(end_time) - date_from_str(latest_date)).total_seconds() > time.time() - start_time:\n                time.sleep(2)\n                if sdc.isStopped():\n                    return cur_batch, offset\n\n            last = None\n            while True:\n                body = {\n                    \"query\": sdc.userParams['QUERY'],\n                    \"startTime\": offset,\n                    \"endTime\": end_time,\n                    \"size\": query_size,\n                    \"after\": last\n                }\n                skip = False\n                for i in range(1, N_REQUESTS_TRIES + 1):\n                    try:\n                        sdc.log.debug(str(body))\n                        res = requests.post(\n                            sdc.userParams['SAGE_URL'],\n                            headers={\n                                'Authorization': 'Bearer ' + sdc.userParams['SAGE_TOKEN'],\n                                'Source':  sdc.userParams.get('SAGE_SOURCE_HEADER', 'anodot')},\n                            json=body,\n                            verify=False,\n                            timeout=180\n                        )\n                        res.raise_for_status()\n                        sdc.log.debug(str(res.json()))\n                        break\n                    except requests.HTTPError as e:\n                        requests.post(sdc.userParams['MONITORING_URL'] + str(e.response.status_code))\n                        sdc.log.error(str(e))\n                        if i == N_REQUESTS_TRIES:\n                            if e.response.status_code == 504:\n                                sdc.log.info(str(body))\n                                skip = True\n                                break\n                            raise\n                        time.sleep(3 ** i)\n\n                if skip:\n                    break\n\n                data = res.json()\n                if data[\"hits\"]:\n                    # records with data\n                    for hit in data[\"hits\"]:\n                        if '@timestamp' not in hit:\n                            hit['@timestamp'] = offset\n                        hit['@timestamp'] = re.sub(r'(\\.[0-9]+)', '', hit['@timestamp'])\n                        hit['last_timestamp'] = watermark_ts\n                        record = sdc.createRecord('record created ' + str(datetime.now()))\n                        record.value = hit\n                        cur_batch.add(record)\n                elif sdc.userParams['DVP_ENABLED'] == 'True':\n                    # records with last_timestamp only\n                    record = sdc.createRecord('record created ' + str(datetime.now()))\n                    record.value = {'last_timestamp': watermark_ts}\n                    cur_batch.add(record)\n                break\n\n            # send batch and save offset\n            offset = end_time\n            cur_batch.process(entityName, offset)\n            cur_batch = sdc.createBatch()\n            # if the pipeline has been stopped, we should end the script\n            if sdc.isStopped():\n                return cur_batch, offset\n\n            # sleep_time = int(sdc.userParams['INTERVAL_IN_MINUTES']) * 60 - (time.time() - time_start)\n            # sdc.log.info('Sleep time: ' + str(sleep_time))\n            # time.sleep(sleep_time)\n        except Exception:\n            sdc.log.error(traceback.format_exc())\n            raise\n\n\ncur_batch_, offset_ = main()\nif cur_batch_.size() + cur_batch_.errorCount() > 0:\n    cur_batch_.process(entityName, str(offset_))\n"
       }, {
         "name" : "scriptConf.batchSize",
         "value" : 1
@@ -438,6 +438,12 @@
           "key" : "SAGE_URL",
           "value" : "http://sage/api/search"
         }, {
+          "key" : "SAGE_SOURCE_HEADER",
+          "value" : "anodot"
+        }, {
+          "key" : "QUERY",
+          "value" : "group = test"
+        }, {
           "key" : "INTERVAL_IN_MINUTES",
           "value" : "1440"
         }, {
@@ -445,7 +451,7 @@
           "value" : "0"
         }, {
           "key" : "DAYS_TO_BACKFILL",
-          "value" : "1509"
+          "value" : "1510"
         }, {
           "key" : "QUERY_SIZE",
           "value" : "1000"
@@ -581,11 +587,12 @@
         "value" : [ ]
       } ],
       "uiInfo" : {
+        "yPos" : 50,
+        "stageType" : "PROCESSOR",
         "description" : "",
         "label" : "Add tags and static dimensions, convert timestamp to long",
         "xPos" : 500,
-        "yPos" : 50,
-        "stageType" : "PROCESSOR"
+        "displayMode" : "BASIC"
       },
       "inputLanes" : [ "JavaScriptEvaluator_01OutputLane15620549534460" ],
       "outputLanes" : [ "ExpressionEvaluator_02OutputLane15480856372920" ],
@@ -602,16 +609,6 @@
       }, {
         "name" : "fieldTypeConverterConfigs",
         "value" : [ {
-          "fields" : [ "/value" ],
-          "targetType" : "FLOAT",
-          "treatInputFieldAsDate" : false,
-          "dataLocale" : "en,US",
-          "scale" : -1,
-          "decimalScaleRoundingStrategy" : "ROUND_UNNECESSARY",
-          "dateFormat" : "OTHER",
-          "zonedDateTimeFormat" : "ISO_ZONED_DATE_TIME",
-          "encoding" : "UTF-8"
-        }, {
           "fields" : [ "/timestamp" ],
           "targetType" : "INTEGER",
           "treatInputFieldAsDate" : false,
@@ -646,11 +643,12 @@
         "value" : [ ]
       } ],
       "uiInfo" : {
+        "yPos" : 49,
+        "stageType" : "PROCESSOR",
         "description" : "Convert value to float and timestamp to int",
         "label" : "Convert value and timestamp",
         "xPos" : 720,
-        "yPos" : 50,
-        "stageType" : "PROCESSOR"
+        "displayMode" : "ADVANCED"
       },
       "inputLanes" : [ "ExpressionEvaluator_02OutputLane15480856372920" ],
       "outputLanes" : [ "destination_OutputLane" ],
@@ -666,7 +664,7 @@
         "value" : "UTF-8"
       }, {
         "name" : "conf.agentOffsetUrl",
-        "value" : ""
+        "value" : "http://anodot-agent/pipeline-offset/test_sage"
       }, {
         "name" : "conf.dataGeneratorFormatConfig.csvFileFormat",
         "value" : "CSV"
@@ -864,7 +862,7 @@
         "value" : false
       }, {
         "name" : "conf.client.proxy.uri",
-        "value" : null
+        "value" : ""
       }, {
         "name" : "conf.client.proxy.username",
         "value" : ""
@@ -972,11 +970,12 @@
         "value" : 60000
       } ],
       "uiInfo" : {
+        "yPos" : 52,
+        "stageType" : "TARGET",
         "description" : "",
         "label" : "HTTP Client 1",
         "xPos" : 939,
-        "yPos" : 52,
-        "stageType" : "TARGET"
+        "displayMode" : "ADVANCED"
       },
       "inputLanes" : [ "destination_OutputLane" ],
       "outputLanes" : [ ],
@@ -1002,20 +1001,20 @@
       "services" : [ ]
     },
     "info" : {
-      "pipelineId" : "sagehttp3f008d4f-3724-4c23-adc8-525cb97c2332",
+      "pipelineId" : "sagehttp5cd21f79-98a7-472b-9036-e8b47f965457",
       "title" : "sage_http",
       "description" : "",
-      "created" : 1643292407625,
-      "lastModified" : 1643364760906,
+      "created" : 1643372012180,
+      "lastModified" : 1643372012685,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "84e434b2-292f-442c-9627-c6d4b8e6b645",
+      "uuid" : "d1e78ebe-9434-4184-9317-c8f25fa47c6a",
       "valid" : true,
       "metadata" : {
         "labels" : [ "sage", "http" ]
       },
-      "name" : "sagehttp3f008d4f-3724-4c23-adc8-525cb97c2332",
+      "name" : "sagehttp5cd21f79-98a7-472b-9036-e8b47f965457",
       "sdcVersion" : "3.18.0",
       "sdcId" : "aedd2b1d-7e31-11ec-bf30-71997af3c765"
     },
@@ -1358,7 +1357,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1643292407629,
+      "timestamp" : 1643370563204,
       "valid" : true
     }, {
       "id" : "stageErrorAlertID",
@@ -1369,7 +1368,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1643292407629,
+      "timestamp" : 1643370563204,
       "valid" : true
     }, {
       "id" : "idleGaugeID",
@@ -1380,7 +1379,7 @@
       "condition" : "${time:now() - value() > 120000}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1643292407629,
+      "timestamp" : 1643370563204,
       "valid" : true
     }, {
       "id" : "batchTimeAlertID",
@@ -1391,12 +1390,12 @@
       "condition" : "${value() > 200}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1643292407629,
+      "timestamp" : 1643370563204,
       "valid" : true
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "4c67cf6c-94ed-4d26-8197-84123c7c4aff",
+    "uuid" : "aab47327-fb8a-412b-9a33-25bb4d6a0b5e",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : null
