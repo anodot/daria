@@ -5,6 +5,7 @@
     "dimensions": {
       "Host_Name": "sys1",
       "Location": "SOME-LOC",
+      "Vendor": "Anodot",
       "Memory_Pool_Description": "Module_1_(Processor)",
       "Memory_Pool_ID": "1",
       "Memory_Pool_Vendor": "None"

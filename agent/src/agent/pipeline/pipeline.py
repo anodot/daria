@@ -196,6 +196,10 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return TimestampType(self.config['timestamp']['type'])
 
     @property
+    def timestamp_name(self) -> Optional[str]:
+        return self.config.get('timestamp', {}).get('name')
+
+    @property
     def timestamp_format(self) -> str:
         return self.config['timestamp'].get('format')
 
@@ -337,8 +341,16 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return self.config.get('watermark_sleep_time', 10)
 
     @property
-    def lookup(self) -> dict:
-        return self.config.get('lookup', {})
+    def lookups(self) -> dict:
+        return self.config.get('lookups', {})
+
+    @property
+    def is_strict(self) -> bool:
+        return bool(self.config.get('strict', True))
+
+    @property
+    def dvp_config(self) -> dict:
+        return self.config.get('dvpConfig', {})
 
     @property
     def dvp_config(self) -> dict:
