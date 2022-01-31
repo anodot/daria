@@ -84,7 +84,10 @@ while True:
                 try:
                     sdc.log.debug(str(body))
                     res = requests.post(sdc.userParams['SAGE_URL'],
-                                        headers={'Authorization': 'Bearer ' + sdc.userParams['SAGE_TOKEN']},
+                                        headers={
+                                            'Authorization': 'Bearer ' + sdc.userParams['SAGE_TOKEN'],
+                                            'Source': 'anodot'
+                                        },
                                         json=body, verify=False, timeout=180)
 
                     res.raise_for_status()
