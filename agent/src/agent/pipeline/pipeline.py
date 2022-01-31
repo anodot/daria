@@ -352,10 +352,6 @@ class Pipeline(Entity, sdc_client.IPipeline):
     def dvp_config(self) -> dict:
         return self.config.get('dvpConfig', {})
 
-    @property
-    def dvp_config(self) -> dict:
-        return self.config.get('dvpConfig', {})
-
     def get_streamsets_config(self) -> dict:
         return pipeline.manager.create_streamsets_pipeline_config(self)
 
