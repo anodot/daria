@@ -1,4 +1,4 @@
-from agent import source
+from agent import monitoring, source
 from agent.pipeline.config.stages.base import JythonSource
 
 
@@ -46,5 +46,9 @@ class SageScript(JythonSource):
             {
                 'key': 'DVP_ENABLED',
                 'value': str(bool(self.pipeline.dvp_config))
+            },
+            {
+                'key': 'MONITORING_URL',
+                'value': monitoring.get_monitoring_source_error_url(self.pipeline)
             },
         ]
