@@ -291,4 +291,4 @@ def init():
         )
     Field.process = monkey_patch_field_process(Field.process)
     FormField.process = monkey_patch_field_process(FormField.process)
-    BooleanField.false_values += False
+    BooleanField.false_values += False,
