@@ -2,10 +2,10 @@
   "pipelineConfig" : {
     "schemaVersion" : 6,
     "version" : 19,
-    "pipelineId" : "test_basic",
-    "title" : "test_basic",
+    "pipelineId" : "influxsch650425dc-063a-43e4-9777-d9fd343e10e2",
+    "title" : "influx_schema",
     "description" : "",
-    "uuid" : "c571cbc2-98de-4ca8-bb38-a8f6f6c5f979",
+    "uuid" : "04675a12-6226-4964-b6bc-c386a13ef25e",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -451,7 +451,7 @@
         "icon" : "jython.png",
         "description" : "",
         "label" : "Jython Scripting 1",
-        "xPos" : 70.08088684082031,
+        "xPos" : 29.765274047851562,
         "displayMode" : "BASIC"
       },
       "inputLanes" : [ ],
@@ -954,15 +954,52 @@
         "value" : 10
       } ],
       "uiInfo" : {
-        "yPos" : 119.29446411132812,
+        "yPos" : 118.17459106445312,
         "stageType" : "PROCESSOR",
         "description" : "",
         "label" : "Get Interval Records",
-        "xPos" : 283.6717529296875,
+        "xPos" : 203.04051208496094,
         "displayMode" : "BASIC"
       },
       "inputLanes" : [ "JythonScripting_01OutputLane16013726491540" ],
       "outputLanes" : [ "get_interval_recordsOutputLane15580084532730" ],
+      "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
+      "instanceName" : "filtering",
+      "library" : "streamsets-datacollector-basic-lib",
+      "stageName" : "com_streamsets_pipeline_stage_processor_expression_ExpressionDProcessor",
+      "stageVersion" : "2",
+      "configuration" : [ {
+        "name" : "expressionProcessorConfigs",
+        "value" : [ ]
+      }, {
+        "name" : "headerAttributeConfigs",
+        "value" : [ ]
+      }, {
+        "name" : "fieldAttributeConfigs",
+        "value" : [ ]
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "yPos" : 121.67219543457031,
+        "stageType" : "PROCESSOR",
+        "icon" : "expression.png",
+        "description" : "",
+        "label" : "Transformations",
+        "xPos" : 388.202880859375,
+        "displayMode" : "ADVANCED"
+      },
+      "inputLanes" : [ "get_interval_recordsOutputLane15580084532730" ],
+      "outputLanes" : [ "ExpressionEvaluator_03OutputLane16436440176080" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -999,14 +1036,14 @@
         "value" : [ ]
       } ],
       "uiInfo" : {
-        "yPos" : 118.17107391357422,
+        "yPos" : 122.65058135986328,
         "stageType" : "PROCESSOR",
         "description" : "",
         "label" : "Process Response",
-        "xPos" : 521.6593017578125,
+        "xPos" : 564.2147216796875,
         "displayMode" : "BASIC"
       },
-      "inputLanes" : [ "get_interval_recordsOutputLane15580084532730" ],
+      "inputLanes" : [ "ExpressionEvaluator_03OutputLane16436440176080" ],
       "outputLanes" : [ "process_responseOutputLane15518645609860" ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -1044,11 +1081,11 @@
         "value" : [ ]
       } ],
       "uiInfo" : {
-        "yPos" : 118.00569915771484,
+        "yPos" : 119.1255874633789,
         "stageType" : "PROCESSOR",
         "description" : "",
         "label" : "Transform Records",
-        "xPos" : 724.8220520019531,
+        "xPos" : 750.5792541503906,
         "displayMode" : "ADVANCED"
       },
       "inputLanes" : [ "process_responseOutputLane15518645609860" ],
@@ -1165,7 +1202,7 @@
         "icon" : "expression.png",
         "description" : "",
         "label" : "Add tags and static dimensions",
-        "xPos" : 919.8220520019531,
+        "xPos" : 932.1407775878906,
         "displayMode" : "BASIC"
       },
       "inputLanes" : [ "destination_OutputLane" ],
@@ -1222,7 +1259,7 @@
         "icon" : "converter.png",
         "description" : "",
         "label" : "Convert timestamp to int",
-        "xPos" : 1122,
+        "xPos" : 1136.5584716796875,
         "displayMode" : "BASIC"
       },
       "inputLanes" : [ "ExpressionEvaluator_02OutputLane16215134030410" ],
@@ -1585,6 +1622,21 @@
       }, {
         "name" : "stageRecordPreconditions",
         "value" : [ ]
+      }, {
+        "name" : "conf.parallelSendersNumber",
+        "value" : 1
+      }, {
+        "name" : "conf.maxBatchSize",
+        "value" : 1000
+      }, {
+        "name" : "conf.propertiesPath",
+        "value" : null
+      }, {
+        "name" : "conf.partitioningKeyPath",
+        "value" : null
+      }, {
+        "name" : "conf.maxSendResponseWait",
+        "value" : 60000
       } ],
       "uiInfo" : {
         "yPos" : 255.89299774169922,
@@ -1898,6 +1950,21 @@
       }, {
         "name" : "conf.dataGeneratorFormatConfig.basicAuthUserInfoForRegistration",
         "value" : null
+      }, {
+        "name" : "conf.parallelSendersNumber",
+        "value" : 1
+      }, {
+        "name" : "conf.maxBatchSize",
+        "value" : 1000
+      }, {
+        "name" : "conf.propertiesPath",
+        "value" : null
+      }, {
+        "name" : "conf.partitioningKeyPath",
+        "value" : null
+      }, {
+        "name" : "conf.maxSendResponseWait",
+        "value" : 60000
       } ],
       "uiInfo" : {
         "yPos" : 117.64195251464844,
@@ -1931,22 +1998,22 @@
       "services" : [ ]
     },
     "info" : {
-      "pipelineId" : "test_basic",
-      "title" : "test_basic",
+      "pipelineId" : "influxsch650425dc-063a-43e4-9777-d9fd343e10e2",
+      "title" : "influx_schema",
       "description" : "",
-      "created" : 1629113073994,
-      "lastModified" : 1629120867983,
+      "created" : 1643643984163,
+      "lastModified" : 1643644394729,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "c571cbc2-98de-4ca8-bb38-a8f6f6c5f979",
+      "uuid" : "04675a12-6226-4964-b6bc-c386a13ef25e",
       "valid" : true,
       "metadata" : {
         "labels" : [ "influx", "http" ]
       },
-      "name" : "test_basic",
+      "name" : "influxsch650425dc-063a-43e4-9777-d9fd343e10e2",
       "sdcVersion" : "3.18.0",
-      "sdcId" : "5ca24b42-fe84-11eb-8c51-9d6a00b59418"
+      "sdcId" : "6870a493-82a5-11ec-b9a4-f737384f346b"
     },
     "metadata" : {
       "labels" : [ "influx", "http" ]
@@ -2325,7 +2392,7 @@
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "2eb050ff-6f6e-48ef-ae86-d3ef1d608d57",
+    "uuid" : "a2a76dec-6e1f-4aef-9d63-b1460f6116c6",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : null

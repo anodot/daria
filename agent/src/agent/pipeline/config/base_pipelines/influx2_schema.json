@@ -2,10 +2,10 @@
   "pipelineConfig" : {
     "schemaVersion" : 6,
     "version" : 19,
-    "pipelineId" : "test_basic",
-    "title" : "test_influx2",
+    "pipelineId" : "influx2sc0e533d95-5b42-4930-a313-c1d65f4b2ad6",
+    "title" : "influx2_schema",
     "description" : "",
-    "uuid" : "3bf8365a-d0a1-4a01-943c-58008d227b37",
+    "uuid" : "51148d92-fa17-4d4b-9fd4-38fd6b9523ff",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -459,12 +459,12 @@
         "value" : "TO_ERROR"
       } ],
       "uiInfo" : {
-        "yPos" : 115.18173217773438,
+        "yPos" : 119.74232482910156,
         "stageType" : "SOURCE",
         "icon" : "jython.png",
         "description" : "",
         "label" : "Jython Scripting 1",
-        "xPos" : 331.0808868408203,
+        "xPos" : 178.30101013183594,
         "displayMode" : "ADVANCED"
       },
       "inputLanes" : [ ],
@@ -484,7 +484,7 @@
         "value" : ""
       }, {
         "name" : "script",
-        "value" : "global sdc\n\ntry:\n    sdc.importLock()\n    import sys\n    import os\n    import collections\n\n    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))\n\n    from datetime import datetime\nfinally:\n    sdc.importUnlock()\n\nDATEFORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'\n\n\ndef to_timestamp(date):\n    epoch = datetime(1970, 1, 1)\n    return (date - epoch).total_seconds()\n\n\nrecords = {}\nfor record in sdc.records:\n    # * 1000 because of strange implementaion of 'Add tags and static dimensions', it will divide by 1000 later\n    timestamp = to_timestamp(datetime.strptime(record.value[sdc.userParams['TIMESTAMP_COLUMN']], DATEFORMAT)) * 1000\n    if timestamp in records:\n        r = records[timestamp]\n        r[record.value['_field']] = record.value['_value']\n        continue\n    record.value[record.value['_field']] = record.value['_value']\n    record.value[sdc.userParams['TIMESTAMP_COLUMN']] = timestamp\n    records[timestamp] = record.value\n\nrecords = sorted(records.items(), key=lambda x: x[1][sdc.userParams['TIMESTAMP_COLUMN']])\nrecords = collections.OrderedDict(records)\n\nfor timestamp, obj in records.items():\n    record = sdc.createRecord('record created ' + str(timestamp))\n    record.value = obj\n    sdc.output.write(record)\n"
+        "value" : "global sdc\n\ntry:\n    sdc.importLock()\n    import sys\n    import os\n    import collections\n\n    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))\n\n    from datetime import datetime\nfinally:\n    sdc.importUnlock()\n\nDATEFORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'\n\n\ndef to_timestamp(date):\n    epoch = datetime(1970, 1, 1)\n    return (date - epoch).total_seconds()\n\n\nrecords = {}\nfor record in sdc.records:\n    # * 1000 because of strange implementaion of 'Add tags and static dimensions', it will divide by 1000 later\n    timestamp = to_timestamp(datetime.strptime(record.value[sdc.userParams['TIMESTAMP_COLUMN']], DATEFORMAT)) * 1000\n    if timestamp in records:\n        r = records[timestamp]\n        r[record.value['_field']] = record.value['_value']\n        continue\n    record.value[record.value['_field']] = record.value['_value']\n    record.value[sdc.userParams['TIMESTAMP_COLUMN']] = timestamp\n    records[timestamp] = record.value\n\nrecords = sorted(records.items(), key=lambda x: x[1][sdc.userParams['TIMESTAMP_COLUMN']])\nrecords = collections.OrderedDict(records)\n\nfor timestamp, obj in records.items():\n    record = sdc.createRecord('record created ' + str(timestamp))\n    record.value = obj\n    sdc.output.write(record)"
       }, {
         "name" : "destroyScript",
         "value" : ""
@@ -508,16 +508,53 @@
         "value" : [ ]
       } ],
       "uiInfo" : {
-        "yPos" : 117.18173217773438,
+        "yPos" : 120.60215759277344,
         "stageType" : "PROCESSOR",
         "icon" : "jython.png",
         "description" : "",
         "label" : "Transform records",
-        "xPos" : 551.0808868408203,
+        "xPos" : 373.2177276611328,
         "displayMode" : "ADVANCED"
       },
       "inputLanes" : [ "JythonScripting_01OutputLane16013726491540" ],
       "outputLanes" : [ "JythonEvaluator_01OutputLane16282574993230" ],
+      "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
+      "instanceName" : "filtering",
+      "library" : "streamsets-datacollector-basic-lib",
+      "stageName" : "com_streamsets_pipeline_stage_processor_expression_ExpressionDProcessor",
+      "stageVersion" : "2",
+      "configuration" : [ {
+        "name" : "expressionProcessorConfigs",
+        "value" : [ ]
+      }, {
+        "name" : "headerAttributeConfigs",
+        "value" : [ ]
+      }, {
+        "name" : "fieldAttributeConfigs",
+        "value" : [ ]
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "yPos" : 121.82936096191406,
+        "stageType" : "PROCESSOR",
+        "icon" : "expression.png",
+        "description" : "",
+        "label" : "Transformations",
+        "xPos" : 564.3009948730469,
+        "displayMode" : "BASIC"
+      },
+      "inputLanes" : [ "JythonEvaluator_01OutputLane16282574993230" ],
+      "outputLanes" : [ "ExpressionEvaluator_03OutputLane16436446664970" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -561,7 +598,7 @@
         "xPos" : 746.8220520019531,
         "displayMode" : "ADVANCED"
       },
-      "inputLanes" : [ "JythonEvaluator_01OutputLane16282574993230" ],
+      "inputLanes" : [ "ExpressionEvaluator_03OutputLane16436446664970" ],
       "outputLanes" : [ "destination_OutputLane" ],
       "eventLanes" : [ "transform_records_EventLane" ],
       "services" : [ ]
@@ -1038,6 +1075,21 @@
       }, {
         "name" : "conf.dataGeneratorFormatConfig.basicAuthUserInfoForRegistration",
         "value" : null
+      }, {
+        "name" : "conf.parallelSendersNumber",
+        "value" : 1
+      }, {
+        "name" : "conf.maxBatchSize",
+        "value" : 1000
+      }, {
+        "name" : "conf.propertiesPath",
+        "value" : null
+      }, {
+        "name" : "conf.partitioningKeyPath",
+        "value" : null
+      }, {
+        "name" : "conf.maxSendResponseWait",
+        "value" : 60000
       } ],
       "uiInfo" : {
         "yPos" : 117.64195251464844,
@@ -1407,6 +1459,21 @@
       }, {
         "name" : "stageRecordPreconditions",
         "value" : [ ]
+      }, {
+        "name" : "conf.parallelSendersNumber",
+        "value" : 1
+      }, {
+        "name" : "conf.maxBatchSize",
+        "value" : 1000
+      }, {
+        "name" : "conf.propertiesPath",
+        "value" : null
+      }, {
+        "name" : "conf.partitioningKeyPath",
+        "value" : null
+      }, {
+        "name" : "conf.maxSendResponseWait",
+        "value" : 60000
       } ],
       "uiInfo" : {
         "yPos" : 258.8929977416992,
@@ -1441,22 +1508,22 @@
       "services" : [ ]
     },
     "info" : {
-      "pipelineId" : "test_influx2",
-      "title" : "test_influx2",
+      "pipelineId" : "influx2sc0e533d95-5b42-4930-a313-c1d65f4b2ad6",
+      "title" : "influx2_schema",
       "description" : "",
-      "created" : 1629113109895,
-      "lastModified" : 1629120267136,
+      "created" : 1643644623025,
+      "lastModified" : 1643644750148,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "3bf8365a-d0a1-4a01-943c-58008d227b37",
+      "uuid" : "51148d92-fa17-4d4b-9fd4-38fd6b9523ff",
       "valid" : true,
       "metadata" : {
         "labels" : [ "influx2", "http" ]
       },
-      "name" : "test_influx2",
+      "name" : "influx2sc0e533d95-5b42-4930-a313-c1d65f4b2ad6",
       "sdcVersion" : "3.18.0",
-      "sdcId" : "5ca24b42-fe84-11eb-8c51-9d6a00b59418"
+      "sdcId" : "6870a493-82a5-11ec-b9a4-f737384f346b"
     },
     "metadata" : {
       "labels" : [ "influx2", "http" ]
@@ -1835,7 +1902,7 @@
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "2fec423d-2ebd-43d3-b864-b589a3c1e7da",
+    "uuid" : "7cd3af37-b3c2-4868-950e-a5fd9d719b04",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : null

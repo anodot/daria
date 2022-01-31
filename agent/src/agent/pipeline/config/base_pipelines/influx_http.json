@@ -2,10 +2,10 @@
   "pipelineConfig" : {
     "schemaVersion" : 6,
     "version" : 19,
-    "pipelineId" : "inf749f1f16-a5b7-4b71-834b-f680aced71e9",
-    "title" : "test_influx_file_short",
+    "pipelineId" : "influxhttd7b5f014-f7b1-48a3-8568-838b5ce9b70b",
+    "title" : "influx_http_base",
     "description" : "",
-    "uuid" : "4b914db7-d87a-400f-886a-1f1015491482",
+    "uuid" : "619f8f7d-50bb-4b01-90d1-fc4ff8a7ddd5",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -448,7 +448,8 @@
         "icon" : "jython.png",
         "description" : "",
         "label" : "Jython Scripting 1",
-        "xPos" : 482.0633544921875
+        "xPos" : 332.1975402832031,
+        "displayMode" : "BASIC"
       },
       "inputLanes" : [ ],
       "outputLanes" : [ "JythonScripting_01OutputLane16013726491540" ],
@@ -954,11 +955,48 @@
         "stageType" : "PROCESSOR",
         "description" : "",
         "label" : "Get Interval Records",
-        "xPos" : 705.0634155273438,
+        "xPos" : 545.9953002929688,
         "displayMode" : "BASIC"
       },
       "inputLanes" : [ "JythonScripting_01OutputLane16013726491540" ],
       "outputLanes" : [ "get_interval_recordsOutputLane15580084532730" ],
+      "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
+      "instanceName" : "filtering",
+      "library" : "streamsets-datacollector-basic-lib",
+      "stageName" : "com_streamsets_pipeline_stage_processor_expression_ExpressionDProcessor",
+      "stageVersion" : "2",
+      "configuration" : [ {
+        "name" : "expressionProcessorConfigs",
+        "value" : [ ]
+      }, {
+        "name" : "headerAttributeConfigs",
+        "value" : [ ]
+      }, {
+        "name" : "fieldAttributeConfigs",
+        "value" : [ ]
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "yPos" : 172.25897979736328,
+        "stageType" : "PROCESSOR",
+        "icon" : "expression.png",
+        "description" : "",
+        "label" : "Transformations",
+        "xPos" : 746.7442626953125,
+        "displayMode" : "ADVANCED"
+      },
+      "inputLanes" : [ "get_interval_recordsOutputLane15580084532730" ],
+      "outputLanes" : [ "ExpressionEvaluator_01OutputLane16436434639580" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -1002,7 +1040,7 @@
         "xPos" : 943.2346801757812,
         "displayMode" : "BASIC"
       },
-      "inputLanes" : [ "get_interval_recordsOutputLane15580084532730" ],
+      "inputLanes" : [ "ExpressionEvaluator_01OutputLane16436434639580" ],
       "outputLanes" : [ "process_responseOutputLane15518645609860" ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -1407,6 +1445,21 @@
       }, {
         "name" : "conf.dataGeneratorFormatConfig.basicAuthUserInfoForRegistration",
         "value" : null
+      }, {
+        "name" : "conf.parallelSendersNumber",
+        "value" : 1
+      }, {
+        "name" : "conf.maxBatchSize",
+        "value" : 1000
+      }, {
+        "name" : "conf.propertiesPath",
+        "value" : null
+      }, {
+        "name" : "conf.partitioningKeyPath",
+        "value" : null
+      }, {
+        "name" : "conf.maxSendResponseWait",
+        "value" : 60000
       } ],
       "uiInfo" : {
         "yPos" : 174.06565856933594,
@@ -1440,22 +1493,22 @@
       "services" : [ ]
     },
     "info" : {
-      "pipelineId" : "test_influx_file_short",
-      "title" : "test_influx_file_short",
+      "pipelineId" : "influxhttd7b5f014-f7b1-48a3-8568-838b5ce9b70b",
+      "title" : "influx_http_base",
       "description" : "",
-      "created" : 1629113108347,
-      "lastModified" : 1629120979041,
+      "created" : 1643643423248,
+      "lastModified" : 1643643938346,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "4b914db7-d87a-400f-886a-1f1015491482",
+      "uuid" : "619f8f7d-50bb-4b01-90d1-fc4ff8a7ddd5",
       "valid" : true,
       "metadata" : {
         "labels" : [ "influx", "http" ]
       },
-      "name" : "test_influx_file_short",
+      "name" : "influxhttd7b5f014-f7b1-48a3-8568-838b5ce9b70b",
       "sdcVersion" : "3.18.0",
-      "sdcId" : "5ca24b42-fe84-11eb-8c51-9d6a00b59418"
+      "sdcId" : "6870a493-82a5-11ec-b9a4-f737384f346b"
     },
     "metadata" : {
       "labels" : [ "influx", "http" ]
@@ -1834,7 +1887,7 @@
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "9562e5ca-1c9d-4356-b1ea-9e09b8529f62",
+    "uuid" : "1d4ff106-9e10-4831-a12d-6030f6b78cdc",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : null
