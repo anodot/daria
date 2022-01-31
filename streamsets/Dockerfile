@@ -1,4 +1,4 @@
-FROM streamsets/datacollector:3.18.0
+FROM streamsets/datacollector:3.18.0-latest
 
 ENV SDC_CONF_PARSER_LIMIT=5048576 SDC_CONF_RUNNER_THREAD_POOL_SIZE="100" STREAMSETS_LIBRARIES_EXTRA_DIR="/opt/sdc-extras/" \
 SDC_LOG="/data/logs"

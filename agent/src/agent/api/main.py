@@ -1,9 +1,8 @@
 import traceback
-import wtforms_json
 
 from flask import Flask, jsonify
 from agent import di
-from agent.modules import db, logger
+from agent.modules import db, logger, wtforms_json
 from agent.api.routes.monitoring import monitoring_bp
 from agent.api.routes.streamsets import streamsets
 from agent.api.routes.destination import destination_
