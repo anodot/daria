@@ -25,3 +25,11 @@ jobs:
 
       - name: Test
         run: make test-all
+
+      - name: Show logs
+        if: ${{ failure() }}
+        run: >
+          docker logs anodot-agent;
+          echo "DC logs "; docker logs dc;
+          echo "Dummy logs"; docker logs dummy_destination;
+          echo "Agent logs"; docker exec -i anodot-agent cat /var/log/agent/agent.log;

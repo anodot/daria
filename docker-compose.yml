@@ -3,6 +3,7 @@ version: '3.1'
 services:
   dc:
     build: streamsets
+    container_name: dc
     ports:
       - "18630:18630"
     restart: on-failure
@@ -99,7 +100,7 @@ services:
 #      - ./certs:/certs
 
   influx:
-    image: influxdb
+    image: influxdb:1.8
 #    ports:
 #      - "8086:8086"
     volumes:
