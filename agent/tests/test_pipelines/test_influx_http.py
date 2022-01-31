@@ -13,6 +13,7 @@ class TestInflux(TestPipelineBase):
             {'name': 'test_basic_offset'},
             {'name': 'test_influx_file_short'},
             {'name': 'test_influx_file_full'},
+            {'name': 'test_influx_file_transform'},
             {'name': 'test_influx2'},
             {'name': 'test_influx2_file_full'},
             {'name': 'influx2_influxql_pipeline'},
@@ -23,6 +24,7 @@ class TestInflux(TestPipelineBase):
             {'name': 'test_basic_offset'},
             {'name': 'test_influx_file_short'},
             {'name': 'test_influx_file_full'},
+            {'name': 'test_influx_file_transform'},
             {'name': 'test_influx2'},
             {'name': 'test_influx2_file_full'},
             {'name': 'influx2_influxql_pipeline'},
@@ -32,7 +34,8 @@ class TestInflux(TestPipelineBase):
         'test_output': [
             {'name': 'test_influx_file_short', 'output': 'influx.json', 'pipeline_type': 'influx'},
             {'name': 'test_influx_file_full', 'output': 'influx_file_full.json', 'pipeline_type': 'influx'},
-            {'name': 'test_influx_adv', 'output': 'influx_adv.json', 'pipeline_type': 'influx'}
+            {'name': 'test_influx_adv', 'output': 'influx_adv.json', 'pipeline_type': 'influx'},
+            {'name': 'test_influx_file_transform', 'output': 'influx_file_transform.json', 'pipeline_type': 'influx'},
         ],
         'test_output_schema': [
             {'name': 'test_basic', 'output': 'influx_schema.json', 'pipeline_type': 'influx'},
@@ -46,6 +49,7 @@ class TestInflux(TestPipelineBase):
             {'name': 'test_basic_offset'},
             {'name': 'test_influx_file_short'},
             {'name': 'test_influx_file_full'},
+            {'name': 'test_influx_file_transform'},
             {'name': 'test_influx2'},
             {'name': 'test_influx2_file_full'},
             {'name': 'influx2_influxql_pipeline'},

@@ -22,6 +22,22 @@
     "uses_schema": false
   },
   {
+    "source": "test_influx",
+    "pipeline_id": "test_influx_file_transform",
+    "measurement_name": "cpu_test",
+    "values": {"usage_active": "gauge"},
+    "dimensions": {
+      "required": [],
+      "optional": ["cpu", "host"]
+    },
+    "transform": {
+      "file": "/home/influx_transform.csv"
+    },
+    "properties": {"test": "val"},
+    "interval": 1200000,
+    "uses_schema": false
+  },
+  {
     "source": "test_influx2_file",
     "pipeline_id": "test_influx2_file_full",
     "measurement_name": "cpu_test",
