@@ -107,11 +107,11 @@ services:
       - ./volumes/influx-initdb:/docker-entrypoint-initdb.d
     environment:
       INFLUXDB_DB: test
-      INFLUXDB_HTTP_AUTH_ENABLED: 'true'
-      INFLUXDB_ADMIN_USER: admin
-      INFLUXDB_ADMIN_PASSWORD: admin
-      INFLUXDB_READ_USER: ro
-      INFLUXDB_READ_USER_PASSWORD: roro
+#      INFLUXDB_HTTP_AUTH_ENABLED: 'true'
+#      INFLUXDB_ADMIN_USER: admin
+#      INFLUXDB_ADMIN_PASSWORD: admin
+#      INFLUXDB_READ_USER: ro
+#      INFLUXDB_READ_USER_PASSWORD: roro
 
   squid:
     image: datadog/squid
