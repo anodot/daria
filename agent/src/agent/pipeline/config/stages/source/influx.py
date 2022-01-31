@@ -26,7 +26,10 @@ class InfluxSource(InfluxScript):
             'conf.client.basicAuth.password': self.pipeline.source.config.get('password', '')
         }
 
-    def get_query(self):
+    def get_query(self) -> str:
+        if self.pipeline.query:
+            return f"{quote_plus(self.pipeline.query)}"
+
         dimensions_to_select = [f'"{d}"::tag' for d in self.pipeline.dimension_paths]
         values_to_select = ['*::field' if v == '*' else f'"{v}"::field' for v in self.pipeline.value_paths]
         columns = quote_plus(','.join(dimensions_to_select + values_to_select))

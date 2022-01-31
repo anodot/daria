@@ -13,6 +13,7 @@ class InfluxConfigHandler(NoSchemaConfigHandler):
     stages_to_override = {
         'offset': stages.influx.InfluxScript,
         'source': stages.source.influx.InfluxSource,
+        'filtering': stages.expression_evaluator.Filtering,
         'destination': stages.destination.Destination
     }
 
@@ -60,6 +61,7 @@ class InfluxSchemaConfigHandler(SchemaConfigHandler):
         'source': stages.source.influx.InfluxSource,
         'transform_records': stages.js_convert_metrics.JSConvertMetrics30,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties30,
+        'filtering': stages.expression_evaluator.Filtering,
         'destination': stages.destination.Destination
     }
 
@@ -70,6 +72,7 @@ class Influx2SchemaConfigHandler(SchemaConfigHandler):
         'jython_transform_records': stages.influx.JythonTransformRecords,
         'js_create_metrics': stages.js_convert_metrics.JSConvertMetrics30,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties30,
+        'filtering': stages.expression_evaluator.Filtering,
         'destination': stages.destination.Destination
     }
 

@@ -2,10 +2,10 @@
   "pipelineConfig" : {
     "schemaVersion" : 6,
     "version" : 19,
-    "pipelineId" : "influxsch650425dc-063a-43e4-9777-d9fd343e10e2",
+    "pipelineId" : "influxsch65a36998-cf6a-47ce-b295-af4d0d7d20d3",
     "title" : "influx_schema",
     "description" : "",
-    "uuid" : "04675a12-6226-4964-b6bc-c386a13ef25e",
+    "uuid" : "d6dde07f-e5a5-458f-b06c-455922965b63",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -966,43 +966,6 @@
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
-      "instanceName" : "filtering",
-      "library" : "streamsets-datacollector-basic-lib",
-      "stageName" : "com_streamsets_pipeline_stage_processor_expression_ExpressionDProcessor",
-      "stageVersion" : "2",
-      "configuration" : [ {
-        "name" : "expressionProcessorConfigs",
-        "value" : [ ]
-      }, {
-        "name" : "headerAttributeConfigs",
-        "value" : [ ]
-      }, {
-        "name" : "fieldAttributeConfigs",
-        "value" : [ ]
-      }, {
-        "name" : "stageOnRecordError",
-        "value" : "TO_ERROR"
-      }, {
-        "name" : "stageRequiredFields",
-        "value" : [ ]
-      }, {
-        "name" : "stageRecordPreconditions",
-        "value" : [ ]
-      } ],
-      "uiInfo" : {
-        "yPos" : 121.67219543457031,
-        "stageType" : "PROCESSOR",
-        "icon" : "expression.png",
-        "description" : "",
-        "label" : "Transformations",
-        "xPos" : 388.202880859375,
-        "displayMode" : "ADVANCED"
-      },
-      "inputLanes" : [ "get_interval_recordsOutputLane15580084532730" ],
-      "outputLanes" : [ "ExpressionEvaluator_03OutputLane16436440176080" ],
-      "eventLanes" : [ ],
-      "services" : [ ]
-    }, {
       "instanceName" : "process_response",
       "library" : "streamsets-datacollector-basic-lib",
       "stageName" : "com_streamsets_pipeline_stage_processor_javascript_JavaScriptDProcessor",
@@ -1036,14 +999,14 @@
         "value" : [ ]
       } ],
       "uiInfo" : {
-        "yPos" : 122.65058135986328,
+        "yPos" : 114.81143951416016,
         "stageType" : "PROCESSOR",
         "description" : "",
         "label" : "Process Response",
-        "xPos" : 564.2147216796875,
+        "xPos" : 390.633544921875,
         "displayMode" : "BASIC"
       },
-      "inputLanes" : [ "ExpressionEvaluator_03OutputLane16436440176080" ],
+      "inputLanes" : [ "get_interval_recordsOutputLane15580084532730" ],
       "outputLanes" : [ "process_responseOutputLane15518645609860" ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -1081,11 +1044,11 @@
         "value" : [ ]
       } ],
       "uiInfo" : {
-        "yPos" : 119.1255874633789,
+        "yPos" : 114.64606475830078,
         "stageType" : "PROCESSOR",
         "description" : "",
         "label" : "Transform Records",
-        "xPos" : 750.5792541503906,
+        "xPos" : 579.2378234863281,
         "displayMode" : "ADVANCED"
       },
       "inputLanes" : [ "process_responseOutputLane15518645609860" ],
@@ -1132,138 +1095,6 @@
       },
       "inputLanes" : [ "transform_records_EventLane" ],
       "outputLanes" : [ "ExpressionEvaluator_01OutputLane16213399946710" ],
-      "eventLanes" : [ ],
-      "services" : [ ]
-    }, {
-      "instanceName" : "ExpressionEvaluator_02",
-      "library" : "streamsets-datacollector-basic-lib",
-      "stageName" : "com_streamsets_pipeline_stage_processor_expression_ExpressionDProcessor",
-      "stageVersion" : "2",
-      "configuration" : [ {
-        "name" : "expressionProcessorConfigs",
-        "value" : [ {
-          "fieldToSet" : "/tags",
-          "expression" : "${emptyMap()}"
-        }, {
-          "fieldToSet" : "/tags/source",
-          "expression" : "${emptyList()}"
-        }, {
-          "fieldToSet" : "/tags/source[0]",
-          "expression" : "${\"anodot-agent\"}"
-        }, {
-          "fieldToSet" : "/tags/source_host_id",
-          "expression" : "${emptyList()}"
-        }, {
-          "fieldToSet" : "/tags/source_host_id[0]",
-          "expression" : "${\"ABCDEF\"}"
-        }, {
-          "fieldToSet" : "/tags/source_host_name",
-          "expression" : "${emptyList()}"
-        }, {
-          "fieldToSet" : "/tags/source_host_name[0]",
-          "expression" : "${\"agent\"}"
-        }, {
-          "fieldToSet" : "/tags/pipeline_id",
-          "expression" : "${emptyList()}"
-        }, {
-          "fieldToSet" : "/tags/pipeline_id[0]",
-          "expression" : "${\"test_basic\"}"
-        }, {
-          "fieldToSet" : "/tags/pipeline_type",
-          "expression" : "${emptyList()}"
-        }, {
-          "fieldToSet" : "/tags/pipeline_type[0]",
-          "expression" : "${\"influx\"}"
-        }, {
-          "fieldToSet" : "/timestamp",
-          "expression" : "${record:value('/timestamp')/1000}"
-        } ]
-      }, {
-        "name" : "headerAttributeConfigs",
-        "value" : [ { } ]
-      }, {
-        "name" : "fieldAttributeConfigs",
-        "value" : [ {
-          "fieldToSet" : "/"
-        } ]
-      }, {
-        "name" : "stageOnRecordError",
-        "value" : "TO_ERROR"
-      }, {
-        "name" : "stageRequiredFields",
-        "value" : [ ]
-      }, {
-        "name" : "stageRecordPreconditions",
-        "value" : [ ]
-      } ],
-      "uiInfo" : {
-        "yPos" : 118.00569915771484,
-        "stageType" : "PROCESSOR",
-        "icon" : "expression.png",
-        "description" : "",
-        "label" : "Add tags and static dimensions",
-        "xPos" : 932.1407775878906,
-        "displayMode" : "BASIC"
-      },
-      "inputLanes" : [ "destination_OutputLane" ],
-      "outputLanes" : [ "ExpressionEvaluator_02OutputLane16215134030410" ],
-      "eventLanes" : [ ],
-      "services" : [ ]
-    }, {
-      "instanceName" : "FieldTypeConverter_01",
-      "library" : "streamsets-datacollector-basic-lib",
-      "stageName" : "com_streamsets_pipeline_stage_processor_fieldtypeconverter_FieldTypeConverterDProcessor",
-      "stageVersion" : "2",
-      "configuration" : [ {
-        "name" : "convertBy",
-        "value" : "BY_FIELD"
-      }, {
-        "name" : "fieldTypeConverterConfigs",
-        "value" : [ {
-          "fields" : [ "/timestamp" ],
-          "targetType" : "INTEGER",
-          "treatInputFieldAsDate" : false,
-          "dataLocale" : "en,US",
-          "scale" : -1,
-          "decimalScaleRoundingStrategy" : "ROUND_UNNECESSARY",
-          "dateFormat" : "YYYY_MM_DD",
-          "zonedDateTimeFormat" : "ISO_ZONED_DATE_TIME",
-          "encoding" : "UTF-8"
-        } ]
-      }, {
-        "name" : "wholeTypeConverterConfigs",
-        "value" : [ {
-          "sourceType" : "INTEGER",
-          "targetType" : "INTEGER",
-          "treatInputFieldAsDate" : false,
-          "dataLocale" : "en,US",
-          "scale" : -1,
-          "decimalScaleRoundingStrategy" : "ROUND_UNNECESSARY",
-          "dateFormat" : "YYYY_MM_DD",
-          "zonedDateTimeFormat" : "ISO_ZONED_DATE_TIME",
-          "encoding" : "UTF-8"
-        } ]
-      }, {
-        "name" : "stageOnRecordError",
-        "value" : "TO_ERROR"
-      }, {
-        "name" : "stageRequiredFields",
-        "value" : [ ]
-      }, {
-        "name" : "stageRecordPreconditions",
-        "value" : [ ]
-      } ],
-      "uiInfo" : {
-        "yPos" : 119,
-        "stageType" : "PROCESSOR",
-        "icon" : "converter.png",
-        "description" : "",
-        "label" : "Convert timestamp to int",
-        "xPos" : 1136.5584716796875,
-        "displayMode" : "BASIC"
-      },
-      "inputLanes" : [ "ExpressionEvaluator_02OutputLane16215134030410" ],
-      "outputLanes" : [ "FieldTypeConverter_01OutputLane16291208030790" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -1652,6 +1483,175 @@
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
+      "instanceName" : "filtering",
+      "library" : "streamsets-datacollector-basic-lib",
+      "stageName" : "com_streamsets_pipeline_stage_processor_expression_ExpressionDProcessor",
+      "stageVersion" : "2",
+      "configuration" : [ {
+        "name" : "expressionProcessorConfigs",
+        "value" : [ ]
+      }, {
+        "name" : "headerAttributeConfigs",
+        "value" : [ ]
+      }, {
+        "name" : "fieldAttributeConfigs",
+        "value" : [ ]
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "yPos" : 114.95295715332031,
+        "stageType" : "PROCESSOR",
+        "icon" : "expression.png",
+        "description" : "",
+        "label" : "Transformations",
+        "xPos" : 755.5228881835938,
+        "displayMode" : "ADVANCED"
+      },
+      "inputLanes" : [ "destination_OutputLane" ],
+      "outputLanes" : [ "ExpressionEvaluator_03OutputLane16436440176080" ],
+      "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
+      "instanceName" : "ExpressionEvaluator_02",
+      "library" : "streamsets-datacollector-basic-lib",
+      "stageName" : "com_streamsets_pipeline_stage_processor_expression_ExpressionDProcessor",
+      "stageVersion" : "2",
+      "configuration" : [ {
+        "name" : "expressionProcessorConfigs",
+        "value" : [ {
+          "fieldToSet" : "/tags",
+          "expression" : "${emptyMap()}"
+        }, {
+          "fieldToSet" : "/tags/source",
+          "expression" : "${emptyList()}"
+        }, {
+          "fieldToSet" : "/tags/source[0]",
+          "expression" : "${\"anodot-agent\"}"
+        }, {
+          "fieldToSet" : "/tags/source_host_id",
+          "expression" : "${emptyList()}"
+        }, {
+          "fieldToSet" : "/tags/source_host_id[0]",
+          "expression" : "${\"ABCDEF\"}"
+        }, {
+          "fieldToSet" : "/tags/source_host_name",
+          "expression" : "${emptyList()}"
+        }, {
+          "fieldToSet" : "/tags/source_host_name[0]",
+          "expression" : "${\"agent\"}"
+        }, {
+          "fieldToSet" : "/tags/pipeline_id",
+          "expression" : "${emptyList()}"
+        }, {
+          "fieldToSet" : "/tags/pipeline_id[0]",
+          "expression" : "${\"test_basic\"}"
+        }, {
+          "fieldToSet" : "/tags/pipeline_type",
+          "expression" : "${emptyList()}"
+        }, {
+          "fieldToSet" : "/tags/pipeline_type[0]",
+          "expression" : "${\"influx\"}"
+        }, {
+          "fieldToSet" : "/timestamp",
+          "expression" : "${record:value('/timestamp')/1000}"
+        } ]
+      }, {
+        "name" : "headerAttributeConfigs",
+        "value" : [ { } ]
+      }, {
+        "name" : "fieldAttributeConfigs",
+        "value" : [ {
+          "fieldToSet" : "/"
+        } ]
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "yPos" : 118.00569915771484,
+        "stageType" : "PROCESSOR",
+        "icon" : "expression.png",
+        "description" : "",
+        "label" : "Add tags and static dimensions",
+        "xPos" : 932.1407775878906,
+        "displayMode" : "BASIC"
+      },
+      "inputLanes" : [ "ExpressionEvaluator_03OutputLane16436440176080" ],
+      "outputLanes" : [ "ExpressionEvaluator_02OutputLane16215134030410" ],
+      "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
+      "instanceName" : "FieldTypeConverter_01",
+      "library" : "streamsets-datacollector-basic-lib",
+      "stageName" : "com_streamsets_pipeline_stage_processor_fieldtypeconverter_FieldTypeConverterDProcessor",
+      "stageVersion" : "2",
+      "configuration" : [ {
+        "name" : "convertBy",
+        "value" : "BY_FIELD"
+      }, {
+        "name" : "fieldTypeConverterConfigs",
+        "value" : [ {
+          "fields" : [ "/timestamp" ],
+          "targetType" : "INTEGER",
+          "treatInputFieldAsDate" : false,
+          "dataLocale" : "en,US",
+          "scale" : -1,
+          "decimalScaleRoundingStrategy" : "ROUND_UNNECESSARY",
+          "dateFormat" : "YYYY_MM_DD",
+          "zonedDateTimeFormat" : "ISO_ZONED_DATE_TIME",
+          "encoding" : "UTF-8"
+        } ]
+      }, {
+        "name" : "wholeTypeConverterConfigs",
+        "value" : [ {
+          "sourceType" : "INTEGER",
+          "targetType" : "INTEGER",
+          "treatInputFieldAsDate" : false,
+          "dataLocale" : "en,US",
+          "scale" : -1,
+          "decimalScaleRoundingStrategy" : "ROUND_UNNECESSARY",
+          "dateFormat" : "YYYY_MM_DD",
+          "zonedDateTimeFormat" : "ISO_ZONED_DATE_TIME",
+          "encoding" : "UTF-8"
+        } ]
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "yPos" : 119,
+        "stageType" : "PROCESSOR",
+        "icon" : "converter.png",
+        "description" : "",
+        "label" : "Convert timestamp to int",
+        "xPos" : 1136.5584716796875,
+        "displayMode" : "BASIC"
+      },
+      "inputLanes" : [ "ExpressionEvaluator_02OutputLane16215134030410" ],
+      "outputLanes" : [ "FieldTypeConverter_01OutputLane16291208030790" ],
+      "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
       "instanceName" : "destination",
       "library" : "anodot",
       "stageName" : "anodot_stage_destination_AnodotDTarget",
@@ -1998,22 +1998,22 @@
       "services" : [ ]
     },
     "info" : {
-      "pipelineId" : "influxsch650425dc-063a-43e4-9777-d9fd343e10e2",
+      "pipelineId" : "influxsch65a36998-cf6a-47ce-b295-af4d0d7d20d3",
       "title" : "influx_schema",
       "description" : "",
-      "created" : 1643643984163,
-      "lastModified" : 1643644394729,
+      "created" : 1643649562121,
+      "lastModified" : 1643649609104,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "04675a12-6226-4964-b6bc-c386a13ef25e",
+      "uuid" : "d6dde07f-e5a5-458f-b06c-455922965b63",
       "valid" : true,
       "metadata" : {
         "labels" : [ "influx", "http" ]
       },
-      "name" : "influxsch650425dc-063a-43e4-9777-d9fd343e10e2",
+      "name" : "influxsch65a36998-cf6a-47ce-b295-af4d0d7d20d3",
       "sdcVersion" : "3.18.0",
-      "sdcId" : "6870a493-82a5-11ec-b9a4-f737384f346b"
+      "sdcId" : "e625b380-82b3-11ec-b342-fdc836711968"
     },
     "metadata" : {
       "labels" : [ "influx", "http" ]
@@ -2392,7 +2392,7 @@
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "a2a76dec-6e1f-4aef-9d63-b1460f6116c6",
+    "uuid" : "ae442055-bb6b-485e-91bb-9847ccf401d0",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : null
