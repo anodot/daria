@@ -1,8 +1,7 @@
-import wtforms_json
-
 from flask import Flask, jsonify
 from agent.api.routes.destination import destination
 from agent.api.routes import source, pipeline, scripts
+from agent.modules import wtforms_json
 from agent.version import __version__
 
 wtforms_json.init()
