@@ -4,7 +4,6 @@
     "dimensions": {
       "INTERFACE_SPEED": "10000000",
       "Location": "SOME-LOC",
-      "Host_Name": "sys1",
       "DEST_STATE": "Iowa",
       "PARENT_ELEMENT_LOCATION": "Anodot"
     },
@@ -70,7 +69,6 @@
     "dimensions": {
       "INTERFACE_SPEED": "0",
       "Location": "SOME-LOC",
-      "Host_Name": "sys1",
       "DEST_STATE": "Nevada",
       "PARENT_ELEMENT_LOCATION": "other"
     },
@@ -135,8 +133,7 @@
     "dimensions": {
       "INTERFACE_SPEED": "0",
       "Location": "SOME-LOC",
-      "Host_Name": "sys1",
-      "DEST_STATE": "Nevada",
+      "DEST_STATE": "other",
       "PARENT_ELEMENT_LOCATION": "other"
     },
     "measurements": {

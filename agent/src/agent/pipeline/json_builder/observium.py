@@ -1,10 +1,6 @@
 from typing import Optional
 from agent import source
-from agent.modules import field
 from agent.pipeline.json_builder import Builder
-
-HOST_NAME = 'Host Name'
-LOCATION = 'Location'
 
 POLL_TIME_KEYS = {
     'ports': 'poll_time',
@@ -136,29 +132,16 @@ class ObserviumBuilder(Builder):
         return self.DEFAULT_MEASUREMENTS[self.default_values_type()]
 
     def _dimensions(self) -> list:
-        if self.config.get('dimensions') or not self.default_values_type():
-            dims = self.config.get('dimensions', [])
-        else:
-            dims = self.DEFAULT_DIMENSIONS[self.default_values_type()]
-        # all observium pipelines by default have these dimensions
-        # they are added from `devices` and `devices_locations` tables
-        if HOST_NAME not in dims:
-            dims.append(HOST_NAME)
-        if LOCATION not in dims:
-            dims.append(LOCATION)
-        return dims
+        return (
+            self.config.get('dimensions', []) if self.config.get('dimensions') or not self.default_values_type() else
+            self.DEFAULT_DIMENSIONS[self.default_values_type()]
+        )
 
     def _dimension_configurations(self):
-        if self.config.get('dimensions') or not self.default_values_type():
-            dim_configurations = self.config.get('dimension_configurations', {})
-        else:
-            # if there are no dimensions we'll use the default ones so need to use default configs as well
-            dim_configurations = self.DEFAULT_DIMENSION_CONFIGURATIONS[self.default_values_type()]
-        if HOST_NAME not in dim_configurations:
-            dim_configurations[HOST_NAME] = {field.Variable.VALUE_PATH: 'sysName'}
-        if LOCATION not in dim_configurations:
-            dim_configurations[LOCATION] = {field.Variable.VALUE_PATH: 'location'}
-        return dim_configurations
+        return (
+            self.config.get('dimension_configurations', {}) if self.config.get('dimensions')
+            or not self.default_values_type() else self.DEFAULT_DIMENSION_CONFIGURATIONS[self.default_values_type()]
+        )
 
     def _validate_dimensions(self):
         if incorrect_dims := self.config['dimension_configurations'].keys() - self.config['dimensions']:

@@ -4,8 +4,6 @@
     "timestamp": 1633517705,
     "dimensions": {
       "processor_type": "cpm",
-      "Host_Name": "sys1",
-      "Location": "SOME-LOC",
       "processor_name": "description"
     },
     "measurements": {
