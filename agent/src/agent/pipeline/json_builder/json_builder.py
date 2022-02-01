@@ -52,10 +52,7 @@ def build(config: dict) -> Pipeline:
 
 def build_raw(config: dict) -> Pipeline:
     _validate_config_for_create(config)
-    pipeline_ = pipeline.RawPipeline(
-        config['pipeline_id'],
-        source.repository.get_by_name(config['source'])
-    )
+    pipeline_ = pipeline.RawPipeline(config['pipeline_id'], source.repository.get_by_name(config['source']))
     return _build(config, pipeline_)
 
 
@@ -83,9 +80,7 @@ def edit_multiple(configs: list) -> List[Pipeline]:
 
 def edit(config: dict) -> Pipeline:
     pipeline_ = pipeline.repository.get_by_id(config['pipeline_id'])
-
     _load_config(pipeline_, config, is_edit=True)
-
     pipeline.manager.update(pipeline_)
     return pipeline_
 
@@ -99,7 +94,11 @@ def extract_configs(file) -> list:
         'items': {
             'type': 'object',
             'properties': {
-                'pipeline_id': {'type': 'string', 'minLength': 1, 'maxLength': 100}
+                'pipeline_id': {
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 100
+                }
             },
             'required': ['pipeline_id']
         }
@@ -114,8 +113,15 @@ def _validate_configs_for_create(configs: list):
         'items': {
             'type': 'object',
             'properties': {
-                'source': {'type': 'string', 'enum': source.repository.get_all_names()},
-                'pipeline_id': {'type': 'string', 'minLength': 1, 'maxLength': 100}
+                'source': {
+                    'type': 'string',
+                    'enum': source.repository.get_all_names()
+                },
+                'pipeline_id': {
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 100
+                }
             },
             'required': ['source', 'pipeline_id']
         }
@@ -127,8 +133,15 @@ def _validate_config_for_create(config: dict):
     json_schema = {
         'type': 'object',
         'properties': {
-            'source': {'type': 'string', 'enum': source.repository.get_all_names()},
-            'pipeline_id': {'type': 'string', 'minLength': 1, 'maxLength': 100}
+            'source': {
+                'type': 'string',
+                'enum': source.repository.get_all_names()
+            },
+            'pipeline_id': {
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 100
+            }
         },
         'required': ['source', 'pipeline_id']
     }
@@ -136,16 +149,48 @@ def _validate_config_for_create(config: dict):
 
 
 def _load_config(pipeline_: Pipeline, config: dict, is_edit=False):
-    if isinstance(pipeline_, pipeline.RawPipeline):
-        config['uses_schema'] = False
-    elif 'uses_schema' not in config:
-        if is_edit:
-            config['uses_schema'] = pipeline_.config.get('uses_schema', False)
-        else:
-            config['uses_schema'] = pipeline.manager.supports_schema(pipeline_)
+    config['uses_schema'] = _uses_schema(pipeline_, config, is_edit)
     json_builder.get(pipeline_, config, is_edit).build()
     # todo too many validations, 4 validations here
     pipeline.config.validators.get_config_validator(pipeline_.source.type).validate(pipeline_)
+
+
+class _SchemaChooser:
+    @staticmethod
+    def choose(pipeline_: Pipeline, config: dict, is_edit=False) -> bool:
+        if isinstance(pipeline_, pipeline.RawPipeline):
+            return False
+        elif 'uses_schema' not in config:
+            if is_edit:
+                return bool(pipeline_.config.get('uses_schema', False))
+            else:
+                return pipeline.manager.supports_schema(pipeline_)
+
+
+class _PromQLSchemaChooser(_SchemaChooser):
+    @staticmethod
+    def choose(pipeline_: Pipeline, config: dict, is_edit=False) -> bool:
+        # todo test it
+        conf_uses = False if 'uses_schema' not in config else bool(config['uses_schema'])
+        # todo test with empty dims
+        # PromQL pipelines support schema only if dimensions are specified
+        actual_schema = (
+            _SchemaChooser.choose(pipeline_, config, is_edit) and 'dimensions' in config and bool(config['dimensions'])
+            and 'values' in config and bool(config['values'])
+        )
+        if conf_uses and not actual_schema:
+            raise Exception(
+                'PromQL pipelines support protocol 3.0 only if `dimensions` and `measurements` are specified'
+            )
+        return actual_schema
+
+
+def _uses_schema(pipeline_: Pipeline, config: dict, is_edit=False) -> bool:
+    if isinstance(pipeline_.source, source.PromQLSource):
+        chooser = _PromQLSchemaChooser()
+    else:
+        chooser = _SchemaChooser()
+    return chooser.choose(pipeline_, config, is_edit)
 
 
 class Builder:

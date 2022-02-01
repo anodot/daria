@@ -17,15 +17,14 @@
         "victoria"
       ]
     },
-    "value": 5.0,
-    "properties": {
+    "dimensions": {
       "instance": "victoriametrics:8428",
       "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a",
-      "level": "info",
-      "target_type": "gauge",
-      "what": "log_messages_total",
       "location": "VictoriaMetrics/app/vmstorage/main_go:86",
       "job": "victoriametrics"
+    },
+    "measurements": {
+      "log_messages_total": 5.0
     },
     "timestamp": 1594113932
   },
@@ -47,15 +46,14 @@
         "victoria"
       ]
     },
-    "value": 7.0,
-    "properties": {
+    "dimensions": {
       "instance": "victoriametrics:8428",
       "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a",
-      "level": "info",
-      "target_type": "gauge",
-      "what": "log_messages_total",
       "location": "VictoriaMetrics/app/vmstorage/main_go:86",
       "job": "victoriametrics"
+    },
+    "measurements": {
+      "log_messages_total": 7.0
     },
     "timestamp": 1594113942
   },
@@ -77,15 +75,14 @@
         "victoria"
       ]
     },
-    "value": 1.0,
-    "properties": {
+    "dimensions": {
       "instance": "victoriametrics:8428",
       "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a",
-      "level": "info",
-      "target_type": "gauge",
-      "what": "log_messages_total",
       "location": "VictoriaMetrics/app/vmstorage/main_go:86",
       "job": "victoriametrics"
+    },
+    "measurements": {
+      "log_messages_total": 1.0
     },
     "timestamp": 1594113952
   },
@@ -107,15 +104,14 @@
         "victoria"
       ]
     },
-    "value": 1.0,
-    "properties": {
+    "dimensions": {
       "instance": "victoriametrics:8428",
       "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a",
-      "level": "info",
-      "target_type": "gauge",
-      "what": "log_messages_total",
       "location": "VictoriaMetrics/app/vmstorage/main_go:86",
       "job": "victoriametrics"
+    },
+    "measurements": {
+      "log_messages_total": 1.0
     },
     "timestamp": 1594113962
   },
@@ -137,15 +133,14 @@
         "victoria"
       ]
     },
-    "value": 3.0,
-    "properties": {
+    "dimensions": {
       "instance": "victoriametrics:8428",
       "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a",
-      "level": "info",
-      "target_type": "gauge",
-      "what": "log_messages_total",
       "location": "VictoriaMetrics/app/vmstorage/main_go:86",
       "job": "victoriametrics"
+    },
+    "measurements": {
+      "log_messages_total": 3.0
     },
     "timestamp": 1594113972
   },
@@ -167,15 +162,14 @@
         "victoria"
       ]
     },
-    "value": 9.0,
-    "properties": {
+    "dimensions": {
       "instance": "victoriametrics:8428",
       "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a",
-      "level": "info",
-      "target_type": "gauge",
-      "what": "log_messages_total",
       "location": "VictoriaMetrics/app/vmstorage/main_go:86",
       "job": "victoriametrics"
+    },
+    "measurements": {
+      "log_messages_total": 9.0
     },
     "timestamp": 1594113982
   },
@@ -197,15 +191,14 @@
         "victoria"
       ]
     },
-    "value": 2.0,
-    "properties": {
+    "dimensions": {
       "instance": "victoriametrics:8428",
       "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a",
-      "level": "info",
-      "target_type": "gauge",
-      "what": "log_messages_total",
       "location": "VictoriaMetrics/app/vmstorage/main_go:86",
       "job": "victoriametrics"
+    },
+    "measurements": {
+      "log_messages_total": 2.0
     },
     "timestamp": 1594113992
   },
@@ -227,15 +220,14 @@
         "victoria"
       ]
     },
-    "value": 4.0,
-    "properties": {
+    "dimensions": {
       "instance": "victoriametrics:8428",
       "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a",
-      "level": "info",
-      "target_type": "gauge",
-      "what": "log_messages_total",
       "location": "VictoriaMetrics/app/vmstorage/main_go:86",
       "job": "victoriametrics"
+    },
+    "measurements": {
+      "log_messages_total": 4.0
     },
     "timestamp": 1594114002
   },
@@ -257,15 +249,14 @@
         "victoria"
       ]
     },
-    "value": 1.0,
-    "properties": {
+    "dimensions": {
       "instance": "victoriametrics:8428",
       "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a",
-      "level": "info",
-      "target_type": "gauge",
-      "what": "log_messages_total",
       "location": "VictoriaMetrics/app/vmstorage/main_go:86",
       "job": "victoriametrics"
+    },
+    "measurements": {
+      "log_messages_total": 1.0
     },
     "timestamp": 1594114012
   },
@@ -287,15 +278,14 @@
         "victoria"
       ]
     },
-    "value": 2.0,
-    "properties": {
+    "dimensions": {
       "instance": "victoriametrics:8428",
       "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a",
-      "level": "info",
-      "target_type": "gauge",
-      "what": "log_messages_total",
       "location": "VictoriaMetrics/app/vmstorage/main_go:86",
       "job": "victoriametrics"
+    },
+    "measurements": {
+      "log_messages_total": 2.0
     },
     "timestamp": 1594114022
   }

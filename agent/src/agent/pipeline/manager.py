@@ -17,7 +17,9 @@ LOG_LEVELS = [logging.getLevelName(logging.INFO), logging.getLevelName(logging.E
 MAX_SAMPLE_RECORDS = 3
 
 
-def supports_schema(pipeline_: Pipeline):
+def supports_schema(pipeline_: Pipeline) -> bool:
+    if isinstance(pipeline_, (TestPipeline, RawPipeline)):
+        return False
     supported = [
         source.TYPE_CLICKHOUSE,
         source.TYPE_DIRECTORY,
@@ -27,7 +29,10 @@ def supports_schema(pipeline_: Pipeline):
         source.TYPE_MYSQL,
         source.TYPE_ORACLE,
         source.TYPE_POSTGRES,
+        source.TYPE_PROMETHEUS,
         source.TYPE_SAGE,
+        source.TYPE_THANOS,
+        source.TYPE_VICTORIA,
     ]
     return pipeline_.source.type in supported
 

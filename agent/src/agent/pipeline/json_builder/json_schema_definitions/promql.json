@@ -11,7 +11,10 @@
     "interval": {"type": "integer"},
     "delay": {"type": "integer"},
     "pipeline_id": {"type": "string"},
-    "source": {"type": "string"}
+    "source": {"type": "string"},
+    "uses_schema": {"type": "boolean"},
+    "dimensions": {"type": "array", "items": {"type": "string"}},
+    "values": {"type": "object"}
   },
   "required": ["query", "interval"]
 }

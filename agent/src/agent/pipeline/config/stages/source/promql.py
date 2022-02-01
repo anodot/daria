@@ -51,6 +51,10 @@ class PromQLScript(JythonSource):
         ]
 
 
+class PromQLSchemaScript(PromQLScript):
+    JYTHON_SCRIPT = 'promql3.py'
+
+
 class TestPromQLScript(JythonSource):
     JYTHON_SCRIPT = 'promql.py'
     JYTHON_SCRIPTS_DIR = os.path.join(JythonSource.JYTHON_SCRIPTS_DIR, 'test_pipelines')

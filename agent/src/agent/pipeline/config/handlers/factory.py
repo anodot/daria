@@ -60,8 +60,11 @@ def _get_schema_handler(pipeline_: Pipeline, base_config: dict) -> SchemaConfigH
         source.TYPE_OBSERVIUM: pipeline.config.handlers.observium.ObserviumConfigHandler,
         source.TYPE_ORACLE: pipeline.config.handlers.jdbc.JDBCSchemaConfigHandler,
         source.TYPE_POSTGRES: pipeline.config.handlers.jdbc.JDBCSchemaConfigHandler,
+        source.TYPE_PROMETHEUS: pipeline.config.handlers.promql.PromQLSchemaConfigHandler,
         source.TYPE_SAGE: pipeline.config.handlers.sage.SageSchemaConfigHandler,
         source.TYPE_SNMP: pipeline.config.handlers.snmp.SNMPConfigHandler,
+        source.TYPE_THANOS: pipeline.config.handlers.promql.PromQLSchemaConfigHandler,
+        source.TYPE_VICTORIA: pipeline.config.handlers.promql.PromQLSchemaConfigHandler,
     }
     return handlers_protocol30[pipeline_.source.type](pipeline_, base_config)
 
