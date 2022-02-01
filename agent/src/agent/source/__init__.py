@@ -17,6 +17,7 @@ TYPE_INFLUX = 'influx'
 TYPE_INFLUX_2 = 'influx2'
 TYPE_KAFKA = 'kafka'
 TYPE_MONGO = 'mongo'
+TYPE_MSSQL = 'mssql'
 TYPE_MYSQL = 'mysql'
 TYPE_ORACLE = 'oracle'
 TYPE_OBSERVIUM = 'observium'
@@ -41,6 +42,7 @@ types = {
     TYPE_INFLUX_2: Influx2Source,
     TYPE_KAFKA: KafkaSource,
     TYPE_MONGO: MongoSource,
+    TYPE_MSSQL: JDBCSource,
     TYPE_MYSQL: JDBCSource,
     TYPE_OBSERVIUM: ObserviumSource,
     TYPE_ORACLE: JDBCSource,

@@ -117,10 +117,11 @@ class JDBCValidator(Validator):
 
     @if_validation_enabled
     def validate_connection_string(self):
-        try:
-            validator.validate_url_format_with_port(self.source.config[source.JDBCSource.CONFIG_CONNECTION_STRING])
-        except validator.ValidationException as e:
-            raise ValidationException(str(e))
+        # TODO add MS SQL Validator
+        # try:
+        #     validator.validate_url_format_with_port(self.source.config[source.JDBCSource.CONFIG_CONNECTION_STRING])
+        # except validator.ValidationException as e:
+        #     raise ValidationException(str(e))
         result = urllib.parse.urlparse(self.source.config[source.JDBCSource.CONFIG_CONNECTION_STRING])
         if self.source.type == source.TYPE_MYSQL and result.scheme != 'mysql':
             raise ValidationException('Wrong url scheme. Use `mysql`')
@@ -128,6 +129,8 @@ class JDBCValidator(Validator):
             raise ValidationException('Wrong url scheme. Use `postgresql`')
         if self.source.type == source.TYPE_CLICKHOUSE and result.scheme != 'clickhouse':
             raise ValidationException('Wrong url scheme. Use `clickhouse`')
+        if self.source.type == source.TYPE_MSSQL and result.scheme != 'sqlserver':
+            raise ValidationException('Wrong url scheme. Use `sqlserver`')
 
 
 class OracleValidator(JDBCValidator):
@@ -337,6 +340,7 @@ def get_validator(source_: Source) -> Validator:
         source.TYPE_INFLUX_2: Influx2Validator,
         source.TYPE_KAFKA: KafkaValidator,
         source.TYPE_MONGO: MongoValidator,
+        source.TYPE_MSSQL: JDBCValidator,
         source.TYPE_MYSQL: JDBCValidator,
         source.TYPE_OBSERVIUM: ObserviumValidator,
         source.TYPE_ORACLE: OracleValidator,
