@@ -2,7 +2,6 @@ from typing import Optional
 from agent import source
 from agent.pipeline.json_builder import Builder
 
-# todo we still need to specify these fields in the query, so probably little sense of keeping default values
 POLL_TIME_KEYS = {
     'ports': 'poll_time',
     'mempools': 'mempool_polled',
@@ -158,6 +157,3 @@ class ObserviumBuilder(Builder):
             return {'name': POLL_TIME_KEYS[self.default_values_type()], 'type': 'unix'}
         else:
             raise Exception('Neither `timestamp` nor `default_values_type` are specified')
-
-
-# ERROR - [observium_ports] - These values were not extracted from data: `ifInUcastPkts`, `ifOutUcastPkts`, `ifInErrors`, `ifOutErrors`, `ifOctets_rate`, `ifInOctets`, `ifOutOctets`, `ifInOctets_perc`, `ifOutOctets_perc`, `ifInNUcastPkts`, `ifOutNUcastPkts`, `ifInBroadcastPkts`, `ifOutBroadcastPkts`, `ifInMulticastPkts`, `ifOutMulticastPkts`, `port_mcbc`, `ifInDiscards`, `ifOutDiscards`, `ifDiscards_rate`
