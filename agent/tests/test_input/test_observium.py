@@ -3,7 +3,6 @@ from .test_zpipeline_base import TestInputBase
 from ..conftest import get_input_file_path
 
 
-# todo we have wrong docs, they say when editing via file all fields are optional, though all fields are required
 class TestObservium(TestInputBase):
     __test__ = True
     params = {
@@ -32,7 +31,7 @@ class TestObservium(TestInputBase):
         assert pipeline.repository.get_by_id('observium_storage').schema == {
             "version": "1",
             "name": "observium_storage",
-            "dimensions": ["Storage_size", "Host_Name", "Location"],
+            "dimensions": ["Storage_size"],
             "dvpConfig": {},
             "measurements": {
                 "my_own_field": {
