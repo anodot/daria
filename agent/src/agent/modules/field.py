@@ -9,6 +9,7 @@ VARIABLE = 'variable'
 CONSTANT = 'constant'
 
 
+# todo use Protocol and there was another place with similar methods
 class Field(ABC):
     @abstractmethod
     def get_name(self) -> str:

@@ -3,6 +3,7 @@
     "source": "observium",
     "pipeline_id": "observium_ports",
     "interval": 3600,
+    "delay": 3,
     "query": "select ifInBroadcastPkts, ifInErrors_rate, ifOctets_rate, ifOutUcastPkts, ifInNUcastPkts, ifUcastPkts_rate, ifInDiscards_rate, ifOutNUcastPkts_rate, ifOutBroadcastPkts_rate, ifOutMulticastPkts_rate, ifInUcastPkts, ifDiscards_rate, ifInOctets_rate, ifOutErrors, ifOutNUcastPkts, ifInOctets_perc, ifInNUcastPkts_rate, ifOutUcastPkts_rate, ifInDiscards, ifOutBroadcastPkts, ifInBroadcastPkts_rate, port_mcbc, ifInErrors, ifOutDiscards, ifOutOctets_rate, ifOutMulticastPkts, ifInUcastPkts_rate, ifOutOctets_perc, ifOutDiscards_rate, ifOutOctets, ifInMulticastPkts_rate, ifOutErrors_rate, ifInOctets, ifErrors_rate, ifInMulticastPkts, ifSpeed, port_label, poll_time, ifType, d.sysName, dl.location from ports p join devices d on d.device_id = p.device_id join devices_locations dl on dl.device_id = p.device_id",
     "default_values_type": "ports",
     "lookups": {
@@ -53,85 +54,5 @@
         ]
       }
     }
-  },
-  {
-    "source": "observium",
-    "pipeline_id": "observium_mempools",
-    "interval": 3600,
-    "default_values_type": "mempools",
-    "dimensions": [
-      "Memory_Pool_ID",
-      "Memory_Pool_Description",
-      "Memory_Pool_Vendor",
-      "Vendor"
-    ],
-    "dimension_configurations": {
-      "Vendor": {
-        "value_path": "vendor",
-        "transformations": [
-          {
-            "type": "function",
-            "name": "regex_substring",
-            "args": ["(.+)\\..+", "\\g<1>"]
-          }
-        ]
-      },
-      "Memory_Pool_ID": {
-        "value_path": "mempool_id"
-      },
-      "Memory_Pool_Description": {
-        "value_path": "mempool_descr"
-      },
-      "Memory_Pool_Vendor": {
-        "value_path": "mempool_mib"
-      }
-    },
-    "query": "select m.*, d.sysName, dl.location, ml.vendor from mempools m join devices d on d.device_id = m.device_id join devices_locations dl on dl.device_id = m.device_id join mempools_lookup ml on ml.mempool_id = m.mempool_id and ml.device_id = m.device_id"
-  },
-  {
-    "source": "observium",
-    "pipeline_id": "observium_mempools_edit",
-    "interval": 3600,
-    "default_values_type": "mempools",
-    "query": "select m.*, d.sysName, dl.location from mempools m join devices d on d.device_id = m.device_id join devices_locations dl on dl.device_id = m.device_id"
-  },
-  {
-    "source": "observium",
-    "pipeline_id": "observium_processors",
-    "interval": 3600,
-    "delay": 1,
-    "query": "select p.*, d.sysName, dl.location from processors p join devices d on d.device_id = p.device_id join devices_locations dl on dl.device_id = p.device_id",
-    "values": {
-      "processor_usage": "gauge"
-    },
-    "dimensions": ["processor_type", "processor_name"],
-    "dimension_configurations": {
-      "processor_name": {
-          "value_path": "processor_descr"
-      }
-    },
-    "timestamp": {
-      "type": "unix",
-      "name": "processor_polled"
-    }
-  },
-  {
-    "source": "observium",
-    "pipeline_id": "observium_storage",
-    "interval": 3600,
-    "default_values_type": "storage",
-    "dimensions": [
-      "Storage size"
-    ],
-    "dimension_configurations": {
-      "Storage size": {
-        "value_path": "storage_size"
-      }
-    },
-    "values": {
-      "my own field": "gauge",
-      "storage_perc": "gauge"
-    },
-    "query": "select s.*, d.sysName, dl.location from storage s join devices d on d.device_id = s.device_id join devices_locations dl on dl.device_id = s.device_id"
   }
 ]
