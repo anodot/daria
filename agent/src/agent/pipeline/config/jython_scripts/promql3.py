@@ -17,9 +17,6 @@ finally:
 entityName = ''
 N_REQUESTS_TRIES = 3
 
-# добавить тестовых данных с разными дименшенами. Или уже не надо?
-# добавить мониторинг для фейлд реквеста
-
 
 def get_now_with_delay():
     return int(time.time()) - int(sdc.userParams['DELAY_IN_MINUTES']) * 60
@@ -52,10 +49,11 @@ def make_request(url_):
                 timeout=sdc.userParams['QUERY_TIMEOUT']
             )
             res.raise_for_status()
-        except Exception as e:
+        except requests.HTTPError as e:
+            requests.post(sdc.userParams['MONITORING_URL'] + str(e.response.status_code))
+            sdc.log.error(str(e))
             if i == N_REQUESTS_TRIES:
                 raise
-            sdc.log.debug(str(e))
             time.sleep(i**2)
             continue
         break
@@ -77,7 +75,6 @@ def get_metric_name(record):
 def process_matrix(result_, end_):
     batch = sdc.createBatch()
     for res in result_['data']['result']:
-        # todo check if measures not here as well
         base_record = dict(res['metric'].items())
         for timestamp, value in res[get_result_key(result_)]:
             record = base_record.copy()
@@ -86,7 +83,6 @@ def process_matrix(result_, end_):
             sdc_record = sdc.createRecord('record created ' + str(get_now_with_delay()))
             sdc_record.value = record
             batch.add(sdc_record)
-            # todo check if batchSize works
             if batch.size == sdc.batchSize:
                 batch.process(entityName, str(end_))
                 batch = sdc.createBatch()
@@ -99,10 +95,8 @@ def process_vector(result_, end_):
     for res in result_['data']['result']:
         record = dict(res['metric'].items())
         timestamp, value = res[get_result_key(result_)]
-        # todo why end?
         # todo tests for schema vector
         record['timestamp'] = timestamp
-        # оно первый раз подставляет имя, а дальше нет
         record[get_metric_name(res)] = value
         sdc_record = sdc.createRecord('record created ' + str(get_now_with_delay()))
         sdc_record.value = record

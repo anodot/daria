@@ -190,6 +190,7 @@ def _uses_schema(pipeline_: Pipeline, config: dict, is_edit=False) -> bool:
         chooser = _PromQLSchemaChooser()
     else:
         chooser = _SchemaChooser()
+    # todo names don't fit, uses vs choose
     return chooser.choose(pipeline_, config, is_edit)
 
 

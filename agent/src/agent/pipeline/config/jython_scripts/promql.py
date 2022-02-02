@@ -49,10 +49,11 @@ def make_request(url_):
                 timeout=sdc.userParams['QUERY_TIMEOUT']
             )
             res.raise_for_status()
-        except Exception as e:
+        except requests.HTTPError as e:
+            requests.post(sdc.userParams['MONITORING_URL'] + str(e.response.status_code))
+            sdc.log.error(str(e))
             if i == N_REQUESTS_TRIES:
                 raise
-            sdc.log.debug(str(e))
             time.sleep(i**2)
             continue
         break
@@ -82,7 +83,6 @@ def create_base_metric(metric_name):
 
 
 def process_matrix(result_, end_):
-    i = 0
     cur_batch = sdc.createBatch()
     for res in result_['data']['result']:
         base_metric = create_base_metric(get_metric_name(res))
@@ -97,18 +97,16 @@ def process_matrix(result_, end_):
             new_record = sdc.createRecord('record created ' + str(get_now_with_delay()))
             new_record.value = metric
             cur_batch.add(new_record)
-            i += 1
-            if i % BATCH_SIZE == 0:
+            if cur_batch.size == sdc.batchSize:
                 cur_batch.process(entityName, str(end_))
                 cur_batch = sdc.createBatch()
         # if we didn't process the batch for the last time
-        if i % BATCH_SIZE != 0:
+        if cur_batch.size > 0:
             cur_batch.process(entityName, str(end_))
             cur_batch = sdc.createBatch()
 
 
 def process_vector(result_, end_):
-    i = 0
     cur_batch = sdc.createBatch()
     for res in result_['data']['result']:
         base_metric = create_base_metric(get_metric_name(res))
@@ -118,19 +116,15 @@ def process_vector(result_, end_):
             base_metric['properties'][dimension] = value
         timestamp, value = res[get_result_key(result_)]
         metric = base_metric
-        # todo WHY END?? TIMESTAMP IS NOT USED. Are they the same in this case?
-        # metric['timestamp'] = end_
         metric['timestamp'] = timestamp
         metric['value'] = value
         new_record = sdc.createRecord('record created ' + str(get_now_with_delay()))
         new_record.value = metric
         cur_batch.add(new_record)
-        i += 1
-        if i % BATCH_SIZE == 0:
+        if cur_batch.size == sdc.batchSize:
             cur_batch.process(entityName, str(end_))
             cur_batch = sdc.createBatch()
-        # if we didn't process the batch for the last time
-    if i % BATCH_SIZE != 0:
+    if cur_batch.size > 0:
         cur_batch.process(entityName, str(end_))
 
 
