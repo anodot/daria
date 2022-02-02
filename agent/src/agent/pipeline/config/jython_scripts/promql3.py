@@ -95,7 +95,8 @@ def process_vector(result_, end_):
     for res in result_['data']['result']:
         record = dict(res['metric'].items())
         timestamp, value = res[get_result_key(result_)]
-        # todo tests for schema vector
+        # here timestamp and end_ are the same values
+        # because aggregation funcitons return timestamp from the end request parameter
         record['timestamp'] = timestamp
         record[get_metric_name(res)] = value
         sdc_record = sdc.createRecord('record created ' + str(get_now_with_delay()))

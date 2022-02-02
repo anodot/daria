@@ -116,6 +116,8 @@ def process_vector(result_, end_):
             base_metric['properties'][dimension] = value
         timestamp, value = res[get_result_key(result_)]
         metric = base_metric
+        # here timestamp and end_ are the same values
+        # because aggregation funcitons return timestamp from the end request parameter
         metric['timestamp'] = timestamp
         metric['value'] = value
         new_record = sdc.createRecord('record created ' + str(get_now_with_delay()))

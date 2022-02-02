@@ -165,22 +165,22 @@ class _SchemaChooser:
                 return bool(pipeline_.config.get('uses_schema', False))
             else:
                 return pipeline.manager.supports_schema(pipeline_)
+        else:
+            return bool(config['uses_schema'])
 
 
 class _PromQLSchemaChooser(_SchemaChooser):
     @staticmethod
     def choose(pipeline_: Pipeline, config: dict, is_edit=False) -> bool:
-        # todo test it
         conf_uses = False if 'uses_schema' not in config else bool(config['uses_schema'])
-        # todo test with empty dims
         # PromQL pipelines support schema only if dimensions are specified
         actual_schema = (
             _SchemaChooser.choose(pipeline_, config, is_edit) and 'dimensions' in config and bool(config['dimensions'])
             and 'values' in config and bool(config['values'])
         )
         if conf_uses and not actual_schema:
-            raise Exception(
-                'PromQL pipelines support protocol 3.0 only if `dimensions` and `measurements` are specified'
+            raise ConfigurationException(
+                'PromQL pipelines support protocol 3.0 only if `dimensions` and `values` are specified'
             )
         return actual_schema
 
@@ -190,7 +190,6 @@ def _uses_schema(pipeline_: Pipeline, config: dict, is_edit=False) -> bool:
         chooser = _PromQLSchemaChooser()
     else:
         chooser = _SchemaChooser()
-    # todo names don't fit, uses vs choose
     return chooser.choose(pipeline_, config, is_edit)
 
 
@@ -252,3 +251,7 @@ class Builder:
     def _load_dimensions(self):
         if type(self.config.get('dimensions')) == list:
             self.config['dimensions'] = {'required': [], 'optional': self.config['dimensions']}
+
+
+class ConfigurationException(Exception):
+    pass

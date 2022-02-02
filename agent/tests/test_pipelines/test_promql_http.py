@@ -25,6 +25,9 @@ class TestPromQL(TestPipelineBase):
             {
                 'name': 'test_promql_schema'
             },
+            {
+                'name': 'test_promql_schema_rate'
+            },
         ],
         'test_force_stop': [
             {
@@ -44,6 +47,9 @@ class TestPromQL(TestPipelineBase):
             },
             {
                 'name': 'test_promql_schema'
+            },
+            {
+                'name': 'test_promql_schema_rate'
             },
         ],
         'test_output': [
@@ -74,6 +80,11 @@ class TestPromQL(TestPipelineBase):
                 'output': 'victoria_schema.jsonl',
                 'pipeline_type': 'victoria'
             },
+            {
+                'name': 'test_promql_schema_rate',
+                'output': 'victoria_schema_rate.jsonl',
+                'pipeline_type': 'victoria'
+            },
         ],
         'test_delete_pipeline': [
             {
@@ -93,6 +104,9 @@ class TestPromQL(TestPipelineBase):
             },
             {
                 'name': 'test_promql_schema'
+            },
+            {
+                'name': 'test_promql_schema_rate'
             },
         ],
         'test_source_delete': [
