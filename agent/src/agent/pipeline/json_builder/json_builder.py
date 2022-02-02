@@ -175,7 +175,8 @@ class _PromQLSchemaChooser(_SchemaChooser):
         conf_uses = False if 'uses_schema' not in config else bool(config['uses_schema'])
         # PromQL pipelines support schema only if dimensions are specified
         actual_schema = (
-            _SchemaChooser.choose(pipeline_, config, is_edit) and 'dimensions' in config and bool(config['dimensions'])
+            _SchemaChooser.choose(pipeline_, config, is_edit)
+            and 'dimensions' in config and bool(config['dimensions'])
             and 'values' in config and bool(config['values'])
         )
         if conf_uses and not actual_schema:
