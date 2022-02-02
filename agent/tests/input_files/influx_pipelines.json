@@ -30,11 +30,12 @@
       "required": [],
       "optional": ["cpu", "host"]
     },
+    "query": "SELECT \"cpu\",\"host\",\"test\",\"usage_active\"::field FROM \"cpu_test\" WHERE \"time\" <= 1552954426168997000",
     "transform": {
       "file": "/home/influx_transform.csv"
     },
     "properties": {"test": "val"},
-    "interval": 1200000,
+    "interval": 86400000,
     "uses_schema": false
   },
   {
