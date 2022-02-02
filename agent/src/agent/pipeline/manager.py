@@ -147,6 +147,8 @@ def _delete_schema(pipeline_: Pipeline):
 
 def _update_schema(pipeline_: Pipeline):
     new_schema = schema.build(pipeline_)
+    if pipeline_.dvp_config:  # set dvpConfig in schema only if it set in pipeline config
+        new_schema['dvpConfig'] = pipeline_.dvp_config
     old_schema = pipeline_.get_schema()
     if old_schema:
         if schema.equal(old_schema, new_schema):

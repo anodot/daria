@@ -14,7 +14,6 @@ def build(pipeline: Pipeline) -> dict:
             'action': 'fill',
             'fill': 'NULL'
         },
-        'dvpConfig': pipeline.dvp_config,
     }
 
 

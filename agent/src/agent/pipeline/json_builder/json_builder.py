@@ -148,6 +148,17 @@ def _load_config(pipeline_: Pipeline, config: dict, is_edit=False):
     pipeline.config.validators.get_config_validator(pipeline_.source.type).validate(pipeline_)
 
 
+def _deep_update(dst: dict, src: dict) -> dict:
+    """Updates a nested dictionary. Modifies ``dst`` in place"""
+    for key, value in src.items():
+        if isinstance(value, dict) and value:
+            returned = _deep_update(dst.get(key, {}), value)
+            dst[key] = returned
+        else:
+            dst[key] = src[key]
+    return dst
+
+
 class Builder:
     VALIDATION_SCHEMA_FILE_NAME = ''
     VALIDATION_SCHEMA_DIR_NAME = 'json_schema_definitions'
@@ -176,6 +187,7 @@ class Builder:
 
     def _validate_json_schema(self):
         if 'dvpConfig' in self.config:
+            self._load_dvp_config_with_default()
             self._validate_dvp_config_json_schema()
         with open(os.path.join(self.definitions_dir, self.VALIDATION_SCHEMA_FILE_NAME + '.json')) as f:
             schema = json.load(f)
@@ -187,6 +199,17 @@ class Builder:
         with open(os.path.join(self.definitions_dir, 'dvp_config.json')) as f:
             schema = json.load(f)
         jsonschema.validate(self.config['dvpConfig'], schema)
+
+    def _load_dvp_config_with_default(self):
+        config_to_update = self.config['dvpConfig']
+        self.config['dvpConfig'] = {
+            'baseRollup': 'MEDIUMROLLUP',
+            'maxDVPDurationHours': 24,
+            'preventNoData': True,
+            'gaugeValue': {'value': 0, 'keepLastValue': False},
+            'counterValue': {'value': 0, 'keepLastValue': False},
+        }
+        _deep_update(self.config['dvpConfig'], config_to_update)
 
     def _load_filtering(self):
         condition = self.config.get('filter', {}).get('condition')
