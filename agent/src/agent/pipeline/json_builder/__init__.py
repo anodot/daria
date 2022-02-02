@@ -37,6 +37,7 @@ def _get_builder(pipeline_: Pipeline, config: dict, is_edit: bool) -> Builder:
         source.TYPE_INFLUX_2: Influx2Builder,
         source.TYPE_KAFKA: KafkaBuilder,
         source.TYPE_MONGO: MongoBuilder,
+        source.TYPE_MSSQL: JDBCBuilder,
         source.TYPE_MYSQL: JDBCBuilder,
         source.TYPE_ORACLE: JDBCBuilder,
         source.TYPE_POSTGRES: JDBCBuilder,

@@ -1,0 +1,12 @@
+[
+  {
+    "type": "mssql",
+    "name": "test_mssql",
+    "config": {
+      "connection_string": "sqlserver://mssql:1433;databaseName=test;",
+      "hikariConfigBean.useCredentials": true,
+      "hikariConfigBean.username": "sa",
+      "hikariConfigBean.password": "TestTest01"
+    }
+  }
+]
