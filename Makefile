@@ -182,7 +182,7 @@ clean-docker-volumes:
 	rm -rf agent/output
 	$(DOCKER_COMPOSE_DEV) down -v --remove-orphans
 
-run-base-services: _run-base-services sleep
+run-base-services: _run-base-services half-sleep
 
 _run-base-services:
 	$(DOCKER_COMPOSE_DEV) up -d agent dc squid dummy_destination
