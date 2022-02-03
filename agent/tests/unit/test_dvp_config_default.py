@@ -74,35 +74,3 @@ class TestDvpConfigDefault(unittest.TestCase):
             'counterValue': {'value': 0, 'keepLastValue': False},
         }
 
-    def test_dummy_update_request(self):
-        headers = {'Content-Type': 'application/json'}
-
-        pipeline_id = 'test_id'
-        self.schema['id'] = pipeline_id
-        dvp_config = {
-            'baseRollup': 'LONGROLLUP',
-            'maxDVPDurationHours': 24
-        }
-        _deep_update(self.dvp_default, dvp_config)
-
-        assert self.schema['dvpConfig'] == {
-            'baseRollup': 'LONGROLLUP',
-            'maxDVPDurationHours': 24,
-            'preventNoData': True,
-            'gaugeValue': {'value': 0, 'keepLastValue': False},
-            'counterValue': {'value': 0, 'keepLastValue': False},
-        }
-
-        # POST with schema['id'] == id
-        url = f'{ANODOT_API_URL}/api/v1/stream-schemas/internal/?token={self.token}&id={pipeline_id}'
-        response = requests.request('POST', url, headers=headers, data=json.dumps(self.schema))
-        assert response.status_code == 200
-        assert response.json()['schema']['id'] == pipeline_id
-
-        # POST with schema['id'] != id
-        pipeline_id = 'other-id'
-        url = f'{ANODOT_API_URL}/api/v1/stream-schemas/internal/?token={self.token}&id={pipeline_id}'
-        response = requests.request('POST', url, headers=headers, data=json.dumps(self.schema))
-        assert response.status_code == 200
-        assert response.json()['schema']['id'] != pipeline_id
-        assert response.json()['schema']['id'] == self.schema['name'] + '-4321'
