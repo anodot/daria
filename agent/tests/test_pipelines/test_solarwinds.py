@@ -7,7 +7,7 @@ from .test_zpipeline_base import TestPipelineBase
 class TestSolarWinds(TestPipelineBase):
     __test__ = True
     params = {
-        'test_start': [{'name': 'solarwinds'}, {'name': 'solarwinds_file'}],
+        'test_start': [{'name': 'solarwinds', 'sleep': 15}, {'name': 'solarwinds_file', 'sleep': 15}],
         'test_force_stop': [{'name': 'solarwinds'}, {'name': 'solarwinds_file'}],
         'test_output': [
             {'name': 'solarwinds', 'output': 'solarwinds.json', 'pipeline_type': source.TYPE_SOLARWINDS},
