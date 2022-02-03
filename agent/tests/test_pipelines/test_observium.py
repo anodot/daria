@@ -9,23 +9,23 @@ class TestObservium(TestPipelineBase):
         'test_start': [
             {
                 'name': 'observium_ports',
-                'sleep': 20,
+                'sleep': 25,
             },
             {
                 'name': 'observium_mempools',
-                'sleep': 20,
+                'sleep': 25,
             },
             {
                 'name': 'observium_mempools_edit',
-                'sleep': 20,
+                'sleep': 25,
             },
             {
                 'name': 'observium_processors',
-                'sleep': 20,
+                'sleep': 25,
             },
             {
                 'name': 'observium_storage',
-                'sleep': 20,
+                'sleep': 25,
             },
         ],
         'test_force_stop': [
