@@ -72,7 +72,7 @@ def update_schema_mock():
             "modifiedTime": time.time(),
         }
     }
-    if not request.args.get('id'):
+    if not request.args.get('id') or request.args.get('id') != schema['id']:
         response['schema']['id'] = f'{schema["name"]}-4321'
     return json.dumps(response)
 
