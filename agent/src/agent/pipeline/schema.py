@@ -5,7 +5,7 @@ from agent.pipeline import Pipeline
 
 
 def build(pipeline: Pipeline) -> dict:
-    return {
+    schema_ = {
         'version': '1',
         'name': pipeline.name,
         'dimensions': pipeline.dimension_names,
@@ -15,6 +15,11 @@ def build(pipeline: Pipeline) -> dict:
             'fill': 'NULL'
         },
     }
+    if pipeline.dvp_config:  # set dvpConfig in schema only if it set in pipeline config
+        schema_['dvpConfig'] = pipeline.dvp_config
+    if pipeline.get_schema_id():
+        schema_['id'] = pipeline.get_schema_id()
+    return schema_
 
 
 def _get_measurements(pipeline: Pipeline) -> dict:
@@ -44,6 +49,12 @@ def equal(old_schema, new_schema) -> bool:
 def create(schema: dict) -> dict:
     # created schema contains additional id field
     return AnodotApiClient(destination.repository.get()).create_schema(schema)['schema']
+
+
+def update(schema: dict) -> dict:
+    # deletes schema and recreates with the same id field
+    delete(schema['id'])
+    return AnodotApiClient(destination.repository.get()).update_schema(schema)['schema']
 
 
 def search(pipeline_id: str) -> Optional[str]:
