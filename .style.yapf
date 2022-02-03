@@ -150,7 +150,7 @@ indent_dictionary_value=False
 indent_width=4
 
 # Join short lines into one line. E.g., single line 'if' statements.
-join_multiple_lines=True
+join_multiple_lines=False
 
 # Do not include spaces around selected binary operators. For example:
 #

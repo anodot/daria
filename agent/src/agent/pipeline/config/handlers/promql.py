@@ -1,6 +1,6 @@
 from agent.modules.logger import get_logger
 from agent.pipeline.config import stages
-from agent.pipeline.config.handlers.base import NoSchemaConfigHandler, SchemaConfigHandler
+from agent.pipeline.config.handlers.base import NoSchemaConfigHandler, SchemaConfigHandler, TestConfigHandler
 
 logger = get_logger(__name__)
 
@@ -23,7 +23,7 @@ class PromQLSchemaConfigHandler(SchemaConfigHandler):
     }
 
 
-class TestPromQLConfigHandler(PromQLConfigHandler):
+class TestPromQLConfigHandler(TestConfigHandler):
     stages_to_override = {
         'source': stages.source.promql.TestPromQLScript,
     }

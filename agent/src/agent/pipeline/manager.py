@@ -216,9 +216,7 @@ def disable_destination_logs(pipeline_: Pipeline):
 def build_test_pipeline(source_: Source) -> TestPipeline:
     # creating a new source because otherwise it will mess with the db session
     test_source = source.manager.create_source_obj(source_.name, source_.type, source_.config)
-    test_pipeline = TestPipeline(_get_test_pipeline_id(test_source), test_source)
-    test_pipeline.config['uses_schema'] = supports_schema(test_pipeline)
-    return test_pipeline
+    return TestPipeline(_get_test_pipeline_id(test_source), test_source)
 
 
 def _get_test_pipeline_id(source_: Source) -> str:
