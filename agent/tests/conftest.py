@@ -26,7 +26,7 @@ def api_client():
         yield client
 
 
-def get_output(file_name):
+def get_output(file_name) -> list:
     for filename in os.listdir(DUMMY_DESTINATION_OUTPUT_PATH):
         if filename == file_name:
             with open(os.path.join(DUMMY_DESTINATION_OUTPUT_PATH, filename)) as f:
