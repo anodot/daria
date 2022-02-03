@@ -59,6 +59,24 @@ def watermark_mock():
     return json.dumps({'errors': []})
 
 
+@app.route('/api/v1/stream-schemas/internal/', methods=['POST'])
+def update_schema_mock():
+    if request.args.get('token') and request.args.get('token') != 'correct_token':
+        return json.dumps({'errors': ['Data collection token is invalid']}), 401
+
+    schema = request.json
+    response = {
+        'schema': schema,
+        'meta': {
+            "createdTime": time.time(),
+            "modifiedTime": time.time(),
+        }
+    }
+    if not request.args.get('id'):
+        response['schema']['id'] = f'{schema["name"]}-4321'
+    return json.dumps(response)
+
+
 @app.route('/api/v2/access-token', methods=['POST'])
 def access_token_mock():
     if request.json['refreshToken'] == 'incorrect_key':
