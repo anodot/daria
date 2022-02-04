@@ -109,3 +109,12 @@ def _replace_list_illegal_chars(list_: list) -> list:
 
 def _replace_dict_illegal_chars(dict_: dict) -> dict:
     return {replace_illegal_chars(k): replace_illegal_chars(v) for k, v in dict_.items()}
+
+
+def deep_update(src: dict, dst: dict):
+    """Updates a nested dictionary. Modifies ``dst`` in place"""
+    for key, value in src.items():
+        if isinstance(value, dict) and value:
+            deep_update(value, dst.setdefault(key, {}))
+        else:
+            dst[key] = value
