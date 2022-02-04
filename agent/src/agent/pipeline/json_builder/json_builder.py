@@ -158,15 +158,11 @@ def _load_config(pipeline_: Pipeline, config: dict, is_edit=False):
 class _SchemaChooser:
     @staticmethod
     def choose(pipeline_: Pipeline, config: dict, is_edit=False) -> bool:
-        # todo make more unit tests?
         if not pipeline.manager.supports_schema(pipeline_):
             return False
         elif 'uses_schema' not in config:
-            if is_edit:
-                return bool(pipeline_.config.get('uses_schema', False))
-            else:
-                # we would return False earlier if it doesn't support schema, so the only option here is True
-                return True
+            # we would return False earlier if it doesn't support schema so if it's not edit it means it should use it
+            return bool(pipeline_.config.get('uses_schema', False)) if is_edit else True
         else:
             return bool(config['uses_schema'])
 

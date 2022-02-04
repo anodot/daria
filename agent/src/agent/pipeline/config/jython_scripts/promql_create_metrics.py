@@ -1,10 +1,5 @@
 global sdc, output, error
 
-try:
-    sdc.importLock()
-finally:
-    sdc.importUnlock()
-
 
 def get_properties(record):
     props = {k: v for k, v in record.value.items() if k not in ['timestamp', '__name__', record.value['what']]}
