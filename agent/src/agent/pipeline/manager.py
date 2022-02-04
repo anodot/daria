@@ -150,7 +150,7 @@ def _update_schema(pipeline_: Pipeline):
     old_schema = pipeline_.get_schema()
     if old_schema:
         if not schema.equal(old_schema, new_schema):
-            schema.update(new_schema)
+            pipeline_.schema = schema.update(new_schema)
         return
     pipeline_.schema = schema.create(new_schema)
 

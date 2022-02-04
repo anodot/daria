@@ -177,8 +177,7 @@ class Builder:
         return os.path.join(os.path.dirname(os.path.realpath(__file__)), self.VALIDATION_SCHEMA_DIR_NAME)
 
     def _validate_json_schema(self):
-        if 'dvpConfig' in self.config:
-            self._validate_dvp_config_json_schema()
+        self._validate_dvp_config_json_schema()
         with open(os.path.join(self.definitions_dir, self.VALIDATION_SCHEMA_FILE_NAME + '.json')) as f:
             schema = json.load(f)
         if self.edit:
@@ -186,15 +185,17 @@ class Builder:
         jsonschema.validate(self.config, schema)
 
     def _validate_dvp_config_json_schema(self):
+        if 'dvpConfig' not in self.config:
+            return
         with open(os.path.join(self.definitions_dir, 'dvp_config.json')) as f:
             schema = json.load(f)
         jsonschema.validate(self.config['dvpConfig'], schema)
 
     def _load_dvp_config_with_default(self):
-        if not self.config['dvpConfig']:
+        if 'dvpConfig' not in self.config:
             return
 
-        config_to_update = self.config['dvpConfig']
+        src_dvp_config = self.config['dvpConfig'].copy()
         self.config['dvpConfig'] = {
             'baseRollup': 'MEDIUMROLLUP',
             'maxDVPDurationHours': 24,
@@ -202,7 +203,7 @@ class Builder:
             'gaugeValue': {'value': 0, 'keepLastValue': False},
             'counterValue': {'value': 0, 'keepLastValue': False},
         }
-        deep_update(self.config['dvpConfig'], config_to_update)
+        deep_update(src_dvp_config, self.config['dvpConfig'])
 
     def _load_filtering(self):
         condition = self.config.get('filter', {}).get('condition')
