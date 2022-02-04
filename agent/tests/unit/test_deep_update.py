@@ -111,3 +111,10 @@ class TestDeepUpdate(unittest.TestCase):
         deep_update(src_dict, dst_dict)
         assert dst_dict is not src_dict
         assert dst_dict == src_dict
+
+    def test_generic_05(self):
+        src_dict = {'1': 1000, '2': 2000}
+        dst_dict = {'1': 0, '2': {}}
+        deep_update(src_dict, dst_dict)
+        assert dst_dict is not src_dict
+        assert dst_dict == src_dict
