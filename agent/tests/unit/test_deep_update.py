@@ -4,7 +4,7 @@ from agent.modules.tools import deep_update
 
 class TestDeepUpdate(unittest.TestCase):
     def setUp(self) -> None:
-        self.dvp_config = {
+        self.dvp_config_base = {
             'baseRollup': 'MEDIUMROLLUP',
             'maxDVPDurationHours': 24,
             'preventNoData': True,
@@ -18,9 +18,9 @@ class TestDeepUpdate(unittest.TestCase):
             'maxDVPDurationHours': 1,
             'gaugeValue': {'value': 1, 'keepLastValue': True},
         }
-        deep_update(src_dvp, self.dvp_config)
+        deep_update(src_dvp, self.dvp_config_base)
 
-        assert self.dvp_config == {
+        assert self.dvp_config_base == {
             'baseRollup': 'LONGROLLUP',
             'maxDVPDurationHours': 1,
             'preventNoData': True,
@@ -36,9 +36,9 @@ class TestDeepUpdate(unittest.TestCase):
             'gaugeValue': {'value': 500, 'keepLastValue': False},
             'counterValue': {'keepLastValue': True}
         }
-        deep_update(src_dvp, self.dvp_config)
+        deep_update(src_dvp, self.dvp_config_base)
 
-        assert self.dvp_config == {
+        assert self.dvp_config_base == {
             'baseRollup': 'SHORTROLLUP',
             'maxDVPDurationHours': 34,
             'preventNoData': False,
@@ -51,9 +51,9 @@ class TestDeepUpdate(unittest.TestCase):
             'baseRollup': 'LONGROLLUP',
             'maxDVPDurationHours': 5,
         }
-        deep_update(src_dvp, self.dvp_config)
+        deep_update(src_dvp, self.dvp_config_base)
 
-        assert self.dvp_config == {
+        assert self.dvp_config_base == {
             'baseRollup': 'LONGROLLUP',
             'maxDVPDurationHours': 5,
             'preventNoData': True,
@@ -63,9 +63,9 @@ class TestDeepUpdate(unittest.TestCase):
 
     def test_default_dvp_04(self):
         src_dvp = {}
-        deep_update(src_dvp, self.dvp_config)
+        deep_update(src_dvp, self.dvp_config_base)
 
-        assert self.dvp_config == {
+        assert self.dvp_config_base == {
             'baseRollup': 'MEDIUMROLLUP',
             'maxDVPDurationHours': 24,
             'preventNoData': True,
@@ -98,3 +98,16 @@ class TestDeepUpdate(unittest.TestCase):
         dst_dict = {'key_1': 'default_value_1', 'key_2': 'default_value_2'}
         deep_update(src_dict, dst_dict)
         assert src_dict == dst_dict
+
+    def test_generic_03(self):
+        src_dict = {'key_3': 'value_3', 'key_4': 'value_4'}
+        dst_dict = {'key_1': 'default_value_1', 'key_2': 'default_value_2'}
+        deep_update(src_dict, dst_dict)
+        assert len(dst_dict) == 4
+
+    def test_generic_04(self):
+        src_dict = {'1': {'2': {'3': {'4': {'5': {'6': 'test'}}}}}}
+        dst_dict = {'1': {'2': {}}}
+        deep_update(src_dict, dst_dict)
+        assert dst_dict is not src_dict
+        assert dst_dict == src_dict
