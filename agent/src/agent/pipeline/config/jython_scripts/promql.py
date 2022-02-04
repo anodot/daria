@@ -4,6 +4,7 @@ try:
     sdc.importLock()
     import sys
     import os
+
     sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))
     import requests
     import traceback
@@ -15,7 +16,6 @@ finally:
 
 entityName = ''
 N_REQUESTS_TRIES = 3
-BATCH_SIZE = 1000
 
 
 def get_now_with_delay():
@@ -64,83 +64,65 @@ def get_result_key(data):
     return 'values' if data['data']['resultType'] == 'matrix' else 'value'
 
 
-def get_metric_name(data):
-    if '__name__' not in data['metric']:
+def get_metric_name(record):
+    if '__name__' not in record['metric']:
         if not sdc.userParams['AGGREGATED_METRIC_NAME']:
             raise Exception("Victoria query result doesn't contain metric __name__ and it wasn't provided by the user")
         return sdc.userParams['AGGREGATED_METRIC_NAME']
-    return data['metric'].pop('__name__')
-
-
-def create_base_metric(metric_name):
-    return {
-        'properties': {
-            'what': metric_name,
-            'target_type': 'gauge',
-        },
-        'tags': {},
-    }
+    return record['metric']['__name__']
 
 
 def process_matrix(result_, end_):
-    cur_batch = sdc.createBatch()
+    batch = sdc.createBatch()
     for res in result_['data']['result']:
-        base_metric = create_base_metric(get_metric_name(res))
-        for dimension, value in res['metric'].items():
-            dimension = re.sub('\s+', '_', dimension.strip()).replace('.', '_')
-            value = re.sub('\s+', '_', value.strip()).replace('.', '_')
-            base_metric['properties'][dimension] = value
+        base_record = dict(res['metric'].items())
         for timestamp, value in res[get_result_key(result_)]:
-            metric = base_metric
-            metric['timestamp'] = int(timestamp)
-            metric['value'] = value
-            new_record = sdc.createRecord('record created ' + str(get_now_with_delay()))
-            new_record.value = metric
-            cur_batch.add(new_record)
-            if cur_batch.size == sdc.batchSize:
-                cur_batch.process(entityName, str(end_))
-                cur_batch = sdc.createBatch()
-        # if we didn't process the batch for the last time
-        if cur_batch.size > 0:
-            cur_batch.process(entityName, str(end_))
-            cur_batch = sdc.createBatch()
+            record = base_record.copy()
+            record['timestamp'] = float(timestamp)
+            metric_name = get_metric_name(res)
+            # this is because this script is reused in the promql protocol 2.0
+            # it won't affect 3.0 because we have list of measurement names
+            record['what'] = metric_name
+            record[metric_name] = value
+            sdc_record = sdc.createRecord('record created ' + str(get_now_with_delay()))
+            sdc_record.value = record
+            batch.add(sdc_record)
+            if batch.size == sdc.batchSize:
+                batch.process(entityName, str(end_))
+                batch = sdc.createBatch()
+    if batch.size > 0:
+        batch.process(entityName, str(end_))
 
 
 def process_vector(result_, end_):
-    cur_batch = sdc.createBatch()
+    batch = sdc.createBatch()
     for res in result_['data']['result']:
-        base_metric = create_base_metric(get_metric_name(res))
-        for dimension, value in res['metric'].items():
-            dimension = re.sub('\s+', '_', dimension.strip()).replace('.', '_')
-            value = re.sub('\s+', '_', value).replace('.', '_')
-            base_metric['properties'][dimension] = value
+        record = dict(res['metric'].items())
         timestamp, value = res[get_result_key(result_)]
-        metric = base_metric
         # here timestamp and end_ are the same values
         # because aggregation funcitons return timestamp from the end request parameter
-        metric['timestamp'] = timestamp
-        metric['value'] = value
-        new_record = sdc.createRecord('record created ' + str(get_now_with_delay()))
-        new_record.value = metric
-        cur_batch.add(new_record)
-        if cur_batch.size == sdc.batchSize:
-            cur_batch.process(entityName, str(end_))
-            cur_batch = sdc.createBatch()
-    if cur_batch.size > 0:
-        cur_batch.process(entityName, str(end_))
+        record['timestamp'] = timestamp
+        metric_name = get_metric_name(res)
+        # this is because this script is reused in the promql protocol 2.0
+        # it won't affect 3.0 because we have list of measurement names
+        record['what'] = metric_name
+        record[metric_name] = value
+        sdc_record = sdc.createRecord('record created ' + str(get_now_with_delay()))
+        sdc_record.value = record
+        batch.add(sdc_record)
+        if batch.size == sdc.batchSize:
+            batch.process(entityName, str(end_))
+            batch = sdc.createBatch()
+    if batch.size > 0:
+        batch.process(entityName, str(end_))
 
 
 def main():
     interval = get_interval()
     end = get_backfill_offset() + interval
-    url = sdc.userParams['URL'] + '/api/v1/query?' + urllib.urlencode({
-        'query': sdc.userParams['QUERY'].encode('utf-8'),
-        'timeout': sdc.userParams['QUERY_TIMEOUT'],
-    })
-
     while True:
         try:
-            curr_url = url + '&' + urllib.urlencode({'time': end})
+            curr_url = get_base_url() + '&' + urllib.urlencode({'time': end})
             while end > get_now_with_delay():
                 time.sleep(2)
                 if sdc.isStopped():
@@ -155,6 +137,13 @@ def main():
         except Exception:
             sdc.log.error(traceback.format_exc())
             raise
+
+
+def get_base_url():
+    return sdc.userParams['URL'] + '/api/v1/query?' + urllib.urlencode({
+        'query': sdc.userParams['QUERY'].encode('utf-8'),
+        'timeout': sdc.userParams['QUERY_TIMEOUT'],
+    })
 
 
 main()

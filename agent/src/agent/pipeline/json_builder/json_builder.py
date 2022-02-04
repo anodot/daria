@@ -149,7 +149,7 @@ def _validate_config_for_create(config: dict):
 
 
 def _load_config(pipeline_: Pipeline, config: dict, is_edit=False):
-    config['uses_schema'] = _uses_schema(pipeline_, config, is_edit)
+    config['uses_schema'] = _get_schema_chooser(pipeline_).choose(pipeline_, config, is_edit)
     json_builder.get(pipeline_, config, is_edit).build()
     # todo too many validations, 4 validations here
     pipeline.config.validators.get_config_validator(pipeline_.source.type).validate(pipeline_)
@@ -158,13 +158,15 @@ def _load_config(pipeline_: Pipeline, config: dict, is_edit=False):
 class _SchemaChooser:
     @staticmethod
     def choose(pipeline_: Pipeline, config: dict, is_edit=False) -> bool:
-        if isinstance(pipeline_, pipeline.RawPipeline):
+        # todo make more unit tests?
+        if not pipeline.manager.supports_schema(pipeline_):
             return False
         elif 'uses_schema' not in config:
             if is_edit:
                 return bool(pipeline_.config.get('uses_schema', False))
             else:
-                return pipeline.manager.supports_schema(pipeline_)
+                # we would return False earlier if it doesn't support schema, so the only option here is True
+                return True
         else:
             return bool(config['uses_schema'])
 
@@ -175,8 +177,7 @@ class _PromQLSchemaChooser(_SchemaChooser):
         conf_uses = False if 'uses_schema' not in config else bool(config['uses_schema'])
         # PromQL pipelines support schema only if dimensions and values are specified
         actual_schema = (
-            _SchemaChooser.choose(pipeline_, config, is_edit)
-            and 'dimensions' in config and bool(config['dimensions'])
+            _SchemaChooser.choose(pipeline_, config, is_edit) and 'dimensions' in config and bool(config['dimensions'])
             and 'values' in config and bool(config['values'])
         )
         if conf_uses and not actual_schema:
@@ -186,12 +187,10 @@ class _PromQLSchemaChooser(_SchemaChooser):
         return actual_schema
 
 
-def _uses_schema(pipeline_: Pipeline, config: dict, is_edit=False) -> bool:
+def _get_schema_chooser(pipeline_: Pipeline) -> _SchemaChooser:
     if isinstance(pipeline_.source, source.PromQLSource):
-        chooser = _PromQLSchemaChooser()
-    else:
-        chooser = _SchemaChooser()
-    return chooser.choose(pipeline_, config, is_edit)
+        return _PromQLSchemaChooser()
+    return _SchemaChooser()
 
 
 class Builder:

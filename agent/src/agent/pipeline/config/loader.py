@@ -37,14 +37,14 @@ class ConfigLoader(ABC):
             source.TYPE_MONGO: 'mongo_http.json',
             source.TYPE_MYSQL: 'jdbc.json',
             source.TYPE_POSTGRES: 'jdbc.json',
-            source.TYPE_PROMETHEUS: 'promql_http.json',
+            source.TYPE_PROMETHEUS: 'promql.json',
             source.TYPE_SAGE: 'sage_http.json',
             source.TYPE_SNMP: 'snmp.json',
             source.TYPE_SPLUNK: 'tcp_server_http.json',
             source.TYPE_SOLARWINDS: 'solarwinds.json',
-            source.TYPE_THANOS: 'promql_http.json',
+            source.TYPE_THANOS: 'promql.json',
             source.TYPE_TOPOLOGY: 'topology.json',
-            source.TYPE_VICTORIA: 'promql_http.json',
+            source.TYPE_VICTORIA: 'promql.json',
             source.TYPE_ZABBIX: 'zabbix_http.json',
         }[pipeline.source.type]
 
