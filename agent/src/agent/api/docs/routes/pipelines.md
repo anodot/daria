@@ -113,7 +113,7 @@ Response codes: `200, 400`
 
 **Request example**:
 ```
-curl -X POST http://localhost:8080/pipelines \
+curl -X PUT http://localhost:8080/pipelines \
 -H 'Content-Type: application/json' \
 -d '[
     {
