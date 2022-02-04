@@ -60,3 +60,41 @@ class TestDeepUpdate(unittest.TestCase):
             'gaugeValue': {'value': 0, 'keepLastValue': False},
             'counterValue': {'value': 0, 'keepLastValue': False},
         }
+
+    def test_default_dvp_04(self):
+        src_dvp = {}
+        deep_update(src_dvp, self.dvp_config)
+
+        assert self.dvp_config == {
+            'baseRollup': 'MEDIUMROLLUP',
+            'maxDVPDurationHours': 24,
+            'preventNoData': True,
+            'gaugeValue': {'value': 0, 'keepLastValue': False},
+            'counterValue': {'value': 0, 'keepLastValue': False},
+        }
+
+    def test_generic_01(self):
+        src_dict = {
+            'key_1': 'value_1',
+            'key_2': 'value_2',
+            'inner_1': {
+                '1': 'a',
+                '2': 'b',
+            }
+        }
+        dst_dict = {}
+        deep_update(src_dict, dst_dict)
+        assert src_dict == dst_dict
+
+    def test_generic_02(self):
+        src_dict = {
+            'key_1': 'value_1',
+            'key_2': 'value_2',
+            'inner_1': {
+                '1': 'a',
+                '2': 'b',
+            }
+        }
+        dst_dict = {'key_1': 'default_value_1', 'key_2': 'default_value_2'}
+        deep_update(src_dict, dst_dict)
+        assert src_dict == dst_dict
