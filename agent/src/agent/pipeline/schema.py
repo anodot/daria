@@ -15,7 +15,7 @@ def build(pipeline: Pipeline) -> dict:
             'fill': 'NULL'
         },
     }
-    if pipeline.dvp_config:  # set dvpConfig in schema only if it set in pipeline config
+    if pipeline.dvp_config:
         schema_['dvpConfig'] = pipeline.dvp_config
     if pipeline.get_schema_id():
         schema_['id'] = pipeline.get_schema_id()
