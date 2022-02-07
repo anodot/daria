@@ -80,10 +80,8 @@ def process_matrix(result_, end_):
             record = base_record.copy()
             record['timestamp'] = float(timestamp)
             metric_name = get_metric_name(res)
-            # this is because this script is reused in the promql protocol 2.0
-            # it won't affect 3.0 because we have list of measurement names
-            record['what'] = metric_name
-            record[metric_name] = value
+            record['__name__'] = metric_name
+            record['__value'] = value
             sdc_record = sdc.createRecord('record created ' + str(get_now_with_delay()))
             sdc_record.value = record
             batch.add(sdc_record)
@@ -102,11 +100,8 @@ def process_vector(result_, end_):
         # here timestamp and end_ are the same values
         # because aggregation funcitons return timestamp from the end request parameter
         record['timestamp'] = timestamp
-        metric_name = get_metric_name(res)
-        # this is because this script is reused in the promql protocol 2.0
-        # it won't affect 3.0 because we have list of measurement names
-        record['what'] = metric_name
-        record[metric_name] = value
+        record['__name__'] = get_metric_name(res)
+        record['__value'] = value
         sdc_record = sdc.createRecord('record created ' + str(get_now_with_delay()))
         sdc_record.value = record
         batch.add(sdc_record)

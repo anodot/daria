@@ -230,8 +230,7 @@ class Builder:
         jsonschema.validate(self.config['dvpConfig'], schema)
 
     def _load_filtering(self):
-        condition = self.config.get('filter', {}).get('condition')
-        if condition:
+        if condition := self.config.get('filter', {}).get('condition'):
             expression_parser.condition.validate(condition)
 
     def _load_transformations(self):
