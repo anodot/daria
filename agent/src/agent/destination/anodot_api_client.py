@@ -66,11 +66,11 @@ class AnodotApiClient:
     def create_schema(self, schema):
         return self.session.post(self._build_url('stream-schemas'), json=schema, proxies=self.proxies)
 
-    @endpoint
     def update_schema(self, schema):
         url_ = self._build_url('stream-schemas', 'internal', f'?token={self.api_token}&id={schema["id"]}', api_version='v1')
-        self.session.headers.pop('Authorization')
-        return self.session.post(url_, json=schema, proxies=self.proxies)
+        res = requests.post(url_, json=schema, proxies=self.proxies)
+        res.raise_for_status()
+        return res.json()
 
     def _delete_schema_old_api(self, schema_id):
         """
