@@ -8,7 +8,6 @@ from .mongo import MongoPrompter
 from .sage import SagePrompter
 from .solarwinds import SolarWindsPrompter
 from .tcp import TCPPrompter
-from .victoria import VictoriaPrompter
 from .zabbix import ZabbixPrompter
 
 
@@ -25,7 +24,6 @@ def get_prompter(source_: source.Source) -> Prompter:
         source.TYPE_SAGE: SagePrompter,
         source.TYPE_SPLUNK: TCPPrompter,
         source.TYPE_SOLARWINDS: SolarWindsPrompter,
-        source.TYPE_VICTORIA: VictoriaPrompter,
         source.TYPE_ZABBIX: ZabbixPrompter,
     }
     if source_.type not in source.types:
