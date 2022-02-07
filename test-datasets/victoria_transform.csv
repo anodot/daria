@@ -1,0 +1,5 @@
+customer,"str:substring(__name__, 0, 3)"
+location,"str:substring(__name__, 3, 8)"
+device,"str:substring(__name__, 8, 14)"
+cell_id,"str:regExCapture(__name__, '.+_(.+)_.+', 1)"
+__name__,"str:regExCapture(__name__, '.+_.+_(.+)', 1)"

@@ -2,8 +2,9 @@ global sdc, output, error
 
 
 def get_properties(record):
-    props = {k: v for k, v in record.value.items() if k not in ['timestamp', '__name__', record.value['what']]}
+    props = {k: v for k, v in record.value.items() if k not in ['timestamp', '__name__', '__value']}
     props['target_type'] = 'gauge'
+    props['what'] = record.value['__name__']
     return props
 
 
@@ -14,7 +15,7 @@ def main():
             new_record.value = {
                 'timestamp': record.value['timestamp'],
                 'properties': get_properties(record),
-                'value': record.value[record.value['what']],
+                'value': record.value['__value'],
             }
             output.write(new_record)
         except Exception as e:

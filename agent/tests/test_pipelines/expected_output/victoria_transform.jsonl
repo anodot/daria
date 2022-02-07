@@ -1,0 +1,31 @@
+[
+  {
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_promql_transform"
+      ],
+      "pipeline_type": [
+        "victoria"
+      ]
+    },
+    "value": 11.0,
+    "properties": {
+      "target_type": "gauge",
+      "what": "MeasurementName",
+      "customer": "ANO",
+      "location": "LO001",
+      "device": "LAPTOP",
+      "cell_id": "1"
+    },
+    "timestamp": 1594113932
+  }
+]

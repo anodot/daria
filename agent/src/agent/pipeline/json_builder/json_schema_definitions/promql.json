@@ -14,7 +14,13 @@
     "source": {"type": "string"},
     "uses_schema": {"type": "boolean"},
     "dimensions": {"type": "array", "items": {"type": "string"}},
-    "values": {"type": "object"}
+    "transform": {
+      "type": "object",
+      "properties": {
+        "file": {"type": "string"},
+        "config": {"type": "string"}
+      }
+    }
   },
   "required": ["query", "interval"]
 }
