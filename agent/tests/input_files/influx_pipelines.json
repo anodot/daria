@@ -30,7 +30,7 @@
       "required": [],
       "optional": ["cpu", "host"]
     },
-    "query": "SELECT \"cpu\",\"host\",\"test\",\"usage_active\"::field FROM \"cpu_test\" WHERE \"time\" <= 1552954426168997000",
+    "query": "SELECT \"cpu\",\"host\",\"test\",\"usage_active\"::field FROM \"cpu_test\" WHERE {TIMESTAMP_CONDITION} AND 1=1",
     "transform": {
       "file": "/home/influx_transform.csv"
     },
