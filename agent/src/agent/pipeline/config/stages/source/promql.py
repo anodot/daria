@@ -1,5 +1,6 @@
 import os
-from agent import source
+
+from agent import source, monitoring
 from agent.pipeline.config.stages.base import JythonSource
 
 
@@ -47,6 +48,10 @@ class PromQLScript(JythonSource):
             {
                 'key': 'AGGREGATED_METRIC_NAME',
                 'value': str(self.pipeline.config.get('aggregated_metric_name'))
+            },
+            {
+                'key': 'MONITORING_URL',
+                'value': monitoring.get_monitoring_source_error_url(self.pipeline)
             },
         ]
 

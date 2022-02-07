@@ -40,7 +40,8 @@ def _add_source():
     try:
         with open(source_file, 'r') as file:
             source.json_builder.create_from_file(file)
-    except (FileNotFoundError, ValidationError, source.SourceException):
+    except (FileNotFoundError, ValidationError, source.SourceException) as e:
+        logger.error(str(e))
         raise click.ClickException('Error during Source creation. See error log for details')
 
 

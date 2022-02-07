@@ -8,16 +8,13 @@ from .mongo import MongoPrompter
 from .elastic import ElasticPrompter
 from .solarwinds import SolarWindsPrompter
 from .tcp import TCPPrompter
-from .directory import DirectoryPrompter
 from .sage import SagePrompter
-from .victoria import VictoriaPrompter
 from .zabbix import ZabbixPrompter
 
 
 def get_prompter(pipeline_: Pipeline, default_config: dict, advanced: bool) -> Prompter:
     prompters = {
         source.TYPE_CLICKHOUSE: JDBCPrompter,
-        source.TYPE_DIRECTORY: DirectoryPrompter,
         source.TYPE_ELASTIC: ElasticPrompter,
         source.TYPE_INFLUX: InfluxPrompter,
         source.TYPE_INFLUX_2: Influx2Prompter,
@@ -28,7 +25,6 @@ def get_prompter(pipeline_: Pipeline, default_config: dict, advanced: bool) -> P
         source.TYPE_SAGE: SagePrompter,
         source.TYPE_SPLUNK: TCPPrompter,
         source.TYPE_SOLARWINDS: SolarWindsPrompter,
-        source.TYPE_VICTORIA: VictoriaPrompter,
         source.TYPE_ZABBIX: ZabbixPrompter,
     }
     return prompters[pipeline_.source.type](pipeline_, default_config, advanced)

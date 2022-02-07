@@ -9,10 +9,7 @@ from agent.cli import prompt
 
 
 def autocomplete(ctx, args, incomplete) -> list:
-    return list(map(
-        lambda s: s.name,
-        source.repository.find_by_name_beginning(incomplete)
-    ))
+    return list(map(lambda s: s.name, source.repository.find_by_name_beginning(incomplete)))
 
 
 @click.group(name='source')
@@ -100,12 +97,8 @@ def _create_from_file(file):
 def _prompt(advanced: bool):
     source_type = _prompt_source_type()
     source_name = _prompt_source_name()
-    prompter = prompt.source.get_prompter(
-        source.manager.create_source_obj(source_name, source_type)
-    )
-    source.repository.save(
-        prompter.prompt(source.manager.get_previous_source_config(source_type), advanced)
-    )
+    prompter = prompt.source.get_prompter(source.manager.create_source_obj(source_name, source_type))
+    source.repository.save(prompter.prompt(source.manager.get_previous_source_config(source_type), advanced))
     click.secho('Source config created', fg='green')
 
 
@@ -117,17 +110,15 @@ def _edit_using_file(file):
 
 
 def _prompt_source_type():
-    return click.prompt(
-        'Choose source',
-        type=click.Choice(_filter_without_cli(source.types.keys()))
-    ).strip()
+    return click.prompt('Choose source', type=click.Choice(_filter_without_cli(source.types.keys()))).strip()
 
 
 def _filter_without_cli(sources: list) -> list:
-    with_cli = [source.TYPE_CACTI, source.TYPE_CLICKHOUSE, source.TYPE_DIRECTORY, source.TYPE_ELASTIC,
-                source.TYPE_INFLUX, source.TYPE_INFLUX_2, source.TYPE_KAFKA, source.TYPE_MONGO, source.TYPE_MYSQL,
-                source.TYPE_POSTGRES, source.TYPE_SAGE, source.TYPE_SPLUNK, source.TYPE_SOLARWINDS,
-                source.TYPE_VICTORIA, source.TYPE_ZABBIX]
+    with_cli = [
+        source.TYPE_CACTI, source.TYPE_CLICKHOUSE, source.TYPE_ELASTIC, source.TYPE_INFLUX, source.TYPE_INFLUX_2,
+        source.TYPE_KAFKA, source.TYPE_MONGO, source.TYPE_MYSQL, source.TYPE_POSTGRES, source.TYPE_SAGE,
+        source.TYPE_SPLUNK, source.TYPE_SOLARWINDS, source.TYPE_ZABBIX
+    ]
     return [source_ for source_ in sources if source_ in with_cli]
 
 
