@@ -135,6 +135,7 @@ class Prompter:
         if click.confirm('Would you like to see the data preview?', default=True):
             test_pipeline = pipeline.manager.build_test_pipeline(self.pipeline.source)
             test_pipeline.config = self.config
+            test_pipeline.config['uses_schema'] = False
             preview.print_sample_data(test_pipeline)
 
     @staticmethod

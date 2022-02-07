@@ -1,6 +1,6 @@
 from agent.modules.logger import get_logger
 from agent.pipeline.config import stages
-from agent.pipeline.config.handlers.base import SchemaConfigHandler, BaseRawConfigHandler
+from agent.pipeline.config.handlers.base import SchemaConfigHandler, RawConfigHandler
 
 logger = get_logger(__name__)
 
@@ -14,7 +14,7 @@ class SNMPConfigHandler(SchemaConfigHandler):
     }
 
 
-class SNMPRawConfigHandler(BaseRawConfigHandler):
+class SNMPRawConfigHandler(RawConfigHandler):
     stages_to_override = {
         'source': stages.source.snmp.SNMPRaw,
         'HTTPClient_01': stages.destination.HttpDestination,

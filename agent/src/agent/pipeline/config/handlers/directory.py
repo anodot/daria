@@ -1,5 +1,5 @@
 from agent.pipeline.config import stages
-from agent.pipeline.config.handlers.base import SchemaConfigHandler
+from agent.pipeline.config.handlers.base import SchemaConfigHandler, TestConfigHandler
 
 
 class DirectoryConfigHandler(SchemaConfigHandler):
@@ -12,4 +12,10 @@ class DirectoryConfigHandler(SchemaConfigHandler):
         'destination': stages.destination.Destination,
         'JythonEvaluator_02': stages.jython.CreateWatermark,
         'destination_watermark': stages.destination.WatermarkDestination,
+    }
+
+
+class TestDirectoryConfigHandler(TestConfigHandler):
+    stages_to_override = {
+        'source': stages.source.Source,
     }

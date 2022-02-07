@@ -91,3 +91,10 @@ class ReplaceIllegalChars(JythonProcessor):
 
     def _get_script_params(self) -> list[dict]:
         return []
+
+
+class PromQLCreateMetrics(JythonProcessor):
+    JYTHON_SCRIPT = 'promql_create_metrics.py'
+
+    def _get_script_params(self) -> list[dict]:
+        return []

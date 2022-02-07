@@ -11,10 +11,14 @@ def _get_days_to_backfill():
 class TestPromQL(TestInputBase):
     __test__ = True
     params = {
-        'test_create_source_with_file': [{'file_name': 'promql_sources'}],
+        'test_create_source_with_file': [{
+            'file_name': 'promql/sources'
+        }],
         'test_create_with_file': [{
-            'file_name': 'promql_pipelines',
-            'override_config': {'days_to_backfill': _get_days_to_backfill()}
+            'file_name': 'promql/pipelines',
+            'override_config': {
+                'days_to_backfill': _get_days_to_backfill()
+            }
         }],
     }
 
@@ -34,7 +38,8 @@ class TestPromQL(TestInputBase):
         query = f'log_messages_total[{interval}s]'
         days_to_backfill = _get_days_to_backfill()
         result = cli_runner.invoke(
-            cli.pipeline.create, catch_exceptions=False,
+            cli.pipeline.create,
+            catch_exceptions=False,
             input=f'test_victoria\n{name}\n{query}\n{days_to_backfill}\n{interval}\n\n'
         )
         assert result.exit_code == 0
@@ -45,8 +50,10 @@ class TestPromQL(TestInputBase):
         query = f'rate(log_messages_total2[{interval}s])'
         days_to_backfill = _get_days_to_backfill()
         result = cli_runner.invoke(
-            cli.pipeline.create, ["-a"], catch_exceptions=False,
-            input=f'test_victoria\n{name}\n{query}\naggregated_metric\n{days_to_backfill}\n{interval}\n\nstatic:dimension\ntag:value\n'
+            cli.pipeline.create, ["-a"],
+            catch_exceptions=False,
+            input=
+            f'test_victoria\n{name}\n{query}\naggregated_metric\n{days_to_backfill}\n{interval}\n\nstatic:dimension\ntag:value\n'
         )
         assert result.exit_code == 0
 

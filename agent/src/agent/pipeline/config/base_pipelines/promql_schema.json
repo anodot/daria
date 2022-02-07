@@ -1,11 +1,11 @@
 {
   "pipelineConfig" : {
     "schemaVersion" : 6,
-    "version" : 17,
+    "version" : 19,
     "pipelineId" : "kafkahttpd097e4bc-a390-44ba-ae35-3b899695053a",
-    "title" : "v",
+    "title" : "test_victoria_a",
     "description" : "",
-    "uuid" : "6d6e2ad1-b9b9-4ca6-ab0c-f0856a10e5af",
+    "uuid" : "dee84a7d-5250-4c29-a001-c2b38a9d1002",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -20,7 +20,7 @@
       "value" : true
     }, {
       "name" : "retryAttempts",
-      "value" : -1
+      "value" : 5
     }, {
       "name" : "notifyOnStates",
       "value" : [ "RUN_ERROR", "START_ERROR", "STOP_ERROR", "RUNNING_ERROR", "RUNNING", "STOPPED", "FINISHED", "DISCONNECTED", "CONNECTING" ]
@@ -38,6 +38,9 @@
       }, {
         "key" : "ANODOT_BASE_URL",
         "value" : "http://dummy_destination"
+      }, {
+        "key" : "AGENT_URL",
+        "value" : "http://anodot-agent"
       } ]
     }, {
       "name" : "errorRecordPolicy",
@@ -296,21 +299,6 @@
       "name" : "clusterConfig.callbackUrl",
       "value" : null
     }, {
-      "name" : "badRecordsHandling",
-      "value" : "streamsets-datacollector-basic-lib::com_streamsets_pipeline_stage_destination_recordstolocalfilesystem_ToErrorLocalFSDTarget::1"
-    }, {
-      "name" : "statsAggregatorStage",
-      "value" : "streamsets-datacollector-basic-lib::com_streamsets_pipeline_stage_destination_devnull_StatsDpmDirectlyDTarget::1"
-    }, {
-      "name" : "startEventStage",
-      "value" : "streamsets-datacollector-basic-lib::com_streamsets_pipeline_stage_destination_devnull_ToErrorNullDTarget::1"
-    }, {
-      "name" : "stopEventStage",
-      "value" : "streamsets-datacollector-basic-lib::com_streamsets_pipeline_stage_destination_devnull_ToErrorNullDTarget::1"
-    }, {
-      "name" : "testOriginStage",
-      "value" : "streamsets-datacollector-dev-lib::com_streamsets_pipeline_stage_devtest_rawdata_RawDataDSource::3"
-    }, {
       "name" : "clusterConfig.sparkAppName",
       "value" : "${pipeline:title()}"
     }, {
@@ -328,8 +316,87 @@
     }, {
       "name" : "transformerEMRConfig.emrVersion",
       "value" : null
+    }, {
+      "name" : "transformerEMRConfig.serviceAccessSecurityGroup",
+      "value" : null
+    }, {
+      "name" : "googleCloudConfig.region",
+      "value" : null
+    }, {
+      "name" : "googleCloudConfig.customRegion",
+      "value" : null
+    }, {
+      "name" : "googleCloudConfig.gcsStagingUri",
+      "value" : null
+    }, {
+      "name" : "googleCloudConfig.create",
+      "value" : false
+    }, {
+      "name" : "googleCloudConfig.clusterPrefix",
+      "value" : null
+    }, {
+      "name" : "googleCloudConfig.version",
+      "value" : "1.4-ubuntu18"
+    }, {
+      "name" : "googleCloudConfig.masterType",
+      "value" : null
+    }, {
+      "name" : "googleCloudConfig.workerType",
+      "value" : null
+    }, {
+      "name" : "googleCloudConfig.networkType",
+      "value" : null
+    }, {
+      "name" : "googleCloudConfig.network",
+      "value" : null
+    }, {
+      "name" : "googleCloudConfig.subnet",
+      "value" : null
+    }, {
+      "name" : "googleCloudConfig.tags",
+      "value" : [ ]
+    }, {
+      "name" : "googleCloudConfig.workerCount",
+      "value" : 2
+    }, {
+      "name" : "googleCloudConfig.clusterName",
+      "value" : null
+    }, {
+      "name" : "googleCloudConfig.terminate",
+      "value" : false
+    }, {
+      "name" : "googleCloudCredentialsConfig.projectId",
+      "value" : null
+    }, {
+      "name" : "googleCloudCredentialsConfig.credentialsProvider",
+      "value" : null
+    }, {
+      "name" : "googleCloudCredentialsConfig.path",
+      "value" : null
+    }, {
+      "name" : "googleCloudCredentialsConfig.credentialsFileContent",
+      "value" : null
+    }, {
+      "name" : "badRecordsHandling",
+      "value" : "streamsets-datacollector-basic-lib::com_streamsets_pipeline_stage_destination_devnull_ToErrorNullDTarget::1"
+    }, {
+      "name" : "statsAggregatorStage",
+      "value" : "streamsets-datacollector-basic-lib::com_streamsets_pipeline_stage_destination_devnull_StatsDpmDirectlyDTarget::1"
+    }, {
+      "name" : "startEventStage",
+      "value" : "streamsets-datacollector-basic-lib::com_streamsets_pipeline_stage_destination_devnull_ToErrorNullDTarget::1"
+    }, {
+      "name" : "stopEventStage",
+      "value" : "streamsets-datacollector-basic-lib::com_streamsets_pipeline_stage_destination_devnull_ToErrorNullDTarget::1"
+    }, {
+      "name" : "testOriginStage",
+      "value" : "streamsets-datacollector-dev-lib::com_streamsets_pipeline_stage_devtest_rawdata_RawDataDSource::3"
+    }, {
+      "name" : "clusterConfig.yarnKerberosKeytabBase64Bytes",
+      "value" : null
     } ],
     "uiInfo" : {
+      "displayMode" : "BASIC",
       "previewConfig" : {
         "previewSource" : "CONFIGURED_SOURCE",
         "batchSize" : 10,
@@ -349,7 +416,7 @@
       "stageVersion" : "1",
       "configuration" : [ {
         "name" : "script",
-        "value" : ""
+        "value" : "global sdc\n\ntry:\n    sdc.importLock()\n    import sys\n    import os\n    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))\n    import requests\n    import traceback\n    import time\n    import urllib\n    import re\nfinally:\n    sdc.importUnlock()\n\nentityName = ''\nN_REQUESTS_TRIES = 3\nBATCH_SIZE = 1000\n\n\ndef get_now_with_delay():\n    return int(time.time()) - int(sdc.userParams['DELAY_IN_MINUTES']) * 60\n\n\ndef get_backfill_offset():\n    if sdc.lastOffsets.containsKey(entityName):\n        return int(float(sdc.lastOffsets.get(entityName)))\n    if sdc.userParams['INITIAL_TIMESTAMP']:\n        return int(sdc.userParams['INITIAL_TIMESTAMP'])\n    return get_now_with_delay() - get_interval()\n\n\ndef get_interval():\n    return int(sdc.userParams['INTERVAL'])\n\n\ndef make_request(url_):\n    session = requests.Session()\n    if sdc.userParams['USERNAME']:\n        session.auth = (sdc.userParams['USERNAME'], sdc.userParams['PASSWORD'])\n    for i in range(1, N_REQUESTS_TRIES + 1):\n        try:\n            sdc.log.debug(url_)\n            res = session.get(url_, stream=True, headers={'Accept-Encoding': 'deflate'},\n                              verify=bool(sdc.userParams['VERIFY_SSL']), timeout=sdc.userParams['QUERY_TIMEOUT'])\n            res.raise_for_status()\n        except Exception as e:\n            if i == N_REQUESTS_TRIES:\n                raise\n            sdc.log.debug(str(e))\n            time.sleep(i ** 2)\n            continue\n        break\n    return res\n\n\ndef get_result_key(data):\n    return 'values' if data['data']['resultType'] == 'matrix' else 'value'\n\n\ndef get_metric_name(data):\n    if '__name__' not in data['metric']:\n        if not sdc.userParams['AGGREGATED_METRIC_NAME']:\n            raise Exception(\"Victoria query result doesn't contain metric __name__ and it wasn't provided by the user\")\n        return sdc.userParams['AGGREGATED_METRIC_NAME']\n    return data['metric'].pop('__name__')\n\n\ndef create_base_metric(metric_name):\n    return {\n        'properties': {\n            'what': metric_name,\n            'target_type': 'gauge',\n        },\n        'tags': {},\n    }\n\n\ndef process_matrix(result_, end_):\n    i = 0\n    cur_batch = sdc.createBatch()\n    for res in result_['data']['result']:\n        base_metric = create_base_metric(get_metric_name(res))\n        for dimension, value in res['metric'].items():\n            dimension = re.sub('\\s+', '_', dimension.strip()).replace('.', '_')\n            value = re.sub('\\s+', '_', value.strip()).replace('.', '_')\n            base_metric['properties'][dimension] = value\n        for timestamp, value in res[get_result_key(result_)]:\n            metric = base_metric\n            metric['timestamp'] = int(timestamp)\n            metric['value'] = value\n            new_record = sdc.createRecord('record created ' + str(get_now_with_delay()))\n            new_record.value = metric\n            cur_batch.add(new_record)\n            i += 1\n            if i % BATCH_SIZE == 0:\n                cur_batch.process(entityName, str(end_))\n                cur_batch = sdc.createBatch()\n        # if we didn't process the batch for the last time\n        if i % BATCH_SIZE != 0:\n            cur_batch.process(entityName, str(end_))\n            cur_batch = sdc.createBatch()\n\n\ndef process_vector(result_, end_):\n    i = 0\n    cur_batch = sdc.createBatch()\n    for res in result_['data']['result']:\n        base_metric = create_base_metric(get_metric_name(res))\n        for dimension, value in res['metric'].items():\n            dimension = re.sub('\\s+', '_', dimension.strip()).replace('.', '_')\n            value = re.sub('\\s+', '_', value).replace('.', '_')\n            base_metric['properties'][dimension] = value\n        timestamp, value = res[get_result_key(result_)]\n        metric = base_metric\n        metric['timestamp'] = end_\n        metric['value'] = value\n        new_record = sdc.createRecord('record created ' + str(get_now_with_delay()))\n        new_record.value = metric\n        cur_batch.add(new_record)\n        i += 1\n        if i % BATCH_SIZE == 0:\n            cur_batch.process(entityName, str(end_))\n            cur_batch = sdc.createBatch()\n        # if we didn't process the batch for the last time\n    if i % BATCH_SIZE != 0:\n        cur_batch.process(entityName, str(end_))\n\n\ndef main():\n    interval = get_interval()\n    end = get_backfill_offset() + interval\n    url = sdc.userParams['URL'] + '/api/v1/query?' + urllib.urlencode({\n        'query': sdc.userParams['QUERY'].encode('utf-8'),\n        'timeout': sdc.userParams['QUERY_TIMEOUT'],\n    })\n\n    while True:\n        try:\n            curr_url = url + '&' + urllib.urlencode({'time': end})\n            while end > get_now_with_delay():\n                time.sleep(2)\n                if sdc.isStopped():\n                    return\n            if sdc.isStopped():\n                break\n            sdc.log.debug(curr_url)\n            res = make_request(curr_url).json()\n            sdc.log.debug(str(res))\n            process_matrix(res, end) if res['data']['resultType'] == 'matrix' else process_vector(res, end)\n            end += interval\n        except Exception:\n            sdc.log.error(traceback.format_exc())\n            raise\n\n\nmain()\n"
       }, {
         "name" : "scriptConf.batchSize",
         "value" : 1000
@@ -372,28 +439,87 @@
           "value" : ""
         }, {
           "key" : "QUERY",
-          "value" : "match[]={__name__!=\"\"}"
+          "value" : "rate(log_messages_total2[100000s])"
         }, {
-          "key" : "DAYS_TO_BACKFILL",
-          "value" : "0"
+          "key" : "INITIAL_TIMESTAMP",
+          "value" : "1593993600"
         }, {
           "key" : "INTERVAL",
-          "value" : "10"
+          "value" : "100000"
+        }, {
+          "key" : "DELAY_IN_MINUTES",
+          "value" : "0"
+        }, {
+          "key" : "VERIFY_SSL",
+          "value" : "1"
+        }, {
+          "key" : "QUERY_TIMEOUT",
+          "value" : "300"
+        }, {
+          "key" : "AGGREGATED_METRIC_NAME",
+          "value" : "aggregated_metric"
         } ]
       }, {
         "name" : "stageOnRecordError",
         "value" : "TO_ERROR"
       } ],
       "uiInfo" : {
-        "yPos" : 49,
+        "yPos" : 132,
         "stageType" : "SOURCE",
         "icon" : "jython.png",
         "description" : "",
-        "label" : "Jython Scripting 1",
-        "xPos" : 238
+        "label" : "Get data",
+        "xPos" : 315,
+        "displayMode" : "BASIC"
       },
       "inputLanes" : [ ],
       "outputLanes" : [ "JythonScripting_01OutputLane15924840586690" ],
+      "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
+      "instanceName" : "JavaScriptEvaluator_01",
+      "library" : "streamsets-datacollector-basic-lib",
+      "stageName" : "com_streamsets_pipeline_stage_processor_javascript_JavaScriptDProcessor",
+      "stageVersion" : "3",
+      "configuration" : [ {
+        "name" : "processingMode",
+        "value" : "BATCH"
+      }, {
+        "name" : "initScript",
+        "value" : "/**\n * Available Objects:\n *\n *   sdc.state: a dict that is preserved between invocations of this script.\n *         Useful for caching bits of data e.g. counters and long-lived resources.\n *\n *   sdc.log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n *                               loglevel is any log4j level: e.g. info, error, warn, trace.\n *   sdc.getFieldNull(Record, 'field path'): Receive a constant defined above\n *                          to check if the field is typed field with value null\n *   sdc.createMap(boolean listMap): Create a map for use as a field in a record.\n *                          Pass true to this function to create a list map (ordered map)\n */\n\n// sdc.state['connection'] = new Connection().open();\n"
+      }, {
+        "name" : "script",
+        "value" : "/**\n * Available constants:\n *   They are to assign a type to a field with a value null.\n *   sdc.NULL_BOOLEAN, sdc.NULL_CHAR, sdc.NULL_BYTE, sdc.NULL_SHORT, sdc.NULL_INTEGER, sdc.NULL_LONG,\n *   sdc.NULL_FLOAT, sdc.NULL_DOUBLE, sdc.NULL_DATE, sdc.NULL_DATETIME, sdc.NULL_TIME, sdc.NULL_DECIMAL,\n *   sdc.NULL_BYTE_ARRAY, sdc.NULL_STRING, sdc.NULL_LIST, sdc.NULL_MAP\n *\n * Available Objects:\n *\n *  sdc.records: an array of records to process, depending on the JavaScript processor\n *           processing mode it may have 1 record or all the records in the batch.\n *\n *  sdc.state: a dict that is preserved between invocations of this script.\n *        Useful for caching bits of data e.g. counters.\n *\n *  sdc.log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n *                               loglevel is any log4j level: e.g. info, error, warn, trace.\n *\n *  sdc.output.write(record): writes a record to processor output\n *\n *  sdc.error.write(record, message): sends a record to error\n *\n *  sdc.getFieldNull(Record, 'field path'): Receive a constant defined above\n *                            to check if the field is typed field with value null\n *  sdc.createRecord(String recordId): Creates a new record.\n *                            Pass a recordId to uniquely identify the record and include enough information to track down the record source.\n *  sdc.createMap(boolean listMap): Create a map for use as a field in a record.\n *                            Pass true to this function to create a list map (ordered map)\n *\n *  sdc.createEvent(String type, int version): Creates a new event.\n *                            Create new empty event with standard headers.\n *  sdc.toEvent(Record): Send event to event stream\n *                            Only events created with sdcFunctions.createEvent are supported.\n *  sdc.isPreview(): Determine if pipeline is in preview mode.\n *\n * Available Record Header Variables:\n *\n *  record.attributes: a map of record header attributes.\n *  record.<header name>: get the value of 'header name'.\n */\n\n// Sample JavaScript code\nvar records = sdc.records;\nfor(var i = 0; i < records.length; i++) {\n    try {\n        // Change record root field value to a STRING value\n        // records[i].value = 'Hello ' + i;\n\n        // Change record root field value to a MAP value and create an entry\n        // records[i].value = { V : 'Hello' };\n\n        // Access a MAP entry\n        // records[i].value.X = records[i].value['V'] + ' World';\n\n        // Modify a MAP entry\n        // records[i].value.V = 5;\n\n        // Create an ARRAY entry\n        // records[i].value.A = ['Element 1', 'Element 2'];\n\n        // Access a Array entry\n        // records[i].value.B = records[i].value['A'][0];\n\n        // Modify an existing ARRAY entry\n        // records[i].value.A[0] = 100;\n\n        // Assign a integer type to a field and value null;\n        // records[i].value.null_int = NULL_INTEGER\n\n        // Check if the field is NULL_INTEGER. If so, assign a value\n        // if(sdc.getFieldNull(records[i], '/null_int') == NULL_INTEGER)\n        //    records[i].value.null_int = 123\n\n        // Direct access to the underlying Data Collector Record. Use for read-only operations.\n        // fieldAttr = records[i].sdcRecord.get('/value').getAttribute('attr')\n\n        // Create a new record with map field\n        // var newRecord = sdc.createRecord(records[i].sourceId + ':newRecordId');\n        // newRecord.value = {'field1' : 'val1', 'field2' : 'val2'};\n        // sdc.output.write(newRecord);\n        // Create a new map and add it to the original record\n        // var newMap = sdc.createMap(true);\n        // newMap['key'] = 'value';\n        // records[i].value['b'] = newMap;\n\n        // Applies if the source uses WHOLE_FILE as data format\n        // var input_stream = record.value['fileRef'].getInputStream();\n        // try {\n        //     input_stream.read(); //Process the input stream\n        // } finally {\n        //     input_stream.close()\n        // }\n\n        // Modify a header attribute entry\n        // records[i].attributes['name'] = records[i].attributes['first_name'] + ' ' + records[i].attributes['last_name']\n\n        // Get a record header with field names ex. get sourceId and errorCode\n        // var sourceId = records[i].sourceId\n        // var errorCode = ''\n        // if (records[i].errorCode) {\n        //     errorCode = records[i].errorCode\n        // }\n\n        // Write record to processor output\n        sdc.output.write(records[i]);\n    } catch (e) {\n        // Send record to error\n        sdc.error.write(records[i], e);\n    }\n}\n"
+      }, {
+        "name" : "destroyScript",
+        "value" : "/**\n * Available Objects:\n *\n *   sdc.state: a dict that is preserved between invocations of this script.\n *        Useful for caching bits of data e.g. counters and long-lived resources.\n *   sdc.log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n *                               loglevel is any log4j level: e.g. info, error, warn, trace.\n *   sdc.getFieldNull(Record, 'field path'): Receive a constant defined above\n *                          to check if the field is typed field with value null\n *   sdc.createMap(boolean listMap): Create a map for use as a field in a record.\n *                          Pass true to this function to create a list map (ordered map)\n *   sdc.createEvent(String type, int version): Creates a new event.\n *                          Create new empty event with standard headers.\n *   sdc.toEvent(Record): Send event to event stream\n *                          Only events created with sdc.createEvent are supported.\n */\n\n// sdc.state['connection'].close();\n"
+      }, {
+        "name" : "scriptRecordType",
+        "value" : "NATIVE_OBJECTS"
+      }, {
+        "name" : "userParams",
+        "value" : [ ]
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "yPos" : 130,
+        "stageType" : "PROCESSOR",
+        "icon" : "javascript.png",
+        "description" : "",
+        "label" : "Convert to metrics 3.0",
+        "xPos" : 538,
+        "displayMode" : "BASIC"
+      },
+      "inputLanes" : [ "JythonScripting_01OutputLane15924840586690" ],
+      "outputLanes" : [ "JavaScriptEvaluator_01OutputLane16436225839990" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -429,13 +555,22 @@
           "expression" : "${emptyList()}"
         }, {
           "fieldToSet" : "/tags/pipeline_id[0]",
-          "expression" : "${\"v\"}"
+          "expression" : "${\"test_victoria_a\"}"
         }, {
           "fieldToSet" : "/tags/pipeline_type",
           "expression" : "${emptyList()}"
         }, {
           "fieldToSet" : "/tags/pipeline_type[0]",
           "expression" : "${\"victoria\"}"
+        }, {
+          "fieldToSet" : "/tags/tag",
+          "expression" : "${emptyList()}"
+        }, {
+          "fieldToSet" : "/tags/tag[0]",
+          "expression" : "${\"value\"}"
+        }, {
+          "fieldToSet" : "/properties/static",
+          "expression" : "${\"dimension\"}"
         }, {
           "fieldToSet" : "/timestamp",
           "expression" : "${record:value('/timestamp')}"
@@ -459,13 +594,14 @@
         "value" : [ ]
       } ],
       "uiInfo" : {
+        "yPos" : 133,
+        "stageType" : "PROCESSOR",
         "description" : "",
         "label" : "Add tags and static dimensions, convert timestamp to long",
-        "xPos" : 499,
-        "yPos" : 49,
-        "stageType" : "PROCESSOR"
+        "xPos" : 751,
+        "displayMode" : "BASIC"
       },
-      "inputLanes" : [ "JythonScripting_01OutputLane15924840586690" ],
+      "inputLanes" : [ "JavaScriptEvaluator_01OutputLane16436225839990" ],
       "outputLanes" : [ "ExpressionEvaluator_02OutputLane15480856372920" ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -480,16 +616,6 @@
       }, {
         "name" : "fieldTypeConverterConfigs",
         "value" : [ {
-          "fields" : [ "/value" ],
-          "targetType" : "FLOAT",
-          "treatInputFieldAsDate" : false,
-          "dataLocale" : "en,US",
-          "scale" : -1,
-          "decimalScaleRoundingStrategy" : "ROUND_UNNECESSARY",
-          "dateFormat" : "OTHER",
-          "zonedDateTimeFormat" : "ISO_ZONED_DATE_TIME",
-          "encoding" : "UTF-8"
-        }, {
           "fields" : [ "/timestamp" ],
           "targetType" : "INTEGER",
           "treatInputFieldAsDate" : false,
@@ -524,14 +650,61 @@
         "value" : [ ]
       } ],
       "uiInfo" : {
+        "yPos" : 135,
+        "stageType" : "PROCESSOR",
         "description" : "Convert value to float and timestamp to int",
         "label" : "Convert value and timestamp",
-        "xPos" : 720,
-        "yPos" : 50,
-        "stageType" : "PROCESSOR"
+        "xPos" : 971,
+        "displayMode" : "BASIC"
       },
       "inputLanes" : [ "ExpressionEvaluator_02OutputLane15480856372920" ],
       "outputLanes" : [ "destination_OutputLane" ],
+      "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
+      "instanceName" : "JythonEvaluator_01",
+      "library" : "streamsets-datacollector-jython_2_7-lib",
+      "stageName" : "com_streamsets_pipeline_stage_processor_jython_JythonDProcessor",
+      "stageVersion" : "3",
+      "configuration" : [ {
+        "name" : "processingMode",
+        "value" : "BATCH"
+      }, {
+        "name" : "initScript",
+        "value" : "# Available Objects:\n#\n#  sdc.state: a dict that is preserved between invocations of this script.\n#         Useful for caching bits of data e.g. counters.\n#  sdc.log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n#                               loglevel is any log4j level: e.g. info, error, warn, trace.\n#  sdc.getFieldNull(Record, 'field path'): Receive a constant defined above\n#                                  to check if the field is typed field with value null\n#  sdc.createMap(boolean listMap): Create a map for use as a field in a record.\n#                            Pass True to this function to create a list map (ordered map).\n#  sdc.createEvent(String type, int version): Creates a new event.\n#                            Create new empty event with standard headers.\n#  sdc.createMap(boolean listMap): Create a map for use as a field in a record.\n#                            Pass True to this function to create a list map (ordered map).\n#\n\n# sdc.state['connection'] = new Connection().open()\n\n"
+      }, {
+        "name" : "script",
+        "value" : "# Available constants: \n#   They are to assign a type to a field with a value null.\n#   sdc.NULL_BOOLEAN, sdc.NULL_CHAR, sdc.NULL_BYTE, sdc.NULL_SHORT, sdc.NULL_INTEGER, sdc.NULL_LONG,\n#   sdc.NULL_FLOAT, sdc.NULL_DOUBLE, sdc.NULL_DATE, sdc.NULL_DATETIME, sdc.NULL_TIME, sdc.NULL_DECIMAL,\n#   sdc.NULL_BYTE_ARRAY, sdc.NULL_STRING, sdc.NULL_LIST, sdc.NULL_MAP\n# \n# Available Objects:\n# \n#  sdc.records: an array of records to process, depending on Jython processor\n#           processing mode it may have 1 record or all the records in the batch.\n#\n#  sdc.state: a dict that is preserved between invocations of this script. \n#         Useful for caching bits of data e.g. counters.\n#\n#  sdc.log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n#                               loglevel is any log4j level: e.g. info, error, warn, trace.\n#\n#  sdc.output.write(record): writes a record to processor output\n#\n#  sdc.error.write(record, message): sends a record to error\n#\n#  sdc.getFieldNull(Record, 'field path'): Receive a constant defined above \n#                                  to check if the field is typed field with value null\n#  sdc.createRecord(String recordId): Creates a new record.\n#                            Pass a recordId to uniquely identify the record and include enough information to track down the record source. \n#  sdc.createMap(boolean listMap): Create a map for use as a field in a record.\n#                            Pass True to this function to create a list map (ordered map)\n#\n#  sdc.createEvent(String type, int version): Creates a new event.\n#                            Create new empty event with standard headers.\n#  sdc.toEvent(Record): Send event to event stream\n#                            Only events created with sdcFunctions.createEvent are supported.\n#  sdc.isPreview(): Determine if pipeline is in preview mode.\n#\n#  sdc.userParams: Dictionary of user-specified keys and values (from UI).\n#\n#\n# Available Record Header Variables:\n#\n#  record.attributes: a map of record header attributes.\n#\n#  record.<header name>: get the value of 'header name'.\n#\n# Add additional module search paths:\n#   try:\n#       sdc.importLock()\n#       import sys\n#       sys.path.append('/some/other/dir/to/search')\n#       import something\n#   finally:\n#       sdc.importUnlock()\n#\n\n# Sample Jython code\nfor record in sdc.records:\n  try:\n    # Change record root field value to a STRING value\n    # record.value = 'Hello '\n\n\n    # Change record root field value to a MAP value and create an entry\n    # record.value = { 'V' : 'Hello'}\n\n    # Access a MAP entry\n    # record.value['X'] = record.value['V'] + ' World'\n\n    # Modify a MAP entry\n    # record.value['V'] = 5\n\n    # Create an ARRAY entry\n    # record.value['A'] = [ 'Element 1', 'Element 2' ]\n\n    # Access an ARRAY entry\n    # record.value['B'] = record.value['A'][0]\n\n    # Modify an existing ARRAY entry\n    # record.value['A'][0] = 100\n\n    # Assign a integer type to a field and value null\n    # record.value['null_int'] = sdc.NULL_INTEGER \n\n    # Check if the field is NULL_INTEGER(Both '==' and 'is' work). If so, assign a value \n    # if sdc.getFieldNull(record, '/null_int') == sdc.NULL_INTEGER:\n    #    record.value['null_int'] = 123\n\n    # Direct access to the underlying Data Collector Record. Use for read-only operations.\n    # fieldAttr = record.sdcRecord.get('/value').getAttribute('attr')  \n\n    # Create a new record with map field \n    # newRecord = sdc.createRecord(record.sourceId + ':newRecordId')\n    # newRecord.value = {'field1' : 'val1', 'field2' : 'val2'}\n    # sdc.output.write(newRecord)\n\n    # Applies if the source uses WHOLE_FILE as data format\n    # input_stream = record.value['fileRef'].getInputStream()\n    # try:\n    #   input_stream.read() #Process the input stream\n    # finally:  \n    #   input_stream.close()\n\n    # Modify a record header attribute entry\n    # record.attributes['name'] = record.attributes['first_name'] + ' ' + record.attributes['last_name']\n\n    # Get a record header with field names ex. get sourceId and errorCode\n    # sourceId = record.sourceId\n    # errorCode = ''\n    # if record.errorCode:\n    #   errorCode = record.errorCode\n\n    # Write record to processor output\n    sdc.output.write(record)\n\n  except Exception as e:\n    # Send record to error\n    sdc.error.write(record, str(e))\n\n"
+      }, {
+        "name" : "destroyScript",
+        "value" : "# Available Objects:\n#\n#  sdc.state: a dict that is preserved between invocations of this script.\n#         Useful for caching bits of data e.g. counters.\n#  sdc.log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n#                               loglevel is any log4j level: e.g. info, error, warn, trace.\n#  sdc.getFieldNull(Record, 'field path'): Receive a constant defined above \n#                                  to check if the field is typed field with value null.\n#  sdc.createMap(boolean listMap): Create a map for use as a field in a record.\n#                            Pass True to this function to create a list map (ordered map).\n#  sdc.createEvent(String type, int version): Creates a new event.\n#                            Create new empty event with standard headers.\n#  sdc.toEvent(Record): Send event to event stream.\n#                            Only events created with sdcFunctions.createEvent are supported.\n#\n\n# sdc.state['connection'].close()\n\n"
+      }, {
+        "name" : "scriptRecordType",
+        "value" : "NATIVE_OBJECTS"
+      }, {
+        "name" : "userParams",
+        "value" : [ ]
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "yPos" : 133,
+        "stageType" : "PROCESSOR",
+        "icon" : "jython.png",
+        "description" : "",
+        "label" : "Replace illegal chars",
+        "xPos" : 1175,
+        "displayMode" : "BASIC"
+      },
+      "inputLanes" : [ "destination_OutputLane" ],
+      "outputLanes" : [ "JythonEvaluator_01OutputLane16436228526440" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -544,7 +717,7 @@
         "value" : "UTF-8"
       }, {
         "name" : "conf.agentOffsetUrl",
-        "value" : ""
+        "value" : "http://anodot-agent/pipeline-offset/test_victoria_a"
       }, {
         "name" : "conf.dataGeneratorFormatConfig.csvFileFormat",
         "value" : "CSV"
@@ -739,7 +912,7 @@
         "value" : ""
       }, {
         "name" : "conf.client.useProxy",
-        "value" : false
+        "value" : true
       }, {
         "name" : "conf.client.proxy.uri",
         "value" : "http://squid:3128"
@@ -824,15 +997,40 @@
       }, {
         "name" : "stageRecordPreconditions",
         "value" : [ ]
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.csvQuoteMode",
+        "value" : "MINIMAL"
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.basicAuthUserInfo",
+        "value" : null
+      }, {
+        "name" : "conf.dataGeneratorFormatConfig.basicAuthUserInfoForRegistration",
+        "value" : null
+      }, {
+        "name" : "conf.parallelSendersNumber",
+        "value" : 1
+      }, {
+        "name" : "conf.maxBatchSize",
+        "value" : 1000
+      }, {
+        "name" : "conf.propertiesPath",
+        "value" : null
+      }, {
+        "name" : "conf.partitioningKeyPath",
+        "value" : null
+      }, {
+        "name" : "conf.maxSendResponseWait",
+        "value" : 60000
       } ],
       "uiInfo" : {
+        "yPos" : 136,
+        "stageType" : "TARGET",
         "description" : "",
         "label" : "HTTP Client 1",
-        "xPos" : 940,
-        "yPos" : 50,
-        "stageType" : "TARGET"
+        "xPos" : 1387,
+        "displayMode" : "BASIC"
       },
-      "inputLanes" : [ "destination_OutputLane" ],
+      "inputLanes" : [ "JythonEvaluator_01OutputLane16436228526440" ],
       "outputLanes" : [ ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -856,22 +1054,22 @@
       "services" : [ ]
     },
     "info" : {
-      "pipelineId" : "v",
-      "title" : "v",
+      "pipelineId" : "test_victoria_a",
+      "title" : "test_victoria_a",
       "description" : "",
-      "created" : 1595329376463,
-      "lastModified" : 1595331149367,
+      "created" : 1643622375812,
+      "lastModified" : 1643622867705,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "6d6e2ad1-b9b9-4ca6-ab0c-f0856a10e5af",
+      "uuid" : "dee84a7d-5250-4c29-a001-c2b38a9d1002",
       "valid" : true,
       "metadata" : {
         "labels" : [ "victoria", "http" ]
       },
-      "name" : "v",
-      "sdcVersion" : "3.15.0",
-      "sdcId" : "b3e93fea-ca9f-11ea-966e-11689dcf2b9e"
+      "name" : "test_victoria_a",
+      "sdcVersion" : "3.18.0",
+      "sdcId" : "5f2342a9-827a-11ec-b859-bbc1393e65cf"
     },
     "metadata" : {
       "labels" : [ "victoria", "http" ]
@@ -1212,7 +1410,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1595329376515,
+      "timestamp" : 1643622375889,
       "valid" : true
     }, {
       "id" : "stageErrorAlertID",
@@ -1223,7 +1421,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1595329376515,
+      "timestamp" : 1643622375889,
       "valid" : true
     }, {
       "id" : "idleGaugeID",
@@ -1234,7 +1432,7 @@
       "condition" : "${time:now() - value() > 120000}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1595329376515,
+      "timestamp" : 1643622375889,
       "valid" : true
     }, {
       "id" : "batchTimeAlertID",
@@ -1245,18 +1443,18 @@
       "condition" : "${value() > 200}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1595329376515,
+      "timestamp" : 1643622375889,
       "valid" : true
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "d274bc0a-9a94-40fc-bf8f-ca88804a4ea6",
+    "uuid" : "c162c21a-c0c7-4602-9d2a-2204cd13aea3",
     "configuration" : [ {
       "name" : "emailIDs",
-      "value" : [ ]
+      "value" : null
     }, {
       "name" : "webhookConfigs",
-      "value" : [ ]
+      "value" : null
     } ],
     "ruleIssues" : [ ],
     "configIssues" : [ ]

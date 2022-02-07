@@ -1,6 +1,5 @@
 from agent import source
 from .base import Prompter
-from .directory import DirectoryPrompter
 from .elastic import ElasticPrompter
 from .influx import InfluxPrompter, Influx2Prompter
 from .jdbc import JDBCPrompter
@@ -16,7 +15,6 @@ from .zabbix import ZabbixPrompter
 def get_prompter(source_: source.Source) -> Prompter:
     types = {
         source.TYPE_CLICKHOUSE: JDBCPrompter,
-        source.TYPE_DIRECTORY: DirectoryPrompter,
         source.TYPE_ELASTIC: ElasticPrompter,
         source.TYPE_INFLUX: InfluxPrompter,
         source.TYPE_INFLUX_2: Influx2Prompter,

@@ -1,6 +1,6 @@
 from agent.modules.logger import get_logger
 from agent.pipeline.config import stages
-from agent.pipeline.config.handlers.base import BaseTestConfigHandler, NoSchemaConfigHandler, SchemaConfigHandler
+from agent.pipeline.config.handlers.base import TestConfigHandler, NoSchemaConfigHandler, SchemaConfigHandler
 
 logger = get_logger(__name__)
 
@@ -26,7 +26,7 @@ class KafkaSchemaConfigHandler(SchemaConfigHandler):
     }
 
 
-class TestKafkaConfigHandler(BaseTestConfigHandler):
+class TestKafkaConfigHandler(TestConfigHandler):
     stages_to_override = {
         'source': stages.source.Source,
     }

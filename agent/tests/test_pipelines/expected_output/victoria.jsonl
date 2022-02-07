@@ -1,1 +1,302 @@
-[{"tags": {"source": ["anodot-agent"], "source_host_id": ["ABCDEF"], "source_host_name": ["agent"], "pipeline_id": ["test_victoria"], "pipeline_type": ["victoria"]}, "value": 5.0, "properties": {"instance": "victoriametrics:8428", "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a", "level": "info", "target_type": "gauge", "what": "log_messages_total", "location": "VictoriaMetrics/app/vmstorage/main_go:86", "job": "victoriametrics"}, "timestamp": 1594113932}, {"tags": {"source": ["anodot-agent"], "source_host_id": ["ABCDEF"], "source_host_name": ["agent"], "pipeline_id": ["test_victoria"], "pipeline_type": ["victoria"]}, "value": 7.0, "properties": {"instance": "victoriametrics:8428", "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a", "level": "info", "target_type": "gauge", "what": "log_messages_total", "location": "VictoriaMetrics/app/vmstorage/main_go:86", "job": "victoriametrics"}, "timestamp": 1594113942}, {"tags": {"source": ["anodot-agent"], "source_host_id": ["ABCDEF"], "source_host_name": ["agent"], "pipeline_id": ["test_victoria"], "pipeline_type": ["victoria"]}, "value": 1.0, "properties": {"instance": "victoriametrics:8428", "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a", "level": "info", "target_type": "gauge", "what": "log_messages_total", "location": "VictoriaMetrics/app/vmstorage/main_go:86", "job": "victoriametrics"}, "timestamp": 1594113952}, {"tags": {"source": ["anodot-agent"], "source_host_id": ["ABCDEF"], "source_host_name": ["agent"], "pipeline_id": ["test_victoria"], "pipeline_type": ["victoria"]}, "value": 1.0, "properties": {"instance": "victoriametrics:8428", "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a", "level": "info", "target_type": "gauge", "what": "log_messages_total", "location": "VictoriaMetrics/app/vmstorage/main_go:86", "job": "victoriametrics"}, "timestamp": 1594113962}, {"tags": {"source": ["anodot-agent"], "source_host_id": ["ABCDEF"], "source_host_name": ["agent"], "pipeline_id": ["test_victoria"], "pipeline_type": ["victoria"]}, "value": 3.0, "properties": {"instance": "victoriametrics:8428", "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a", "level": "info", "target_type": "gauge", "what": "log_messages_total", "location": "VictoriaMetrics/app/vmstorage/main_go:86", "job": "victoriametrics"}, "timestamp": 1594113972}, {"tags": {"source": ["anodot-agent"], "source_host_id": ["ABCDEF"], "source_host_name": ["agent"], "pipeline_id": ["test_victoria"], "pipeline_type": ["victoria"]}, "value": 9.0, "properties": {"instance": "victoriametrics:8428", "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a", "level": "info", "target_type": "gauge", "what": "log_messages_total", "location": "VictoriaMetrics/app/vmstorage/main_go:86", "job": "victoriametrics"}, "timestamp": 1594113982}, {"tags": {"source": ["anodot-agent"], "source_host_id": ["ABCDEF"], "source_host_name": ["agent"], "pipeline_id": ["test_victoria"], "pipeline_type": ["victoria"]}, "value": 2.0, "properties": {"instance": "victoriametrics:8428", "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a", "level": "info", "target_type": "gauge", "what": "log_messages_total", "location": "VictoriaMetrics/app/vmstorage/main_go:86", "job": "victoriametrics"}, "timestamp": 1594113992}, {"tags": {"source": ["anodot-agent"], "source_host_id": ["ABCDEF"], "source_host_name": ["agent"], "pipeline_id": ["test_victoria"], "pipeline_type": ["victoria"]}, "value": 4.0, "properties": {"instance": "victoriametrics:8428", "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a", "level": "info", "target_type": "gauge", "what": "log_messages_total", "location": "VictoriaMetrics/app/vmstorage/main_go:86", "job": "victoriametrics"}, "timestamp": 1594114002}, {"tags": {"source": ["anodot-agent"], "source_host_id": ["ABCDEF"], "source_host_name": ["agent"], "pipeline_id": ["test_victoria"], "pipeline_type": ["victoria"]}, "value": 1.0, "properties": {"instance": "victoriametrics:8428", "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a", "level": "info", "target_type": "gauge", "what": "log_messages_total", "location": "VictoriaMetrics/app/vmstorage/main_go:86", "job": "victoriametrics"}, "timestamp": 1594114012}, {"tags": {"source": ["anodot-agent"], "source_host_id": ["ABCDEF"], "source_host_name": ["agent"], "pipeline_id": ["test_victoria"], "pipeline_type": ["victoria"]}, "value": 2.0, "properties": {"instance": "victoriametrics:8428", "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a", "level": "info", "target_type": "gauge", "what": "log_messages_total", "location": "VictoriaMetrics/app/vmstorage/main_go:86", "job": "victoriametrics"}, "timestamp": 1594114022}]
+[
+  {
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_victoria"
+      ],
+      "pipeline_type": [
+        "victoria"
+      ]
+    },
+    "value": 5.0,
+    "properties": {
+      "instance": "victoriametrics:8428",
+      "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a",
+      "level": "info",
+      "target_type": "gauge",
+      "what": "log_messages_total",
+      "location": "VictoriaMetrics/app/vmstorage/main_go:86",
+      "job": "victoriametrics"
+    },
+    "timestamp": 1594113932
+  },
+  {
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_victoria"
+      ],
+      "pipeline_type": [
+        "victoria"
+      ]
+    },
+    "value": 7.0,
+    "properties": {
+      "instance": "victoriametrics:8428",
+      "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a",
+      "level": "info",
+      "target_type": "gauge",
+      "what": "log_messages_total",
+      "location": "VictoriaMetrics/app/vmstorage/main_go:86",
+      "job": "victoriametrics"
+    },
+    "timestamp": 1594113942
+  },
+  {
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_victoria"
+      ],
+      "pipeline_type": [
+        "victoria"
+      ]
+    },
+    "value": 1.0,
+    "properties": {
+      "instance": "victoriametrics:8428",
+      "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a",
+      "level": "info",
+      "target_type": "gauge",
+      "what": "log_messages_total",
+      "location": "VictoriaMetrics/app/vmstorage/main_go:86",
+      "job": "victoriametrics"
+    },
+    "timestamp": 1594113952
+  },
+  {
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_victoria"
+      ],
+      "pipeline_type": [
+        "victoria"
+      ]
+    },
+    "value": 1.0,
+    "properties": {
+      "instance": "victoriametrics:8428",
+      "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a",
+      "level": "info",
+      "target_type": "gauge",
+      "what": "log_messages_total",
+      "location": "VictoriaMetrics/app/vmstorage/main_go:86",
+      "job": "victoriametrics"
+    },
+    "timestamp": 1594113962
+  },
+  {
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_victoria"
+      ],
+      "pipeline_type": [
+        "victoria"
+      ]
+    },
+    "value": 3.0,
+    "properties": {
+      "instance": "victoriametrics:8428",
+      "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a",
+      "level": "info",
+      "target_type": "gauge",
+      "what": "log_messages_total",
+      "location": "VictoriaMetrics/app/vmstorage/main_go:86",
+      "job": "victoriametrics"
+    },
+    "timestamp": 1594113972
+  },
+  {
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_victoria"
+      ],
+      "pipeline_type": [
+        "victoria"
+      ]
+    },
+    "value": 9.0,
+    "properties": {
+      "instance": "victoriametrics:8428",
+      "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a",
+      "level": "info",
+      "target_type": "gauge",
+      "what": "log_messages_total",
+      "location": "VictoriaMetrics/app/vmstorage/main_go:86",
+      "job": "victoriametrics"
+    },
+    "timestamp": 1594113982
+  },
+  {
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_victoria"
+      ],
+      "pipeline_type": [
+        "victoria"
+      ]
+    },
+    "value": 2.0,
+    "properties": {
+      "instance": "victoriametrics:8428",
+      "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a",
+      "level": "info",
+      "target_type": "gauge",
+      "what": "log_messages_total",
+      "location": "VictoriaMetrics/app/vmstorage/main_go:86",
+      "job": "victoriametrics"
+    },
+    "timestamp": 1594113992
+  },
+  {
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_victoria"
+      ],
+      "pipeline_type": [
+        "victoria"
+      ]
+    },
+    "value": 4.0,
+    "properties": {
+      "instance": "victoriametrics:8428",
+      "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a",
+      "level": "info",
+      "target_type": "gauge",
+      "what": "log_messages_total",
+      "location": "VictoriaMetrics/app/vmstorage/main_go:86",
+      "job": "victoriametrics"
+    },
+    "timestamp": 1594114002
+  },
+  {
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_victoria"
+      ],
+      "pipeline_type": [
+        "victoria"
+      ]
+    },
+    "value": 1.0,
+    "properties": {
+      "instance": "victoriametrics:8428",
+      "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a",
+      "level": "info",
+      "target_type": "gauge",
+      "what": "log_messages_total",
+      "location": "VictoriaMetrics/app/vmstorage/main_go:86",
+      "job": "victoriametrics"
+    },
+    "timestamp": 1594114012
+  },
+  {
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_victoria"
+      ],
+      "pipeline_type": [
+        "victoria"
+      ]
+    },
+    "value": 2.0,
+    "properties": {
+      "instance": "victoriametrics:8428",
+      "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a",
+      "level": "info",
+      "target_type": "gauge",
+      "what": "log_messages_total",
+      "location": "VictoriaMetrics/app/vmstorage/main_go:86",
+      "job": "victoriametrics"
+    },
+    "timestamp": 1594114022
+  }
+]

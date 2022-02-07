@@ -1,7 +1,6 @@
-from agent import pipeline
 from agent.modules.logger import get_logger
 from agent.pipeline.config import stages
-from agent.pipeline.config.handlers.base import NoSchemaConfigHandler
+from agent.pipeline.config.handlers.base import NoSchemaConfigHandler, SchemaConfigHandler, TestConfigHandler
 
 logger = get_logger(__name__)
 
@@ -9,18 +8,24 @@ logger = get_logger(__name__)
 class PromQLConfigHandler(NoSchemaConfigHandler):
     stages_to_override = {
         'source': stages.source.promql.PromQLScript,
+        'JythonEvaluator_01': stages.jython.PromQLCreateMetrics,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties,
+        'JythonEvaluator_02': stages.jython.ReplaceIllegalChars,
         'destination': stages.destination.Destination
     }
 
-    def _override_stages(self):
-        self.pipeline.config['timestamp'] = {
-            'type': pipeline.TimestampType.UNIX.value
-        }
-        super()._override_stages()
+
+class PromQLSchemaConfigHandler(SchemaConfigHandler):
+    stages_to_override = {
+        'source': stages.source.promql.PromQLScript,
+        'JavaScriptEvaluator_01': stages.js_convert_metrics.JSConvertMetrics30,
+        'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties,
+        'JythonEvaluator_01': stages.jython.ReplaceIllegalChars,
+        'destination': stages.destination.Destination
+    }
 
 
-class TestPromQLConfigHandler(PromQLConfigHandler):
+class TestPromQLConfigHandler(TestConfigHandler):
     stages_to_override = {
         'source': stages.source.promql.TestPromQLScript,
     }

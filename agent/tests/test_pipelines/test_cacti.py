@@ -7,7 +7,11 @@ from .test_zpipeline_base import TestPipelineBase
 class TestCacti(TestPipelineBase):
     __test__ = True
     params = {
-        'test_start': [{'name': 'cacti_archive'}, {'name': 'cacti_dir'}, {'name': 'cacti_file', 'sleep': 15}],
+        'test_start': [
+            {'name': 'cacti_archive'},
+            {'name': 'cacti_dir'},
+            {'name': 'cacti_file'}
+        ],
         'test_force_stop': [{'name': 'cacti_archive'}, {'name': 'cacti_dir'}, {'name': 'cacti_file'}],
         'test_output': [
             {'name': 'cacti_archive', 'output': 'cacti_archive.json', 'pipeline_type': source.TYPE_CACTI},
