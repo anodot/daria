@@ -7,6 +7,13 @@
     }
   },
   {
+    "name": "test_victoria",
+    "type": "victoria",
+    "config": {
+      "url": "http://victoriametrics:8428"
+    }
+  },
+  {
     "name": "test_thanos",
     "type": "thanos",
     "config": {

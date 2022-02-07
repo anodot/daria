@@ -1,1 +1,87 @@
-[{"query": "{__name__!=\"\"}", "days_to_backfill": 581, "interval": 10, "pipeline_id": "test_victoria_2", "source": "test_victoria_2"}, {"query": "log_messages_total[10000s]", "days_to_backfill": 581, "interval": 10000, "pipeline_id": "test_thanos", "source": "test_thanos"}, {"source": "test_prometheus", "pipeline_id": "test_prometheus", "query": "log_messages_total[10000s]", "days_to_backfill": 581, "interval": 10000}, {"source": "test_victoria_2", "pipeline_id": "test_promql_schema", "query": "diff_dims[10000s]", "days_to_backfill": 581, "interval": 10000, "dimensions": ["instance", "location", "job"], "values": {"diff_dims": "gauge"}}, {"source": "test_victoria_2", "pipeline_id": "test_promql_schema_rate", "query": "rate(diff_dims[10000s])", "days_to_backfill": 581, "interval": 10000, "aggregated_metric_name": "name", "dimensions": ["instance", "location", "job"], "values": {"name": "gauge"}}, {"source": "test_victoria_2", "pipeline_id": "test_promql_transform", "query": "ANOLO001LAPTOP_1_MeasurementName[10000s]", "days_to_backfill": 581, "interval": 10000, "transform": {"file": "/home/victoria_transform.csv"}}]
+[
+  {
+    "query": "log_messages_total[10000s]",
+    "days_to_backfill": 581,
+    "interval": 10000,
+    "pipeline_id": "test_victoria",
+    "source": "test_victoria"
+  },
+  {
+    "query": "rate(log_messages_total2[100000s])",
+    "days_to_backfill": 581,
+    "interval": 100000,
+    "pipeline_id": "test_victoria_a",
+    "source": "test_victoria",
+    "aggregated_metric_name": "aggregated_metric",
+    "properties": {
+      "static": "dimension"
+    },
+    "tags": {
+      "tag": [
+        "value"
+      ]
+    }
+  },
+  {
+    "query": "{__name__!=\"\"}",
+    "days_to_backfill": 581,
+    "interval": 10,
+    "pipeline_id": "test_victoria_2",
+    "source": "test_victoria_2"
+  },
+  {
+    "query": "log_messages_total[10000s]",
+    "days_to_backfill": 581,
+    "interval": 10000,
+    "pipeline_id": "test_thanos",
+    "source": "test_thanos"
+  },
+  {
+    "source": "test_prometheus",
+    "pipeline_id": "test_prometheus",
+    "query": "log_messages_total[10000s]",
+    "days_to_backfill": 581,
+    "interval": 10000
+  },
+  {
+    "source": "test_victoria_2",
+    "pipeline_id": "test_promql_schema",
+    "query": "diff_dims[10000s]",
+    "days_to_backfill": 581,
+    "interval": 10000,
+    "dimensions": [
+      "instance",
+      "location",
+      "job"
+    ],
+    "values": {
+      "diff_dims": "gauge"
+    }
+  },
+  {
+    "source": "test_victoria_2",
+    "pipeline_id": "test_promql_schema_rate",
+    "query": "rate(diff_dims[10000s])",
+    "days_to_backfill": 581,
+    "interval": 10000,
+    "aggregated_metric_name": "name",
+    "dimensions": [
+      "instance",
+      "location",
+      "job"
+    ],
+    "values": {
+      "name": "gauge"
+    }
+  },
+  {
+    "source": "test_victoria_2",
+    "pipeline_id": "test_promql_transform",
+    "query": "ANOLO001LAPTOP_1_MeasurementName[10000s]",
+    "days_to_backfill": 581,
+    "interval": 10000,
+    "transform": {
+      "file": "/home/victoria_transform.csv"
+    }
+  }
+]
