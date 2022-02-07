@@ -24,7 +24,6 @@
   {
     "source": "test_influx",
     "pipeline_id": "test_influx_file_transform",
-    "measurement_name": "cpu_test",
     "values": {"usage_active": "gauge"},
     "dimensions": {
       "required": [],

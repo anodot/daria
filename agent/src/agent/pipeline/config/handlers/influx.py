@@ -45,7 +45,7 @@ state['TAGS'] = {tags}
         return self.DECLARE_VARS_JS.format(
             required_dimensions=str(self.pipeline.required_dimensions),
             optional_dimensions=str(self.pipeline.optional_dimensions),
-            measurement_name=tools.replace_illegal_chars(self.pipeline.config['measurement_name']),
+            measurement_name=tools.replace_illegal_chars(self.pipeline.config.get('measurement_name', {})),
             target_type=self.pipeline.config.get('target_type', 'gauge'),
             constant_properties=str(self.pipeline.static_dimensions),
             host_id=self.pipeline.destination.host_id,

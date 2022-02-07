@@ -26,5 +26,8 @@
       }
     }
   },
-  "required": ["measurement_name", "values", "dimensions"]
+  "oneOf": [
+    {"required": ["measurement_name", "values", "dimensions"]},
+    {"required": ["query", "values", "dimensions"]}
+  ]
 }
