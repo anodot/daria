@@ -24,4 +24,4 @@ class PromQLBuilder(Builder):
     def _change_values(self):
         if len(self.config['values']) > 1:
             raise Exception('VictoriaMetrics supports only one value')
-        return {self.VALUE: 'gauge' for _ in self.config['values'].values()}
+        return {self.VALUE: type_ for type_ in self.config['values'].values()}
