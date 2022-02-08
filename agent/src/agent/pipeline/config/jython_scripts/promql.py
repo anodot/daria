@@ -79,6 +79,8 @@ def process_matrix(result_, end_):
         for timestamp, value in res[get_result_key(result_)]:
             record = base_record.copy()
             record['timestamp'] = float(timestamp)
+            # js 3.0 adds interval to last timestamp to send watermark, so here we should subtract it
+            record['last_timestamp'] = end_ - get_interval()
             metric_name = get_metric_name(res)
             record['__name__'] = metric_name
             record['__value'] = value
@@ -100,6 +102,8 @@ def process_vector(result_, end_):
         # here timestamp and end_ are the same values
         # because aggregation funcitons return timestamp from the end request parameter
         record['timestamp'] = timestamp
+        # js 3.0 adds interval to last timestamp to send watermark, so here we should subtract it
+        record['last_timestamp'] = end_ - get_interval()
         record['__name__'] = get_metric_name(res)
         record['__value'] = value
         sdc_record = sdc.createRecord('record created ' + str(get_now_with_delay()))
