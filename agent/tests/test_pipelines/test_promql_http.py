@@ -165,8 +165,8 @@ class TestPromQL(TestPipelineBase):
     def test_output_schema(self, name, pipeline_type, output):
         expected_output = get_expected_schema_output(name, output, pipeline_type)
         actual_output = get_output(f'{name}_{pipeline_type}.json')
-        if name == 'test_promql_schema_rate':
-            # victoria returns aggregated values in random order
+        if name in ['test_promql_schema_rate', 'test_promql_schema']:
+            # victoria returns values in random order, probably due to different dimensions
             expected_output.sort(key=compare)
             actual_output.sort(key=compare)
         assert actual_output == expected_output
