@@ -90,6 +90,10 @@ test-cacti: bootstrap run-mysql sleep
 test-oracle: bootstrap
 	$(DOCKER_TEST) tests/test_input/test_2/test_oracle.py
 
+test-mssql:
+	docker exec -i dc bash -c '$$SDC_DIST/bin/streamsets stagelib-cli jks-credentialstore add -i jks -n testmssql -c UserTest123$$'
+	$(DOCKER_TEST) tests/test_input/test_mssql.py
+
 test-databricks: bootstrap
 	$(DOCKER_TEST) tests/test_input/test_2/test_databricks.py
 
