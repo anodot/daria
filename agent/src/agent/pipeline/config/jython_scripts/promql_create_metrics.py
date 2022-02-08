@@ -2,7 +2,7 @@ global sdc, output, error
 
 
 def get_properties(record):
-    props = {k: v for k, v in record.value.items() if k not in ['timestamp', '__name__', '__value']}
+    props = {k: v for k, v in record.value.items() if k not in ['timestamp', '__name__', '__value', 'last_timestamp']}
     props['target_type'] = 'gauge'
     props['what'] = record.value['__name__']
     return props

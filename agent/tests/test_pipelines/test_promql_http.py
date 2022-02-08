@@ -1,6 +1,6 @@
 import pytest
 
-from .test_zpipeline_base import TestPipelineBase, get_expected_schema_output
+from .test_zpipeline_base import TestPipelineBase, get_expected_schema_output, get_schema_id
 from ..conftest import get_output
 
 
@@ -155,14 +155,18 @@ class TestPromQL(TestPipelineBase):
     def test_force_stop(self, cli_runner, name):
         super().test_force_stop(cli_runner, name)
 
+    def test_watermark(self):
+        schema_id = get_schema_id('test_promql_schema')
+        assert get_output(f'{schema_id}_watermark.json') == {'watermark': 1594123600, 'schemaId': schema_id}
+
     def test_output(self, name, pipeline_type, output):
         super().test_output(name, pipeline_type, output)
 
     def test_output_schema(self, name, pipeline_type, output):
         expected_output = get_expected_schema_output(name, output, pipeline_type)
         actual_output = get_output(f'{name}_{pipeline_type}.json')
-        if name == 'test_promql_schema_rate':
-            # victoria returns aggregated values in random order
+        if name in ['test_promql_schema_rate', 'test_promql_schema']:
+            # victoria returns values in random order, probably due to different dimensions
             expected_output.sort(key=compare)
             actual_output.sort(key=compare)
         assert actual_output == expected_output
@@ -170,7 +174,4 @@ class TestPromQL(TestPipelineBase):
 
 def compare(obj):
     # instance is a dimensions that's present only in one metric so we sort by it
-    if 'instance' in obj['dimensions']:
-        return -1
-    else:
-        return 0
+    return -1 if 'instance' in obj['dimensions'] else 0
