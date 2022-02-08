@@ -3,7 +3,7 @@ version: '3.1'
 services:
   dc:
 #    build: containers/streamsets
-    image: anodot/streamsets:3.28.2-aggregation-alpha
+    image: anodot/streamsets:3.17.1-aggregation-alpha
     container_name: dc
     ports:
       - "18630:18630"
@@ -25,7 +25,7 @@ services:
   #  creating second streamsets to run tests on multiple instances
   dc2:
 #    build: containers/streamsets
-    image: anodot/streamsets:3.28.2-aggregation-alpha
+    image: anodot/streamsets:3.17.1-aggregation-alpha
     container_name: dc2
     ports:
       - "18629:18630"
