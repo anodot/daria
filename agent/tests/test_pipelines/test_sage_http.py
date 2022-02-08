@@ -1,6 +1,6 @@
 import pytest
 
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from .test_zpipeline_base import TestPipelineBase, get_schema_id
 from ..conftest import get_output
 

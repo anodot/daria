@@ -2,7 +2,7 @@
   "type": "object",
   "properties": {
     "baseRollup": {"type": "string", "enum": ["SHORTROLLUP", "MEDIUMROLLUP", "LONGROLLUP", "LONGLONGROLLUP", "WEEKLY"]},
-    "maxDVPDurationHours": {"type": "number", "minimum": 1, "maximum": 24},
+    "maxDVPDurationHours": {"type": "number", "minimum": 1},
     "gaugeValue": {
         "type": "object", "maxProperties": 2,
         "propertyNames": {"enum": ["keepLastValue", "value"]},

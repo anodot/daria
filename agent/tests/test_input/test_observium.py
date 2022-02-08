@@ -32,7 +32,6 @@ class TestObservium(TestInputBase):
             "version": "1",
             "name": "observium_storage",
             "dimensions": ["Storage_size"],
-            "dvpConfig": {},
             "measurements": {
                 "my_own_field": {
                     "aggregation": "average",

@@ -27,7 +27,6 @@ class TestDirectory(TestInputBase):
             'version': '1',
             'name': pipeline_id,
             'dimensions': ['ver', 'Country', 'Exchange', 'optional_dim', 'version'],
-            'dvpConfig': {},
             'measurements': {
                 'clicks': {
                     'aggregation': 'average',
