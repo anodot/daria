@@ -3,9 +3,9 @@
     "schemaVersion" : 6,
     "version" : 19,
     "pipelineId" : "cacti6cbb199b-50f2-49ae-9e04-065960040de3",
-    "title" : "cacti",
+    "title" : "cacti_file",
     "description" : "",
-    "uuid" : "d5598abe-7d96-40f2-bf4a-9a04be2f0acc",
+    "uuid" : "1c554387-6d48-4527-900b-0dd5650c35ec",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -23,7 +23,7 @@
       "value" : 2000
     }, {
       "name" : "retryAttempts",
-      "value" : -1
+      "value" : 5
     }, {
       "name" : "ludicrousMode",
       "value" : false
@@ -416,7 +416,7 @@
       "stageVersion" : "1",
       "configuration" : [ {
         "name" : "script",
-        "value" : "global sdc\n\ntry:\n    sdc.importLock()\n    import sys\n    import os\n    import time\n    from datetime import datetime, timedelta\n\n    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))\n    import requests\nfinally:\n    sdc.importUnlock()\n\n\ndef to_timestamp(date):\n    epoch = datetime(1970, 1, 1)\n    return int((date - epoch).total_seconds())\n\n\ndef get_interval():\n    return int(sdc.userParams['INTERVAL_IN_SECONDS'])\n\n\ndef get_now_with_delay():\n    return int(time.time()) - int(sdc.userParams['DELAY_IN_MINUTES']) * 60\n\n\ndef get_step():\n    return int(sdc.userParams['STEP_IN_SECONDS'])\n\n\nentityName = ''\n\nif sdc.lastOffsets.containsKey(entityName):\n    offset = int(float(sdc.lastOffsets.get(entityName)))\nelif sdc.userParams['DAYS_TO_BACKFILL']:\n    offset = to_timestamp(datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=int(sdc.userParams['DAYS_TO_BACKFILL'])))\nelse:\n    offset = to_timestamp(datetime.now().replace(second=0, microsecond=0))\n\nsdc.log.info('OFFSET: ' + str(offset))\n\nwhile True:\n    if sdc.isStopped():\n        break\n    end = offset + get_interval()\n    if end > get_now_with_delay():\n        time.sleep(end - get_now_with_delay())\n\n    batch = sdc.createBatch()\n\n    res = requests.get(\n        sdc.userParams['RRD_SOURCE_URL'],\n        params={\n            'start': offset,\n            'end': offset + get_interval(),\n            'step': get_step(),\n        }\n    )\n    res.raise_for_status()\n    for metric in res.json():\n        record = sdc.createRecord('record created ' + str(datetime.now()))\n        record.value = metric\n        batch.add(record)\n\n        if batch.size() == sdc.batchSize:\n            batch.process(entityName, str(end))\n            batch = sdc.createBatch()\n            if sdc.isStopped():\n                break\n\n    offset += get_interval()\n    batch.process(entityName, str(offset))\n"
+        "value" : "global sdc\n\nMAX_TRIES = 3\n\ntry:\n    sdc.importLock()\n    import sys\n    import os\n    import time\n    from datetime import datetime, timedelta\n\n    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))\n    import requests\nfinally:\n    sdc.importUnlock()\n\n\ndef to_timestamp(date):\n    epoch = datetime(1970, 1, 1)\n    return int((date - epoch).total_seconds())\n\n\ndef get_interval():\n    return int(sdc.userParams['INTERVAL_IN_SECONDS'])\n\n\ndef get_now_with_delay():\n    return int(time.time()) - int(sdc.userParams['DELAY_IN_MINUTES']) * 60\n\n\ndef get_step():\n    return int(sdc.userParams['STEP_IN_SECONDS'])\n\n\nentityName = ''\n\n\ndef main():\n    if sdc.lastOffsets.containsKey(entityName):\n        offset = int(float(sdc.lastOffsets.get(entityName)))\n    elif sdc.userParams['DAYS_TO_BACKFILL']:\n        offset = to_timestamp(datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=int(sdc.userParams['DAYS_TO_BACKFILL'])))\n    else:\n        offset = to_timestamp(datetime.utcnow().replace(second=0, microsecond=0))\n\n    sdc.log.info('OFFSET: ' + str(offset))\n\n    tries = 0\n    while True:\n        if sdc.isStopped():\n            break\n        end = offset + get_interval()\n        while end > get_now_with_delay():\n            time.sleep(2)\n            if sdc.isStopped():\n                return\n\n        batch = sdc.createBatch()\n\n        res = requests.get(\n            sdc.userParams['RRD_SOURCE_URL'],\n            params={\n                'start': offset,\n                'end': offset + get_interval(),\n                'step': get_step(),\n            }\n        )\n        if res.status_code == 204:\n            # this means the rrd archive has been removed by the script that copies it via scp\n            # and we should wait until a new version of the file is uploaded and try again\n            tries += 1\n            if tries == MAX_TRIES:\n                raise Exception('extract_metrics endpoint returned 204 status code %s times in a row. The archive with rrd files does not exist' % MAX_TRIES)\n            time.sleep(30)\n            continue\n        tries = 0\n        res.raise_for_status()\n        for metric in res.json():\n            record = sdc.createRecord('record created ' + str(datetime.now()))\n            record.value = metric\n            batch.add(record)\n\n            if batch.size() == sdc.batchSize:\n                batch.process(entityName, str(end))\n                batch = sdc.createBatch()\n                if sdc.isStopped():\n                    break\n\n        offset += get_interval()\n        batch.process(entityName, str(offset))\n\n\nmain()\n"
       }, {
         "name" : "scriptConf.batchSize",
         "value" : 1000
@@ -430,16 +430,16 @@
         "name" : "scriptConf.params",
         "value" : [ {
           "key" : "RRD_SOURCE_URL",
-          "value" : "http://anodot-agent/rrd_source/fetch_data/${pipeline:id()}"
+          "value" : "http://anodot-agent/data_extractor/cacti/${pipeline:id()}"
         }, {
           "key" : "INTERVAL_IN_SECONDS",
-          "value" : "300"
+          "value" : "3600"
         }, {
           "key" : "DELAY_IN_MINUTES",
           "value" : "0"
         }, {
           "key" : "DAYS_TO_BACKFILL",
-          "value" : "9"
+          "value" : "293"
         }, {
           "key" : "STEP_IN_SECONDS",
           "value" : "300"
@@ -468,10 +468,7 @@
       "stageVersion" : "2",
       "configuration" : [ {
         "name" : "expressionProcessorConfigs",
-        "value" : [ {
-          "fieldToSet" : "/",
-          "expression" : "${record:value('/')}"
-        } ]
+        "value" : [ ]
       }, {
         "name" : "headerAttributeConfigs",
         "value" : [ { } ]
@@ -510,10 +507,7 @@
       "stageVersion" : "2",
       "configuration" : [ {
         "name" : "renameMapping",
-        "value" : [ {
-          "fromFieldExpression" : "/properties/query_ifAlias",
-          "toFieldExpression" : "/properties/alias"
-        } ]
+        "value" : [ ]
       }, {
         "name" : "errorHandler.nonExistingFromFieldHandling",
         "value" : "CONTINUE"
@@ -579,7 +573,7 @@
           "expression" : "${emptyList()}"
         }, {
           "fieldToSet" : "/tags/pipeline_id[0]",
-          "expression" : "${\"cacti\"}"
+          "expression" : "${\"cacti_file\"}"
         }, {
           "fieldToSet" : "/tags/pipeline_type",
           "expression" : "${emptyList()}"
@@ -619,6 +613,52 @@
       },
       "inputLanes" : [ "FieldRenamer_01OutputLane16165887647400" ],
       "outputLanes" : [ "ExpressionEvaluator_01OutputLane16152955352740" ],
+      "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
+      "instanceName" : "JythonEvaluator_01",
+      "library" : "streamsets-datacollector-jython_2_7-lib",
+      "stageName" : "com_streamsets_pipeline_stage_processor_jython_JythonDProcessor",
+      "stageVersion" : "3",
+      "configuration" : [ {
+        "name" : "processingMode",
+        "value" : "BATCH"
+      }, {
+        "name" : "initScript",
+        "value" : "# Available Objects:\n#\n#  sdc.state: a dict that is preserved between invocations of this script.\n#         Useful for caching bits of data e.g. counters.\n#  sdc.log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n#                               loglevel is any log4j level: e.g. info, error, warn, trace.\n#  sdc.getFieldNull(Record, 'field path'): Receive a constant defined above\n#                                  to check if the field is typed field with value null\n#  sdc.createMap(boolean listMap): Create a map for use as a field in a record.\n#                            Pass True to this function to create a list map (ordered map).\n#  sdc.createEvent(String type, int version): Creates a new event.\n#                            Create new empty event with standard headers.\n#  sdc.createMap(boolean listMap): Create a map for use as a field in a record.\n#                            Pass True to this function to create a list map (ordered map).\n#\n\n# sdc.state['connection'] = new Connection().open()\n\n"
+      }, {
+        "name" : "script",
+        "value" : "# Available constants: \n#   They are to assign a type to a field with a value null.\n#   sdc.NULL_BOOLEAN, sdc.NULL_CHAR, sdc.NULL_BYTE, sdc.NULL_SHORT, sdc.NULL_INTEGER, sdc.NULL_LONG,\n#   sdc.NULL_FLOAT, sdc.NULL_DOUBLE, sdc.NULL_DATE, sdc.NULL_DATETIME, sdc.NULL_TIME, sdc.NULL_DECIMAL,\n#   sdc.NULL_BYTE_ARRAY, sdc.NULL_STRING, sdc.NULL_LIST, sdc.NULL_MAP\n# \n# Available Objects:\n# \n#  sdc.records: an array of records to process, depending on Jython processor\n#           processing mode it may have 1 record or all the records in the batch.\n#\n#  sdc.state: a dict that is preserved between invocations of this script. \n#         Useful for caching bits of data e.g. counters.\n#\n#  sdc.log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n#                               loglevel is any log4j level: e.g. info, error, warn, trace.\n#\n#  sdc.output.write(record): writes a record to processor output\n#\n#  sdc.error.write(record, message): sends a record to error\n#\n#  sdc.getFieldNull(Record, 'field path'): Receive a constant defined above \n#                                  to check if the field is typed field with value null\n#  sdc.createRecord(String recordId): Creates a new record.\n#                            Pass a recordId to uniquely identify the record and include enough information to track down the record source. \n#  sdc.createMap(boolean listMap): Create a map for use as a field in a record.\n#                            Pass True to this function to create a list map (ordered map)\n#\n#  sdc.createEvent(String type, int version): Creates a new event.\n#                            Create new empty event with standard headers.\n#  sdc.toEvent(Record): Send event to event stream\n#                            Only events created with sdcFunctions.createEvent are supported.\n#  sdc.isPreview(): Determine if pipeline is in preview mode.\n#\n#  sdc.userParams: Dictionary of user-specified keys and values (from UI).\n#\n#\n# Available Record Header Variables:\n#\n#  record.attributes: a map of record header attributes.\n#\n#  record.<header name>: get the value of 'header name'.\n#\n# Add additional module search paths:\n#   try:\n#       sdc.importLock()\n#       import sys\n#       sys.path.append('/some/other/dir/to/search')\n#       import something\n#   finally:\n#       sdc.importUnlock()\n#\n\n# Sample Jython code\nfor record in sdc.records:\n  try:\n    # Change record root field value to a STRING value\n    # record.value = 'Hello '\n\n\n    # Change record root field value to a MAP value and create an entry\n    # record.value = { 'V' : 'Hello'}\n\n    # Access a MAP entry\n    # record.value['X'] = record.value['V'] + ' World'\n\n    # Modify a MAP entry\n    # record.value['V'] = 5\n\n    # Create an ARRAY entry\n    # record.value['A'] = [ 'Element 1', 'Element 2' ]\n\n    # Access an ARRAY entry\n    # record.value['B'] = record.value['A'][0]\n\n    # Modify an existing ARRAY entry\n    # record.value['A'][0] = 100\n\n    # Assign a integer type to a field and value null\n    # record.value['null_int'] = sdc.NULL_INTEGER \n\n    # Check if the field is NULL_INTEGER(Both '==' and 'is' work). If so, assign a value \n    # if sdc.getFieldNull(record, '/null_int') == sdc.NULL_INTEGER:\n    #    record.value['null_int'] = 123\n\n    # Direct access to the underlying Data Collector Record. Use for read-only operations.\n    # fieldAttr = record.sdcRecord.get('/value').getAttribute('attr')  \n\n    # Create a new record with map field \n    # newRecord = sdc.createRecord(record.sourceId + ':newRecordId')\n    # newRecord.value = {'field1' : 'val1', 'field2' : 'val2'}\n    # sdc.output.write(newRecord)\n\n    # Applies if the source uses WHOLE_FILE as data format\n    # input_stream = record.value['fileRef'].getInputStream()\n    # try:\n    #   input_stream.read() #Process the input stream\n    # finally:  \n    #   input_stream.close()\n\n    # Modify a record header attribute entry\n    # record.attributes['name'] = record.attributes['first_name'] + ' ' + record.attributes['last_name']\n\n    # Get a record header with field names ex. get sourceId and errorCode\n    # sourceId = record.sourceId\n    # errorCode = ''\n    # if record.errorCode:\n    #   errorCode = record.errorCode\n\n    # Write record to processor output\n    sdc.output.write(record)\n\n  except Exception as e:\n    # Send record to error\n    sdc.error.write(record, str(e))\n\n"
+      }, {
+        "name" : "destroyScript",
+        "value" : "# Available Objects:\n#\n#  sdc.state: a dict that is preserved between invocations of this script.\n#         Useful for caching bits of data e.g. counters.\n#  sdc.log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n#                               loglevel is any log4j level: e.g. info, error, warn, trace.\n#  sdc.getFieldNull(Record, 'field path'): Receive a constant defined above \n#                                  to check if the field is typed field with value null.\n#  sdc.createMap(boolean listMap): Create a map for use as a field in a record.\n#                            Pass True to this function to create a list map (ordered map).\n#  sdc.createEvent(String type, int version): Creates a new event.\n#                            Create new empty event with standard headers.\n#  sdc.toEvent(Record): Send event to event stream.\n#                            Only events created with sdcFunctions.createEvent are supported.\n#\n\n# sdc.state['connection'].close()\n\n"
+      }, {
+        "name" : "scriptRecordType",
+        "value" : "NATIVE_OBJECTS"
+      }, {
+        "name" : "userParams",
+        "value" : [ ]
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "yPos" : 148,
+        "stageType" : "PROCESSOR",
+        "icon" : "jython.png",
+        "description" : "",
+        "label" : "Replace illegal chars",
+        "xPos" : 1164,
+        "displayMode" : "BASIC"
+      },
+      "inputLanes" : [ "ExpressionEvaluator_01OutputLane16152955352740" ],
+      "outputLanes" : [ "JythonEvaluator_01OutputLane16444003965810" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -823,10 +863,10 @@
         "value" : ""
       }, {
         "name" : "conf.client.useProxy",
-        "value" : false
+        "value" : true
       }, {
         "name" : "conf.client.proxy.uri",
-        "value" : null
+        "value" : "http://squid:3128"
       }, {
         "name" : "conf.client.proxy.username",
         "value" : ""
@@ -910,7 +950,7 @@
         "value" : "SUCCESS_RECORDS"
       }, {
         "name" : "conf.agentOffsetUrl",
-        "value" : "http://anodot-agent/pipeline-offset/${pipeline:id()}"
+        "value" : "http://anodot-agent/pipeline-offset/cacti_file"
       }, {
         "name" : "stageOnRecordError",
         "value" : "TO_ERROR"
@@ -920,6 +960,21 @@
       }, {
         "name" : "stageRecordPreconditions",
         "value" : [ ]
+      }, {
+        "name" : "conf.parallelSendersNumber",
+        "value" : 1
+      }, {
+        "name" : "conf.maxBatchSize",
+        "value" : 1000
+      }, {
+        "name" : "conf.propertiesPath",
+        "value" : null
+      }, {
+        "name" : "conf.partitioningKeyPath",
+        "value" : null
+      }, {
+        "name" : "conf.maxSendResponseWait",
+        "value" : 60000
       } ],
       "uiInfo" : {
         "yPos" : 149,
@@ -927,10 +982,10 @@
         "icon" : "anodot_logo.png",
         "description" : "",
         "label" : "Anodot",
-        "xPos" : 1183,
+        "xPos" : 1376,
         "displayMode" : "BASIC"
       },
-      "inputLanes" : [ "ExpressionEvaluator_01OutputLane16152955352740" ],
+      "inputLanes" : [ "JythonEvaluator_01OutputLane16444003965810" ],
       "outputLanes" : [ ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -955,22 +1010,22 @@
       "services" : [ ]
     },
     "info" : {
-      "pipelineId" : "cacti",
-      "title" : "cacti",
+      "pipelineId" : "cacti_file",
+      "title" : "cacti_file",
       "description" : "",
-      "created" : 1616588646496,
-      "lastModified" : 1616595974154,
+      "created" : 1644400232558,
+      "lastModified" : 1644400454564,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "d5598abe-7d96-40f2-bf4a-9a04be2f0acc",
+      "uuid" : "1c554387-6d48-4527-900b-0dd5650c35ec",
       "valid" : true,
       "metadata" : {
         "labels" : [ "cacti", "http" ]
       },
-      "name" : "cacti",
+      "name" : "cacti_file",
       "sdcVersion" : "3.18.0",
-      "sdcId" : "62a3bf96-8c9b-11eb-a6d9-f39b95790165"
+      "sdcId" : "8170f059-8989-11ec-bb85-cfa8fdde1e4d"
     },
     "metadata" : {
       "labels" : [ "cacti", "http" ]
@@ -1313,7 +1368,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1616588646608,
+      "timestamp" : 1644400232600,
       "valid" : true
     }, {
       "id" : "stageErrorAlertID",
@@ -1324,7 +1379,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1616588646608,
+      "timestamp" : 1644400232600,
       "valid" : true
     }, {
       "id" : "idleGaugeID",
@@ -1335,7 +1390,7 @@
       "condition" : "${time:now() - value() > 120000}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1616588646608,
+      "timestamp" : 1644400232600,
       "valid" : true
     }, {
       "id" : "batchTimeAlertID",
@@ -1346,12 +1401,12 @@
       "condition" : "${value() > 200}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1616588646608,
+      "timestamp" : 1644400232600,
       "valid" : true
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "9aa698fe-c646-4aec-9337-07fc5d43bf28",
+    "uuid" : "9ab2ce8f-15de-4f93-8ae1-011bd7e757f7",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : null
