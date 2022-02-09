@@ -38,6 +38,21 @@
     "uses_schema": false
   },
   {
+    "source": "test_influx",
+    "pipeline_id": "test_influx_schema_query",
+    "values": {"usage_active": "gauge", "hdd_idle": "counter"},
+    "dimensions": {
+      "required": [],
+      "optional": ["cpu", "host", "zone"]
+    },
+    "query": "SELECT hdd_idle,zone,host,usage_active::field FROM cpu_test,hdd_test WHERE {TIMESTAMP_CONDITION} AND 1=1",
+    "transform": {
+      "file": "/home/influx_schema_transform.csv"
+    },
+    "properties": {"test": "val"},
+    "interval": 86400000
+  },
+  {
     "source": "test_influx2_file",
     "pipeline_id": "test_influx2_file_full",
     "measurement_name": "cpu_test",
