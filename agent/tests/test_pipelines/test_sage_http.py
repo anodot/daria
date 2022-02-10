@@ -9,11 +9,11 @@ class TestSage(TestPipelineBase):
     __test__ = True
     params = {
         'test_start': [
-            {'name': 'test_sage_value_const'},
-            {'name': 'test_sage'},
-            {'name': 'test_sage_file'},
-            {'name': 'test_sage_schema_file'},
-            {'name': 'test_sage_schema_file_dvp'},
+            {'name': 'test_sage_value_const', 'sleep': 15},
+            {'name': 'test_sage', 'sleep': 15},
+            {'name': 'test_sage_file', 'sleep': 15},
+            {'name': 'test_sage_schema_file', 'sleep': 15},
+            {'name': 'test_sage_schema_file_dvp', 'sleep': 15},
         ],
         'test_force_stop': [
             {'name': 'test_sage_value_const'},

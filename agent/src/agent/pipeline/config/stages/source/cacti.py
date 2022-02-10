@@ -25,6 +25,7 @@ class Cacti(JythonDataExtractorSource):
             },
             {
                 'key': 'STEP_IN_SECONDS',
-                'value': str(self.pipeline.config['step'])
+                # we need 'or interval' for the case when the step is dynamic
+                'value': str(self.pipeline.config.get('step') or self.pipeline.interval)
             },
         ]
