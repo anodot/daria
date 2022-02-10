@@ -17,7 +17,18 @@
     },
     "delay": {"type": "string"},
     "interval": {"type": "integer"},
+    "query": {"type": "string"},
+    "transform": {
+      "type": "object",
+      "properties": {
+        "config": {"type": "string"},
+        "file": {"type": "string"}
+      }
+    },
     "filtering": {"type": "string"}
   },
-  "required": ["measurement_name", "values", "dimensions"]
+  "oneOf": [
+    {"required": ["measurement_name", "values", "dimensions"]},
+    {"required": ["query", "values", "dimensions"]}
+  ]
 }

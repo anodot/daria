@@ -63,5 +63,20 @@
     },
     "properties": {"test": "val"},
     "interval": 1200000
+  },
+  {
+    "source": "test_influx2_file",
+    "pipeline_id": "test_influx2_query",
+    "values": {"usage_active": "gauge", "hdd_user": "counter", "hdd_idle": "counter"},
+    "dimensions": {
+      "required": [],
+      "optional": ["cpu", "host", "zone"]
+    },
+    "query": "from(bucket:\"test\") |> {TIMESTAMP_CONDITION} |> filter(fn: (r) => (r._measurement == \"cpu_test\" or r._measurement == \"hdd_test\"))",
+    "transform": {
+      "file": "/home/influx_schema_transform.csv"
+    },
+    "properties": {"test": "val"},
+    "interval": 1200000
   }
 ]

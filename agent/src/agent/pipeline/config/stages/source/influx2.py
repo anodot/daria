@@ -5,6 +5,8 @@ from agent import monitoring
 from agent.pipeline.config.stages.influx import InfluxScript
 from agent.pipeline.config.stages.base import JythonSource
 
+TIMESTAMP_CONDITION = '{TIMESTAMP_CONDITION}'
+
 
 class Influx2Source(InfluxScript):
     JYTHON_SCRIPT = 'influx2.py'
@@ -46,9 +48,11 @@ class Influx2Source(InfluxScript):
         }
 
     def _get_query(self) -> str:
-        return f'from(bucket:"{self.pipeline.source.config["bucket"]}") ' \
-               '|> range(start: {}, stop: {}) ' \
+        query = self.pipeline.query or \
+               f'from(bucket:"{self.pipeline.source.config["bucket"]}") ' \
+               '|> {TIMESTAMP_CONDITION} ' \
                f'|> filter(fn: (r) => {self._get_filter_condition()}")'
+        return query.replace(TIMESTAMP_CONDITION, 'range(start: {}, stop: {})')
 
     def _get_filter_condition(self) -> str:
         filter_condition = f'r._measurement == "{self.pipeline.config["measurement_name"]}'
