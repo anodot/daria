@@ -18,5 +18,14 @@
       "conf.dataFormatConfig.grokPattern": "%{NONNEGINT:timestamp_unix_ms} %{TIMESTAMP:timestamp_string} %{NONNEGINT:ver} %{WORD} %{WORD:Country} %{WORD:AdType} %{WORD:Exchange} %{NUMBER:Clicks}",
       "conf.dataFormatConfig.grokPatternDefinition": "TIMESTAMP %{DATE_US} %{TIME}"
     }
+  },
+  {
+    "type": "directory",
+    "name": "test_dir_csv",
+    "config": {
+      "conf.spoolDir": "/home/test-directory-collector",
+      "conf.filePattern": "*.csv",
+      "conf.dataFormat": "DELIMITED"
+    }
   }
 ]

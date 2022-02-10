@@ -1,0 +1,112 @@
+[
+  {
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_victoria"
+      ],
+      "pipeline_type": [
+        "victoria"
+      ]
+    },
+    "dimensions": {
+      "instance": "victoriametrics:8428",
+      "location": "VictoriaMetrics/app/vmstorage/main_go:86",
+      "job": "victoriametrics"
+    },
+    "measurements": {
+      "diff_dims": 1.0
+    },
+    "timestamp": 1594113932
+  },
+  {
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_victoria"
+      ],
+      "pipeline_type": [
+        "victoria"
+      ]
+    },
+    "dimensions": {
+      "instance": "victoriametrics:8428",
+      "location": "VictoriaMetrics/app/vmstorage/main_go:86",
+      "job": "victoriametrics"
+    },
+    "measurements": {
+      "diff_dims": 3.0
+    },
+    "timestamp": 1594113942
+  },
+  {
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_victoria"
+      ],
+      "pipeline_type": [
+        "victoria"
+      ]
+    },
+    "dimensions": {
+      "location": "VictoriaMetrics/app/vmstorage/main_go:86",
+      "job": "victoriametrics"
+    },
+    "measurements": {
+      "diff_dims": 2.0
+    },
+    "timestamp": 1594113942
+  },
+  {
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_victoria"
+      ],
+      "pipeline_type": [
+        "victoria"
+      ]
+    },
+    "dimensions": {
+      "location": "VictoriaMetrics/app/vmstorage/main_go:86",
+      "job": "victoriametrics"
+    },
+    "measurements": {
+      "diff_dims": 4.0
+    },
+    "timestamp": 1594113952
+  }
+]

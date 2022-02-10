@@ -1,1 +1,88 @@
-[{"source": "cacti_archive", "pipeline_id": "cacti_file", "step": 300, "interval": 3600, "add_graph_name_dimension": true, "add_graph_id_dimension": true, "graph_ids": ["13882"], "days_to_backfill": 278}, {"source": "cacti_archive", "pipeline_id": "cacti_archive", "step": 300, "interval": 3600, "delay": 5, "add_graph_name_dimension": true, "days_to_backfill": 278, "properties": {"static_dim": "cacti"}, "convert_bytes_into_bits": false, "rename_dimensions_mapping": {"query_ifAlias": "alias", "query_ifName": "name"}, "transform": {"file": "/home/cacti_transform.csv"}, "tags": {"tag": ["cacti"]}}, {"source": "cacti_dir", "pipeline_id": "cacti_dir", "step": 300, "interval": 3600, "delay": 5, "add_graph_name_dimension": true, "days_to_backfill": 278, "convert_bytes_into_bits": true, "rename_dimensions_mapping": {"query_ifAlias": "alias", "query_ifName": "name"}, "transform": {"file": "/home/cacti_transform.csv"}, "properties": {"static_dim": "cacti"}, "tags": {"tag": ["cacti"]}}]
+[
+  {
+    "source": "cacti_archive",
+    "pipeline_id": "cacti_file",
+    "step": 300,
+    "interval": 3600,
+    "add_graph_name_dimension": true,
+    "add_graph_id_dimension": true,
+    "graph_ids": [
+      "13882"
+    ],
+    "days_to_backfill": 278
+  },
+  {
+    "source": "cacti_archive",
+    "pipeline_id": "cacti_archive",
+    "step": 300,
+    "interval": 3600,
+    "delay": 5,
+    "add_graph_name_dimension": true,
+    "days_to_backfill": 278,
+    "properties": {
+      "static_dim": "cacti"
+    },
+    "convert_bytes_into_bits": false,
+    "rename_dimensions_mapping": {
+      "query_ifAlias": "alias",
+      "query_ifName": "name"
+    },
+    "transform": {
+      "file": "/home/cacti_transform.csv"
+    },
+    "tags": {
+      "tag": [
+        "cacti"
+      ]
+    }
+  },
+  {
+    "source": "cacti_dir",
+    "pipeline_id": "cacti_dir",
+    "step": 300,
+    "interval": 3600,
+    "delay": 5,
+    "add_graph_name_dimension": true,
+    "days_to_backfill": 278,
+    "convert_bytes_into_bits": true,
+    "rename_dimensions_mapping": {
+      "query_ifAlias": "alias",
+      "query_ifName": "name"
+    },
+    "transform": {
+      "file": "/home/cacti_transform.csv"
+    },
+    "properties": {
+      "static_dim": "cacti"
+    },
+    "tags": {
+      "tag": [
+        "cacti"
+      ]
+    }
+  },
+  {
+    "source": "cacti_dir",
+    "pipeline_id": "cacti_dir_flex",
+    "interval": 7200,
+    "add_graph_name_dimension": true,
+    "days_to_backfill": 278,
+    "convert_bytes_into_bits": true,
+    "dynamic_step": true,
+    "rename_dimensions_mapping": {
+      "query_ifAlias": "alias",
+      "query_ifName": "name"
+    },
+    "transform": {
+      "file": "/home/cacti_transform.csv"
+    },
+    "properties": {
+      "static_dim": "cacti"
+    },
+    "tags": {
+      "tag": [
+        "cacti"
+      ]
+    }
+  }
+]

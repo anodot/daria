@@ -4,7 +4,7 @@ from agent.modules import tools
 from agent.modules.logger import get_logger
 from agent.modules.constants import HOSTNAME
 from agent.pipeline.config import stages
-from agent.pipeline.config.handlers.base import BaseTestConfigHandler, NoSchemaConfigHandler, SchemaConfigHandler
+from agent.pipeline.config.handlers.base import TestConfigHandler, NoSchemaConfigHandler, SchemaConfigHandler
 
 logger = get_logger(__name__)
 
@@ -35,7 +35,9 @@ state['TAGS'] = {tags}
             if stage['instanceName'] == 'transform_records':
                 for conf in stage['configuration']:
                     if conf['name'] == 'stageRequiredFields':
-                        conf['value'] = ['/' + d for d in tools.replace_illegal_chars(self.pipeline.required_dimensions)]
+                        conf['value'] = [
+                            '/' + d for d in tools.replace_illegal_chars(self.pipeline.required_dimensions)
+                        ]
 
                     if conf['name'] == 'initScript':
                         conf['value'] = self._get_js_vars()
@@ -74,13 +76,13 @@ class Influx2SchemaConfigHandler(SchemaConfigHandler):
     }
 
 
-class TestInfluxConfigHandler(BaseTestConfigHandler):
+class TestInfluxConfigHandler(TestConfigHandler):
     stages_to_override = {
         'source': stages.source.influx.TestInfluxSource,
     }
 
 
-class TestInflux2ConfigHandler(BaseTestConfigHandler):
+class TestInflux2ConfigHandler(TestConfigHandler):
     stages_to_override = {
         'source': stages.source.influx2.TestInflux2Source,
     }

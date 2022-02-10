@@ -1,4 +1,7 @@
 import json
+import os.path
+import shutil
+
 import sdc_client
 
 from typing import Callable
@@ -24,7 +27,7 @@ class TestInputBase(object):
 
     def _test_create_with_file(self, cli_runner, file_name, override_config: dict, create_function: Callable):
         input_file_path = get_input_file_path(file_name + '.json')
-        _replace_config_in_file(input_file_path, override_config)
+        input_file_path = _replace_config_in_file(input_file_path, override_config)
         result = cli_runner.invoke(create_function, ['-f', input_file_path], catch_exceptions=False)
         assert result.exit_code == 0
         with open(input_file_path) as f:
@@ -34,7 +37,12 @@ class TestInputBase(object):
 
 def _replace_config_in_file(input_file_path, override_config: dict):
     if not override_config:
-        return
+        return input_file_path
+
+    new_path = os.path.join('/tmp', os.path.basename(input_file_path))
+    if os.path.exists(new_path):
+        os.remove(new_path)
+    shutil.copy(input_file_path, new_path)
 
     with open(input_file_path) as f:
         pipelines = json.load(f)
@@ -42,5 +50,6 @@ def _replace_config_in_file(input_file_path, override_config: dict):
         for key, val in override_config.items():
             pipeline_config[key] = val
 
-    with open(input_file_path, 'w') as f:
+    with open(new_path, 'w') as f:
         json.dump(pipelines, f)
+    return new_path

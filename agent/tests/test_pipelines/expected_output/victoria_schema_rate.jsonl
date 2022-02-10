@@ -1,0 +1,57 @@
+[
+  {
+    "timestamp": 1594123600,
+    "dimensions": {
+      "location": "VictoriaMetrics/app/vmstorage/main_go:86",
+      "job": "victoriametrics"
+    },
+    "measurements": {
+      "name": 0.2
+    },
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_victoria"
+      ],
+      "pipeline_type": [
+        "victoria"
+      ]
+    }
+  },
+  {
+    "timestamp": 1594123600,
+    "dimensions": {
+      "instance": "victoriametrics:8428",
+      "location": "VictoriaMetrics/app/vmstorage/main_go:86",
+      "job": "victoriametrics"
+    },
+    "measurements": {
+      "name": 0.2
+    },
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_victoria"
+      ],
+      "pipeline_type": [
+        "victoria"
+      ]
+    }
+  }
+]

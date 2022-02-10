@@ -17,7 +17,9 @@ LOG_LEVELS = [logging.getLevelName(logging.INFO), logging.getLevelName(logging.E
 MAX_SAMPLE_RECORDS = 3
 
 
-def supports_schema(pipeline_: Pipeline):
+def supports_schema(pipeline_: Pipeline) -> bool:
+    if isinstance(pipeline_, (TestPipeline, RawPipeline)):
+        return False
     supported = [
         source.TYPE_CLICKHOUSE,
         source.TYPE_DIRECTORY,
@@ -27,7 +29,10 @@ def supports_schema(pipeline_: Pipeline):
         source.TYPE_MYSQL,
         source.TYPE_ORACLE,
         source.TYPE_POSTGRES,
+        source.TYPE_PROMETHEUS,
         source.TYPE_SAGE,
+        source.TYPE_THANOS,
+        source.TYPE_VICTORIA,
     ]
     return pipeline_.source.type in supported
 
@@ -149,9 +154,9 @@ def _update_schema(pipeline_: Pipeline):
     new_schema = schema.build(pipeline_)
     old_schema = pipeline_.get_schema()
     if old_schema:
-        if schema.equal(old_schema, new_schema):
-            return
-        schema.delete(pipeline_.get_schema_id())
+        if not schema.equal(old_schema, new_schema):
+            pipeline_.schema = schema.update(new_schema)
+        return
     pipeline_.schema = schema.create(new_schema)
 
 
@@ -211,9 +216,7 @@ def disable_destination_logs(pipeline_: Pipeline):
 def build_test_pipeline(source_: Source) -> TestPipeline:
     # creating a new source because otherwise it will mess with the db session
     test_source = source.manager.create_source_obj(source_.name, source_.type, source_.config)
-    test_pipeline = TestPipeline(_get_test_pipeline_id(test_source), test_source)
-    test_pipeline.config['uses_schema'] = supports_schema(test_pipeline)
-    return test_pipeline
+    return TestPipeline(_get_test_pipeline_id(test_source), test_source)
 
 
 def _get_test_pipeline_id(source_: Source) -> str:

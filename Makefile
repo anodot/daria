@@ -186,7 +186,7 @@ clean-docker-volumes:
 	rm -rf agent/output
 	$(DOCKER_COMPOSE_DEV) down -v --remove-orphans
 
-run-base-services: _run-base-services sleep
+run-base-services: _run-base-services half-sleep
 
 _run-base-services:
 	$(DOCKER_COMPOSE_DEV) up -d agent dc squid dummy_destination
@@ -201,7 +201,7 @@ _build-base-services:
 run-dc2:
 	$(DOCKER_COMPOSE_DEV) up -d dc2
 
-run-elastic: _run-elastic sleep setup-elastic
+run-elastic: _run-elastic half-sleep setup-elastic
 
 _run-elastic:
 	$(DOCKER_COMPOSE_DEV) up -d es
@@ -258,7 +258,7 @@ _run-zabbix:
 setup-kafka:
 	./scripts/upload-test-data-to-kafka.sh
 
-setup-elastic: half-sleep
+setup-elastic:
 	./scripts/upload-test-data-to-elastic.sh
 
 setup-victoria:
