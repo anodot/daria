@@ -141,7 +141,7 @@ class MssqlValidator(JDBCValidator):
         result = urllib.parse.urlparse(url)
         if result.scheme != 'sqlserver':
             raise ValidationException('Wrong url scheme. Use `sqlserver`')
-        if 'database=' not in result.netloc.lower() or 'databaseName=' not in result.netloc.lower():
+        if 'database=' not in result.netloc.lower() and 'databaseName=' not in result.netloc.lower():
             raise ValidationException('Database name not provided. `sqlserver://<host>;database=<name>`')
 
 

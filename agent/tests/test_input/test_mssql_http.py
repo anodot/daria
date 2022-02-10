@@ -1,4 +1,5 @@
 from datetime import datetime
+from agent import source, pipeline
 from .test_zpipeline_base import TestInputBase
 
 
@@ -16,3 +17,10 @@ class TestMSSQL(TestInputBase):
             'file_name': 'jdbc_pipelines_mssql', 'override_config': {'days_to_backfill': _get_days_to_backfill()}
         }],
     }
+
+    @classmethod
+    def teardown_class(cls):
+        for _pipeline in pipeline.repository.get_by_type(source.TYPE_MSSQL):
+            pipeline.manager.delete(_pipeline)
+        for _source in source.repository.get_by_type(source.TYPE_MSSQL):
+            source.manager.delete(_source)
