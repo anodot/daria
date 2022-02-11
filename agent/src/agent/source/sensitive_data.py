@@ -23,6 +23,7 @@ def _get_keywords(source_type: str) -> List[str]:
             'configBean.mongoConfig.connectionString', 'configBean.mongoConfig.username',
             'configBean.mongoConfig.password', 'configBean.mongoConfig.authSource'
         ],
+        source.TYPE_MSSQL: ['connection_string', 'hikariConfigBean.username', 'hikariConfigBean.password'],
         source.TYPE_MYSQL: ['connection_string', 'hikariConfigBean.username', 'hikariConfigBean.password'],
         source.TYPE_OBSERVIUM: ['username', 'password'],
         source.TYPE_ORACLE: ['connection_string', 'hikariConfigBean.username', 'hikariConfigBean.password'],

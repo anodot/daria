@@ -19,6 +19,7 @@ def get_prompter(source_: source.Source) -> Prompter:
         source.TYPE_INFLUX_2: Influx2Prompter,
         source.TYPE_KAFKA: KafkaBuilder,
         source.TYPE_MONGO: MongoPrompter,
+        source.TYPE_MSSQL: JDBCPrompter,
         source.TYPE_MYSQL: JDBCPrompter,
         source.TYPE_POSTGRES: JDBCPrompter,
         source.TYPE_SAGE: SagePrompter,

@@ -42,6 +42,8 @@ class Builder:
 '{self.pipeline.timezone}')) as date) - TO_DATE('1970-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS')) * 86400"""
             if self.pipeline.source.type == source.TYPE_DATABRICKS:
                 return f"unix_timestamp({self.pipeline.timestamp_path})"
+            if self.pipeline.source.type == source.TYPE_MSSQL:
+                return f"DATEDIFF(s, '1970-01-01 00:00:00', {self.pipeline.timestamp_path})"
     
         if self.pipeline.timestamp_type == pipeline.TimestampType.UNIX_MS:
             return self.pipeline.timestamp_path + '/1000'

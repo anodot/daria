@@ -130,6 +130,21 @@ class JDBCValidator(Validator):
             raise ValidationException('Wrong url scheme. Use `clickhouse`')
 
 
+class MssqlValidator(JDBCValidator):
+    @if_validation_enabled
+    def validate_connection_string(self):
+        url = self.source.config[source.JDBCSource.CONFIG_CONNECTION_STRING]
+        try:
+            validator.validate_url_format(url)
+        except validator.ValidationException as e:
+            raise ValidationException(str(e))
+        result = urllib.parse.urlparse(url)
+        if result.scheme != 'sqlserver':
+            raise ValidationException('Wrong url scheme. Use `sqlserver`')
+        if 'database=' not in result.netloc.lower() and 'databaseName=' not in result.netloc.lower():
+            raise ValidationException('Database name not provided. `sqlserver://<host>;database=<name>`')
+
+
 class OracleValidator(JDBCValidator):
     @if_validation_enabled
     def validate_connection_string(self):
@@ -337,6 +352,7 @@ def get_validator(source_: Source) -> Validator:
         source.TYPE_INFLUX_2: Influx2Validator,
         source.TYPE_KAFKA: KafkaValidator,
         source.TYPE_MONGO: MongoValidator,
+        source.TYPE_MSSQL: MssqlValidator,
         source.TYPE_MYSQL: JDBCValidator,
         source.TYPE_OBSERVIUM: ObserviumValidator,
         source.TYPE_ORACLE: OracleValidator,
