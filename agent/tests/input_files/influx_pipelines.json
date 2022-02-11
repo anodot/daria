@@ -27,7 +27,7 @@
     "values": {"usage_active": "gauge"},
     "dimensions": {
       "required": [],
-      "optional": ["cpu", "host"]
+      "optional": ["cpu", "host", "zone"]
     },
     "query": "SELECT hdd_sum,host,usage_active::field FROM cpu_test,hdd_test WHERE {TIMESTAMP_CONDITION} AND 1=1",
     "transform": {

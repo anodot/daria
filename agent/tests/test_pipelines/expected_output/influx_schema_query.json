@@ -9,7 +9,7 @@
     "measurements": {
       "usage_active": 0.204
     },
-    "schemaId": "test_influx_schema_file_transform-1234",
+    "schemaId": "test_influx_schema_query-1234",
     "tags": {
       "source": [
         "anodot-agent"
@@ -21,7 +21,7 @@
         "agent"
       ],
       "pipeline_id": [
-        "test_influx_schema_file_transform"
+        "test_influx_schema_query"
       ],
       "pipeline_type": [
         "influx"
@@ -38,7 +38,7 @@
     "measurements": {
       "usage_active": 0.224
     },
-    "schemaId": "test_influx_schema_file_transform-1234",
+    "schemaId": "test_influx_schema_query-1234",
     "tags": {
       "source": [
         "anodot-agent"
@@ -50,7 +50,7 @@
         "agent"
       ],
       "pipeline_id": [
-        "test_influx_schema_file_transform"
+        "test_influx_schema_query"
       ],
       "pipeline_type": [
         "influx"
@@ -67,7 +67,7 @@
     "measurements": {
       "usage_active": 0.22432747346756737
     },
-    "schemaId": "test_influx_schema_file_transform-1234",
+    "schemaId": "test_influx_schema_query-1234",
     "tags": {
       "source": [
         "anodot-agent"
@@ -79,7 +79,7 @@
         "agent"
       ],
       "pipeline_id": [
-        "test_influx_schema_file_transform"
+        "test_influx_schema_query"
       ],
       "pipeline_type": [
         "influx"
@@ -96,7 +96,7 @@
     "measurements": {
       "usage_active": 0.224
     },
-    "schemaId": "test_influx_schema_file_transform-1234",
+    "schemaId": "test_influx_schema_query-1234",
     "tags": {
       "source": [
         "anodot-agent"
@@ -108,7 +108,7 @@
         "agent"
       ],
       "pipeline_id": [
-        "test_influx_schema_file_transform"
+        "test_influx_schema_query"
       ],
       "pipeline_type": [
         "influx"
@@ -125,7 +125,7 @@
     "measurements": {
       "usage_active": 0.504
     },
-    "schemaId": "test_influx_schema_file_transform-1234",
+    "schemaId": "test_influx_schema_query-1234",
     "tags": {
       "source": [
         "anodot-agent"
@@ -137,7 +137,7 @@
         "agent"
       ],
       "pipeline_id": [
-        "test_influx_schema_file_transform"
+        "test_influx_schema_query"
       ],
       "pipeline_type": [
         "influx"
@@ -154,7 +154,7 @@
     "measurements": {
       "usage_active": 0.504
     },
-    "schemaId": "test_influx_schema_file_transform-1234",
+    "schemaId": "test_influx_schema_query-1234",
     "tags": {
       "source": [
         "anodot-agent"
@@ -166,7 +166,7 @@
         "agent"
       ],
       "pipeline_id": [
-        "test_influx_schema_file_transform"
+        "test_influx_schema_query"
       ],
       "pipeline_type": [
         "influx"
@@ -183,7 +183,7 @@
     "measurements": {
       "hdd_idle": 1
     },
-    "schemaId": "test_influx_schema_file_transform-1234",
+    "schemaId": "test_influx_schema_query-1234",
     "tags": {
       "source": [
         "anodot-agent"
@@ -195,7 +195,7 @@
         "agent"
       ],
       "pipeline_id": [
-        "test_influx_schema_file_transform"
+        "test_influx_schema_query"
       ],
       "pipeline_type": [
         "influx"
@@ -212,7 +212,7 @@
     "measurements": {
       "hdd_idle": 2
     },
-    "schemaId": "test_influx_schema_file_transform-1234",
+    "schemaId": "test_influx_schema_query-1234",
     "tags": {
       "source": [
         "anodot-agent"
@@ -224,7 +224,7 @@
         "agent"
       ],
       "pipeline_id": [
-        "test_influx_schema_file_transform"
+        "test_influx_schema_query"
       ],
       "pipeline_type": [
         "influx"
@@ -241,7 +241,7 @@
     "measurements": {
       "hdd_idle": 3
     },
-    "schemaId": "test_influx_schema_file_transform-1234",
+    "schemaId": "test_influx_schema_query-1234",
     "tags": {
       "source": [
         "anodot-agent"
@@ -253,7 +253,7 @@
         "agent"
       ],
       "pipeline_id": [
-        "test_influx_schema_file_transform"
+        "test_influx_schema_query"
       ],
       "pipeline_type": [
         "influx"
@@ -270,7 +270,7 @@
     "measurements": {
       "hdd_idle": 4
     },
-    "schemaId": "test_influx_schema_file_transform-1234",
+    "schemaId": "test_influx_schema_query-1234",
     "tags": {
       "source": [
         "anodot-agent"
@@ -282,7 +282,7 @@
         "agent"
       ],
       "pipeline_id": [
-        "test_influx_schema_file_transform"
+        "test_influx_schema_query"
       ],
       "pipeline_type": [
         "influx"
@@ -299,7 +299,7 @@
     "measurements": {
       "hdd_idle": 5
     },
-    "schemaId": "test_influx_schema_file_transform-1234",
+    "schemaId": "test_influx_schema_query-1234",
     "tags": {
       "source": [
         "anodot-agent"
@@ -311,7 +311,7 @@
         "agent"
       ],
       "pipeline_id": [
-        "test_influx_schema_file_transform"
+        "test_influx_schema_query"
       ],
       "pipeline_type": [
         "influx"
@@ -328,7 +328,7 @@
     "measurements": {
       "hdd_idle": 6
     },
-    "schemaId": "test_influx_schema_file_transform-1234",
+    "schemaId": "test_influx_schema_query-1234",
     "tags": {
       "source": [
         "anodot-agent"
@@ -340,7 +340,7 @@
         "agent"
       ],
       "pipeline_id": [
-        "test_influx_schema_file_transform"
+        "test_influx_schema_query"
       ],
       "pipeline_type": [
         "influx"

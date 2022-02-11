@@ -5,9 +5,9 @@
       "target_type": "gauge",
       "test": "val",
       "host": "msk-air-trn5",
+      "zone": "US",
       "measurement_category": "cpu_test",
-      "what": "usage_active",
-      "zone": "US"
+      "what": "usage_active"
     },
     "tags": {
       "source": [
@@ -34,9 +34,9 @@
       "target_type": "gauge",
       "test": "val",
       "host": "msk_a_ir_trn1",
+      "zone": "US",
       "measurement_category": "cpu_test",
-      "what": "usage_active",
-      "zone": "US"
+      "what": "usage_active"
     },
     "tags": {
       "source": [
@@ -63,9 +63,9 @@
       "target_type": "gauge",
       "test": "val",
       "host": "msk_air_trn1",
+      "zone": "US",
       "measurement_category": "cpu_test",
-      "what": "usage_active",
-      "zone": "US"
+      "what": "usage_active"
     },
     "tags": {
       "source": [
@@ -92,9 +92,9 @@
       "target_type": "gauge",
       "test": "val",
       "host": "msk-air-trn1",
+      "zone": "US",
       "measurement_category": "cpu_test",
-      "what": "usage_active",
-      "zone": "US"
+      "what": "usage_active"
     },
     "tags": {
       "source": [
@@ -121,9 +121,9 @@
       "target_type": "gauge",
       "test": "val",
       "host": "msk-air-trn1",
+      "zone": "US",
       "measurement_category": "cpu_test",
-      "what": "usage_active",
-      "zone": "US"
+      "what": "usage_active"
     },
     "tags": {
       "source": [
@@ -150,9 +150,9 @@
       "target_type": "gauge",
       "test": "val",
       "host": "msk-air-trn1",
+      "zone": "US",
       "measurement_category": "cpu_test",
-      "what": "usage_active",
-      "zone": "US"
+      "what": "usage_active"
     },
     "tags": {
       "source": [
@@ -179,9 +179,9 @@
       "target_type": "gauge",
       "test": "val",
       "host": "msk-air-trn5",
+      "zone": "US",
       "measurement_category": "hdd_test",
-      "what": "hdd_sum",
-      "zone": "US"
+      "what": "hdd_sum"
     },
     "tags": {
       "source": [
@@ -208,9 +208,9 @@
       "target_type": "gauge",
       "test": "val",
       "host": "msk_a_ir_trn1",
+      "zone": "US",
       "measurement_category": "hdd_test",
-      "what": "hdd_sum",
-      "zone": "US"
+      "what": "hdd_sum"
     },
     "tags": {
       "source": [
@@ -237,9 +237,9 @@
       "target_type": "gauge",
       "test": "val",
       "host": "msk_air_trn1",
+      "zone": "US",
       "measurement_category": "hdd_test",
-      "what": "hdd_sum",
-      "zone": "US"
+      "what": "hdd_sum"
     },
     "tags": {
       "source": [
@@ -266,9 +266,9 @@
       "target_type": "gauge",
       "test": "val",
       "host": "msk-air-trn1",
+      "zone": "US",
       "measurement_category": "hdd_test",
-      "what": "hdd_sum",
-      "zone": "US"
+      "what": "hdd_sum"
     },
     "tags": {
       "source": [
@@ -295,9 +295,9 @@
       "target_type": "gauge",
       "test": "val",
       "host": "msk-air-trn1",
+      "zone": "US",
       "measurement_category": "hdd_test",
-      "what": "hdd_sum",
-      "zone": "US"
+      "what": "hdd_sum"
     },
     "tags": {
       "source": [
@@ -324,9 +324,9 @@
       "target_type": "gauge",
       "test": "val",
       "host": "msk-air-trn1",
+      "zone": "US",
       "measurement_category": "hdd_test",
-      "what": "hdd_sum",
-      "zone": "US"
+      "what": "hdd_sum"
     },
     "tags": {
       "source": [
