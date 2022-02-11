@@ -7,8 +7,8 @@
     "interval": 86400,
     "query": "SELECT * FROM test WHERE {TIMESTAMP_CONDITION}",
     "timestamp": {
-      "type": "unix_ms",
-      "name": "timestamp_unix_ms"
+      "type": "datetime",
+      "name": "timestamp_datetime"
     }
   }
 ]
