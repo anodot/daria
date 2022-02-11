@@ -2,10 +2,10 @@
   "pipelineConfig" : {
     "schemaVersion" : 6,
     "version" : 19,
-    "pipelineId" : "influx2scf5762ebf-d5e9-457a-9c0d-7c5b148b5453",
+    "pipelineId" : "influx2scd31a3091-e1af-4cd9-ad79-56933014f489",
     "title" : "influx2_schema",
     "description" : "",
-    "uuid" : "58ef9c27-ece9-4207-86fa-191949df89f2",
+    "uuid" : "a190b6df-7e9c-4bbf-8ed6-f8637db768c7",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -464,11 +464,48 @@
         "icon" : "jython.png",
         "description" : "",
         "label" : "Jython Scripting 1",
-        "xPos" : 178.30101013183594,
+        "xPos" : 147.51699829101562,
         "displayMode" : "ADVANCED"
       },
       "inputLanes" : [ ],
       "outputLanes" : [ "JythonScripting_01OutputLane16013726491540" ],
+      "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
+      "instanceName" : "filtering",
+      "library" : "streamsets-datacollector-basic-lib",
+      "stageName" : "com_streamsets_pipeline_stage_processor_expression_ExpressionDProcessor",
+      "stageVersion" : "2",
+      "configuration" : [ {
+        "name" : "expressionProcessorConfigs",
+        "value" : [ ]
+      }, {
+        "name" : "headerAttributeConfigs",
+        "value" : [ ]
+      }, {
+        "name" : "fieldAttributeConfigs",
+        "value" : [ ]
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "yPos" : 121.829345703125,
+        "stageType" : "PROCESSOR",
+        "icon" : "expression.png",
+        "description" : "",
+        "label" : "Transformations",
+        "xPos" : 352.23345947265625,
+        "displayMode" : "BASIC"
+      },
+      "inputLanes" : [ "JythonScripting_01OutputLane16013726491540" ],
+      "outputLanes" : [ "ExpressionEvaluator_03OutputLane16436446664970" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -508,15 +545,15 @@
         "value" : [ ]
       } ],
       "uiInfo" : {
-        "yPos" : 120.60215759277344,
+        "yPos" : 121.7423095703125,
         "stageType" : "PROCESSOR",
         "icon" : "jython.png",
         "description" : "",
         "label" : "Transform records",
-        "xPos" : 373.2177276611328,
+        "xPos" : 551.0808868408203,
         "displayMode" : "ADVANCED"
       },
-      "inputLanes" : [ "JythonScripting_01OutputLane16013726491540" ],
+      "inputLanes" : [ "ExpressionEvaluator_03OutputLane16436446664970" ],
       "outputLanes" : [ "JythonEvaluator_01OutputLane16282574993230" ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -554,11 +591,11 @@
         "value" : [ ]
       } ],
       "uiInfo" : {
-        "yPos" : 121.00569915771484,
+        "yPos" : 122.14583587646484,
         "stageType" : "PROCESSOR",
         "description" : "",
         "label" : "Create metrics",
-        "xPos" : 556.4172668457031,
+        "xPos" : 749.1023254394531,
         "displayMode" : "ADVANCED"
       },
       "inputLanes" : [ "JythonEvaluator_01OutputLane16282574993230" ],
@@ -993,43 +1030,6 @@
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
-      "instanceName" : "filtering",
-      "library" : "streamsets-datacollector-basic-lib",
-      "stageName" : "com_streamsets_pipeline_stage_processor_expression_ExpressionDProcessor",
-      "stageVersion" : "2",
-      "configuration" : [ {
-        "name" : "expressionProcessorConfigs",
-        "value" : [ ]
-      }, {
-        "name" : "headerAttributeConfigs",
-        "value" : [ ]
-      }, {
-        "name" : "fieldAttributeConfigs",
-        "value" : [ ]
-      }, {
-        "name" : "stageOnRecordError",
-        "value" : "TO_ERROR"
-      }, {
-        "name" : "stageRequiredFields",
-        "value" : [ ]
-      }, {
-        "name" : "stageRecordPreconditions",
-        "value" : [ ]
-      } ],
-      "uiInfo" : {
-        "yPos" : 120.689208984375,
-        "stageType" : "PROCESSOR",
-        "icon" : "expression.png",
-        "description" : "",
-        "label" : "Transformations",
-        "xPos" : 758.1262512207031,
-        "displayMode" : "BASIC"
-      },
-      "inputLanes" : [ "destination_OutputLane" ],
-      "outputLanes" : [ "ExpressionEvaluator_03OutputLane16436446664970" ],
-      "eventLanes" : [ ],
-      "services" : [ ]
-    }, {
       "instanceName" : "ExpressionEvaluator_02",
       "library" : "streamsets-datacollector-basic-lib",
       "stageName" : "com_streamsets_pipeline_stage_processor_expression_ExpressionDProcessor",
@@ -1100,7 +1100,7 @@
         "xPos" : 960.8220520019531,
         "displayMode" : "BASIC"
       },
-      "inputLanes" : [ "ExpressionEvaluator_03OutputLane16436446664970" ],
+      "inputLanes" : [ "destination_OutputLane" ],
       "outputLanes" : [ "ExpressionEvaluator_02OutputLane16215134030410" ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -1508,22 +1508,22 @@
       "services" : [ ]
     },
     "info" : {
-      "pipelineId" : "influx2scf5762ebf-d5e9-457a-9c0d-7c5b148b5453",
+      "pipelineId" : "influx2scd31a3091-e1af-4cd9-ad79-56933014f489",
       "title" : "influx2_schema",
       "description" : "",
-      "created" : 1643650250764,
-      "lastModified" : 1643650330764,
+      "created" : 1644587054299,
+      "lastModified" : 1644587607833,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "58ef9c27-ece9-4207-86fa-191949df89f2",
+      "uuid" : "a190b6df-7e9c-4bbf-8ed6-f8637db768c7",
       "valid" : true,
       "metadata" : {
         "labels" : [ "influx2", "http" ]
       },
-      "name" : "influx2scf5762ebf-d5e9-457a-9c0d-7c5b148b5453",
+      "name" : "influx2scd31a3091-e1af-4cd9-ad79-56933014f489",
       "sdcVersion" : "3.18.0",
-      "sdcId" : "e625b380-82b3-11ec-b342-fdc836711968"
+      "sdcId" : "7a2c5392-88eb-11ec-9753-f77cc69814fa"
     },
     "metadata" : {
       "labels" : [ "influx2", "http" ]
@@ -1902,7 +1902,7 @@
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "de725f02-411d-4364-8f86-ccf821993daa",
+    "uuid" : "b8520707-812a-4307-80cd-b4d37c3dee2e",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : null

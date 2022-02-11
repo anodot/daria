@@ -2,10 +2,10 @@
   "pipelineConfig" : {
     "schemaVersion" : 6,
     "version" : 19,
-    "pipelineId" : "influxsch65a36998-cf6a-47ce-b295-af4d0d7d20d3",
+    "pipelineId" : "influxschbe8648e3-402d-4bb4-b818-31f52ef7cb92",
     "title" : "influx_schema",
     "description" : "",
-    "uuid" : "d6dde07f-e5a5-458f-b06c-455922965b63",
+    "uuid" : "9a0dd239-b658-404b-b698-afa83decb6ee",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -1011,6 +1011,43 @@
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
+      "instanceName" : "filtering",
+      "library" : "streamsets-datacollector-basic-lib",
+      "stageName" : "com_streamsets_pipeline_stage_processor_expression_ExpressionDProcessor",
+      "stageVersion" : "2",
+      "configuration" : [ {
+        "name" : "expressionProcessorConfigs",
+        "value" : [ ]
+      }, {
+        "name" : "headerAttributeConfigs",
+        "value" : [ ]
+      }, {
+        "name" : "fieldAttributeConfigs",
+        "value" : [ ]
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "yPos" : 116.07283020019531,
+        "stageType" : "PROCESSOR",
+        "icon" : "expression.png",
+        "description" : "",
+        "label" : "Transformations",
+        "xPos" : 576.3424072265625,
+        "displayMode" : "ADVANCED"
+      },
+      "inputLanes" : [ "process_responseOutputLane15518645609860" ],
+      "outputLanes" : [ "ExpressionEvaluator_03OutputLane16436440176080" ],
+      "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
       "instanceName" : "transform_records",
       "library" : "streamsets-datacollector-basic-lib",
       "stageName" : "com_streamsets_pipeline_stage_processor_javascript_JavaScriptDProcessor",
@@ -1044,14 +1081,14 @@
         "value" : [ ]
       } ],
       "uiInfo" : {
-        "yPos" : 114.64606475830078,
+        "yPos" : 118.00568389892578,
         "stageType" : "PROCESSOR",
         "description" : "",
         "label" : "Transform Records",
-        "xPos" : 579.2378234863281,
+        "xPos" : 751.6990661621094,
         "displayMode" : "ADVANCED"
       },
-      "inputLanes" : [ "process_responseOutputLane15518645609860" ],
+      "inputLanes" : [ "ExpressionEvaluator_03OutputLane16436440176080" ],
       "outputLanes" : [ "destination_OutputLane" ],
       "eventLanes" : [ "transform_records_EventLane" ],
       "services" : [ ]
@@ -1483,43 +1520,6 @@
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
-      "instanceName" : "filtering",
-      "library" : "streamsets-datacollector-basic-lib",
-      "stageName" : "com_streamsets_pipeline_stage_processor_expression_ExpressionDProcessor",
-      "stageVersion" : "2",
-      "configuration" : [ {
-        "name" : "expressionProcessorConfigs",
-        "value" : [ ]
-      }, {
-        "name" : "headerAttributeConfigs",
-        "value" : [ ]
-      }, {
-        "name" : "fieldAttributeConfigs",
-        "value" : [ ]
-      }, {
-        "name" : "stageOnRecordError",
-        "value" : "TO_ERROR"
-      }, {
-        "name" : "stageRequiredFields",
-        "value" : [ ]
-      }, {
-        "name" : "stageRecordPreconditions",
-        "value" : [ ]
-      } ],
-      "uiInfo" : {
-        "yPos" : 114.95295715332031,
-        "stageType" : "PROCESSOR",
-        "icon" : "expression.png",
-        "description" : "",
-        "label" : "Transformations",
-        "xPos" : 755.5228881835938,
-        "displayMode" : "ADVANCED"
-      },
-      "inputLanes" : [ "destination_OutputLane" ],
-      "outputLanes" : [ "ExpressionEvaluator_03OutputLane16436440176080" ],
-      "eventLanes" : [ ],
-      "services" : [ ]
-    }, {
       "instanceName" : "ExpressionEvaluator_02",
       "library" : "streamsets-datacollector-basic-lib",
       "stageName" : "com_streamsets_pipeline_stage_processor_expression_ExpressionDProcessor",
@@ -1590,7 +1590,7 @@
         "xPos" : 932.1407775878906,
         "displayMode" : "BASIC"
       },
-      "inputLanes" : [ "ExpressionEvaluator_03OutputLane16436440176080" ],
+      "inputLanes" : [ "destination_OutputLane" ],
       "outputLanes" : [ "ExpressionEvaluator_02OutputLane16215134030410" ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -1998,22 +1998,22 @@
       "services" : [ ]
     },
     "info" : {
-      "pipelineId" : "influxsch65a36998-cf6a-47ce-b295-af4d0d7d20d3",
+      "pipelineId" : "influxschbe8648e3-402d-4bb4-b818-31f52ef7cb92",
       "title" : "influx_schema",
       "description" : "",
-      "created" : 1643649562121,
-      "lastModified" : 1643649609104,
+      "created" : 1644586965659,
+      "lastModified" : 1644586994980,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "d6dde07f-e5a5-458f-b06c-455922965b63",
+      "uuid" : "9a0dd239-b658-404b-b698-afa83decb6ee",
       "valid" : true,
       "metadata" : {
         "labels" : [ "influx", "http" ]
       },
-      "name" : "influxsch65a36998-cf6a-47ce-b295-af4d0d7d20d3",
+      "name" : "influxschbe8648e3-402d-4bb4-b818-31f52ef7cb92",
       "sdcVersion" : "3.18.0",
-      "sdcId" : "e625b380-82b3-11ec-b342-fdc836711968"
+      "sdcId" : "7a2c5392-88eb-11ec-9753-f77cc69814fa"
     },
     "metadata" : {
       "labels" : [ "influx", "http" ]
@@ -2392,7 +2392,7 @@
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "ae442055-bb6b-485e-91bb-9847ccf401d0",
+    "uuid" : "175a32bf-9962-47f2-b3f3-ae1d78a88882",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : null
