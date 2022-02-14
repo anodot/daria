@@ -13,6 +13,7 @@ class InfluxConfigHandler(NoSchemaConfigHandler):
     stages_to_override = {
         'offset': stages.influx.InfluxScript,
         'source': stages.source.influx.InfluxSource,
+        'filtering': stages.expression_evaluator.Filtering,
         'destination': stages.destination.Destination
     }
 
@@ -46,7 +47,7 @@ state['TAGS'] = {tags}
         return self.DECLARE_VARS_JS.format(
             required_dimensions=str(self.pipeline.required_dimensions),
             optional_dimensions=str(self.pipeline.optional_dimensions),
-            measurement_name=tools.replace_illegal_chars(self.pipeline.config['measurement_name']),
+            measurement_name=tools.replace_illegal_chars(self.pipeline.config.get('measurement_name', {})),
             target_type=self.pipeline.config.get('target_type', 'gauge'),
             constant_properties=str(self.pipeline.static_dimensions),
             host_id=self.pipeline.destination.host_id,
@@ -62,6 +63,7 @@ class InfluxSchemaConfigHandler(SchemaConfigHandler):
         'source': stages.source.influx.InfluxSource,
         'transform_records': stages.js_convert_metrics.JSConvertMetrics30,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties30,
+        'filtering': stages.expression_evaluator.Filtering,
         'destination': stages.destination.Destination
     }
 
@@ -72,6 +74,7 @@ class Influx2SchemaConfigHandler(SchemaConfigHandler):
         'jython_transform_records': stages.influx.JythonTransformRecords,
         'js_create_metrics': stages.js_convert_metrics.JSConvertMetrics30,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties30,
+        'filtering': stages.expression_evaluator.Filtering,
         'destination': stages.destination.Destination
     }
 
