@@ -88,7 +88,6 @@ def main():
             event = sdc.createEvent('interval processed', 1)
             event.value = {
                 'watermark': offset + get_interval(),
-                'schemaId': sdc.userParams['SCHEMA_ID']
             }
             batch.addEvent(event)
             batch.process(entityName, str(offset))

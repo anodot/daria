@@ -5,7 +5,7 @@
     "pipelineId" : "observium4d4c1229-4247-4f16-ae59-e414492943bc",
     "title" : "observium_schema",
     "description" : "",
-    "uuid" : "8927982a-3ca3-44ed-86fa-231e43ebcca1",
+    "uuid" : "ad7b7ff6-a17f-4be9-b087-0bd5f90f8b6b",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -1004,6 +1004,48 @@
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
+      "instanceName" : "ExpressionEvaluator_03",
+      "library" : "streamsets-datacollector-basic-lib",
+      "stageName" : "com_streamsets_pipeline_stage_processor_expression_ExpressionDProcessor",
+      "stageVersion" : "2",
+      "configuration" : [ {
+        "name" : "expressionProcessorConfigs",
+        "value" : [ {
+          "fieldToSet" : "/schemaId",
+          "expression" : "${SCHEMA_ID}"
+        } ]
+      }, {
+        "name" : "headerAttributeConfigs",
+        "value" : [ { } ]
+      }, {
+        "name" : "fieldAttributeConfigs",
+        "value" : [ {
+          "fieldToSet" : "/"
+        } ]
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "yPos" : 300.1646270751953,
+        "stageType" : "PROCESSOR",
+        "icon" : "expression.png",
+        "description" : "",
+        "label" : "Add schema id",
+        "xPos" : 612.9010304860526,
+        "displayMode" : "BASIC"
+      },
+      "inputLanes" : [ "source_EventLane" ],
+      "outputLanes" : [ "ExpressionEvaluator_03OutputLane16449370174860" ],
+      "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
       "instanceName" : "AnodotDestination_01",
       "library" : "anodot",
       "stageName" : "anodot_stage_destination_AnodotDTarget",
@@ -1319,15 +1361,15 @@
         "value" : [ ]
       } ],
       "uiInfo" : {
-        "yPos" : 301.8985917374895,
+        "yPos" : 299.6549393937395,
         "stageType" : "TARGET",
         "icon" : "anodot_logo.png",
         "description" : "",
         "label" : "Anodot Destination Watermark",
-        "xPos" : 606.0456838063651,
+        "xPos" : 844.9921559743339,
         "displayMode" : "ADVANCED"
       },
-      "inputLanes" : [ "source_EventLane" ],
+      "inputLanes" : [ "ExpressionEvaluator_03OutputLane16449370174860" ],
       "outputLanes" : [ ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -1355,11 +1397,11 @@
       "title" : "observium_schema",
       "description" : "",
       "created" : 1644829258420,
-      "lastModified" : 1644914194972,
+      "lastModified" : 1644937057758,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "8927982a-3ca3-44ed-86fa-231e43ebcca1",
+      "uuid" : "ad7b7ff6-a17f-4be9-b087-0bd5f90f8b6b",
       "valid" : true,
       "metadata" : {
         "labels" : [ "observium", "http" ]
