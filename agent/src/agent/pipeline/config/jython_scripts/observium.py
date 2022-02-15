@@ -75,6 +75,8 @@ def main():
             for metric in res.json():
                 record = sdc.createRecord('record created ' + str(datetime.now()))
                 record.value = metric
+                '%TRANSFORM_SCRIPT_PLACEHOLDER%'
+
                 batch.add(record)
 
                 if batch.size() == sdc.batchSize:

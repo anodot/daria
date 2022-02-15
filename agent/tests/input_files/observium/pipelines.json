@@ -133,5 +133,27 @@
       "storage_perc": "gauge"
     },
     "query": "select s.*, d.sysName, dl.location from storage s join devices d on d.device_id = s.device_id join devices_locations dl on dl.device_id = s.device_id"
+  },
+    {
+    "source": "observium",
+    "pipeline_id": "observium_storage_transform",
+    "interval": 3600,
+    "default_values_type": "storage",
+    "dimensions": [
+      "Storage size"
+    ],
+    "dimension_configurations": {
+      "Storage size": {
+        "value_path": "storage_size"
+      }
+    },
+    "values": {
+      "my own field": "gauge",
+      "storage_perc": "gauge"
+    },
+    "query": "select s.*, d.sysName, dl.location from storage s join devices d on d.device_id = s.device_id join devices_locations dl on dl.device_id = s.device_id",
+    "transform_script": {
+      "file": "tests/input_files/transform_scripts/observium.py"
+    }
   }
 ]
