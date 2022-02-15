@@ -10,7 +10,8 @@ class ObserviumConfigHandler(SchemaConfigHandler):
         'source': stages.source.observium.ObserviumScript,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties,
         'replace_illegal_chars': stages.jython.ReplaceIllegalChars,
-        'destination': stages.destination.Destination
+        'destination': stages.destination.Destination,
+        'destination_watermark': stages.destination.WatermarkDestination,
     }
 
 
