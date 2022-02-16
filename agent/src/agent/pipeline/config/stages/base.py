@@ -27,7 +27,7 @@ class JSProcessor(Stage, ABC):
 
     def _get_script(self) -> str:
         with open(os.path.join(ROOT_DIR, self.JS_SCRIPTS_PATH, self.JS_SCRIPT_NAME)) as f:
-            return f.read()
+            return f.read().replace("'%TRANSFORM_SCRIPT_PLACEHOLDER%'", self.pipeline.transform_script_config or '')
 
 
 class _JythonScript(Stage, ABC):

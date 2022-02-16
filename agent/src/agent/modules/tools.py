@@ -39,7 +39,7 @@ def print_json(records):
 
 def map_keys(records, mapping):
     if type(mapping) is list:
-        mapping = {idx: item for idx, item in enumerate(mapping)}
+        mapping = dict(enumerate(mapping))
     return [{new_key: record[int(idx)] for idx, new_key in mapping.items()} for record in records]
 
 
@@ -121,3 +121,7 @@ def deep_update(src: dict, dst: Any):
             deep_update(value, dst.setdefault(key, {}))
         else:
             dst[key] = value
+
+
+def escape_quotes(s: str) -> str:
+    return s.replace("'", "\\'")

@@ -15,8 +15,8 @@ class TestMySQL(TestInputBase):
                         {'name': 'test_mysql_timestamp_datetime', 'source': 'test_jdbc', 'timestamp_type': 'datetime', 'timestamp_name': 'timestamp_datetime'}],
         'test_create_timezone': [{'name': 'test_mysql_timezone_datetime', 'source': 'test_jdbc', 'timestamp_type': 'datetime', 'timezone': 'Europe/Berlin', 'timestamp_name': 'timestamp_datetime'}],
         'test_create_advanced': [{'name': 'test_mysql_advanced', 'source': 'test_jdbc'}],
-        'test_create_with_file': [{'file_name': 'jdbc_pipelines'}],
-        'test_create_source_with_file': [{'file_name': 'mysql_sources'}],
+        'test_create_with_file': [{'file_name': 'jdbc/pipelines'}],
+        'test_create_source_with_file': [{'file_name': 'jdbc/mysql_sources'}],
     }
 
     def test_source_create(self, cli_runner, name, type, conn):

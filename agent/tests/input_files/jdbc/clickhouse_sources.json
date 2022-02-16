@@ -5,5 +5,12 @@
     "config": {
       "connection_string": "clickhouse://clickhouse:8123/test"
     }
+  },
+  {
+    "type": "clickhouse",
+    "name": "clickhouse_tags",
+    "config": {
+      "connection_string": "clickhouse://clickhouse:8123/test"
+    }
   }
 ]

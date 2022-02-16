@@ -17,7 +17,6 @@ def get_config_handler(pipeline_: Pipeline) -> ConfigHandler:
 def _get_no_schema_handler(pipeline_: Pipeline, base_config: dict) -> NoSchemaConfigHandler:
     handlers_protocol20 = {
         source.TYPE_CACTI: pipeline.config.handlers.cacti.CactiConfigHandler,
-        source.TYPE_CLICKHOUSE: pipeline.config.handlers.jdbc.JDBCConfigHandler,
         source.TYPE_ELASTIC: pipeline.config.handlers.elastic.ElasticConfigHandler,
         source.TYPE_INFLUX: pipeline.config.handlers.influx.InfluxConfigHandler,
         source.TYPE_KAFKA: pipeline.config.handlers.kafka.KafkaConfigHandler,

@@ -72,6 +72,8 @@ function last_timestamp_only(record) {
     return (record_keys.length === 1 && record_keys[0] === 'last_timestamp');
 }
 
+'%TRANSFORM_SCRIPT_PLACEHOLDER%'
+
 if (records.length === 1 && last_timestamp_only(records[0].value)) {
     var timestamp_from = records[0].value['last_timestamp']
     var timestamp_to = records[0].value['last_timestamp'] + state['INTERVAL']
@@ -92,8 +94,12 @@ if (records.length === 1 && last_timestamp_only(records[0].value)) {
                 'timestamp': timestamp,
                 'dimensions': get_dimensions(records[i]),
                 'measurements': measurements,
-                'schemaId': "${SCHEMA_ID}"
+                'schemaId': "${SCHEMA_ID}",
+                'tags': {},
             };
+            if (records[i].value['__tags'] !== null) {
+                newRecord.value['tags'] = records[i].value['__tags']
+            }
             output.write(newRecord);
         } catch (e) {
             error.write(records[i], e);
