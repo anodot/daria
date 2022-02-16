@@ -5,8 +5,8 @@ from .test_zpipeline_base import TestInputBase
 class TestDatabricks(TestInputBase):
     __test__ = True
     params = {
-        'test_create_source_with_file': [{'file_name': 'databricks_sources'}],
-        'test_create_with_file': [{'file_name': 'jdbc_pipelines_databricks'}],
+        'test_create_source_with_file': [{'file_name': 'jdbc/databricks_sources'}],
+        'test_create_with_file': [{'file_name': 'jdbc/databricks_pipelines'}],
     }
 
     @classmethod

@@ -4,6 +4,10 @@ from .test_zpipeline_base import TestInputBase
 from ..conftest import generate_input
 
 
+def _get_days_to_backfill():
+    return (datetime.now() - datetime(year=2017, month=12, day=10)).days + 1
+
+
 class TestClickhouse(TestInputBase):
     __test__ = True
     params = {
@@ -15,8 +19,11 @@ class TestClickhouse(TestInputBase):
             {'name': 'test_clickhouse_timestamp_datetime', 'source': 'test_jdbc_clickhouse', 'timestamp_type': 'datetime',
              'timestamp_name': 'timestamp_datetime'}],
         'test_create_advanced': [{'name': 'test_clickhouse_advanced', 'source': 'test_jdbc_clickhouse'}],
-        'test_create_with_file': [{'file_name': 'jdbc_pipelines_clickhouse'}],
-        'test_create_source_with_file': [{'file_name': 'clickhouse_sources'}],
+        'test_create_with_file': [{
+            'file_name': 'jdbc/clickhouse_pipelines',
+            'override_config': {'days_to_backfill': _get_days_to_backfill()}
+        }],
+        'test_create_source_with_file': [{'file_name': 'jdbc/clickhouse_sources'}],
     }
 
     def test_source_create(self, cli_runner, name, type, conn):
@@ -33,14 +40,13 @@ class TestClickhouse(TestInputBase):
         assert source.repository.exists(name)
 
     def test_create(self, cli_runner, name, source, timestamp_type, timestamp_name):
-        days_to_backfill = (datetime.now() - datetime(year=2017, month=12, day=10)).days + 1
         input_ = {
             "source name": source,
             "pipeline name": name,
             "query": "SELECT * FROM test WHERE {TIMESTAMP_CONDITION}",
             "see preview": "",
             "interval": 86400,
-            "days to backfill": days_to_backfill,
+            "days to backfill": _get_days_to_backfill(),
             "delay": 1,
             "timestamp name": timestamp_name,
             "timestamp_type": timestamp_type,
@@ -55,14 +61,13 @@ class TestClickhouse(TestInputBase):
         assert result.exit_code == 0
 
     def test_create_advanced(self, cli_runner, name, source):
-        days_to_backfill = (datetime.now() - datetime(year=2017, month=12, day=10)).days + 1
         input_ = {
             "source name": source,
             "pipeline name": name,
             "query": "SELECT * FROM test WHERE {TIMESTAMP_CONDITION} AND country = 'USA'",
             "see preview": "",
             "interval": 86400,
-            "days to backfill": days_to_backfill,
+            "days to backfill": _get_days_to_backfill(),
             "delay": 1,
             "timestamp name": "timestamp_unix",
             "timestamp_type": "unix",

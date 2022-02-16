@@ -14,8 +14,8 @@ class TestPostgreSQL(TestInputBase):
             {'name': 'test_postgres_timestamp_datetime', 'source': 'test_jdbc_postgres', 'timestamp_type': 'datetime',
              'timestamp_name': 'timestamp_datetime'}],
         'test_create_advanced': [{'name': 'test_postgres_advanced', 'source': 'test_jdbc_postgres'}],
-        'test_create_with_file': [{'file_name': 'jdbc_pipelines_postgres'}],
-        'test_create_source_with_file': [{'file_name': 'postgres_sources'}],
+        'test_create_with_file': [{'file_name': 'jdbc/postgres_pipelines'}],
+        'test_create_source_with_file': [{'file_name': 'jdbc/postgres_sources'}],
     }
 
     def test_source_create(self, cli_runner, name, type, conn):
