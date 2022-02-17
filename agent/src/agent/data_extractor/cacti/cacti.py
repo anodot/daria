@@ -226,7 +226,7 @@ def _extract_dimensions(
     if 'host_description' not in dimensions and 'description' in host:
         dimensions['host_description'] = host['description']
 
-    dimensions = {**dimensions, **_extract_item_dimensions(item)}
+    dimensions = {**dimensions, **_extract_item_dimensions(item, host)}
 
     return dimensions
 
@@ -285,17 +285,12 @@ def _extract_dimension_names(name: str) -> List[str]:
     return re.findall('\|([^|]+)\|', name)
 
 
-def _extract_item_dimensions(item: dict) -> dict:
+def _extract_item_dimensions(item: dict, host: dict) -> dict:
     dimensions = {}
     item_title = item['item_title']
     if 'variables' in item and item_title != '':
         for dimension_name in _extract_dimension_names(item_title):
-            if not dimension_name.startswith('query'):
-                continue
-            dim_name = dimension_name.replace('query_', '')
-            if dim_name not in item['variables']:
-                continue
-            value = item['variables'][dim_name]
+            value = _extract(dimension_name, item['variables'], host)
             if value is None or value == '':
                 continue
             dimensions[dimension_name] = value
