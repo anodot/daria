@@ -134,26 +134,52 @@
     },
     "query": "select s.*, d.sysName, dl.location from storage s join devices d on d.device_id = s.device_id join devices_locations dl on dl.device_id = s.device_id"
   },
-    {
+  {
     "source": "observium",
     "pipeline_id": "observium_storage_transform",
     "interval": 3600,
     "default_values_type": "storage",
     "dimensions": [
-      "Storage size"
+      "Storage units by 8",
+      "HostName"
     ],
+    "lookups": {
+      "HOSTNAME_GROUP": {
+        "type": "file",
+        "path": "/usr/src/app/tests/input_files/observium/HOSTNAME_GROUP",
+        "format": "CSV"
+      }
+    },
     "dimension_configurations": {
-      "Storage size": {
-        "value_path": "storage_size"
+      "Storage units by 8": {
+        "value_path": "storage_units",
+        "transformations": [
+          {
+            "type": "function",
+            "name": "divide_by_8"
+          }
+        ]
+      },
+      "HostName": {
+        "value_path": "hostname",
+        "transformations": [
+          {
+            "type": "lookup",
+            "name": "HOSTNAME_GROUP",
+            "key": "HOST_NAME",
+            "value": "REPLACE_NAME",
+            "compare_function": "regex_contains",
+            "default": "DEFAULT_name"
+          }
+        ]
       }
     },
     "values": {
-      "my own field": "gauge",
-      "storage_perc": "gauge"
+      "storage_perc": "gauge",
+      "storage_units": "counter"
     },
-    "query": "select s.*, d.sysName, dl.location from storage s join devices d on d.device_id = s.device_id join devices_locations dl on dl.device_id = s.device_id",
-    "transform_script": {
-      "file": "tests/input_files/transform_scripts/observium.py"
-    }
+    "values_configurations": {
+    },
+    "query": "select s.*, d.hostname, d.sysName, dl.location from storage s join devices d on d.device_id = s.device_id join devices_locations dl on dl.device_id = s.device_id"
   }
 ]

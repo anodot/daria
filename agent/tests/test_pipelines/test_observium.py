@@ -78,6 +78,11 @@ class TestObservium(TestPipelineBase):
                 'output': 'observium_storage_schema.json',
                 'pipeline_type': 'observium'
             },
+            {
+                'name': 'observium_storage_transform',
+                'output': 'observium_storage_transform.json',
+                'pipeline_type': 'observium'
+            },
         ],
         'test_watermark': [
             {
