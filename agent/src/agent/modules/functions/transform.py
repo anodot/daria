@@ -16,6 +16,10 @@ def regex_substring(string: str, pattern: str, repl: str) -> str:
     return res
 
 
+def divide_by_8(value: int) -> float:
+    return value / 8
+
+
 def get_by_name(name: str) -> Callable:
     try:
         return getattr(sys.modules[__name__], name)
