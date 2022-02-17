@@ -21,7 +21,7 @@
     "properties": {
       "instance": "victoriametrics:8428",
       "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a",
-      "level": "info",
+      "level": "инфо",
       "target_type": "gauge",
       "what": "log_messages_total",
       "location": "VictoriaMetrics/app/vmstorage/main_go:86",
@@ -51,7 +51,7 @@
     "properties": {
       "instance": "victoriametrics:8428",
       "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a",
-      "level": "info",
+      "level": "инфо",
       "target_type": "gauge",
       "what": "log_messages_total",
       "location": "VictoriaMetrics/app/vmstorage/main_go:86",
@@ -81,7 +81,7 @@
     "properties": {
       "instance": "victoriametrics:8428",
       "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a",
-      "level": "info",
+      "level": "инфо",
       "target_type": "gauge",
       "what": "log_messages_total",
       "location": "VictoriaMetrics/app/vmstorage/main_go:86",
@@ -111,7 +111,7 @@
     "properties": {
       "instance": "victoriametrics:8428",
       "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a",
-      "level": "info",
+      "level": "инфо",
       "target_type": "gauge",
       "what": "log_messages_total",
       "location": "VictoriaMetrics/app/vmstorage/main_go:86",
@@ -141,7 +141,7 @@
     "properties": {
       "instance": "victoriametrics:8428",
       "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a",
-      "level": "info",
+      "level": "инфо",
       "target_type": "gauge",
       "what": "log_messages_total",
       "location": "VictoriaMetrics/app/vmstorage/main_go:86",
@@ -171,7 +171,7 @@
     "properties": {
       "instance": "victoriametrics:8428",
       "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a",
-      "level": "info",
+      "level": "инфо",
       "target_type": "gauge",
       "what": "log_messages_total",
       "location": "VictoriaMetrics/app/vmstorage/main_go:86",
@@ -201,7 +201,7 @@
     "properties": {
       "instance": "victoriametrics:8428",
       "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a",
-      "level": "info",
+      "level": "инфо",
       "target_type": "gauge",
       "what": "log_messages_total",
       "location": "VictoriaMetrics/app/vmstorage/main_go:86",
@@ -231,7 +231,7 @@
     "properties": {
       "instance": "victoriametrics:8428",
       "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a",
-      "level": "info",
+      "level": "инфо",
       "target_type": "gauge",
       "what": "log_messages_total",
       "location": "VictoriaMetrics/app/vmstorage/main_go:86",
@@ -261,7 +261,7 @@
     "properties": {
       "instance": "victoriametrics:8428",
       "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a",
-      "level": "info",
+      "level": "инфо",
       "target_type": "gauge",
       "what": "log_messages_total",
       "location": "VictoriaMetrics/app/vmstorage/main_go:86",
@@ -291,7 +291,7 @@
     "properties": {
       "instance": "victoriametrics:8428",
       "app_version": "victoria-metrics-20200701-115333-tags-v1_37_4-0-g8da3f773a",
-      "level": "info",
+      "level": "инфо",
       "target_type": "gauge",
       "what": "log_messages_total",
       "location": "VictoriaMetrics/app/vmstorage/main_go:86",
