@@ -19,9 +19,6 @@ TOPOLOGY_ENTITIES = [REGION, SITE, NODE, CARD, INTERFACE, CELL, LINK, SERVICE, L
 
 # todo add username/password/token/whatever to the agent/source/sensitive_data.py
 # todo add jsonschema definition for topology, now it's almost empty
-# todo raise Exception if default is None?
-# todo example of a url https://networkdb.smart.com.kh/api/v1/site?page[number]=1&filter=`updated_at`>='2021-10-27'&token=457b8a6f9774824ad0bcd55b70fe1b39
-# todo do we need to extract by pages? how do we know how many pages we have? notice it contains filter
 
 
 def extract_metrics(pipeline_: Pipeline) -> dict:
@@ -34,18 +31,20 @@ def extract_metrics(pipeline_: Pipeline) -> dict:
 class Entity(ABC):
     def __init__(self, name: str, config: dict):
         self.name: str = name
+        # todo if one source can contain multiple entities then they must be separate
         self.source: DataSource = data_source.build(config['source'])
         self.fields: list[field.Field] = field.build_fields(config['fields'])
 
 
-def _create_topology_records(entities: list[Entity]) -> dict:
-    return {
-        entity_.name: [field.extract_fields(entity_.fields, row) for row in entity_.source.get_data()]
-        for entity_ in entities
-    }
+def _create_topology_records(entities: list[Entity]) -> list:
+    records = []
+    for entity_ in entities:
+        for row in entity_.source.get_data():
+            records.append(field.extract_fields(entity_.fields, row))
+    return records
 
 
-def _build_topology_data(topology_entities: dict) -> dict:
+def _build_topology_data(topology_entities: list) -> dict:
     pass
 
 

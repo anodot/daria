@@ -27,8 +27,6 @@ class FileLoader(ABC):
 class CSVLoader(FileLoader):
     @staticmethod
     def load(path: str) -> list[dict]:
-        if '/usr/src/app/' in path:
-            path = path.replace('/usr/src/app/', '/Users/antonzelenin/Workspace/daria/agent/')
         with open(path) as f:
             reader = csv.reader(f)
             rows = list(reader)

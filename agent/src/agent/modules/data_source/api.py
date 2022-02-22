@@ -9,8 +9,7 @@ BASIC_AUTH = 'basic'
 class API(DataSource):
     def __init__(self, url: str, auth_config: dict):
         self.url: str = url
-        self.url = 'http://localhost:8080/api/v1/site'
-        self.authentication = _get_authentication(auth_config)
+        self.authentication = _get_authentication(auth_config['authentication'])
 
     def get_data(self) -> list[dict]:
         res = requests.get(self.url, auth=self.authentication)

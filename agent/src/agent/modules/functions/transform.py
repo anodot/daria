@@ -16,10 +16,6 @@ def regex_substring(string: str, pattern: str, repl: str) -> str:
     return res
 
 
-def substring(string: str, from_index: int, to_index: int) -> str:
-    return string[from_index:to_index]
-
-
 def get_by_name(name: str) -> Callable:
     try:
         return getattr(sys.modules[__name__], name)
