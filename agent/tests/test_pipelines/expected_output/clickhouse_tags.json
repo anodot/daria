@@ -1,0 +1,72 @@
+[
+  {
+    "timestamp": 1512867600,
+    "dimensions": {
+      "adsize": "Sma_ll",
+      "country": "USA"
+    },
+    "measurements": {
+      "clicks": 6784.69,
+      "impressions": 123
+    },
+    "schemaId": "111111-22222-3333-4444",
+    "tags": {
+      "tag1": [
+        "val1"
+      ],
+      "tag2": [
+        "val2"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_mysql"
+      ],
+      "pipeline_type": [
+        "mysql"
+      ]
+    }
+  },
+  {
+    "timestamp": 1512871200,
+    "dimensions": {
+      "adsize": "Sma_ll",
+      "country": "USA"
+    },
+    "measurements": {
+      "clicks": 6839.0,
+      "impressions": 22
+    },
+    "schemaId": "111111-22222-3333-4444",
+    "tags": {
+      "tag3": [
+        "val3"
+      ],
+      "tag4": [
+        "val4"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_mysql"
+      ],
+      "pipeline_type": [
+        "mysql"
+      ]
+    }
+  }
+]

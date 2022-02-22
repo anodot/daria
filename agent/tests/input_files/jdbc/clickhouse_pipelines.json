@@ -1,7 +1,7 @@
 [
   {
-    "source": "test_jdbc_clickhouse",
-    "pipeline_id": "test_jdbc_file_short_clickhouse",
+    "source": "clickhouse_tags",
+    "pipeline_id": "clickhouse_tags",
     "values": {"clicks": "gauge", "impressions": "gauge"},
     "dimensions": ["adsize", "country"],
     "timestamp": {
@@ -9,10 +9,13 @@
       "name": "timestamp_unix_ms"
     },
     "interval": 86400,
-    "query": "SELECT * FROM test WHERE {TIMESTAMP_CONDITION}"
+    "query": "SELECT clicks, impressions, adsize, country, timestamp_unix_ms, toString(tags) as tags FROM tags WHERE {TIMESTAMP_CONDITION}",
+    "transform_script": {
+      "file": "tests/input_files/jdbc/clickhouse_transform.js"
+    }
   },
   {
-    "source": "test_jdbc_clickhouse",
+    "source": "test_clickhouse_1",
     "pipeline_id": "test_jdbc_file_full_clickhouse",
     "values": {"clicks": "gauge", "impressions": "gauge"},
     "count_records": true,
@@ -24,6 +27,6 @@
     },
     "properties": {"key1": "val1", "key2":  "val2"},
     "interval": 86400,
-    "query": "SELECT * FROM test WHERE {TIMESTAMP_CONDITION} AND Country = 'USA'"
+    "query": "SELECT * FROM test WHERE {TIMESTAMP_CONDITION} AND country = 'USA'"
   }
 ]

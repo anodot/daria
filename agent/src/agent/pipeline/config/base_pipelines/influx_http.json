@@ -2,10 +2,10 @@
   "pipelineConfig" : {
     "schemaVersion" : 6,
     "version" : 19,
-    "pipelineId" : "inf749f1f16-a5b7-4b71-834b-f680aced71e9",
-    "title" : "test_influx_file_short",
+    "pipelineId" : "influxhttdc5b00c5-8fad-48e0-90b2-74515d2b93d4",
+    "title" : "influx_http",
     "description" : "",
-    "uuid" : "4b914db7-d87a-400f-886a-1f1015491482",
+    "uuid" : "12630618-8bd2-4b3d-99a2-4e0ada20f88e",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -448,7 +448,8 @@
         "icon" : "jython.png",
         "description" : "",
         "label" : "Jython Scripting 1",
-        "xPos" : 482.0633544921875
+        "xPos" : 332.1975402832031,
+        "displayMode" : "BASIC"
       },
       "inputLanes" : [ ],
       "outputLanes" : [ "JythonScripting_01OutputLane16013726491540" ],
@@ -954,7 +955,7 @@
         "stageType" : "PROCESSOR",
         "description" : "",
         "label" : "Get Interval Records",
-        "xPos" : 705.0634155273438,
+        "xPos" : 545.9953002929688,
         "displayMode" : "BASIC"
       },
       "inputLanes" : [ "JythonScripting_01OutputLane16013726491540" ],
@@ -974,7 +975,7 @@
         "value" : ""
       }, {
         "name" : "script",
-        "value" : "for(var i = 0; i < records.length; i++) {\n  try {\n    if (records[i].value['response']['results'][0]['series'] == null) {\n      continue;\n    } \n    series = records[i].value['response']['results'][0]['series'][0]\n    for (var k = 0; k < series['values'].length; k++) {\n      var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + k);\n      newRecord.value = {};\n      for (var c = 0; c < series['columns'].length; c++) {\n\t\tif (series['values'][k][c] == null) {\n          continue;\n        }\n        newRecord.value[series['columns'][c].replace(/[\\. \\<]+/g, '_')] = typeof series['values'][k][c] === 'string' \n          ? series['values'][k][c].replace(/[\\.\\s]+/g, '_') : series['values'][k][c]\n      }\n      output.write(newRecord);\n    }\n  } catch (e) {\n    // Send record to error\n    error.write(records[i], e);\n  }\n}"
+        "value" : "for(var i = 0; i < records.length; i++) {\n  try {\n    if (records[i].value['response']['results'][0]['series'] == null) {\n      continue;\n    } \n    for (var j = 0; j < records[i].value['response']['results'][0]['series'].length; j++) {\n      series = records[i].value['response']['results'][0]['series'][j]\n      for (var k = 0; k < series['values'].length; k++) {\n        var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + k);\n        newRecord.value = {};\n        newRecord.value['measurement_name'] = series['name']\n        for (var c = 0; c < series['columns'].length; c++) {\n          if (series['values'][k][c] == null) {\n            continue;\n          }\n          newRecord.value[series['columns'][c].replace(/[\\. \\<]+/g, '_')] = typeof series['values'][k][c] === 'string' \n            ? series['values'][k][c].replace(/[\\.\\s]+/g, '_') : series['values'][k][c]\n        }\n        output.write(newRecord);\n      }\n    }\n  } catch (e) {\n    // Send record to error\n    error.write(records[i], e);\n  }\n}"
       }, {
         "name" : "destroyScript",
         "value" : "/**\n * Available Objects:\n * \n *  state: a dict that is preserved between invocations of this script. \n *        Useful for caching bits of data e.g. counters and long-lived resources.\n *\n *  log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n *                               loglevel is any log4j level: e.g. info, error, warn, trace.\n *   sdcFunctions.getFieldNull(Record, 'field path'): Receive a constant defined above \n *                          to check if the field is typed field with value null\n *   sdcFunctions.createMap(boolean listMap): Create a map for use as a field in a record. \n *                          Pass true to this function to create a list map (ordered map)\n *   sdcFunctions.createEvent(String type, int version): Creates a new event.\n *                          Create new empty event with standard headers.\n *   sdcFunctions.toEvent(Record): Send event to event stream\n *                          Only events created with sdcFunctions.createEvent are supported.\n */\n\n// state['connection'].close();"
@@ -999,11 +1000,48 @@
         "stageType" : "PROCESSOR",
         "description" : "",
         "label" : "Process Response",
-        "xPos" : 943.2346801757812,
+        "xPos" : 763.1328125,
         "displayMode" : "BASIC"
       },
       "inputLanes" : [ "get_interval_recordsOutputLane15580084532730" ],
       "outputLanes" : [ "process_responseOutputLane15518645609860" ],
+      "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
+      "instanceName" : "filtering",
+      "library" : "streamsets-datacollector-basic-lib",
+      "stageName" : "com_streamsets_pipeline_stage_processor_expression_ExpressionDProcessor",
+      "stageVersion" : "2",
+      "configuration" : [ {
+        "name" : "expressionProcessorConfigs",
+        "value" : [ ]
+      }, {
+        "name" : "headerAttributeConfigs",
+        "value" : [ ]
+      }, {
+        "name" : "fieldAttributeConfigs",
+        "value" : [ ]
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "yPos" : 174.8882064819336,
+        "stageType" : "PROCESSOR",
+        "icon" : "expression.png",
+        "description" : "",
+        "label" : "Transformations",
+        "xPos" : 975.4868774414062,
+        "displayMode" : "ADVANCED"
+      },
+      "inputLanes" : [ "process_responseOutputLane15518645609860" ],
+      "outputLanes" : [ "ExpressionEvaluator_01OutputLane16436434639580" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -1019,7 +1057,7 @@
         "value" : "\nstate['MEASUREMENT_NAME'] = 'cpu_test';\nstate['REQUIRED_DIMENSIONS'] = [];\nstate['OPTIONAL_DIMENSIONS'] = ['cpu', 'host', 'zone'];\nstate['TARGET_TYPE'] = 'gauge';\nstate['CONSTANT_PROPERTIES'] = {}\nstate['HOST_ID'] = 'ABCDEF'\nstate['HOST_NAME'] = 'agent'\nstate['PIPELINE_ID'] = 'test_influx_file_short'\nstate['TAGS'] = {\"source\": [\"anodot-agent\"], \"source_host_id\": [\"ABCDEF\"], \"source_host_name\": [\"agent\"], \"pipeline_id\": [\"test_influx_file_short\"], \"pipeline_type\": [\"influx\"]}\n"
       }, {
         "name" : "script",
-        "value" : "function replace_illegal_chars(str) {\n    return str.replace(/[\\. \\<]+/g, '_')\n}\n\nfor(var i = 0; i < records.length; i++) {\n  try {\n\ttimestamp = records[i].value['time'] / 1e3\n    \n    for (var p in records[i].value) {\n      if (state['REQUIRED_DIMENSIONS'].map(replace_illegal_chars).indexOf(p) >= 0 || state['OPTIONAL_DIMENSIONS'].map(replace_illegal_chars).indexOf(p) >= 0 || p == 'time'){\n        continue;\n      }\n      var properties = {'target_type': state['TARGET_TYPE']}\n      for (var key in state['CONSTANT_PROPERTIES']) {\n        if (state['CONSTANT_PROPERTIES'].hasOwnProperty(key)) properties[key] = state['CONSTANT_PROPERTIES'][key];\n      }\n      for (var k = 0; k < state['REQUIRED_DIMENSIONS'].length; k++) {\n        var dim_name = replace_illegal_chars(state['REQUIRED_DIMENSIONS'][k])\n        properties[dim_name] = records[i].value[dim_name]\n      }\n      for (var k = 0; k < state['OPTIONAL_DIMENSIONS'].length; k++) {\n        var dim_name = replace_illegal_chars(state['OPTIONAL_DIMENSIONS'][k])\n        if (records[i].value[dim_name] !== null) {\n          properties[dim_name] = records[i].value[dim_name]\n        }\n      }\n      item = {'timestamp' : timestamp,\n                         'properties' : properties,\n                         'tags': state['TAGS'],\n                         'value': records[i].value[p]}\n\n      item['properties']['measurement_category'] = state['MEASUREMENT_NAME'].replace(/[\\.\\s]+/g, '_');\n      item['properties']['what'] = p;\n      var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + i);\n      newRecord.value = item\n      output.write(newRecord);\n    }\n  } catch (e) {\n    error.write(records[i], e);\n  }\n}"
+        "value" : "function replace_illegal_chars(str) {\n    return str.replace(/[\\. \\<]+/g, '_')\n}\n\nfor(var i = 0; i < records.length; i++) {\n  try {\n\ttimestamp = records[i].value['time'] / 1e3\n    measurement_name = records[i].value['measurement_name']\n    for (var p in records[i].value) {\n      if (state['REQUIRED_DIMENSIONS'].map(replace_illegal_chars).indexOf(p) >= 0 || state['OPTIONAL_DIMENSIONS'].map(replace_illegal_chars).indexOf(p) >= 0 || p == 'time' || p == 'measurement_name') {\n        continue;\n      }\n      var properties = {'target_type': state['TARGET_TYPE']}\n      for (var key in state['CONSTANT_PROPERTIES']) {\n        if (state['CONSTANT_PROPERTIES'].hasOwnProperty(key)) properties[key] = state['CONSTANT_PROPERTIES'][key];\n      }\n      for (var k = 0; k < state['REQUIRED_DIMENSIONS'].length; k++) {\n        var dim_name = replace_illegal_chars(state['REQUIRED_DIMENSIONS'][k])\n        properties[dim_name] = records[i].value[dim_name]\n      }\n      for (var k = 0; k < state['OPTIONAL_DIMENSIONS'].length; k++) {\n        var dim_name = replace_illegal_chars(state['OPTIONAL_DIMENSIONS'][k])\n        if (records[i].value[dim_name] !== null) {\n          properties[dim_name] = records[i].value[dim_name]\n        }\n      }\n      item = {'timestamp' : timestamp,\n                         'properties' : properties,\n                         'tags': state['TAGS'],\n                         'value': records[i].value[p]}\n\n      item['properties']['measurement_category'] = measurement_name;\n      item['properties']['what'] = p;\n      var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + i);\n      newRecord.value = item\n      output.write(newRecord);\n    }\n  } catch (e) {\n    error.write(records[i], e);\n  }\n}"
       }, {
         "name" : "destroyScript",
         "value" : ""
@@ -1040,14 +1078,14 @@
         "value" : [ ]
       } ],
       "uiInfo" : {
-        "yPos" : 172.54216766357422,
+        "yPos" : 176.48601531982422,
         "stageType" : "PROCESSOR",
         "description" : "",
         "label" : "Transform Records",
-        "xPos" : 1163.6939392089844,
+        "xPos" : 1171.5817565917969,
         "displayMode" : "BASIC"
       },
-      "inputLanes" : [ "process_responseOutputLane15518645609860" ],
+      "inputLanes" : [ "ExpressionEvaluator_01OutputLane16436434639580" ],
       "outputLanes" : [ "destination_OutputLane" ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -1407,6 +1445,21 @@
       }, {
         "name" : "conf.dataGeneratorFormatConfig.basicAuthUserInfoForRegistration",
         "value" : null
+      }, {
+        "name" : "conf.parallelSendersNumber",
+        "value" : 1
+      }, {
+        "name" : "conf.maxBatchSize",
+        "value" : 1000
+      }, {
+        "name" : "conf.propertiesPath",
+        "value" : null
+      }, {
+        "name" : "conf.partitioningKeyPath",
+        "value" : null
+      }, {
+        "name" : "conf.maxSendResponseWait",
+        "value" : 60000
       } ],
       "uiInfo" : {
         "yPos" : 174.06565856933594,
@@ -1440,22 +1493,22 @@
       "services" : [ ]
     },
     "info" : {
-      "pipelineId" : "test_influx_file_short",
-      "title" : "test_influx_file_short",
+      "pipelineId" : "influxhttdc5b00c5-8fad-48e0-90b2-74515d2b93d4",
+      "title" : "influx_http",
       "description" : "",
-      "created" : 1629113108347,
-      "lastModified" : 1629120979041,
+      "created" : 1644586903193,
+      "lastModified" : 1644586934019,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "4b914db7-d87a-400f-886a-1f1015491482",
+      "uuid" : "12630618-8bd2-4b3d-99a2-4e0ada20f88e",
       "valid" : true,
       "metadata" : {
         "labels" : [ "influx", "http" ]
       },
-      "name" : "test_influx_file_short",
+      "name" : "influxhttdc5b00c5-8fad-48e0-90b2-74515d2b93d4",
       "sdcVersion" : "3.18.0",
-      "sdcId" : "5ca24b42-fe84-11eb-8c51-9d6a00b59418"
+      "sdcId" : "7a2c5392-88eb-11ec-9753-f77cc69814fa"
     },
     "metadata" : {
       "labels" : [ "influx", "http" ]
@@ -1834,7 +1887,7 @@
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "9562e5ca-1c9d-4356-b1ea-9e09b8529f62",
+    "uuid" : "5747d41c-fa16-4beb-938f-4c54819b01c3",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : null

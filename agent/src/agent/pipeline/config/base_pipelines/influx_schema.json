@@ -2,10 +2,10 @@
   "pipelineConfig" : {
     "schemaVersion" : 6,
     "version" : 19,
-    "pipelineId" : "test_basic",
-    "title" : "test_basic",
+    "pipelineId" : "influxschbe8648e3-402d-4bb4-b818-31f52ef7cb92",
+    "title" : "influx_schema",
     "description" : "",
-    "uuid" : "c571cbc2-98de-4ca8-bb38-a8f6f6c5f979",
+    "uuid" : "9a0dd239-b658-404b-b698-afa83decb6ee",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -451,7 +451,7 @@
         "icon" : "jython.png",
         "description" : "",
         "label" : "Jython Scripting 1",
-        "xPos" : 70.08088684082031,
+        "xPos" : 29.765274047851562,
         "displayMode" : "BASIC"
       },
       "inputLanes" : [ ],
@@ -954,11 +954,11 @@
         "value" : 10
       } ],
       "uiInfo" : {
-        "yPos" : 119.29446411132812,
+        "yPos" : 118.17459106445312,
         "stageType" : "PROCESSOR",
         "description" : "",
         "label" : "Get Interval Records",
-        "xPos" : 283.6717529296875,
+        "xPos" : 203.04051208496094,
         "displayMode" : "BASIC"
       },
       "inputLanes" : [ "JythonScripting_01OutputLane16013726491540" ],
@@ -978,7 +978,7 @@
         "value" : ""
       }, {
         "name" : "script",
-        "value" : "for(var i = 0; i < records.length; i++) {\n  try {\n    if (records[i].value['response']['results'][0]['series'] == null) {\n      continue;\n    } \n    series = records[i].value['response']['results'][0]['series'][0]\n    for (var k = 0; k < series['values'].length; k++) {\n      var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + k);\n      newRecord.value = {};\n      for (var c = 0; c < series['columns'].length; c++) {\n\t\tif (series['values'][k][c] == null) {\n          continue;\n        }\n        newRecord.value[series['columns'][c].replace(/[\\. \\<]+/g, '_')] = typeof series['values'][k][c] === 'string' \n          ? series['values'][k][c].replace(/[\\.\\s]+/g, '_') : series['values'][k][c]\n      }\n      newRecord.value['last_timestamp'] = records[i].value['last_timestamp'] / 1e9\n      output.write(newRecord);\n    }\n  } catch (e) {\n    // Send record to error\n    error.write(records[i], e);\n  }\n}"
+        "value" : "for(var i = 0; i < records.length; i++) {\n  try {\n    if (records[i].value['response']['results'][0]['series'] == null) {\n      continue;\n    }\n    for (var j = 0; j < records[i].value['response']['results'][0]['series'].length; j++) {\n      series = records[i].value['response']['results'][0]['series'][j]\n      for (var k = 0; k < series['values'].length; k++) {\n        var newRecord = sdcFunctions.createRecord(records[i].sourceId + ':' + k);\n        newRecord.value = {};\n        newRecord.value['measurement_name'] = series['name']\n        for (var c = 0; c < series['columns'].length; c++) {\n          if (series['values'][k][c] == null) {\n            continue;\n          }\n          newRecord.value[series['columns'][c].replace(/[\\. \\<]+/g, '_')] = typeof series['values'][k][c] === 'string' \n            ? series['values'][k][c].replace(/[\\.\\s]+/g, '_') : series['values'][k][c]\n        }\n        newRecord.value['last_timestamp'] = records[i].value['last_timestamp'] / 1e9\n        output.write(newRecord);\n      }\n    }\n  } catch (e) {\n    // Send record to error\n    error.write(records[i], e);\n  }\n}"
       }, {
         "name" : "destroyScript",
         "value" : "/**\n * Available Objects:\n * \n *  state: a dict that is preserved between invocations of this script. \n *        Useful for caching bits of data e.g. counters and long-lived resources.\n *\n *  log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n *                               loglevel is any log4j level: e.g. info, error, warn, trace.\n *   sdcFunctions.getFieldNull(Record, 'field path'): Receive a constant defined above \n *                          to check if the field is typed field with value null\n *   sdcFunctions.createMap(boolean listMap): Create a map for use as a field in a record. \n *                          Pass true to this function to create a list map (ordered map)\n *   sdcFunctions.createEvent(String type, int version): Creates a new event.\n *                          Create new empty event with standard headers.\n *   sdcFunctions.toEvent(Record): Send event to event stream\n *                          Only events created with sdcFunctions.createEvent are supported.\n */\n\n// state['connection'].close();"
@@ -999,15 +999,52 @@
         "value" : [ ]
       } ],
       "uiInfo" : {
-        "yPos" : 118.17107391357422,
+        "yPos" : 114.81143951416016,
         "stageType" : "PROCESSOR",
         "description" : "",
         "label" : "Process Response",
-        "xPos" : 521.6593017578125,
+        "xPos" : 390.633544921875,
         "displayMode" : "BASIC"
       },
       "inputLanes" : [ "get_interval_recordsOutputLane15580084532730" ],
       "outputLanes" : [ "process_responseOutputLane15518645609860" ],
+      "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
+      "instanceName" : "filtering",
+      "library" : "streamsets-datacollector-basic-lib",
+      "stageName" : "com_streamsets_pipeline_stage_processor_expression_ExpressionDProcessor",
+      "stageVersion" : "2",
+      "configuration" : [ {
+        "name" : "expressionProcessorConfigs",
+        "value" : [ ]
+      }, {
+        "name" : "headerAttributeConfigs",
+        "value" : [ ]
+      }, {
+        "name" : "fieldAttributeConfigs",
+        "value" : [ ]
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "yPos" : 116.07283020019531,
+        "stageType" : "PROCESSOR",
+        "icon" : "expression.png",
+        "description" : "",
+        "label" : "Transformations",
+        "xPos" : 576.3424072265625,
+        "displayMode" : "ADVANCED"
+      },
+      "inputLanes" : [ "process_responseOutputLane15518645609860" ],
+      "outputLanes" : [ "ExpressionEvaluator_03OutputLane16436440176080" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -1044,14 +1081,14 @@
         "value" : [ ]
       } ],
       "uiInfo" : {
-        "yPos" : 118.00569915771484,
+        "yPos" : 118.00568389892578,
         "stageType" : "PROCESSOR",
         "description" : "",
         "label" : "Transform Records",
-        "xPos" : 724.8220520019531,
+        "xPos" : 751.6990661621094,
         "displayMode" : "ADVANCED"
       },
-      "inputLanes" : [ "process_responseOutputLane15518645609860" ],
+      "inputLanes" : [ "ExpressionEvaluator_03OutputLane16436440176080" ],
       "outputLanes" : [ "destination_OutputLane" ],
       "eventLanes" : [ "transform_records_EventLane" ],
       "services" : [ ]
@@ -1095,138 +1132,6 @@
       },
       "inputLanes" : [ "transform_records_EventLane" ],
       "outputLanes" : [ "ExpressionEvaluator_01OutputLane16213399946710" ],
-      "eventLanes" : [ ],
-      "services" : [ ]
-    }, {
-      "instanceName" : "ExpressionEvaluator_02",
-      "library" : "streamsets-datacollector-basic-lib",
-      "stageName" : "com_streamsets_pipeline_stage_processor_expression_ExpressionDProcessor",
-      "stageVersion" : "2",
-      "configuration" : [ {
-        "name" : "expressionProcessorConfigs",
-        "value" : [ {
-          "fieldToSet" : "/tags",
-          "expression" : "${emptyMap()}"
-        }, {
-          "fieldToSet" : "/tags/source",
-          "expression" : "${emptyList()}"
-        }, {
-          "fieldToSet" : "/tags/source[0]",
-          "expression" : "${\"anodot-agent\"}"
-        }, {
-          "fieldToSet" : "/tags/source_host_id",
-          "expression" : "${emptyList()}"
-        }, {
-          "fieldToSet" : "/tags/source_host_id[0]",
-          "expression" : "${\"ABCDEF\"}"
-        }, {
-          "fieldToSet" : "/tags/source_host_name",
-          "expression" : "${emptyList()}"
-        }, {
-          "fieldToSet" : "/tags/source_host_name[0]",
-          "expression" : "${\"agent\"}"
-        }, {
-          "fieldToSet" : "/tags/pipeline_id",
-          "expression" : "${emptyList()}"
-        }, {
-          "fieldToSet" : "/tags/pipeline_id[0]",
-          "expression" : "${\"test_basic\"}"
-        }, {
-          "fieldToSet" : "/tags/pipeline_type",
-          "expression" : "${emptyList()}"
-        }, {
-          "fieldToSet" : "/tags/pipeline_type[0]",
-          "expression" : "${\"influx\"}"
-        }, {
-          "fieldToSet" : "/timestamp",
-          "expression" : "${record:value('/timestamp')/1000}"
-        } ]
-      }, {
-        "name" : "headerAttributeConfigs",
-        "value" : [ { } ]
-      }, {
-        "name" : "fieldAttributeConfigs",
-        "value" : [ {
-          "fieldToSet" : "/"
-        } ]
-      }, {
-        "name" : "stageOnRecordError",
-        "value" : "TO_ERROR"
-      }, {
-        "name" : "stageRequiredFields",
-        "value" : [ ]
-      }, {
-        "name" : "stageRecordPreconditions",
-        "value" : [ ]
-      } ],
-      "uiInfo" : {
-        "yPos" : 118.00569915771484,
-        "stageType" : "PROCESSOR",
-        "icon" : "expression.png",
-        "description" : "",
-        "label" : "Add tags and static dimensions",
-        "xPos" : 919.8220520019531,
-        "displayMode" : "BASIC"
-      },
-      "inputLanes" : [ "destination_OutputLane" ],
-      "outputLanes" : [ "ExpressionEvaluator_02OutputLane16215134030410" ],
-      "eventLanes" : [ ],
-      "services" : [ ]
-    }, {
-      "instanceName" : "FieldTypeConverter_01",
-      "library" : "streamsets-datacollector-basic-lib",
-      "stageName" : "com_streamsets_pipeline_stage_processor_fieldtypeconverter_FieldTypeConverterDProcessor",
-      "stageVersion" : "2",
-      "configuration" : [ {
-        "name" : "convertBy",
-        "value" : "BY_FIELD"
-      }, {
-        "name" : "fieldTypeConverterConfigs",
-        "value" : [ {
-          "fields" : [ "/timestamp" ],
-          "targetType" : "INTEGER",
-          "treatInputFieldAsDate" : false,
-          "dataLocale" : "en,US",
-          "scale" : -1,
-          "decimalScaleRoundingStrategy" : "ROUND_UNNECESSARY",
-          "dateFormat" : "YYYY_MM_DD",
-          "zonedDateTimeFormat" : "ISO_ZONED_DATE_TIME",
-          "encoding" : "UTF-8"
-        } ]
-      }, {
-        "name" : "wholeTypeConverterConfigs",
-        "value" : [ {
-          "sourceType" : "INTEGER",
-          "targetType" : "INTEGER",
-          "treatInputFieldAsDate" : false,
-          "dataLocale" : "en,US",
-          "scale" : -1,
-          "decimalScaleRoundingStrategy" : "ROUND_UNNECESSARY",
-          "dateFormat" : "YYYY_MM_DD",
-          "zonedDateTimeFormat" : "ISO_ZONED_DATE_TIME",
-          "encoding" : "UTF-8"
-        } ]
-      }, {
-        "name" : "stageOnRecordError",
-        "value" : "TO_ERROR"
-      }, {
-        "name" : "stageRequiredFields",
-        "value" : [ ]
-      }, {
-        "name" : "stageRecordPreconditions",
-        "value" : [ ]
-      } ],
-      "uiInfo" : {
-        "yPos" : 119,
-        "stageType" : "PROCESSOR",
-        "icon" : "converter.png",
-        "description" : "",
-        "label" : "Convert timestamp to int",
-        "xPos" : 1122,
-        "displayMode" : "BASIC"
-      },
-      "inputLanes" : [ "ExpressionEvaluator_02OutputLane16215134030410" ],
-      "outputLanes" : [ "FieldTypeConverter_01OutputLane16291208030790" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -1585,6 +1490,21 @@
       }, {
         "name" : "stageRecordPreconditions",
         "value" : [ ]
+      }, {
+        "name" : "conf.parallelSendersNumber",
+        "value" : 1
+      }, {
+        "name" : "conf.maxBatchSize",
+        "value" : 1000
+      }, {
+        "name" : "conf.propertiesPath",
+        "value" : null
+      }, {
+        "name" : "conf.partitioningKeyPath",
+        "value" : null
+      }, {
+        "name" : "conf.maxSendResponseWait",
+        "value" : 60000
       } ],
       "uiInfo" : {
         "yPos" : 255.89299774169922,
@@ -1597,6 +1517,138 @@
       },
       "inputLanes" : [ "FieldTypeConverter_02OutputLane16291208084970" ],
       "outputLanes" : [ ],
+      "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
+      "instanceName" : "ExpressionEvaluator_02",
+      "library" : "streamsets-datacollector-basic-lib",
+      "stageName" : "com_streamsets_pipeline_stage_processor_expression_ExpressionDProcessor",
+      "stageVersion" : "2",
+      "configuration" : [ {
+        "name" : "expressionProcessorConfigs",
+        "value" : [ {
+          "fieldToSet" : "/tags",
+          "expression" : "${emptyMap()}"
+        }, {
+          "fieldToSet" : "/tags/source",
+          "expression" : "${emptyList()}"
+        }, {
+          "fieldToSet" : "/tags/source[0]",
+          "expression" : "${\"anodot-agent\"}"
+        }, {
+          "fieldToSet" : "/tags/source_host_id",
+          "expression" : "${emptyList()}"
+        }, {
+          "fieldToSet" : "/tags/source_host_id[0]",
+          "expression" : "${\"ABCDEF\"}"
+        }, {
+          "fieldToSet" : "/tags/source_host_name",
+          "expression" : "${emptyList()}"
+        }, {
+          "fieldToSet" : "/tags/source_host_name[0]",
+          "expression" : "${\"agent\"}"
+        }, {
+          "fieldToSet" : "/tags/pipeline_id",
+          "expression" : "${emptyList()}"
+        }, {
+          "fieldToSet" : "/tags/pipeline_id[0]",
+          "expression" : "${\"test_basic\"}"
+        }, {
+          "fieldToSet" : "/tags/pipeline_type",
+          "expression" : "${emptyList()}"
+        }, {
+          "fieldToSet" : "/tags/pipeline_type[0]",
+          "expression" : "${\"influx\"}"
+        }, {
+          "fieldToSet" : "/timestamp",
+          "expression" : "${record:value('/timestamp')/1000}"
+        } ]
+      }, {
+        "name" : "headerAttributeConfigs",
+        "value" : [ { } ]
+      }, {
+        "name" : "fieldAttributeConfigs",
+        "value" : [ {
+          "fieldToSet" : "/"
+        } ]
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "yPos" : 118.00569915771484,
+        "stageType" : "PROCESSOR",
+        "icon" : "expression.png",
+        "description" : "",
+        "label" : "Add tags and static dimensions",
+        "xPos" : 932.1407775878906,
+        "displayMode" : "BASIC"
+      },
+      "inputLanes" : [ "destination_OutputLane" ],
+      "outputLanes" : [ "ExpressionEvaluator_02OutputLane16215134030410" ],
+      "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
+      "instanceName" : "FieldTypeConverter_01",
+      "library" : "streamsets-datacollector-basic-lib",
+      "stageName" : "com_streamsets_pipeline_stage_processor_fieldtypeconverter_FieldTypeConverterDProcessor",
+      "stageVersion" : "2",
+      "configuration" : [ {
+        "name" : "convertBy",
+        "value" : "BY_FIELD"
+      }, {
+        "name" : "fieldTypeConverterConfigs",
+        "value" : [ {
+          "fields" : [ "/timestamp" ],
+          "targetType" : "INTEGER",
+          "treatInputFieldAsDate" : false,
+          "dataLocale" : "en,US",
+          "scale" : -1,
+          "decimalScaleRoundingStrategy" : "ROUND_UNNECESSARY",
+          "dateFormat" : "YYYY_MM_DD",
+          "zonedDateTimeFormat" : "ISO_ZONED_DATE_TIME",
+          "encoding" : "UTF-8"
+        } ]
+      }, {
+        "name" : "wholeTypeConverterConfigs",
+        "value" : [ {
+          "sourceType" : "INTEGER",
+          "targetType" : "INTEGER",
+          "treatInputFieldAsDate" : false,
+          "dataLocale" : "en,US",
+          "scale" : -1,
+          "decimalScaleRoundingStrategy" : "ROUND_UNNECESSARY",
+          "dateFormat" : "YYYY_MM_DD",
+          "zonedDateTimeFormat" : "ISO_ZONED_DATE_TIME",
+          "encoding" : "UTF-8"
+        } ]
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "yPos" : 119,
+        "stageType" : "PROCESSOR",
+        "icon" : "converter.png",
+        "description" : "",
+        "label" : "Convert timestamp to int",
+        "xPos" : 1136.5584716796875,
+        "displayMode" : "BASIC"
+      },
+      "inputLanes" : [ "ExpressionEvaluator_02OutputLane16215134030410" ],
+      "outputLanes" : [ "FieldTypeConverter_01OutputLane16291208030790" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -1898,6 +1950,21 @@
       }, {
         "name" : "conf.dataGeneratorFormatConfig.basicAuthUserInfoForRegistration",
         "value" : null
+      }, {
+        "name" : "conf.parallelSendersNumber",
+        "value" : 1
+      }, {
+        "name" : "conf.maxBatchSize",
+        "value" : 1000
+      }, {
+        "name" : "conf.propertiesPath",
+        "value" : null
+      }, {
+        "name" : "conf.partitioningKeyPath",
+        "value" : null
+      }, {
+        "name" : "conf.maxSendResponseWait",
+        "value" : 60000
       } ],
       "uiInfo" : {
         "yPos" : 117.64195251464844,
@@ -1931,22 +1998,22 @@
       "services" : [ ]
     },
     "info" : {
-      "pipelineId" : "test_basic",
-      "title" : "test_basic",
+      "pipelineId" : "influxschbe8648e3-402d-4bb4-b818-31f52ef7cb92",
+      "title" : "influx_schema",
       "description" : "",
-      "created" : 1629113073994,
-      "lastModified" : 1629120867983,
+      "created" : 1644586965659,
+      "lastModified" : 1644586994980,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "c571cbc2-98de-4ca8-bb38-a8f6f6c5f979",
+      "uuid" : "9a0dd239-b658-404b-b698-afa83decb6ee",
       "valid" : true,
       "metadata" : {
         "labels" : [ "influx", "http" ]
       },
-      "name" : "test_basic",
+      "name" : "influxschbe8648e3-402d-4bb4-b818-31f52ef7cb92",
       "sdcVersion" : "3.18.0",
-      "sdcId" : "5ca24b42-fe84-11eb-8c51-9d6a00b59418"
+      "sdcId" : "7a2c5392-88eb-11ec-9753-f77cc69814fa"
     },
     "metadata" : {
       "labels" : [ "influx", "http" ]
@@ -2325,7 +2392,7 @@
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "2eb050ff-6f6e-48ef-ae86-d3ef1d608d57",
+    "uuid" : "175a32bf-9962-47f2-b3f3-ae1d78a88882",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : null

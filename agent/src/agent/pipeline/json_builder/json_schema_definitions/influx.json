@@ -16,7 +16,18 @@
       "patternProperties":  {"[^ \\.]+": {"type": "array", "items": {"type": "string"}}}
     },
     "delay": {"type": "string"},
-    "interval": {"type": "integer"}
+    "interval": {"type": "integer"},
+    "query": {"type": "string"},
+    "transform": {
+      "type": "object",
+      "properties": {
+        "config": {"type": "string"},
+        "file": {"type": "string"}
+      }
+    }
   },
-  "required": ["measurement_name", "values", "dimensions"]
+  "oneOf": [
+    {"required": ["measurement_name", "values", "dimensions"]},
+    {"required": ["query", "values", "dimensions"]}
+  ]
 }

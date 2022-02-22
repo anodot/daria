@@ -256,7 +256,8 @@ class Builder:
             with open(transformation_file) as f:
                 self.config['transform']['config'] = f.read()
         if transformation_script_file := self.config.get('transform_script', {}).get('file'):
-            validator.validate_python_file(transformation_script_file)
+            if os.path.splitext(transformation_script_file)[1] == '.py':
+                validator.validate_python_file(transformation_script_file)
             with open(transformation_script_file) as f:
                 self.config['transform_script']['config'] = f.read()
 

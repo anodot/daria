@@ -5,8 +5,8 @@ from .test_zpipeline_base import TestInputBase
 class TestOracle(TestInputBase):
     __test__ = True
     params = {
-        'test_create_source_with_file': [{'file_name': 'oracle_sources'}],
-        'test_create_with_file': [{'file_name': 'jdbc_pipelines_oracle'}],
+        'test_create_source_with_file': [{'file_name': 'jdbc/oracle_sources'}],
+        'test_create_with_file': [{'file_name': 'jdbc/oracle_pipelines'}],
     }
 
     @classmethod
