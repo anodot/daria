@@ -6,8 +6,8 @@
       "Storage_units_by_8": "256_0"
     },
     "measurements": {
-      "storage_perc": 52.0,
-      "storage_units": 2048.0
+      "storage_perc": 52,
+      "storage_units": 256.0
     },
     "timestamp": 1633518002,
     "tags": {

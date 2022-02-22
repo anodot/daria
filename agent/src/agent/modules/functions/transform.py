@@ -16,8 +16,8 @@ def regex_substring(string: str, pattern: str, repl: str) -> str:
     return res
 
 
-def divide_by_8(value: int) -> float:
-    return value / 8
+def divide_by(value: int, divider: int) -> float:
+    return value / divider
 
 
 def get_by_name(name: str) -> Callable:

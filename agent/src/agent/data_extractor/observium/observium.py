@@ -32,15 +32,14 @@ def _create_metrics(data: dict, pipeline_: Pipeline) -> list:
     metrics = []
     # these values must be outside the for loop for optimization purposes
     fields = field.build_fields(pipeline_.dimension_configurations)
-    value_paths = pipeline_.value_paths
-    value_paths = dict(zip(value_paths, value_paths))
+    fields_mes = field.build_fields(pipeline_.values_configurations)
     schema_id = pipeline_.get_schema_id()
     try:
         for obj in data:
             metric = {
                 "timestamp": obj[pipeline_.timestamp_name],
                 "dimensions": field.extract_fields(fields, obj),
-                "measurements": _extract_measurements(obj, value_paths),
+                "measurements": field.extract_fields(fields_mes, obj),
                 "schemaId": schema_id,
             }
             metrics.append(metric)
