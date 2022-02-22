@@ -50,4 +50,4 @@ class TestMySQL(TestPipelineBase):
 
     def test_watermark(self):
         schema_id = get_schema_id('test_mysql_advanced')
-        assert get_output(f'{schema_id}_watermark.json') == {'watermark': 1512950400.0, 'schemaId': schema_id}
+        assert get_output(f'{schema_id}_watermark.json') == {'watermark': 1512950460.0, 'schemaId': schema_id}

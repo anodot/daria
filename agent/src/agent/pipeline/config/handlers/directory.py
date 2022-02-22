@@ -10,7 +10,7 @@ class DirectoryConfigHandler(SchemaConfigHandler):
         'ExpressionEvaluator_03': stages.expression_evaluator.Filtering,
         'FieldTypeConverter_01': stages.field_type_converter.FieldTypeConverter,
         'destination': stages.destination.Destination,
-        'JythonEvaluator_02': stages.jython.CreateWatermark,
+        'JythonEvaluator_02': stages.jython.CreateWatermarkDirectory,
         'destination_watermark': stages.destination.WatermarkDestination,
     }
 

@@ -57,6 +57,26 @@ class CreateWatermark(JythonProcessor):
                 'value': self.pipeline.get_schema_id()
             },
             {
+                'key': 'BUCKET_SIZE',
+                'value': self.pipeline.config.get(self.pipeline.FLUSH_BUCKET_SIZE, '1m')
+            },
+        ]
+
+
+class CreateWatermarkDirectory(JythonProcessor):
+    JYTHON_SCRIPT = 'create_watermark_directory.py'
+
+    def _get_script_params(self) -> list[dict]:
+        return [
+            {
+                'key': 'SLEEP_TIME',
+                'value': str(self.pipeline.watermark_sleep_time)
+            },
+            {
+                'key': 'SCHEMA_ID',
+                'value': self.pipeline.get_schema_id()
+            },
+            {
                 'key': 'CALCULATE_DIRECTORY_WATERMARK_URL',
                 'value': urllib.parse.urljoin(
                     self.pipeline.streamsets.agent_external_url, f'/pipelines/{self.pipeline.name}/watermark'

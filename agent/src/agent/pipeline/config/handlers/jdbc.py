@@ -12,6 +12,7 @@ class JDBCSchemaConfigHandler(SchemaConfigHandler):
         'source': stages.source.jdbc.JDBCSource,
         'JavaScriptEvaluator_01': stages.js_convert_metrics.JSConvertMetrics30,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties30,
+        'JythonEvaluator_01': stages.jython.CreateWatermark,
         'destination': stages.destination.Destination
     }
 
