@@ -3,12 +3,6 @@
     "type": "topology",
     "name": "topology",
     "config": {
-      "lookup": {
-        "region": {
-          "type": "file",
-          "path": "/usr/src/app/tests/input_files/topology/region.csv"
-        }
-      },
       "entities": {
         "region": {
           "source": {
@@ -52,7 +46,8 @@
               "transformations": [
                 {
                   "type": "function",
-                  "value": "substring 0 2"
+                  "name": "substring",
+                  "args": [0, 2]
                 },
                 {
                   "type": "lookup",
@@ -84,13 +79,8 @@
             },
             "address": {
               "type": "variable",
-              "value_path": "attributes.street",
-              "transformations": [
-                {
-                  "type": "function",
-                  "value": "concat attributes.house"
-                }
-              ]
+              "value_path": ["attributes.street", "attributes.house"],
+              "concat_by": ", "
             }
           }
         }

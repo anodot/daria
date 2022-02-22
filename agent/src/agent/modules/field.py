@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Optional
 from agent.modules import transformer
 from agent.modules.transformer import Transformer
 from abc import ABC, abstractmethod
@@ -30,10 +30,14 @@ class Field(ABC):
 
 class Variable(Field):
     VALUE_PATH = 'value_path'
+    CONCAT_BY = 'concat_by'
 
-    def __init__(self, name: str, value_path: str, transformations: list[Transformer]):
+    def __init__(
+        self, name: str, value_path: str | list[str], concat_by: Optional[str], transformations: list[Transformer]
+    ):
         self.name: str = name
-        self.value_path: str = value_path
+        self.value_paths: list = value_path if isinstance(value_path, list) else [value_path]
+        self.concat_by: str = concat_by or ''
         self.transformers: list = transformations
 
     def get_name(self) -> str:
@@ -43,7 +47,10 @@ class Variable(Field):
         return self.transformers
 
     def extract_from(self, obj: dict) -> Any:
-        return self.apply_transformations(obj[self.value_path])
+        return self.apply_transformations(self._extract(obj))
+
+    def _extract(self, obj: dict) -> Any:
+        return self.concat_by.join([obj[path] for path in self.value_paths])
 
 
 class Constant(Field):
@@ -66,7 +73,12 @@ def build_fields(fields_conf: dict) -> list[Field]:
     for name, field_ in fields_conf.items():
         type_ = field_.get(TYPE, VARIABLE)
         if type_ == VARIABLE:
-            fields.append(Variable(name, field_[Variable.VALUE_PATH], transformer.build_transformers(field_)))
+            fields.append(
+                Variable(
+                    name, field_[Variable.VALUE_PATH], field_.get(Variable.CONCAT_BY),
+                    transformer.build_transformers(field_)
+                )
+            )
         elif type_ == CONSTANT:
             fields.append(Constant(name, field_['value']))
     return fields

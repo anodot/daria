@@ -36,7 +36,8 @@ class LookupTransformer(Transformer):
         lookup_key: str,
         lookup_value: Any,
         compare_func_name: Optional[str],
-        default: Any,
+        # todo should default be optional? in this case we can raise an Exception
+        default: Optional[Any],
         discard_empty_values=True
     ):
         self.compare_func = functions.compare.get_by_name(compare_func_name) \
@@ -71,7 +72,7 @@ def build_transformers(field_conf: dict) -> list[Transformer]:
                     transform['key'],
                     transform['value'],
                     transform.get('compare_function'),
-                    transform['default'],
+                    transform.get('default'),
                 )
             )
         else:

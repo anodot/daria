@@ -2,6 +2,13 @@
   {
     "source": "topology",
     "pipeline_id": "topology",
-    "interval": 300
+    "interval": 300,
+    "lookups": {
+      "region": {
+        "type": "file",
+        "format": "CSV",
+        "path": "/usr/src/app/tests/input_files/topology/region.csv"
+      }
+    }
   }
 ]

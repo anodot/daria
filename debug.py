@@ -1,5 +1,7 @@
 import json
 
+import requests
+
 from agent.data_extractor.snmp import snmp
 from agent import cli, source, destination, pipeline, streamsets, di, data_extractor
 from agent.api import main
@@ -15,6 +17,11 @@ def api_client():
 
 
 di.init()
+
+res = requests.post(
+    'https://app.anodot.com/api/v1/telco/topology/map/rollup/start?token=7475d33778e80014e24adb497930b22e'
+)
+
 # res = api_client().get('/alerts?status=CLOSE&startTime=1623321686')
 # res = api_client().get('/alert/status?alertName=Drop%20in%20Device_uptime%20for%20All%20equipments&host=eNodeBbaicells180&startTime=-300')
 
@@ -24,9 +31,11 @@ di.init()
 # r = snmp.extract_metrics(pipeline.repository.get_by_id('snmp'))
 
 t = 1
+exit()
 
-# data_extractor.topology.extract_metrics(pipeline.repository.get_by_id('topology'))
-# cli.pipeline.create(["-f", "/Users/antonzelenin/Workspace/daria/agent/tests/input_files/topology/pipelines.json"])
+data_extractor.topology.extract_metrics(pipeline.repository.get_by_id('topology'))
+# cli.pipeline.create(["-f", "/Users/antonzelenin/Workspace/daria/agent/tests/input_files/promql/pipelines.json"])
 # cli.destination()
 # cli.pipeline.create()
 # cli.streamsets.delete(["asdfa"])
+t = 1
