@@ -31,7 +31,7 @@ def _get(pipeline_: Pipeline):
 def _create_metrics(data: dict, pipeline_: Pipeline) -> list:
     metrics = []
     # these values must be outside the for loop for optimization purposes
-    fields = field.build_fields(pipeline_.dimension_configurations)
+    fields_dims = field.build_fields(pipeline_.dimension_configurations)
     fields_meas = field.build_fields(pipeline_.values_configurations)
     fields_tags = field.build_fields(pipeline_.tags_configurations)
     schema_id = pipeline_.get_schema_id()
@@ -39,9 +39,9 @@ def _create_metrics(data: dict, pipeline_: Pipeline) -> list:
         for obj in data:
             metric = {
                 "timestamp": obj[pipeline_.timestamp_name],
-                "dimensions": field.extract_fields(fields, obj),
+                "dimensions": field.extract_fields(fields_dims, obj),
                 "measurements": field.extract_fields(fields_meas, obj),
-                "tags":  {name: [tags] for name, tags in field.extract_fields(fields_tags, obj).items()},
+                "tags":  pipeline_.tags | {name: [tags] for name, tags in field.extract_fields(fields_tags, obj).items()},
                 "schemaId": schema_id,
             }
             if not metric['tags']:

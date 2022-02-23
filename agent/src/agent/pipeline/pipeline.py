@@ -189,7 +189,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
 
     @property
     def tags_configurations(self) -> Optional[dict]:
-        return _build_transformation_configurations(list(self.tags), self.config.get('tags_configurations', {}))
+        return self.config.get('tags_configurations', {})
 
     @property
     def timestamp_path(self) -> str:
