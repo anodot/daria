@@ -73,4 +73,4 @@ def build_fields(fields_conf: dict) -> list[Field]:
 
 
 def extract_fields(fields: list[Field], data: dict) -> dict:
-    return {field_.get_name(): field_.extract_from(data) for field_ in fields}
+    return {field_.get_name(): field_.extract_from(data) for field_ in fields if field_.extract_from(data) != ''}

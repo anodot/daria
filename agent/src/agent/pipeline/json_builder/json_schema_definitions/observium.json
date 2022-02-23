@@ -21,6 +21,7 @@
       "type": "object",
       "patternProperties":  {"[^ \\.]+": {"type": "array", "items": {"type": "string"}}}
     },
+    "tags_configurations": {"type": "object"},
     "properties": {"type": "object"}
   },
   "required": ["interval", "query"]
