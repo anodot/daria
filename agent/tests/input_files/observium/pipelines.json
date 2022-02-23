@@ -3,7 +3,7 @@
     "source": "observium",
     "pipeline_id": "observium_ports",
     "interval": 3600,
-    "query": "select ifInBroadcastPkts, ifInErrors_rate, ifOctets_rate, ifOutUcastPkts, ifInNUcastPkts, ifUcastPkts_rate, ifInDiscards_rate, ifOutNUcastPkts_rate, ifOutBroadcastPkts_rate, ifOutMulticastPkts_rate, ifInUcastPkts, ifDiscards_rate, ifInOctets_rate, ifOutErrors, ifOutNUcastPkts, ifInOctets_perc, ifInNUcastPkts_rate, ifOutUcastPkts_rate, ifInDiscards, ifOutBroadcastPkts, ifInBroadcastPkts_rate, port_mcbc, ifInErrors, ifOutDiscards, ifOutOctets_rate, ifOutMulticastPkts, ifInUcastPkts_rate, ifOutOctets_perc, ifOutDiscards_rate, ifOutOctets, ifInMulticastPkts_rate, ifOutErrors_rate, ifInOctets, ifErrors_rate, ifInMulticastPkts, ifSpeed, port_label, poll_time, ifType, d.sysName, dl.location from ports p join devices d on d.device_id = p.device_id join devices_locations dl on dl.device_id = p.device_id",
+    "query": "select ifInBroadcastPkts, ifInErrors_rate, ifOctets_rate, ifOutUcastPkts, ifInNUcastPkts, ifUcastPkts_rate, ifInDiscards_rate, ifOutNUcastPkts_rate, ifOutBroadcastPkts_rate, ifOutMulticastPkts_rate, ifInUcastPkts, ifDiscards_rate, ifInOctets_rate, ifOutErrors, ifOutNUcastPkts, ifInOctets_perc, ifInNUcastPkts_rate, ifOutUcastPkts_rate, ifInDiscards, ifOutBroadcastPkts, ifInBroadcastPkts_rate, port_mcbc, ifInErrors, ifOutDiscards, ifOutOctets_rate, ifOutMulticastPkts, ifInUcastPkts_rate, ifOutOctets_perc, ifOutDiscards_rate, ifOutOctets, ifInMulticastPkts_rate, ifOutErrors_rate, ifInOctets, ifErrors_rate, ifInMulticastPkts, ifSpeed, ifDescr, ifAlias, port_label, poll_time, ifType, d.sysName, dl.location from ports p join devices d on d.device_id = p.device_id join devices_locations dl on dl.device_id = p.device_id",
     "default_values_type": "ports",
     "lookups": {
       "DEST_GROUP_CATEGORY": {
@@ -51,6 +51,20 @@
             "args": [".+\\.(.+)", "\\g<1>"]
           }
         ]
+      }
+    },
+    "tags": {
+      "Static_tag": ["static_tag_value"]
+    },
+    "tags_configurations": {
+      "INTERFACE_ALIAS": {
+        "value_path": "ifAlias"
+      },
+      "INTERFACE_DESCRIPTION": {
+        "value_path": "ifDescr"
+      },
+      "INTERFACE_SPEED": {
+        "value_path": "ifSpeed"
       }
     }
   },
