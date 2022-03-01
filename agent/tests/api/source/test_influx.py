@@ -67,6 +67,10 @@ class TestInflux:
         result = api_client.get('/sources')
         assert result.json == ["influx"]
 
+    def test_get_config(self, api_client):
+        result = api_client.get('/sources/influx?with_credentials=true')
+        assert result.json == self.params['test_edit'][0]['data'][0]
+
     def test_delete(self, api_client):
         api_client.delete('sources/influx')
         assert api_client.get('/sources').json == []
