@@ -9,7 +9,7 @@ learn more about agent port forwarding visit the [Installation guide](https://gi
 * [Create source](#create-source)
 * [Edit source](#edit-source)
 * [Delete source](#delete-source)
-* [Get source's config](#source-config)
+* [Get source config](#source-config)
 
 Get sources
 -----------
@@ -174,8 +174,8 @@ Status: 400 BAD REQUEST
 
 Source config not_existing doesn't exist
 
-Get source's config
--------------
+Get source config
+-----------------
 To retrieve single source configuration data submit GET request to `sources/<source_id>` endpoint
 
 Options:
