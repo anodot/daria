@@ -1,20 +1,18 @@
 import os
 import re
+import shutil
 import rrdtool
-import tarfile
 
 from copy import deepcopy
 from typing import List, Optional
+from agent import source
 from agent.data_extractor import cacti
 from agent.data_extractor.cacti.cacher import CactiCache
+from agent.data_extractor.rrd import rrd
 from agent.pipeline import Pipeline
-from agent import source
-from agent.modules import logger
-from shutil import copyfile
+from agent.modules import logger, tools
 
 logger_ = logger.get_logger(__name__)
-
-RRD_TMP_DIR = '/tmp/cacti_rrd/'
 
 
 def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> list:
@@ -38,16 +36,46 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
                 metrics_to_sum[item['data_source_name']] = base_metric
                 continue
 
-            metrics += _get_metric_values_for_item(
+            metrics += rrd.build_metrics(
                 result,
-                item,
                 start,
                 end,
                 _should_convert_to_bits(item, pipeline_),
-                base_metric
+                base_metric,
+                item['data_source_name'],
             )
         metrics += _sum_similar(graph['items'], metrics_to_sum, start, end, step, pipeline_)
     return metrics
+
+
+def _read_data_from_rrd(data_source_path, start, end, step, pipeline_: Pipeline):
+    if not data_source_path:
+        return
+    if '<path_rra>/' not in data_source_path:
+        logger_.debug(f'Path {data_source_path} does not contain "<path_rra>/", skipping')
+        return
+
+    rrd_file_path = data_source_path.replace('<path_rra>', _get_source_dir(pipeline_))
+    if not os.path.isfile(rrd_file_path):
+        logger_.debug(f'File {rrd_file_path} does not exist')
+        return
+
+    if source.RRDSource.RRD_DIR_PATH in pipeline_.source.config:
+        rrd_file_path = _copy_files_to_tmp_dir(pipeline_, rrd_file_path, data_source_path)
+
+    result = rrdtool.fetch(rrd_file_path, 'AVERAGE', ['-s', start, '-e', end, '-r', step])
+
+    if source.RRDSource.RRD_DIR_PATH in pipeline_.source.config:
+        os.remove(rrd_file_path)
+
+    if not result or not result[0]:
+        return
+
+    # result[0][2] - is the closest available step to the step provided in the fetch command
+    # if they differ - skip the source as the desired step is not available for it
+    if result[0][2] != int(step) and not pipeline_.dynamic_step:
+        return
+    return result
 
 
 def _get_cache(pipeline_) -> CactiCache:
@@ -55,11 +83,6 @@ def _get_cache(pipeline_) -> CactiCache:
     if cache is None:
         raise Exception('Cacti cache does not exist')
     return cache
-
-
-def _prepare_files(pipeline_):
-    if pipeline_.source.RRD_ARCHIVE_PATH in pipeline_.source.config:
-        _extract_rrd_archive(pipeline_)
 
 
 def _is_appropriate_graph_type(item: dict) -> bool:
@@ -81,50 +104,6 @@ def _build_base_metric(item: dict, graph: dict, cache: CactiCache, local_graph_i
     }
 
 
-def _read_data_from_rrd(data_source_path, start, end, step, pipeline_: Pipeline):
-    if not data_source_path:
-        return
-    if '<path_rra>/' not in data_source_path:
-        logger_.debug(f'Path {data_source_path} does not contain "<path_rra>/", skipping')
-        return
-
-    rrd_file_path = data_source_path.replace('<path_rra>', _get_source_dir(pipeline_))
-    if not os.path.isfile(rrd_file_path):
-        logger_.debug(f'File {rrd_file_path} does not exist')
-        return
-
-    if source.CactiSource.RRD_DIR_PATH in pipeline_.source.config:
-        rrd_file_path = _copy_files_to_tmp_dir(pipeline_, rrd_file_path, data_source_path)
-
-    result = rrdtool.fetch(rrd_file_path, 'AVERAGE', ['-s', start, '-e', end, '-r', step])
-
-    if source.CactiSource.RRD_DIR_PATH in pipeline_.source.config:
-        os.remove(rrd_file_path)
-
-    if not result or not result[0]:
-        return
-
-    # result[0][2] - is the closest available step to the step provided in the fetch command
-    # if they differ - skip the source as the desired step is not available for it
-    if result[0][2] != int(step) and not pipeline_.dynamic_step:
-        return
-    return result
-
-
-def _get_source_dir(pipeline_: Pipeline) -> str:
-    if source.CactiSource.RRD_DIR_PATH in pipeline_.source.config:
-        return pipeline_.source.config[source.CactiSource.RRD_DIR_PATH]
-    return _get_rrd_tmp_dir(pipeline_)
-
-
-def _copy_files_to_tmp_dir(pipeline_: Pipeline, old_path, data_source_path) -> str:
-    tmp_dir = _get_rrd_tmp_dir(pipeline_)
-    new_path = data_source_path.replace('<path_rra>', tmp_dir)
-    os.makedirs(os.path.dirname(new_path), exist_ok=True)
-    copyfile(old_path, new_path)
-    return new_path
-
-
 def _get_data_to_sum(items: dict, metrics_to_sum: dict, start, end, step, pipeline_: Pipeline) -> list:
     data = []
     extracted_sources = set()
@@ -139,13 +118,13 @@ def _get_data_to_sum(items: dict, metrics_to_sum: dict, start, end, step, pipeli
         if not result:
             continue
 
-        data += _get_metric_values_for_item(
+        data += rrd.build_metrics(
             result,
-            item,
             start,
             end,
             _should_convert_to_bits(item, pipeline_),
-            metrics_to_sum[item['data_source_name']]
+            metrics_to_sum[item['data_source_name']],
+            item['data_source_name'],
         )
         extracted_sources.add(key)
 
@@ -168,44 +147,6 @@ def _sum_similar(items: dict, metrics_to_sum: dict, start, end, step, pipeline_:
         result[key]['timestamp'] = metric['timestamp']
 
     return list(result.values())
-
-
-def _get_metric_values_for_item(
-        rrd_result,
-        item: dict,
-        start: str,
-        end: str,
-        should_convert_to_bits: bool,
-        base_metric: dict
-) -> list:
-    values = []
-    first_data_item_timestamp = rrd_result[0][0]
-    for name_idx, measurement_name in enumerate(rrd_result[1]):
-        if measurement_name != item['data_source_name']:
-            continue
-        for row_idx, data in enumerate(rrd_result[2]):
-            timestamp = int(first_data_item_timestamp) + row_idx * int(rrd_result[0][2])
-            value = data[name_idx]
-
-            # rrd might return a record for the timestamp earlier then start
-            if timestamp < int(start):
-                continue
-            # skip values with timestamp end in order not to duplicate them
-            if timestamp >= int(end):
-                continue
-            # value will be None if it's not available for the chosen consolidation function or timestamp
-            if value is None:
-                continue
-
-            if should_convert_to_bits:
-                value *= 8
-
-            metric = deepcopy(base_metric)
-            metric['properties']['what'] = item['data_source_name']
-            metric['value'] = value
-            metric['timestamp'] = timestamp
-            values.append(metric)
-    return values
 
 
 def _extract_dimensions(
@@ -268,18 +209,6 @@ def _extract(variable: str, variables: dict, host: dict) -> Optional[str]:
     return vars_[var_name]
 
 
-def _extract_rrd_archive(pipeline_: Pipeline):
-    file_path = pipeline_.source.config[source.CactiSource.RRD_ARCHIVE_PATH]
-    if not os.path.isfile(file_path):
-        raise ArchiveNotExistsException()
-    with tarfile.open(file_path, "r:gz") as tar:
-        tar.extractall(path=_get_rrd_tmp_dir(pipeline_))
-
-
-def _get_rrd_tmp_dir(pipeline_: Pipeline):
-    return os.path.join(RRD_TMP_DIR, pipeline_.name)
-
-
 def _extract_dimension_names(name: str) -> List[str]:
     # extract all values between `|`
     return re.findall('\|([^|]+)\|', name)
@@ -332,5 +261,23 @@ def _should_sum_similar_items(item: dict) -> bool:
     )
 
 
-class ArchiveNotExistsException(Exception):
-    pass
+def _prepare_files(pipeline_):
+    if source.RRDSource.RRD_ARCHIVE_PATH in pipeline_.source.config:
+        tools.extract_archive(
+            pipeline_.source.config[source.RRDSource.RRD_ARCHIVE_PATH],
+            rrd.get_tmp_dir(pipeline_)
+        )
+
+
+def _get_source_dir(pipeline_: Pipeline) -> str:
+    if source.RRDSource.RRD_DIR_PATH in pipeline_.source.config:
+        return pipeline_.source.config[source.RRDSource.RRD_DIR_PATH]
+    return rrd.get_tmp_dir(pipeline_)
+
+
+def _copy_files_to_tmp_dir(pipeline_: Pipeline, old_path, data_source_path) -> str:
+    tmp_dir = rrd.get_tmp_dir(pipeline_)
+    new_path = data_source_path.replace('<path_rra>', tmp_dir)
+    os.makedirs(os.path.dirname(new_path), exist_ok=True)
+    shutil.copyfile(old_path, new_path)
+    return new_path

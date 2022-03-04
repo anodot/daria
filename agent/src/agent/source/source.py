@@ -227,6 +227,11 @@ class PromQLSource(APISource):
     pass
 
 
+class RRDSource(Source):
+    RRD_DIR_PATH = 'rrd_dir_path'
+    RRD_ARCHIVE_PATH = 'rrd_archive_path'
+
+
 class SolarWindsSource(APISource):
     pass
 
@@ -237,8 +242,6 @@ class ZabbixSource(APISource):
 
 class CactiSource(Source):
     MYSQL_CONNECTION_STRING = 'mysql_connection_string'
-    RRD_ARCHIVE_PATH = 'rrd_archive_path'
-    RRD_DIR_PATH = 'rrd_dir_path'
 
 
 class DirectorySource(SchemalessSource):

@@ -1,0 +1,8 @@
+{
+  "type": "object",
+  "properties": {
+    "rrd_archive_path": {"type": "string"},
+    "rrd_dir_path": {"type": "string"}
+  },
+  "required": []
+}

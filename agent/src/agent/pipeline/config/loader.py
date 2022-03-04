@@ -39,6 +39,7 @@ class ConfigLoader(ABC):
             source.TYPE_MYSQL: 'jdbc.json',
             source.TYPE_POSTGRES: 'jdbc.json',
             source.TYPE_PROMETHEUS: 'promql.json',
+            source.TYPE_RRD: 'rrd.json',
             source.TYPE_SAGE: 'sage_http.json',
             source.TYPE_SNMP: 'snmp.json',
             source.TYPE_SPLUNK: 'tcp_server_http.json',

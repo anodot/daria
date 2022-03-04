@@ -25,6 +25,7 @@ def _get_no_schema_handler(pipeline_: Pipeline, base_config: dict) -> NoSchemaCo
         source.TYPE_MYSQL: pipeline.config.handlers.jdbc.JDBCConfigHandler,
         source.TYPE_POSTGRES: pipeline.config.handlers.jdbc.JDBCConfigHandler,
         source.TYPE_PROMETHEUS: pipeline.config.handlers.promql.PromQLConfigHandler,
+        source.TYPE_RRD: pipeline.config.handlers.rrd.RRDConfigHandler,
         source.TYPE_SAGE: pipeline.config.handlers.sage.SageConfigHandler,
         source.TYPE_SOLARWINDS: pipeline.config.handlers.solarwinds.SolarWindsConfigHandler,
         source.TYPE_SPLUNK: pipeline.config.handlers.tcp.TCPConfigHandler,

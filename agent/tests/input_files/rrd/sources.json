@@ -1,0 +1,9 @@
+[
+  {
+    "type": "rrd",
+    "name": "rrd",
+    "config": {
+      "rrd_dir_path": "/usr/src/app/tests/input_files/rrd/1/"
+    }
+  }
+]

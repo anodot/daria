@@ -1,0 +1,7 @@
+[
+  {
+    "source": "rrd",
+    "pipeline_id": "rrd",
+    "interval": 300
+  }
+]
