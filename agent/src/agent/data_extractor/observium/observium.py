@@ -41,11 +41,9 @@ def _create_metrics(data: dict, pipeline_: Pipeline) -> list:
                 "timestamp": obj[pipeline_.timestamp_name],
                 "dimensions": field.extract_fields(fields_dims, obj),
                 "measurements": field.extract_fields(fields_meas, obj),
-                "tags":  pipeline_.tags | {name: [tags] for name, tags in field.extract_fields(fields_tags, obj).items()},
+                "tags":  {name: [tags] for name, tags in field.extract_fields(fields_tags, obj).items()},
                 "schemaId": schema_id,
             }
-            if not metric['tags']:
-                metric.pop('tags')
             metrics.append(metric)
     except NoMeasurementException as e:
         message = f'[{pipeline_.name}] - These values were not extracted from data: {e}'

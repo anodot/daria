@@ -80,6 +80,9 @@
       "Static_tag": [
         "static_tag_value"
       ],
+      "INTERFACE_ALIAS": [
+        ""
+      ],
       "INTERFACE_SPEED": [
         "0"
       ],
@@ -152,6 +155,9 @@
     "tags": {
       "Static_tag": [
         "static_tag_value"
+      ],
+      "INTERFACE_ALIAS": [
+        ""
       ],
       "INTERFACE_SPEED": [
         "0"
