@@ -56,7 +56,7 @@
     "tags": {
       "Static_tag": ["static_tag_value"]
     },
-    "tags_configurations": {
+    "tag_configurations": {
       "INTERFACE_ALIAS": {
         "value_path": "ifAlias"
       },
@@ -170,7 +170,7 @@
         "transformations": [
           {
             "type": "function",
-            "name": "divide_by",
+            "name": "divide",
             "args": [8]
           }
         ]
@@ -193,13 +193,13 @@
       "storage_perc": "gauge",
       "storage_units": "counter"
     },
-    "values_configurations": {
+    "value_configurations": {
       "storage_units": {
         "value_path": "storage_units",
         "transformations": [
           {
             "type": "function",
-            "name": "divide_by",
+            "name": "divide",
             "args": [8]
           }
         ]

@@ -120,7 +120,7 @@ class ObserviumBuilder(Builder):
         self.config['dimensions'] = self._dimensions()
         self._validate_dimensions()
         self.config['values'] = self._measurements()
-        self.config['values_configurations'] = self._values_configurations()
+        self.config['value_configurations'] = self._value_configurations()
         self._validate_values()
         self.config['timestamp'] = self._timestamp()
         return self.config
@@ -145,8 +145,8 @@ class ObserviumBuilder(Builder):
             or not self.default_values_type() else self.DEFAULT_DIMENSION_CONFIGURATIONS[self.default_values_type()]
         )
 
-    def _values_configurations(self):
-        return self.config.get('values_configurations', {})
+    def _value_configurations(self):
+        return self.config.get('value_configurations', {})
 
     def _validate_dimensions(self):
         if incorrect_dims := self.config['dimension_configurations'].keys() - self.config['dimensions']:
@@ -156,10 +156,10 @@ class ObserviumBuilder(Builder):
             )
 
     def _validate_values(self):
-        if incorrect_values := self.config['values_configurations'].keys() - self.config['values']:
+        if incorrect_values := self.config['value_configurations'].keys() - self.config['values']:
             incorrect_values = ", ".join(map(lambda s: f"`{s}`", incorrect_values))
             raise Exception(
-                f'These values from values_configurations are not specified in values: {incorrect_values}'
+                f'These values from value_configurations are not specified in values: {incorrect_values}'
             )
 
     def _timestamp(self) -> dict:

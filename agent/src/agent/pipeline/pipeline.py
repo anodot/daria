@@ -184,12 +184,12 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return _build_transformation_configurations(self.dimensions, self.config.get('dimension_configurations'))
 
     @property
-    def values_configurations(self) -> Optional[dict]:
-        return _build_transformation_configurations(list(self.values), self.config.get('values_configurations', {}))
+    def value_configurations(self) -> Optional[dict]:
+        return _build_transformation_configurations(list(self.values), self.config.get('value_configurations', {}))
 
     @property
-    def tags_configurations(self) -> Optional[dict]:
-        return self.config.get('tags_configurations', {})
+    def tag_configurations(self) -> Optional[dict]:
+        return self.config.get('tag_configurations', {})
 
     @property
     def timestamp_path(self) -> str:
@@ -508,9 +508,9 @@ class PipelineMetric:
 
 def _build_transformation_configurations(values: list, configurations: dict) -> dict:
     """
-    Configurations could be either dimensions_configurations or values_configurations.
+    Configurations could be either dimensions_configurations or value_configurations.
     Dimension or measurement configurations are optional for a pipeline, this function adds dimensions or
-    measurements that are not in the dimension_configurations or values_configurations respectively and
+    measurements that are not in the dimension_configurations or value_configurations respectively and
     sets their value path to be the same as the dimension or measurement itself.
     Doing so allows working with only one config dimension_configurations instead of using two
     """
