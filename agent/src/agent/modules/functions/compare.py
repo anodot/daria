@@ -21,7 +21,7 @@ def regex_contains(pattern: str, s: str):
         pattern_ = re.compile(pattern)
     except re.error:
         raise Exception(f'Invalid regex pattern: {pattern}')
-    return re.search(pattern_, s)
+    return bool(re.search(pattern_, s))
 
 
 def get_by_name(name: str) -> Callable:
