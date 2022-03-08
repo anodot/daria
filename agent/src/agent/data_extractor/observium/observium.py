@@ -32,7 +32,7 @@ def _create_metrics(data: dict, pipeline_: Pipeline) -> list:
     metrics = []
     # these values must be outside the for loop for optimization purposes
     fields_dims = field.build_fields(pipeline_.dimension_configurations)
-    fields_meas = field.build_fields(pipeline_.value_configurations)
+    fields_meas = field.build_fields(pipeline_.measurement_configurations)
     fields_tags = field.build_fields(pipeline_.tag_configurations)
     schema_id = pipeline_.get_schema_id()
     try:

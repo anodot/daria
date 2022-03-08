@@ -11,7 +11,7 @@
     "dimension_configurations": {"type": "object"},
     "lookup": {"type": "object"},
     "values": {"type": "object"},
-    "value_configurations": {"type": "object"},
+    "measurement_configurations": {"type": "object"},
     "strict": {"type": "boolean"},
     "timestamp": {"type":  "object", "properties": {
       "name": {"type": "string", "minLength": 1},

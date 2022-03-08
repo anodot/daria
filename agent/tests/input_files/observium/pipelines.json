@@ -193,7 +193,7 @@
       "storage_perc": "gauge",
       "storage_units": "counter"
     },
-    "value_configurations": {
+    "measurement_configurations": {
       "storage_units": {
         "value_path": "storage_units",
         "transformations": [
