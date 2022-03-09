@@ -236,7 +236,7 @@ DROP TABLE IF EXISTS `storage`;
   `storage_units` int(11) NOT NULL,
   `storage_used` bigint(20) NOT NULL,
   `storage_free` bigint(20) NOT NULL,
-  `storage_perc` int(11) NOT NULL,
+  `storage_perc` int(11),
   `my own field` int(11) NOT NULL,
   PRIMARY KEY (`storage_id`),
   UNIQUE KEY `index_unique` (`device_id`,`storage_mib`,`storage_index`),
@@ -245,7 +245,8 @@ DROP TABLE IF EXISTS `storage`;
 
 LOCK TABLES `storage` WRITE;
 INSERT INTO `storage`
-VALUES (1, 1, 'HOST-RESOURCES-MIB', 1, 'flashMemory', 'description', 0, 0, NULL, NULL, 0, 1633518002, 9223372036854775807, 2048, 47782296, 44979816, 52, 42);
+VALUES (1, 1, 'HOST-RESOURCES-MIB', 1, 'flashMemory', 'description', 0, 0, NULL, NULL, 0, 1633518002, 9223372036854775807, 2048, 47782296, 44979816, 52, 42),
+       (2, 2, 'HOST-RESOURCES-MIB', 1, 'ssdMemory', 'description2', 0, 0, NULL, NULL, 0, 1633518002, 9223372036854775807, 4096, 200, 100, NULL, 43);
 UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `processors`;

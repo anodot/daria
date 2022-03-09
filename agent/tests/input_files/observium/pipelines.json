@@ -205,6 +205,6 @@
         ]
       }
     },
-    "query": "select s.*, d.hostname, d.sysName, dl.location from storage s join devices d on d.device_id = s.device_id join devices_locations dl on dl.device_id = s.device_id"
+    "query": "select s.*, d.hostname, d.sysName from storage s join devices d where s.device_id = 2"
   }
 ]
