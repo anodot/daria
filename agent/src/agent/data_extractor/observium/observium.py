@@ -44,6 +44,7 @@ def _create_metrics(data: dict, pipeline_: Pipeline) -> list:
                 "tags":  {name: [tags] for name, tags in field.extract_fields(fields_tags, obj).items()},
                 "schemaId": schema_id,
             }
+            metric['measurements'] = {k: v for k, v in metric['measurements'].items() if v is not None}
             metrics.append(metric)
     except NoMeasurementException as e:
         message = f'[{pipeline_.name}] - These values were not extracted from data: {e}'
