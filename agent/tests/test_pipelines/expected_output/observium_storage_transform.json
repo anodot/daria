@@ -3,11 +3,10 @@
     "schemaId": "observium_storage_transform-1234",
     "dimensions": {
       "HostName": "NEW_host",
-      "Storage_units_by_8": "256_0"
+      "Storage_units_by_8": "512_0"
     },
     "measurements": {
-      "storage_perc": 52,
-      "storage_units": 256.0
+      "storage_units": 512.0
     },
     "timestamp": 1633518002,
     "tags": {
