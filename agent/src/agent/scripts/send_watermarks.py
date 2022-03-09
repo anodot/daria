@@ -6,7 +6,6 @@ from agent import pipeline, destination, monitoring
 from agent.destination.anodot_api_client import AnodotApiClient
 from agent.modules.logger import get_logger
 from agent.modules import constants
-from anodot import api_client
 
 if not constants.SEND_WATERMARKS_BY_CRON:
     exit(0)
@@ -42,7 +41,9 @@ def main():
                 pipeline_.offset.timestamp
             )
             watermark = anodot.Watermark(pipeline_.get_schema_id(), next_bucket_start).to_dict()
-            logger.info(f'Sent watermark for `{pipeline_.name}`, value: {watermark.timestamp()}')
+            AnodotApiClient(destination.repository.get()).send_watermark(watermark)
+            logger.debug(f'Sent watermark for `{pipeline_.name}`, value: {next_bucket_start.timestamp()}')
+            monitoring.set_watermark_delta(pipeline_.name, time.time() - next_bucket_start.timestamp())
         except Exception:
             num_of_errors = _update_errors_count(num_of_errors)
             logger.error(f'Error sending pipeline watermark {pipeline_.name}')

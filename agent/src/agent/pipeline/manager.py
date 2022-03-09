@@ -10,7 +10,6 @@ from agent.pipeline import Pipeline, TestPipeline, schema, extra_setup, Pipeline
 from agent.modules.logger import get_logger
 from agent.pipeline.config.handlers.factory import get_config_handler
 from agent.source import Source
-from typing import Optional
 
 logger_ = get_logger(__name__, stdout=True)
 

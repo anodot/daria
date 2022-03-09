@@ -41,6 +41,11 @@ def set_scheduled_script_execution_time(script_name, duration):
     requests.post(url, json={'duration': duration}).raise_for_status()
 
 
+def set_watermark_delta(pipeline_id: str, delta):
+    url = constants.AGENT_MONITORING_ENDPOINT + '/watermark_delta/' + pipeline_id
+    requests.post(url, json={'delta': delta}).raise_for_status()
+
+
 def run():
     url = constants.AGENT_MONITORING_ENDPOINT
     requests.get(url).raise_for_status()
