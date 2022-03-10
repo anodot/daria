@@ -12,6 +12,9 @@ logger = get_logger(__name__)
 
 
 def process_response(res: requests.Response):
+    """
+    Logs errors and returns json response
+    """
     try:
         res.raise_for_status()
         parsed = res.json()
@@ -24,12 +27,15 @@ def process_response(res: requests.Response):
 
 
 def v2endpoint(func):
-    """
-    Logs errors and returns json response
-    """
-
     def wrapper(*args, **kwargs):
         args[0].refresh_session_authorization()
+        return process_response(func(*args, **kwargs))
+
+    return wrapper
+
+
+def v1endpoint(func):
+    def wrapper(*args, **kwargs):
         return process_response(func(*args, **kwargs))
 
     return wrapper
@@ -70,21 +76,21 @@ class AnodotApiClient:
     def create_schema(self, schema):
         return self.session.post(self._build_url('stream-schemas'), json=schema, proxies=self.proxies)
 
+    @v1endpoint
     def update_schema(self, schema):
         url_ = self._build_url('stream-schemas', 'internal', api_version='v1')
-        res = requests.post(url_, json=schema, proxies=self.proxies, params={
+        return requests.post(url_, json=schema, proxies=self.proxies, params={
             'token': self.api_token,
             'id': schema["id"]
         })
-        return process_response(res)
 
+    @v1endpoint
     def send_watermark(self, data):
         url_ = self._build_url('metrics', 'watermark', api_version='v1')
-        res = requests.post(url_, json=data, proxies=self.proxies, params={
+        return requests.post(url_, json=data, proxies=self.proxies, params={
             'token': self.api_token,
             'protocol': HttpDestination.PROTOCOL_30
         })
-        return process_response(res)
 
     def _delete_schema_old_api(self, schema_id):
         """

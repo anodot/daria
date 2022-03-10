@@ -18,7 +18,7 @@ def _update_errors_count(num_of_errors):
     return num_of_errors + 1
 
 
-def _if_send_watermark(pipeline_: pipeline.Pipeline):
+def _should_send_watermark(pipeline_: pipeline.Pipeline):
     return pipeline_.uses_schema \
            and pipeline_.periodic_watermark_config and pipeline_.offset \
            and pipeline_.offset.timestamp + pipeline_.watermark_delay <= time.time()
@@ -33,7 +33,7 @@ def main():
 
     num_of_errors = 0
     for pipeline_ in pipelines:
-        if not _if_send_watermark(pipeline_):
+        if not _should_send_watermark(pipeline_):
             continue
         try:
             next_bucket_start = pipeline.manager.get_next_bucket_start(
