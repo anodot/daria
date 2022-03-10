@@ -9,18 +9,23 @@ class TestRRD(TestPipelineBase):
     params = {
         'test_start': [
             {'name': 'rrd'},
+            {'name': 'rrd_archive'},
         ],
         'test_force_stop': [
             {'name': 'rrd'},
+            {'name': 'rrd_archive'},
         ],
         'test_output': [
             {'name': 'rrd', 'output': 'rrd_dir.json', 'pipeline_type': source.TYPE_RRD},
+            {'name': 'rrd_archive', 'output': 'rrd_archive.json', 'pipeline_type': source.TYPE_RRD},
         ],
         'test_delete_pipeline': [
             {'name': 'rrd'},
+            {'name': 'rrd_archive'},
         ],
         'test_source_delete': [
             {'name': 'rrd'},
+            {'name': 'rrd_archive'},
         ],
     }
 

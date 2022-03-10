@@ -20,26 +20,24 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
                 logger_.info(f'Skipping file `{file}`')
                 continue
             res = read_data_from_rrd(os.path.join(rrd_dir_path, file), start, end, step, pipeline_)
-            base_metric = _get_base_metric(file.replace(get_tmp_dir(pipeline_) + '/', ''))
-            metrics.extend(build_metrics(res, start, end, False, base_metric))
+            if not res:
+                logger_.debug('Result is None, skipping')
+                continue
+            base_metric = _get_base_metric(_get_file_relative_path(file, pipeline_))
+            metrics.extend(build_metrics(res, start, end, pipeline_.config['convert_bytes_into_bits'], base_metric))
     return metrics
 
 
-def _get_base_metric(file: str) -> dict:
+def _get_file_relative_path(file, pipeline_) -> str:
+    return file.replace(f'{_get_tmp_dir(pipeline_)}/', '')
+
+
+def _get_base_metric(file_path: str) -> dict:
     return {
         'target_type': 'gauge',
         'properties': {
-            'data_source': file,
+            'data_source': file_path,
         },
-    }
-
-
-def _build_base_metric() -> dict:
-    return {
-        'target_type': 'gauge',
-        'properties': {
-
-        }
     }
 
 
@@ -61,7 +59,7 @@ def read_data_from_rrd(rrd_file_path: str, start, end, step, pipeline_: Pipeline
     return result
 
 
-def get_tmp_dir(pipeline_: Pipeline):
+def _get_tmp_dir(pipeline_: Pipeline):
     return os.path.join(RRD_TMP_DIR, pipeline_.name)
 
 
@@ -106,14 +104,14 @@ def build_metrics(
 class TMPDir:
     def __init__(self, pipeline_: Pipeline):
         self.pipeline = pipeline_
-        self.tmp_dir = get_tmp_dir(pipeline_)
+        self.tmp_dir = _get_tmp_dir(pipeline_)
 
     def __enter__(self):
         if source.RRDSource.RRD_ARCHIVE_PATH in self.pipeline.source.config:
             tools.extract_archive(
                 self.pipeline.source.config[source.RRDSource.RRD_ARCHIVE_PATH],
                 self.tmp_dir,
-                self.pipeline.config['archive_compression'],
+                tools.ArchiveCompressionType(self.pipeline.source.config[source.RRDSource.ARCHIVE_COMPRESSION_TYPE])
             )
         else:
             tools.copy_dir(

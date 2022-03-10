@@ -247,8 +247,21 @@ class RRDValidator(Validator):
 
     def validate(self):
         self.validate_json()
-        if not os.path.isdir(self.source.config[source.RRDSource.RRD_DIR_PATH]):
+        if (
+                source.RRDSource.RRD_DIR_PATH in self.source.config
+                and not os.path.isdir(self.source.config[source.RRDSource.RRD_DIR_PATH])
+        ):
             raise ValidationException(f'Directory {self.source.config[source.RRDSource.RRD_DIR_PATH]} doesn\'t exist')
+        elif (
+                source.RRDSource.RRD_ARCHIVE_PATH in self.source.config
+                and not os.path.isfile(self.source.config[source.RRDSource.RRD_ARCHIVE_PATH])
+        ):
+            raise ValidationException(f'Archive {self.source.config[source.RRDSource.RRD_ARCHIVE_PATH]} doesn\'t exist')
+        elif (
+                source.RRDSource.RRD_ARCHIVE_PATH not in self.source.config
+                and source.RRDSource.RRD_DIR_PATH not in self.source.config
+        ):
+            raise ValidationException(f'Neither `{source.RRDSource.RRD_ARCHIVE_PATH}` nor `{source.RRDSource.RRD_DIR_PATH}` is specified')
 
 
 class SolarWindsValidator(Validator):
@@ -332,13 +345,13 @@ class CactiValidator(Validator):
 
     def validate(self):
         super().validate()
-        if source.RRDSource.RRD_ARCHIVE_PATH in self.source.config:
-            validator.file_exists(self.source.config[source.RRDSource.RRD_ARCHIVE_PATH])
-        elif source.RRDSource.RRD_DIR_PATH in self.source.config:
-            validator.dir_exists(self.source.config[source.RRDSource.RRD_DIR_PATH])
+        if source.CactiSource.RRD_ARCHIVE_PATH in self.source.config:
+            validator.file_exists(self.source.config[source.CactiSource.RRD_ARCHIVE_PATH])
+        elif source.CactiSource.RRD_DIR_PATH in self.source.config:
+            validator.dir_exists(self.source.config[source.CactiSource.RRD_DIR_PATH])
         else:
             raise ValidationException(
-                f'The source `{self.source.config["name"]}` doesn\'t contain neither `{source.RRDSource.RRD_ARCHIVE_PATH}` nor `{source.RRDSource.RRD_DIR_PATH}` keys'
+                f'The source `{self.source.config["name"]}` doesn\'t contain neither `{source.CactiSource.RRD_ARCHIVE_PATH}` nor `{source.CactiSource.RRD_DIR_PATH}` keys'
             )
 
     @if_validation_enabled

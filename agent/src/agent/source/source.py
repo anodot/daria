@@ -230,6 +230,7 @@ class PromQLSource(APISource):
 class RRDSource(Source):
     RRD_DIR_PATH = 'rrd_dir_path'
     RRD_ARCHIVE_PATH = 'rrd_archive_path'
+    ARCHIVE_COMPRESSION_TYPE = 'archive_compression'
 
 
 class SolarWindsSource(APISource):
@@ -240,7 +241,7 @@ class ZabbixSource(APISource):
     USER = 'user'
 
 
-class CactiSource(Source):
+class CactiSource(RRDSource):
     MYSQL_CONNECTION_STRING = 'mysql_connection_string'
 
 

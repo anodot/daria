@@ -12,6 +12,8 @@ from agent.data_extractor.rrd import rrd
 from agent.pipeline import Pipeline
 from agent.modules import logger, tools
 
+RRD_TMP_DIR = '/tmp/cacti/'
+
 logger_ = logger.get_logger(__name__)
 
 
@@ -29,6 +31,7 @@ def extract_metrics(pipeline_: Pipeline, start: str, end: str, step: str) -> lis
 
             result = _read_data_from_rrd(item['data_source_path'], start, end, step, pipeline_)
             if not result:
+                logger_.debug('Result is None, skipping')
                 continue
 
             base_metric = _build_base_metric(item, graph, cache, str(local_graph_id), pipeline_)
@@ -60,12 +63,12 @@ def _read_data_from_rrd(data_source_path, start, end, step, pipeline_: Pipeline)
         logger_.debug(f'File {rrd_file_path} does not exist')
         return
 
-    if source.RRDSource.RRD_DIR_PATH in pipeline_.source.config:
+    if source.CactiSource.RRD_DIR_PATH in pipeline_.source.config:
         rrd_file_path = _copy_files_to_tmp_dir(pipeline_, rrd_file_path, data_source_path)
 
     result = rrdtool.fetch(rrd_file_path, 'AVERAGE', ['-s', start, '-e', end, '-r', step])
 
-    if source.RRDSource.RRD_DIR_PATH in pipeline_.source.config:
+    if source.CactiSource.RRD_DIR_PATH in pipeline_.source.config:
         os.remove(rrd_file_path)
 
     if not result or not result[0]:
@@ -262,22 +265,26 @@ def _should_sum_similar_items(item: dict) -> bool:
 
 
 def _prepare_files(pipeline_):
-    if source.RRDSource.RRD_ARCHIVE_PATH in pipeline_.source.config:
+    if source.CactiSource.RRD_ARCHIVE_PATH in pipeline_.source.config:
         tools.extract_archive(
-            pipeline_.source.config[source.RRDSource.RRD_ARCHIVE_PATH],
-            rrd.get_tmp_dir(pipeline_)
+            pipeline_.source.config[source.CactiSource.RRD_ARCHIVE_PATH],
+            _get_tmp_dir(pipeline_)
         )
 
 
 def _get_source_dir(pipeline_: Pipeline) -> str:
-    if source.RRDSource.RRD_DIR_PATH in pipeline_.source.config:
-        return pipeline_.source.config[source.RRDSource.RRD_DIR_PATH]
-    return rrd.get_tmp_dir(pipeline_)
+    if source.CactiSource.RRD_DIR_PATH in pipeline_.source.config:
+        return pipeline_.source.config[source.CactiSource.RRD_DIR_PATH]
+    return _get_tmp_dir(pipeline_)
 
 
 def _copy_files_to_tmp_dir(pipeline_: Pipeline, old_path, data_source_path) -> str:
-    tmp_dir = rrd.get_tmp_dir(pipeline_)
+    tmp_dir = _get_tmp_dir(pipeline_)
     new_path = data_source_path.replace('<path_rra>', tmp_dir)
     os.makedirs(os.path.dirname(new_path), exist_ok=True)
     shutil.copyfile(old_path, new_path)
     return new_path
+
+
+def _get_tmp_dir(pipeline_: Pipeline):
+    return os.path.join(RRD_TMP_DIR, pipeline_.name)
