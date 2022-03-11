@@ -11,6 +11,7 @@
     "dimension_configurations": {"type": "object"},
     "lookup": {"type": "object"},
     "values": {"type": "object"},
+    "measurement_configurations": {"type": "object"},
     "strict": {"type": "boolean"},
     "timestamp": {"type":  "object", "properties": {
       "name": {"type": "string", "minLength": 1},
@@ -20,6 +21,7 @@
       "type": "object",
       "patternProperties":  {"[^ \\.]+": {"type": "array", "items": {"type": "string"}}}
     },
+    "tag_configurations": {"type": "object"},
     "properties": {"type": "object"}
   },
   "required": ["interval", "query"]

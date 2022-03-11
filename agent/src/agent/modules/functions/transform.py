@@ -16,6 +16,10 @@ def regex_substring(string: str, pattern: str, repl: str) -> str:
     return res
 
 
+def divide(numerator: int | float, denominator: int | float) -> float:
+    return numerator / denominator
+
+
 def get_by_name(name: str) -> Callable:
     try:
         return getattr(sys.modules[__name__], name)

@@ -1,0 +1,2 @@
+HOST_NAME,REPLACE_NAME
+^host[0-9].*,NEW_host

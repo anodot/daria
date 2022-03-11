@@ -27,6 +27,10 @@ class TestObservium(TestPipelineBase):
                 'name': 'observium_storage',
                 'sleep': 25,
             },
+            {
+                'name': 'observium_storage_transform',
+                'sleep': 25,
+            },
         ],
         'test_force_stop': [
             {
@@ -43,6 +47,9 @@ class TestObservium(TestPipelineBase):
             },
             {
                 'name': 'observium_storage'
+            },
+            {
+                'name': 'observium_storage_transform'
             },
         ],
         'test_output_schema': [
@@ -71,6 +78,11 @@ class TestObservium(TestPipelineBase):
                 'output': 'observium_storage_schema.json',
                 'pipeline_type': 'observium'
             },
+            {
+                'name': 'observium_storage_transform',
+                'output': 'observium_storage_transform.json',
+                'pipeline_type': 'observium'
+            },
         ],
         'test_watermark': [
             {
@@ -93,6 +105,10 @@ class TestObservium(TestPipelineBase):
                 'name': 'observium_storage',
                 'timestamp': 1633518002
             },
+            {
+                'name': 'observium_storage_transform',
+                'timestamp': 1633518002
+            },
         ],
         'test_delete_pipeline': [
             {
@@ -109,6 +125,9 @@ class TestObservium(TestPipelineBase):
             },
             {
                 'name': 'observium_storage'
+            },
+            {
+                'name': 'observium_storage_transform'
             },
         ],
         'test_source_delete': [

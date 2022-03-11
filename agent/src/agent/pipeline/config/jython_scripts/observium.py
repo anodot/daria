@@ -83,6 +83,11 @@ def main():
                     if sdc.isStopped():
                         break
 
+            event = sdc.createEvent('interval processed', 1)
+            event.value = {
+                'watermark': offset + get_interval(),
+            }
+            batch.addEvent(event)
             batch.process(entityName, str(offset))
             batch = sdc.createBatch()
         except Exception:
