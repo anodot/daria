@@ -14,6 +14,7 @@ learn more about agent port forwarding visit the [Installation guide](https://gi
 * [Force stop pipeline](#force-stop-pipeline)
 * [Get pipeline info](#get-pipeline-info)
 * [Get pipeline logs](#get-pipeline-logs)
+* [Get pipeline config](#get-pipeline-config)
 * [Enable destination logs](#enable-destination-logs)
 * [Disable destination logs](#disable-destination-logs)
 * [Reset pipeline](#reset-pipeline)
@@ -276,6 +277,58 @@ curl -X GET http://localhost:8080/pipelines/test_influx/logs?severity=INFO&numbe
         "Pipeline execution mode is: STANDALONE "
     ]
 ]
+```
+
+Get pipeline config
+-------------------
+To retrieve single pipeline configuration data submit GET request to `pipelines/<pipeline_id>` endpoint
+
+Response codes: `200`
+
+**Request:**
+```
+curl -X GET http://localhost:8080/pipelines/mssql_pipeline
+```
+
+**Response:**
+```
+{
+    "config": {
+        "dimensions": [
+            "adsize",
+            "country"
+        ],
+        "interval": 86400,
+        "pipeline_id": "mssql_pipeline",
+        "query": "SELECT * FROM test WHERE {TIMESTAMP_CONDITION}",
+        "timestamp": {
+            "name": "timestamp_unix_ms",
+            "type": "unix_ms"
+        },
+        "uses_schema": false,
+        "values": {
+            "clicks": "gauge",
+            "impressions": "gauge"
+        }
+    },
+    "destination": {
+        "conf.client.proxy.password": "",
+        "conf.client.proxy.uri": "",
+        "conf.client.proxy.username": "",
+        "conf.client.useProxy": false,
+        "token": "correct_token",
+        "url": "http://dummy_destination"
+    },
+    "id": "test_jdbc_file_short_mssql",
+    "override_source": {},
+    "schema": {},
+    "source": {
+        "connection_string": "sqlserver://host:1433;database=test",
+        "hikariConfigBean.password": "${credential:get(\"jks\", \"all\", \"testmssql\")}",
+        "hikariConfigBean.useCredentials": true,
+        "hikariConfigBean.username": "usertest2"
+    }
+}
 ```
 
 Enable destination logs

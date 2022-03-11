@@ -9,6 +9,7 @@ learn more about agent port forwarding visit the [Installation guide](https://gi
 * [Create source](#create-source)
 * [Edit source](#edit-source)
 * [Delete source](#delete-source)
+* [Get source config](#source-config)
 
 Get sources
 -----------
@@ -105,7 +106,7 @@ All types of source configurations are described in the [Wiki](https://github.co
 
 Response codes: `200, 400`
 
-**Request example**:
+**Request example:**
 ```
 curl -X PUT http://localhost:8080/sources \
 -H 'Content-Type: application/json' \
@@ -125,7 +126,7 @@ curl -X PUT http://localhost:8080/sources \
 }]'
 ```
 
-**Response example**
+**Response example:**
 ```
 [
     {
@@ -172,3 +173,31 @@ curl -X DELETE http://localhost:8080/sources/not_existing
 Status: 400 BAD REQUEST
 
 Source config not_existing doesn't exist
+
+Get source config
+-----------------
+To retrieve single source configuration data submit GET request to `sources/<source_id>` endpoint
+
+Options:
+* `with_credentials` (optional, bool) - unmask hidden credentials
+
+Response codes: `200, 400`
+
+**Request example:**
+```
+curl -X GET http://localhost:8080/sources/observium -H 'Content-Type: application/json'
+```
+
+**Response example:**
+```
+{
+    "config": {
+        "database": "observium",
+        "host": "mysql",
+        "port": "3306",
+        "username": "******"
+    },
+    "name": "observium",
+    "type": "observium"
+}
+```
