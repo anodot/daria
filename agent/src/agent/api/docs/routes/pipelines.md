@@ -9,6 +9,7 @@ learn more about agent port forwarding visit the [Installation guide](https://gi
 * [Create pipelines](#create-pipelines)
 * [Edit pipelines](#edit-pipelines)
 * [Delete pipeline](#delete-pipeline)
+* [Force Delete pipeline](#force-delete-pipeline)
 * [Start pipeline](#start-pipeline)
 * [Stop pipeline](#stop-pipeline)
 * [Force stop pipeline](#force-stop-pipeline)
@@ -181,6 +182,29 @@ curl -X DELETE http://localhost:8080/pipelines/test_influx
 **Request:**
 ```
 curl -X DELETE http://localhost:8080/pipelines/not_existing
+```
+**Response:**
+```
+Status: 400 BAD REQUEST
+
+Pipeline not_existing does not exist
+```
+
+
+Force delete pipeline
+-------------
+Response codes: `200, 400`
+
+**Request:**
+```
+curl -X DELETE http://localhost:8080/pipelines/force-delete/test_influx
+```
+**Response:**
+`Status: 200 OK`
+
+**Request:**
+```
+curl -X DELETE http://localhost:8080/pipelines/force-delete/not_existing
 ```
 **Response:**
 ```
