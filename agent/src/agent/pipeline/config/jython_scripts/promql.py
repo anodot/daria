@@ -36,6 +36,7 @@ def get_interval():
 
 def make_request(url_):
     session = requests.Session()
+    session.headers.update(sdc.userParams['HEADERS'])
     if sdc.userParams['USERNAME']:
         session.auth = (sdc.userParams['USERNAME'], sdc.userParams['PASSWORD'])
     for i in range(1, N_REQUESTS_TRIES + 1):

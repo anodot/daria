@@ -50,6 +50,10 @@ class PromQLScript(JythonSource):
                 'value': str(self.pipeline.config.get('aggregated_metric_name'))
             },
             {
+                'key': 'HEADERS',
+                'value': self.pipeline.config.get('request_headers', {})
+            },
+            {
                 'key': 'MONITORING_URL',
                 'value': monitoring.get_monitoring_source_error_url(self.pipeline)
             },
