@@ -14,6 +14,7 @@
     "source": {"type": "string"},
     "uses_schema": {"type": "boolean"},
     "dimensions": {"type": "array", "items": {"type": "string"}},
+    "request_headers": {"type": "object"},
     "transform": {
       "type": "object",
       "properties": {

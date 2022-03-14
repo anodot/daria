@@ -4,7 +4,8 @@
     "days_to_backfill": 581,
     "interval": 10000,
     "pipeline_id": "test_victoria",
-    "source": "test_victoria"
+    "source": "test_victoria",
+    "request_headers": {"my_header": "my_value"}
   },
   {
     "query": "rate(log_messages_total2[100000s])",
