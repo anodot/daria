@@ -12,8 +12,7 @@
     "pipeline_id": {"type": "string"},
     "source": {"type": "string"},
     "convert_bytes_into_bits": {"type": "boolean"},
-    "dynamic_step": {"type": "boolean"},
-    "archive_compression": {"type": "string", "enum": ["gz", "bz2", "xz"]}
+    "dynamic_step": {"type": "boolean"}
   },
   "required": ["interval"]
 }
