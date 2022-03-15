@@ -1,7 +1,11 @@
+import os
 import re
+import shutil
+import tarfile
 import click
 import json
 
+from enum import Enum
 from datetime import datetime
 from agent.modules import constants
 from tabulate import tabulate
@@ -125,3 +129,39 @@ def deep_update(src: dict, dst: Any):
 
 def escape_quotes(s: str) -> str:
     return s.replace("'", "\\'")
+
+
+class ArchiveCompressionType(Enum):
+    GZ = 'gz'
+    BZ2 = 'bz2'
+    XZ = 'xz'
+
+
+def extract_archive(
+        archive_path: str,
+        destination_path: str,
+        compression: ArchiveCompressionType = ArchiveCompressionType.GZ
+):
+    if not os.path.isfile(archive_path):
+        raise ArchiveNotExistsException()
+    with tarfile.open(archive_path, f'r:{compression.value}') as tar:
+        tar.extractall(path=destination_path)
+
+
+def copy_dir(source_dir: str, destination_dir: str):
+    os.makedirs(os.path.dirname(destination_dir), exist_ok=True)
+    shutil.copytree(source_dir, destination_dir)
+
+
+def get_all_files(directory: str):
+    if not os.path.isdir(directory):
+        raise NotADirectoryError(f'`{directory}` is not a directory')
+    for root, dirs, files in os.walk(directory):
+        for dir_ in dirs:
+            get_all_files(dir_)
+        for file in files:
+            yield os.path.join(root, file)
+
+
+class ArchiveNotExistsException(Exception):
+    pass

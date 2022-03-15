@@ -1,3 +1,3 @@
-from .cacti import extract_metrics, ArchiveNotExistsException
+from .cacti import extract_metrics
 from . import repository
 from . import cacher

@@ -1,0 +1,13 @@
+[
+  {
+    "source": "rrd",
+    "pipeline_id": "rrd",
+    "interval": 300
+  },
+  {
+    "source": "rrd_archive",
+    "pipeline_id": "rrd_archive",
+    "interval": 3600,
+    "dynamic_step": true
+  }
+]

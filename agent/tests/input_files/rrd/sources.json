@@ -1,0 +1,17 @@
+[
+  {
+    "type": "rrd",
+    "name": "rrd",
+    "config": {
+      "rrd_dir_path": "/usr/src/app/tests/input_files/rrd/1/"
+    }
+  },
+  {
+    "type": "rrd",
+    "name": "rrd_archive",
+    "config": {
+      "rrd_archive_path": "/usr/src/app/tests/input_files/cacti_rrd.tar.gz",
+      "archive_compression": "gz"
+    }
+  }
+]

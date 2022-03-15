@@ -3,7 +3,7 @@
     "pipeline_id": "observium_mempools_edit",
     "values": {"mempool_perc": "gauge"},
     "dimensions": ["mempool_descr"],
-    "interval": 300,
+    "interval": 3600,
     "delay": 1,
     "default_values_type": "mempools",
     "query": "select m.*, d.sysName, dl.location from mempools m join devices d on d.device_id = m.device_id join devices_locations dl on dl.device_id = m.device_id"

@@ -10,6 +10,7 @@ from .kafka import KafkaBuilder
 from .mongo import MongoBuilder
 from .observium import ObserviumBuilder
 from .promql import PromQLBuilder
+from .rrd import RRDBuilder
 from .sage import SageBuilder
 from .snmp import SNMPBuilder, SNMPRawBuilder
 from .solarwinds import SolarWindsClientData
@@ -43,6 +44,7 @@ def _get_builder(pipeline_: Pipeline, config: dict, is_edit: bool) -> Builder:
         source.TYPE_POSTGRES: JDBCBuilder,
         source.TYPE_PROMETHEUS: PromQLBuilder,
         source.TYPE_OBSERVIUM: ObserviumBuilder,
+        source.TYPE_RRD: RRDBuilder,
         source.TYPE_SAGE: SageBuilder,
         source.TYPE_SNMP: SNMPBuilder,
         source.TYPE_SOLARWINDS: SolarWindsClientData,
