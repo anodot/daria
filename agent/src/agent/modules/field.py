@@ -72,5 +72,6 @@ def build_fields(fields_conf: dict) -> list[Field]:
     return fields
 
 
-def extract_fields(fields: list[Field], data: dict) -> dict:
-    return {field_.get_name(): field_.extract_from(data) for field_ in fields}
+def extract_fields(fields: list[Field], data: dict, skip_none: bool = False) -> dict:
+    ret_ = {field_.get_name(): field_.extract_from(data) for field_ in fields}
+    return ret_ if not skip_none else {k: v for k, v in ret_.items() if v is not None}

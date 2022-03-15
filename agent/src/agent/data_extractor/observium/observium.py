@@ -40,7 +40,7 @@ def _create_metrics(data: dict, pipeline_: Pipeline) -> list:
             metric = {
                 "timestamp": obj[pipeline_.timestamp_name],
                 "dimensions": field.extract_fields(fields_dims, obj),
-                "measurements": field.extract_fields(fields_meas, obj),
+                "measurements": field.extract_fields(fields_meas, obj, True),
                 "tags":  {name: [tags] for name, tags in field.extract_fields(fields_tags, obj).items()},
                 "schemaId": schema_id,
             }
