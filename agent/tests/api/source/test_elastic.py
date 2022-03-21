@@ -14,7 +14,7 @@ class TestElastic:
             }],
             'er': [{
                 "config": {"conf.httpUris": ["http://es:9200"], "conf.index": "test", "conf.initialOffset": "now-3d/d",
-                           "conf.isIncrementalMode": False, "conf.offsetField": "timestamp",
+                           "conf.isIncrementalMode": True, "conf.offsetField": "timestamp",
                            "conf.queryInterval": "seconds"},
                 "name": "elastic",
                 "type": "elastic"
@@ -24,16 +24,16 @@ class TestElastic:
             'data': [{
                 'name': 'elastic',
                 'config': {
-                    'conf.httpUris': ['http://es:9201'],
+                    'conf.httpUris': ['http://es:9200'],
                     'conf.index': 'test1',
-                    'conf.offsetField': 'timestamp',
+                    'conf.offsetField': 'timestamp_unix_ms',
                     'conf.initialOffset': 'now-3d/d',
                     'conf.queryInterval': 'seconds',
                 }
             }],
-            'er': [{"config": {"conf.httpUris": ["http://es:9201"], "conf.index": "test1",
-                               "conf.initialOffset": "now-3d/d", "conf.isIncrementalMode": False,
-                               "conf.offsetField": "timestamp", "conf.queryInterval": "seconds"},
+            'er': [{"config": {"conf.httpUris": ["http://es:9200"], "conf.index": "test1",
+                               "conf.initialOffset": "now-3d/d", "conf.isIncrementalMode": True,
+                               "conf.offsetField": "timestamp_unix_ms", "conf.queryInterval": "seconds"},
                     "name": "elastic",
                     "type": "elastic"}]
         }]
