@@ -31,7 +31,7 @@ class TestObservium(TestInputBase):
         assert pipeline.repository.get_by_id('observium_storage').schema == {
             "version": "1",
             "name": "observium_storage",
-            "dimensions": ["Storage_size"],
+            "dimensions": ["Storage_size", "storage_mib"],
             "measurements": {
                 "my_own_field": {
                     "aggregation": "average",

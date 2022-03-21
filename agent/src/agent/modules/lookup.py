@@ -47,30 +47,29 @@ def lookup(
     if lookup_name not in _lookup_cache:
         _lookup_cache[lookup_name] = _sources[lookup_name].get_data()
 
-    res = None
     result_cache_key = _build_result_cache_key(lookup_name, lookup_value, key_field, value_field, compare_function)
-
     if result := _results_cache.get(result_cache_key):
         return result
 
-    for obj in _lookup_cache[lookup_name]:
-        if compare_function(obj[key_field], lookup_value):
-            if res is not None:
-                raise Exception(
-                    '\n'.join([
-                        'Multiple values exist in the lookup for provided params:',
-                        f'lookup name: {lookup_name}',
-                        f'lookup value: {lookup_value}',
-                        f'key field: {key_field}',
-                        f'value field: {value_field}',
-                        f'compare function: {compare_function.__name__}',
-                    ])
-                )
-            res = obj[value_field]
+    res = [obj[value_field] for obj in _lookup_cache[lookup_name] if compare_function(obj[key_field], lookup_value)]
 
-    _results_cache[result_cache_key] = res
+    if len(res) > 1:
+        raise Exception(
+            '\n'.join([
+                'Multiple values exist in the lookup for provided params:',
+                f'lookup name: {lookup_name}',
+                f'lookup value: {lookup_value}',
+                f'key field: {key_field}',
+                f'value field: {value_field}',
+                f'compare function: {compare_function.__name__}',
+                f'matched values: {", ".join(res)}',
+            ])
+        )
 
-    return res
+    if len(res) == 1:
+        _results_cache[result_cache_key] = res[0]
+        return res[0]
+    return None
 
 
 def _init_sources(lookup_configs: dict):
