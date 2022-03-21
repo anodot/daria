@@ -11,18 +11,21 @@ class Validator:
 class ElasticValidator(Validator):
     @staticmethod
     def validate(pipeline):
-        with open(pipeline.config['query_file']) as f:
-            query = f.read()
-        errors = elastic_query.get_errors(query, pipeline.source.config[source.ElasticSource.CONFIG_OFFSET_FIELD])
-        if errors:
+        if 'query_file' in pipeline.config:
+            with open(pipeline.config['query_file']) as f:
+                query = f.read()
+        elif 'query_data' in pipeline.config:
+            query = pipeline.config['query_data']
+        else:
+            raise ValidationException('No query_data or query_file')
+        if errors := elastic_query.get_errors(query, pipeline.source.config[source.ElasticSource.CONFIG_OFFSET_FIELD]):
             raise ValidationException(errors)
 
 
 class JDBCValidator(Validator):
     @staticmethod
     def validate(pipeline):
-        errors = jdbc_query.get_errors(pipeline.query)
-        if errors:
+        if errors := jdbc_query.get_errors(pipeline.query):
             raise ValidationException(errors)
 
 

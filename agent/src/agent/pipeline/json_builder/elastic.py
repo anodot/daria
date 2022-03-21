@@ -11,4 +11,6 @@ class ElasticBuilder(Builder):
         if 'query_file' in self.config:
             with open(self.config['query_file']) as f:
                 self.config['override_source'][source.ElasticSource.CONFIG_QUERY] = f.read()
+        elif 'query_data' in self.config:
+            self.config['override_source'][source.ElasticSource.CONFIG_QUERY] = self.config['query_data']
         return self.config
