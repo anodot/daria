@@ -23,5 +23,8 @@
     },
     "query_file": {"type": "string"}
   },
-  "required": ["values", "dimensions", "timestamp", "query_file"]
+  "oneOf": [
+    {"required": ["values", "dimensions", "timestamp", "query_file"]},
+    {"required": ["values", "dimensions", "timestamp", "query_data"]}
+  ]
 }
