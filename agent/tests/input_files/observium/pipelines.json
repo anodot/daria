@@ -38,7 +38,8 @@
             "key": "ABBREVIATION",
             "value": "STATE",
             "compare_function": "contains",
-            "default": "other"
+            "default": "other",
+            "strict": false
           }
         ]
       },

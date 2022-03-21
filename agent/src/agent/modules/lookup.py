@@ -24,6 +24,7 @@ def lookup(
     key_field: str,
     value_field: str,
     compare_function: Callable,
+    strict: bool,
 ) -> Optional[Any]:
     """
     Searches for a lookup_value in the key_field of a lookup using a provided compare function.
@@ -48,12 +49,12 @@ def lookup(
         _lookup_cache[lookup_name] = _sources[lookup_name].get_data()
 
     result_cache_key = _build_result_cache_key(lookup_name, lookup_value, key_field, value_field, compare_function)
-    if result := _results_cache.get(result_cache_key):
-        return result
+    if result_cache_key in _results_cache:
+        return _results_cache[result_cache_key]
 
     res = [obj[value_field] for obj in _lookup_cache[lookup_name] if compare_function(obj[key_field], lookup_value)]
 
-    if len(res) > 1:
+    if len(res) > 1 and strict:
         raise Exception(
             '\n'.join([
                 'Multiple values exist in the lookup for provided params:',
@@ -66,10 +67,14 @@ def lookup(
             ])
         )
 
-    if len(res) == 1:
-        _results_cache[result_cache_key] = res[0]
-        return res[0]
-    return None
+    _results_cache[result_cache_key] = _extract_result(res)
+    return _results_cache[result_cache_key]
+
+
+def _extract_result(res: list):
+    if len(res) > 1:
+        res.sort()
+    return res[0] if res else None
 
 
 def _init_sources(lookup_configs: dict):
