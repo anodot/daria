@@ -102,9 +102,17 @@ class ElasticValidator(Validator):
 
     @if_validation_enabled
     def validate_connection(self):
-        # todo
-        self.source.config[source.ElasticSource.CONFIG_IS_INCREMENTAL] = False
-        super().validate_connection()
+        url = f"{self.source.config[source.ElasticSource.CONFIG_HTTP_URIS][0]}/_cat/indices"
+        if not url.startswith('http'):
+            url = f'http://{url}'
+        try:
+            res = requests.get(url)
+            res.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            raise ValidationException(
+                'Failed to connect to Elastic. Make sure you provided correct url\n'
+                + str(e)
+            )
 
 
 class JDBCValidator(Validator):
