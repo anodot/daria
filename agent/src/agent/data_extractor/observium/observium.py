@@ -17,7 +17,7 @@ def _get(pipeline_: Pipeline):
     try:
         return MySQL(
             pipeline_.source.config['host'],
-            pipeline_.source.config.get('port', 3306),
+            pipeline_.source.config.get('port', '3306'),
             pipeline_.source.config.get('username'),
             pipeline_.source.config.get('password'),
             pipeline_.source.config['database'],
@@ -41,7 +41,7 @@ def _create_metrics(data: dict, pipeline_: Pipeline) -> list:
                 "timestamp": obj[pipeline_.timestamp_name],
                 "dimensions": field.extract_fields(fields_dims, obj),
                 "measurements": field.extract_fields(fields_meas, obj, True),
-                "tags":  {name: [tags] for name, tags in field.extract_fields(fields_tags, obj).items()},
+                "tags": {name: [tags] for name, tags in field.extract_fields(fields_tags, obj).items()},
                 "schemaId": schema_id,
             }
             metrics.append(metric)

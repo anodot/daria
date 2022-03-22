@@ -37,7 +37,8 @@ class LookupTransformer(Transformer):
         lookup_value: Any,
         compare_func_name: Optional[str],
         default: Any,
-        discard_empty_values=True
+        strict_lookup: bool,
+        discard_empty_values=True,
     ):
         self.compare_func = functions.compare.get_by_name(compare_func_name) \
             if compare_func_name is not None \
@@ -47,11 +48,16 @@ class LookupTransformer(Transformer):
         self.lookup_value = lookup_value
         self.default = default
         self.discard_empty_values = discard_empty_values
+        self.strict_lookup = strict_lookup \
+            if strict_lookup is not None \
+            else True
 
     def transform(self, value) -> Optional[Any]:
         if self.discard_empty_values and not value:
             return self.default
-        result = lookup.lookup(self.lookup_name, value, self.lookup_key, self.lookup_value, self.compare_func)
+        result = lookup.lookup(
+            self.lookup_name, value, self.lookup_key, self.lookup_value, self.compare_func, self.strict_lookup
+        )
         return result or self.default
 
 
@@ -72,6 +78,7 @@ def build_transformers(field_conf: dict) -> list[Transformer]:
                     transform['value'],
                     transform.get('compare_function'),
                     transform['default'],
+                    transform.get('strict'),
                 )
             )
         else:
