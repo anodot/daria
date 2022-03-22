@@ -25,6 +25,6 @@
   },
   "oneOf": [
     {"required": ["values", "dimensions", "timestamp", "query_file"]},
-    {"required": ["values", "dimensions", "timestamp", "query_data"]}
+    {"required": ["values", "dimensions", "timestamp", "query"]}
   ]
 }

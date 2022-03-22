@@ -14,10 +14,10 @@ class ElasticValidator(Validator):
         if 'query_file' in pipeline.config:
             with open(pipeline.config['query_file']) as f:
                 query = f.read()
-        elif 'query_data' in pipeline.config:
-            query = pipeline.config['query_data']
+        elif 'query' in pipeline.config:
+            query = pipeline.config['query']
         else:
-            raise ValidationException('No query_data or query_file')
+            raise ValidationException('No query or query_file')
         if errors := elastic_query.get_errors(query, pipeline.source.config[source.ElasticSource.CONFIG_OFFSET_FIELD]):
             raise ValidationException(errors)
 

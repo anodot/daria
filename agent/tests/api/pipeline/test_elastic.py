@@ -42,7 +42,7 @@ class TestElastic:
                     "type": "unix",
                     "name": "_source/timestamp_unix"
                 },
-                "query_data": """{
+                "query": """{
                     "sort": [{"timestamp_unix_ms": {"order": "asc"}}],
                     "query": {"range": {"timestamp_unix_ms": {"gt": ${OFFSET}}}}
                 }"""
@@ -55,7 +55,7 @@ class TestElastic:
                     },
                     'measurement_names': {'Clicks': 'clicks'},
                     'pipeline_id': 'test_elastic_api',
-                    'query_data': '{\n                    "sort": [{"timestamp_unix_ms": {"order": "asc"}}],\n                    "query": {"range": {"timestamp_unix_ms": {"gt": ${OFFSET}}}}\n                }',
+                    'query': '{\n                    "sort": [{"timestamp_unix_ms": {"order": "asc"}}],\n                    "query": {"range": {"timestamp_unix_ms": {"gt": ${OFFSET}}}}\n                }',
                     'timestamp': {'name': '_source/timestamp_unix', 'type': 'unix'},
                     'uses_schema': False,
                     'values': {'Clicks': 'gauge'}
