@@ -26,6 +26,7 @@ def supports_schema(pipeline_: Pipeline) -> bool:
         source.TYPE_DATABRICKS,
         source.TYPE_INFLUX,
         source.TYPE_KAFKA,
+        source.TYPE_MSSQL,
         source.TYPE_MYSQL,
         source.TYPE_ORACLE,
         source.TYPE_POSTGRES,
