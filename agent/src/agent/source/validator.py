@@ -6,6 +6,7 @@ import requests
 import inject
 
 from abc import ABC, abstractmethod
+from copy import deepcopy
 from datetime import datetime
 from pysnmp.entity.engine import SnmpEngine
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
@@ -33,7 +34,7 @@ class Validator:
     connection_validator = inject.attr(IConnectionValidator)
 
     def __init__(self, source_: Source):
-        self.source = source_
+        self.source = deepcopy(source_)
 
     def validate(self):
         self.validate_json()
@@ -102,17 +103,8 @@ class ElasticValidator(Validator):
 
     @if_validation_enabled
     def validate_connection(self):
-        url = f"{self.source.config[source.ElasticSource.CONFIG_HTTP_URIS][0]}/_cat/indices"
-        if not url.startswith('http'):
-            url = f'http://{url}'
-        try:
-            res = requests.get(url)
-            res.raise_for_status()
-        except requests.exceptions.RequestException as e:
-            raise ValidationException(
-                'Failed to connect to Elastic. Make sure you provided correct url\n'
-                + str(e)
-            )
+        self.source.config[source.ElasticSource.CONFIG_IS_INCREMENTAL] = False
+        super().validate_connection()
 
 
 class JDBCValidator(Validator):
