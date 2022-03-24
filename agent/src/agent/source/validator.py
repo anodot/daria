@@ -102,7 +102,7 @@ class ElasticValidator(Validator):
 
     @if_validation_enabled
     def validate_connection(self):
-        incremental_ = self.source.config[source.ElasticSource.CONFIG_IS_INCREMENTAL]
+        incremental_ = self.source.config.get(source.ElasticSource.CONFIG_IS_INCREMENTAL, True)
         self.source.config[source.ElasticSource.CONFIG_IS_INCREMENTAL] = False
         super().validate_connection()
         self.source.config[source.ElasticSource.CONFIG_IS_INCREMENTAL] = incremental_
