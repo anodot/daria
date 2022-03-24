@@ -6,7 +6,6 @@ import requests
 import inject
 
 from abc import ABC, abstractmethod
-from copy import deepcopy
 from datetime import datetime
 from pysnmp.entity.engine import SnmpEngine
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
@@ -34,7 +33,7 @@ class Validator:
     connection_validator = inject.attr(IConnectionValidator)
 
     def __init__(self, source_: Source):
-        self.source = deepcopy(source_)
+        self.source = source_
 
     def validate(self):
         self.validate_json()
@@ -103,8 +102,10 @@ class ElasticValidator(Validator):
 
     @if_validation_enabled
     def validate_connection(self):
+        incremental_ = self.source.config[source.ElasticSource.CONFIG_IS_INCREMENTAL]
         self.source.config[source.ElasticSource.CONFIG_IS_INCREMENTAL] = False
         super().validate_connection()
+        self.source.config[source.ElasticSource.CONFIG_IS_INCREMENTAL] = incremental_
 
 
 class JDBCValidator(Validator):
