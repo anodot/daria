@@ -1,3 +1,6 @@
+import json
+
+import prometheus_client.metrics
 import requests
 import urllib.parse
 
@@ -97,3 +100,31 @@ def watermark_delta(pipeline_id):
         .labels(pipeline_.streamsets.url, pipeline_.name, pipeline_.source.type)\
         .set(delta)
     return jsonify('')
+
+
+def _delete_metric(metric: prometheus_client.metrics.MetricWrapperBase, labels: tuple):
+    try:
+        metric.remove(*labels)
+    except KeyError:
+        pass
+
+
+@monitoring_bp.route('/monitoring/delete_metrics/<pipeline_id>', methods=['DELETE'])
+def watermark_metrics(pipeline_id):
+    pipeline_ = pipeline.repository.get_by_id(pipeline_id)
+    labels = (pipeline_.streamsets.url, pipeline_.name, pipeline_.source.type)
+    for status in pipeline_.statuses:
+        _delete_metric(monitoring_.metrics.PIPELINE_STATUS, (*labels, status))
+
+    _delete_metric(monitoring_.metrics.PIPELINE_INCOMING_RECORDS, labels)
+    _delete_metric(monitoring_.metrics.PIPELINE_OUTGOING_RECORDS, labels)
+    _delete_metric(monitoring_.metrics.PIPELINE_ERROR_RECORDS, labels)
+    _delete_metric(monitoring_.metrics.PIPELINE_DESTINATION_LATENCY, labels)
+    _delete_metric(monitoring_.metrics.PIPELINE_SOURCE_LATENCY, labels)
+    _delete_metric(monitoring_.metrics.WATERMARK_DELTA, labels)
+    _delete_metric(monitoring_.metrics.DIRECTORY_FILE_PROCESSED, (pipeline_.streamsets.url, pipeline_.name))
+    _delete_metric(monitoring_.metrics.SOURCE_MYSQL_ERRORS, (pipeline_.name,))
+    for code in [400, 401, 402, 403, 404, 405, 500, 501, 502, 503, 504, 505]:
+        _delete_metric(monitoring_.metrics.SOURCE_HTTP_ERRORS, (pipeline_.name, pipeline_.source.type, code))
+
+    return json.dumps('')
