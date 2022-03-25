@@ -8,16 +8,16 @@
       "startDate": 1468326864,
       "properties": [
         {
-          "key": "open",
-          "value": " Status"
+          "value": "open",
+          "key": "Status"
         },
         {
-          "key": "Impact Type",
-          "value": "deadly"
+          "value": "deadly",
+          "key": "Impact Type"
         },
         {
-          "key": "pipeline_id",
-          "value": "events_directory"
+          "value": "events_directory",
+          "key": "pipeline_id"
         }
       ]
     }

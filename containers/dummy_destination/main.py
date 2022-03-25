@@ -15,13 +15,12 @@ def to_file():
     if request.args.get('token') and request.args.get('token') == 'incorrect_token':
         return json.dumps({'errors': ['Data collection token is invalid']}), 401
     return _write_to_file(_extract_file_name(request.json))
-# todo add pipeline id to properties
+
 
 @app.route('/api/v2/user-events', methods=['POST'])
 def event_to_file():
-    # todo
-    # if request.args.get('token') and request.args.get('token') == 'incorrect_token':
-    #     return json.dumps({'errors': ['Data collection token is invalid']}), 401
+    if request.headers.get('Authorization') != 'Bearer ok':
+        return json.dumps({'errors': ['Data collection token is invalid']}), 401
     return _write_to_file(_extract_events_file_name(request.json))
 
 
@@ -56,7 +55,7 @@ def _extract_events_file_name(data: list[dict]):
 @app.route('/api/v1/alert', methods=['POST'])
 def to_file_simple():
     file_name = "alert"
-    with open(os.path.join(OUTPUT_DIR, file_name + '.json'), 'a+') as f:
+    with open(os.path.join(OUTPUT_DIR, f'{file_name}.json'), 'a+') as f:
         json.dump(request.json, f)
         f.write('\n')
     return ''
