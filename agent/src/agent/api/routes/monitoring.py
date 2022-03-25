@@ -5,6 +5,7 @@ import requests
 import urllib.parse
 
 from flask import jsonify, Blueprint, request
+from json.decoder import JSONDecodeError
 from agent import monitoring as monitoring_, destination, pipeline
 from agent.modules import constants, proxy
 from prometheus_client import generate_latest, multiprocess
@@ -26,9 +27,12 @@ def _send_to_anodot(data: list, url: str, proxy_obj: proxy.Proxy):
         errors.append(f'Error {res.status_code} from {url}')
 
     if res.text:
-        res_json = res.json()
-        if res_json['errors']:
-            errors.append(str(res_json['errors']))
+        try:
+            res_json = res.json()
+            if res_json['errors']:
+                errors.append(str(res_json['errors']))
+        except JSONDecodeError:
+            errors.append(res.text)
 
     return errors
 
@@ -107,24 +111,3 @@ def _delete_metric(metric: prometheus_client.metrics.MetricWrapperBase, labels: 
         metric.remove(*labels)
     except KeyError:
         pass
-
-
-@monitoring_bp.route('/monitoring/delete_metrics/<pipeline_id>', methods=['DELETE'])
-def watermark_metrics(pipeline_id):
-    pipeline_ = pipeline.repository.get_by_id(pipeline_id)
-    labels = (pipeline_.streamsets.url, pipeline_.name, pipeline_.source.type)
-    for status in pipeline_.statuses:
-        _delete_metric(monitoring_.metrics.PIPELINE_STATUS, (*labels, status))
-
-    _delete_metric(monitoring_.metrics.PIPELINE_INCOMING_RECORDS, labels)
-    _delete_metric(monitoring_.metrics.PIPELINE_OUTGOING_RECORDS, labels)
-    _delete_metric(monitoring_.metrics.PIPELINE_ERROR_RECORDS, labels)
-    _delete_metric(monitoring_.metrics.PIPELINE_DESTINATION_LATENCY, labels)
-    _delete_metric(monitoring_.metrics.PIPELINE_SOURCE_LATENCY, labels)
-    _delete_metric(monitoring_.metrics.WATERMARK_DELTA, labels)
-    _delete_metric(monitoring_.metrics.DIRECTORY_FILE_PROCESSED, (pipeline_.streamsets.url, pipeline_.name))
-    _delete_metric(monitoring_.metrics.SOURCE_MYSQL_ERRORS, (pipeline_.name,))
-    for code in [400, 401, 402, 403, 404, 405, 500, 501, 502, 503, 504, 505]:
-        _delete_metric(monitoring_.metrics.SOURCE_HTTP_ERRORS, (pipeline_.name, pipeline_.source.type, code))
-
-    return json.dumps('')
