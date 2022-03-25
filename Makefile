@@ -46,7 +46,7 @@ test-promql: bootstrap run-victoria nap setup-victoria
 	$(DOCKER_TEST) tests/test_input/test_promql_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_promql_http.py
 
-test-influx: bootstrap run-influx nap
+test-influx: bootstrap run-influx run-influx-2 nap
 	$(DOCKER_TEST) tests/test_input/test_influx_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_influx_http.py
 
