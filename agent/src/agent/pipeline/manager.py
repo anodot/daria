@@ -18,7 +18,7 @@ MAX_SAMPLE_RECORDS = 3
 
 
 def supports_schema(pipeline_: Pipeline) -> bool:
-    if isinstance(pipeline_, RawPipeline):
+    if isinstance(pipeline_, (TestPipeline, RawPipeline)):
         return False
     supported = {
         source.TYPE_CACTI: False,
