@@ -104,10 +104,3 @@ def watermark_delta(pipeline_id):
         .labels(pipeline_.streamsets.url, pipeline_.name, pipeline_.source.type)\
         .set(delta)
     return jsonify('')
-
-
-def _delete_metric(metric: prometheus_client.metrics.MetricWrapperBase, labels: tuple):
-    try:
-        metric.remove(*labels)
-    except KeyError:
-        pass
