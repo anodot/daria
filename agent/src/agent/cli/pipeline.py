@@ -287,7 +287,7 @@ def _prompt(advanced: bool):
     source_name = click.prompt('Choose source config', type=click.Choice(sources), default=_get_default_source(sources))
     pipeline_id = _prompt_pipeline_id()
 
-    pipeline_ = pipeline.manager.create_object(pipeline_id, source_name)
+    pipeline_ = pipeline.manager.create_pipeline(pipeline_id, source_name)
     previous_pipeline_config = _get_previous_pipeline_config(pipeline_.source.type)
 
     pipeline_prompter = prompt.pipeline.get_prompter(pipeline_, previous_pipeline_config, advanced)

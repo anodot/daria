@@ -71,7 +71,7 @@ def migrate_pipelines(data_dir):
                 if pipeline.repository.exists(pipeline_id):
                     logger_.info(f'Pipeline {pipeline_id} already exists, skipping')
                     continue
-                pipeline_ = pipeline.manager.create_object(pipeline_id, data['source']['name'])
+                pipeline_ = pipeline.manager.create_pipeline(pipeline_id, data['source']['name'])
                 pipeline_.set_streamsets(streamsets_)
                 data.pop('source')
                 pipeline_.config = data

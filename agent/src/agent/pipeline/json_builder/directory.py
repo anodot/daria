@@ -1,4 +1,5 @@
 from agent.pipeline.json_builder import Builder
+from agent.pipeline.json_builder.json_builder import EventsBuilder
 
 
 class DirectoryBuilder(Builder):
@@ -8,3 +9,7 @@ class DirectoryBuilder(Builder):
         super()._load_config()
         self._load_dimensions()
         return self.config
+
+
+class DirectoryEventsBuilder(EventsBuilder):
+    VALIDATION_SCHEMA_FILE_NAME = 'directory'

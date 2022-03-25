@@ -79,5 +79,18 @@
     "properties": {
       "version": "1"
     }
+  },
+  {
+    "source": "events_directory",
+    "pipeline_id": "events_directory",
+    "pipeline_type": "events_pipeline",
+    "mapping": {
+      "description": "Description",
+      "properties": [
+        "Status",
+        "Impact Type"
+      ]
+    },
+    "interval": 86400
   }
 ]

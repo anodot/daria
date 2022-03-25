@@ -38,9 +38,9 @@ di.init()
 
 t = 1
 
-res = data_extractor.rrd.extract_metrics(pipeline.repository.get_by_id('rrd'), '1619085000',  '1619086800', '300')
+# res = data_extractor.rrd.extract_metrics(pipeline.repository.get_by_id('rrd'), '1619085000',  '1619086800', '300')
 # cli.pipeline.create(["-f", "/Users/antonzelenin/Workspace/daria/agent/tests/input_files/rrd/pipelines.json"])
 # cli.destination()
-# cli.pipeline.create()
+cli.pipeline.create(['-f', '/Users/antonzelenin/Workspace/daria/agent/tests/input_files/directory/pipelines.json'])
 # cli.streamsets.delete(["asdfa"])
 t = 1

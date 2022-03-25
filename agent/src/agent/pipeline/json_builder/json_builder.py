@@ -3,6 +3,7 @@ import os
 import traceback
 import jsonschema
 
+from abc import ABC, abstractmethod
 from typing import List, Callable
 from agent import source, pipeline
 from agent.modules import validator
@@ -47,7 +48,12 @@ def _build_multiple(configs: list, build_func: Callable) -> List[Pipeline]:
 
 def build(config: dict) -> Pipeline:
     _validate_config_for_create(config)
-    pipeline_ = pipeline.manager.create_object(config['pipeline_id'], config['source'])
+    # todo double-check
+    # todo schema validation for pipeline type
+    if pipeline.TYPE in config and config[pipeline.TYPE] == pipeline.EVENTS_PIPELINE:
+        pipeline_ = pipeline.manager.create_events_pipeline(config['pipeline_id'], config['source'])
+    else:
+        pipeline_ = pipeline.manager.create_pipeline(config['pipeline_id'], config['source'])
     return _build(config, pipeline_)
 
 
@@ -190,14 +196,20 @@ def _get_schema_chooser(pipeline_: Pipeline) -> _SchemaChooser:
     return _SchemaChooser()
 
 
-class Builder:
-    VALIDATION_SCHEMA_FILE_NAME = ''
-    VALIDATION_SCHEMA_DIR_NAME = 'json_schema_definitions'
-
+class IBuilder(ABC):
     def __init__(self, pipeline_: Pipeline, config: dict, is_edit: bool):
         self.config = config
         self.pipeline = pipeline_
         self.edit = is_edit
+
+    @abstractmethod
+    def build(self) -> Pipeline:
+        pass
+
+
+class Builder(IBuilder):
+    VALIDATION_SCHEMA_FILE_NAME = ''
+    VALIDATION_SCHEMA_DIR_NAME = 'json_schema_definitions'
 
     def build(self) -> Pipeline:
         self._load_config()
@@ -264,6 +276,17 @@ class Builder:
     def _load_dimensions(self):
         if type(self.config.get('dimensions')) == list:
             self.config['dimensions'] = {'required': [], 'optional': self.config['dimensions']}
+
+
+# todo is everything ok? except for russia
+class EventsBuilder(IBuilder):
+    # todo it's not working
+    VALIDATION_SCHEMA_FILE_NAME = ''
+    VALIDATION_SCHEMA_DIR_NAME = 'json_schema_definitions/events'
+
+    def build(self) -> Pipeline:
+        self.pipeline.set_config(self.config)
+        return self.pipeline
 
 
 class ConfigurationException(Exception):

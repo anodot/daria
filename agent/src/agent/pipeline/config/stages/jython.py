@@ -78,6 +78,26 @@ class CreateWatermark(JythonProcessor):
         ]
 
 
+class CreateEvents(JythonProcessor):
+    JYTHON_SCRIPT = 'create_events.py'
+
+    def _get_script_params(self) -> list[dict]:
+        return [
+            {
+                'key': 'EVENT_MAPPING',
+                'value': {
+                    "title": self.pipeline.config.get("mapping", {}).get("title", "title"),
+                    "description": self.pipeline.config.get("mapping", {}).get("description", "description"),
+                    "category": self.pipeline.config.get("mapping", {}).get("category", "category"),
+                    "source": self.pipeline.config.get("mapping", {}).get("source", "source"),
+                    "startDate": self.pipeline.config.get("mapping", {}).get("startDate", "startDate"),
+                    "endDate": self.pipeline.config.get("mapping", {}).get("endDate", "endDate"),
+                    "properties": self.pipeline.config.get("mapping", {}).get("properties", "properties"),
+                }
+            }
+        ]
+
+
 # todo probably on pipeline creation we should create a topology user
 class TopologyDestination(JythonProcessor):
     JYTHON_SCRIPT = 'topology_destination.py'

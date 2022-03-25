@@ -6,7 +6,8 @@ import sdc_client
 from datetime import datetime, timedelta, timezone
 from agent import source, pipeline, destination, streamsets
 from agent.modules import tools, constants
-from agent.pipeline import Pipeline, TestPipeline, schema, extra_setup, PipelineMetric, PipelineRetries, RawPipeline
+from agent.pipeline import Pipeline, TestPipeline, schema, extra_setup, PipelineMetric, PipelineRetries, RawPipeline, \
+    EventsPipeline
 from agent.modules.logger import get_logger
 from agent.pipeline.config.handlers.factory import get_config_handler
 from agent.source import Source
@@ -17,28 +18,37 @@ LOG_LEVELS = [logging.getLevelName(logging.INFO), logging.getLevelName(logging.E
 MAX_SAMPLE_RECORDS = 3
 
 
+# todo think how to make a hard requirement to specify schema/no schema for every pipeline
 def supports_schema(pipeline_: Pipeline) -> bool:
-    if isinstance(pipeline_, (TestPipeline, RawPipeline)):
-        return False
-    supported = [
-        source.TYPE_CLICKHOUSE,
-        source.TYPE_DIRECTORY,
-        source.TYPE_DATABRICKS,
-        source.TYPE_INFLUX,
-        source.TYPE_KAFKA,
-        source.TYPE_MYSQL,
-        source.TYPE_ORACLE,
-        source.TYPE_POSTGRES,
-        source.TYPE_PROMETHEUS,
-        source.TYPE_SAGE,
-        source.TYPE_THANOS,
-        source.TYPE_VICTORIA,
-    ]
-    return pipeline_.source.type in supported
+    if not isinstance(pipeline_, (EventsPipeline, RawPipeline, TestPipeline)):
+        supported = [
+            source.TYPE_CLICKHOUSE,
+            source.TYPE_DIRECTORY,
+            source.TYPE_DATABRICKS,
+            source.TYPE_INFLUX,
+            source.TYPE_KAFKA,
+            source.TYPE_MYSQL,
+            source.TYPE_ORACLE,
+            source.TYPE_POSTGRES,
+            source.TYPE_PROMETHEUS,
+            source.TYPE_SAGE,
+            source.TYPE_THANOS,
+            source.TYPE_VICTORIA,
+        ]
+        return pipeline_.source.type in supported
+    return False
 
 
-def create_object(pipeline_id: str, source_name: str) -> Pipeline:
+def create_pipeline(pipeline_id: str, source_name: str) -> Pipeline:
     return Pipeline(
+        pipeline_id,
+        source.repository.get_by_name(source_name),
+        destination.repository.get(),
+    )
+
+
+def create_events_pipeline(pipeline_id: str, source_name: str) -> EventsPipeline:
+    return EventsPipeline(
         pipeline_id,
         source.repository.get_by_name(source_name),
         destination.repository.get(),

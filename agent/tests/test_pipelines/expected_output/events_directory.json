@@ -1,0 +1,25 @@
+[
+  {
+    "event": {
+      "title": "deployment started on myServer",
+      "description": "my description",
+      "source": "chef",
+      "category": "deployments",
+      "startDate": 1468326864,
+      "properties": [
+        {
+          "key": "open",
+          "value": " Status"
+        },
+        {
+          "key": "Impact Type",
+          "value": "deadly"
+        },
+        {
+          "key": "pipeline_id",
+          "value": "events_directory"
+        }
+      ]
+    }
+  }
+]

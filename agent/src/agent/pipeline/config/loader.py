@@ -89,6 +89,19 @@ class RawConfigLoader(ConfigLoader):
         pass
 
 
+class EventsConfigLoader(ConfigLoader):
+    BASE_PIPELINE_CONFIGS_PATH = 'base_pipelines/events'
+
+    def _check_pipeline(self, pipeline_: Pipeline):
+        pass
+
+    @classmethod
+    def _get_config_file(cls, pipeline: Pipeline) -> str:
+        return {
+            source.TYPE_DIRECTORY: 'directory.json',
+        }[pipeline.source.type]
+
+
 class TestPipelineConfigLoader(ConfigLoader):
     BASE_PIPELINE_CONFIGS_PATH = 'test_pipelines'
 

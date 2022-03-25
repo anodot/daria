@@ -9,6 +9,8 @@ def get_config_handler(pipeline_: Pipeline) -> ConfigHandler:
         return _get_raw_handler(pipeline_, base_config)
     if isinstance(pipeline_, pipeline.TestPipeline):
         return _get_test_handler(pipeline_, base_config)
+    if isinstance(pipeline_, pipeline.EventsPipeline):
+        return _get_events_handler(pipeline_, base_config)
     if pipeline_.uses_schema:
         return _get_schema_handler(pipeline_, base_config)
     return _get_no_schema_handler(pipeline_, base_config)
@@ -98,11 +100,20 @@ def _get_test_handler(pipeline_: Pipeline, base_config: dict) -> ConfigHandler:
     return handlers[pipeline_.source.type](pipeline_, base_config)
 
 
+def _get_events_handler(pipeline_: Pipeline, base_config: dict) -> ConfigHandler:
+    handlers = {
+        source.TYPE_DIRECTORY: pipeline.config.handlers.directory.DirectoryEventsConfigHandler,
+    }
+    return handlers[pipeline_.source.type](pipeline_, base_config)
+
+
 def _get_config_loader(pipeline_: Pipeline):
     if isinstance(pipeline_, pipeline.TestPipeline):
         return pipeline.config.loader.TestPipelineConfigLoader
     if isinstance(pipeline_, pipeline.RawPipeline):
         return pipeline.config.loader.RawConfigLoader
+    if isinstance(pipeline_, pipeline.EventsPipeline):
+        return pipeline.config.loader.EventsConfigLoader
     if pipeline_.uses_schema:
         return pipeline.config.loader.SchemaConfigLoader
     return pipeline.config.loader.NoSchemaConfigLoader
