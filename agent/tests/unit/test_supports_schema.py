@@ -5,8 +5,16 @@ from agent.pipeline import Pipeline
 from agent.source import Source
 
 
+class Object(object):
+    pass
+
+
 def test_supports_schema():
     for source_type in source.types:
-        source_ = Source(f'test_{source_type}', source_type, {})
-        pipeline_ = Pipeline(source_.name, source_, DummyHttpDestination())
+        source_ = Object()
+        source_.type = source_type
+
+        pipeline_ = Object()
+        pipeline_.source = source_
+
         pipeline.manager.supports_schema(pipeline_)
