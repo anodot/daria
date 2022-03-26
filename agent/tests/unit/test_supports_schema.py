@@ -1,8 +1,5 @@
 from agent import pipeline
 from agent import source
-from agent.destination import DummyHttpDestination
-from agent.pipeline import Pipeline
-from agent.source import Source
 
 
 class Object(object):
