@@ -1,7 +1,11 @@
+import json
+
+import prometheus_client.metrics
 import requests
 import urllib.parse
 
 from flask import jsonify, Blueprint, request
+from json.decoder import JSONDecodeError
 from agent import monitoring as monitoring_, destination, pipeline
 from agent.modules import constants, proxy
 from prometheus_client import generate_latest, multiprocess
@@ -23,9 +27,12 @@ def _send_to_anodot(data: list, url: str, proxy_obj: proxy.Proxy):
         errors.append(f'Error {res.status_code} from {url}')
 
     if res.text:
-        res_json = res.json()
-        if res_json['errors']:
-            errors.append(str(res_json['errors']))
+        try:
+            res_json = res.json()
+            if res_json['errors']:
+                errors.append(str(res_json['errors']))
+        except JSONDecodeError:
+            errors.append(res.text)
 
     return errors
 
