@@ -24,6 +24,7 @@ def lookup(
     key_field: str,
     value_field: str,
     compare_function: Callable,
+    strict: bool,
 ) -> Optional[Any]:
     """
     Searches for a lookup_value in the key_field of a lookup using a provided compare function.
@@ -47,30 +48,33 @@ def lookup(
     if lookup_name not in _lookup_cache:
         _lookup_cache[lookup_name] = _sources[lookup_name].get_data()
 
-    res = None
     result_cache_key = _build_result_cache_key(lookup_name, lookup_value, key_field, value_field, compare_function)
+    if result_cache_key in _results_cache:
+        return _results_cache[result_cache_key]
 
-    if result := _results_cache.get(result_cache_key):
-        return result
+    res = [obj[value_field] for obj in _lookup_cache[lookup_name] if compare_function(obj[key_field], lookup_value)]
 
-    for obj in _lookup_cache[lookup_name]:
-        if compare_function(obj[key_field], lookup_value):
-            if res is not None:
-                raise Exception(
-                    '\n'.join([
-                        'Multiple values exist in the lookup for provided params:',
-                        f'lookup name: {lookup_name}',
-                        f'lookup value: {lookup_value}',
-                        f'key field: {key_field}',
-                        f'value field: {value_field}',
-                        f'compare function: {compare_function.__name__}',
-                    ])
-                )
-            res = obj[value_field]
+    if len(res) > 1 and strict:
+        raise Exception(
+            '\n'.join([
+                'Multiple values exist in the lookup for provided params:',
+                f'lookup name: {lookup_name}',
+                f'lookup value: {lookup_value}',
+                f'key field: {key_field}',
+                f'value field: {value_field}',
+                f'compare function: {compare_function.__name__}',
+                f'matched values: {", ".join(res)}',
+            ])
+        )
 
-    _results_cache[result_cache_key] = res
+    _results_cache[result_cache_key] = _extract_result(res)
+    return _results_cache[result_cache_key]
 
-    return res
+
+def _extract_result(res: list):
+    if len(res) > 1:
+        res.sort()
+    return res[0] if res else None
 
 
 def _init_sources(lookup_configs: dict):

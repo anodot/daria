@@ -106,6 +106,78 @@ curl -X POST http://localhost:8080/pipelines \
 ]
 ```
 
+**Request example** (with Elasticsearch query):
+```
+curl -X POST http://localhost:8080/pipelines \
+-H'Content-Type: application/json' \
+-d '[
+    {
+        "source": "elastic_src",
+        "pipeline_id": "elastic_pipeline",
+        "measurement_names": {"Clicks":  "clicks"},
+        "values": {"Clicks":  "gauge"},
+        "dimensions": ["_source/ver", "_source/Country"],
+        "timestamp": {
+            "type": "unix",
+            "name": "_source/timestamp_unix"
+        },
+        "query": "{\"sort\": [{\"timestamp_unix_ms\": {\"order\": \"asc\"}}],\n \"query\": {\"range\": {\"timestamp_unix_ms\": {\"gt\": ${OFFSET}}}}}"
+    }
+]'
+```
+
+**Response example** (with Elasticsearch query):
+```
+[
+    {
+        "config": {
+            "dimensions": {
+                "optional": [
+                    "_source/ver",
+                    "_source/Country"
+                ],
+                "required": []
+            },
+            "measurement_names": {
+                "Clicks": "clicks"
+            },
+            "pipeline_id": "elastic_pipeline",
+            "query": "{\"sort\": [{\"timestamp_unix_ms\": {\"order\": \"asc\"}}],\n \"query\": {\"range\": {\"timestamp_unix_ms\": {\"gt\": ${OFFSET}}}}}",
+            "timestamp": {
+                "name": "_source/timestamp_unix",
+                "type": "unix"
+            },
+            "uses_schema": false,
+            "values": {
+                "Clicks": "gauge"
+            }
+        },
+        "destination": {
+            "conf.client.proxy.password": "",
+            "conf.client.proxy.uri": "",
+            "conf.client.proxy.username": "",
+            "conf.client.useProxy": false,
+            "token": "correct_token",
+            "url": "http://dummy_destination"
+        },
+        "id": "elastic_pipeline",
+        "override_source": {},
+        "schema": {},
+        "source": {
+            "conf.httpUris": [
+                "http://es:9200"
+            ],
+            "conf.index": "test",
+            "conf.initialOffset": "now-1563d",
+            "conf.isIncrementalMode": true,
+            "conf.offsetField": "timestamp_unix_ms",
+            "conf.queryInterval": "${1 * SECONDS}",
+            "query_interval_sec": 1
+        }
+    }
+]
+```
+
 Edit pipelines
 -----------
 To edit one or multiple pipelines submit a PUT request containing pipeline configurations in JSON format to the `/pipelines` endpoint.

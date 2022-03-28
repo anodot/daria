@@ -38,7 +38,8 @@
             "key": "ABBREVIATION",
             "value": "STATE",
             "compare_function": "contains",
-            "default": "other"
+            "default": "other",
+            "strict": false
           }
         ]
       },
@@ -135,7 +136,8 @@
     "interval": 3600,
     "default_values_type": "storage",
     "dimensions": [
-      "Storage size"
+      "Storage size",
+      "storage_mib"
     ],
     "dimension_configurations": {
       "Storage size": {
