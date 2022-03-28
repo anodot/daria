@@ -1,6 +1,6 @@
 from agent.modules.logger import get_logger
 from agent.pipeline.config import stages
-from agent.pipeline.config.handlers.base import NoSchemaConfigHandler
+from agent.pipeline.config.handlers.base import NoSchemaConfigHandler, TestConfigHandler
 
 logger = get_logger(__name__)
 
@@ -13,3 +13,7 @@ class MongoConfigHandler(NoSchemaConfigHandler):
         'ExpressionEvaluator_03': stages.expression_evaluator.Filtering,
         'destination': stages.destination.Destination
     }
+
+
+class TestMongoConfigHandler(TestConfigHandler):
+    stages_to_override = {'source': stages.source.Source}
