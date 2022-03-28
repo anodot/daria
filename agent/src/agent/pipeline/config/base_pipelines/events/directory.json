@@ -5,7 +5,7 @@
     "pipelineId" : "directory905eaa73-3070-424f-a925-6dc6510b0f21",
     "title" : "events_directory",
     "description" : "",
-    "uuid" : "5bdb8da5-399b-4c53-8eac-3024fd8e4e65",
+    "uuid" : "6ed805b0-7aea-4d88-9a1e-0fef78999c23",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -31,16 +31,16 @@
       "name" : "constants",
       "value" : [ {
         "key" : "TOKEN",
-        "value" : "correct_token"
+        "value" : "e2df74ce3386746d403c072854c4be46"
       }, {
         "key" : "AUTH_TOKEN",
-        "value" : "ok"
+        "value" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiMDgwNjVlYjA3ZTI4ZTRiZGVlZjkxZGJlNDllMGUwZTQwMTZhNzFkNzAwNjk5Yzc0YmMwNWMwMDI4ZWQ5NDllMjFlODU3YWIxODMxZmJkN2VmYmJiZmUwZGVlMmExMzQ0N2M3MmM2YzQyMjFiY2UzMjMwOGVhMDVkNjdkZjhkNjBiYjA3MmY1Yjg0NGI3MTRlNTgiLCJpYXQiOjE2NDg0Njk2NTksImV4cCI6MTY1MTA2MTY1OX0.TjpCpNtQ14DdMAGU0XNvbKSyDCxOR0wx-_xgN5050Q8"
       }, {
         "key" : "PROTOCOL",
         "value" : "anodot20"
       }, {
         "key" : "ANODOT_BASE_URL",
-        "value" : "http://dummy_destination"
+        "value" : "https://ap.anodot.com"
       }, {
         "key" : "AGENT_URL",
         "value" : "http://anodot-agent"
@@ -727,7 +727,7 @@
         "value" : ""
       }, {
         "name" : "script",
-        "value" : "global sdc\n\ntry:\n    sdc.importLock()\n    from datetime import datetime\nfinally:\n    sdc.importUnlock()\n\n\nfor rec in sdc.records:\n    record = sdc.createRecord('record created ' + str(datetime.now()))\n    record.value = {k: rec.value[v] for k, v in sdc.userParams['EVENT_MAPPING'].items()}\n    sdc.output.write(record)"
+        "value" : "global sdc\n\ntry:\n    sdc.importLock()\n    from datetime import datetime\nfinally:\n    sdc.importUnlock()\n\n# todo do I need create categories and probably other things?\nREQUIRED = [\n    'title',\n    'category',\n    'source',\n    'startDate'\n]\n\n\nfor rec in sdc.records:\n    record = sdc.createRecord('record created ' + str(datetime.now()))\n    event = {}\n    for k, v in sdc.userParams['EVENT_MAPPING'].items():\n        if k == 'properties':\n            continue\n        if v not in rec.value:\n            if v in REQUIRED:\n                raise Exception('Missing required field: ' + v)\n            continue\n        event[k] = rec.value[v]\n    event['properties'] = []\n    for prop in sdc.userParams['EVENT_MAPPING']['properties']:\n        prop = {\n            'key': prop,\n            'value': rec.value[prop],\n        }\n        event['properties'].append(prop)\n    event['properties'].append({\n        'key': 'pipeline_id',\n        'value': '${pipeline:id()}'\n    })\n    record.value = {\n        'event': event\n    }\n    sdc.output.write(record)\n"
       }, {
         "name" : "destroyScript",
         "value" : ""
@@ -739,13 +739,13 @@
         "value" : [ {
           "key" : "EVENT_MAPPING",
           "value" : {
-            "Title" : "Title",
-            "Description" : "Description",
-            "Category" : "Category",
-            "Source" : "Source",
-            "StartDate" : "StartDate",
-            "EndDate" : "EndDate",
-            "Properties" : "Properties"
+            "title" : "title",
+            "description" : "Description",
+            "category" : "category",
+            "source" : "source",
+            "startDate" : "startDate",
+            "endDate" : "endDate",
+            "properties" : [ "Status", "Impact Type" ]
           }
         } ]
       }, {
@@ -805,7 +805,7 @@
         "value" : "\""
       }, {
         "name" : "conf.dataGeneratorFormatConfig.jsonMode",
-        "value" : "ARRAY_OBJECTS"
+        "value" : "MULTIPLE_OBJECTS"
       }, {
         "name" : "conf.dataGeneratorFormatConfig.textFieldPath",
         "value" : "/text"
@@ -982,10 +982,10 @@
         "value" : ""
       }, {
         "name" : "conf.client.useProxy",
-        "value" : true
+        "value" : false
       }, {
         "name" : "conf.client.proxy.uri",
-        "value" : "http://squid:3128"
+        "value" : ""
       }, {
         "name" : "conf.client.proxy.username",
         "value" : ""
@@ -1033,7 +1033,7 @@
         "value" : [ ]
       }, {
         "name" : "conf.client.requestLoggingConfig.enableRequestLogging",
-        "value" : false
+        "value" : true
       }, {
         "name" : "conf.client.requestLoggingConfig.logLevel",
         "value" : "INFO"
@@ -1127,19 +1127,19 @@
       "pipelineId" : "events_directory",
       "title" : "events_directory",
       "description" : "",
-      "created" : 1648128279488,
-      "lastModified" : 1648133708451,
+      "created" : 1648470816389,
+      "lastModified" : 1648471057706,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "5bdb8da5-399b-4c53-8eac-3024fd8e4e65",
+      "uuid" : "6ed805b0-7aea-4d88-9a1e-0fef78999c23",
       "valid" : true,
       "metadata" : {
         "labels" : [ "directory", "http" ]
       },
       "name" : "events_directory",
       "sdcVersion" : "3.18.0",
-      "sdcId" : "45f0921a-ab75-11ec-aafe-27a2aa7e64c9"
+      "sdcId" : "6b918d9d-ae8f-11ec-9ca8-2b7390d6a011"
     },
     "metadata" : {
       "labels" : [ "directory", "http" ]
@@ -1480,7 +1480,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1648128279546,
+      "timestamp" : 1648470816480,
       "valid" : true
     }, {
       "id" : "stageErrorAlertID",
@@ -1491,7 +1491,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1648128279546,
+      "timestamp" : 1648470816480,
       "valid" : true
     }, {
       "id" : "idleGaugeID",
@@ -1502,7 +1502,7 @@
       "condition" : "${time:now() - value() > 120000}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1648128279546,
+      "timestamp" : 1648470816480,
       "valid" : true
     }, {
       "id" : "batchTimeAlertID",
@@ -1513,12 +1513,12 @@
       "condition" : "${value() > 200}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1648128279546,
+      "timestamp" : 1648470816480,
       "valid" : true
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "609d49e9-2ec0-497f-9547-f3e99fc9b634",
+    "uuid" : "f6af3d88-7191-42f9-87eb-95a39a1e48c8",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : null

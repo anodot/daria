@@ -48,9 +48,7 @@ def _build_multiple(configs: list, build_func: Callable) -> List[Pipeline]:
 
 def build(config: dict) -> Pipeline:
     _validate_config_for_create(config)
-    # todo double-check
-    # todo schema validation for pipeline type
-    if pipeline.TYPE in config and config[pipeline.TYPE] == pipeline.EVENTS_PIPELINE:
+    if config.get(pipeline.TYPE, pipeline.REGULAR_PIPELINE) == pipeline.EVENTS_PIPELINE:
         pipeline_ = pipeline.manager.create_events_pipeline(config['pipeline_id'], config['source'])
     else:
         pipeline_ = pipeline.manager.create_pipeline(config['pipeline_id'], config['source'])
@@ -148,7 +146,8 @@ def _validate_config_for_create(config: dict):
                 'type': 'string',
                 'minLength': 1,
                 'maxLength': 100
-            }
+            },
+            'pipeline_type': {'type': 'string', 'enum': pipeline.PIPELINE_TYPES},
         },
         'required': ['source', 'pipeline_id']
     }
@@ -180,8 +179,9 @@ class _PromQLSchemaChooser(_SchemaChooser):
         conf_uses = False if 'uses_schema' not in config else bool(config['uses_schema'])
         # PromQL pipelines support schema only if dimensions and values are specified
         actual_schema = (
-            _SchemaChooser.choose(pipeline_, config, is_edit) and 'dimensions' in config and bool(config['dimensions'])
-            and 'values' in config and bool(config['values'])
+                _SchemaChooser.choose(pipeline_, config, is_edit) and 'dimensions' in config and bool(
+            config['dimensions'])
+                and 'values' in config and bool(config['values'])
         )
         if conf_uses and not actual_schema:
             raise ConfigurationException(
@@ -197,6 +197,9 @@ def _get_schema_chooser(pipeline_: Pipeline) -> _SchemaChooser:
 
 
 class IBuilder(ABC):
+    VALIDATION_SCHEMA_FILE_NAME = ''
+    VALIDATION_SCHEMA_DIR_NAME = ''
+
     def __init__(self, pipeline_: Pipeline, config: dict, is_edit: bool):
         self.config = config
         self.pipeline = pipeline_
@@ -206,9 +209,15 @@ class IBuilder(ABC):
     def build(self) -> Pipeline:
         pass
 
+    @property
+    def definitions_dir(self):
+        return os.path.join(os.path.dirname(os.path.realpath(__file__)), self.VALIDATION_SCHEMA_DIR_NAME)
+
+    def _get_validation_file_path(self):
+        return os.path.join(self.definitions_dir, f'{self.VALIDATION_SCHEMA_FILE_NAME}.json')
+
 
 class Builder(IBuilder):
-    VALIDATION_SCHEMA_FILE_NAME = ''
     VALIDATION_SCHEMA_DIR_NAME = 'json_schema_definitions'
 
     def build(self) -> Pipeline:
@@ -225,24 +234,14 @@ class Builder(IBuilder):
         self._load_filtering()
         self._load_transformations()
 
-    @property
-    def definitions_dir(self):
-        return os.path.join(os.path.dirname(os.path.realpath(__file__)), self.VALIDATION_SCHEMA_DIR_NAME)
-
     def _validate_json_schema(self):
         self._validate_dvp_config_json_schema()
-        with open(os.path.join(self.definitions_dir, self.VALIDATION_SCHEMA_FILE_NAME + '.json')) as f:
-            schema = json.load(f)
-        if self.edit:
-            schema['required'] = []
-        jsonschema.validate(self.config, schema)
+        _validate_schema(self._get_validation_file_path(), self.config, self.edit)
 
     def _validate_dvp_config_json_schema(self):
         if 'dvpConfig' not in self.config:
             return
-        with open(os.path.join(self.definitions_dir, 'dvp_config.json')) as f:
-            schema = json.load(f)
-        jsonschema.validate(self.config['dvpConfig'], schema)
+        _validate_schema(os.path.join(self.definitions_dir, 'dvp_config.json'), self.config['dvpConfig'], False)
 
     def _load_dvp_config_with_default(self):
         if 'dvpConfig' not in self.config:
@@ -278,15 +277,21 @@ class Builder(IBuilder):
             self.config['dimensions'] = {'required': [], 'optional': self.config['dimensions']}
 
 
-# todo is everything ok? except for russia
 class EventsBuilder(IBuilder):
-    # todo it's not working
-    VALIDATION_SCHEMA_FILE_NAME = ''
     VALIDATION_SCHEMA_DIR_NAME = 'json_schema_definitions/events'
 
     def build(self) -> Pipeline:
+        _validate_schema(self._get_validation_file_path(), self.config, self.edit)
         self.pipeline.set_config(self.config)
         return self.pipeline
+
+
+def _validate_schema(file_path: str, config: dict, is_edit: bool):
+    with open(file_path) as f:
+        schema = json.load(f)
+    if is_edit:
+        schema['required'] = []
+    jsonschema.validate(config, schema)
 
 
 class ConfigurationException(Exception):

@@ -18,7 +18,6 @@ LOG_LEVELS = [logging.getLevelName(logging.INFO), logging.getLevelName(logging.E
 MAX_SAMPLE_RECORDS = 3
 
 
-# todo think how to make a hard requirement to specify schema/no schema for every pipeline
 def supports_schema(pipeline_: Pipeline) -> bool:
     if not isinstance(pipeline_, (EventsPipeline, RawPipeline, TestPipeline)):
         supported = [

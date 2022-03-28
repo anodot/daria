@@ -15,13 +15,13 @@ from agent.modules.time import Interval
 from agent.source import Source
 from agent.streamsets import StreamSets
 
-# todo think about name and value
 TYPE = 'pipeline_type'
 
 REGULAR_PIPELINE = 'regular_pipeline'
 RAW_PIPELINE = 'raw_pipeline'
-# todo is "pipeline_type": "events_pipeline" okay in config? discuss it
 EVENTS_PIPELINE = 'events_pipeline'
+
+PIPELINE_TYPES = [REGULAR_PIPELINE, RAW_PIPELINE, EVENTS_PIPELINE]
 
 
 class PipelineException(Exception):

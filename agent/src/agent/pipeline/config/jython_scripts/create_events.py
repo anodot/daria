@@ -6,11 +6,11 @@ try:
 finally:
     sdc.importUnlock()
 
-# todo do I need create categories and probably other things?
 REQUIRED = [
     'title',
     'category',
-    'source',
+    # it will be required if it's not hardcoded
+    # 'source',
     'startDate'
 ]
 
@@ -25,10 +25,7 @@ for rec in sdc.records:
             if v in REQUIRED:
                 raise Exception('Missing required field: ' + v)
             continue
-        val = rec.value[v]
-        if k in ['startDate', 'endDate']:
-            val = int(val)
-        event[k] = val
+        event[k] = rec.value[v]
     event['properties'] = []
     for prop in sdc.userParams['EVENT_MAPPING']['properties']:
         prop = {
@@ -40,6 +37,8 @@ for rec in sdc.records:
         'key': 'pipeline_id',
         'value': '${pipeline:id()}'
     })
+    # this is hardcoded for all events for now
+    event['source'] = 'Agent'
     record.value = {
         'event': event
     }

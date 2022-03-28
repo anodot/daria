@@ -71,6 +71,5 @@ class TestDirectory(TestPipelineBase):
             }
         }
 
-    # todo send two events to a real account
     def test_events_output(self):
         assert get_output(f'events_directory.json') == get_expected_events_output('events_directory.json')

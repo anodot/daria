@@ -14,30 +14,31 @@ app.secret_key = b"\xf9\x19\x8d\xd2\xb7N\x84\xae\x16\x0f'`U\x88x&\nF\xa2\xe9\xa1
 def to_file():
     if request.args.get('token') and request.args.get('token') == 'incorrect_token':
         return json.dumps({'errors': ['Data collection token is invalid']}), 401
-    return _write_to_file(_extract_file_name(request.json))
+    data = request.json
+    if data and len(data) > 0:
+        _write_to_file(_extract_file_name(request.json), data)
+    return json.dumps({'errors': []})
 
 
 @app.route('/api/v2/user-events', methods=['POST'])
 def event_to_file():
     if request.headers.get('Authorization') != 'Bearer ok':
         return json.dumps({'errors': ['Data collection token is invalid']}), 401
-    return _write_to_file(_extract_events_file_name(request.json))
-
-
-def _write_to_file(file_name: str):
-    data = request.json
-    if data and len(data) > 0:
-        file_path = os.path.join(OUTPUT_DIR, file_name)
-        if os.path.isfile(file_path):
-            with open(file_path, 'r') as f:
-                if existing_data := json.load(f):
-                    data = existing_data + data
-        with open(file_path, 'w') as f:
-            json.dump(data, f)
+    _write_to_file(_extract_events_file_name(request.json), request.json)
     return json.dumps({'errors': []})
 
 
-def _extract_file_name(data):
+def _write_to_file(file_name: str, data):
+    file_path = os.path.join(OUTPUT_DIR, file_name)
+    if os.path.isfile(file_path):
+        with open(file_path, 'r') as f:
+            if existing_data := json.load(f):
+                data = existing_data + data
+    with open(file_path, 'w') as f:
+        json.dump(data, f)
+
+
+def _extract_file_name(data: list[dict]):
     try:
         file_name = data[0]['tags']['pipeline_id'][0] + '_' + data[0]['tags']['pipeline_type'][0]
     except KeyError:
@@ -45,8 +46,8 @@ def _extract_file_name(data):
     return f'{file_name}.json'
 
 
-def _extract_events_file_name(data: list[dict]):
-    for prop in data[0]['event']['properties']:
+def _extract_events_file_name(data: dict):
+    for prop in data['event']['properties']:
         if prop['key'] == 'pipeline_id':
             return f'{prop["value"]}.json'
     raise Exception('pipeline_id not found in event properties')
