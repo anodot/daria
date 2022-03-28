@@ -16,4 +16,6 @@ class MongoConfigHandler(NoSchemaConfigHandler):
 
 
 class TestMongoConfigHandler(TestConfigHandler):
-    stages_to_override = {'source': stages.source.Source}
+    stages_to_override = {
+        'source': stages.source.Source,
+    }

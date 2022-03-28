@@ -92,7 +92,7 @@ def _get_test_handler(pipeline_: Pipeline, base_config: dict) -> ConfigHandler:
         source.TYPE_PROMETHEUS: pipeline.config.handlers.promql.TestPromQLConfigHandler,
         source.TYPE_SAGE: pipeline.config.handlers.sage.SageConfigHandler,
         source.TYPE_SOLARWINDS: pipeline.config.handlers.solarwinds.SolarWindsConfigHandler,
-        source.TYPE_SPLUNK: pipeline.config.handlers.tcp.TCPConfigHandler,
+        source.TYPE_SPLUNK: pipeline.config.handlers.tcp.TestTCPConfigHandler,
         source.TYPE_THANOS: pipeline.config.handlers.promql.TestPromQLConfigHandler,
         source.TYPE_VICTORIA: pipeline.config.handlers.promql.TestPromQLConfigHandler,
         source.TYPE_ZABBIX: pipeline.config.handlers.zabbix.TestZabbixConfigHandler,
