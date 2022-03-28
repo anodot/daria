@@ -20,21 +20,33 @@ MAX_SAMPLE_RECORDS = 3
 def supports_schema(pipeline_: Pipeline) -> bool:
     if isinstance(pipeline_, (TestPipeline, RawPipeline)):
         return False
-    supported = [
-        source.TYPE_CLICKHOUSE,
-        source.TYPE_DIRECTORY,
-        source.TYPE_DATABRICKS,
-        source.TYPE_INFLUX,
-        source.TYPE_KAFKA,
-        source.TYPE_MYSQL,
-        source.TYPE_ORACLE,
-        source.TYPE_POSTGRES,
-        source.TYPE_PROMETHEUS,
-        source.TYPE_SAGE,
-        source.TYPE_THANOS,
-        source.TYPE_VICTORIA,
-    ]
-    return pipeline_.source.type in supported
+    supported = {
+        source.TYPE_CACTI: False,
+        source.TYPE_CLICKHOUSE: True,
+        source.TYPE_DIRECTORY: True,
+        source.TYPE_DATABRICKS: True,
+        source.TYPE_ELASTIC: False,
+        source.TYPE_INFLUX: True,
+        source.TYPE_INFLUX_2: True,
+        source.TYPE_KAFKA: True,
+        source.TYPE_MONGO: False,
+        source.TYPE_MSSQL: True,
+        source.TYPE_MYSQL: True,
+        source.TYPE_OBSERVIUM: False,
+        source.TYPE_ORACLE: True,
+        source.TYPE_POSTGRES: True,
+        source.TYPE_PROMETHEUS: True,
+        source.TYPE_RRD: False,
+        source.TYPE_SAGE: True,
+        source.TYPE_SNMP: False,
+        source.TYPE_SPLUNK: False,
+        source.TYPE_SOLARWINDS: False,
+        source.TYPE_THANOS: True,
+        source.TYPE_TOPOLOGY: False,
+        source.TYPE_VICTORIA: True,
+        source.TYPE_ZABBIX: False,
+    }
+    return supported[pipeline_.source.type]
 
 
 def create_object(pipeline_id: str, source_name: str) -> Pipeline:
