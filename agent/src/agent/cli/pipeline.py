@@ -19,6 +19,9 @@ def get_pipelines_ids_complete(ctx, args, incomplete):
 
 @click.command(name='list')
 def list_pipelines():
+    """
+    List all available pipelines
+    """
     pipelines = pipeline.repository.get_all()
     statuses = sdc_client.get_all_pipeline_statuses()
     table = _build_table(
@@ -33,6 +36,9 @@ def list_pipelines():
 @click.option('-f', '--file', type=click.File())
 @click.option('-p', '--result-preview', is_flag=True)
 def create(advanced: bool, file, result_preview: bool):
+    """
+    Create new Pipeline
+    """
     check_prerequisites()
     _create_from_file(file, result_preview) if file else _prompt(advanced)
 
@@ -40,6 +46,9 @@ def create(advanced: bool, file, result_preview: bool):
 @click.command(name='create-raw')
 @click.option('-f', '--file', type=click.File(), required=True)
 def create_raw(file):
+    """
+    Create raw Pipeline
+    """
     _check_raw_prerequisites()
     try:
         pipeline.json_builder.build_raw_using_file(file)
@@ -53,6 +62,9 @@ def create_raw(file):
 @click.option('-f', '--file', type=click.File())
 @click.option('-p', '--result-preview', is_flag=True)
 def edit(pipeline_id: str, advanced: bool, file, result_preview: bool):
+    """
+    Edit config of an existing Pipeline
+    """
     check_prerequisites()
     if not file and not pipeline_id:
         raise click.UsageError('Specify pipeline id or file')
@@ -73,6 +85,9 @@ def _check_raw_prerequisites():
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, required=False)
 @click.option('-f', '--file', type=click.File())
 def start(pipeline_id: str, file):
+    """
+    Start a Pipelines to perform data collection
+    """
     if not file and not pipeline_id:
         raise click.UsageError('Specify pipeline id or file')
     for pipeline_id in _get_pipeline_ids(pipeline_id, file):
@@ -90,6 +105,9 @@ def start(pipeline_id: str, file):
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, required=False)
 @click.option('-f', '--file', type=click.File())
 def stop(pipeline_id: str, file):
+    """
+    Stop a Pipelines to stop processing data
+    """
     if not file and not pipeline_id:
         raise click.UsageError('Specify pipeline id or file')
     for pipeline_id in _get_pipeline_ids(pipeline_id, file):
@@ -110,6 +128,9 @@ def _get_pipeline_ids(pipeline_id, file):
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
 def force_stop(pipeline_id: str):
+    """
+    Forcing a Pipeline to stop (often stops processes before they complete, which can lead to unexpected results)
+    """
     try:
         click.echo('Force pipeline stopping...')
         sdc_client.force_stop(pipeline.repository.get_by_id(pipeline_id))
@@ -123,6 +144,9 @@ def force_stop(pipeline_id: str):
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, required=False)
 @click.option('-f', '--file', type=click.File())
 def delete(pipeline_id: str, file):
+    """
+    Delete a Pipeline by its name (safely stopping before deletion)
+    """
     if not file and not pipeline_id:
         raise click.UsageError('Specify pipeline id or file')
     for pipeline_id in _get_pipeline_ids(pipeline_id, file):
@@ -139,6 +163,9 @@ def delete(pipeline_id: str, file):
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
 def force_delete(pipeline_id: str):
+    """
+    Forcing to delete a Pipeline
+    """
     errors = pipeline.manager.force_delete(pipeline_id)
     if errors:
         for e in errors:
@@ -153,6 +180,9 @@ def force_delete(pipeline_id: str):
 @click.option('-l', '--lines', type=click.INT, default=10)
 @click.option('-s', '--severity', type=click.Choice([Severity.INFO, Severity.ERROR]), default=None)
 def logs(pipeline_id: str, lines: int, severity: Optional[Severity]):
+    """
+    Show a Pipeline logs
+    """
     try:
         logs_ = sdc_client.get_pipeline_logs(pipeline.repository.get_by_id(pipeline_id), severity, lines)
     except (sdc_client.ApiClientException, pipeline.repository.PipelineNotExistsException) as e:
@@ -264,6 +294,9 @@ def update(pipeline_id: str):
 @click.command()
 @click.option('-d', '--dir-path', type=click.Path())
 def export(dir_path):
+    """
+    Export pipelines' config into file
+    """
     if not dir_path:
         dir_path = 'pipelines'
     if not os.path.isdir(dir_path):
