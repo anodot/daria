@@ -79,7 +79,9 @@ def start(pipeline_id: str, file):
         try:
             click.echo(f'Pipeline {pipeline_id} is starting...')
             pipeline.manager.start(pipeline.repository.get_by_id(pipeline_id))
-        except (sdc_client.ApiClientException, pipeline.PipelineException) as e:
+        except (
+            sdc_client.ApiClientException, pipeline.PipelineException, pipeline.repository.PipelineNotExistsException
+        ) as e:
             click.secho(str(e), err=True, fg='red')
             continue
 
@@ -94,7 +96,9 @@ def stop(pipeline_id: str, file):
         try:
             sdc_client.stop(pipeline.repository.get_by_id(pipeline_id))
             click.secho(f'Pipeline {pipeline_id} is stopped', fg='green')
-        except (sdc_client.ApiClientException, pipeline.PipelineException) as e:
+        except (
+            sdc_client.ApiClientException, pipeline.PipelineException, pipeline.repository.PipelineNotExistsException
+        ) as e:
             click.secho(str(e), err=True, fg='red')
             continue
 
@@ -110,7 +114,7 @@ def force_stop(pipeline_id: str):
         click.echo('Force pipeline stopping...')
         sdc_client.force_stop(pipeline.repository.get_by_id(pipeline_id))
         click.secho('Pipeline is stopped', fg='green')
-    except sdc_client.ApiClientException as e:
+    except (sdc_client.ApiClientException, pipeline.repository.PipelineNotExistsException) as e:
         click.secho(str(e), err=True, fg='red')
         return
 
@@ -136,9 +140,11 @@ def delete(pipeline_id: str, file):
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
 def force_delete(pipeline_id: str):
     errors = pipeline.manager.force_delete(pipeline_id)
-    for e in errors:
-        click.secho(e, err=True, fg='red')
-    click.echo('Finished')
+    if errors:
+        for e in errors:
+            click.secho(e, err=True, fg='red')
+    else:
+        click.echo('Finished')
 
 
 # todo severity is not working
@@ -149,7 +155,7 @@ def force_delete(pipeline_id: str):
 def logs(pipeline_id: str, lines: int, severity: Optional[Severity]):
     try:
         logs_ = sdc_client.get_pipeline_logs(pipeline.repository.get_by_id(pipeline_id), severity, lines)
-    except sdc_client.ApiClientException as e:
+    except (sdc_client.ApiClientException, pipeline.repository.PipelineNotExistsException) as e:
         raise click.ClickException(str(e))
     table = _build_table(['Timestamp', 'Severity', 'Category', 'Message'], logs_)
     click.echo(table.draw())
@@ -162,7 +168,10 @@ def destination_logs(pipeline_id: str, enable: bool):
     """
     Enable destination response logs for a pipeline (for debugging purposes only)
     """
-    pipeline_ = pipeline.repository.get_by_id(pipeline_id)
+    try:
+        pipeline_ = pipeline.repository.get_by_id(pipeline_id)
+    except pipeline.repository.PipelineNotExistsException as e:
+        raise click.ClickException(str(e))
     if enable:
         pipeline.manager.enable_destination_logs(pipeline_)
     else:
@@ -181,7 +190,7 @@ def info(pipeline_id: str, lines: int):
         pipeline_ = pipeline.repository.get_by_id(pipeline_id)
         info_ = pipeline.manager.get_info(pipeline_, lines)
         print_info(info_)
-    except sdc_client.ApiClientException as e:
+    except (sdc_client.ApiClientException, pipeline.repository.PipelineNotExistsException) as e:
         raise click.ClickException(str(e))
 
 
@@ -230,7 +239,7 @@ def reset(pipeline_id: str):
     """
     try:
         pipeline.manager.reset(pipeline.repository.get_by_id(pipeline_id))
-    except sdc_client.ApiClientException as e:
+    except (sdc_client.ApiClientException, pipeline.repository.PipelineNotExistsException) as e:
         click.secho(str(e), err=True, fg='red')
         return
     click.echo('Pipeline offset reset')
