@@ -58,6 +58,13 @@ def create_pipeline(pipeline_id: str, source_name: str) -> Pipeline:
     )
 
 
+def create_raw_pipeline(pipeline_id: str, source_name: str) -> RawPipeline:
+    return RawPipeline(
+        pipeline_id,
+        source.repository.get_by_name(source_name),
+    )
+
+
 def create_events_pipeline(pipeline_id: str, source_name: str) -> EventsPipeline:
     return EventsPipeline(
         pipeline_id,

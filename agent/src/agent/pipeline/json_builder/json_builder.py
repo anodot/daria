@@ -31,6 +31,10 @@ def build_raw_using_file(file) -> List[Pipeline]:
     return _build_multiple(extract_configs(file), build_raw)
 
 
+def build_events_using_file(file) -> List[Pipeline]:
+    return _build_multiple(extract_configs(file), build_events)
+
+
 def _build_multiple(configs: list, build_func: Callable) -> List[Pipeline]:
     _validate_configs_for_create(configs)
     exceptions = {}
@@ -48,16 +52,19 @@ def _build_multiple(configs: list, build_func: Callable) -> List[Pipeline]:
 
 def build(config: dict) -> Pipeline:
     _validate_config_for_create(config)
-    if config.get(pipeline.TYPE, pipeline.REGULAR_PIPELINE) == pipeline.EVENTS_PIPELINE:
-        pipeline_ = pipeline.manager.create_events_pipeline(config['pipeline_id'], config['source'])
-    else:
-        pipeline_ = pipeline.manager.create_pipeline(config['pipeline_id'], config['source'])
+    pipeline_ = pipeline.manager.create_pipeline(config['pipeline_id'], config['source'])
     return _build(config, pipeline_)
 
 
 def build_raw(config: dict) -> Pipeline:
     _validate_config_for_create(config)
-    pipeline_ = pipeline.RawPipeline(config['pipeline_id'], source.repository.get_by_name(config['source']))
+    pipeline_ = pipeline.manager.create_raw_pipeline(config['pipeline_id'], config['source'])
+    return _build(config, pipeline_)
+
+
+def build_events(config: dict) -> Pipeline:
+    _validate_config_for_create(config)
+    pipeline_ = pipeline.manager.create_events_pipeline(config['pipeline_id'], config['source'])
     return _build(config, pipeline_)
 
 

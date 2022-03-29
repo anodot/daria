@@ -17,7 +17,9 @@ from .solarwinds import SolarWindsClientData
 from .tcp import TcpBuilder
 from .topology import TopologyBuilder
 from .zabbix import ZabbixBuilder
-from .json_builder import build, build_raw, build_using_file, build_raw_using_file, build_multiple
+from .json_builder import (
+    build, build_raw, build_using_file, build_raw_using_file, build_events_using_file, build_multiple
+)
 from .json_builder import edit, edit_using_file, edit_multiple, extract_configs
 
 

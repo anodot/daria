@@ -23,7 +23,12 @@ def list_pipelines():
     statuses = sdc_client.get_all_pipeline_statuses()
     table = _build_table(
         ['Name', 'Type', 'Status', 'Streamsets URL'],
-        [[p.name, p.source.type, statuses[p.name]['status'] if p.name in statuses else 'DOES NOT EXIST IN STREAMSETS', p.streamsets.url] for p in pipelines]
+        [
+            [p.name, p.source.type, statuses[p.name]['status']
+            if p.name in statuses
+            else 'DOES NOT EXIST IN STREAMSETS', p.streamsets.url]
+            for p in pipelines
+        ]
     )
     click.echo(table.draw())
 
@@ -44,7 +49,17 @@ def create_raw(file):
     try:
         pipeline.json_builder.build_raw_using_file(file)
     except (sdc_client.ApiClientException, ValidationError, pipeline.PipelineException) as e:
-        raise click.ClickException(str(e))
+        raise click.ClickException(str(e)) from e
+
+
+@click.command(name='create-events')
+@click.option('-f', '--file', type=click.File(), required=True)
+def create_events(file):
+    check_prerequisites()
+    try:
+        pipeline.json_builder.build_events_using_file(file)
+    except (sdc_client.ApiClientException, ValidationError, pipeline.PipelineException) as e:
+        raise click.ClickException(str(e)) from e
 
 
 @click.command()
@@ -126,7 +141,8 @@ def delete(pipeline_id: str, file):
             pipeline.manager.delete_by_id(pipeline_id)
             click.echo(f'Pipeline {pipeline_id} deleted')
         except (
-            sdc_client.ApiClientException, pipeline.PipelineException, pipeline.repository.PipelineNotExistsException
+                sdc_client.ApiClientException, pipeline.PipelineException,
+                pipeline.repository.PipelineNotExistsException
         ) as e:
             click.secho(str(e), err=True, fg='red')
             continue
@@ -145,12 +161,12 @@ def force_delete(pipeline_id: str):
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
 @click.option('-l', '--lines', type=click.INT, default=10)
-@click.option('-s', '--severity', type=click.Choice([Severity.INFO, Severity.ERROR]), default=None)
+@click.option('-s', '--severity', type=click.Choice([Severity.INFO.value, Severity.ERROR.value]), default=None)
 def logs(pipeline_id: str, lines: int, severity: Optional[Severity]):
     try:
         logs_ = sdc_client.get_pipeline_logs(pipeline.repository.get_by_id(pipeline_id), severity, lines)
     except sdc_client.ApiClientException as e:
-        raise click.ClickException(str(e))
+        raise click.ClickException(str(e)) from e
     table = _build_table(['Timestamp', 'Severity', 'Category', 'Message'], logs_)
     click.echo(table.draw())
 
@@ -167,7 +183,7 @@ def destination_logs(pipeline_id: str, enable: bool):
         pipeline.manager.enable_destination_logs(pipeline_)
     else:
         pipeline.manager.disable_destination_logs(pipeline_)
-    click.secho('Updated pipeline {}'.format(pipeline_id), fg='green')
+    click.secho(f'Updated pipeline {pipeline_id}', fg='green')
 
 
 @click.command()
@@ -182,7 +198,7 @@ def info(pipeline_id: str, lines: int):
         info_ = pipeline.manager.get_info(pipeline_, lines)
         print_info(info_)
     except sdc_client.ApiClientException as e:
-        raise click.ClickException(str(e))
+        raise click.ClickException(str(e)) from e
 
 
 def print_info(info_: dict):
@@ -212,7 +228,7 @@ def print_info(info_: dict):
         click.echo('')
         click.secho('=== STAGE ISSUES ===', bold=True, fg='red')
         for stage, issues in info_['stage_issues'].items():
-            click.secho('Stage name: ' + stage, bold=True)
+            click.secho(f'Stage name: {stage}', bold=True)
             for issue in issues:
                 click.echo(issue)
 
@@ -261,7 +277,7 @@ def export(dir_path):
         os.mkdir(dir_path)
 
     for pipeline_ in pipeline.repository.get_all():
-        with open(os.path.join(dir_path, pipeline_.name + '.json'), 'w+') as f:
+        with open(os.path.join(dir_path, f'{pipeline_.name}.json'), 'w+') as f:
             json.dump([pipeline_.export()], f)
 
     click.echo(f'All pipelines exported to the `{dir_path}` directory')
@@ -279,7 +295,7 @@ def _create_from_file(file, result_preview: bool):
             for pipeline_ in pipelines:
                 _result_preview(pipeline_)
     except (sdc_client.ApiClientException, ValidationError, pipeline.PipelineException) as e:
-        raise click.ClickException(str(e))
+        raise click.ClickException(str(e)) from e
 
 
 def _prompt(advanced: bool):
@@ -295,7 +311,7 @@ def _prompt(advanced: bool):
 
     pipeline.manager.create(pipeline_prompter.pipeline)
 
-    click.secho('Created pipeline {}'.format(pipeline_id), fg='green')
+    click.secho(f'Created pipeline {pipeline_id}', fg='green')
     _result_preview(pipeline_prompter.pipeline)
 
 
@@ -310,7 +326,7 @@ def _edit_using_file(file, result_preview: bool):
             for pipeline_ in pipelines:
                 _result_preview(pipeline_)
     except (pipeline.PipelineException, streamsets.manager.StreamsetsException) as e:
-        raise click.UsageError(str(e))
+        raise click.UsageError(str(e)) from e
 
 
 def _prompt_edit(advanced: bool, pipeline_id: str):
@@ -319,20 +335,21 @@ def _prompt_edit(advanced: bool, pipeline_id: str):
         pipeline_ = prompt.pipeline.get_prompter(pipeline_, pipeline_.config, advanced).prompt()
         pipeline.manager.update(pipeline_)
         _result_preview(pipeline_)
-    except pipeline.repository.PipelineNotExistsException:
-        raise click.UsageError(f'{pipeline_id} does not exist')
+    except pipeline.repository.PipelineNotExistsException as e:
+        raise click.UsageError(f'{pipeline_id} does not exist') from e
 
 
 def _result_preview(pipeline_: Pipeline):
-    if _should_prompt_preview(pipeline_):
-        if click.confirm(f'Would you like to see the result data preview for `{pipeline_.name}`?', default=True):
-            preview.show_preview(pipeline_)
-            click.echo('To change the config use `agent pipeline edit`')
+    if (
+        _should_prompt_preview(pipeline_)
+        and click.confirm(f'Would you like to see the result data preview for `{pipeline_.name}`?', default=True)
+    ):
+        preview.show_preview(pipeline_)
+        click.echo('To change the config use `agent pipeline edit`')
 
 
 def _get_previous_pipeline_config(source_type: str) -> dict:
-    pipelines_with_source = pipeline.repository.get_by_source(source_type)
-    if pipelines_with_source:
+    if pipelines_with_source := pipeline.repository.get_by_source(source_type):
         return max(pipelines_with_source, key=lambda p: p.last_edited).config
     return {}
 
@@ -366,6 +383,7 @@ def _build_table(header, rows):
 
 pipeline_group.add_command(create)
 pipeline_group.add_command(create_raw)
+pipeline_group.add_command(create_events)
 pipeline_group.add_command(list_pipelines)
 pipeline_group.add_command(start)
 pipeline_group.add_command(stop)
