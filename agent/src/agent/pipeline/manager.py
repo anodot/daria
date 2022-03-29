@@ -135,11 +135,6 @@ def create(pipeline_: Pipeline):
     pipeline.repository.save(pipeline_)
 
 
-def create_raw_pipeline(raw_pipeline: RawPipeline):
-    sdc_client.create(raw_pipeline)
-    pipeline.repository.save(raw_pipeline)
-
-
 def update_source_pipelines(source_: Source):
     for pipeline_ in pipeline.repository.get_by_source(source_.name):
         try:
