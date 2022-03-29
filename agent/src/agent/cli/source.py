@@ -43,7 +43,10 @@ def edit(name, advanced, file):
         _edit_using_file(file)
         return
 
-    source_ = source.repository.get_by_name(name)
+    try:
+        source_ = source.repository.get_by_name(name)
+    except source.repository.SourceNotExists as e:
+        raise click.ClickException(str(e))
     source_ = prompt.source.get_prompter(source_).prompt(source_.config, advanced=advanced)
     source.manager.update(source_)
 
@@ -56,9 +59,11 @@ def check_prerequisites():
 @click.command()
 @click.argument('name', autocompletion=autocomplete)
 def delete(name):
-    source.repository.delete_by_name(name)
-    click.echo(f'Source {name} deleted')
-
+    try:
+        source.repository.delete_by_name(name)
+        click.echo(f'Source {name} deleted')
+    except source.repository.SourceNotExists as e:
+        raise click.ClickException(str(e))
 
 @click.command()
 @click.option('-d', '--dir-path', type=click.Path())
