@@ -46,6 +46,7 @@ def main():
             })
             res = s.post(sdc.userParams['EVENTS_URL'], json=record.value, proxies=sdc.userParams['PROXIES'])
             res.raise_for_status()
+            sdc.output.write(record)
         except Exception as e:
             message = str(e)
             if isinstance(e, requests.exceptions.HTTPError) and res.status_code == 400:

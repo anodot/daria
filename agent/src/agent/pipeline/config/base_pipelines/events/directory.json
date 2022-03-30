@@ -774,7 +774,7 @@
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
-      "instanceName" : "JythonEvaluator_02",
+      "instanceName" : "destination",
       "library" : "streamsets-datacollector-jython_2_7-lib",
       "stageName" : "com_streamsets_pipeline_stage_processor_jython_JythonDProcessor",
       "stageVersion" : "3",

@@ -25,7 +25,7 @@ class DirectoryEventsConfigHandler(ConfigHandler):
     stages_to_override = {
         'source': stages.source.Source,
         'JythonEvaluator_01': stages.jython.CreateEvents,
-        'JythonEvaluator_02': stages.destination.AnodotEventsDestination,
+        'destination': stages.destination.AnodotEventsDestination,
     }
 
     def _check_pipeline(self):
