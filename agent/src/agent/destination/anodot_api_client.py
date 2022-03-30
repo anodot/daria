@@ -64,7 +64,7 @@ class AnodotApiClient:
 
     def get_new_token(self):
         response = requests.post(
-            self._build_url('access-token'), json={'refreshToken': self.access_key}, proxies=self.proxies
+            self.get_refresh_token_url(), json={'refreshToken': self.access_key}, proxies=self.proxies
         )
         response.raise_for_status()
         return response.text.replace('"', '')
@@ -79,18 +79,25 @@ class AnodotApiClient:
     @v1endpoint
     def update_schema(self, schema):
         url_ = self._build_url('stream-schemas', 'internal', api_version='v1')
-        return requests.post(url_, json=schema, proxies=self.proxies, params={
-            'token': self.api_token,
-            'id': schema["id"]
-        })
+        return requests.post(
+            url_, json=schema, proxies=self.proxies, params={
+                'token': self.api_token,
+                'id': schema["id"]
+            }
+        )
 
     @v1endpoint
     def send_watermark(self, data):
         url_ = self._build_url('metrics', 'watermark', api_version='v1')
-        return requests.post(url_, json=data, proxies=self.proxies, params={
-            'token': self.api_token,
-            'protocol': HttpDestination.PROTOCOL_30
-        })
+        return requests.post(
+            url_,
+            json=data,
+            proxies=self.proxies,
+            params={
+                'token': self.api_token,
+                'protocol': HttpDestination.PROTOCOL_30
+            }
+        )
 
     def _delete_schema_old_api(self, schema_id):
         """
@@ -158,3 +165,9 @@ class AnodotApiClient:
             params=params,
             proxies=self.proxies,
         )
+
+    def get_refresh_token_url(self) -> str:
+        return self._build_url('access-token')
+
+    def get_events_url(self) -> str:
+        return self._build_url('user-events')
