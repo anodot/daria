@@ -1,5 +1,6 @@
 import pytest
 
+from datetime import datetime, timezone
 from .test_zpipeline_base import TestPipelineBase, get_expected_schema_output, get_schema_id
 from ..conftest import get_output
 
@@ -16,6 +17,10 @@ class TestPromQL(TestPipelineBase):
             },
             {
                 'name': 'test_victoria_a'
+            },
+            {
+                'name': 'test_victoria_dvp',
+                'sleep': 15
             },
             {
                 'name': 'test_thanos'
@@ -42,6 +47,9 @@ class TestPromQL(TestPipelineBase):
             },
             {
                 'name': 'test_victoria_a'
+            },
+            {
+                'name': 'test_victoria_dvp'
             },
             {
                 'name': 'test_thanos'
@@ -109,6 +117,9 @@ class TestPromQL(TestPipelineBase):
                 'name': 'test_victoria_a'
             },
             {
+                'name': 'test_victoria_dvp'
+            },
+            {
                 'name': 'test_thanos'
             },
             {
@@ -158,6 +169,12 @@ class TestPromQL(TestPipelineBase):
     def test_watermark(self):
         schema_id = get_schema_id('test_promql_schema')
         assert get_output(f'{schema_id}_watermark.json') == {'watermark': 1594123600, 'schemaId': schema_id}
+
+    def test_watermark_dvp(self):
+        schema_id = get_schema_id('test_victoria_dvp')
+        current_day = datetime.now(timezone.utc)
+        day_start_timestamp = current_day.replace(hour=0, minute=0, second=0, microsecond=0).timestamp()
+        assert get_output(f'{schema_id}_watermark.json') == {'watermark': day_start_timestamp, 'schemaId': schema_id}
 
     def test_output(self, name, pipeline_type, output):
         super().test_output(name, pipeline_type, output)
