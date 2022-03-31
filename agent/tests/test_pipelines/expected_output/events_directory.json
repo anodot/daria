@@ -3,6 +3,7 @@
     "title": "deployment started on myServer",
     "description": "my description",
     "source": "Agent",
+    "type": "SUPPRESS",
     "category": "deployments",
     "startDate": "1468326864",
     "properties": [

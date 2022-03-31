@@ -6,7 +6,6 @@ try:
 finally:
     sdc.importUnlock()
 
-
 for rec in sdc.records:
     record = sdc.createRecord('record created ' + str(datetime.now()))
     event = {}
@@ -21,13 +20,9 @@ for rec in sdc.records:
             'value': rec.value[prop],
         }
         event['properties'].append(prop)
-    event['properties'].append({
-        'key': 'pipeline_id',
-        'value': '${pipeline:id()}'
-    })
-    # this is hardcoded for all events for now
+    event['properties'].append({'key': 'pipeline_id', 'value': '${pipeline:id()}'})
+    # these are hardcoded for all events for now
     event['source'] = 'Agent'
-    record.value = {
-        'event': event
-    }
+    event['type'] = 'SUPPRESS'
+    record.value = {'event': event}
     sdc.output.write(record)
