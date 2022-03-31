@@ -74,7 +74,8 @@ def get_metric_name(record):
     return record['metric']['__name__']
 
 
-def process_matrix(batch_, result_, end_):
+def process_matrix(result_, end_):
+    batch = sdc.createBatch()
     for res in result_['data']['result']:
         base_record = dict(res['metric'].items())
         for timestamp, value in res[get_result_key(result_)]:
@@ -87,13 +88,16 @@ def process_matrix(batch_, result_, end_):
             record['__value'] = value
             sdc_record = sdc.createRecord('record created ' + str(get_now_with_delay()))
             sdc_record.value = record
-            batch_.add(sdc_record)
-            if batch_.size == sdc.batchSize:
-                batch_.process(entityName, str(end_))
-                batch_ = sdc.createBatch()
+            batch.add(sdc_record)
+            if batch.size == sdc.batchSize:
+                batch.process(entityName, str(end_))
+                batch = sdc.createBatch()
+    if batch.size > 0:
+        batch.process(entityName, str(end_))
 
 
-def process_vector(batch_, result_, end_):
+def process_vector(result_, end_):
+    batch = sdc.createBatch()
     for res in result_['data']['result']:
         record = dict(res['metric'].items())
         timestamp, value = res[get_result_key(result_)]
@@ -106,10 +110,12 @@ def process_vector(batch_, result_, end_):
         record['__value'] = value
         sdc_record = sdc.createRecord('record created ' + str(get_now_with_delay()))
         sdc_record.value = record
-        batch_.add(sdc_record)
-        if batch_.size == sdc.batchSize:
-            batch_.process(entityName, str(end_))
-            batch_ = sdc.createBatch()
+        batch.add(sdc_record)
+        if batch.size == sdc.batchSize:
+            batch.process(entityName, str(end_))
+            batch = sdc.createBatch()
+    if batch.size > 0:
+        batch.process(entityName, str(end_))
 
 
 def main():
@@ -127,17 +133,16 @@ def main():
             sdc.log.debug(curr_url)
             res = make_request(curr_url).json()
             sdc.log.debug(str(res))
-            batch = sdc.createBatch()
             if res['data']['result']:
-                process_matrix(batch, res, end) if res['data']['resultType'] == 'matrix' else process_vector(batch, res, end)
+                process_matrix(res, end) if res['data']['resultType'] == 'matrix' else process_vector(res, end)
             elif sdc.userParams['DVP_ENABLED'] == 'True':
                 # records with last_timestamp only
+                batch = sdc.createBatch()
                 record = sdc.createRecord('record created ' + str(datetime.now()))
                 record.value = {'last_timestamp': end - get_interval()}
                 batch.add(record)
-            if batch.size > 0:
                 batch.process(entityName, str(end))
-                end += interval
+            end += interval
         except Exception:
             sdc.log.error(traceback.format_exc())
             raise
