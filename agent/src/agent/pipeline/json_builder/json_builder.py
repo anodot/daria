@@ -1,6 +1,5 @@
 import json
 import os
-import traceback
 import jsonschema
 
 from typing import List, Callable
@@ -39,7 +38,8 @@ def _build_multiple(configs: list, build_func: Callable) -> List[Pipeline]:
             pipeline.manager.check_pipeline_id(config['pipeline_id'])
             pipelines.append(build_func(config))
         except Exception as e:
-            exceptions[config['pipeline_id']] = f'{type(e).__name__}: {traceback.format_exc()}'
+            exceptions[config['pipeline_id']] = f'{type(e).__name__}: {e}'
+            logger_.debug(e, exc_info=True)
     if exceptions:
         raise pipeline.PipelineException(json.dumps(exceptions))
     return pipelines
@@ -74,6 +74,7 @@ def edit_multiple(configs: list) -> List[Pipeline]:
             pipelines.append(edit(config))
         except Exception as e:
             exceptions[config['pipeline_id']] = f'{type(e).__name__}: {e}'
+            logger_.debug(e, exc_info=True)
         if exceptions:
             raise pipeline.PipelineException(json.dumps(exceptions))
     return pipelines
