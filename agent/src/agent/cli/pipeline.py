@@ -52,7 +52,7 @@ def create_raw(file):
     _check_raw_prerequisites()
     try:
         pipeline.json_builder.build_raw_using_file(file)
-    except (sdc_client.ApiClientException, ValidationError, pipeline.PipelineException) as e:
+    except (sdc_client.ApiClientException, ValidationError, json.JSONDecodeError, pipeline.PipelineException) as e:
         raise click.ClickException(str(e))
 
 
@@ -320,7 +320,7 @@ def _create_from_file(file, result_preview: bool):
         if result_preview:
             for pipeline_ in pipelines:
                 _result_preview(pipeline_)
-    except (sdc_client.ApiClientException, ValidationError, pipeline.PipelineException) as e:
+    except (sdc_client.ApiClientException, ValidationError, json.JSONDecodeError, pipeline.PipelineException) as e:
         raise click.ClickException(str(e))
 
 

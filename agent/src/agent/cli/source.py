@@ -95,7 +95,7 @@ def _prompt_source_name():
 def _create_from_file(file):
     try:
         source.json_builder.create_from_file(file)
-    except (ValidationError, SchemaError) as e:
+    except (ValidationError, SchemaError, json.JSONDecodeError, source.SourceException) as e:
         raise click.ClickException(str(e))
 
 
@@ -110,7 +110,7 @@ def _prompt(advanced: bool):
 def _edit_using_file(file):
     try:
         source.json_builder.edit_using_file(file)
-    except (ValidationError, SchemaError) as e:
+    except (ValidationError, SchemaError, json.JSONDecodeError, source.SourceException) as e:
         raise click.UsageError(str(e))
 
 
