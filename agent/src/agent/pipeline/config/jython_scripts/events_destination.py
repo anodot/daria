@@ -64,6 +64,7 @@ def send_event(auth_token, record):
                 sdc.error.write(record, message)
                 break
             elif i < REQUEST_RETRIES - 1:
+                time.sleep(10)
                 continue
             sdc.error.write(record, str(e))
             break
