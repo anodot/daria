@@ -81,13 +81,13 @@
         "static_tag_value"
       ],
       "INTERFACE_ALIAS": [
-        ""
+        "NULL"
       ],
       "INTERFACE_SPEED": [
         "0"
       ],
       "INTERFACE_DESCRIPTION": [
-        "dsc"
+        "NULL"
       ],
       "source": [
         "anodot-agent"
@@ -157,7 +157,7 @@
         "static_tag_value"
       ],
       "INTERFACE_ALIAS": [
-        ""
+        "NULL"
       ],
       "INTERFACE_SPEED": [
         "0"
@@ -233,7 +233,7 @@
         "static_tag_value"
       ],
       "INTERFACE_ALIAS": [
-        ""
+        "NULL"
       ],
       "INTERFACE_SPEED": [
         "0"

@@ -46,7 +46,8 @@ def main():
         if 'tags' in record.value:
             replace_keys(record, 'tags')
             for k, vals in record.value['tags'].items():
-                record.value['tags'][k] = [replace_illegal_chars(v) for v in vals]
+                record.value['tags'][k] = ['NULL' if v == '' or v is None else replace_illegal_chars(v) for v in vals]
+            record.value['tags'] = {k: v for k, v in record.value['tags'].items() if v}
         sdc.output.write(record)
 
 
