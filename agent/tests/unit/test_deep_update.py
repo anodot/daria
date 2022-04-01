@@ -30,7 +30,7 @@ class TestDeepUpdate(unittest.TestCase):
 
     def test_default_dvp_02(self):
         src_dvp = {
-            'baseRollup': 'SHORTROLLUP',
+            'baseRollup': 'LONGLONGROLLUP',
             'maxDVPDurationHours': 34,
             'preventNoData': False,
             'gaugeValue': {'value': 500, 'keepLastValue': False},
@@ -39,7 +39,7 @@ class TestDeepUpdate(unittest.TestCase):
         deep_update(src_dvp, self.dvp_config_base)
 
         assert self.dvp_config_base == {
-            'baseRollup': 'SHORTROLLUP',
+            'baseRollup': 'LONGLONGROLLUP',
             'maxDVPDurationHours': 34,
             'preventNoData': False,
             'gaugeValue': {'value': 500, 'keepLastValue': False},
