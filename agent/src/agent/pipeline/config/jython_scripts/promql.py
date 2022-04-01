@@ -11,6 +11,7 @@ try:
     import time
     import urllib
     import re
+    from datetime import datetime
 finally:
     sdc.importUnlock()
 
@@ -101,7 +102,7 @@ def process_vector(result_, end_):
         record = dict(res['metric'].items())
         timestamp, value = res[get_result_key(result_)]
         # here timestamp and end_ are the same values
-        # because aggregation funcitons return timestamp from the end request parameter
+        # because aggregation functions return timestamp from the end request parameter
         record['timestamp'] = timestamp
         # js 3.0 adds interval to last timestamp to send watermark, so here we should subtract it
         record['last_timestamp'] = end_ - get_interval()
@@ -132,7 +133,15 @@ def main():
             sdc.log.debug(curr_url)
             res = make_request(curr_url).json()
             sdc.log.debug(str(res))
-            process_matrix(res, end) if res['data']['resultType'] == 'matrix' else process_vector(res, end)
+            if res['data']['result']:
+                process_matrix(res, end) if res['data']['resultType'] == 'matrix' else process_vector(res, end)
+            elif sdc.userParams['DVP_ENABLED'] == 'True':
+                # records with last_timestamp only
+                batch = sdc.createBatch()
+                record = sdc.createRecord('record created ' + str(datetime.now()))
+                record.value = {'last_timestamp': end - get_interval()}
+                batch.add(record)
+                batch.process(entityName, str(end))
             end += interval
         except Exception:
             sdc.log.error(traceback.format_exc())

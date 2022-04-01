@@ -42,7 +42,7 @@ test-elastic: bootstrap run-elastic setup-elastic
 	$(DOCKER_TEST) tests/test_input/test_elastic_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_elastic_http.py
 
-test-promql: bootstrap run-victoria nap setup-victoria
+test-promql: bootstrap run-victoria
 	$(DOCKER_TEST) tests/test_input/test_promql_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_promql_http.py
 
