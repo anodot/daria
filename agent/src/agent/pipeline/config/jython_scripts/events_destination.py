@@ -57,7 +57,7 @@ def send_event(auth_token, record):
             res = s.post(sdc.userParams['EVENTS_URL'], json=record.value, proxies=sdc.userParams['PROXIES'], timeout=30)
             res.raise_for_status()
         except (requests.ConnectionError, requests.HTTPError) as e:
-            if isinstance(e, requests.exceptions.HTTPError) and res.status_code == 400:
+            if isinstance(e, requests.exceptions.HTTPError) and 400 <= res.status_code < 500:
                 message = str(e)
                 if 'message' in res.json():
                     message += ': ' + res.json()['message']
