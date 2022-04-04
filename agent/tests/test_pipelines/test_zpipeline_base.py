@@ -71,6 +71,11 @@ def get_expected_output(pipeline_id: str, expected_output_file: str, pipeline_ty
     return expected_output
 
 
+def get_expected_events_output(expected_output_file: str) -> list:
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), f'expected_output/{expected_output_file}')) as f:
+        return json.load(f)
+
+
 def get_expected_schema_output(pipeline_id: str, expected_output_file: str, pipeline_type: str) -> list:
     expected_output = get_expected_output(pipeline_id, expected_output_file, pipeline_type)
     for record in expected_output:

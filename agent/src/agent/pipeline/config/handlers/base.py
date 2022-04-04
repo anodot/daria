@@ -50,6 +50,7 @@ class ConfigHandler(ABC):
     def _get_pipeline_config(self) -> dict:
         return {
             'TOKEN': self.pipeline.destination.token,
+            'AUTH_TOKEN': self.pipeline.destination.auth_token.authentication_token,
             'PROTOCOL': self.pipeline.destination.PROTOCOL_20,
             'ANODOT_BASE_URL': self.pipeline.destination.url,
             'AGENT_URL': self.pipeline.streamsets.agent_external_url,

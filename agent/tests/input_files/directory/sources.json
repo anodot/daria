@@ -27,5 +27,14 @@
       "conf.filePattern": "*.csv",
       "conf.dataFormat": "DELIMITED"
     }
+  },
+  {
+    "type": "directory",
+    "name": "events_directory",
+    "config": {
+      "conf.spoolDir": "/home/events-directory",
+      "conf.filePattern": "*.csv",
+      "conf.dataFormat": "DELIMITED"
+    }
   }
 ]

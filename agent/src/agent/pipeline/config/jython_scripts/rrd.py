@@ -39,8 +39,12 @@ def main():
     if sdc.lastOffsets.containsKey(entityName):
         offset = int(float(sdc.lastOffsets.get(entityName)))
     elif sdc.userParams['DAYS_TO_BACKFILL']:
-        offset = to_timestamp(datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=int(sdc.userParams['DAYS_TO_BACKFILL'])))
+        offset = to_timestamp(
+            datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+            - timedelta(days=int(sdc.userParams['DAYS_TO_BACKFILL']))
+        )
     else:
+        # todo should it run on a specific time? Like on 5 mins, or 10 mins, I mean 05, 10, 15, 20 mins etc.
         offset = to_timestamp(datetime.utcnow().replace(second=0, microsecond=0))
 
     sdc.log.info('OFFSET: ' + str(offset))
@@ -70,7 +74,10 @@ def main():
             # and we should wait until a new version of the file is uploaded and try again
             tries += 1
             if tries == MAX_TRIES:
-                raise Exception('extract_metrics endpoint returned 204 status code %s times in a row. The archive with rrd files does not exist' % MAX_TRIES)
+                raise Exception(
+                    'extract_metrics endpoint returned 204 status code %s times in a row. The archive with rrd files does not exist'
+                    % MAX_TRIES
+                )
             time.sleep(30)
             continue
         tries = 0

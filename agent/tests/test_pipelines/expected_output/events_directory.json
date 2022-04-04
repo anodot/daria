@@ -1,0 +1,24 @@
+{
+  "event": {
+    "title": "deployment started on myServer",
+    "description": "my description",
+    "source": "Agent",
+    "type": "SUPPRESS",
+    "category": "deployments",
+    "startDate": "1468326864",
+    "properties": [
+      {
+        "value": "open",
+        "key": "Status"
+      },
+      {
+        "value": "deadly",
+        "key": "Impact Type"
+      },
+      {
+        "value": "events_directory",
+        "key": "pipeline_id"
+      }
+    ]
+  }
+}

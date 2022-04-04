@@ -1,4 +1,4 @@
-from agent import pipeline
+from agent import pipeline, cli
 from .test_zpipeline_base import TestInputBase
 from ..test_pipelines.test_zpipeline_base import get_schema_id
 
@@ -12,6 +12,9 @@ class TestDirectory(TestInputBase):
         'test_create_with_file': [{
             'file_name': 'directory/pipelines'
         }],
+        'test_create_events_pipeline_with_file': [{
+            'file_name': 'directory/event-pipelines'
+        }],
     }
 
     def test_create_source_with_file(self, cli_runner, file_name):
@@ -19,6 +22,9 @@ class TestDirectory(TestInputBase):
 
     def test_create_with_file(self, cli_runner, file_name, override_config):
         super().test_create_with_file(cli_runner, file_name, override_config)
+
+    def test_create_events_pipeline_with_file(self, cli_runner, file_name):
+        super(TestDirectory, self)._test_create_with_file(cli_runner, file_name, {}, cli.pipeline.create_events)
 
     def test_schema(self):
         pipeline_id = 'test_dir_csv'

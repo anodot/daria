@@ -6,7 +6,8 @@ import sdc_client
 from datetime import datetime, timedelta, timezone
 from agent import source, pipeline, destination, streamsets
 from agent.modules import tools, constants
-from agent.pipeline import Pipeline, TestPipeline, schema, extra_setup, PipelineMetric, PipelineRetries, RawPipeline
+from agent.pipeline import Pipeline, TestPipeline, schema, extra_setup, PipelineMetric, PipelineRetries, RawPipeline, \
+    EventsPipeline
 from agent.modules.logger import get_logger
 from agent.pipeline.config.handlers.factory import get_config_handler
 from agent.source import Source
@@ -18,7 +19,7 @@ MAX_SAMPLE_RECORDS = 3
 
 
 def supports_schema(pipeline_: Pipeline) -> bool:
-    if isinstance(pipeline_, (TestPipeline, RawPipeline)):
+    if isinstance(pipeline_, (TestPipeline, RawPipeline, EventsPipeline)):
         return False
     supported = {
         source.TYPE_CACTI: False,
@@ -49,8 +50,23 @@ def supports_schema(pipeline_: Pipeline) -> bool:
     return supported[pipeline_.source.type]
 
 
-def create_object(pipeline_id: str, source_name: str) -> Pipeline:
+def create_pipeline(pipeline_id: str, source_name: str) -> Pipeline:
     return Pipeline(
+        pipeline_id,
+        source.repository.get_by_name(source_name),
+        destination.repository.get(),
+    )
+
+
+def create_raw_pipeline(pipeline_id: str, source_name: str) -> RawPipeline:
+    return RawPipeline(
+        pipeline_id,
+        source.repository.get_by_name(source_name),
+    )
+
+
+def create_events_pipeline(pipeline_id: str, source_name: str) -> EventsPipeline:
+    return EventsPipeline(
         pipeline_id,
         source.repository.get_by_name(source_name),
         destination.repository.get(),
@@ -117,11 +133,6 @@ def create(pipeline_: Pipeline):
         _update_schema(pipeline_)
     sdc_client.create(pipeline_)
     pipeline.repository.save(pipeline_)
-
-
-def create_raw_pipeline(raw_pipeline: RawPipeline):
-    sdc_client.create(raw_pipeline)
-    pipeline.repository.save(raw_pipeline)
 
 
 def update_source_pipelines(source_: Source):

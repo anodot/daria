@@ -15,8 +15,13 @@ from agent.modules.time import Interval
 from agent.source import Source
 from agent.streamsets import StreamSets
 
+TYPE = 'pipeline_type'
+
 REGULAR_PIPELINE = 'regular_pipeline'
 RAW_PIPELINE = 'raw_pipeline'
+EVENTS_PIPELINE = 'events_pipeline'
+
+PIPELINE_TYPES = [REGULAR_PIPELINE, RAW_PIPELINE, EVENTS_PIPELINE]
 
 
 class PipelineException(Exception):
@@ -54,15 +59,6 @@ class Pipeline(Entity, sdc_client.IPipeline):
     COUNTER = 'counter'
     GAUGE = 'gauge'
     RUNNING_COUNTER = 'running_counter'
-
-    error_statuses = [STATUS_RUN_ERROR, STATUS_START_ERROR, STATUS_STOP_ERROR, STATUS_RUNNING_ERROR]
-    # TODO make it enum
-    statuses = [
-        STATUS_EDITED, STATUS_STARTING, STATUS_RUNNING, STATUS_STOPPING, STATUS_STOPPED, STATUS_RETRY, STATUS_RUN_ERROR,
-        STATUS_START_ERROR, STATUS_STOP_ERROR, STATUS_RUNNING_ERROR
-    ]
-
-    TARGET_TYPES = [COUNTER, GAUGE, RUNNING_COUNTER]
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
@@ -185,7 +181,10 @@ class Pipeline(Entity, sdc_client.IPipeline):
 
     @property
     def measurement_configurations(self) -> Optional[dict]:
-        return _build_transformation_configurations(list(self.values), self.config.get('measurement_configurations', {}))
+        return _build_transformation_configurations(
+            list(self.values),
+            self.config.get('measurement_configurations', {})
+        )
 
     @property
     def tag_configurations(self) -> Optional[dict]:
@@ -438,8 +437,13 @@ class Pipeline(Entity, sdc_client.IPipeline):
 class RawPipeline(Pipeline):
     def __init__(self, pipeline_id: str, source_: Source):
         super(RawPipeline, self).__init__(pipeline_id, source_, DummyHttpDestination())
-        # this is needed to distinguish Pipeline and RawPipeline when they're loaded from the db
         self.type = RAW_PIPELINE
+
+
+class EventsPipeline(Pipeline):
+    def __init__(self, pipeline_id: str, source_: Source, destination_: HttpDestination):
+        super(EventsPipeline, self).__init__(pipeline_id, source_, destination_)
+        self.type = EVENTS_PIPELINE
 
 
 class TestPipeline(Pipeline):

@@ -54,6 +54,10 @@ class PromQLScript(JythonSource):
                 'value': self.pipeline.config.get('request_headers', {})
             },
             {
+                'key': 'DVP_ENABLED',
+                'value': str(bool(self.pipeline.dvp_config))
+            },
+            {
                 'key': 'MONITORING_URL',
                 'value': monitoring.get_monitoring_source_error_url(self.pipeline)
             },
