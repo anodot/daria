@@ -39,8 +39,15 @@ class _JythonScript(Stage, ABC):
     def _get_script_params(self) -> list[dict]:
         pass
 
+    def _get_required_fields(self) -> list:
+        return []
+
     def get_config(self) -> dict:
-        return {self.PARAMS_KEY: self._get_script_params(), 'script': self._get_script()}
+        return {
+            self.PARAMS_KEY: self._get_script_params(),
+            'script': self._get_script(),
+            'stageRequiredFields': self._get_required_fields()
+        }
 
     def _get_script(self) -> str:
         with open(os.path.join(ROOT_DIR, self.JYTHON_SCRIPTS_DIR, self.JYTHON_SCRIPT)) as f:

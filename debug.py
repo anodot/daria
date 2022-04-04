@@ -17,19 +17,10 @@ def api_client():
 
 
 di.init()
-# res = api_client().get('/alerts?status=CLOSE&startTime=1623321686')
-# res = api_client().get('/alert/status?alertName=Drop%20in%20Device_uptime%20for%20All%20equipments&host=eNodeBbaicells180&startTime=-300')
 
-# s = http.Session()
-# r = s.get('https://10.237.70.2:17778/SolarWinds/InformationService/v3/Json/Query?query=select+top+1+1+as+test+from+Orion.Accounts')
-# r.raise_for_status()
-# r = snmp.extract_metrics(pipeline.repository.get_by_id('snmp'))
-
-t = 1
-
-res = data_extractor.rrd.extract_metrics(pipeline.repository.get_by_id('rrd'), '1619085000', '1619086800', '300')
+# res = data_extractor.rrd.extract_metrics(pipeline.repository.get_by_id('rrd'), '1619085000',  '1619086800', '300')
 # cli.pipeline.create(["-f", "/Users/antonzelenin/Workspace/daria/agent/tests/input_files/rrd/pipelines.json"])
 # cli.destination()
-# cli.pipeline.create()
+# cli.pipeline.create(['-f', '/Users/antonzelenin/Workspace/daria/agent/tests/input_files/directory/pipelines.json'])
 # cli.streamsets.delete(["asdfa"])
 t = 1

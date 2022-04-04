@@ -16,29 +16,47 @@ def to_file():
         return json.dumps({'errors': ['Data collection token is invalid']}), 401
     data = request.json
     if data and len(data) > 0:
-        file_path = os.path.join(OUTPUT_DIR, _extract_file_name(data) + '.json')
-        if os.path.isfile(file_path):
-            with open(file_path, 'r') as f:
-                existing_data = json.load(f)
-                if existing_data:
-                    data = existing_data + data
-        with open(file_path, 'w') as f:
-            json.dump(data, f)
+        _write_to_file(_extract_file_name(request.json), data)
     return json.dumps({'errors': []})
 
 
-def _extract_file_name(data):
+@app.route('/api/v2/user-events', methods=['POST'])
+def event_to_file():
+    if request.headers.get('Authorization') != 'Bearer ok':
+        return json.dumps({'errors': ['Data collection token is invalid']}), 401
+    _write_to_file(_extract_events_file_name(request.json), request.json)
+    return json.dumps({'errors': []})
+
+
+def _write_to_file(file_name: str, data):
+    file_path = os.path.join(OUTPUT_DIR, file_name)
+    if os.path.isfile(file_path):
+        with open(file_path, 'r') as f:
+            if existing_data := json.load(f):
+                data = existing_data + data
+    with open(file_path, 'w') as f:
+        json.dump(data, f)
+
+
+def _extract_file_name(data: list[dict]):
     try:
         file_name = data[0]['tags']['pipeline_id'][0] + '_' + data[0]['tags']['pipeline_type'][0]
     except KeyError:
         file_name = data[0]['properties']['what']
-    return file_name
+    return f'{file_name}.json'
+
+
+def _extract_events_file_name(data: dict):
+    for prop in data['event']['properties']:
+        if prop['key'] == 'pipeline_id':
+            return f'{prop["value"]}.json'
+    raise Exception('pipeline_id not found in event properties')
 
 
 @app.route('/api/v1/alert', methods=['POST'])
 def to_file_simple():
     file_name = "alert"
-    with open(os.path.join(OUTPUT_DIR, file_name + '.json'), 'a+') as f:
+    with open(os.path.join(OUTPUT_DIR, f'{file_name}.json'), 'a+') as f:
         json.dump(request.json, f)
         f.write('\n')
     return ''
