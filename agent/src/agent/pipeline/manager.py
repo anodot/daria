@@ -140,7 +140,7 @@ def update_source_pipelines(source_: Source):
         try:
             sdc_client.update(pipeline_)
         except streamsets.manager.StreamsetsException as e:
-            logger_.exception(str(e))
+            logger_.debug(str(e), exc_info=True)
             continue
         logger_.info(f'Pipeline {pipeline_.name} updated')
 
@@ -301,7 +301,7 @@ def get_sample_records(pipeline_: Pipeline) -> (list, list):
     try:
         data = preview_data['batchesOutput'][0][0]['output']['source_outputLane']
     except (ValueError, TypeError, IndexError) as e:
-        logger_.exception(str(e))
+        logger_.debug(str(e), exc_info=True)
         return [], []
 
     return [tools.sdc_record_map_to_dict(record['value']) for record in data[:MAX_SAMPLE_RECORDS]], errors
@@ -315,7 +315,7 @@ def get_preview_data(pipeline_: Pipeline) -> (list, list):
         logger_.error(str(e))
         return [], []
     except (Exception, KeyboardInterrupt) as e:
-        logger_.exception(str(e))
+        logger_.debug(str(e), exc_info=True)
         raise
     return preview_data, errors
 
