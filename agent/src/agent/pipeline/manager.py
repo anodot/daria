@@ -217,10 +217,13 @@ def force_delete(pipeline_id: str) -> list:
             exceptions.append(str(e))
         pipeline.repository.delete(pipeline_)
     else:
-        sdc_client.force_delete(pipeline_id)
-        schema_id = schema.search(pipeline_id)
-        if schema_id:
-            schema.delete(schema_id)
+        try:
+            sdc_client.force_delete(pipeline_id)
+            schema_id = schema.search(pipeline_id)
+            if schema_id:
+                schema.delete(schema_id)
+        except Exception as e:
+            exceptions.append(str(e))
     return exceptions
 
 

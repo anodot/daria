@@ -19,6 +19,9 @@ def get_pipelines_ids_complete(ctx, args, incomplete):
 
 @click.command(name='list')
 def list_pipelines():
+    """
+    List all available pipelines
+    """
     pipelines = pipeline.repository.get_all()
     statuses = sdc_client.get_all_pipeline_statuses()
     table = _build_table(
@@ -38,6 +41,9 @@ def list_pipelines():
 @click.option('-f', '--file', type=click.File())
 @click.option('-p', '--result-preview', is_flag=True)
 def create(advanced: bool, file, result_preview: bool):
+    """
+    Create new Pipeline
+    """
     check_prerequisites()
     _create_from_file(file, result_preview) if file else _prompt(advanced)
 
@@ -45,11 +51,14 @@ def create(advanced: bool, file, result_preview: bool):
 @click.command(name='create-raw')
 @click.option('-f', '--file', type=click.File(), required=True)
 def create_raw(file):
+    """
+    Create raw Pipeline
+    """
     _check_raw_prerequisites()
     try:
         pipeline.json_builder.build_raw_using_file(file)
-    except (sdc_client.ApiClientException, ValidationError, pipeline.PipelineException) as e:
-        raise click.ClickException(str(e)) from e
+    except (sdc_client.ApiClientException, ValidationError, json.JSONDecodeError, pipeline.PipelineException) as e:
+        raise click.ClickException(str(e))
 
 
 @click.command(name='create-events')
@@ -68,6 +77,9 @@ def create_events(file):
 @click.option('-f', '--file', type=click.File())
 @click.option('-p', '--result-preview', is_flag=True)
 def edit(pipeline_id: str, advanced: bool, file, result_preview: bool):
+    """
+    Edit config of an existing Pipeline
+    """
     check_prerequisites()
     if not file and not pipeline_id:
         raise click.UsageError('Specify pipeline id or file')
@@ -88,13 +100,18 @@ def _check_raw_prerequisites():
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, required=False)
 @click.option('-f', '--file', type=click.File())
 def start(pipeline_id: str, file):
+    """
+    Start a Pipelines to perform data collection
+    """
     if not file and not pipeline_id:
         raise click.UsageError('Specify pipeline id or file')
     for pipeline_id in _get_pipeline_ids(pipeline_id, file):
         try:
             click.echo(f'Pipeline {pipeline_id} is starting...')
             pipeline.manager.start(pipeline.repository.get_by_id(pipeline_id))
-        except (sdc_client.ApiClientException, pipeline.PipelineException) as e:
+        except (
+            sdc_client.ApiClientException, pipeline.PipelineException, pipeline.repository.PipelineNotExistsException
+        ) as e:
             click.secho(str(e), err=True, fg='red')
             continue
 
@@ -103,13 +120,18 @@ def start(pipeline_id: str, file):
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, required=False)
 @click.option('-f', '--file', type=click.File())
 def stop(pipeline_id: str, file):
+    """
+    Stop a Pipelines to stop processing data
+    """
     if not file and not pipeline_id:
         raise click.UsageError('Specify pipeline id or file')
     for pipeline_id in _get_pipeline_ids(pipeline_id, file):
         try:
             sdc_client.stop(pipeline.repository.get_by_id(pipeline_id))
             click.secho(f'Pipeline {pipeline_id} is stopped', fg='green')
-        except (sdc_client.ApiClientException, pipeline.PipelineException) as e:
+        except (
+            sdc_client.ApiClientException, pipeline.PipelineException, pipeline.repository.PipelineNotExistsException
+        ) as e:
             click.secho(str(e), err=True, fg='red')
             continue
 
@@ -121,11 +143,14 @@ def _get_pipeline_ids(pipeline_id, file):
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
 def force_stop(pipeline_id: str):
+    """
+    Forcing a Pipeline to stop (often stops processes before they complete, which can lead to unexpected results)
+    """
     try:
         click.echo('Force pipeline stopping...')
         sdc_client.force_stop(pipeline.repository.get_by_id(pipeline_id))
         click.secho('Pipeline is stopped', fg='green')
-    except sdc_client.ApiClientException as e:
+    except (sdc_client.ApiClientException, pipeline.repository.PipelineNotExistsException) as e:
         click.secho(str(e), err=True, fg='red')
         return
 
@@ -134,6 +159,9 @@ def force_stop(pipeline_id: str):
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, required=False)
 @click.option('-f', '--file', type=click.File())
 def delete(pipeline_id: str, file):
+    """
+    Delete a Pipeline by its name (safely stopping before deletion)
+    """
     if not file and not pipeline_id:
         raise click.UsageError('Specify pipeline id or file')
     for pipeline_id in _get_pipeline_ids(pipeline_id, file):
@@ -151,10 +179,15 @@ def delete(pipeline_id: str, file):
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
 def force_delete(pipeline_id: str):
+    """
+    Forcing to delete a Pipeline
+    """
     errors = pipeline.manager.force_delete(pipeline_id)
-    for e in errors:
-        click.secho(e, err=True, fg='red')
-    click.echo('Finished')
+    if errors:
+        for e in errors:
+            click.secho(e, err=True, fg='red')
+    else:
+        click.echo('Finished')
 
 
 # todo severity is not working
@@ -163,10 +196,13 @@ def force_delete(pipeline_id: str):
 @click.option('-l', '--lines', type=click.INT, default=10)
 @click.option('-s', '--severity', type=click.Choice([Severity.INFO.value, Severity.ERROR.value]), default=None)
 def logs(pipeline_id: str, lines: int, severity: Optional[Severity]):
+    """
+    Show a Pipeline logs
+    """
     try:
         logs_ = sdc_client.get_pipeline_logs(pipeline.repository.get_by_id(pipeline_id), severity, lines)
-    except sdc_client.ApiClientException as e:
-        raise click.ClickException(str(e)) from e
+    except (sdc_client.ApiClientException, pipeline.repository.PipelineNotExistsException) as e:
+        raise click.ClickException(str(e))
     table = _build_table(['Timestamp', 'Severity', 'Category', 'Message'], logs_)
     click.echo(table.draw())
 
@@ -178,7 +214,10 @@ def destination_logs(pipeline_id: str, enable: bool):
     """
     Enable destination response logs for a pipeline (for debugging purposes only)
     """
-    pipeline_ = pipeline.repository.get_by_id(pipeline_id)
+    try:
+        pipeline_ = pipeline.repository.get_by_id(pipeline_id)
+    except pipeline.repository.PipelineNotExistsException as e:
+        raise click.ClickException(str(e))
     if enable:
         pipeline.manager.enable_destination_logs(pipeline_)
     else:
@@ -197,8 +236,8 @@ def info(pipeline_id: str, lines: int):
         pipeline_ = pipeline.repository.get_by_id(pipeline_id)
         info_ = pipeline.manager.get_info(pipeline_, lines)
         print_info(info_)
-    except sdc_client.ApiClientException as e:
-        raise click.ClickException(str(e)) from e
+    except (sdc_client.ApiClientException, pipeline.repository.PipelineNotExistsException) as e:
+        raise click.ClickException(str(e))
 
 
 def print_info(info_: dict):
@@ -246,7 +285,7 @@ def reset(pipeline_id: str):
     """
     try:
         pipeline.manager.reset(pipeline.repository.get_by_id(pipeline_id))
-    except sdc_client.ApiClientException as e:
+    except (sdc_client.ApiClientException, pipeline.repository.PipelineNotExistsException) as e:
         click.secho(str(e), err=True, fg='red')
         return
     click.echo('Pipeline offset reset')
@@ -271,6 +310,9 @@ def update(pipeline_id: str):
 @click.command()
 @click.option('-d', '--dir-path', type=click.Path())
 def export(dir_path):
+    """
+    Export pipelines' config into file
+    """
     if not dir_path:
         dir_path = 'pipelines'
     if not os.path.isdir(dir_path):
@@ -294,8 +336,8 @@ def _create_from_file(file, result_preview: bool):
         if result_preview:
             for pipeline_ in pipelines:
                 _result_preview(pipeline_)
-    except (sdc_client.ApiClientException, ValidationError, pipeline.PipelineException) as e:
-        raise click.ClickException(str(e)) from e
+    except (sdc_client.ApiClientException, ValidationError, json.JSONDecodeError, pipeline.PipelineException) as e:
+        raise click.ClickException(str(e))
 
 
 def _prompt(advanced: bool):

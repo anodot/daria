@@ -1,10 +1,12 @@
 import json
-import traceback
 import jsonschema
 
 from typing import List
 from agent import source
+from agent.modules.logger import get_logger
 from agent.source import Source
+
+logger_ = get_logger(__name__, stdout=True)
 
 
 def create_from_file(file):
@@ -27,7 +29,8 @@ def build_multiple(configs: list) -> List[Source]:
             )
             print(f"Source {config['name']} created")
         except Exception as e:
-            exceptions[config['name']] = f'{type(e).__name__}:\n' + traceback.format_exc()
+            exceptions[config['name']] = f'{type(e).__name__}: {e}\n'
+            logger_.debug(e, exc_info=True)
     if exceptions:
         raise source.SourceException(json.dumps(exceptions))
     return sources
@@ -54,6 +57,7 @@ def edit_multiple(configs: list) -> List[Source]:
             sources.append(source_)
         except Exception as e:
             exceptions[config['name']] = f'{type(e).__name__}: {e}'
+            logger_.debug(e, exc_info=True)
     if exceptions:
         raise source.SourceException(json.dumps(exceptions))
     return sources
