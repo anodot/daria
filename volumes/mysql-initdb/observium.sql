@@ -216,7 +216,7 @@ DROP TABLE IF EXISTS `mempools`;
 
 LOCK TABLES `mempools` WRITE;
 INSERT INTO `mempools`
-VALUES (1, 1253.1, null, null, null, 1.00000, 0, 'Module 1 (Processor)', 1, 0, null, null, null, '', 1628160603, 21, 43289060, 163147772, 206436832);
+VALUES (1, 1253.1, null, null, null, 1.00000, 0, 'Module 1 (Processor)', 1, 0, null, null, null, '', 1628160620, 21, 43289060, 163147772, 206436832);
 UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `storage`;
@@ -246,8 +246,8 @@ DROP TABLE IF EXISTS `storage`;
 
 LOCK TABLES `storage` WRITE;
 INSERT INTO `storage`
-VALUES (1, 1, '', 1, 'flashMemory', 'description', 0, 0, NULL, NULL, 0, 1633518002, 9223372036854775807, 2048, 47782296, 44979816, 52, 42),
-       (2, 2, 'HOST-RESOURCES-MIB', 1, 'ssdMemory', 'description2', 0, 0, NULL, NULL, 0, 1633518002, 9223372036854775807, 4096, 200, 100, NULL, 43);
+VALUES (1, 1, '', 1, 'flashMemory', 'description', 0, 0, NULL, NULL, 0, 1628160620, 9223372036854775807, 2048, 47782296, 44979816, 52, 42),
+       (2, 2, 'HOST-RESOURCES-MIB', 1, 'ssdMemory', 'description2', 0, 0, NULL, NULL, 0, 1628160620, 9223372036854775807, 4096, 200, 100, NULL, 43);
 UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `processors`;
@@ -275,7 +275,7 @@ DROP TABLE IF EXISTS `processors`;
 
 LOCK TABLES `processors` WRITE;
 INSERT INTO `processors`
-VALUES (1, 187073, NULL, 1, '.1.3.6.1.9.1.1.1.1.1.1.1', 202, 'cpm', 'description', 0, 1, NULL, NULL, NULL, NULL, 3, 1633517705, 0);
+VALUES (1, 187073, NULL, 1, '.1.3.6.1.9.1.1.1.1.1.1.1', 202, 'cpm', 'description', 0, 1, NULL, NULL, NULL, NULL, 3, 1628160620, 0);
 UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `mempools_lookup`;

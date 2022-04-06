@@ -28,9 +28,16 @@ class ObserviumScript(JythonDataExtractorSource):
                 'key': 'MONITORING_URL',
                 'value': monitoring.get_monitoring_source_error_url(self.pipeline)
             },
+            {
+                'key': 'OBSERVIUM_STEP_IN_SECONDS',
+                'value': self.pipeline.config.get('step', '300')
+            },
         ]
 
     def _get_bucket_size(self) -> str:
+        # todo can we allow different interval and bucket size?
+        if self.pipeline.interval == 60:
+            return '1m'
         if self.pipeline.interval == 300:
             return '5m'
         elif self.pipeline.interval == 3600:
