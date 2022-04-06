@@ -35,7 +35,6 @@ class ObserviumScript(JythonDataExtractorSource):
         ]
 
     def _get_bucket_size(self) -> str:
-        # todo can we allow different interval and bucket size?
         if self.pipeline.interval == 60:
             return '1m'
         if self.pipeline.interval == 300:

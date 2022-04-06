@@ -3,7 +3,7 @@ from agent import data_extractor
 from agent import source
 
 
-def test_supports_schema():
+def test_build_observium_query():
     source_ = Mock()
     source_.type = source.TYPE_OBSERVIUM
 
