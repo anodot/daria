@@ -94,4 +94,8 @@ class TestInfluxSource(JythonSource):
                 'key': 'REQUEST_TIMEOUT',
                 'value': 10
             },
+            {
+                'key': 'MEASUREMENT_NAME',
+                'value': self.pipeline.config.get('measurement_name', '')
+            },
         ]
