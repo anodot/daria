@@ -16,6 +16,7 @@ class InfluxPrompter(Prompter):
         self.prompt_tags()
         self.set_delay()
         self.set_filtering()
+        self.set_transform()
         self.set_uses_schema()
         self.config['timestamp'] = {
             'type': 'unix_ms',
@@ -66,6 +67,10 @@ class InfluxPrompter(Prompter):
 
     def set_query(self):
         self.config['query'] = click.prompt('Query', type=click.STRING, default=self.default_config.get('query'))
+
+    def set_transform(self):
+        if self.default_config.get('transform'):
+            self.config['transform'] = self.default_config['transform']
 
 
 class Influx2Prompter(InfluxPrompter):
