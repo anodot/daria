@@ -22,9 +22,18 @@ class InfluxPrompter(Prompter):
             'name': 'time',
         }
 
+    def set_measurement_name(self):
+        if self.pipeline.query:
+            self.set_query()
+        else:
+            super().set_measurement_name()
+
     def get_test_url(self):
         source_config = self.pipeline.source.config
-        query = f"select+%2A+from+{self.config['measurement_name']}+limit+{pipeline.manager.MAX_SAMPLE_RECORDS}"
+        query = (
+            self.pipeline.query
+            or f"select+%2A+from+{self.config['measurement_name']}+limit+{pipeline.manager.MAX_SAMPLE_RECORDS}"
+        )
         return urljoin(source_config['host'], f"/query?db={source_config['db']}&epoch=ns&q={query}")
 
     def set_delay(self):
@@ -54,6 +63,9 @@ class InfluxPrompter(Prompter):
                 type=click.STRING,
                 default=self.default_config.get('filtering', '')
             ).strip()
+
+    def set_query(self):
+        self.config['query'] = click.prompt('Query', type=click.STRING, default=self.default_config.get('query'))
 
 
 class Influx2Prompter(InfluxPrompter):

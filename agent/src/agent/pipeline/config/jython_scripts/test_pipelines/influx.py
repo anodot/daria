@@ -42,6 +42,8 @@ try:
     ssl = True if influx_url_parsed.scheme == 'https' else False
     if sdc.userParams['MEASUREMENT_NAME']:
         params = {'q': 'SELECT * FROM ' + sdc.userParams['MEASUREMENT_NAME'], 'db': sdc.userParams['DATABASE']}
+    elif sdc.userParams['QUERY']:
+        params = {'q': sdc.userParams['QUERY'].replace('{TIMESTAMP_CONDITION}', '1=1'), 'db': sdc.userParams['DATABASE']}
     else:
         # get list of databases
         params = {'q': 'SHOW DATABASES', 'db': None}
@@ -50,7 +52,7 @@ try:
     sdc.log.error("influx_request Response code: {0}".format(response.status_code))
     response.raise_for_status()
 
-    if sdc.userParams['MEASUREMENT_NAME']:
+    if sdc.userParams['MEASUREMENT_NAME'] or sdc.userParams['QUERY']:
         cur_batch = sdc.createBatch()
         record = sdc.createRecord('record created ' + str(datetime.now()))
         record.value = response.json()

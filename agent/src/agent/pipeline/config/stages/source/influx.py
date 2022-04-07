@@ -98,4 +98,8 @@ class TestInfluxSource(JythonSource):
                 'key': 'MEASUREMENT_NAME',
                 'value': self.pipeline.config.get('measurement_name', '')
             },
+            {
+                'key': 'QUERY',
+                'value': self.pipeline.config.get('query', '')
+            },
         ]
