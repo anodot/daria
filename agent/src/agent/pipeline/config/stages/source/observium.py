@@ -21,10 +21,6 @@ class ObserviumScript(JythonDataExtractorSource):
                 'value': self._get_bucket_size(),
             },
             {
-                'key': 'DELAY_IN_MINUTES',
-                'value': str(self.pipeline.delay)
-            },
-            {
                 'key': 'MONITORING_URL',
                 'value': monitoring.get_monitoring_source_error_url(self.pipeline)
             },

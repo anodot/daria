@@ -6,7 +6,6 @@
     "query": {"type": "string"},
     "default_values_type": {"type": "string", "enum": ["ports", "mempools", "processors", "storage"]},
     "interval": {"type": "integer"},
-    "delay": {"type": "integer"},
     "dimensions": {"type": "array", "items": {"type": "string"}},
     "dimension_configurations": {"type": "object"},
     "lookup": {"type": "object"},

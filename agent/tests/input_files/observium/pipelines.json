@@ -114,7 +114,6 @@
     "source": "observium",
     "pipeline_id": "observium_processors",
     "interval": 3600,
-    "delay": 1,
     "query": "select p.*, d.sysName, dl.location from processors p join devices d on d.device_id = p.device_id join devices_locations dl on dl.device_id = p.device_id where processor_polled >= 1628160600 and processor_polled < 1628160660",
     "values": {
       "processor_usage": "gauge"
