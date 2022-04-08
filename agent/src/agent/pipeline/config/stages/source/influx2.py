@@ -62,32 +62,28 @@ class Influx2Source(InfluxScript):
         return filter_condition
 
 
-class TestInflux2Source(JythonSource):
+class TestInflux2Source(Influx2Source):
     JYTHON_SCRIPT = 'influx2.py'
     JYTHON_SCRIPTS_DIR = os.path.join(JythonSource.JYTHON_SCRIPTS_DIR, 'test_pipelines')
 
     def _get_script_params(self) -> list[dict]:
-        return [
+        params = super()._get_script_params()
+        params.extend([
             {
-                'key': 'URL',
-                'value': self._get_url()
+                'key': 'BUCKET',
+                'value': self.pipeline.source.config.get('bucket', '')
             },
-            {
-                'key': 'HEADERS',
-                'value': self._get_headers()
-            },
-            {
-                'key': 'REQUEST_TIMEOUT',
-                'value': 10
-            },
-        ]
+        ])
+        return params
 
     def _get_url(self) -> str:
-        return urljoin(self.pipeline.source.config['host'], '/api/v2/buckets')
+        if 'measurement_name' in self.pipeline.config or 'query' in self.pipeline.config:
+            return super()._get_url()
+        else:
+            return urljoin(self.pipeline.source.config['host'], '/api/v2/buckets')
 
-    def _get_headers(self) -> dict:
-        return {
-            'Authorization': f'Token {self.pipeline.source.config["token"]}',
-            'Accept': 'application/csv',
-            'Content-type': 'application/vnd.flux',
-        }
+    def _get_query(self) -> str:
+        if 'measurement_name' in self.pipeline.config or 'query' in self.pipeline.config:
+            return super()._get_query()
+        else:
+            return ''
