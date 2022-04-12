@@ -285,7 +285,7 @@ def should_send_error_notification(pipeline_: Pipeline) -> bool:
     return not constants.DISABLE_PIPELINE_ERROR_NOTIFICATIONS \
            and pipeline_.error_notification_enabled() \
            and pipeline_.retries \
-           and pipeline_.retries.number_of_error_statuses - 1 >= constants.STREAMSETS_MAX_RETRY_ATTEMPTS
+           and pipeline_.retries.number_of_error_statuses - 1 >= constants.STREAMSETS_NOTIFY_AFTER_RETRY_ATTEMPTS
 
 
 def get_sample_records(pipeline_: Pipeline) -> (list, list):
