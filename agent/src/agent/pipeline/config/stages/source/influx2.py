@@ -66,6 +66,11 @@ class TestInflux2Source(Influx2Source):
     JYTHON_SCRIPT = 'influx2.py'
     JYTHON_SCRIPTS_DIR = os.path.join(JythonSource.JYTHON_SCRIPTS_DIR, 'test_pipelines')
 
+
+class Influx2SrcValidationSource(TestInflux2Source):
+    JYTHON_SCRIPT = 'influx2.py'
+    JYTHON_SCRIPTS_DIR = os.path.join(JythonSource.JYTHON_SCRIPTS_DIR, 'source_validation_pipelines')
+
     def _get_script_params(self) -> list[dict]:
         params = super()._get_script_params()
         params.extend([
@@ -77,13 +82,7 @@ class TestInflux2Source(Influx2Source):
         return params
 
     def _get_url(self) -> str:
-        if 'measurement_name' in self.pipeline.config or 'query' in self.pipeline.config:
-            return super()._get_url()
-        else:
-            return urljoin(self.pipeline.source.config['host'], '/api/v2/buckets')
+        return urljoin(self.pipeline.source.config['host'], '/api/v2/buckets')
 
     def _get_query(self) -> str:
-        if 'measurement_name' in self.pipeline.config or 'query' in self.pipeline.config:
-            return super()._get_query()
-        else:
-            return ''
+        return ''

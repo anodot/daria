@@ -112,7 +112,7 @@ def _get_events_handler(pipeline_: Pipeline, base_config: dict) -> ConfigHandler
 def _get_source_validation_handler(pipeline_: Pipeline, base_config: dict) -> ConfigHandler:
     handlers = {
         source.TYPE_INFLUX: pipeline.config.handlers.influx.InfluxSourceValidationConfigHandler,
-        source.TYPE_INFLUX_2: pipeline.config.handlers.influx.TestInflux2ConfigHandler,
+        source.TYPE_INFLUX_2: pipeline.config.handlers.influx.Influx2SourceValidationConfigHandler,
     }
     return handlers[pipeline_.source.type](pipeline_, base_config)
 

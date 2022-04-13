@@ -95,3 +95,9 @@ class InfluxSourceValidationConfigHandler(TestConfigHandler):
     stages_to_override = {
         'source': stages.source.influx.InfluxSrcValidationSource,
     }
+
+
+class Influx2SourceValidationConfigHandler(TestConfigHandler):
+    stages_to_override = {
+        'source': stages.source.influx2.Influx2SrcValidationSource,
+    }
