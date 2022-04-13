@@ -13,7 +13,7 @@ class Builder:
         self.pipeline = pipeline_
 
     def build(self):
-        if isinstance(self.pipeline, (pipeline.TestPipeline, pipeline.SourceValidationPipeline)):
+        if isinstance(self.pipeline, pipeline.TestPipeline):
             return self._get_preview_query()
         query = self.pipeline.query.replace(f'{TIMESTAMP_CONDITION}', self._get_timestamp_condition())
         return query + ' ORDER BY ' + self.pipeline.timestamp_path

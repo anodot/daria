@@ -40,23 +40,33 @@ def main():
     session = requests.Session()
     session.headers = sdc.userParams['HEADERS']
     try:
-        if sdc.userParams['INITIAL_OFFSET']:
-            offset = to_timestamp(datetime.strptime(sdc.userParams['INITIAL_OFFSET'], '%d/%m/%Y %H:%M'))
-        else:
-            offset = to_timestamp(datetime.utcnow().replace(second=0, microsecond=0) - timedelta(days=365))
+        if sdc.userParams['QUERY']:
+            if sdc.userParams['INITIAL_OFFSET']:
+                offset = to_timestamp(datetime.strptime(sdc.userParams['INITIAL_OFFSET'], '%d/%m/%Y %H:%M'))
+            else:
+                offset = to_timestamp(datetime.utcnow().replace(second=0, microsecond=0) - timedelta(days=365))
 
-        res = session.post(
-            sdc.userParams['URL'],
-            data=sdc.userParams['QUERY'].format(int(offset), 'now()'),
-            timeout=sdc.userParams['TIMEOUT']
-        )
-        res.raise_for_status()
-        cur_batch = sdc.createBatch()
-        for obj in csv_to_json(res.text, int(offset))[:10]:
-            record = sdc.createRecord('record created ' + str(datetime.now()))
-            record.value = obj
-            cur_batch.add(record)
-        cur_batch.process('', str(offset))
+            res = session.post(
+                sdc.userParams['URL'],
+                data=sdc.userParams['QUERY'].format(int(offset), 'now()'),
+                timeout=sdc.userParams['TIMEOUT']
+            )
+            res.raise_for_status()
+            cur_batch = sdc.createBatch()
+            for obj in csv_to_json(res.text, int(offset))[:10]:
+                record = sdc.createRecord('record created ' + str(datetime.now()))
+                record.value = obj
+                cur_batch.add(record)
+            cur_batch.process('', str(offset))
+        else:
+            # source create
+            res = session.get(sdc.userParams['URL'], timeout=sdc.userParams['TIMEOUT'])
+            res.raise_for_status()
+            bucket_list = [bucket['name'] for bucket in res.json()['buckets']]
+
+            if sdc.userParams['BUCKET'] not in bucket_list:
+                raise Exception('Bucket %s not found. Please check your input again' % sdc.userParams['BUCKET'])
+
     except Exception as e:
         sdc.log.error(str(e))
         sdc.log.error(traceback.format_exc())

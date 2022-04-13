@@ -39,20 +39,36 @@ def influx_request(base_url, url, method='GET', params=None, data=None, ssl=Fals
 
 try:
     influx_url_parsed = urlparse(sdc.userParams['HOST'])
-    ssl = influx_url_parsed.scheme == 'https'
-    params = {'q': 'SELECT * FROM ' + sdc.userParams['MEASUREMENT_NAME'], 'db': sdc.userParams['DATABASE']}
-    if sdc.userParams['QUERY']:
+    ssl = True if influx_url_parsed.scheme == 'https' else False
+    if sdc.userParams['MEASUREMENT_NAME']:
+        params = {'q': 'SELECT * FROM ' + sdc.userParams['MEASUREMENT_NAME'], 'db': sdc.userParams['DATABASE']}
+    elif sdc.userParams['QUERY']:
         params = {'q': sdc.userParams['QUERY'].replace('{TIMESTAMP_CONDITION}', '1=1'), 'db': sdc.userParams['DATABASE']}
+    else:
+        # get list of databases
+        params = {'q': 'SHOW DATABASES', 'db': None}
 
     response = influx_request(base_url=sdc.userParams['HOST'], url='query', params=params, ssl=ssl)
     sdc.log.error("influx_request Response code: {0}".format(response.status_code))
     response.raise_for_status()
 
-    cur_batch = sdc.createBatch()
-    record = sdc.createRecord('record created ' + str(datetime.now()))
-    record.value = response.json()
-    cur_batch.add(record)
-    cur_batch.process('', str(datetime.now()))
+    if sdc.userParams['MEASUREMENT_NAME'] or sdc.userParams['QUERY']:
+        cur_batch = sdc.createBatch()
+        record = sdc.createRecord('record created ' + str(datetime.now()))
+        record.value = response.json()
+        cur_batch.add(record)
+        cur_batch.process('', str(datetime.now()))
+    else:
+        db_list = []
+        series = response.json().get('results', [])
+        for s in series:
+            series_list = s.get('series')
+            if series_list:
+                for item in series_list:
+                    db_list.extend(item['values'])
+
+        if not any([sdc.userParams['DATABASE']] == db for db in db_list):
+            raise Exception('Database %s not found. Please check your credentials again' % sdc.userParams['DATABASE'])
 except Exception as e:
     sdc.log.error(str(e))
     sdc.log.error(traceback.format_exc())
