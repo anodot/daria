@@ -11,8 +11,6 @@ class TestInflux(TestInputBase):
                                {'name': 'test_influx_offset', 'offset': '19/03/2019 12:53'}],
         'test_create': [{'name': 'test_basic', 'source_': 'test_influx'},
                         {'name': 'test_basic_offset', 'source_': 'test_influx_offset'}],
-        'test_edit': [{'options': ['-a', 'test_basic'], 'value': 'Y'},
-                      {'options': ['-a', 'test_influx_schema_query'], 'value': 'Y\n'}],
         'test_create_source_with_file': [{'file_name': 'influx_sources'}],
         'test_create_with_file': [{'file_name': 'influx_pipelines'}],
     }
@@ -57,11 +55,6 @@ class TestInflux(TestInputBase):
     def test_create_with_file(self, cli_runner, file_name, override_config):
         super().test_create_with_file(cli_runner, file_name, override_config)
 
-    def test_edit(self, cli_runner, options, value):
-        result = cli_runner.invoke(cli.pipeline.edit, options, catch_exceptions=False,
-                                   input=f"\n{value}\n\n\n\n\n\n\n")
-        assert result.exit_code == 0
-
     def test_edit_with_file(self, cli_runner):
         input_file_path = get_input_file_path('influx_pipelines_edit.json')
         result = cli_runner.invoke(cli.pipeline.edit, ['-f', input_file_path], catch_exceptions=False)
@@ -79,22 +72,5 @@ class TestInflux(TestInputBase):
             'offset': '10/03/2019 12:53',
         }
         result = cli_runner.invoke(cli.source.create, catch_exceptions=False, input=generate_input(input_))
-        assert result.exit_code == 0
-        assert source.repository.exists(name)
-
-    def test_influx2_pipeline_create(self, cli_runner):
-        name = 'test_influx2'
-        input_ = {
-            'source': 'test_influx2',
-            'name': name,
-            'measurement name': 'cpu_test',
-            'preview': 'n',
-            'value columns': 'usage_idle:gauge',
-            'dimensions': 'zone cpu',
-            'delay': '',
-            'interval': 1200000,
-            'result preview': 'n',
-        }
-        result = cli_runner.invoke(cli.pipeline.create, catch_exceptions=False, input=generate_input(input_))
         assert result.exit_code == 0
         assert source.repository.exists(name)
