@@ -111,8 +111,27 @@ def _get_events_handler(pipeline_: Pipeline, base_config: dict) -> ConfigHandler
 
 def _get_source_validation_handler(pipeline_: Pipeline, base_config: dict) -> ConfigHandler:
     handlers = {
+        source.TYPE_CACTI: pipeline.config.handlers.cacti.CactiConfigHandler,
+        source.TYPE_CLICKHOUSE: pipeline.config.handlers.jdbc.TestJDBCConfigHandler,
+        source.TYPE_DIRECTORY: pipeline.config.handlers.directory.TestDirectoryConfigHandler,
+        source.TYPE_DATABRICKS: pipeline.config.handlers.jdbc.TestJDBCConfigHandler,
+        source.TYPE_ELASTIC: pipeline.config.handlers.elastic.TestElasticConfigHandler,
         source.TYPE_INFLUX: pipeline.config.handlers.influx.InfluxSourceValidationConfigHandler,
         source.TYPE_INFLUX_2: pipeline.config.handlers.influx.Influx2SourceValidationConfigHandler,
+        source.TYPE_KAFKA: pipeline.config.handlers.kafka.TestKafkaConfigHandler,
+        source.TYPE_MONGO: pipeline.config.handlers.mongo.TestMongoConfigHandler,
+        source.TYPE_MSSQL: pipeline.config.handlers.jdbc.TestJDBCConfigHandler,
+        source.TYPE_MYSQL: pipeline.config.handlers.jdbc.TestJDBCConfigHandler,
+        source.TYPE_OBSERVIUM: pipeline.config.handlers.observium.TestObserviumConfigHandler,
+        source.TYPE_ORACLE: pipeline.config.handlers.jdbc.TestJDBCConfigHandler,
+        source.TYPE_POSTGRES: pipeline.config.handlers.jdbc.TestJDBCConfigHandler,
+        source.TYPE_PROMETHEUS: pipeline.config.handlers.promql.TestPromQLConfigHandler,
+        source.TYPE_SAGE: pipeline.config.handlers.sage.SageConfigHandler,
+        source.TYPE_SOLARWINDS: pipeline.config.handlers.solarwinds.SolarWindsConfigHandler,
+        source.TYPE_SPLUNK: pipeline.config.handlers.tcp.TestTCPConfigHandler,
+        source.TYPE_THANOS: pipeline.config.handlers.promql.TestPromQLConfigHandler,
+        source.TYPE_VICTORIA: pipeline.config.handlers.promql.TestPromQLConfigHandler,
+        source.TYPE_ZABBIX: pipeline.config.handlers.zabbix.TestZabbixConfigHandler,
     }
     return handlers[pipeline_.source.type](pipeline_, base_config)
 
