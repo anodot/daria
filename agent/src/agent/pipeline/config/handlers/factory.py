@@ -7,6 +7,8 @@ def get_config_handler(pipeline_: Pipeline) -> ConfigHandler:
     base_config = _get_config_loader(pipeline_).load_base_config(pipeline_)
     if isinstance(pipeline_, pipeline.RawPipeline):
         return _get_raw_handler(pipeline_, base_config)
+    if isinstance(pipeline_, pipeline.SourceValidationPipeline):
+        return _get_source_validation_handler(pipeline_, base_config)
     if isinstance(pipeline_, pipeline.TestPipeline):
         return _get_test_handler(pipeline_, base_config)
     if isinstance(pipeline_, pipeline.EventsPipeline):
@@ -107,8 +109,16 @@ def _get_events_handler(pipeline_: Pipeline, base_config: dict) -> ConfigHandler
     return handlers[pipeline_.source.type](pipeline_, base_config)
 
 
+def _get_source_validation_handler(pipeline_: Pipeline, base_config: dict) -> ConfigHandler:
+    handlers = {
+        source.TYPE_INFLUX: pipeline.config.handlers.influx.InfluxSourceValidationConfigHandler,
+        source.TYPE_INFLUX_2: pipeline.config.handlers.influx.TestInflux2ConfigHandler,
+    }
+    return handlers[pipeline_.source.type](pipeline_, base_config)
+
+
 def _get_config_loader(pipeline_: Pipeline):
-    if isinstance(pipeline_, pipeline.TestPipeline):
+    if isinstance(pipeline_, (pipeline.TestPipeline, pipeline.SourceValidationPipeline)):
         return pipeline.config.loader.TestPipelineConfigLoader
     if isinstance(pipeline_, pipeline.RawPipeline):
         return pipeline.config.loader.RawConfigLoader

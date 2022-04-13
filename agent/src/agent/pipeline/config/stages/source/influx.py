@@ -103,3 +103,8 @@ class TestInfluxSource(JythonSource):
                 'value': self.pipeline.config.get('query', '')
             },
         ]
+
+
+class InfluxSrcValidationSource(TestInfluxSource):
+    JYTHON_SCRIPT = 'influx.py'
+    JYTHON_SCRIPTS_DIR = os.path.join(JythonSource.JYTHON_SCRIPTS_DIR, 'source_validation_pipelines')

@@ -8,7 +8,7 @@ from agent.source.validator import IConnectionValidator, ValidationException
 class SourceConnectionValidator(IConnectionValidator):
     @staticmethod
     def validate(source_: Source):
-        test_pipeline = pipeline.manager.build_test_pipeline(source_)
+        test_pipeline = pipeline.manager.build_source_validation_pipeline(source_)
         try:
             sdc_client.create(test_pipeline)
             validate_status = sdc_client.validate(test_pipeline)

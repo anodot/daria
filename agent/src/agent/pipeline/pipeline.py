@@ -20,8 +20,9 @@ TYPE = 'pipeline_type'
 REGULAR_PIPELINE = 'regular_pipeline'
 RAW_PIPELINE = 'raw_pipeline'
 EVENTS_PIPELINE = 'events_pipeline'
+SOURCE_VALIDATION_PIPELINE = 'source_validation_pipeline'
 
-PIPELINE_TYPES = [REGULAR_PIPELINE, RAW_PIPELINE, EVENTS_PIPELINE]
+PIPELINE_TYPES = [REGULAR_PIPELINE, RAW_PIPELINE, EVENTS_PIPELINE, SOURCE_VALIDATION_PIPELINE]
 
 
 class PipelineException(Exception):
@@ -449,6 +450,15 @@ class EventsPipeline(Pipeline):
 class TestPipeline(Pipeline):
     def __init__(self, pipeline_id: str, source_):
         super().__init__(pipeline_id, source_, DummyHttpDestination())
+
+    def get_schema_id(self) -> str:
+        return 'dummy_schema_id'
+
+
+class SourceValidationPipeline(Pipeline):
+    def __init__(self, pipeline_id: str, source_):
+        super().__init__(pipeline_id, source_, DummyHttpDestination())
+        self.type = SOURCE_VALIDATION_PIPELINE
 
     def get_schema_id(self) -> str:
         return 'dummy_schema_id'

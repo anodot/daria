@@ -7,7 +7,7 @@ from datetime import datetime, timedelta, timezone
 from agent import source, pipeline, destination, streamsets
 from agent.modules import tools, constants
 from agent.pipeline import Pipeline, TestPipeline, schema, extra_setup, PipelineMetric, PipelineRetries, RawPipeline, \
-    EventsPipeline
+    EventsPipeline, SourceValidationPipeline
 from agent.modules.logger import get_logger
 from agent.pipeline.config.handlers.factory import get_config_handler
 from agent.source import Source
@@ -243,6 +243,12 @@ def build_test_pipeline(source_: Source) -> TestPipeline:
     # creating a new source because otherwise it will mess with the db session
     test_source = source.manager.create_source_obj(source_.name, source_.type, source_.config)
     return TestPipeline(_get_test_pipeline_id(test_source), test_source)
+
+
+def build_source_validation_pipeline(source_: Source) -> SourceValidationPipeline:
+    # creating a new source because otherwise it will mess with the db session
+    test_source = source.manager.create_source_obj(source_.name, source_.type, source_.config)
+    return SourceValidationPipeline(_get_test_pipeline_id(test_source), test_source)
 
 
 def _get_test_pipeline_id(source_: Source) -> str:
