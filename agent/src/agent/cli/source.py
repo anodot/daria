@@ -120,9 +120,18 @@ def _prompt_source_type():
 
 def _filter_without_cli(sources: list) -> list:
     with_cli = [
-        source.TYPE_CACTI, source.TYPE_CLICKHOUSE, source.TYPE_ELASTIC, source.TYPE_INFLUX, source.TYPE_INFLUX_2,
-        source.TYPE_KAFKA, source.TYPE_MONGO, source.TYPE_MSSQL, source.TYPE_MYSQL, source.TYPE_POSTGRES, 
-        source.TYPE_SAGE, source.TYPE_SPLUNK, source.TYPE_SOLARWINDS, source.TYPE_ZABBIX
+        source.TYPE_CACTI,
+        source.TYPE_CLICKHOUSE,
+        source.TYPE_ELASTIC,
+        source.TYPE_KAFKA,
+        source.TYPE_MONGO,
+        source.TYPE_MSSQL,
+        source.TYPE_MYSQL,
+        source.TYPE_POSTGRES,
+        source.TYPE_SAGE,
+        source.TYPE_SPLUNK,
+        source.TYPE_SOLARWINDS,
+        source.TYPE_ZABBIX,
     ]
     return [source_ for source_ in sources if source_ in with_cli]
 
