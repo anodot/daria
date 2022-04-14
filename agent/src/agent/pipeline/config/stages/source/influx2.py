@@ -77,13 +77,7 @@ class TestInflux2Source(Influx2Source):
         return params
 
     def _get_url(self) -> str:
-        if 'measurement_name' in self.pipeline.config or 'query' in self.pipeline.config:
-            return super()._get_url()
-        else:
-            return urljoin(self.pipeline.source.config['host'], '/api/v2/buckets')
+        return urljoin(self.pipeline.source.config['host'], '/api/v2/buckets')
 
     def _get_query(self) -> str:
-        if 'measurement_name' in self.pipeline.config or 'query' in self.pipeline.config:
-            return super()._get_query()
-        else:
-            return ''
+        return ''
