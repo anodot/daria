@@ -67,17 +67,24 @@ class TestInflux2Source(Influx2Source):
     JYTHON_SCRIPTS_DIR = os.path.join(JythonSource.JYTHON_SCRIPTS_DIR, 'test_pipelines')
 
     def _get_script_params(self) -> list[dict]:
-        params = super()._get_script_params()
-        params.extend([
+        return [
+            {
+                'key': 'URL',
+                'value': self._get_url()
+            },
+            {
+                'key': 'HEADERS',
+                'value': self._get_headers()
+            },
+            {
+                'key': 'TIMEOUT',
+                'value': self.pipeline.source.query_timeout
+            },
             {
                 'key': 'BUCKET',
                 'value': self.pipeline.source.config.get('bucket', '')
             },
-        ])
-        return params
+        ]
 
     def _get_url(self) -> str:
         return urljoin(self.pipeline.source.config['host'], '/api/v2/buckets')
-
-    def _get_query(self) -> str:
-        return ''
