@@ -1,7 +1,6 @@
 from agent import source
 from agent.pipeline import Pipeline, PipelineException
 from .base import Prompter
-from .influx import InfluxPrompter
 from .jdbc import JDBCPrompter
 from .kafka import KafkaPrompter
 from .mongo import MongoPrompter
@@ -16,7 +15,6 @@ def get_prompter(pipeline_: Pipeline, default_config: dict, advanced: bool) -> P
     prompters = {
         source.TYPE_CLICKHOUSE: JDBCPrompter,
         source.TYPE_ELASTIC: ElasticPrompter,
-        source.TYPE_INFLUX: InfluxPrompter,
         source.TYPE_KAFKA: KafkaPrompter,
         source.TYPE_MONGO: MongoPrompter,
         source.TYPE_MYSQL: JDBCPrompter,
