@@ -1,10 +1,11 @@
 import requests
 import sdc_client
 
+from datetime import datetime
 from jsonschema import ValidationError
-from agent.api.routes import needs_pipeline
 from flask import jsonify, Blueprint, request, escape
 from agent.api import routes
+from agent.api.routes import needs_pipeline
 from agent import pipeline, source, streamsets, monitoring
 from agent.modules import logger
 from sdc_client import Severity
@@ -162,10 +163,12 @@ def pipeline_status_change(pipeline_id: str):
 @pipelines.route('/pipeline-offset/<pipeline_id>', methods=['POST'])
 @needs_pipeline
 def pipeline_offset_changed(pipeline_id: str):
-    pipeline.manager.update_pipeline_offset(
-        pipeline.repository.get_by_id(pipeline_id),
-        float(request.get_json()['offset'])
-    )
+    offset_ = float(request.get_json()['offset'])
+    pipeline_ = pipeline.repository.get_by_id(pipeline_id)
+    labels_ = (pipeline_.streamsets.url, pipeline_.name, pipeline_.source.type)
+    pipeline.manager.update_pipeline_offset(pipeline_, offset_)
+    logger.info(f'offset_: {offset_}, now: {datetime.now().timestamp()}')
+    monitoring.metrics.PIPELINE_AVG_LAG.labels(*labels_).set(datetime.now().timestamp() - offset_)
     return jsonify('')
 
 
