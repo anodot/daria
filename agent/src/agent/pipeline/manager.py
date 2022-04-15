@@ -80,7 +80,6 @@ def check_pipeline_id(pipeline_id: str):
 
 def start(pipeline_: Pipeline, wait_for_sending_data: bool = False):
     reset_pipeline_retries(pipeline_)
-    set_pipeline_retries_notification_sent(pipeline_, False)
     sdc_client.start(pipeline_, wait_for_sending_data)
 
 
@@ -88,7 +87,6 @@ def stop(pipeline_: Pipeline):
     try:
         sdc_client.stop(pipeline_)
         reset_pipeline_retries(pipeline_)
-        set_pipeline_retries_notification_sent(pipeline_, False)
     except (sdc_client.ApiClientException, sdc_client.StreamsetsException) as e:
         raise pipeline.PipelineException(str(e))
 
@@ -109,6 +107,7 @@ def get_metrics(pipeline_: Pipeline) -> PipelineMetric:
 
 def reset_pipeline_retries(pipeline_: Pipeline):
     if pipeline_.retries:
+        pipeline_.retries.notification_sent = False
         pipeline_.retries.number_of_error_statuses = 0
         pipeline.repository.save(pipeline_.retries)
 
@@ -288,7 +287,7 @@ def should_send_error_notification(pipeline_: Pipeline) -> bool:
     return not constants.DISABLE_PIPELINE_ERROR_NOTIFICATIONS \
            and pipeline_.error_notification_enabled() \
            and pipeline_.retries \
-           and pipeline_.retries.number_of_error_statuses - 1 == constants.STREAMSETS_NOTIFY_AFTER_RETRY_ATTEMPTS \
+           and pipeline_.retries.number_of_error_statuses - 1 >= constants.STREAMSETS_NOTIFY_AFTER_RETRY_ATTEMPTS \
            and not pipeline_.retries.notification_sent
 
 
@@ -332,13 +331,6 @@ def increase_retry_counter(pipeline_: Pipeline):
     if not pipeline_.retries:
         pipeline_.retries = PipelineRetries(pipeline_)
     pipeline_.retries.number_of_error_statuses += 1
-    pipeline.repository.save(pipeline_.retries)
-
-
-def set_pipeline_retries_notification_sent(pipeline_: Pipeline, value: bool):
-    if not pipeline_.retries:
-        pipeline_.retries = PipelineRetries(pipeline_)
-    pipeline_.retries.notification_sent = value
     pipeline.repository.save(pipeline_.retries)
 
 

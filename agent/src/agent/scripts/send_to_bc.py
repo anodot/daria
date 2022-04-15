@@ -40,7 +40,8 @@ def main():
             api_client.send_pipeline_data_to_bc(pipeline_data)
             if should_send_error_notification:
                 # set 'notification_sent' flag to True
-                pipeline.manager.set_pipeline_retries_notification_sent(pipeline_, True)
+                pipeline_.retries.notification_sent = True
+                pipeline.repository.save(pipeline_.retries)
         except requests.HTTPError as e:
             if e.response.status_code != 404:
                 num_of_errors = _update_errors_count(num_of_errors)
