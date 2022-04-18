@@ -126,6 +126,7 @@ def update(pipeline_: Pipeline):
         _update_schema(pipeline_)
     sdc_client.update(pipeline_)
     pipeline.repository.save(pipeline_)
+    reset_pipeline_retries(pipeline_)
     logger_.info(f'Updated pipeline {pipeline_.name}')
 
 
