@@ -144,7 +144,7 @@ test-pipelines:
 test-run-test-pipeline:
 	$(DOCKER_TEST) tests/test_run_test_pipeline.py
 
-test-monitoring-metrics: bootstrap
+test-monitoring-metrics:
 	$(DOCKER_TEST) tests/test_monitoring.py
 
 test-api:
