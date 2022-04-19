@@ -4,7 +4,7 @@ from .test_input.test_zpipeline_base import TestInputBase
 from .test_pipelines.test_zpipeline_base import TestPipelineBase
 
 
-class TestDirectory(TestInputBase, TestPipelineBase):
+class TestMonitoringMetrics(TestInputBase, TestPipelineBase):
     __test__ = True
     params = {
         'test_create_source_with_file': [

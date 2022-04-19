@@ -167,7 +167,6 @@ def pipeline_offset_changed(pipeline_id: str):
     pipeline_ = pipeline.repository.get_by_id(pipeline_id)
     labels_ = (pipeline_.streamsets.url, pipeline_.name, pipeline_.source.type)
     pipeline.manager.update_pipeline_offset(pipeline_, offset_)
-    logger.info(f'offset_: {offset_}, now: {datetime.now().timestamp()}')
     monitoring.metrics.PIPELINE_AVG_LAG.labels(*labels_).set(datetime.now().timestamp() - offset_)
     return jsonify('')
 
