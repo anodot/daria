@@ -1,6 +1,3 @@
-import json
-
-import prometheus_client.metrics
 import requests
 import urllib.parse
 
