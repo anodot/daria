@@ -1,29 +1,5 @@
 [
   {
-    "source": "test_dir_monitoring_json",
-    "pipeline_id": "test_dir_monitoring_json",
-    "measurement_names": {
-      "Clicks": "clicks"
-    },
-    "values": {
-      "Clicks": "gauge"
-    },
-    "dimensions": [
-      "ver",
-      "Country",
-      "Exchange",
-      "metric"
-    ],
-    "timestamp": {
-      "type": "unix",
-      "name": "timestamp_unix"
-    },
-    "flush_bucket_size": "1h",
-    "transform_script": {
-      "file": "tests/input_files/directory/transform.py"
-    }
-  },
-  {
     "source": "test_dir_monitoring_csv",
     "pipeline_id": "test_dir_monitoring_csv",
     "values": {

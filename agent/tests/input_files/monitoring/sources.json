@@ -1,15 +1,6 @@
 [
   {
     "type": "directory",
-    "name": "test_dir_monitoring_json",
-    "config": {
-      "conf.spoolDir": "/home/test-directory-collector",
-      "conf.filePattern": "*.json",
-      "conf.dataFormat": "JSON"
-    }
-  },
-  {
-    "type": "directory",
     "name": "test_dir_monitoring_csv",
     "config": {
       "conf.spoolDir": "/home/test-directory-collector",

@@ -14,23 +14,18 @@ class TestMonitoringMetrics(TestInputBase, TestPipelineBase):
             {'file_name': 'monitoring/pipelines'}
         ],
         'test_start': [
-            {'name': 'test_dir_monitoring_json'},
             {'name': 'test_dir_monitoring_csv'},
         ],
         'test_stop': [
-            {'name': 'test_dir_monitoring_json'},
             {'name': 'test_dir_monitoring_csv'},
         ],
         'test_metric_pipeline_avg_lag': [
-            {'name': 'test_dir_monitoring_json', 'metric_type': 'pipeline_avg_lag'},
-            {'name': 'test_dir_monitoring_csv', 'metric_type': 'pipeline_avg_lag'}
+            {'name': 'test_dir_monitoring_csv', 'metric_type': 'pipeline_avg_lag'},
         ],
         'test_delete_pipeline': [
-            {'name': 'test_dir_monitoring_json'},
             {'name': 'test_dir_monitoring_csv'},
         ],
         'test_source_delete': [
-            {'name': 'test_dir_monitoring_json'},
             {'name': 'test_dir_monitoring_csv'},
         ],
     }
