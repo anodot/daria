@@ -24,7 +24,17 @@ class TestMonitoringMetrics(TestInputBase, TestPipelineBase):
         'test_metric_pipeline_avg_lag': [
             {'name': 'test_dir_csv', 'metric_type': 'pipeline_avg_lag'},
             {'name': 'test_dir_log', 'metric_type': 'pipeline_avg_lag'}
-        ]
+        ],
+        'test_delete_pipeline': [
+            {'name': 'test_dir_log'},
+            {'name': 'test_dir_json'},
+            {'name': 'test_dir_csv'},
+        ],
+        'test_source_delete': [
+            {'name': 'test_dir_log'},
+            {'name': 'test_dir_json'},
+            {'name': 'test_dir_csv'},
+        ],
     }
 
     def test_create_source_with_file(self, cli_runner, file_name):
@@ -59,9 +69,3 @@ class TestMonitoringMetrics(TestInputBase, TestPipelineBase):
         response = requests.request("GET", url, headers={}, data={})
         metric_found = any(i.startswith(metric_type) and i.find(name) != -1 for i in response.text.split('\n'))
         assert metric_found
-
-    def test_delete_pipeline(self, cli_runner, name=None):
-        pytest.skip()
-
-    def test_source_delete(self, cli_runner, name=None):
-        pytest.skip()
