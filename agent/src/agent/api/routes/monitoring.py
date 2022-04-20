@@ -1,6 +1,3 @@
-import json
-
-import prometheus_client.metrics
 import requests
 import urllib.parse
 
@@ -42,7 +39,7 @@ def monitoring():
     try:
         destination_ = destination.repository.get()
     except destination.repository.DestinationNotExists:
-        return jsonify('')
+        return jsonify({'error': 'Destination does not exist'})
 
     data = monitoring_.latest_to_anodot()
     monitoring_url = constants.MONITORING_URL or destination_.url
@@ -62,7 +59,7 @@ def monitoring():
         errors += _send_to_anodot(data, url, destination_.proxy)
 
     if errors:
-        raise Exception('Errors from anodot: ' + str(errors))
+        raise Exception(f'Errors from anodot: {errors}')
 
     return jsonify('')
 
