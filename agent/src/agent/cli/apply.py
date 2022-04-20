@@ -39,6 +39,7 @@ def populate_source_from_file(file):
             else:
                 source.json_builder.build(config)
         except Exception as e:
+            # TODO Check this
             if not constants.ENV_PROD:
                 raise
             exceptions.append(str(e))
@@ -58,8 +59,6 @@ def populate_pipeline_from_file(file):
             else:
                 pipeline.manager.start(pipeline.json_builder.build(config))
         except Exception as e:
-            if not constants.ENV_PROD:
-                raise
             exceptions.append(str(e))
     if exceptions:
         raise Exception(json.dumps(exceptions))
@@ -79,8 +78,6 @@ def process(directory, create):
                     create(file)
                 logger_.info('Success')
             except Exception as e:
-                if not constants.ENV_PROD:
-                    raise
                 logger_.exception(f'{FAIL}EXCEPTION: {type(e).__name__}: {e}\n{ENDC}')
                 failed = True
                 continue

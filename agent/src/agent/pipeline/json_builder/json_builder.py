@@ -69,9 +69,13 @@ def build_events(config: dict) -> Pipeline:
 
 
 def _build(config: dict, pipeline_: Pipeline) -> Pipeline:
-    _load_config(pipeline_, config)
-    pipeline.manager.create(pipeline_)
-    logger_.info(f'Pipeline {pipeline_.name} created')
+    try:
+        _load_config(pipeline_, config)
+        pipeline.manager.create(pipeline_)
+        logger_.info(f'Pipeline {pipeline_.name} created')
+    except Exception as e:
+        pipeline.repository.expunge(pipeline_)
+        raise e
     return pipeline_
 
 

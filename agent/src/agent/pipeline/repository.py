@@ -71,6 +71,10 @@ def delete_offset(pipeline_offset: PipelineOffset):
     Session.commit()
 
 
+def expunge(entity: Entity):
+    Session.expunge(entity)
+
+
 @typed
 def get_by_streamsets_id(streamsets_id: int) -> List[Pipeline]:
     return Session.query(Pipeline).filter(Pipeline.streamsets_id == streamsets_id).all()
