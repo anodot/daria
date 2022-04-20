@@ -3,7 +3,7 @@ import json
 import os
 
 from agent import cli, pipeline, source
-from agent.modules import logger, constants
+from agent.modules import logger
 
 logger_ = logger.get_logger(__name__, stdout=True)
 
@@ -39,9 +39,6 @@ def populate_source_from_file(file):
             else:
                 source.json_builder.build(config)
         except Exception as e:
-            # TODO Check this
-            if not constants.ENV_PROD:
-                raise
             exceptions.append(str(e))
     if exceptions:
         raise Exception(json.dumps(exceptions))
