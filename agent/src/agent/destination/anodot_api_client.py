@@ -58,13 +58,19 @@ class MonitoringApiClient:
     @v1endpoint
     def send_to_client(self, data: list[dict]):
         return requests.post(
-            self.url_builder.build('metrics', api_version='v1'), json=data, params=self.params, proxies=self.proxies
+            self.url_builder.build('metrics', api_version='v1'),
+            json=data,
+            params=self.params,
+            proxies=self.proxies,
         )
 
     @v1endpoint
     def send_to_anodot(self, data: list[dict]):
         return requests.post(
-            self.url_builder.build('agents', api_version='v1'), json=data, params=self.params, proxies=self.proxies
+            self.url_builder.build('agents', api_version='v1'),
+            json=data,
+            params=self.params,
+            proxies=self.proxies,
         )
 
 
@@ -197,15 +203,3 @@ class AnodotApiClient:
 
     def get_events_url(self) -> str:
         return self.url_builder.build('user-events')
-
-    @v1endpoint
-    def send_monitoring_to_client(self, data: dict):
-        return self.session.post(
-            self.url_builder.build('metrics'),
-            proxies=self.proxies,
-            json=data,
-            params={
-                'token': self.api_token,
-                'protocol': HttpDestination.PROTOCOL_30
-            }
-        )

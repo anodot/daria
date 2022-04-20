@@ -17,7 +17,7 @@ def monitoring():
     try:
         destination_ = destination.repository.get()
     except destination.repository.DestinationNotExists:
-        return jsonify({'error': 'Destination does not exist'})
+        return jsonify('')
 
     if errors := monitoring_.data_sender.send_monitoring_data(destination_):
         raise MonitoringException(errors)

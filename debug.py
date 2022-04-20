@@ -1,7 +1,5 @@
 import json
 import os
-
-import requests
 import rrdtool
 
 from agent.data_extractor.snmp import snmp
@@ -19,12 +17,6 @@ def api_client():
 
 
 di.init()
-
-try:
-    res = AnodotApiClient(destination.repository.get()).update_schema({'I': 'am schema'})
-except Exception as e:
-    t = 1
-tt = 1
 
 # res = data_extractor.rrd.extract_metrics(pipeline.repository.get_by_id('rrd'), '1619085000',  '1619086800', '300')
 # cli.pipeline.create(["-f", "/Users/antonzelenin/Workspace/daria/agent/tests/input_files/rrd/pipelines.json"])
