@@ -21,7 +21,7 @@ def api_client():
 di.init()
 
 try:
-    res = AnodotApiClient(destination.repository.get()).create_schema({'I': 'am schema'})
+    res = AnodotApiClient(destination.repository.get()).update_schema({'I': 'am schema'})
 except Exception as e:
     t = 1
 tt = 1
