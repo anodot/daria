@@ -21,8 +21,6 @@ def process_response(res: requests.Response):
     except requests.exceptions.HTTPError:
         if res.text:
             logger.error(f'{res.url} - {res.text}')
-        elif res.json():
-            logger.error(f'{res.url} - {res.json()}')
         raise
 
     return parsed
