@@ -1,68 +1,26 @@
-import json
-
-import prometheus_client.metrics
-import requests
-import urllib.parse
-
 from flask import jsonify, Blueprint, request
-from json.decoder import JSONDecodeError
-from agent import monitoring as monitoring_, destination, pipeline
-from agent.modules import constants, proxy
+from agent import monitoring, destination, pipeline
 from prometheus_client import generate_latest, multiprocess
 
-multiprocess.MultiProcessCollector(monitoring_.metrics.registry)
+multiprocess.MultiProcessCollector(monitoring.metrics.registry)
 monitoring_bp = Blueprint('monitoring', __name__)
 
 
 @monitoring_bp.route('/metrics', methods=['GET'])
 def metrics():
-    monitoring_.pull_latest()
-    return generate_latest(registry=monitoring_.metrics.registry)
-
-
-def _send_to_anodot(data: list, url: str, proxy_obj: proxy.Proxy):
-    errors = []
-    res = requests.post(url, json=data, proxies=proxy.get_config(proxy_obj))
-    if res.status_code != 200:
-        errors.append(f'Error {res.status_code} from {url}')
-
-    if res.text:
-        try:
-            res_json = res.json()
-            if res_json['errors']:
-                errors.append(str(res_json['errors']))
-        except JSONDecodeError:
-            errors.append(res.text)
-
-    return errors
+    monitoring.pull_latest()
+    return generate_latest(registry=monitoring.metrics.registry)
 
 
 @monitoring_bp.route('/monitoring', methods=['GET'])
-def monitoring():
+def monitoring_():
     try:
         destination_ = destination.repository.get()
     except destination.repository.DestinationNotExists:
         return jsonify('')
 
-    data = monitoring_.latest_to_anodot()
-    monitoring_url = constants.MONITORING_URL or destination_.url
-    monitoring_token = constants.MONITORING_TOKEN or destination_.token
-
-    errors = []
-    if constants.MONITORING_SEND_TO_CLIENT:
-        url = urllib.parse.urljoin(
-            monitoring_url, f'api/v1/metrics?token={monitoring_token}&protocol={destination_.PROTOCOL_20}'
-        )
-        errors += _send_to_anodot(data, url, destination_.proxy)
-
-    if constants.MONITORING_SEND_TO_ANODOT:
-        url = urllib.parse.urljoin(
-            monitoring_url, f'api/v1/agents?token={monitoring_token}&protocol={destination_.PROTOCOL_20}'
-        )
-        errors += _send_to_anodot(data, url, destination_.proxy)
-
-    if errors:
-        raise Exception('Errors from anodot: ' + str(errors))
+    if errors := monitoring.sender.send_monitoring_data(destination_):
+        raise MonitoringException(errors)
 
     return jsonify('')
 
@@ -70,26 +28,26 @@ def monitoring():
 @monitoring_bp.route('/monitoring/source_http_error/<pipeline_id>/<code>', methods=['POST'])
 def source_http_error(pipeline_id, code):
     pipeline_ = pipeline.repository.get_by_id(pipeline_id)
-    monitoring_.metrics.SOURCE_HTTP_ERRORS.labels(pipeline_id, pipeline_.source.type, code).inc(1)
+    monitoring.metrics.SOURCE_HTTP_ERRORS.labels(pipeline_id, pipeline_.source.type, code).inc(1)
     return jsonify('')
 
 
 @monitoring_bp.route('/monitoring/scheduled_script_error/<script_name>', methods=['POST'])
 def scheduled_script_error(script_name):
-    monitoring_.metrics.SCHEDULED_SCRIPTS_ERRORS.labels(script_name).inc(1)
+    monitoring.metrics.SCHEDULED_SCRIPTS_ERRORS.labels(script_name).inc(1)
     return jsonify('')
 
 
 @monitoring_bp.route('/monitoring/scheduled_script_execution_time/<script_name>', methods=['POST'])
 def scheduled_script_execution_time(script_name):
-    monitoring_.metrics.SCHEDULED_SCRIPT_EXECUTION_TIME.labels(script_name).set(request.json['duration'])
+    monitoring.metrics.SCHEDULED_SCRIPT_EXECUTION_TIME.labels(script_name).set(request.json['duration'])
     return jsonify('')
 
 
 @monitoring_bp.route('/monitoring/directory_file_processed/<pipeline_id>', methods=['POST'])
 def directory_file_processed(pipeline_id):
     pipeline_ = pipeline.repository.get_by_id(pipeline_id)
-    monitoring_.metrics.DIRECTORY_FILE_PROCESSED\
+    monitoring.metrics.DIRECTORY_FILE_PROCESSED\
         .labels(pipeline_.streamsets.url, pipeline_.name)\
         .inc(1)
     return jsonify('')
@@ -100,7 +58,11 @@ def watermark_delta(pipeline_id):
     delta = request.args.get('delta')
     assert delta or delta == 0
     pipeline_ = pipeline.repository.get_by_id(pipeline_id)
-    monitoring_.metrics.WATERMARK_DELTA\
+    monitoring.metrics.WATERMARK_DELTA\
         .labels(pipeline_.streamsets.url, pipeline_.name, pipeline_.source.type)\
         .set(delta)
     return jsonify('')
+
+
+class MonitoringException(Exception):
+    pass

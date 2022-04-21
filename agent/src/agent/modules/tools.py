@@ -20,12 +20,13 @@ def infinite_retry(func):
         while True:
             try:
                 return func(*args, **kwargs)
-            except (KeyboardInterrupt, SystemExit, click.Abort):
-                raise click.Abort()
+            except (KeyboardInterrupt, SystemExit, click.Abort) as e:
+                raise click.Abort() from e
             except click.UsageError as e:
                 click.secho(str(e.message), err=True, color='red')
             except Exception as e:
                 click.secho(str(e), err=True, color='red')
+
     return new_func
 
 
@@ -49,8 +50,10 @@ def map_keys(records, mapping):
 
 def if_validation_enabled(func):
     if not constants.VALIDATION_ENABLED:
+
         def new_func(*args, **kwargs):
             return True
+
         return new_func
     return func
 
@@ -138,9 +141,9 @@ class ArchiveCompressionType(Enum):
 
 
 def extract_archive(
-        archive_path: str,
-        destination_path: str,
-        compression: ArchiveCompressionType = ArchiveCompressionType.GZ
+    archive_path: str,
+    destination_path: str,
+    compression: ArchiveCompressionType = ArchiveCompressionType.GZ,
 ):
     if not os.path.isfile(archive_path):
         raise ArchiveNotExistsException()
@@ -161,6 +164,11 @@ def get_all_files(directory: str):
             get_all_files(dir_)
         for file in files:
             yield os.path.join(root, file)
+
+
+def chunks(lst, n):
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
 
 
 class ArchiveNotExistsException(Exception):
