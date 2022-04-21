@@ -79,7 +79,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - /var/lib/postgresql/data
+      - db-data:/var/lib/postgresql/data
 
   mongo:
     image: mongo:4.4.1
@@ -283,3 +283,4 @@ services:
 
 volumes:
   agent-data:
+  db-data:
