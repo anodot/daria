@@ -1,0 +1,34 @@
+[
+  {
+    "source": "test_dir_monitoring_csv",
+    "pipeline_id": "test_dir_monitoring_csv",
+    "values": {
+      "Clicks": "gauge"
+    },
+    "measurement_names": {
+      "Clicks": "clicks"
+    },
+    "dimensions": {
+      "required": [
+        "ver",
+        "Country"
+      ],
+      "optional": [
+        "Exchange",
+        "optional_dim"
+      ]
+    },
+    "timestamp": {
+      "name": "timestamp_datetime",
+      "type": "string",
+      "format": "MMddyyyy"
+    },
+    "flush_bucket_size": "1h",
+    "count_records": true,
+    "count_records_measurement_name": "count_records",
+    "static_what": true,
+    "properties": {
+      "version": "1"
+    }
+  }
+]

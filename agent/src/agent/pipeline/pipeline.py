@@ -8,7 +8,7 @@ from agent.modules.constants import HOSTNAME
 from agent.modules.db import Entity
 from agent.destination import HttpDestination, DummyHttpDestination
 from enum import Enum
-from sqlalchemy import Column, Integer, String, JSON, ForeignKey, func, Float
+from sqlalchemy import Column, Integer, String, JSON, ForeignKey, func, Float, Boolean
 from copy import deepcopy
 from agent import source, pipeline
 from agent.modules.time import Interval
@@ -481,10 +481,13 @@ class PipelineRetries(Entity):
 
     pipeline_id = Column(String, ForeignKey('pipelines.name'), primary_key=True)
     number_of_error_statuses = Column(Integer)
+    notification_sent = Column(Boolean, default=False)
+    last_updated = Column(TIMESTAMP(timezone=True), default=func.now(), onupdate=func.now())
 
     def __init__(self, pipeline_: Pipeline):
         self.pipeline_id = pipeline_.name
         self.number_of_error_statuses = 0
+        self.notification_sent = False
 
 
 class PipelineMetric:
