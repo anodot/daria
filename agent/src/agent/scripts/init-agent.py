@@ -10,7 +10,7 @@ di.init()
 logger = logger.get_logger(__name__)
 
 IGNORE_INIT_SCRIPT_FAILURES = os.environ.get('IGNORE_INIT_SCRIPT_FAILURES', 'false').lower() == 'true'
-NUMBER_OF_RETRIES = 2
+NUMBER_OF_RETRIES = 4
 RETRY_SLEEP = 20
 
 
