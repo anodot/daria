@@ -488,7 +488,7 @@
         "value" : false
       }, {
         "name" : "conf.useSecurity",
-        "value" : true
+        "value" : false
       }, {
         "name" : "stageOnRecordError",
         "value" : "TO_ERROR"
