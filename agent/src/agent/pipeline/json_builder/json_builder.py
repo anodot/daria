@@ -97,8 +97,12 @@ def edit_multiple(configs: list) -> List[Pipeline]:
 
 def edit(config: dict) -> Pipeline:
     pipeline_ = pipeline.repository.get_by_id(config['pipeline_id'])
-    _load_config(pipeline_, config, is_edit=True)
-    pipeline.manager.update(pipeline_)
+    try:
+        _load_config(pipeline_, config, is_edit=True)
+        pipeline.manager.update(pipeline_)
+    except Exception as e:
+        pipeline.repository.expunge(pipeline_)
+        raise e
     return pipeline_
 
 
