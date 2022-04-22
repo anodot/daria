@@ -45,7 +45,10 @@ def create(advanced: bool, file, result_preview: bool):
     Create new Pipeline
     """
     check_prerequisites()
-    _create_from_file(file, result_preview) if file else _prompt(advanced)
+    try:
+        _create_from_file(file, result_preview) if file else _prompt(advanced)
+    except pipeline.PipelineException as e:
+        raise click.ClickException(str(e)) from e
 
 
 @click.command(name='create-raw')

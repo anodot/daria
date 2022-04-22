@@ -10,6 +10,37 @@
   },
   {
     "source": "test_influx",
+    "pipeline_id": "test_influx_adv",
+    "measurement_name": "cpu_test",
+    "values": {"usage_active": "gauge", "usage_idle": "gauge"},
+    "dimensions": {"required": ["cpu", "zone", "host"], "optional": []},
+    "tags": {"key": ["val"], "key1": ["val1"]},
+    "properties": {"key": "val", "key1": "val1"},
+    "filtering": "zone = 'GEO'",
+    "interval": 1200000,
+    "delay": "0s",
+    "uses_schema": false
+  },
+  {
+    "source": "test_influx",
+    "pipeline_id": "test_basic",
+    "measurement_name": "cpu_test",
+    "values": {"usage_active": "gauge", "usage_idle": "gauge"},
+    "dimensions": ["cpu", "host", "zone"],
+    "interval": 1200000,
+    "uses_schema": true
+  },
+  {
+    "source": "test_influx_offset",
+    "pipeline_id": "test_basic_offset",
+    "measurement_name": "cpu_test",
+    "values": {"usage_active": "gauge", "usage_idle": "gauge"},
+    "dimensions": ["cpu", "host", "zone"],
+    "interval": 1200000,
+    "uses_schema": true
+  },
+  {
+    "source": "test_influx",
     "pipeline_id": "test_influx_file_full",
     "measurement_name": "cpu_test",
     "values": {"usage_active": "gauge"},
@@ -51,6 +82,25 @@
     },
     "properties": {"test": "val"},
     "interval": 86400000
+  },
+  {
+    "source": "influx2_influxql_source",
+    "pipeline_id": "influx2_influxql_pipeline",
+    "measurement_name": "cpu_test",
+    "values": {"usage_active": "gauge", "usage_idle": "gauge"},
+    "dimensions": {
+      "required": [],
+      "optional": ["cpu", "host", "zone"]
+    },
+    "interval": 1200000
+  },
+  {
+    "source": "test_influx2",
+    "pipeline_id": "test_influx2",
+    "measurement_name": "cpu_test",
+    "values": {"usage_idle": "gauge"},
+    "dimensions": ["zone", "cpu"],
+    "interval": 1200000
   },
   {
     "source": "test_influx2_file",

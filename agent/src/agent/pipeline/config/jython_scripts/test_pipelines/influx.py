@@ -38,9 +38,9 @@ def influx_request(base_url, url, method='GET', params=None, data=None, ssl=Fals
 
 try:
     influx_url_parsed = urlparse(sdc.userParams['HOST'])
-    ssl = True if influx_url_parsed.scheme == 'https' else False
-    # get list of databases
+    ssl = influx_url_parsed.scheme == 'https'
     params = {'q': 'SHOW DATABASES', 'db': None}
+
     response = influx_request(base_url=sdc.userParams['HOST'], url='query', params=params, ssl=ssl)
     sdc.log.error("influx_request Response code: {0}".format(response.status_code))
     response.raise_for_status()

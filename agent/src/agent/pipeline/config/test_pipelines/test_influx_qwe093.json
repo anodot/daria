@@ -431,7 +431,7 @@
         "displayMode" : "ADVANCED"
       },
       "inputLanes" : [ ],
-      "outputLanes" : [ "JythonScripting_01OutputLane16413274349280" ],
+      "outputLanes" : [ "source_outputLane" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -447,7 +447,7 @@
         "yPos" : 83,
         "stageType" : "TARGET"
       },
-      "inputLanes" : [ "JythonScripting_01OutputLane16413274349280" ],
+      "inputLanes" : [ "source_outputLane" ],
       "outputLanes" : [ ],
       "eventLanes" : [ ],
       "services" : [ ]
