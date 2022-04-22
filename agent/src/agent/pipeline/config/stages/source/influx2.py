@@ -62,7 +62,7 @@ class Influx2Source(InfluxScript):
         return filter_condition
 
 
-class TestInflux2Source(JythonSource):
+class TestInflux2Source(Influx2Source):
     JYTHON_SCRIPT = 'influx2.py'
     JYTHON_SCRIPTS_DIR = os.path.join(JythonSource.JYTHON_SCRIPTS_DIR, 'test_pipelines')
 
@@ -77,17 +77,14 @@ class TestInflux2Source(JythonSource):
                 'value': self._get_headers()
             },
             {
-                'key': 'REQUEST_TIMEOUT',
-                'value': 10
+                'key': 'TIMEOUT',
+                'value': self.pipeline.source.query_timeout
+            },
+            {
+                'key': 'BUCKET',
+                'value': self.pipeline.source.config.get('bucket', '')
             },
         ]
 
     def _get_url(self) -> str:
         return urljoin(self.pipeline.source.config['host'], '/api/v2/buckets')
-
-    def _get_headers(self) -> dict:
-        return {
-            'Authorization': f'Token {self.pipeline.source.config["token"]}',
-            'Accept': 'application/csv',
-            'Content-type': 'application/vnd.flux',
-        }

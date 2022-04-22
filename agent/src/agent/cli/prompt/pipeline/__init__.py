@@ -1,7 +1,6 @@
 from agent import source
-from agent.pipeline import Pipeline
+from agent.pipeline import Pipeline, PipelineException
 from .base import Prompter
-from .influx import InfluxPrompter, Influx2Prompter
 from .jdbc import JDBCPrompter
 from .kafka import KafkaPrompter
 from .mongo import MongoPrompter
@@ -16,8 +15,6 @@ def get_prompter(pipeline_: Pipeline, default_config: dict, advanced: bool) -> P
     prompters = {
         source.TYPE_CLICKHOUSE: JDBCPrompter,
         source.TYPE_ELASTIC: ElasticPrompter,
-        source.TYPE_INFLUX: InfluxPrompter,
-        source.TYPE_INFLUX_2: Influx2Prompter,
         source.TYPE_KAFKA: KafkaPrompter,
         source.TYPE_MONGO: MongoPrompter,
         source.TYPE_MYSQL: JDBCPrompter,
@@ -27,4 +24,7 @@ def get_prompter(pipeline_: Pipeline, default_config: dict, advanced: bool) -> P
         source.TYPE_SOLARWINDS: SolarWindsPrompter,
         source.TYPE_ZABBIX: ZabbixPrompter,
     }
-    return prompters[pipeline_.source.type](pipeline_, default_config, advanced)
+    try:
+        return prompters[pipeline_.source.type](pipeline_, default_config, advanced)
+    except KeyError as e:
+        raise PipelineException(f'No prompter available for Pipeline with source type `{pipeline_.source.type}`') from e

@@ -456,7 +456,7 @@
         "displayMode" : "ADVANCED"
       },
       "inputLanes" : [ ],
-      "outputLanes" : [ "JythonScripting_01OutputLane16013726491540" ],
+      "outputLanes" : [ "source_outputLane" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -473,7 +473,7 @@
         "label" : "Trash 1",
         "xPos" : 556.3414611816406
       },
-      "inputLanes" : [ "JythonScripting_01OutputLane16013726491540" ],
+      "inputLanes" : [ "source_outputLane" ],
       "outputLanes" : [ ],
       "eventLanes" : [ ],
       "services" : [ ]
