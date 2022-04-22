@@ -11,6 +11,7 @@ logger = logger.get_logger(__name__)
 
 IGNORE_INIT_SCRIPT_FAILURES = os.environ.get('IGNORE_INIT_SCRIPT_FAILURES', 'false').lower() == 'true'
 NUMBER_OF_RETRIES = 2
+RETRY_SLEEP = 20
 
 
 def main():
@@ -20,8 +21,9 @@ def main():
             _update_pipeline_statuses()
         except Exception as e:
             if i > 0:
+                logger.info(f'Init script failed, retrying in {RETRY_SLEEP} seconds...')
                 i -= 1
-                time.sleep(20)
+                time.sleep(RETRY_SLEEP)
                 continue
 
             logger.error(traceback.format_exc())
@@ -46,5 +48,6 @@ class InitScriptException(Exception):
 
 
 if __name__ == '__main__':
+    logger.info('Agent init script started')
     main()
     logger.info('Agent init script finished successfully')
