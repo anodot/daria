@@ -45,7 +45,8 @@ tabulate==0.8.9
 texttable==1.6.0
 urllib3==1.26.5
 pytest-xdist==2.4.0
-flask==2.0.2
+flask==2.1.1
+werkzeug==2.1.1
 Flask-WTF==1.0.0
 result==0.5.0
 alembic==1.4.2
