@@ -5,11 +5,9 @@ try:
     import time
     import os
     import sys
-    import calendar
     from datetime import datetime, timedelta
 
     sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))
-    import requests
     import pytz
 finally:
     sdc.importUnlock()

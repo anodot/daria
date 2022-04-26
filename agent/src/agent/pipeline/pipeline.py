@@ -182,7 +182,8 @@ class Pipeline(Entity, sdc_client.IPipeline):
     @property
     def measurement_configurations(self) -> Optional[dict]:
         return _build_transformation_configurations(
-            list(self.values), self.config.get('measurement_configurations', {})
+            list(self.values),
+            self.config.get('measurement_configurations', {}),
         )
 
     @property
