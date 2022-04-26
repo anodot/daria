@@ -182,8 +182,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
     @property
     def measurement_configurations(self) -> Optional[dict]:
         return _build_transformation_configurations(
-            list(self.values),
-            self.config.get('measurement_configurations', {})
+            list(self.values), self.config.get('measurement_configurations', {})
         )
 
     @property
@@ -320,6 +319,10 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return self.config.get('delay', '0')
 
     @property
+    def watermark_in_local_timezone(self) -> str:
+        return self.config.get('watermark_in_local_timezone', False)
+
+    @property
     def batch_size(self) -> str:
         return self.config.get('batch_size', '1000')
 
@@ -416,7 +419,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
                 return str(idx)
         if property_value in self.config.get('dimension_value_paths', {}):
             return str(self.config.get('dimension_value_paths', {})[property_value])
-        return str(property_value)
+        return property_value
 
     def meta_tags(self) -> dict:
         return {

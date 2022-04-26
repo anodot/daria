@@ -9,7 +9,7 @@ from agent.pipeline import pipeline, Pipeline
 class AddProperties(Stage):
     @classmethod
     def _get_dimension_field_path(cls, key) -> str:
-        return '/properties/' + key
+        return f'/properties/{key}'
 
     def get_config(self) -> dict:
         expressions = [
@@ -25,6 +25,16 @@ class AddProperties(Stage):
         expressions.append(get_value('/timestamp', timestamp_to_unix))
         return {
             'expressionProcessorConfigs': _get_tags_expressions(self.pipeline) + expressions
+        }
+
+
+class ConvertWatermarkTimezone(Stage):
+    def get_config(self) -> dict:
+        expressions = [get_value('/schemaId', 'SCHEMA_ID')]
+        if self.pipeline.watermark_in_local_timezone:
+            expressions.append(get_value('/watermark', _convert_watermark_to_timezone(self.pipeline.timezone)))
+        return {
+            'expressionProcessorConfigs': expressions
         }
 
 
@@ -57,7 +67,7 @@ class Filtering(Stage):
 class AddProperties30(AddProperties):
     @classmethod
     def _get_dimension_field_path(cls, key):
-        return '/dimensions/' + key
+        return f'/dimensions/{key}'
 
 
 def _get_convert_timestamp_to_unix_expression(
@@ -77,12 +87,15 @@ def _get_convert_timestamp_to_unix_expression(
     return timestamp_value
 
 
+def _convert_watermark_to_timezone(timezone: str):
+    return f"(record:value('/watermark') * 1000 - time:timeZoneOffset('{timezone}')) / 1000"
+
+
 def _get_tags_expressions(pipeline_: Pipeline) -> list:
     tags_expressions = [get_value('/tags', 'record:value("/tags") == NULL ? emptyMap() : record:value("/tags")')]
     for tag_name, tag_values in pipeline_.get_tags().items():
         tags_expressions.append(get_value(f'/tags/{tag_name}', 'emptyList()'))
-        for idx, val in enumerate(tag_values):
-            tags_expressions.append(get_value(f'/tags/{tag_name}[{idx}]', f'"{val}"'))
+        tags_expressions.extend(get_value(f'/tags/{tag_name}[{idx}]', f'"{val}"') for idx, val in enumerate(tag_values))
     return tags_expressions
 
 
