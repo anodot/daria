@@ -28,7 +28,7 @@ class AddProperties(Stage):
         }
 
 
-class ConvertWatermarkTimezone(Stage):
+class ProcessWatermark(Stage):
     def get_config(self) -> dict:
         expressions = [get_value('/schemaId', 'SCHEMA_ID')]
         if self.pipeline.watermark_in_local_timezone:
