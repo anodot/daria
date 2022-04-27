@@ -17,8 +17,8 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column('pipeline_retries', sa.Column('notification_sent', sa.Boolean, nullable=False, default=False))
-    op.add_column('pipeline_retries', sa.Column('last_updated', sa.TIMESTAMP, nullable=False))
+    op.add_column('pipeline_retries', sa.Column('notification_sent', sa.Boolean, default=False))
+    op.add_column('pipeline_retries', sa.Column('last_updated', sa.TIMESTAMP))
 
 
 def downgrade():
