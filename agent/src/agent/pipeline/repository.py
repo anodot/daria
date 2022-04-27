@@ -71,10 +71,6 @@ def delete_offset(pipeline_offset: PipelineOffset):
     Session.commit()
 
 
-def expunge(entity: Entity):
-    Session.expunge(entity)
-
-
 @typed
 def get_by_streamsets_id(streamsets_id: int) -> List[Pipeline]:
     return Session.query(Pipeline).filter(Pipeline.streamsets_id == streamsets_id).all()
@@ -125,3 +121,21 @@ def _construct_pipeline(pipeline_: Pipeline) -> Pipeline:
 
 class PipelineNotExistsException(Exception):
     pass
+
+
+class SessionManager:
+    def __init__(self, entity):
+        self.entity = entity
+        self.session = Session()
+        if not self.session.object_session(self.entity):
+            self.session.add(self.entity)
+
+    def __enter__(self):
+        return self.session
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        if exc_value:
+            self.session.expunge(self.entity)
+            return False
+        self.session.commit()
+        return True

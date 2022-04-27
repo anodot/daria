@@ -69,13 +69,10 @@ def build_events(config: dict) -> Pipeline:
 
 
 def _build(config: dict, pipeline_: Pipeline) -> Pipeline:
-    try:
+    with pipeline.repository.SessionManager(pipeline_):
         _load_config(pipeline_, config)
         pipeline.manager.create(pipeline_)
         logger_.info(f'Pipeline {pipeline_.name} created')
-    except Exception as e:
-        pipeline.repository.expunge(pipeline_)
-        raise e
     return pipeline_
 
 
@@ -97,12 +94,9 @@ def edit_multiple(configs: list) -> List[Pipeline]:
 
 def edit(config: dict) -> Pipeline:
     pipeline_ = pipeline.repository.get_by_id(config['pipeline_id'])
-    try:
+    with pipeline.repository.SessionManager(pipeline_):
         _load_config(pipeline_, config, is_edit=True)
         pipeline.manager.update(pipeline_)
-    except Exception as e:
-        pipeline.repository.expunge(pipeline_)
-        raise e
     return pipeline_
 
 
