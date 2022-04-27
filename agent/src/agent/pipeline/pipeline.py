@@ -74,7 +74,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
     streamsets_id = Column(Integer, ForeignKey('streamsets.id'))
 
     offset = relationship("PipelineOffset", cascade="delete", uselist=False)
-    source_ = relationship('Source', back_populates='pipelines')
+    source_ = relationship('Source')
     destination = relationship('HttpDestination', cascade="merge")
     streamsets = relationship('StreamSets')
     retries = relationship('PipelineRetries', cascade="delete", uselist=False)
