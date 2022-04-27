@@ -96,6 +96,28 @@ def test_split_to_literals(expression, expected_result):
     assert expression_parser.condition.split_to_literals(expression) == expected_result
 
 
+@pytest.mark.parametrize("value, expected_result", [
+    ('"prop" == "val"', 0),
+    ('"\'prop\'" == "val"', 0),
+    ("'prop' == 'val'", 0),
+    ("!('prop' == 'val')", 2),
+    ("'\"prop\"' == 'val'", 0)
+])
+def test_get_start_quote_idx(value, expected_result):
+    assert expression_parser.condition.get_start_quote_idx(value) == expected_result
+
+
+@pytest.mark.parametrize("value, expected_result", [
+    ('"prop" == "val"', 14),
+    ('"prop" == "\'val\'"', 16),
+    ("'prop' == 'val'", 14),
+    ("!('prop' == 'val')", 16),
+    ("'prop' == '\"val\"'", 16)
+])
+def test_get_end_quote_idx(value, expected_result):
+    assert expression_parser.condition.get_end_quote_idx(value) == expected_result
+
+
 @pytest.mark.parametrize("condition, expected_result", [
     ('"prop" == "val" && "prop2" contains "val2"', 'record:value(\'/prop\') == "val" && str:contains(record:value(\'/prop2\'), "val2")'),
     ("'prop' == 'val' || 'prop2' contains 'val2'", 'record:value(\'/prop\') == \'val\' || str:contains(record:value(\'/prop2\'), \'val2\')'),
@@ -104,6 +126,7 @@ def test_split_to_literals(expression, expected_result):
     ('"prop" startsWith "val"', 'str:startsWith(record:value(\'/prop\'), "val")'),
     ('"prop" endsWith "val"', 'str:endsWith(record:value(\'/prop\'), "val")'),
     ('"prop" != null', 'record:value(\'/prop\') != null'),
+    ("'prop' == 'val' && !('data' contains '\"result\": null')", 'record:value(\'/prop\') == \'val\' && !(str:contains(record:value(\'/data\'), \'"result": null\'))'),
 ])
 def test_get_filtering_expression(condition, expected_result):
     assert expression_parser.condition.process_expression(condition) == expected_result

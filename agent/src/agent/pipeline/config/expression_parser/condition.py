@@ -3,6 +3,7 @@ Validate condition entered by user and transform it to StreamSets expression lan
 """
 import re
 import regex
+import math
 
 COMPARISON_FUNCTIONS = ['contains', 'startsWith', 'endsWith', 'matches']
 COMPARISON_LITERALS = ['==', '!=']
@@ -145,17 +146,33 @@ def get_number_of_arguments(function: str) -> int:
 
 
 def get_start_quote_idx(literal: str) -> int:
+    double_quote_idx = math.inf
+    single_quote_idx = math.inf
     try:
-        return literal.index('"')
+        double_quote_idx = literal.index('"')
     except ValueError:
-        return literal.index("'")
+        pass
+
+    try:
+        single_quote_idx = literal.index("'")
+    except ValueError:
+        pass
+    return min(double_quote_idx, single_quote_idx)
 
 
 def get_end_quote_idx(literal: str) -> int:
+    double_quote_idx = -math.inf
+    single_quote_idx = -math.inf
     try:
-        return literal.rindex('"')
+        double_quote_idx = literal.rindex('"')
     except ValueError:
-        return literal.rindex("'")
+        pass
+
+    try:
+        single_quote_idx = literal.rindex("'")
+    except ValueError:
+        pass
+    return max(double_quote_idx, single_quote_idx)
 
 
 def is_function(expression: str) -> bool:
