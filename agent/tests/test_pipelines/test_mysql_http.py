@@ -11,13 +11,13 @@ class TestMySQL(TestPipelineBase):
                        {'name': 'test_mysql_timestamp_datetime'},
                        {'name': 'test_mysql_advanced'}, {'name': 'test_jdbc_file_short_mysql'},
                        {'name': 'test_jdbc_file_full_mysql'}, {'name': 'test_mysql_timezone_datetime'},
-                       {'name': 'test_mysql_no_schema'}],
+                       {'name': 'test_mysql_no_schema'}, {'name': 'test_watermark_local_timezone'}],
         'test_reset': [{'name': 'test_mysql'}],
         'test_force_stop': [{'name': 'test_mysql'}, {'name': 'test_mysql_timestamp_ms'},
                             {'name': 'test_mysql_timestamp_datetime'},
                             {'name': 'test_mysql_advanced'}, {'name': 'test_jdbc_file_short_mysql'},
                             {'name': 'test_jdbc_file_full_mysql'}, {'name': 'test_mysql_timezone_datetime'},
-                            {'name': 'test_mysql_no_schema'}],
+                            {'name': 'test_mysql_no_schema'}, {'name': 'test_watermark_local_timezone'}],
         'test_output': [
             {'name': 'test_mysql_no_schema', 'output': 'jdbc_file_full_no_schema.json', 'pipeline_type': 'mysql'},
         ],
@@ -26,13 +26,14 @@ class TestMySQL(TestPipelineBase):
             {'name': 'test_mysql_timestamp_ms', 'output': 'jdbc.json', 'pipeline_type': 'mysql'},
             {'name': 'test_mysql_timestamp_datetime', 'output': 'jdbc.json', 'pipeline_type': 'mysql'},
             {'name': 'test_mysql_timezone_datetime', 'output': 'jdbc_timezone.json', 'pipeline_type': 'mysql'},
+            {'name': 'test_watermark_local_timezone', 'output': 'jdbc_timezone.json', 'pipeline_type': 'mysql'},
             {'name': 'test_mysql_advanced', 'output': 'jdbc_file_full.json', 'pipeline_type': 'mysql'},
         ],
         'test_delete_pipeline': [{'name': 'test_mysql'}, {'name': 'test_mysql_timestamp_ms'},
                                  {'name': 'test_mysql_timestamp_datetime'},
                                  {'name': 'test_mysql_advanced'}, {'name': 'test_jdbc_file_short_mysql'},
                                  {'name': 'test_jdbc_file_full_mysql'}, {'name': 'test_mysql_timezone_datetime'},
-                                 {'name': 'test_mysql_no_schema'}],
+                                 {'name': 'test_mysql_no_schema'}, {'name': 'test_watermark_local_timezone'}],
         'test_source_delete': [{'name': 'test_jdbc'}, {'name': 'test_mysql_1'}]
     }
 
@@ -51,3 +52,6 @@ class TestMySQL(TestPipelineBase):
     def test_watermark(self):
         schema_id = get_schema_id('test_mysql_advanced')
         assert get_output(f'{schema_id}_watermark.json') == {'watermark': 1512950400.0, 'schemaId': schema_id}
+        schema_id = get_schema_id('test_watermark_local_timezone')
+        # 1512943200 is 2 hours earlier than 1512950400
+        assert get_output(f'{schema_id}_watermark.json') == {'watermark': 1512943200.0, 'schemaId': schema_id}

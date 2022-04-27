@@ -31,7 +31,7 @@ class ConfigLoader(ABC):
         return {
             source.TYPE_CACTI: 'cacti.json',
             source.TYPE_CLICKHOUSE: 'jdbc.json',
-            source.TYPE_ELASTIC: 'elastic_http.json',
+            source.TYPE_ELASTIC: 'elastic.json',
             source.TYPE_INFLUX: 'influx_http.json',
             source.TYPE_KAFKA: 'kafka_http.json',
             source.TYPE_MONGO: 'mongo_http.json',

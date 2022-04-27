@@ -86,6 +86,7 @@ def start(pipeline_: Pipeline, wait_for_sending_data: bool = False):
 def stop(pipeline_: Pipeline):
     try:
         sdc_client.stop(pipeline_)
+        reset_pipeline_retries(pipeline_)
     except (sdc_client.ApiClientException, sdc_client.StreamsetsException) as e:
         raise pipeline.PipelineException(str(e))
 
@@ -106,6 +107,7 @@ def get_metrics(pipeline_: Pipeline) -> PipelineMetric:
 
 def reset_pipeline_retries(pipeline_: Pipeline):
     if pipeline_.retries:
+        pipeline_.retries.notification_sent = False
         pipeline_.retries.number_of_error_statuses = 0
         pipeline.repository.save(pipeline_.retries)
 
@@ -123,6 +125,7 @@ def update(pipeline_: Pipeline):
     if pipeline_.uses_schema:
         _update_schema(pipeline_)
     sdc_client.update(pipeline_)
+    reset_pipeline_retries(pipeline_)
     logger_.info(f'Updated pipeline {pipeline_.name}')
 
 
@@ -138,7 +141,7 @@ def update_source_pipelines(source_: Source):
         try:
             sdc_client.update(pipeline_)
         except streamsets.manager.StreamsetsException as e:
-            logger_.exception(str(e))
+            logger_.debug(str(e), exc_info=True)
             continue
         logger_.info(f'Pipeline {pipeline_.name} updated')
 
@@ -283,7 +286,8 @@ def should_send_error_notification(pipeline_: Pipeline) -> bool:
     return not constants.DISABLE_PIPELINE_ERROR_NOTIFICATIONS \
            and pipeline_.error_notification_enabled() \
            and pipeline_.retries \
-           and pipeline_.retries.number_of_error_statuses - 1 >= constants.STREAMSETS_MAX_RETRY_ATTEMPTS
+           and pipeline_.retries.number_of_error_statuses - 1 >= constants.STREAMSETS_NOTIFY_AFTER_RETRY_ATTEMPTS \
+           and not pipeline_.retries.notification_sent
 
 
 def get_sample_records(pipeline_: Pipeline) -> (list, list):
@@ -299,7 +303,7 @@ def get_sample_records(pipeline_: Pipeline) -> (list, list):
     try:
         data = preview_data['batchesOutput'][0][0]['output']['source_outputLane']
     except (ValueError, TypeError, IndexError) as e:
-        logger_.exception(str(e))
+        logger_.debug(str(e), exc_info=True)
         return [], []
 
     return [tools.sdc_record_map_to_dict(record['value']) for record in data[:MAX_SAMPLE_RECORDS]], errors
@@ -313,7 +317,7 @@ def get_preview_data(pipeline_: Pipeline) -> (list, list):
         logger_.error(str(e))
         return [], []
     except (Exception, KeyboardInterrupt) as e:
-        logger_.exception(str(e))
+        logger_.debug(str(e), exc_info=True)
         raise
     return preview_data, errors
 

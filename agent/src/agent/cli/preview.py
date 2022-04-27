@@ -55,6 +55,15 @@ class InfluxPreview(Preview):
             print('No preview data available')
 
 
+class Influx2Preview(Preview):
+    @staticmethod
+    def _print_sample_data(records, errors):
+        try:
+            tools.print_dicts(records)
+        except Exception:
+            print('No preview data available')
+
+
 class SchemalessPreview(Preview):
     def print_sample_data(self, pipeline_: Pipeline):
         records, errors = pipeline.manager.get_sample_records(pipeline_)
@@ -77,6 +86,7 @@ class SchemalessPreview(Preview):
 def _get_preview_type(source_type: str) -> Preview:
     types = {
         source.TYPE_INFLUX: InfluxPreview,
+        source.TYPE_INFLUX_2: Influx2Preview,
         source.TYPE_KAFKA: SchemalessPreview,
         source.TYPE_MONGO: Preview,
         source.TYPE_MYSQL: Preview,

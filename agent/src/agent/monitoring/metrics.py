@@ -27,6 +27,9 @@ PIPELINE_OUTGOING_RECORDS = Counter(
 PIPELINE_ERROR_RECORDS = Counter(
     'pipeline_error_records', 'Pipeline error records', ['streamsets_url', 'pipeline_id', 'pipeline_type']
 )
+PIPELINE_AVG_LAG = Gauge(
+    'pipeline_avg_lag', 'Pipeline average lag metrics', ['streamsets_url', 'pipeline_id', 'pipeline_type']
+)
 PIPELINE_DESTINATION_LATENCY = Gauge(
     'pipeline_destination_latency_seconds',
     'Pipeline destination latency', ['streamsets_url', 'pipeline_id', 'pipeline_type'],

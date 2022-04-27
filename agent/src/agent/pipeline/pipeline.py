@@ -8,7 +8,7 @@ from agent.modules.constants import HOSTNAME
 from agent.modules.db import Entity
 from agent.destination import HttpDestination, DummyHttpDestination
 from enum import Enum
-from sqlalchemy import Column, Integer, String, JSON, ForeignKey, func, Float
+from sqlalchemy import Column, Integer, String, JSON, ForeignKey, func, Float, Boolean
 from copy import deepcopy
 from agent import source, pipeline
 from agent.modules.time import Interval
@@ -183,7 +183,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
     def measurement_configurations(self) -> Optional[dict]:
         return _build_transformation_configurations(
             list(self.values),
-            self.config.get('measurement_configurations', {})
+            self.config.get('measurement_configurations', {}),
         )
 
     @property
@@ -320,6 +320,10 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return self.config.get('delay', '0')
 
     @property
+    def watermark_in_local_timezone(self) -> str:
+        return self.config.get('watermark_in_local_timezone', False)
+
+    @property
     def batch_size(self) -> str:
         return self.config.get('batch_size', '1000')
 
@@ -416,7 +420,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
                 return str(idx)
         if property_value in self.config.get('dimension_value_paths', {}):
             return str(self.config.get('dimension_value_paths', {})[property_value])
-        return str(property_value)
+        return property_value
 
     def meta_tags(self) -> dict:
         return {
@@ -481,10 +485,13 @@ class PipelineRetries(Entity):
 
     pipeline_id = Column(String, ForeignKey('pipelines.name'), primary_key=True)
     number_of_error_statuses = Column(Integer)
+    notification_sent = Column(Boolean, default=False)
+    last_updated = Column(TIMESTAMP(timezone=True), default=func.now(), onupdate=func.now())
 
     def __init__(self, pipeline_: Pipeline):
         self.pipeline_id = pipeline_.name
         self.number_of_error_statuses = 0
+        self.notification_sent = False
 
 
 class PipelineMetric:

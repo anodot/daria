@@ -25,5 +25,29 @@
     "properties": {"key1": "val1", "key2":  "val2"},
     "interval": 86400,
     "query": "SELECT * FROM test WHERE {TIMESTAMP_CONDITION} AND Country = 'USA'"
+  },
+  {
+    "source": "test_jdbc",
+    "pipeline_id": "test_watermark_local_timezone",
+    "query": "SELECT * FROM test WHERE {TIMESTAMP_CONDITION}",
+    "uses_schema": true,
+    "interval": 86400,
+    "days_to_backfill": 1,
+    "delay": 1,
+    "timestamp": {
+      "name": "timestamp_datetime",
+      "type": "datetime"
+    },
+    "timezone": "Europe/Berlin",
+    "watermark_in_local_timezone": true,
+    "count_records": false,
+    "values": {
+      "clicks": "gauge",
+      "impressions": "gauge"
+    },
+    "dimensions": [
+      "adsize",
+      "country"
+    ]
   }
 ]

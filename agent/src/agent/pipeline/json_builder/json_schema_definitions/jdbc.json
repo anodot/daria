@@ -8,6 +8,7 @@
     "values": {"type": "object"},
     "count_records": {"type": "boolean"},
     "dimensions": {"type": "array", "items": {"type": "string"}},
+    "watermark_in_local_timezone": {"type": "boolean"},
     "timestamp": {"type":  "object", "properties": {
       "name": {"type": "string", "minLength": 1},
       "type": {"type":  "string", "enum": ["datetime", "unix", "unix_ms"]}

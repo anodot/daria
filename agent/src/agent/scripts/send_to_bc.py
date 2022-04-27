@@ -37,12 +37,13 @@ def main():
                     'code': GENERAL_PIPELINE_ERROR_CODE,
                     'description': 'pipeline error',
                 }
-            api_client.send_pipeline_data_to_bc(pipeline.manager.transform_for_bc(pipeline_))
+            api_client.send_pipeline_data_to_bc(pipeline_data)
             if should_send_error_notification:
-                # reset retries counter after sending a notification
-                pipeline.manager.reset_pipeline_retries(pipeline_)
+                # set 'notification_sent' flag to True
+                pipeline_.retries.notification_sent = True
+                pipeline.repository.save(pipeline_.retries)
         except requests.HTTPError as e:
-            if not e.response.status_code == 404:
+            if e.response.status_code != 404:
                 num_of_errors = _update_errors_count(num_of_errors)
                 logger.error(traceback.format_exc())
         except Exception:
@@ -56,7 +57,7 @@ def main():
             api_client.delete_pipeline_from_bc(deleted_pipeline_id)
             pipeline.repository.remove_deleted_pipeline_id(deleted_pipeline_id)
         except requests.HTTPError as e:
-            if not e.response.status_code == 404:
+            if e.response.status_code != 404:
                 num_of_errors = _update_errors_count(num_of_errors)
                 logger.error(traceback.format_exc())
         except Exception:
