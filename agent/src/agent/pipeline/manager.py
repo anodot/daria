@@ -123,7 +123,6 @@ def update(pipeline_: Pipeline):
     if pipeline_.uses_schema:
         _update_schema(pipeline_)
     sdc_client.update(pipeline_)
-    pipeline.repository.save(pipeline_)
     logger_.info(f'Updated pipeline {pipeline_.name}')
 
 
@@ -132,7 +131,6 @@ def create(pipeline_: Pipeline):
     if pipeline_.uses_schema:
         _update_schema(pipeline_)
     sdc_client.create(pipeline_)
-    pipeline.repository.save(pipeline_)
 
 
 def update_source_pipelines(source_: Source):

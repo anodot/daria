@@ -351,7 +351,8 @@ def _prompt(advanced: bool):
     pipeline_prompter = prompt.pipeline.get_prompter(pipeline_, previous_pipeline_config, advanced)
     pipeline_prompter.prompt()
 
-    pipeline.manager.create(pipeline_prompter.pipeline)
+    with pipeline.repository.SessionManager(pipeline_):
+        pipeline.manager.create(pipeline_prompter.pipeline)
 
     click.secho(f'Created pipeline {pipeline_id}', fg='green')
     _result_preview(pipeline_prompter.pipeline)
@@ -375,7 +376,8 @@ def _prompt_edit(advanced: bool, pipeline_id: str):
     try:
         pipeline_ = pipeline.repository.get_by_id(pipeline_id)
         pipeline_ = prompt.pipeline.get_prompter(pipeline_, pipeline_.config, advanced).prompt()
-        pipeline.manager.update(pipeline_)
+        with pipeline.repository.SessionManager(pipeline_):
+            pipeline.manager.update(pipeline_)
         _result_preview(pipeline_)
     except pipeline.repository.PipelineNotExistsException as e:
         raise click.UsageError(f'{pipeline_id} does not exist') from e
