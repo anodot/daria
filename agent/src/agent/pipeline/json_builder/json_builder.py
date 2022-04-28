@@ -8,7 +8,7 @@ from agent import source, pipeline
 from agent.modules import validator
 from agent.modules.logger import get_logger
 from agent.modules.tools import deep_update
-from agent.pipeline import Pipeline, json_builder
+from agent.pipeline import Pipeline
 from agent.pipeline.config import expression_parser
 
 logger_ = get_logger(__name__, stdout=True)
@@ -69,10 +69,8 @@ def build_events(config: dict) -> Pipeline:
 
 
 def _build(config: dict, pipeline_: Pipeline) -> Pipeline:
-    with pipeline.repository.SessionManager(pipeline_):
-        _load_config(pipeline_, config)
-        pipeline.manager.create(pipeline_)
-        logger_.info(f'Pipeline {pipeline_.name} created')
+    pipeline.manager.create(pipeline_, config)
+    logger_.info(f'Pipeline {pipeline_.name} created')
     return pipeline_
 
 
@@ -94,9 +92,7 @@ def edit_multiple(configs: list) -> List[Pipeline]:
 
 def edit(config: dict) -> Pipeline:
     pipeline_ = pipeline.repository.get_by_id(config['pipeline_id'])
-    with pipeline.repository.SessionManager(pipeline_):
-        _load_config(pipeline_, config, is_edit=True)
-        pipeline.manager.update(pipeline_)
+    pipeline.manager.update(pipeline_, config)
     return pipeline_
 
 
@@ -164,13 +160,6 @@ def _validate_config_for_create(config: dict):
     jsonschema.validate(config, json_schema)
 
 
-def _load_config(pipeline_: Pipeline, config: dict, is_edit=False):
-    config['uses_schema'] = _get_schema_chooser(pipeline_).choose(pipeline_, config, is_edit)
-    json_builder.get(pipeline_, config, is_edit).build()
-    # todo too many validations, 4 validations here
-    pipeline.config.validators.get_config_validator(pipeline_.source.type).validate(pipeline_)
-
-
 class _SchemaChooser:
     @staticmethod
     def choose(pipeline_: Pipeline, config: dict, is_edit=False) -> bool:
@@ -200,7 +189,7 @@ class _PromQLSchemaChooser(_SchemaChooser):
         return actual_schema
 
 
-def _get_schema_chooser(pipeline_: Pipeline) -> _SchemaChooser:
+def get_schema_chooser(pipeline_: Pipeline) -> _SchemaChooser:
     if isinstance(pipeline_.source, source.PromQLSource):
         return _PromQLSchemaChooser()
     return _SchemaChooser()

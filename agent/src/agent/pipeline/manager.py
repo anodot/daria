@@ -6,8 +6,8 @@ import sdc_client
 from datetime import datetime, timedelta, timezone
 from agent import source, pipeline, destination, streamsets
 from agent.modules import tools, constants
-from agent.pipeline import Pipeline, TestPipeline, schema, extra_setup, PipelineMetric, PipelineRetries, RawPipeline, \
-    EventsPipeline
+from agent.pipeline import Pipeline, TestPipeline, PipelineMetric, PipelineRetries, RawPipeline, EventsPipeline
+from agent.pipeline import extra_setup, json_builder, schema
 from agent.modules.logger import get_logger
 from agent.pipeline.config.handlers.factory import get_config_handler
 from agent.source import Source
@@ -117,23 +117,36 @@ def _delete_pipeline_retries(pipeline_: Pipeline):
         pipeline.repository.delete_pipeline_retries(pipeline_.retries)
 
 
-def update(pipeline_: Pipeline):
-    if not pipeline_.config_changed():
-        logger_.info(f'No need to update pipeline {pipeline_.name}')
-        return
-    extra_setup.do(pipeline_)
-    if pipeline_.uses_schema:
-        _update_schema(pipeline_)
-    sdc_client.update(pipeline_)
-    reset_pipeline_retries(pipeline_)
-    logger_.info(f'Updated pipeline {pipeline_.name}')
+def _load_config(pipeline_: Pipeline, config: dict, is_edit=False):
+    config['uses_schema'] = json_builder.get_schema_chooser(pipeline_).choose(pipeline_, config, is_edit)
+    json_builder.get(pipeline_, config, is_edit).build()
+    # todo too many validations, 4 validations here
+    pipeline.config.validators.get_config_validator(pipeline_.source.type).validate(pipeline_)
 
 
-def create(pipeline_: Pipeline):
-    extra_setup.do(pipeline_)
-    if pipeline_.uses_schema:
-        _update_schema(pipeline_)
-    sdc_client.create(pipeline_)
+def update(pipeline_: Pipeline, config_: dict = None):
+    with pipeline.repository.SessionManager(pipeline_):
+        if config_:
+            _load_config(pipeline_, config_, is_edit=True)
+        if not pipeline_.config_changed():
+            logger_.info(f'No need to update pipeline {pipeline_.name}')
+            return
+        extra_setup.do(pipeline_)
+        if pipeline_.uses_schema:
+            _update_schema(pipeline_)
+        sdc_client.update(pipeline_)
+        reset_pipeline_retries(pipeline_)
+        logger_.info(f'Updated pipeline {pipeline_.name}')
+
+
+def create(pipeline_: Pipeline, config_: dict = None):
+    with pipeline.repository.SessionManager(pipeline_):
+        if config_:
+            _load_config(pipeline_, config_)
+        extra_setup.do(pipeline_)
+        if pipeline_.uses_schema:
+            _update_schema(pipeline_)
+        sdc_client.create(pipeline_)
 
 
 def update_source_pipelines(source_: Source):

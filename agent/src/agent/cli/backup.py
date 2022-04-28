@@ -28,8 +28,7 @@ def _restore_pipelines():
     existing, not_existing = _get_pipelines()
     for pipeline_ in not_existing:
         click.echo(f'Creating pipeline `{pipeline_.name}`')
-        with pipeline.repository.SessionManager(pipeline_):
-            pipeline.manager.create(pipeline_)
+        pipeline.manager.create(pipeline_)
         _update_status(pipeline_)
         click.secho('Success', fg='green')
     for pipeline_ in existing:
