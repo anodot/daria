@@ -74,6 +74,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
     streamsets_id = Column(Integer, ForeignKey('streamsets.id'))
 
     offset = relationship("PipelineOffset", cascade="delete", uselist=False)
+    watermark = relationship("PipelineWatermark", cascade="delete", uselist=False)
     source_ = relationship('Source', back_populates='pipelines')
     destination = relationship('HttpDestination', cascade="merge")
     streamsets = relationship('StreamSets')
@@ -469,6 +470,17 @@ class PipelineOffset(Entity):
     def __init__(self, pipeline_id: int, offset: str, timestamp: float):
         self.pipeline_id = pipeline_id
         self.offset = offset
+        self.timestamp = timestamp
+
+
+class PipelineWatermark(Entity):
+    __tablename__ = 'pipeline_watermarks'
+
+    pipeline_id = Column(Integer, ForeignKey('pipelines.name'), primary_key=True)
+    timestamp = Column(Float)
+
+    def __init__(self, pipeline_id: int, timestamp: float):
+        self.pipeline_id = pipeline_id
         self.timestamp = timestamp
 
 

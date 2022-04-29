@@ -14,6 +14,7 @@ services:
       - ./certs:/home/certs
       - ./test-datasets/test-directory-collector:/home/test-directory-collector
       - ./test-datasets/events-directory:/home/events-directory
+      - ./containers/streamsets/lib/anodot/lib:/opt/streamsets-datacollector-user-libs/anodot/lib/
 #    environment:
 #      SDC_CONF_PARSER_LIMIT: 2048576
 #      SDC_CONF_RUNNER_THREAD_POOL_SIZE: "200"

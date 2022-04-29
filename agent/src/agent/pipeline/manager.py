@@ -171,6 +171,14 @@ def update_pipeline_offset(pipeline_: Pipeline, timestamp: float):
     pipeline.repository.save(pipeline_.offset)
 
 
+def update_pipeline_watermark(pipeline_: Pipeline, timestamp: float):
+    if pipeline_.watermark:
+        pipeline_.watermark.timestamp = timestamp
+    else:
+        pipeline_.watermark = pipeline.PipelineWatermark(pipeline_.id, timestamp)
+    pipeline.repository.save(pipeline_.watermark)
+
+
 def reset(pipeline_: Pipeline):
     try:
         sdc_client.reset(pipeline_)
