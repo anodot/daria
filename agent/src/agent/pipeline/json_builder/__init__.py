@@ -20,7 +20,7 @@ from .zabbix import ZabbixBuilder
 from .json_builder import (
     build, build_raw, build_using_file, build_raw_using_file, build_events_using_file, build_multiple
 )
-from .json_builder import edit, edit_using_file, edit_multiple, extract_configs
+from .json_builder import edit, edit_using_file, edit_multiple, extract_configs, get_schema_chooser
 
 
 def get(pipeline_: Pipeline, config: dict, is_edit=False) -> IBuilder:

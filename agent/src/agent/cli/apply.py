@@ -3,7 +3,7 @@ import json
 import os
 
 from agent import cli, pipeline, source
-from agent.modules import logger, constants
+from agent.modules import logger
 
 logger_ = logger.get_logger(__name__, stdout=True)
 
@@ -39,8 +39,6 @@ def populate_source_from_file(file):
             else:
                 source.json_builder.build(config)
         except Exception as e:
-            if not constants.ENV_PROD:
-                raise
             exceptions.append(str(e))
     if exceptions:
         raise Exception(json.dumps(exceptions))
@@ -58,8 +56,6 @@ def populate_pipeline_from_file(file):
             else:
                 pipeline.manager.start(pipeline.json_builder.build(config))
         except Exception as e:
-            if not constants.ENV_PROD:
-                raise
             exceptions.append(str(e))
     if exceptions:
         raise Exception(json.dumps(exceptions))
@@ -79,8 +75,6 @@ def process(directory, create):
                     create(file)
                 logger_.info('Success')
             except Exception as e:
-                if not constants.ENV_PROD:
-                    raise
                 logger_.exception(f'{FAIL}EXCEPTION: {type(e).__name__}: {e}\n{ENDC}')
                 failed = True
                 continue
