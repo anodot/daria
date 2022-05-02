@@ -3,14 +3,14 @@ from abc import ABC, abstractmethod
 
 class KafkaExtractor:
     def get(self):
-        # getting data from kafka
-        return
+        con = get_kafka_consumer()
+        return con.consume()
 
 
 class MongoExtractor:
     def get(self):
-        # getting data from mongo
-        return
+        conn = connect_to_mongo()
+        return conn.query()
 
 
 class Source(ABC):
@@ -19,8 +19,11 @@ class Source(ABC):
         pass
 
     def transform(self):
-        self.get_data()
-        # do smth
+        data = self.get_data()
+        # 
+        # transform data for sending
+        #
+        return data
 
 
 class MongoSource(Source):
@@ -31,3 +34,7 @@ class MongoSource(Source):
 class KafkaSource(Source):
     def get_data(self):
         return KafkaExtractor().get()
+    
+    
+data = KafkaSource().transform()
+send(data)
