@@ -1,6 +1,7 @@
 import logging
 import random
 import string
+import time
 import sdc_client
 
 from datetime import datetime, timedelta, timezone
@@ -88,21 +89,21 @@ def stop(pipeline_: Pipeline):
         sdc_client.stop(pipeline_)
         reset_pipeline_retries(pipeline_)
     except (sdc_client.ApiClientException, sdc_client.StreamsetsException) as e:
-        raise pipeline.PipelineException(str(e))
+        raise pipeline.PipelineException(str(e)) from e
 
 
 def get_info(pipeline_: Pipeline, lines: int) -> dict:
     try:
         return sdc_client.get_pipeline_info(pipeline_, lines)
     except (sdc_client.ApiClientException, sdc_client.StreamsetsException) as e:
-        raise pipeline.PipelineException(str(e))
+        raise pipeline.PipelineException(str(e)) from e
 
 
 def get_metrics(pipeline_: Pipeline) -> PipelineMetric:
     try:
         return PipelineMetric(sdc_client.get_pipeline_metrics(pipeline_))
     except (sdc_client.ApiClientException, sdc_client.StreamsetsException) as e:
-        raise pipeline.PipelineException(str(e))
+        raise pipeline.PipelineException(str(e)) from e
 
 
 def reset_pipeline_retries(pipeline_: Pipeline):
@@ -186,7 +187,7 @@ def reset(pipeline_: Pipeline):
             pipeline.repository.delete_offset(pipeline_.offset)
             pipeline_.offset = None
     except sdc_client.ApiClientException as e:
-        raise pipeline.PipelineException(str(e))
+        raise pipeline.PipelineException(str(e)) from e
 
 
 def _delete_schema(pipeline_: Pipeline):
@@ -197,8 +198,7 @@ def _delete_schema(pipeline_: Pipeline):
 
 def _update_schema(pipeline_: Pipeline):
     new_schema = schema.build(pipeline_)
-    old_schema = pipeline_.get_schema()
-    if old_schema:
+    if old_schema := pipeline_.get_schema():
         if not schema.equal(old_schema, new_schema):
             pipeline_.schema = schema.update(new_schema)
         return
@@ -210,7 +210,7 @@ def delete(pipeline_: Pipeline):
     try:
         sdc_client.delete(pipeline_)
     except sdc_client.ApiClientException as e:
-        raise pipeline.PipelineException(str(e))
+        raise pipeline.PipelineException(str(e)) from e
     pipeline.repository.delete(pipeline_)
     pipeline.repository.add_deleted_pipeline_id(pipeline_.name)
 
@@ -241,8 +241,7 @@ def force_delete(pipeline_id: str) -> list:
     else:
         try:
             sdc_client.force_delete(pipeline_id)
-            schema_id = schema.search(pipeline_id)
-            if schema_id:
+            if schema_id := schema.search(pipeline_id):
                 schema.delete(schema_id)
         except Exception as e:
             exceptions.append(str(e))
@@ -354,6 +353,55 @@ def increase_retry_counter(pipeline_: Pipeline):
     pipeline.repository.save(pipeline_.retries)
 
 
+class WatermarkManager:
+    def should_send_watermark(self, pipeline_: Pipeline) -> bool:
+        return bool(pipeline_.uses_schema) \
+               and bool(pipeline_.periodic_watermark_config) \
+               and (
+                       (bool(pipeline_.watermark) and self._watermark_delay_passed(pipeline_))
+                       or (not pipeline_.watermark and bool(pipeline_.offset) and self._offset_delay_passed(pipeline_))
+               )
+
+    @staticmethod
+    def _watermark_delay_passed(pipeline_: Pipeline) -> bool:
+        return time.time() >= pipeline_.watermark.timestamp \
+               + pipeline.FlushBucketSize(pipeline_.periodic_watermark_config['bucket_size']).total_seconds() \
+               + pipeline_.watermark_delay
+
+    @staticmethod
+    def _offset_delay_passed(pipeline_: Pipeline) -> bool:
+        next_bucket_start = get_next_bucket_start(
+            pipeline_.periodic_watermark_config['bucket_size'], pipeline_.offset.offset
+        )
+        return time.time() >= next_bucket_start.timestamp() + pipeline_.watermark_delay
+
+    def get_latest_bucket_start(self, pipeline_: Pipeline) -> int:
+        delay = pipeline_.watermark_delay
+        bs = pipeline.FlushBucketSize(pipeline_.periodic_watermark_config['bucket_size'])
+
+        watermark_timestamp = self._get_current_watermark(pipeline_)
+        while not self._is_latest_watermark(watermark_timestamp, delay, bs):
+            watermark_timestamp = int(get_next_bucket_start(
+                pipeline_.periodic_watermark_config['bucket_size'], watermark_timestamp
+            ).timestamp())
+        return watermark_timestamp
+
+    @staticmethod
+    def _get_current_watermark(pipeline_: Pipeline) -> int:
+        if pipeline_.watermark:
+            return pipeline_.watermark.timestamp
+        elif pipeline_.offset:
+            return int(get_next_bucket_start(
+                pipeline_.periodic_watermark_config['bucket_size'], pipeline_.offset.offset
+            ).timestamp())
+        raise WatermarkCalculationException('No watermark or offset for pipeline')
+
+    @staticmethod
+    def _is_latest_watermark(watermark: int, delay: int, bucket_size: pipeline.FlushBucketSize):
+        # todo should I care about timezone?
+        return time.time() - delay - watermark < bucket_size.total_seconds()
+
+
 def get_next_bucket_start(bs: str, offset: float) -> datetime:
     dt = datetime.fromtimestamp(offset, tz=timezone.utc)
     if bs == pipeline.FlushBucketSize.MIN_1:
@@ -364,4 +412,8 @@ def get_next_bucket_start(bs: str, offset: float) -> datetime:
         return dt.replace(minute=0, second=0, microsecond=0) + timedelta(hours=1)
     elif bs == pipeline.FlushBucketSize.DAY_1:
         return dt.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
-    raise Exception('Invalid bucket size provided')
+    raise WatermarkCalculationException('Invalid bucket size provided')
+
+
+class WatermarkCalculationException(Exception):
+    pass

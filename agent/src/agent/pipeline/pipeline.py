@@ -174,7 +174,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
     @property
     def dimension_configurations(self) -> Optional[dict]:
         if not isinstance(self.dimensions, list):
-            raise Exception((
+            raise PipelineException((
                 'Pipeline dimensions should be a list in order to build dimension_configurations, '
                 f'but {type(self.dimensions).__name__} provided'
             ))
@@ -464,6 +464,7 @@ class PipelineOffset(Entity):
 
     id = Column(Integer, primary_key=True)
     pipeline_id = Column(Integer, ForeignKey('pipelines.id'))
+    # todo rename to timestamp
     offset = Column(String)
     timestamp = Column(Float)
 
