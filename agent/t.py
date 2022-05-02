@@ -36,5 +36,11 @@ class KafkaSource(Source):
         return KafkaExtractor().get()
     
     
-data = KafkaSource().transform()
-send(data)
+kafka_source = KafkaSource()
+kafka_data = kafka_source.transform()
+send(kafka_data)
+
+mongo_source = MongoSource()
+mongo_data = mongo_source.transform()
+send(mongo_data)
+
