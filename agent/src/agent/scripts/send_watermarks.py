@@ -14,7 +14,6 @@ if not constants.SEND_WATERMARKS_BY_CRON:
 logger = get_logger(__name__, stdout=True)
 
 
-# todo add check that watermark delay is less then interval
 # todo should the delay be less then bucket size?
 # todo normal names everywhere
 def main():
@@ -25,7 +24,7 @@ def main():
         raise
 
     num_of_errors = 0
-    watermark_manager = pipeline.manager.WatermarkManager()
+    watermark_manager = pipeline.manager.PeriodicWatermarkManager()
     for pipeline_ in pipelines:
         if watermark_manager.should_send_watermark(pipeline_):
             try:

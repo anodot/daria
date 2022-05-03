@@ -353,7 +353,21 @@ def increase_retry_counter(pipeline_: Pipeline):
     pipeline.repository.save(pipeline_.retries)
 
 
-class WatermarkManager:
+class PeriodicWatermarkManager:
+    """
+    This class is responsible for the logic of sending watermarks to Anodot periodically for pipelines that can't
+    send watermarks directly from StreamSets.
+    It is possible to send watermarks only for pipelines that use protocol30 and have a periodic_watermark
+    configuration.
+
+    The watermark should be sent in two cases:
+    1. The pipeline doesn't have a watermark, but it has offset, i.e. it already sent some data to Anodot.
+    And the next watermark value, which is calculated based on this offset, is less than `now - watermark_delay`
+    2. The pipeline has a watermark that was sent previously, and the next watermark value
+    is less than `now - watermark_delay`
+
+    The watermark value must be less than `now - watermark_delay`
+    """
     def should_send_watermark(self, pipeline_: Pipeline) -> bool:
         return bool(pipeline_.uses_schema) \
                and bool(pipeline_.periodic_watermark_config) \
