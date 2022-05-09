@@ -353,7 +353,6 @@ def increase_retry_counter(pipeline_: Pipeline):
     pipeline.repository.save(pipeline_.retries)
 
 
-# todo would be nice to have this method in sdc_client
 def is_running(pipeline_: Pipeline) -> bool:
     return sdc_client.get_pipeline_status(pipeline_) in [Pipeline.STATUS_RUNNING, Pipeline.STATUS_RETRY]
 
