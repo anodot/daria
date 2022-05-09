@@ -14,7 +14,14 @@
     "add_graph_name_dimension": {"type":  "boolean"},
     "add_graph_id_dimension": {"type":  "boolean"},
     "convert_bytes_into_bits": {"type": "boolean"},
-    "dynamic_step": {"type": "boolean"}
+    "dynamic_step": {"type": "boolean"},
+    "transform": {
+      "type": "object",
+      "properties": {
+        "file": {"type": "string"},
+        "config": {"type": "string"}
+      }
+    }
   },
   "required": ["interval"]
 }

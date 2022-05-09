@@ -3,7 +3,12 @@ global sdc
 try:
     sdc.importLock()
     import time
+    import os
+    import sys
     from datetime import datetime, timedelta
+
+    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))
+    import pytz
 finally:
     sdc.importUnlock()
 
@@ -13,7 +18,11 @@ def get_interval():
 
 
 def get_now_with_delay():
-    return int(time.time()) - int(sdc.userParams['DELAY_IN_SECONDS'])
+    if sdc.userParams['WATERMARK_IN_LOCAL_TIMEZONE'] == 'True':
+        now = int(time.mktime(datetime.now(pytz.timezone(sdc.userParams['TIMEZONE'])).timetuple()))
+    else:
+        now = int(time.time())
+    return now - int(sdc.userParams['DELAY_IN_SECONDS'])
 
 
 def to_timestamp(date):

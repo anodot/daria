@@ -1,6 +1,7 @@
 from flask import jsonify, Blueprint, request
 from agent import pipeline, data_extractor
 from agent.api.routes import needs_pipeline
+from agent.modules import tools
 
 cacti = Blueprint('cacti_source', __name__)
 
@@ -16,6 +17,6 @@ def read(pipeline_id: str):
             str(request.args['end']),
             str(request.args['step']),
         )
-    except data_extractor.cacti.ArchiveNotExistsException:
+    except tools.ArchiveNotExistsException:
         return jsonify(''), 204
     return jsonify(metrics)

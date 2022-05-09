@@ -31,7 +31,7 @@ class ConfigLoader(ABC):
         return {
             source.TYPE_CACTI: 'cacti.json',
             source.TYPE_CLICKHOUSE: 'jdbc.json',
-            source.TYPE_ELASTIC: 'elastic_http.json',
+            source.TYPE_ELASTIC: 'elastic.json',
             source.TYPE_INFLUX: 'influx_http.json',
             source.TYPE_KAFKA: 'kafka_http.json',
             source.TYPE_MONGO: 'mongo_http.json',
@@ -39,6 +39,7 @@ class ConfigLoader(ABC):
             source.TYPE_MYSQL: 'jdbc.json',
             source.TYPE_POSTGRES: 'jdbc.json',
             source.TYPE_PROMETHEUS: 'promql.json',
+            source.TYPE_RRD: 'rrd.json',
             source.TYPE_SAGE: 'sage_http.json',
             source.TYPE_SNMP: 'snmp.json',
             source.TYPE_SPLUNK: 'tcp_server_http.json',
@@ -86,6 +87,19 @@ class RawConfigLoader(ConfigLoader):
 
     def _check_pipeline(self, pipeline_: Pipeline):
         pass
+
+
+class EventsConfigLoader(ConfigLoader):
+    BASE_PIPELINE_CONFIGS_PATH = 'base_pipelines/events'
+
+    def _check_pipeline(self, pipeline_: Pipeline):
+        pass
+
+    @classmethod
+    def _get_config_file(cls, pipeline: Pipeline) -> str:
+        return {
+            source.TYPE_DIRECTORY: 'directory.json',
+        }[pipeline.source.type]
 
 
 class TestPipelineConfigLoader(ConfigLoader):

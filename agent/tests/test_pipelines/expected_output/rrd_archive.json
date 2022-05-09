@@ -1,0 +1,548 @@
+[
+  {
+    "target_type": "gauge",
+    "value": 0.0033333333333333335,
+    "properties": {
+      "data_source": "rrd/1/cacti_rrd",
+      "what": "test_data_source"
+    },
+    "timestamp": 1619085000,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "rrd_archive"
+      ],
+      "pipeline_type": [
+        "rrd"
+      ]
+    }
+  },
+  {
+    "target_type": "gauge",
+    "value": 8.97,
+    "properties": {
+      "data_source": "rrd/1/cacti_rrd",
+      "what": "test_data_source"
+    },
+    "timestamp": 1619085300,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "rrd_archive"
+      ],
+      "pipeline_type": [
+        "rrd"
+      ]
+    }
+  },
+  {
+    "target_type": "gauge",
+    "value": 1.0033333333333334,
+    "properties": {
+      "data_source": "rrd/1/cacti_rrd",
+      "what": "traffic_out"
+    },
+    "timestamp": 1619085000,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "rrd_archive"
+      ],
+      "pipeline_type": [
+        "rrd"
+      ]
+    }
+  },
+  {
+    "target_type": "gauge",
+    "value": 9.97,
+    "properties": {
+      "data_source": "rrd/1/cacti_rrd",
+      "what": "traffic_out"
+    },
+    "timestamp": 1619085300,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "rrd_archive"
+      ],
+      "pipeline_type": [
+        "rrd"
+      ]
+    }
+  },
+  {
+    "target_type": "gauge",
+    "value": 2.0033333333333334,
+    "properties": {
+      "data_source": "rrd/1/cacti_rrd",
+      "what": "not_used"
+    },
+    "timestamp": 1619085000,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "rrd_archive"
+      ],
+      "pipeline_type": [
+        "rrd"
+      ]
+    }
+  },
+  {
+    "target_type": "gauge",
+    "value": 9.973333333333333,
+    "properties": {
+      "data_source": "rrd/1/cacti_rrd",
+      "what": "not_used"
+    },
+    "timestamp": 1619085300,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "rrd_archive"
+      ],
+      "pipeline_type": [
+        "rrd"
+      ]
+    }
+  },
+  {
+    "target_type": "gauge",
+    "value": 8.003333333333334,
+    "properties": {
+      "data_source": "rrd/1/cacti_rrd",
+      "what": "test_data_source"
+    },
+    "timestamp": 1619085600,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "rrd_archive"
+      ],
+      "pipeline_type": [
+        "rrd"
+      ]
+    }
+  },
+  {
+    "target_type": "gauge",
+    "value": 3.0166666666666666,
+    "properties": {
+      "data_source": "rrd/1/cacti_rrd",
+      "what": "test_data_source"
+    },
+    "timestamp": 1619085900,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "rrd_archive"
+      ],
+      "pipeline_type": [
+        "rrd"
+      ]
+    }
+  },
+  {
+    "target_type": "gauge",
+    "value": 0.01,
+    "properties": {
+      "data_source": "rrd/1/cacti_rrd",
+      "what": "test_data_source"
+    },
+    "timestamp": 1619086200,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "rrd_archive"
+      ],
+      "pipeline_type": [
+        "rrd"
+      ]
+    }
+  },
+  {
+    "target_type": "gauge",
+    "value": 5.98,
+    "properties": {
+      "data_source": "rrd/1/cacti_rrd",
+      "what": "test_data_source"
+    },
+    "timestamp": 1619086500,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "rrd_archive"
+      ],
+      "pipeline_type": [
+        "rrd"
+      ]
+    }
+  },
+  {
+    "target_type": "gauge",
+    "value": 3.01,
+    "properties": {
+      "data_source": "rrd/1/cacti_rrd",
+      "what": "test_data_source"
+    },
+    "timestamp": 1619086800,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "rrd_archive"
+      ],
+      "pipeline_type": [
+        "rrd"
+      ]
+    }
+  },
+  {
+    "target_type": "gauge",
+    "value": 9.003333333333334,
+    "properties": {
+      "data_source": "rrd/1/cacti_rrd",
+      "what": "traffic_out"
+    },
+    "timestamp": 1619085600,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "rrd_archive"
+      ],
+      "pipeline_type": [
+        "rrd"
+      ]
+    }
+  },
+  {
+    "target_type": "gauge",
+    "value": 4.016666666666667,
+    "properties": {
+      "data_source": "rrd/1/cacti_rrd",
+      "what": "traffic_out"
+    },
+    "timestamp": 1619085900,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "rrd_archive"
+      ],
+      "pipeline_type": [
+        "rrd"
+      ]
+    }
+  },
+  {
+    "target_type": "gauge",
+    "value": 1.01,
+    "properties": {
+      "data_source": "rrd/1/cacti_rrd",
+      "what": "traffic_out"
+    },
+    "timestamp": 1619086200,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "rrd_archive"
+      ],
+      "pipeline_type": [
+        "rrd"
+      ]
+    }
+  },
+  {
+    "target_type": "gauge",
+    "value": 6.98,
+    "properties": {
+      "data_source": "rrd/1/cacti_rrd",
+      "what": "traffic_out"
+    },
+    "timestamp": 1619086500,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "rrd_archive"
+      ],
+      "pipeline_type": [
+        "rrd"
+      ]
+    }
+  },
+  {
+    "target_type": "gauge",
+    "value": 4.01,
+    "properties": {
+      "data_source": "rrd/1/cacti_rrd",
+      "what": "traffic_out"
+    },
+    "timestamp": 1619086800,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "rrd_archive"
+      ],
+      "pipeline_type": [
+        "rrd"
+      ]
+    }
+  },
+  {
+    "target_type": "gauge",
+    "value": 10.0,
+    "properties": {
+      "data_source": "rrd/1/cacti_rrd",
+      "what": "not_used"
+    },
+    "timestamp": 1619085600,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "rrd_archive"
+      ],
+      "pipeline_type": [
+        "rrd"
+      ]
+    }
+  },
+  {
+    "target_type": "gauge",
+    "value": 5.016666666666667,
+    "properties": {
+      "data_source": "rrd/1/cacti_rrd",
+      "what": "not_used"
+    },
+    "timestamp": 1619085900,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "rrd_archive"
+      ],
+      "pipeline_type": [
+        "rrd"
+      ]
+    }
+  },
+  {
+    "target_type": "gauge",
+    "value": 2.01,
+    "properties": {
+      "data_source": "rrd/1/cacti_rrd",
+      "what": "not_used"
+    },
+    "timestamp": 1619086200,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "rrd_archive"
+      ],
+      "pipeline_type": [
+        "rrd"
+      ]
+    }
+  },
+  {
+    "target_type": "gauge",
+    "value": 7.98,
+    "properties": {
+      "data_source": "rrd/1/cacti_rrd",
+      "what": "not_used"
+    },
+    "timestamp": 1619086500,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "rrd_archive"
+      ],
+      "pipeline_type": [
+        "rrd"
+      ]
+    }
+  },
+  {
+    "target_type": "gauge",
+    "value": 5.01,
+    "properties": {
+      "data_source": "rrd/1/cacti_rrd",
+      "what": "not_used"
+    },
+    "timestamp": 1619086800,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "rrd_archive"
+      ],
+      "pipeline_type": [
+        "rrd"
+      ]
+    }
+  }
+]

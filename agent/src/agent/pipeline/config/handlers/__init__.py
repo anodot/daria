@@ -8,6 +8,7 @@ from . import jdbc
 from . import kafka
 from . import mongo
 from . import observium
+from . import rrd
 from . import sage
 from . import snmp
 from . import solarwinds

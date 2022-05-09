@@ -9,11 +9,13 @@ learn more about agent port forwarding visit the [Installation guide](https://gi
 * [Create pipelines](#create-pipelines)
 * [Edit pipelines](#edit-pipelines)
 * [Delete pipeline](#delete-pipeline)
+* [Force Delete pipeline](#force-delete-pipeline)
 * [Start pipeline](#start-pipeline)
 * [Stop pipeline](#stop-pipeline)
 * [Force stop pipeline](#force-stop-pipeline)
 * [Get pipeline info](#get-pipeline-info)
 * [Get pipeline logs](#get-pipeline-logs)
+* [Get pipeline config](#get-pipeline-config)
 * [Enable destination logs](#enable-destination-logs)
 * [Disable destination logs](#disable-destination-logs)
 * [Reset pipeline](#reset-pipeline)
@@ -104,6 +106,78 @@ curl -X POST http://localhost:8080/pipelines \
 ]
 ```
 
+**Request example** (with Elasticsearch query):
+```
+curl -X POST http://localhost:8080/pipelines \
+-H'Content-Type: application/json' \
+-d '[
+    {
+        "source": "elastic_src",
+        "pipeline_id": "elastic_pipeline",
+        "measurement_names": {"Clicks":  "clicks"},
+        "values": {"Clicks":  "gauge"},
+        "dimensions": ["_source/ver", "_source/Country"],
+        "timestamp": {
+            "type": "unix",
+            "name": "_source/timestamp_unix"
+        },
+        "query": "{\"sort\": [{\"timestamp_unix_ms\": {\"order\": \"asc\"}}],\n \"query\": {\"range\": {\"timestamp_unix_ms\": {\"gt\": ${OFFSET}}}}}"
+    }
+]'
+```
+
+**Response example** (with Elasticsearch query):
+```
+[
+    {
+        "config": {
+            "dimensions": {
+                "optional": [
+                    "_source/ver",
+                    "_source/Country"
+                ],
+                "required": []
+            },
+            "measurement_names": {
+                "Clicks": "clicks"
+            },
+            "pipeline_id": "elastic_pipeline",
+            "query": "{\"sort\": [{\"timestamp_unix_ms\": {\"order\": \"asc\"}}],\n \"query\": {\"range\": {\"timestamp_unix_ms\": {\"gt\": ${OFFSET}}}}}",
+            "timestamp": {
+                "name": "_source/timestamp_unix",
+                "type": "unix"
+            },
+            "uses_schema": false,
+            "values": {
+                "Clicks": "gauge"
+            }
+        },
+        "destination": {
+            "conf.client.proxy.password": "",
+            "conf.client.proxy.uri": "",
+            "conf.client.proxy.username": "",
+            "conf.client.useProxy": false,
+            "token": "correct_token",
+            "url": "http://dummy_destination"
+        },
+        "id": "elastic_pipeline",
+        "override_source": {},
+        "schema": {},
+        "source": {
+            "conf.httpUris": [
+                "http://es:9200"
+            ],
+            "conf.index": "test",
+            "conf.initialOffset": "now-1563d",
+            "conf.isIncrementalMode": true,
+            "conf.offsetField": "timestamp_unix_ms",
+            "conf.queryInterval": "${1 * SECONDS}",
+            "query_interval_sec": 1
+        }
+    }
+]
+```
+
 Edit pipelines
 -----------
 To edit one or multiple pipelines submit a PUT request containing pipeline configurations in JSON format to the `/pipelines` endpoint.
@@ -180,6 +254,29 @@ curl -X DELETE http://localhost:8080/pipelines/test_influx
 **Request:**
 ```
 curl -X DELETE http://localhost:8080/pipelines/not_existing
+```
+**Response:**
+```
+Status: 400 BAD REQUEST
+
+Pipeline not_existing does not exist
+```
+
+
+Force delete pipeline
+-------------
+Response codes: `200, 400`
+
+**Request:**
+```
+curl -X DELETE http://localhost:8080/pipelines/force-delete/test_influx
+```
+**Response:**
+`Status: 200 OK`
+
+**Request:**
+```
+curl -X DELETE http://localhost:8080/pipelines/force-delete/not_existing
 ```
 **Response:**
 ```
@@ -276,6 +373,58 @@ curl -X GET http://localhost:8080/pipelines/test_influx/logs?severity=INFO&numbe
         "Pipeline execution mode is: STANDALONE "
     ]
 ]
+```
+
+Get pipeline config
+-------------------
+To retrieve single pipeline configuration data submit GET request to `pipelines/<pipeline_id>` endpoint
+
+Response codes: `200`
+
+**Request:**
+```
+curl -X GET http://localhost:8080/pipelines/mssql_pipeline
+```
+
+**Response:**
+```
+{
+    "config": {
+        "dimensions": [
+            "adsize",
+            "country"
+        ],
+        "interval": 86400,
+        "pipeline_id": "mssql_pipeline",
+        "query": "SELECT * FROM test WHERE {TIMESTAMP_CONDITION}",
+        "timestamp": {
+            "name": "timestamp_unix_ms",
+            "type": "unix_ms"
+        },
+        "uses_schema": false,
+        "values": {
+            "clicks": "gauge",
+            "impressions": "gauge"
+        }
+    },
+    "destination": {
+        "conf.client.proxy.password": "",
+        "conf.client.proxy.uri": "",
+        "conf.client.proxy.username": "",
+        "conf.client.useProxy": false,
+        "token": "correct_token",
+        "url": "http://dummy_destination"
+    },
+    "id": "test_jdbc_file_short_mssql",
+    "override_source": {},
+    "schema": {},
+    "source": {
+        "connection_string": "sqlserver://host:1433;database=test",
+        "hikariConfigBean.password": "${credential:get(\"jks\", \"all\", \"testmssql\")}",
+        "hikariConfigBean.useCredentials": true,
+        "hikariConfigBean.username": "usertest2"
+    }
+}
 ```
 
 Enable destination logs

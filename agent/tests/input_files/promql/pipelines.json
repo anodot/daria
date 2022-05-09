@@ -4,7 +4,8 @@
     "days_to_backfill": 581,
     "interval": 10000,
     "pipeline_id": "test_victoria",
-    "source": "test_victoria"
+    "source": "test_victoria",
+    "request_headers": {"my_header": "my_value"}
   },
   {
     "query": "rate(log_messages_total2[100000s])",
@@ -82,6 +83,28 @@
     "interval": 10000,
     "transform": {
       "file": "/home/victoria_transform.csv"
+    }
+  },
+  {
+    "source": "test_victoria_2",
+    "pipeline_id": "test_victoria_dvp",
+    "query": "diff_dims[10000s]",
+    "days_to_backfill": 5,
+    "interval": 86400,
+    "dimensions": [
+      "instance",
+      "location",
+      "job"
+    ],
+    "values": {
+      "diff_dims": "gauge"
+    },
+    "uses_schema": true,
+    "dvpConfig": {
+      "baseRollup": "MEDIUMROLLUP",
+      "maxDVPDurationHours": 20,
+      "gaugeValue": {"keepLastValue": true},
+      "counterValue": {"value": 25}
     }
   }
 ]

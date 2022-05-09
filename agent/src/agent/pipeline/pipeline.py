@@ -8,15 +8,20 @@ from agent.modules.constants import HOSTNAME
 from agent.modules.db import Entity
 from agent.destination import HttpDestination, DummyHttpDestination
 from enum import Enum
-from sqlalchemy import Column, Integer, String, JSON, ForeignKey, func, Float
+from sqlalchemy import Column, Integer, String, JSON, ForeignKey, func, Float, Boolean
 from copy import deepcopy
 from agent import source, pipeline
 from agent.modules.time import Interval
 from agent.source import Source
 from agent.streamsets import StreamSets
 
+TYPE = 'pipeline_type'
+
 REGULAR_PIPELINE = 'regular_pipeline'
 RAW_PIPELINE = 'raw_pipeline'
+EVENTS_PIPELINE = 'events_pipeline'
+
+PIPELINE_TYPES = [REGULAR_PIPELINE, RAW_PIPELINE, EVENTS_PIPELINE]
 
 
 class PipelineException(Exception):
@@ -54,15 +59,6 @@ class Pipeline(Entity, sdc_client.IPipeline):
     COUNTER = 'counter'
     GAUGE = 'gauge'
     RUNNING_COUNTER = 'running_counter'
-
-    error_statuses = [STATUS_RUN_ERROR, STATUS_START_ERROR, STATUS_STOP_ERROR, STATUS_RUNNING_ERROR]
-    # TODO make it enum
-    statuses = [
-        STATUS_EDITED, STATUS_STARTING, STATUS_RUNNING, STATUS_STOPPING, STATUS_STOPPED, STATUS_RETRY, STATUS_RUN_ERROR,
-        STATUS_START_ERROR, STATUS_STOP_ERROR, STATUS_RUNNING_ERROR
-    ]
-
-    TARGET_TYPES = [COUNTER, GAUGE, RUNNING_COUNTER]
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
@@ -181,7 +177,18 @@ class Pipeline(Entity, sdc_client.IPipeline):
                 'Pipeline dimensions should be a list in order to build dimension_configurations, '
                 f'but {type(self.dimensions).__name__} provided'
             ))
-        return _build_dimension_configurations(self.dimensions, self.config.get('dimension_configurations'))
+        return _build_transformation_configurations(self.dimensions, self.config.get('dimension_configurations'))
+
+    @property
+    def measurement_configurations(self) -> Optional[dict]:
+        return _build_transformation_configurations(
+            list(self.values),
+            self.config.get('measurement_configurations', {}),
+        )
+
+    @property
+    def tag_configurations(self) -> Optional[dict]:
+        return self.config.get('tag_configurations', {})
 
     @property
     def timestamp_path(self) -> str:
@@ -313,6 +320,10 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return self.config.get('delay', '0')
 
     @property
+    def watermark_in_local_timezone(self) -> str:
+        return self.config.get('watermark_in_local_timezone', False)
+
+    @property
     def batch_size(self) -> str:
         return self.config.get('batch_size', '1000')
 
@@ -409,7 +420,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
                 return str(idx)
         if property_value in self.config.get('dimension_value_paths', {}):
             return str(self.config.get('dimension_value_paths', {})[property_value])
-        return str(property_value)
+        return property_value
 
     def meta_tags(self) -> dict:
         return {
@@ -430,8 +441,13 @@ class Pipeline(Entity, sdc_client.IPipeline):
 class RawPipeline(Pipeline):
     def __init__(self, pipeline_id: str, source_: Source):
         super(RawPipeline, self).__init__(pipeline_id, source_, DummyHttpDestination())
-        # this is needed to distinguish Pipeline and RawPipeline when they're loaded from the db
         self.type = RAW_PIPELINE
+
+
+class EventsPipeline(Pipeline):
+    def __init__(self, pipeline_id: str, source_: Source, destination_: HttpDestination):
+        super(EventsPipeline, self).__init__(pipeline_id, source_, destination_)
+        self.type = EVENTS_PIPELINE
 
 
 class TestPipeline(Pipeline):
@@ -469,10 +485,13 @@ class PipelineRetries(Entity):
 
     pipeline_id = Column(String, ForeignKey('pipelines.name'), primary_key=True)
     number_of_error_statuses = Column(Integer)
+    notification_sent = Column(Boolean, default=False)
+    last_updated = Column(TIMESTAMP(timezone=True), default=func.now(), onupdate=func.now())
 
     def __init__(self, pipeline_: Pipeline):
         self.pipeline_id = pipeline_.name
         self.number_of_error_statuses = 0
+        self.notification_sent = False
 
 
 class PipelineMetric:
@@ -498,13 +517,15 @@ class PipelineMetric:
         return self.stat_out == 0
 
 
-def _build_dimension_configurations(dimensions: list, dimension_configurations: dict) -> dict:
+def _build_transformation_configurations(values: list, configurations: dict) -> dict:
     """
-    Dimension configurations is optional for a pipeline, this function adds dimensions that are not
-    in the dimension_configurations and sets their value path to be the same as the dimension itself
+    Configurations could be either dimensions_configurations or measurement_configurations.
+    Dimension or measurement configurations are optional for a pipeline, this function adds dimensions or
+    measurements that are not in the dimension_configurations or measurement_configurations respectively and
+    sets their value path to be the same as the dimension or measurement itself.
     Doing so allows working with only one config dimension_configurations instead of using two
     """
-    for dim in dimensions:
-        if dim not in dimension_configurations:
-            dimension_configurations[dim] = {field.Variable.VALUE_PATH: dim}
-    return dimension_configurations
+    for item in values:
+        if item not in configurations:
+            configurations[item] = {field.Variable.VALUE_PATH: item}
+    return configurations

@@ -1,6 +1,6 @@
 from agent.modules.logger import get_logger
 from agent.pipeline.config import stages
-from agent.pipeline.config.handlers.base import NoSchemaConfigHandler
+from agent.pipeline.config.handlers.base import NoSchemaConfigHandler, TestConfigHandler
 
 logger = get_logger(__name__)
 
@@ -14,5 +14,8 @@ class ElasticConfigHandler(NoSchemaConfigHandler):
         'destination': stages.destination.Destination
     }
 
-    def _override_stages(self):
-        super()._override_stages()
+
+class TestElasticConfigHandler(TestConfigHandler):
+    stages_to_override = {
+        'source': stages.source.Source,
+    }

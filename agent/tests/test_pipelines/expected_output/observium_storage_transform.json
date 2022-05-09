@@ -1,0 +1,30 @@
+[
+  {
+    "schemaId": "observium_storage_transform-1234",
+    "dimensions": {
+      "HostName": "NEW_host",
+      "Storage_units_by_8": "512_0"
+    },
+    "measurements": {
+      "storage_units": 512.0
+    },
+    "timestamp": 1628160620,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "observium_storage_transform"
+      ],
+      "pipeline_type": [
+        "observium"
+      ]
+    }
+  }
+]

@@ -13,7 +13,7 @@ all: build-all test-all
 
 build-all: get-streamsets-libs build-docker sleep setup-all
 
-test-all: run-unit-tests test-flask-app test-streamsets test-raw-input test-raw-pipelines test-destination test-run-test-pipeline test-apply test-api test-api-scripts test-input test-export-sources test-streamsets-2 test-send-to-bc test-pipelines test-send-to-watermark
+test-all: run-unit-tests test-flask-app test-streamsets test-raw-input test-raw-pipelines test-destination test-run-test-pipeline test-apply test-api test-api-scripts test-input test-export-sources test-streamsets-2 test-send-to-bc test-pipelines test-send-to-watermark test-monitoring-metrics
 
 ##-------------
 ## DEVELOPMENT
@@ -42,11 +42,11 @@ test-elastic: bootstrap run-elastic setup-elastic
 	$(DOCKER_TEST) tests/test_input/test_elastic_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_elastic_http.py
 
-test-promql: bootstrap run-victoria nap setup-victoria
+test-promql: bootstrap run-victoria
 	$(DOCKER_TEST) tests/test_input/test_promql_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_promql_http.py
 
-test-influx: bootstrap run-influx nap
+test-influx: bootstrap run-influx run-influx-2 nap
 	$(DOCKER_TEST) tests/test_input/test_influx_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_influx_http.py
 
@@ -144,6 +144,9 @@ test-pipelines:
 test-run-test-pipeline:
 	$(DOCKER_TEST) tests/test_run_test_pipeline.py
 
+test-monitoring-metrics:
+	$(DOCKER_TEST) tests/test_monitoring.py
+
 test-api:
 	$(DOCKER_TEST) tests/api/test_destination.py
 	$(DOCKER_TEST) tests/api/test_streamsets.py
@@ -161,7 +164,7 @@ run-unit-tests:
 
 get-streamsets-libs: install-streamsets-requirements
 	rm -rf containers/streamsets/lib/anodot
-	curl -L https://github.com/anodot/anodot-sdc-stage/releases/download/v2.0.4/anodot-2.0.4.tar.gz -o /tmp/sdc.tar.gz && tar xvfz /tmp/sdc.tar.gz -C containers/streamsets/lib
+	curl -L https://github.com/anodot/anodot-sdc-stage/releases/download/v2.0.5/anodot-2.0.5.tar.gz -o /tmp/sdc.tar.gz && tar xvfz /tmp/sdc.tar.gz -C containers/streamsets/lib
 
 install-streamsets-requirements:
 	rm -rf containers/streamsets/python-libs/*

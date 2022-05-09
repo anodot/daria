@@ -1,12 +1,12 @@
 [
   {
     "schemaId": "observium_mempools-1234",
-    "timestamp": 1628160603,
+    "timestamp": 1628160620,
     "dimensions": {
       "Vendor": "Anodot",
       "Memory_Pool_Description": "Module_1_(Processor)",
       "Memory_Pool_ID": "1",
-      "Memory_Pool_Vendor": "None"
+      "Memory_Pool_Vendor": "NULL"
     },
     "measurements": {
       "mempool_used": 43289060.0,

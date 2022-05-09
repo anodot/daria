@@ -6,7 +6,8 @@ import sdc_client
 from datetime import datetime, timedelta, timezone
 from agent import source, pipeline, destination, streamsets
 from agent.modules import tools, constants
-from agent.pipeline import Pipeline, TestPipeline, schema, extra_setup, PipelineMetric, PipelineRetries, RawPipeline
+from agent.pipeline import Pipeline, TestPipeline, PipelineMetric, PipelineRetries, RawPipeline, EventsPipeline
+from agent.pipeline import extra_setup, json_builder, schema
 from agent.modules.logger import get_logger
 from agent.pipeline.config.handlers.factory import get_config_handler
 from agent.source import Source
@@ -18,27 +19,54 @@ MAX_SAMPLE_RECORDS = 3
 
 
 def supports_schema(pipeline_: Pipeline) -> bool:
-    if isinstance(pipeline_, (TestPipeline, RawPipeline)):
+    if isinstance(pipeline_, (TestPipeline, RawPipeline, EventsPipeline)):
         return False
-    supported = [
-        source.TYPE_CLICKHOUSE,
-        source.TYPE_DIRECTORY,
-        source.TYPE_DATABRICKS,
-        source.TYPE_INFLUX,
-        source.TYPE_KAFKA,
-        source.TYPE_MYSQL,
-        source.TYPE_ORACLE,
-        source.TYPE_POSTGRES,
-        source.TYPE_PROMETHEUS,
-        source.TYPE_SAGE,
-        source.TYPE_THANOS,
-        source.TYPE_VICTORIA,
-    ]
-    return pipeline_.source.type in supported
+    supported = {
+        source.TYPE_CACTI: False,
+        source.TYPE_CLICKHOUSE: True,
+        source.TYPE_DIRECTORY: True,
+        source.TYPE_DATABRICKS: True,
+        source.TYPE_ELASTIC: False,
+        source.TYPE_INFLUX: True,
+        source.TYPE_INFLUX_2: True,
+        source.TYPE_KAFKA: True,
+        source.TYPE_MONGO: False,
+        source.TYPE_MSSQL: True,
+        source.TYPE_MYSQL: True,
+        source.TYPE_OBSERVIUM: False,
+        source.TYPE_ORACLE: True,
+        source.TYPE_POSTGRES: True,
+        source.TYPE_PROMETHEUS: True,
+        source.TYPE_RRD: False,
+        source.TYPE_SAGE: True,
+        source.TYPE_SNMP: False,
+        source.TYPE_SPLUNK: False,
+        source.TYPE_SOLARWINDS: False,
+        source.TYPE_THANOS: True,
+        source.TYPE_TOPOLOGY: False,
+        source.TYPE_VICTORIA: True,
+        source.TYPE_ZABBIX: False,
+    }
+    return supported[pipeline_.source.type]
 
 
-def create_object(pipeline_id: str, source_name: str) -> Pipeline:
+def create_pipeline(pipeline_id: str, source_name: str) -> Pipeline:
     return Pipeline(
+        pipeline_id,
+        source.repository.get_by_name(source_name),
+        destination.repository.get(),
+    )
+
+
+def create_raw_pipeline(pipeline_id: str, source_name: str) -> RawPipeline:
+    return RawPipeline(
+        pipeline_id,
+        source.repository.get_by_name(source_name),
+    )
+
+
+def create_events_pipeline(pipeline_id: str, source_name: str) -> EventsPipeline:
+    return EventsPipeline(
         pipeline_id,
         source.repository.get_by_name(source_name),
         destination.repository.get(),
@@ -58,6 +86,7 @@ def start(pipeline_: Pipeline, wait_for_sending_data: bool = False):
 def stop(pipeline_: Pipeline):
     try:
         sdc_client.stop(pipeline_)
+        reset_pipeline_retries(pipeline_)
     except (sdc_client.ApiClientException, sdc_client.StreamsetsException) as e:
         raise pipeline.PipelineException(str(e))
 
@@ -78,6 +107,7 @@ def get_metrics(pipeline_: Pipeline) -> PipelineMetric:
 
 def reset_pipeline_retries(pipeline_: Pipeline):
     if pipeline_.retries:
+        pipeline_.retries.notification_sent = False
         pipeline_.retries.number_of_error_statuses = 0
         pipeline.repository.save(pipeline_.retries)
 
@@ -87,29 +117,36 @@ def _delete_pipeline_retries(pipeline_: Pipeline):
         pipeline.repository.delete_pipeline_retries(pipeline_.retries)
 
 
-def update(pipeline_: Pipeline):
-    if not pipeline_.config_changed():
-        logger_.info(f'No need to update pipeline {pipeline_.name}')
-        return
-    extra_setup.do(pipeline_)
-    if pipeline_.uses_schema:
-        _update_schema(pipeline_)
-    sdc_client.update(pipeline_)
-    pipeline.repository.save(pipeline_)
-    logger_.info(f'Updated pipeline {pipeline_.name}')
+def _load_config(pipeline_: Pipeline, config: dict, is_edit=False):
+    config['uses_schema'] = json_builder.get_schema_chooser(pipeline_).choose(pipeline_, config, is_edit)
+    json_builder.get(pipeline_, config, is_edit).build()
+    # todo too many validations, 4 validations here
+    pipeline.config.validators.get_config_validator(pipeline_.source.type).validate(pipeline_)
 
 
-def create(pipeline_: Pipeline):
-    extra_setup.do(pipeline_)
-    if pipeline_.uses_schema:
-        _update_schema(pipeline_)
-    sdc_client.create(pipeline_)
-    pipeline.repository.save(pipeline_)
+def update(pipeline_: Pipeline, config_: dict = None):
+    with pipeline.repository.SessionManager(pipeline_):
+        if config_:
+            _load_config(pipeline_, config_, is_edit=True)
+        if not pipeline_.config_changed():
+            logger_.info(f'No need to update pipeline {pipeline_.name}')
+            return
+        extra_setup.do(pipeline_)
+        if pipeline_.uses_schema:
+            _update_schema(pipeline_)
+        sdc_client.update(pipeline_)
+        reset_pipeline_retries(pipeline_)
+        logger_.info(f'Updated pipeline {pipeline_.name}')
 
 
-def create_raw_pipeline(raw_pipeline: RawPipeline):
-    sdc_client.create(raw_pipeline)
-    pipeline.repository.save(raw_pipeline)
+def create(pipeline_: Pipeline, config_: dict = None):
+    with pipeline.repository.SessionManager(pipeline_):
+        if config_:
+            _load_config(pipeline_, config_)
+        extra_setup.do(pipeline_)
+        if pipeline_.uses_schema:
+            _update_schema(pipeline_)
+        sdc_client.create(pipeline_)
 
 
 def update_source_pipelines(source_: Source):
@@ -117,7 +154,7 @@ def update_source_pipelines(source_: Source):
         try:
             sdc_client.update(pipeline_)
         except streamsets.manager.StreamsetsException as e:
-            logger_.exception(str(e))
+            logger_.debug(str(e), exc_info=True)
             continue
         logger_.info(f'Pipeline {pipeline_.name} updated')
 
@@ -194,10 +231,13 @@ def force_delete(pipeline_id: str) -> list:
             exceptions.append(str(e))
         pipeline.repository.delete(pipeline_)
     else:
-        sdc_client.force_delete(pipeline_id)
-        schema_id = schema.search(pipeline_id)
-        if schema_id:
-            schema.delete(schema_id)
+        try:
+            sdc_client.force_delete(pipeline_id)
+            schema_id = schema.search(pipeline_id)
+            if schema_id:
+                schema.delete(schema_id)
+        except Exception as e:
+            exceptions.append(str(e))
     return exceptions
 
 
@@ -259,7 +299,8 @@ def should_send_error_notification(pipeline_: Pipeline) -> bool:
     return not constants.DISABLE_PIPELINE_ERROR_NOTIFICATIONS \
            and pipeline_.error_notification_enabled() \
            and pipeline_.retries \
-           and pipeline_.retries.number_of_error_statuses - 1 >= constants.STREAMSETS_MAX_RETRY_ATTEMPTS
+           and pipeline_.retries.number_of_error_statuses - 1 >= constants.STREAMSETS_NOTIFY_AFTER_RETRY_ATTEMPTS \
+           and not pipeline_.retries.notification_sent
 
 
 def get_sample_records(pipeline_: Pipeline) -> (list, list):
@@ -275,7 +316,7 @@ def get_sample_records(pipeline_: Pipeline) -> (list, list):
     try:
         data = preview_data['batchesOutput'][0][0]['output']['source_outputLane']
     except (ValueError, TypeError, IndexError) as e:
-        logger_.exception(str(e))
+        logger_.debug(str(e), exc_info=True)
         return [], []
 
     return [tools.sdc_record_map_to_dict(record['value']) for record in data[:MAX_SAMPLE_RECORDS]], errors
@@ -289,7 +330,7 @@ def get_preview_data(pipeline_: Pipeline) -> (list, list):
         logger_.error(str(e))
         return [], []
     except (Exception, KeyboardInterrupt) as e:
-        logger_.exception(str(e))
+        logger_.debug(str(e), exc_info=True)
         raise
     return preview_data, errors
 

@@ -14,8 +14,11 @@ def replace_illegal_chars(value):
     return re.sub('\s+', '_', value)
 
 
-def replace_all(record, key):
+def process_dimensions(record, key):
     for k, v in record.value[key].items():
+        if v == '' or v is None:
+            record.value[key][k] = 'NULL'
+            continue
         new_k = replace_illegal_chars(k)
         new_v = replace_illegal_chars(v)
         if new_k != k or new_v != v:
@@ -35,15 +38,16 @@ def replace_keys(record, key):
 def main():
     for record in sdc.records:
         if 'properties' in record.value:
-            replace_all(record, 'properties')
+            process_dimensions(record, 'properties')
         if 'dimensions' in record.value:
-            replace_all(record, 'dimensions')
+            process_dimensions(record, 'dimensions')
         if 'measurements' in record.value:
             replace_keys(record, 'measurements')
         if 'tags' in record.value:
             replace_keys(record, 'tags')
             for k, vals in record.value['tags'].items():
-                record.value['tags'][k] = [replace_illegal_chars(v) for v in vals]
+                record.value['tags'][k] = ['NULL' if v == '' or v is None else replace_illegal_chars(v) for v in vals]
+            record.value['tags'] = {k: v for k, v in record.value['tags'].items() if v}
         sdc.output.write(record)
 
 

@@ -13,6 +13,7 @@ services:
       - ./sdc-conf:/etc/sdc_conf
       - ./certs:/home/certs
       - ./test-datasets/test-directory-collector:/home/test-directory-collector
+      - ./test-datasets/events-directory:/home/events-directory
 #    environment:
 #      SDC_CONF_PARSER_LIMIT: 2048576
 #      SDC_CONF_RUNNER_THREAD_POOL_SIZE: "200"
@@ -31,6 +32,7 @@ services:
       - ./sdc-data2:/data
       - ./certs:/home/certs
       - ./test-datasets/test-directory-collector:/home/test-directory-collector
+      - ./test-datasets/events-directory:/home/events-directory
     environment:
       SDC_CONF_PRODUCTION_MAXBATCHSIZE: "50"
       SDC_CONF_RUNNER_THREAD_POOL_SIZE: "2000"
@@ -77,7 +79,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - /var/lib/postgresql/data
+      - db-data:/var/lib/postgresql/data
 
   mongo:
     image: mongo:4.4.1
@@ -281,3 +283,4 @@ services:
 
 volumes:
   agent-data:
+  db-data:

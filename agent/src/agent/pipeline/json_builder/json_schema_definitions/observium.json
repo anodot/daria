@@ -6,20 +6,24 @@
     "query": {"type": "string"},
     "default_values_type": {"type": "string", "enum": ["ports", "mempools", "processors", "storage"]},
     "interval": {"type": "integer"},
-    "delay": {"type": "integer"},
     "dimensions": {"type": "array", "items": {"type": "string"}},
     "dimension_configurations": {"type": "object"},
     "lookup": {"type": "object"},
     "values": {"type": "object"},
+    "measurement_configurations": {"type": "object"},
     "strict": {"type": "boolean"},
-    "timestamp": {"type":  "object", "properties": {
-      "name": {"type": "string", "minLength": 1},
-      "type": {"type":  "string", "enum": ["unix"]}
-    }, "required": ["name", "type"]},
+    "timestamp": {
+      "type":  "object", "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "type": {"type":  "string", "enum": ["unix"]}
+      },
+      "required": ["name", "type"]
+    },
     "tags": {
       "type": "object",
       "patternProperties":  {"[^ \\.]+": {"type": "array", "items": {"type": "string"}}}
     },
+    "tag_configurations": {"type": "object"},
     "properties": {"type": "object"}
   },
   "required": ["interval", "query"]

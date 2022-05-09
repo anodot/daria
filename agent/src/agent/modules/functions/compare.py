@@ -1,3 +1,4 @@
+import re
 import sys
 
 from typing import Callable
@@ -11,8 +12,16 @@ def equals(a, b) -> bool:
     return a == b
 
 
-def contains(haystack: str, needle: str) -> bool:
+def contains(needle: str, haystack: str) -> bool:
     return needle in haystack
+
+
+def regex_contains(pattern: str, s: str):
+    try:
+        pattern_ = re.compile(pattern)
+    except re.error:
+        raise Exception(f'Invalid regex pattern: {pattern}')
+    return bool(re.search(pattern_, s))
 
 
 def get_by_name(name: str) -> Callable:

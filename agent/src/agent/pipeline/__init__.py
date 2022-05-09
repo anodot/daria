@@ -8,7 +8,7 @@ from . import validators
 from . import json_builder
 from . import jdbc
 
-TYPES = {REGULAR_PIPELINE: Pipeline, RAW_PIPELINE: RawPipeline}
+TYPES = {REGULAR_PIPELINE: Pipeline, RAW_PIPELINE: RawPipeline, EVENTS_PIPELINE: EventsPipeline}
 
 
 def check_prerequisites() -> list:

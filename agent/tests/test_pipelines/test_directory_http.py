@@ -2,23 +2,43 @@ import json
 import pytest
 
 from ..conftest import get_output
-from .test_zpipeline_base import TestPipelineBase, get_schema_id
+from .test_zpipeline_base import TestPipelineBase, get_schema_id, get_expected_events_output
 from agent import source, pipeline
 
 
 class TestDirectory(TestPipelineBase):
     __test__ = True
     params = {
-        'test_start': [{'name': 'test_dir_csv'}, {'name': 'test_dir_log'}, {'name': 'test_dir_json'}],
-        'test_stop': [{'name': 'test_dir_log'}, {'name': 'test_dir_json'}, {'name': 'test_dir_csv'}],
+        'test_start': [
+            {'name': 'test_dir_csv'},
+            {'name': 'test_dir_log'},
+            {'name': 'test_dir_json'},
+            {'name': 'events_directory'},
+        ],
+        'test_stop': [
+            {'name': 'test_dir_log'},
+            {'name': 'test_dir_json'},
+            {'name': 'test_dir_csv'},
+            {'name': 'events_directory'},
+        ],
         'test_reset': [{'name': 'test_dir_log'}],
         'test_output_schema': [
             {'name': 'test_dir_csv', 'output': 'directory_csv.json', 'pipeline_type': source.TYPE_DIRECTORY},
             {'name': 'test_dir_json', 'output': 'directory_json.json', 'pipeline_type': source.TYPE_DIRECTORY},
             {'name': 'test_dir_log', 'output': 'directory_log.json', 'pipeline_type': source.TYPE_DIRECTORY}
         ],
-        'test_delete_pipeline': [{'name': 'test_dir_log'}, {'name': 'test_dir_json'}, {'name': 'test_dir_csv'}],
-        'test_source_delete': [{'name': 'test_dir_log'}, {'name': 'test_dir_json'}, {'name': 'test_dir_csv'}],
+        'test_delete_pipeline': [
+            {'name': 'test_dir_log'},
+            {'name': 'test_dir_json'},
+            {'name': 'test_dir_csv'},
+            {'name': 'events_directory'},
+        ],
+        'test_source_delete': [
+            {'name': 'test_dir_log'},
+            {'name': 'test_dir_json'},
+            {'name': 'test_dir_csv'},
+            {'name': 'events_directory'},
+        ],
     }
 
     def test_info(self, cli_runner, name=None):
@@ -50,3 +70,6 @@ class TestDirectory(TestPipelineBase):
                 "/home/test-directory-collector/12102017_test.csv": "{\"POS\":\"-1\"}"
             }
         }
+
+    def test_events_output(self):
+        assert get_output(f'events_directory.json') == get_expected_events_output('events_directory.json')

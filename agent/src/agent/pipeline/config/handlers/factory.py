@@ -9,6 +9,8 @@ def get_config_handler(pipeline_: Pipeline) -> ConfigHandler:
         return _get_raw_handler(pipeline_, base_config)
     if isinstance(pipeline_, pipeline.TestPipeline):
         return _get_test_handler(pipeline_, base_config)
+    if isinstance(pipeline_, pipeline.EventsPipeline):
+        return _get_events_handler(pipeline_, base_config)
     if pipeline_.uses_schema:
         return _get_schema_handler(pipeline_, base_config)
     return _get_no_schema_handler(pipeline_, base_config)
@@ -25,6 +27,7 @@ def _get_no_schema_handler(pipeline_: Pipeline, base_config: dict) -> NoSchemaCo
         source.TYPE_MYSQL: pipeline.config.handlers.jdbc.JDBCConfigHandler,
         source.TYPE_POSTGRES: pipeline.config.handlers.jdbc.JDBCConfigHandler,
         source.TYPE_PROMETHEUS: pipeline.config.handlers.promql.PromQLConfigHandler,
+        source.TYPE_RRD: pipeline.config.handlers.rrd.RRDConfigHandler,
         source.TYPE_SAGE: pipeline.config.handlers.sage.SageConfigHandler,
         source.TYPE_SOLARWINDS: pipeline.config.handlers.solarwinds.SolarWindsConfigHandler,
         source.TYPE_SPLUNK: pipeline.config.handlers.tcp.TCPConfigHandler,
@@ -76,11 +79,11 @@ def _get_test_handler(pipeline_: Pipeline, base_config: dict) -> ConfigHandler:
         source.TYPE_CLICKHOUSE: pipeline.config.handlers.jdbc.TestJDBCConfigHandler,
         source.TYPE_DIRECTORY: pipeline.config.handlers.directory.TestDirectoryConfigHandler,
         source.TYPE_DATABRICKS: pipeline.config.handlers.jdbc.TestJDBCConfigHandler,
-        source.TYPE_ELASTIC: pipeline.config.handlers.elastic.ElasticConfigHandler,
+        source.TYPE_ELASTIC: pipeline.config.handlers.elastic.TestElasticConfigHandler,
         source.TYPE_INFLUX: pipeline.config.handlers.influx.TestInfluxConfigHandler,
         source.TYPE_INFLUX_2: pipeline.config.handlers.influx.TestInflux2ConfigHandler,
         source.TYPE_KAFKA: pipeline.config.handlers.kafka.TestKafkaConfigHandler,
-        source.TYPE_MONGO: pipeline.config.handlers.mongo.MongoConfigHandler,
+        source.TYPE_MONGO: pipeline.config.handlers.mongo.TestMongoConfigHandler,
         source.TYPE_MSSQL: pipeline.config.handlers.jdbc.TestJDBCConfigHandler,
         source.TYPE_MYSQL: pipeline.config.handlers.jdbc.TestJDBCConfigHandler,
         source.TYPE_OBSERVIUM: pipeline.config.handlers.observium.TestObserviumConfigHandler,
@@ -89,10 +92,17 @@ def _get_test_handler(pipeline_: Pipeline, base_config: dict) -> ConfigHandler:
         source.TYPE_PROMETHEUS: pipeline.config.handlers.promql.TestPromQLConfigHandler,
         source.TYPE_SAGE: pipeline.config.handlers.sage.SageConfigHandler,
         source.TYPE_SOLARWINDS: pipeline.config.handlers.solarwinds.SolarWindsConfigHandler,
-        source.TYPE_SPLUNK: pipeline.config.handlers.tcp.TCPConfigHandler,
+        source.TYPE_SPLUNK: pipeline.config.handlers.tcp.TestTCPConfigHandler,
         source.TYPE_THANOS: pipeline.config.handlers.promql.TestPromQLConfigHandler,
         source.TYPE_VICTORIA: pipeline.config.handlers.promql.TestPromQLConfigHandler,
         source.TYPE_ZABBIX: pipeline.config.handlers.zabbix.TestZabbixConfigHandler,
+    }
+    return handlers[pipeline_.source.type](pipeline_, base_config)
+
+
+def _get_events_handler(pipeline_: Pipeline, base_config: dict) -> ConfigHandler:
+    handlers = {
+        source.TYPE_DIRECTORY: pipeline.config.handlers.directory.DirectoryEventsConfigHandler,
     }
     return handlers[pipeline_.source.type](pipeline_, base_config)
 
@@ -102,6 +112,8 @@ def _get_config_loader(pipeline_: Pipeline):
         return pipeline.config.loader.TestPipelineConfigLoader
     if isinstance(pipeline_, pipeline.RawPipeline):
         return pipeline.config.loader.RawConfigLoader
+    if isinstance(pipeline_, pipeline.EventsPipeline):
+        return pipeline.config.loader.EventsConfigLoader
     if pipeline_.uses_schema:
         return pipeline.config.loader.SchemaConfigLoader
     return pipeline.config.loader.NoSchemaConfigLoader

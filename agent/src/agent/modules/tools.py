@@ -1,7 +1,11 @@
+import os
 import re
+import shutil
+import tarfile
 import click
 import json
 
+from enum import Enum
 from datetime import datetime
 from agent.modules import constants
 from tabulate import tabulate
@@ -16,12 +20,13 @@ def infinite_retry(func):
         while True:
             try:
                 return func(*args, **kwargs)
-            except (KeyboardInterrupt, SystemExit, click.Abort):
-                raise click.Abort()
+            except (KeyboardInterrupt, SystemExit, click.Abort) as e:
+                raise click.Abort() from e
             except click.UsageError as e:
                 click.secho(str(e.message), err=True, color='red')
             except Exception as e:
                 click.secho(str(e), err=True, color='red')
+
     return new_func
 
 
@@ -45,8 +50,10 @@ def map_keys(records, mapping):
 
 def if_validation_enabled(func):
     if not constants.VALIDATION_ENABLED:
+
         def new_func(*args, **kwargs):
             return True
+
         return new_func
     return func
 
@@ -125,3 +132,44 @@ def deep_update(src: dict, dst: Any):
 
 def escape_quotes(s: str) -> str:
     return s.replace("'", "\\'")
+
+
+class ArchiveCompressionType(Enum):
+    GZ = 'gz'
+    BZ2 = 'bz2'
+    XZ = 'xz'
+
+
+def extract_archive(
+    archive_path: str,
+    destination_path: str,
+    compression: ArchiveCompressionType = ArchiveCompressionType.GZ,
+):
+    if not os.path.isfile(archive_path):
+        raise ArchiveNotExistsException()
+    with tarfile.open(archive_path, f'r:{compression.value}') as tar:
+        tar.extractall(path=destination_path)
+
+
+def copy_dir(source_dir: str, destination_dir: str):
+    os.makedirs(os.path.dirname(destination_dir), exist_ok=True)
+    shutil.copytree(source_dir, destination_dir)
+
+
+def get_all_files(directory: str):
+    if not os.path.isdir(directory):
+        raise NotADirectoryError(f'`{directory}` is not a directory')
+    for root, dirs, files in os.walk(directory):
+        for dir_ in dirs:
+            get_all_files(dir_)
+        for file in files:
+            yield os.path.join(root, file)
+
+
+def chunks(lst, n):
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+
+
+class ArchiveNotExistsException(Exception):
+    pass

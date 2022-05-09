@@ -1,0 +1,9 @@
+{
+  "type": "object",
+  "properties": {
+    "rrd_archive_path": {"type": "string"},
+    "rrd_dir_path": {"type": "string"},
+    "archive_compression": {"type": "string", "enum": ["gz", "bz2", "xz"]}
+  },
+  "required": []
+}
