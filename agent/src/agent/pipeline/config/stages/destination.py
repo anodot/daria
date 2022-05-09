@@ -20,7 +20,7 @@ class WatermarkDestination(Stage):
     def get_config(self) -> dict:
         return {
             'conf.agentWatermarkUrl': urllib.parse.urljoin(
-                self.pipeline.streamsets.agent_external_url, f'/pipeline-watermark/{self.pipeline.name}'
+                self.pipeline.streamsets.agent_external_url, f'/pipelines/{self.pipeline.name}/watermark'
             ),
             **self.pipeline.destination.config,
         }

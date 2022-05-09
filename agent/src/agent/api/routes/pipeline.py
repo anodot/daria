@@ -171,7 +171,7 @@ def pipeline_offset_changed(pipeline_id: str):
     return jsonify('')
 
 
-@pipelines.route('/pipeline-watermark/<pipeline_id>', methods=['POST'])
+@pipelines.route('/pipelines/<pipeline_id>/watermark', methods=['POST'])
 @needs_pipeline
 def pipeline_watermark_changed(pipeline_id: str):
     watermark = float(request.get_json()['watermark'])

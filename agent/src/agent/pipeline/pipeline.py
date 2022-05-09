@@ -487,7 +487,7 @@ class PipelineWatermark(Entity):
     pipeline_id = Column(Integer, ForeignKey('pipelines.name'), primary_key=True)
     timestamp = Column(Float)
 
-    def __init__(self, pipeline_id: int, timestamp: float):
+    def __init__(self, pipeline_id: str, timestamp: float):
         self.pipeline_id = pipeline_id
         self.timestamp = timestamp
 
