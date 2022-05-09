@@ -1,7 +1,7 @@
 import logging
 import random
 import string
-import time
+import pytz
 import sdc_client
 
 from datetime import datetime, timedelta, timezone
@@ -133,7 +133,7 @@ def update(pipeline_: Pipeline, config_: dict = None):
             logger_.info(f'No need to update pipeline {pipeline_.name}')
             return
         extra_setup.do(pipeline_)
-        if pipeline_.uses_schema:
+        if pipeline_.uses_schema():
             _update_schema(pipeline_)
         sdc_client.update(pipeline_)
         reset_pipeline_retries(pipeline_)
@@ -145,7 +145,7 @@ def create(pipeline_: Pipeline, config_: dict = None):
         if config_:
             _load_config(pipeline_, config_)
         extra_setup.do(pipeline_)
-        if pipeline_.uses_schema:
+        if pipeline_.uses_schema():
             _update_schema(pipeline_)
         sdc_client.create(pipeline_)
 
@@ -353,12 +353,20 @@ def increase_retry_counter(pipeline_: Pipeline):
     pipeline.repository.save(pipeline_.retries)
 
 
+# todo would be nice to have this method in sdc_client
+def is_running(pipeline_: Pipeline) -> bool:
+    return sdc_client.get_pipeline_status(pipeline_) in [Pipeline.STATUS_RUNNING, Pipeline.STATUS_RETRY]
+
+
 class PeriodicWatermarkManager:
     """
     This class is responsible for the logic of sending watermarks to Anodot periodically for pipelines that can't
     send watermarks directly from StreamSets.
-    It is possible to send watermarks only for pipelines that use protocol30 and have a periodic_watermark
-    configuration.
+    It is possible to send watermarks only for pipelines that use protocol30 (protocol20 doesn't have watermarks)
+    and have a periodic_watermark configuration.
+    Also, the pipeline must be running, if it's not running and the watermark is sent, when the pipeline is started
+    the data with a timestamp less than watermark might be sent and thus will be lost.
+
 
     The watermark should be sent in two cases:
     1. The pipeline doesn't have a watermark, but it has offset, i.e. it already sent some data to Anodot.
@@ -366,54 +374,85 @@ class PeriodicWatermarkManager:
     2. The pipeline has a watermark that was sent previously, and the next watermark value
     is less than `now - watermark_delay`
 
-    The watermark value must be less than `now - watermark_delay`
+    This condition is deliberately ignoring some edge cases, like when the pipeline is sending historical data, because
+    taking into account everything makes the logic too complex.
     """
-    def should_send_watermark(self, pipeline_: Pipeline) -> bool:
-        return bool(pipeline_.uses_schema) \
-               and bool(pipeline_.periodic_watermark_config) \
+
+    def __init__(self, pipeline_: Pipeline):
+        self.pipeline = pipeline_
+        self.timezone_ = pytz.timezone(pipeline_.periodic_watermark_config.get('timezone', 'UTC'))
+
+    def should_send_watermark(self) -> bool:
+        # the commented method might be useful in situations when we have problems with loading historical data
+        # and not self._is_recent_offset(pipeline_) \
+        # schema = pipeline.manager.is_running(self.pipeline) and self.pipeline.uses_schema()
+        # off = self.pipeline.has_offset()
+        # wat = self.pipeline.has_periodic_watermark_config()
+        # wat_passed = self.pipeline.has_watermark() and self._watermark_delay_passed()
+        # offset_passed = not self.pipeline.has_watermark() and self._offset_delay_passed()
+        # t = 1
+        return pipeline.manager.is_running(self.pipeline) and self.pipeline.uses_schema() \
+               and self.pipeline.has_offset() \
+               and self.pipeline.has_periodic_watermark_config() \
                and (
-                       (bool(pipeline_.watermark) and self._watermark_delay_passed(pipeline_))
-                       or (not pipeline_.watermark and bool(pipeline_.offset) and self._offset_delay_passed(pipeline_))
+                       (self.pipeline.has_watermark() and self._watermark_delay_passed())
+                       or (not self.pipeline.has_watermark() and self._offset_delay_passed())
                )
 
-    @staticmethod
-    def _watermark_delay_passed(pipeline_: Pipeline) -> bool:
-        return time.time() >= pipeline_.watermark.timestamp \
-               + pipeline.FlushBucketSize(pipeline_.periodic_watermark_config['bucket_size']).total_seconds() \
-               + pipeline_.watermark_delay
+    # @staticmethod
+    # def _is_recent_offset(pipeline_: Pipeline) -> bool:
+    #     return self.pipeline.offset.updated_at > self._get_local_now_timestamp() \
+    #            - pipeline.FlushBucketSize(self.pipeline.periodic_watermark_config['bucket_size']).total_seconds()
 
-    @staticmethod
-    def _offset_delay_passed(pipeline_: Pipeline) -> bool:
+    def _watermark_delay_passed(self) -> bool:
+        # now = self._get_local_now_timestamp()
+        # wat_timestamp = self.pipeline.watermark.timestamp
+        # bucket_size = pipeline.FlushBucketSize(self.pipeline.periodic_watermark_config['bucket_size']).total_seconds()
+        # watermark_delay = self.pipeline.watermark_delay
+        # sum = self.pipeline.watermark.timestamp \
+        #       + pipeline.FlushBucketSize(self.pipeline.periodic_watermark_config['bucket_size']).total_seconds() \
+        #       + self.pipeline.watermark_delay
+        # t = 1
+        return self._get_local_now_timestamp() >= self.pipeline.watermark.timestamp \
+               + pipeline.FlushBucketSize(self.pipeline.periodic_watermark_config['bucket_size']).total_seconds() \
+               + self.pipeline.watermark_delay
+
+    def _offset_delay_passed(self) -> bool:
         next_bucket_start = get_next_bucket_start(
-            pipeline_.periodic_watermark_config['bucket_size'], pipeline_.offset.offset
+            self.pipeline.periodic_watermark_config['bucket_size'], self.pipeline.offset.timestamp
         )
-        return time.time() >= next_bucket_start.timestamp() + pipeline_.watermark_delay
+        return self._get_local_now_timestamp() >= next_bucket_start.timestamp() + self.pipeline.watermark_delay
 
-    def get_latest_bucket_start(self, pipeline_: Pipeline) -> int:
-        delay = pipeline_.watermark_delay
-        bs = pipeline.FlushBucketSize(pipeline_.periodic_watermark_config['bucket_size'])
+    def get_latest_bucket_start(self) -> int:
+        delay = self.pipeline.watermark_delay
+        bs_secs = pipeline.FlushBucketSize(self.pipeline.periodic_watermark_config['bucket_size']).total_seconds()
 
-        watermark_timestamp = self._get_current_watermark(pipeline_)
-        while not self._is_latest_watermark(watermark_timestamp, delay, bs):
-            watermark_timestamp = int(get_next_bucket_start(
-                pipeline_.periodic_watermark_config['bucket_size'], watermark_timestamp
-            ).timestamp())
+        watermark_timestamp = self._get_current_watermark()
+        while not self._is_latest_watermark(watermark_timestamp, delay, bs_secs):
+            watermark_timestamp += bs_secs
         return watermark_timestamp
 
-    @staticmethod
-    def _get_current_watermark(pipeline_: Pipeline) -> int:
-        if pipeline_.watermark:
-            return pipeline_.watermark.timestamp
-        elif pipeline_.offset:
+    def _get_current_watermark(self) -> int:
+        # todo why different here and above?
+        if self.pipeline.watermark:
+            return self.pipeline.watermark.timestamp
+        elif self.pipeline.offset:
             return int(get_next_bucket_start(
-                pipeline_.periodic_watermark_config['bucket_size'], pipeline_.offset.offset
+                self.pipeline.periodic_watermark_config['bucket_size'], self.pipeline.offset.timestamp
             ).timestamp())
-        raise WatermarkCalculationException('No watermark or offset for pipeline')
+        raise WatermarkCalculationException(
+            f'No watermark or offset for the pipeline `{self.pipeline.name}`'
+        )
 
-    @staticmethod
-    def _is_latest_watermark(watermark: int, delay: int, bucket_size: pipeline.FlushBucketSize):
-        # todo should I care about timezone?
-        return time.time() - delay - watermark < bucket_size.total_seconds()
+    def _is_latest_watermark(self, watermark: int, delay: int, bucket_size: int):
+        # everything is in seconds
+        return self._get_local_now_timestamp() - delay - watermark < bucket_size
+
+    def _get_local_now_timestamp(self) -> int:
+        """
+        Calculates the timestamp relatively to the provided timezone.
+        """
+        return int((datetime.utcnow() - self.timezone_.utcoffset(datetime.utcnow())).timestamp())
 
 
 def get_next_bucket_start(bs: str, offset: float) -> datetime:

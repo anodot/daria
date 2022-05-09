@@ -26,7 +26,8 @@
       "type": "object",
       "properties":  {
         "bucket_size": {"type": "string", "enum": ["1m", "5m", "1h", "1d"]},
-        "delay": {"type": "integer"}
+        "delay": {"type": "integer"},
+        "timezone": {"type": "string"}
       }
     }
   },

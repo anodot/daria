@@ -3,7 +3,7 @@ import traceback
 import anodot
 
 from datetime import datetime
-from agent import pipeline, destination, monitoring
+from agent import pipeline, destination, monitoring, di
 from agent.destination.anodot_api_client import AnodotApiClient
 from agent.modules.logger import get_logger
 from agent.modules import constants
@@ -12,10 +12,9 @@ if not constants.SEND_WATERMARKS_BY_CRON:
     exit(0)
 
 logger = get_logger(__name__, stdout=True)
+di.init()
 
 
-# todo should the delay be less then bucket size?
-# todo normal names everywhere
 def main():
     try:
         pipelines = pipeline.repository.get_all()
@@ -24,12 +23,12 @@ def main():
         raise
 
     num_of_errors = 0
-    watermark_manager = pipeline.manager.PeriodicWatermarkManager()
     for pipeline_ in pipelines:
-        if watermark_manager.should_send_watermark(pipeline_):
+        watermark_manager = pipeline.manager.PeriodicWatermarkManager(pipeline_)
+        if watermark_manager.should_send_watermark():
             try:
                 with pipeline.repository.SessionManager(pipeline_):
-                    next_bucket_start = watermark_manager.get_latest_bucket_start(pipeline_)
+                    next_bucket_start = watermark_manager.get_latest_bucket_start()
                     pipeline_.watermark.timestamp = next_bucket_start
 
                     watermark = anodot.Watermark(pipeline_.get_schema_id(), datetime.fromtimestamp(next_bucket_start))

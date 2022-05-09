@@ -109,9 +109,18 @@ class Pipeline(Entity, sdc_client.IPipeline):
     def source(self) -> Source:
         return self.source_
 
+    def has_periodic_watermark_config(self) -> bool:
+        return bool(self.config.get('periodic_watermark'))
+
+    def has_offset(self) -> bool:
+        return bool(self.offset)
+
+    def has_watermark(self) -> bool:
+        return bool(self.watermark)
+
     @property
     def periodic_watermark_config(self) -> dict:
-        return self.config.get('periodic_watermark')
+        return self.config.get('periodic_watermark', {})
 
     @property
     def watermark_delay(self) -> int:
@@ -328,7 +337,6 @@ class Pipeline(Entity, sdc_client.IPipeline):
     def batch_size(self) -> str:
         return self.config.get('batch_size', '1000')
 
-    @property
     def uses_schema(self) -> bool:
         return bool(self.config.get('uses_schema'))
 
@@ -464,7 +472,6 @@ class PipelineOffset(Entity):
 
     id = Column(Integer, primary_key=True)
     pipeline_id = Column(Integer, ForeignKey('pipelines.id'))
-    # todo rename to timestamp
     offset = Column(String)
     timestamp = Column(Float)
 

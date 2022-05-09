@@ -53,12 +53,12 @@ class ConfigLoader(ABC):
 
 class NoSchemaConfigLoader(ConfigLoader):
     def _check_pipeline(self, pipeline_: Pipeline):
-        assert not pipeline_.uses_schema
+        assert not pipeline_.uses_schema()
 
 
 class SchemaConfigLoader(ConfigLoader):
     def _check_pipeline(self, pipeline_: Pipeline):
-        assert pipeline_.uses_schema
+        assert pipeline_.uses_schema()
 
     @classmethod
     def _get_config_file(cls, pipeline: Pipeline) -> str:

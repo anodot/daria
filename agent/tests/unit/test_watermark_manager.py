@@ -1,13 +1,13 @@
 import pytest
+import pytz
 
 from unittest.mock import Mock
+from datetime import datetime, timedelta
 from agent import pipeline
 
 
 @pytest.mark.parametrize(
     "now, watermark, offset, watermark_delay, bucket_size, uses_schema, er", [
-        # todo add column created at, don't specify nullable false
-        # todo should send if pipeline is running and offset updated at < now - bucket_size
         (100, None, None, 10, '5m', True, False),
         (100, None, None, 10, '5m', False, False),
         (1200, 1200 - 450, 1000, 100, '5m', False, False),
@@ -24,34 +24,44 @@ from agent import pipeline
 )
 def test_should_send_watermark(now, watermark, offset, watermark_delay, bucket_size, uses_schema, er):
     pipeline_ = Mock()
-    pipeline_.uses_schema = uses_schema
+    pipeline_.uses_schema = Mock(return_value=uses_schema)
     pipeline_.watermark_delay = watermark_delay
     pipeline_.periodic_watermark_config = {'bucket_size': bucket_size}
-    pipeline.manager.time.time = Mock(return_value=now)
+    pipeline_.has_periodic_watermark_config = Mock(return_value=True)
+    pipeline.manager.is_running = Mock(return_value=True)
 
     if watermark:
         pipeline_.watermark = Mock()
         pipeline_.watermark.timestamp = watermark
+        pipeline_.has_watermark = Mock(return_value=True)
     else:
         pipeline_.watermark = None
+        pipeline_.has_watermark = Mock(return_value=False)
 
     if offset:
         pipeline_.offset = Mock()
-        pipeline_.offset.offset = offset
+        pipeline_.offset.timestamp = offset
+        pipeline_.has_offset = Mock(return_value=True)
     else:
         pipeline_.offset = None
+        pipeline_.has_offset = Mock(return_value=False)
 
-    assert pipeline.manager.PeriodicWatermarkManager().should_send_watermark(pipeline_) == er
+    watermark_manager = pipeline.manager.PeriodicWatermarkManager(pipeline_)
+    watermark_manager._get_local_now_timestamp = Mock(return_value=now)
+    assert watermark_manager.should_send_watermark() == er
 
 
 def test_should_not_send_watermark():
     pipeline_ = Mock()
-    pipeline_.uses_schema = True
-    pipeline_.periodic_watermark_config = None
+    pipeline_.uses_schema = Mock(return_value=True)
+    pipeline.manager.is_running = Mock(return_value=True)
+    pipeline_.has_offset = Mock(return_value=True)
+    pipeline_.periodic_watermark_config = {}
+    pipeline_.has_periodic_watermark_config = Mock(return_value=False)
 
-    assert pipeline.manager.PeriodicWatermarkManager().should_send_watermark(pipeline_) is False
+    assert pipeline.manager.PeriodicWatermarkManager(pipeline_).should_send_watermark() is False
 
-
+#
 @pytest.mark.parametrize(
     "now, watermark, offset, watermark_delay, bucket_size, er", [
         (70, None, 35, 10, '1m', 60),
@@ -74,19 +84,40 @@ def test_calculate_watermark(now, watermark, offset, watermark_delay, bucket_siz
     pipeline_ = Mock()
     pipeline_.watermark_delay = watermark_delay
     pipeline_.periodic_watermark_config = {'bucket_size': bucket_size}
-    pipeline.manager.time.time = Mock(return_value=now)
 
     if watermark:
         pipeline_.watermark = Mock()
         pipeline_.watermark.timestamp = watermark
+        pipeline_.has_watermark = Mock(return_value=True)
     else:
         pipeline_.watermark = None
+        pipeline_.has_watermark = Mock(return_value=False)
 
     if offset:
         pipeline_.offset = Mock()
-        pipeline_.offset.offset = offset
+        pipeline_.offset.timestamp = offset
     else:
         pipeline_.offset = None
 
-    res = pipeline.manager.PeriodicWatermarkManager().get_latest_bucket_start(pipeline_)
-    assert res == er
+    watermark_manager = pipeline.manager.PeriodicWatermarkManager(pipeline_)
+    watermark_manager._get_local_now_timestamp = Mock(return_value=now)
+    assert watermark_manager.get_latest_bucket_start() == er
+
+
+def test_calculate_timezone_watermark():
+    tz_name = 'Etc/GMT-1'
+    tz = pytz.timezone(tz_name)
+    now = datetime.utcnow()
+
+    pipeline_ = Mock()
+    pipeline_.watermark_delay = 1
+    pipeline_.periodic_watermark_config = {'bucket_size': '1h', 'timezone': tz_name}
+    pipeline_.watermark = None
+    pipeline_.offset = Mock()
+    pipeline_.offset.timestamp = (now - tz.utcoffset(now)).timestamp()
+
+    ar = pipeline.manager.PeriodicWatermarkManager(pipeline_).get_latest_bucket_start()
+    er = int((now.replace(minute=0, second=0, microsecond=0) - tz.utcoffset(now) + timedelta(hours=1)).timestamp())
+    assert ar == er
+    # it should be equal 0 because bucket size is 1h and timezone is Etc/GMT-1 which is 1 hour ahead of UTC
+    assert datetime.fromtimestamp(ar).hour - now.hour == 0
