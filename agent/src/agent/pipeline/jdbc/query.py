@@ -1,5 +1,6 @@
 from agent import pipeline, source
 from agent.pipeline import Pipeline
+from typing import Optional
 
 TIMESTAMP_CONDITION = '{TIMESTAMP_CONDITION}'
 LAST_TIMESTAMP = '${record:value("/last_timestamp")}'
@@ -16,18 +17,28 @@ class Builder:
         if isinstance(self.pipeline, pipeline.TestPipeline):
             return self._get_preview_query()
         query = self.pipeline.query.replace(f'{TIMESTAMP_CONDITION}', self._get_timestamp_condition())
-        return query + ' ORDER BY ' + self.pipeline.timestamp_path
+        return f'{query} ORDER BY {self.pipeline.timestamp_path}'
 
     def _get_preview_query(self):
         if not self.pipeline.query:
             # dummy query for validating source connection in streamsets
             return 'SELECT * FROM t'
         query = self.pipeline.query.replace(f'{TIMESTAMP_CONDITION}', '1=1')
-        return query + f' LIMIT {pipeline.manager.MAX_SAMPLE_RECORDS}'
+        return f'{query} LIMIT {pipeline.manager.MAX_SAMPLE_RECORDS}'
 
     def _get_timestamp_condition(self) -> str:
+        if query := self._get_indexed_query():
+            return query
         return f'{self._timestamp_to_unix()} >= {self.TIMESTAMP_VALUE}' \
                f' AND {self._timestamp_to_unix()} < {self.TIMESTAMP_VALUE} + {self.pipeline.interval}'
+
+    def _get_indexed_query(self) -> Optional[str]:
+        query = None
+        if self.pipeline.timestamp_type in [pipeline.TimestampType.DATETIME, pipeline.TimestampType.STRING]:
+            if self.pipeline.source.type == source.TYPE_MSSQL:
+                query = f"{self.pipeline.timestamp_path} BETWEEN DATEADD(second, {self.TIMESTAMP_VALUE}, '1970-01-01')"\
+                        f" AND DATEADD(second, {self.TIMESTAMP_VALUE} + {self.pipeline.interval}, '1970-01-01')"
+        return query
 
     def _timestamp_to_unix(self):
         if self.pipeline.timestamp_type == pipeline.TimestampType.DATETIME:
@@ -42,11 +53,9 @@ class Builder:
 '{self.pipeline.timezone}')) as date) - TO_DATE('1970-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS')) * 86400"""
             if self.pipeline.source.type == source.TYPE_DATABRICKS:
                 return f"unix_timestamp({self.pipeline.timestamp_path})"
-            if self.pipeline.source.type == source.TYPE_MSSQL:
-                return f"DATEDIFF(s, '1970-01-01 00:00:00', {self.pipeline.timestamp_path})"
 
         if self.pipeline.timestamp_type == pipeline.TimestampType.UNIX_MS:
-            return self.pipeline.timestamp_path + '/1000'
+            return f'{self.pipeline.timestamp_path}/1000'
 
         return self.pipeline.timestamp_path
 
