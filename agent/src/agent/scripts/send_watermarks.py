@@ -24,7 +24,7 @@ def main():
 
     num_of_errors = 0
     for pipeline_ in pipelines:
-        watermark_manager = pipeline.manager.PeriodicWatermarkManager(pipeline_)
+        watermark_manager = pipeline.watermark.PeriodicWatermarkManager(pipeline_)
         if watermark_manager.should_send_watermark():
             try:
                 with pipeline.repository.SessionManager(pipeline_):

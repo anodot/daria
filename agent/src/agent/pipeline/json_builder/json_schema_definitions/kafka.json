@@ -22,12 +22,12 @@
       "type": "object",
       "patternProperties":  {"[^ \\.]+": {"type": "array", "items": {"type": "string"}}}
     },
+    "timezone": {"type": "string"},
     "periodic_watermark": {
       "type": "object",
       "properties":  {
         "bucket_size": {"type": "string", "enum": ["1m", "5m", "1h", "1d"]},
-        "delay": {"type": "integer"},
-        "timezone": {"type": "string"}
+        "delay": {"type": "integer"}
       }
     }
   },

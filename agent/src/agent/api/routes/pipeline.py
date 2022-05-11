@@ -188,7 +188,7 @@ def calculate_watermark(pipeline_id: str):
     if not pipeline_.offset:
         return jsonify({WATERMARK: None})
     return jsonify({
-        WATERMARK: pipeline.manager.get_next_bucket_start(
+        WATERMARK: pipeline.watermark.get_next_bucket_start(
             pipeline_.flush_bucket_size.value, pipeline_.offset.timestamp
         ).timestamp()
     })
