@@ -27,18 +27,21 @@ class Builder:
         return f'{query} LIMIT {pipeline.manager.MAX_SAMPLE_RECORDS}'
 
     def _get_timestamp_condition(self) -> str:
-        if query := self._get_indexed_query():
-            return query
-        return f'{self._timestamp_to_unix()} >= {self.TIMESTAMP_VALUE}' \
-               f' AND {self._timestamp_to_unix()} < {self.TIMESTAMP_VALUE} + {self.pipeline.interval}'
+        if self._supports_indexed_timestamp_condition():
+            return self._get_indexed_query()
+        return self._get_regular_query()
+
+    def _supports_indexed_timestamp_condition(self) -> bool:
+        return self.pipeline.timestamp_type in [pipeline.TimestampType.DATETIME, pipeline.TimestampType.STRING] and \
+               self.pipeline.source.type == source.TYPE_MSSQL
 
     def _get_indexed_query(self) -> Optional[str]:
-        query = None
-        if self.pipeline.timestamp_type in [pipeline.TimestampType.DATETIME, pipeline.TimestampType.STRING]:
-            if self.pipeline.source.type == source.TYPE_MSSQL:
-                query = f"{self.pipeline.timestamp_path} BETWEEN DATEADD(second, {self.TIMESTAMP_VALUE}, '1970-01-01')"\
-                        f" AND DATEADD(second, {self.TIMESTAMP_VALUE} + {self.pipeline.interval}, '1970-01-01')"
-        return query
+        return f"{self.pipeline.timestamp_path} BETWEEN DATEADD(second, {self.TIMESTAMP_VALUE}, '1970-01-01')" \
+               f" AND DATEADD(second, {self.TIMESTAMP_VALUE} + {self.pipeline.interval}, '1970-01-01')"
+
+    def _get_regular_query(self) -> Optional[str]:
+        return f'{self._timestamp_to_unix()} >= {self.TIMESTAMP_VALUE} AND ' \
+               f'{self._timestamp_to_unix()} < {self.TIMESTAMP_VALUE} + {self.pipeline.interval}'
 
     def _timestamp_to_unix(self):
         if self.pipeline.timestamp_type == pipeline.TimestampType.DATETIME:
