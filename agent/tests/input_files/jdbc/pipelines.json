@@ -11,6 +11,18 @@
       "name": "timestamp_unix_ms"
     }
   },
+    {
+    "source": "test_jdbc",
+    "pipeline_id": "test_jdbc_no_timestamp_condition",
+    "values": {"clicks": "gauge", "impressions": "gauge"},
+    "dimensions": ["adsize", "country"],
+    "interval": 86400,
+    "query": "SELECT * FROM test WHERE {TIMESTAMP_COLUMN} BETWEEN FROM_UNIXTIME({LAST_TIMESTAMP_VALUE}) AND FROM_UNIXTIME({LAST_TIMESTAMP_VALUE} + {INTERVAL})",
+    "timestamp": {
+      "type": "datetime",
+      "name": "timestamp_datetime"
+    }
+  },
   {
     "source": "test_jdbc",
     "pipeline_id": "test_jdbc_file_full_mysql",
