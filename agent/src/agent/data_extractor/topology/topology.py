@@ -27,8 +27,7 @@ TOPOLOGY_ENTITIES = [REGION, SITE, NODE, CARD, INTERFACE, CELL, LINK, SERVICE, L
 def extract_metrics(pipeline_: Pipeline) -> dict:
     with lookup.Provide(pipeline_.lookups):
         entities = _create_entities(pipeline_.source)
-        topology_records = _create_topology_records(entities)
-        return _build_topology_data(topology_records)
+        return _create_topology_records(entities)
 
 
 class Entity(ABC):
@@ -43,10 +42,6 @@ def _create_topology_records(entities: list[Entity]) -> dict:
         entity_.name: [field.extract_fields(entity_.fields, row) for row in entity_.source.get_data()]
         for entity_ in entities
     }
-
-
-def _build_topology_data(topology_entities: dict) -> dict:
-    pass
 
 
 def _create_entities(source_: Source) -> list[Entity]:

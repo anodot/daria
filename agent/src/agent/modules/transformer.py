@@ -52,7 +52,7 @@ class LookupTransformer(Transformer):
             if strict_lookup is not None \
             else True
 
-    def transform(self, value) -> Optional[Any]:
+    def transform(self, value) -> Any:
         if self.discard_empty_values and not value:
             return self.default
         result = lookup.lookup(
@@ -77,10 +77,15 @@ def build_transformers(field_conf: dict) -> list[Transformer]:
                     transform['key'],
                     transform['value'],
                     transform.get('compare_function'),
-                    transform['default'],
+                    # todo optional or required?
+                    transform.get('default'),
                     transform.get('strict'),
                 )
             )
         else:
-            raise Exception(f'Invalid type of a transformation provided: `{type_}`')
+            raise TransformationException(f'Invalid type of a transformation provided: `{type_}`')
     return transformers
+
+
+class TransformationException(Exception):
+    pass

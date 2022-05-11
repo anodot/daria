@@ -18,9 +18,34 @@ def api_client():
 
 di.init()
 
-res = requests.post(
-    'https://app.anodot.com/api/v1/telco/topology/map/rollup/start?token=7475d33778e80014e24adb497930b22e'
+dest = destination.repository.get()
+
+client = AnodotApiClient(dest)
+res = client.get_schemas()
+
+s = requests.Session()
+s.headers.update({
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer ' + dest.auth_token.authentication_token
+})
+
+schemas = s.get(
+    'https://app.anodot.com/api/v2/stream-schemas/schemas'
 )
+
+load = s.post(
+    'https://app.anodot.com/api/v2/topology/map/load/start'
+)
+t = 1
+
+# res = s.put(
+#     'https://app.anodot.com/api/v2/topology/user',
+#     json={
+#         '_id': '5e819f0bd7a1e5000de34385'
+#     }
+# )
+# t = 1
+exit()
 
 # res = api_client().get('/alerts?status=CLOSE&startTime=1623321686')
 # res = api_client().get('/alert/status?alertName=Drop%20in%20Device_uptime%20for%20All%20equipments&host=eNodeBbaicells180&startTime=-300')
@@ -30,10 +55,7 @@ res = requests.post(
 # r.raise_for_status()
 # r = snmp.extract_metrics(pipeline.repository.get_by_id('snmp'))
 
-t = 1
-exit()
-
-data_extractor.topology.extract_metrics(pipeline.repository.get_by_id('topology'))
+res = data_extractor.topology.extract_metrics(pipeline.repository.get_by_id('topology'))
 # cli.pipeline.create(["-f", "/Users/antonzelenin/Workspace/daria/agent/tests/input_files/promql/pipelines.json"])
 # cli.destination()
 # cli.pipeline.create()

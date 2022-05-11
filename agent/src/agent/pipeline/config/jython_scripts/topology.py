@@ -29,9 +29,7 @@ def main():
     else:
         offset = int(time.time())
 
-    while True:
-        if sdc.isStopped():
-            break
+    while not sdc.isStopped():
         while offset > get_now_with_delay():
             time.sleep(2)
             if sdc.isStopped():
@@ -40,10 +38,9 @@ def main():
         res = requests.get(sdc.userParams['TOPOLOGY_SOURCE_URL'])
         res.raise_for_status()
 
-        for i, row in enumerate(res):
-            record = sdc.createRecord('record created ' + str(i))
-            record.value = row
-            batch.add(record)
+        record = sdc.createRecord('record created')
+        record.value = res.json()
+        batch.add(record)
 
         batch.process(entityName, str(time.time()))
 
