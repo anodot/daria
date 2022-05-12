@@ -29,7 +29,7 @@ def main():
             try:
                 with pipeline.repository.SessionManager(pipeline_):
                     next_bucket_start = watermark_manager.get_latest_bucket_start()
-                    pipeline_.watermark.timestamp = next_bucket_start
+                    pipeline.manager.update_pipeline_watermark(pipeline_, next_bucket_start)
 
                     watermark = anodot.Watermark(pipeline_.get_schema_id(), datetime.fromtimestamp(next_bucket_start))
                     AnodotApiClient(destination.repository.get()).send_watermark(watermark.to_dict())
