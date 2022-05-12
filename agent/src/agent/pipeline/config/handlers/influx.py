@@ -64,7 +64,8 @@ class InfluxSchemaConfigHandler(SchemaConfigHandler):
         'transform_records': stages.js_convert_metrics.JSConvertMetrics30,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties30,
         'filtering': stages.expression_evaluator.Filtering,
-        'destination': stages.destination.Destination
+        'destination': stages.destination.Destination,
+        'destination_watermark': stages.destination.WatermarkDestination,
     }
 
 
@@ -75,7 +76,8 @@ class Influx2SchemaConfigHandler(SchemaConfigHandler):
         'js_create_metrics': stages.js_convert_metrics.JSConvertMetrics30,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties30,
         'filtering': stages.expression_evaluator.Filtering,
-        'destination': stages.destination.Destination
+        'destination': stages.destination.Destination,
+        'destination_watermark': stages.destination.WatermarkDestination,
     }
 
 
