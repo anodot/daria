@@ -169,6 +169,7 @@ services:
 
   squid:
     image: datadog/squid
+    container_name: squid
     extra_hosts:
       - "daria-test2:10.0.0.28"
     ports:

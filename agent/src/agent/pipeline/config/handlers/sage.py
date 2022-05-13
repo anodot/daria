@@ -28,5 +28,6 @@ class SageSchemaConfigHandler(SchemaConfigHandler):
         'source': stages.source.sage.SageScript,
         'JavaScriptEvaluator_01': stages.js_convert_metrics.SageJSConvertMetrics30,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties30,
-        'destination': stages.destination.Destination
+        'destination': stages.destination.Destination,
+        'destination_watermark': stages.destination.WatermarkDestination,
     }
