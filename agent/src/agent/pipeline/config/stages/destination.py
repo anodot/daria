@@ -12,13 +12,18 @@ class Destination(Stage):
                 self.pipeline.streamsets.agent_external_url, f'/pipeline-offset/{self.pipeline.name}'
             ),
             self.pipeline.destination.CONFIG_ENABLE_REQUEST_LOGGING: self.pipeline.destination.if_logs_enabled,
-            **self.pipeline.destination.config
+            **self.pipeline.destination.config,
         }
 
 
 class WatermarkDestination(Stage):
     def get_config(self) -> dict:
-        return self.pipeline.destination.config
+        return {
+            'conf.agentWatermarkUrl': urllib.parse.urljoin(
+                self.pipeline.streamsets.agent_external_url, f'/pipelines/{self.pipeline.name}/watermark'
+            ),
+            **self.pipeline.destination.config,
+        }
 
 
 class EventsDestination(Stage):

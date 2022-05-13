@@ -22,6 +22,7 @@
       "type": "object",
       "patternProperties":  {"[^ \\.]+": {"type": "array", "items": {"type": "string"}}}
     },
+    "timezone": {"type": "string"},
     "periodic_watermark": {
       "type": "object",
       "properties":  {

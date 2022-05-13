@@ -1,6 +1,7 @@
 import logging
 import random
 import string
+import pytz
 import sdc_client
 
 from datetime import datetime, timedelta, timezone
@@ -88,21 +89,21 @@ def stop(pipeline_: Pipeline):
         sdc_client.stop(pipeline_)
         reset_pipeline_retries(pipeline_)
     except (sdc_client.ApiClientException, sdc_client.StreamsetsException) as e:
-        raise pipeline.PipelineException(str(e))
+        raise pipeline.PipelineException(str(e)) from e
 
 
 def get_info(pipeline_: Pipeline, lines: int) -> dict:
     try:
         return sdc_client.get_pipeline_info(pipeline_, lines)
     except (sdc_client.ApiClientException, sdc_client.StreamsetsException) as e:
-        raise pipeline.PipelineException(str(e))
+        raise pipeline.PipelineException(str(e)) from e
 
 
 def get_metrics(pipeline_: Pipeline) -> PipelineMetric:
     try:
         return PipelineMetric(sdc_client.get_pipeline_metrics(pipeline_))
     except (sdc_client.ApiClientException, sdc_client.StreamsetsException) as e:
-        raise pipeline.PipelineException(str(e))
+        raise pipeline.PipelineException(str(e)) from e
 
 
 def reset_pipeline_retries(pipeline_: Pipeline):
@@ -132,7 +133,7 @@ def update(pipeline_: Pipeline, config_: dict = None):
             logger_.info(f'No need to update pipeline {pipeline_.name}')
             return
         extra_setup.do(pipeline_)
-        if pipeline_.uses_schema:
+        if pipeline_.uses_schema():
             _update_schema(pipeline_)
         sdc_client.update(pipeline_)
         reset_pipeline_retries(pipeline_)
@@ -144,7 +145,7 @@ def create(pipeline_: Pipeline, config_: dict = None):
         if config_:
             _load_config(pipeline_, config_)
         extra_setup.do(pipeline_)
-        if pipeline_.uses_schema:
+        if pipeline_.uses_schema():
             _update_schema(pipeline_)
         sdc_client.create(pipeline_)
 
@@ -171,6 +172,14 @@ def update_pipeline_offset(pipeline_: Pipeline, timestamp: float):
     pipeline.repository.save(pipeline_.offset)
 
 
+def update_pipeline_watermark(pipeline_: Pipeline, timestamp: float):
+    if pipeline_.watermark:
+        pipeline_.watermark.timestamp = timestamp
+    else:
+        pipeline_.watermark = pipeline.PipelineWatermark(pipeline_.name, timestamp)
+    pipeline.repository.save(pipeline_.watermark)
+
+
 def reset(pipeline_: Pipeline):
     try:
         sdc_client.reset(pipeline_)
@@ -178,7 +187,7 @@ def reset(pipeline_: Pipeline):
             pipeline.repository.delete_offset(pipeline_.offset)
             pipeline_.offset = None
     except sdc_client.ApiClientException as e:
-        raise pipeline.PipelineException(str(e))
+        raise pipeline.PipelineException(str(e)) from e
 
 
 def _delete_schema(pipeline_: Pipeline):
@@ -189,8 +198,7 @@ def _delete_schema(pipeline_: Pipeline):
 
 def _update_schema(pipeline_: Pipeline):
     new_schema = schema.build(pipeline_)
-    old_schema = pipeline_.get_schema()
-    if old_schema:
+    if old_schema := pipeline_.get_schema():
         if not schema.equal(old_schema, new_schema):
             pipeline_.schema = schema.update(new_schema)
         return
@@ -202,7 +210,7 @@ def delete(pipeline_: Pipeline):
     try:
         sdc_client.delete(pipeline_)
     except sdc_client.ApiClientException as e:
-        raise pipeline.PipelineException(str(e))
+        raise pipeline.PipelineException(str(e)) from e
     pipeline.repository.delete(pipeline_)
     pipeline.repository.add_deleted_pipeline_id(pipeline_.name)
 
@@ -233,8 +241,7 @@ def force_delete(pipeline_id: str) -> list:
     else:
         try:
             sdc_client.force_delete(pipeline_id)
-            schema_id = schema.search(pipeline_id)
-            if schema_id:
+            if schema_id := schema.search(pipeline_id):
                 schema.delete(schema_id)
         except Exception as e:
             exceptions.append(str(e))
@@ -346,14 +353,5 @@ def increase_retry_counter(pipeline_: Pipeline):
     pipeline.repository.save(pipeline_.retries)
 
 
-def get_next_bucket_start(bs: str, offset: float) -> datetime:
-    dt = datetime.fromtimestamp(offset, tz=timezone.utc)
-    if bs == pipeline.FlushBucketSize.MIN_1:
-        return dt.replace(second=0, microsecond=0) + timedelta(minutes=1)
-    elif bs == pipeline.FlushBucketSize.MIN_5:
-        return dt.replace(second=0, microsecond=0) + timedelta(minutes=5 - dt.minute % 5)
-    elif bs == pipeline.FlushBucketSize.HOUR_1:
-        return dt.replace(minute=0, second=0, microsecond=0) + timedelta(hours=1)
-    elif bs == pipeline.FlushBucketSize.DAY_1:
-        return dt.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
-    raise Exception('Invalid bucket size provided')
+def is_running(pipeline_: Pipeline) -> bool:
+    return sdc_client.get_pipeline_status(pipeline_) in [Pipeline.STATUS_RUNNING, Pipeline.STATUS_RETRY]

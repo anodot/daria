@@ -11,7 +11,7 @@ def get_config_handler(pipeline_: Pipeline) -> ConfigHandler:
         return _get_test_handler(pipeline_, base_config)
     if isinstance(pipeline_, pipeline.EventsPipeline):
         return _get_events_handler(pipeline_, base_config)
-    if pipeline_.uses_schema:
+    if pipeline_.uses_schema():
         return _get_schema_handler(pipeline_, base_config)
     return _get_no_schema_handler(pipeline_, base_config)
 
@@ -114,6 +114,6 @@ def _get_config_loader(pipeline_: Pipeline):
         return pipeline.config.loader.RawConfigLoader
     if isinstance(pipeline_, pipeline.EventsPipeline):
         return pipeline.config.loader.EventsConfigLoader
-    if pipeline_.uses_schema:
+    if pipeline_.uses_schema():
         return pipeline.config.loader.SchemaConfigLoader
     return pipeline.config.loader.NoSchemaConfigLoader

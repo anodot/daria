@@ -59,7 +59,7 @@ class ConfigHandler(ABC):
 
 class NoSchemaConfigHandler(ConfigHandler):
     def _check_pipeline(self):
-        assert not self.pipeline.uses_schema
+        assert not self.pipeline.uses_schema()
 
 
 class SchemaConfigHandler(ConfigHandler):
@@ -72,7 +72,7 @@ class SchemaConfigHandler(ConfigHandler):
         return pipeline_config
 
     def _check_pipeline(self):
-        assert self.pipeline.uses_schema
+        assert self.pipeline.uses_schema()
 
 
 class RawConfigHandler(NoSchemaConfigHandler):

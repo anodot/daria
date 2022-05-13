@@ -984,7 +984,10 @@
         "value" : "CSV"
       }, {
         "name" : "conf.agentOffsetUrl",
-        "value" : "http://anodot-agent/pipeline-offset/test_dir_json"
+        "value" : ""
+      }, {
+        "name" : "conf.agentWatermarkUrl",
+        "value" : ""
       }, {
         "name" : "conf.dataGeneratorFormatConfig.csvHeader",
         "value" : "NO_HEADER"
@@ -1688,7 +1691,10 @@
         "value" : null
       }, {
         "name" : "conf.agentOffsetUrl",
-        "value" : null
+        "value" : ""
+      }, {
+        "name" : "conf.agentWatermarkUrl",
+        "value" : ""
       }, {
         "name" : "conf.parallelSendersNumber",
         "value" : 1
