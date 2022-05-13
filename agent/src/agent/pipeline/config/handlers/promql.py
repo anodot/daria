@@ -23,7 +23,8 @@ class PromQLSchemaConfigHandler(SchemaConfigHandler):
         'JavaScriptEvaluator_01': stages.js_convert_metrics.JSConvertMetrics30,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties,
         'JythonEvaluator_01': stages.jython.ReplaceIllegalChars,
-        'destination': stages.destination.Destination
+        'destination': stages.destination.Destination,
+        'destination_watermark': stages.destination.WatermarkDestination,
     }
 
 

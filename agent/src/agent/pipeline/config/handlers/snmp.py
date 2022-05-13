@@ -11,6 +11,7 @@ class SNMPConfigHandler(SchemaConfigHandler):
         'ExpressionEvaluator_02': stages.expression_evaluator.Filtering,
         'ExpressionEvaluator_01': stages.expression_evaluator.AddProperties,
         'destination': stages.destination.Destination,
+        'destination_watermark': stages.destination.WatermarkDestination,
     }
 
 
