@@ -4,16 +4,16 @@ from agent.pipeline import Pipeline
 from agent.source import Source
 from agent.modules import field, data_source, lookup
 
-REGION = 'region'
-SITE = 'site'
-NODE = 'node'
-CARD = 'card'
-INTERFACE = 'interface'
-CELL = 'cell'
-LINK = 'link'
-SERVICE = 'service'
-LOGICAL_GROUP = 'logical_group'
-APPLICATION = 'application'
+REGION = 'REGION'
+SITE = 'SITE'
+NODE = 'NODE'
+CARD = 'CARD'
+INTERFACE = 'INTERFACE'
+CELL = 'CELL'
+LINK = 'LINK'
+SERVICE = 'SERVICE'
+LOGICAL_GROUP = 'LOGICAL_GROUP'
+APPLICATION = 'APPLICATION'
 
 TOPOLOGY_ENTITIES = [REGION, SITE, NODE, CARD, INTERFACE, CELL, LINK, SERVICE, LOGICAL_GROUP, APPLICATION]
 
@@ -45,4 +45,4 @@ def _create_topology_records(entities: list[Entity]) -> dict:
 
 
 def _create_entities(source_: Source) -> list[Entity]:
-    return [Entity(name, entity_config) for name, entity_config in source_.config['entities'].items()]
+    return [Entity(name.upper(), entity_config) for name, entity_config in source_.config['entities'].items()]

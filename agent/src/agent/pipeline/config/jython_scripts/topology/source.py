@@ -30,10 +30,15 @@ def main():
         offset = int(time.time())
 
     while not sdc.isStopped():
-        while offset > get_now_with_delay():
-            time.sleep(2)
+        now = get_now_with_delay()
+        while offset > now:
+            # todo I guess it might shift data sending all the time because sleep might oversleep a bit
+            # todo and then we add interval, not interval - overslept time
+            time.sleep(1)
             if sdc.isStopped():
                 return
+        offset = now + get_interval()
+
         batch = sdc.createBatch()
         res = requests.get(sdc.userParams['TOPOLOGY_SOURCE_URL'])
         res.raise_for_status()
@@ -42,7 +47,7 @@ def main():
         record.value = res.json()
         batch.add(record)
 
-        batch.process(entityName, str(time.time()))
+        batch.process(entityName, str(offset))
 
 
 main()

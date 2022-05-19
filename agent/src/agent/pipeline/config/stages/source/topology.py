@@ -2,7 +2,7 @@ from agent.pipeline.config.stages.base import JythonDataExtractorSource
 
 
 class TopologyScript(JythonDataExtractorSource):
-    JYTHON_SCRIPT = 'topology.py'
+    JYTHON_SCRIPT = 'topology/source.py'
     DATA_EXTRACTOR_API_ENDPOINT = 'data_extractors/topology'
 
     def _get_script_params(self) -> list[dict]:
@@ -11,7 +11,6 @@ class TopologyScript(JythonDataExtractorSource):
                 'key': 'TOPOLOGY_SOURCE_URL',
                 'value': self._get_source_url()
             },
-            # todo doesn't interval depend on the source in this case?
             {
                 'key': 'INTERVAL_IN_SECONDS',
                 'value': str(self.pipeline.interval)

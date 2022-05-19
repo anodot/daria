@@ -162,13 +162,15 @@ test-flask-app:
 run-unit-tests:
 	$(DOCKER_TEST_PARALLEL) tests/unit/
 
-get-streamsets-libs: install-streamsets-requirements
+get-streamsets-libs: install-streamsets-requirements install-streamsets-custom-libs
 	rm -rf containers/streamsets/lib/anodot
 	curl -L https://github.com/anodot/anodot-sdc-stage/releases/download/v2.0.5/anodot-2.0.5.tar.gz -o /tmp/sdc.tar.gz && tar xvfz /tmp/sdc.tar.gz -C containers/streamsets/lib
 
 install-streamsets-requirements:
 	rm -rf containers/streamsets/python-libs/*
 	pip install --upgrade pip && pip install --target containers/streamsets/python-libs -r containers/streamsets/python_requirements.txt
+
+install-streamsets-custom-libs:
 	cp -r containers/streamsets/custom_libs/* containers/streamsets/python-libs/
 
 setup-all: setup-victoria setup-kafka setup-elastic setup-zabbix

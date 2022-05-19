@@ -5,6 +5,7 @@ import time
 from flask import Flask, request, jsonify
 
 OUTPUT_DIR = os.environ.get('OUTPUT_DIR', 'log')
+ROLLUP_ID = '123456789'
 
 app = Flask(__name__)
 app.secret_key = b"\xf9\x19\x8d\xd2\xb7N\x84\xae\x16\x0f'`U\x88x&\nF\xa2\xe9\xa1\xd7\x8b\t"
@@ -213,6 +214,33 @@ def topology_site_entity():
         return json.dumps({'error': 'Wrong user or pass'}), 401
     with open('data/site_entity.json') as f:
         return jsonify(json.load(f))
+
+
+@app.route('/api/v2/topology/map/load/start', methods=['POST'])
+def topology_load_start():
+    if request.headers.get('Authorization') != 'Bearer ok':
+        return json.dumps({'errors': ['Data collection token is invalid']}), 401
+    return {'rollupId': ROLLUP_ID}
+
+
+@app.route('/api/v2/topology/map/load/<rollup_id>', methods=['PUT'])
+def topology_load_data(rollup_id):
+    if rollup_id != ROLLUP_ID:
+        return {'errors': ['Wrong rollup id']}, 500
+    if request.headers.get('Authorization') != 'Bearer ok':
+        return json.dumps({'errors': ['Data collection token is invalid']}), 401
+    if data := [request.json]:
+        _write_to_file('topology_topology.json', data)
+    return {}
+
+
+@app.route('/api/v2/topology/map/load/<rollup_id>/end', methods=['POST'])
+def topology_load_end(rollup_id):
+    if rollup_id != ROLLUP_ID:
+        return {'errors': ['Wrong rollup id']}, 500
+    if request.headers.get('Authorization') != 'Bearer ok':
+        return json.dumps({'errors': ['Data collection token is invalid']}), 401
+    return {}
 
 
 if __name__ == '__main__':

@@ -1,0 +1,46 @@
+[
+  {
+    "bulkSerNumber": 1,
+    "type": "SITE",
+    "rows": {
+      "BB001": "{\\\"address\\\": \\\"5th Ave, 122\\\", \\\"parent_region_dimension_id\\\": \\\"Battambang\\\", \\\"lon\\\": \\\"100.01\\\", \\\"type\\\": \\\"Mobile RAN\\\", \\\"domain\\\": \\\"RAN\\\", \\\"name\\\": \\\"BB001\\\", \\\"id\\\": \\\"BB001\\\", \\\"lat\\\": \\\"10.005\\\"}",
+      "BB002": "{\\\"address\\\": \\\"6th Ave, 112\\\", \\\"parent_region_dimension_id\\\": \\\"Battambang\\\", \\\"lon\\\": \\\"100.11\\\", \\\"type\\\": \\\"Mobile RAN\\\", \\\"domain\\\": \\\"RAN\\\", \\\"name\\\": \\\"BB002\\\", \\\"id\\\": \\\"BB002\\\", \\\"lat\\\": \\\"10.015\\\"}",
+      "BB003": "{\\\"address\\\": \\\"Brpadway, 113\\\", \\\"parent_region_dimension_id\\\": \\\"Battambang\\\", \\\"lon\\\": \\\"100.31\\\", \\\"type\\\": \\\"Mobile RAN\\\", \\\"domain\\\": \\\"RAN\\\", \\\"name\\\": \\\"BB003\\\", \\\"id\\\": \\\"BB003\\\", \\\"lat\\\": \\\"10.035\\\"}"
+    },
+    "numberOfRows": 3,
+    "rollupId": "123456789"
+  },
+  {
+    "bulkSerNumber": 1,
+    "type": "REGION",
+    "rows": {
+      "Phnom Penh": "{\\\"type\\\": \\\"Province\\\", \\\"name\\\": \\\"Phnom Penh\\\", \\\"id\\\": \\\"Phnom Penh\\\"}",
+      "Steung Treng": "{\\\"type\\\": \\\"Province\\\", \\\"name\\\": \\\"Steung Treng\\\", \\\"id\\\": \\\"Steung Treng\\\"}",
+      "Preah Vihear": "{\\\"type\\\": \\\"Province\\\", \\\"name\\\": \\\"Preah Vihear\\\", \\\"id\\\": \\\"Preah Vihear\\\"}",
+      "Svay Rieng": "{\\\"type\\\": \\\"Province\\\", \\\"name\\\": \\\"Svay Rieng\\\", \\\"id\\\": \\\"Svay Rieng\\\"}",
+      "Siem Reap": "{\\\"type\\\": \\\"Province\\\", \\\"name\\\": \\\"Siem Reap\\\", \\\"id\\\": \\\"Siem Reap\\\"}",
+      "Kandal": "{\\\"type\\\": \\\"Province\\\", \\\"name\\\": \\\"Kandal\\\", \\\"id\\\": \\\"Kandal\\\"}",
+      "Pailin": "{\\\"type\\\": \\\"Province\\\", \\\"name\\\": \\\"Pailin\\\", \\\"id\\\": \\\"Pailin\\\"}",
+      "Sihanoukville": "{\\\"type\\\": \\\"Province\\\", \\\"name\\\": \\\"Sihanoukville\\\", \\\"id\\\": \\\"Sihanoukville\\\"}",
+      "Koh Kong": "{\\\"type\\\": \\\"Province\\\", \\\"name\\\": \\\"Koh Kong\\\", \\\"id\\\": \\\"Koh Kong\\\"}",
+      "Kampong Speu": "{\\\"type\\\": \\\"Province\\\", \\\"name\\\": \\\"Kampong Speu\\\", \\\"id\\\": \\\"Kampong Speu\\\"}",
+      "Mondulkiri": "{\\\"type\\\": \\\"Province\\\", \\\"name\\\": \\\"Mondulkiri\\\", \\\"id\\\": \\\"Mondulkiri\\\"}",
+      "Kampong Cham": "{\\\"type\\\": \\\"Province\\\", \\\"name\\\": \\\"Kampong Cham\\\", \\\"id\\\": \\\"Kampong Cham\\\"}",
+      "Kampong Thom": "{\\\"type\\\": \\\"Province\\\", \\\"name\\\": \\\"Kampong Thom\\\", \\\"id\\\": \\\"Kampong Thom\\\"}",
+      "Takeo": "{\\\"type\\\": \\\"Province\\\", \\\"name\\\": \\\"Takeo\\\", \\\"id\\\": \\\"Takeo\\\"}",
+      "Oddor Meanchey": "{\\\"type\\\": \\\"Province\\\", \\\"name\\\": \\\"Oddor Meanchey\\\", \\\"id\\\": \\\"Oddor Meanchey\\\"}",
+      "Battambang": "{\\\"type\\\": \\\"Province\\\", \\\"name\\\": \\\"Battambang\\\", \\\"id\\\": \\\"Battambang\\\"}",
+      "Pursat": "{\\\"type\\\": \\\"Province\\\", \\\"name\\\": \\\"Pursat\\\", \\\"id\\\": \\\"Pursat\\\"}",
+      "Tboung Khmum": "{\\\"type\\\": \\\"Province\\\", \\\"name\\\": \\\"Tboung Khmum\\\", \\\"id\\\": \\\"Tboung Khmum\\\"}",
+      "Kampong Chnnang": "{\\\"type\\\": \\\"Province\\\", \\\"name\\\": \\\"Kampong Chnnang\\\", \\\"id\\\": \\\"Kampong Chnnang\\\"}",
+      "Ratanakiri": "{\\\"type\\\": \\\"Province\\\", \\\"name\\\": \\\"Ratanakiri\\\", \\\"id\\\": \\\"Ratanakiri\\\"}",
+      "Prey Veng": "{\\\"type\\\": \\\"Province\\\", \\\"name\\\": \\\"Prey Veng\\\", \\\"id\\\": \\\"Prey Veng\\\"}",
+      "Kep": "{\\\"type\\\": \\\"Province\\\", \\\"name\\\": \\\"Kep\\\", \\\"id\\\": \\\"Kep\\\"}",
+      "Banteay Meanchey": "{\\\"type\\\": \\\"Province\\\", \\\"name\\\": \\\"Banteay Meanchey\\\", \\\"id\\\": \\\"Banteay Meanchey\\\"}",
+      "Kratie": "{\\\"type\\\": \\\"Province\\\", \\\"name\\\": \\\"Kratie\\\", \\\"id\\\": \\\"Kratie\\\"}",
+      "Kampot": "{\\\"type\\\": \\\"Province\\\", \\\"name\\\": \\\"Kampot\\\", \\\"id\\\": \\\"Kampot\\\"}"
+    },
+    "numberOfRows": 25,
+    "rollupId": "123456789"
+  }
+]

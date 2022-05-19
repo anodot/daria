@@ -11,7 +11,7 @@
             "path": "/usr/src/app/tests/input_files/topology/region.csv"
           },
           "fields": {
-            "dimension_id": {
+            "id": {
               "type": "variable",
               "value_path": "Full Name"
             },
@@ -36,7 +36,7 @@
             }
           },
           "fields": {
-            "dimension_id": {
+            "id": {
               "type": "variable",
               "value_path": "attributes.name"
             },
