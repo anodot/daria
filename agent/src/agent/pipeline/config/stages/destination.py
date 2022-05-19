@@ -1,6 +1,5 @@
 import urllib.parse
 
-from agent.destination import anodot_api_client
 from agent.modules import proxy
 from .base import Stage, JythonProcessor
 
@@ -30,13 +29,9 @@ class AnodotEventsDestination(JythonProcessor):
     JYTHON_SCRIPT = 'events_destination.py'
 
     def _get_script_params(self) -> list[dict]:
-        client = anodot_api_client.AnodotApiClient(self.pipeline.destination)
         return [{
-            'key': 'EVENTS_URL',
-            'value': client.get_events_url()
-        }, {
-            'key': 'REFRESH_TOKEN_URL',
-            'value': client.get_refresh_token_url()
+            'key': 'ANODOT_URL',
+            'value': self.pipeline.destination.url
         }, {
             'key': 'ACCESS_TOKEN',
             'value': self.pipeline.destination.access_key

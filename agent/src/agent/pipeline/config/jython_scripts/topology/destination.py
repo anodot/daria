@@ -41,10 +41,8 @@ def build_entities(base_entity, entities, bulk_ser_number):
     data = base_entity.copy()
     rows = {}
     for entity in entities:
-        # row must be a json string with escaped quotes, because the great topology api requires this format
-        row = json.dumps(entity)
-        row = row.replace('"', '\\"')
-        rows[entity['id']] = row
+        # row must be a json string, because the topology api requires this format
+        rows[entity['id']] = json.dumps(entity)
 
     data['rows'] = rows
     data['numberOfRows'] = len(rows)

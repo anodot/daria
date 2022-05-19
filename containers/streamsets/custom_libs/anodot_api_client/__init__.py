@@ -34,6 +34,9 @@ class AnodotApiClient:
     def send_topology_data(self, data, rollup_id):
         return self._put(self.url_builder.build('topology', 'map', 'load', rollup_id), json_=data)
 
+    def send_events(self, events):
+        return self._post(self.url_builder.build('user-events'), json_=events)
+
     def _post(self, url, data=None, json_=None, params=None, timeout=30):
         return self.session.post(
             url,
@@ -72,9 +75,7 @@ class AnodotApiClient:
 
     def _retrieve_new_auth_token(self):
         response = requests.post(
-            self._get_refresh_token_url(),
-            json={'refreshToken': self.access_token},
-            proxies=self.proxies
+            self._get_refresh_token_url(), json={'refreshToken': self.access_token}, proxies=self.proxies
         )
         response.raise_for_status()
         return response.text.replace('"', '')

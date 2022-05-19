@@ -21,17 +21,19 @@ di.init()
 #
 # client = AnodotApiClient(dest)
 # res = client.get_schemas()
-#
+
 # s = requests.Session()
+# added this token on 19 may 17:26, wait until it's expired and try to send a request
+# auth_token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiMDgwNjVlYjA3ZTI4ZTRiZGVlZjkxZGJlNGZlOGU2ZWEwMjZlNzE4MzU2MzFjODIyYjEwNWMwMDI4ZWRlNGZlNjRjOGQ3NGIxODMxZmJkN2VmYmJiZmUwZGVlMmExMzQ0N2M3MmM2YzQyMjFiY2UzMjMwOGVhMDVkNjdkZjhkNjBiYjA0Mjg1Yjg3NGI3MTRlNTgiLCJpYXQiOjE2NTI5Njk5NTEsImV4cCI6MTY1NTU2MTk1MX0.Xbo4MyumlqUxWbFp_efQ4rSNrAqulL77pKT2JjWfRok'
 # s.headers.update({
 #     'Content-Type': 'application/json',
-#     'Authorization': 'Bearer ' + dest.auth_token.authentication_token
+#     'Authorization': 'Bearer ' + auth_token
 # })
 #
 # schemas = s.get(
 #     'https://app.anodot.com/api/v2/stream-schemas/schemas'
 # )
-#
+# t = 1
 # load = s.post(
 #     'https://app.anodot.com/api/v2/topology/map/load/start'
 # )
@@ -47,7 +49,6 @@ di.init()
 #     "lat": 10.005
 # }
 # s_row = json.dumps(row)
-# s_row = s_row.replace('"', '\\"')
 # rows = {
 #     "BB001": s_row
 # }
@@ -58,11 +59,11 @@ di.init()
 #     "type": "SITE",
 #     "rows": rows,
 #     "numberOfRows": 1,
-#     "rollupId": 45
+#     "rollupId": 49
 # }
 #
 # res = s.put(
-#     'https://app.anodot.com/api/v2/topology/map/load/45',
+#     'https://app.anodot.com/api/v2/topology/map/load/49',
 #     json=data
 # )
 # t = 1

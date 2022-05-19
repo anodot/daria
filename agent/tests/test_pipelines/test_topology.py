@@ -4,23 +4,35 @@ from agent import source
 from .test_zpipeline_base import TestPipelineBase
 
 
-class TestCacti(TestPipelineBase):
+class TestTopology(TestPipelineBase):
     __test__ = True
     params = {
         'test_start': [
-            {'name': 'topology'},
+            {
+                'name': 'topology'
+            },
         ],
         'test_force_stop': [
-            {'name': 'topology'},
+            {
+                'name': 'topology'
+            },
         ],
         'test_output': [
-            {'name': 'topology', 'output': 'topology.json', 'pipeline_type': source.TYPE_TOPOLOGY},
+            {
+                'name': 'topology',
+                'output': 'topology.json',
+                'pipeline_type': source.TYPE_TOPOLOGY
+            },
         ],
         'test_delete_pipeline': [
-            {'name': 'topology'},
+            {
+                'name': 'topology'
+            },
         ],
         'test_source_delete': [
-            {'name': 'topology'},
+            {
+                'name': 'topology'
+            },
         ],
     }
 
