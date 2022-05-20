@@ -1,7 +1,8 @@
 import pytest
 
 from agent import source
-from .test_zpipeline_base import TestPipelineBase
+from .test_zpipeline_base import TestPipelineBase, get_expected_output
+from ..conftest import get_output
 
 
 class TestTopology(TestPipelineBase):
@@ -53,3 +54,13 @@ class TestTopology(TestPipelineBase):
 
     def test_output_schema(self, name=None, pipeline_type=None, output=None):
         pytest.skip()
+
+    def test_force_stop(self, cli_runner, name):
+        super().test_force_stop(cli_runner, name)
+
+    def test_output(self, name, pipeline_type, output):
+        actual_output = get_output(f'{name}_{pipeline_type}.json')
+        expected_output = get_expected_output(name, output, pipeline_type)
+        for obj in actual_output:
+            obj.pop('timestamp')
+        assert actual_output == expected_output
