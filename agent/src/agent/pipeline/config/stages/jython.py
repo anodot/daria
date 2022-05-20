@@ -112,6 +112,26 @@ class CreateEvents(JythonProcessor):
         return [f'/{field}' for field in self.REQUIRED_EVENT_FIELDS]
 
 
+class SendMonitoringMetrics(JythonProcessor):
+    JYTHON_SCRIPT = 'send_monitoring_metrics.py'
+
+    def _get_script_params(self) -> list[dict]:
+        return [
+            {
+                'key': 'WATERMARK_DELTA_MONITORING_ENDPOINT',
+                'value': urllib.parse.urljoin(
+                    self.pipeline.streamsets.agent_external_url, f'/monitoring/watermark_delta/{self.pipeline.name}'
+                )
+            },
+            {
+                'key': 'WATERMARK_SENT_MONITORING_ENDPOINT',
+                'value': urllib.parse.urljoin(
+                    self.pipeline.streamsets.agent_external_url, f'/monitoring/watermark_sent/{self.pipeline.name}'
+                )
+            },
+        ]
+
+
 # todo probably on pipeline creation we should create a topology user
 class TopologyDestination(JythonProcessor):
     JYTHON_SCRIPT = 'topology_destination.py'
