@@ -50,6 +50,11 @@ def set_watermark_delta(pipeline_id: str, delta):
     requests.post(url, params={'delta': delta}).raise_for_status()
 
 
+def set_watermark_sent(pipeline_id: str):
+    url = f'{constants.AGENT_MONITORING_ENDPOINT}/watermark_sent/{pipeline_id}'
+    requests.post(url).raise_for_status()
+
+
 def run():
     url = constants.AGENT_MONITORING_ENDPOINT
     requests.get(url).raise_for_status()

@@ -84,6 +84,10 @@ WATERMARK_DELTA = Gauge(
     multiprocess_mode='max'
 )
 
+WATERMARK_SENT = Counter(
+    'watermark_sent', 'Number of sent watermarks', ['streamsets_url', 'pipeline_id', 'pipeline_type']
+)
+
 # # Not for every endpoint
 # AGENT_API_REQUESTS_LATENCY = Gauge('agent_api_requests_latency_seconds', 'Agent API requests time in seconds',
 #                                    ['endpoint'], registry=registry)
