@@ -50,7 +50,15 @@ class Variable(Field):
         return self.apply_transformations(self._extract(obj))
 
     def _extract(self, obj: dict) -> Any:
-        return self.concat_by.join([obj[path] for path in self.value_paths])
+        if len(self.value_paths) > 1:
+            return self._extract_multiple(obj)
+        return self._extract_single(obj)
+
+    def _extract_multiple(self, obj: dict) -> Any:
+        return self.concat_by.join([str(obj[path]) for path in self.value_paths])
+
+    def _extract_single(self, obj: dict) -> Any:
+        return obj[self.value_paths[0]]
 
 
 class Constant(Field):
@@ -75,7 +83,9 @@ def build_fields(fields_conf: dict) -> list[Field]:
         if type_ == VARIABLE:
             fields.append(
                 Variable(
-                    name, field_[Variable.VALUE_PATH], field_.get(Variable.CONCAT_BY),
+                    name,
+                    field_[Variable.VALUE_PATH],
+                    field_.get(Variable.CONCAT_BY),
                     transformer.build_transformers(field_)
                 )
             )

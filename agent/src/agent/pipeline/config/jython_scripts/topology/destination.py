@@ -61,6 +61,7 @@ def send_data(client, data, rollup_id):
 
 
 def main():
+    now = int(time.time())
     # todo preview sends data
     client = AnodotApiClient(
         sdc.state, sdc.userParams['ANODOT_URL'], sdc.userParams['ACCESS_TOKEN'], sdc.userParams['PROXIES']
@@ -71,8 +72,8 @@ def main():
             base = {
                 "type": entity_type,
                 "rollupId": rollup_id,
-                # it's optional, do we need it?
-                # "timestamp": time.time(),
+                # todo tests, they'll fail with this field
+                "timestamp": now,
                 "bulkSerNumber": 1,
             }
             for i, chunk in enumerate(chunks(entities, 500)):

@@ -83,7 +83,7 @@ di.init()
 # r.raise_for_status()
 # r = snmp.extract_metrics(pipeline.repository.get_by_id('snmp'))
 
-# res = data_extractor.topology.extract_metrics(pipeline.repository.get_by_id('topology'))
+# res = data_extractor.observium.extract_metrics(pipeline.repository.get_by_id('observium_storage_transform'), 1652979622)
 # cli.pipeline.create(["-f", "/Users/antonzelenin/Workspace/daria/agent/tests/input_files/promql/pipelines.json"])
 # cli.destination()
 # cli.pipeline.create()
