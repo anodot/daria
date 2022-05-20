@@ -36,6 +36,7 @@ def main():
 
                     logger.debug(f'Sent watermark for `{pipeline_.name}`, value: {pipeline_.watermark.timestamp}')
                     monitoring.set_watermark_delta(pipeline_.name, time.time() - pipeline_.watermark.timestamp)
+                    monitoring.set_watermark_sent(pipeline_.name)
             except Exception:
                 num_of_errors = _update_errors_count(num_of_errors)
                 logger.error(f'Error sending pipeline watermark {pipeline_.name}')
