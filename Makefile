@@ -9,11 +9,11 @@ DOCKER_TEST_PARALLEL = $(DOCKER_TEST) -n $(THREADS) --dist=loadfile
 ##---------
 ## RELEASE
 ##---------
-all: build-all run-all sleep setup-all test-all
+all: build-all test-all
 
 build-all: get-streamsets-libs build-docker
 
-test-all: run-unit-tests test-flask-app test-streamsets test-raw-input test-raw-pipelines test-destination test-run-test-pipeline test-apply test-api test-api-scripts test-input test-export-sources test-streamsets-2 test-send-to-bc test-pipelines test-send-to-watermark test-monitoring-metrics
+test-all: run-all sleep setup-all run-unit-tests test-flask-app test-streamsets test-raw-input test-raw-pipelines test-destination test-run-test-pipeline test-apply test-api test-api-scripts test-input test-export-sources test-streamsets-2 test-send-to-bc test-pipelines test-send-to-watermark test-monitoring-metrics
 
 ##-------------
 ## DEVELOPMENT
