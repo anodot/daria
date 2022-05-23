@@ -46,7 +46,7 @@ class LookupTransformer(Transformer):
         self.lookup_name = lookup_name
         self.lookup_key = lookup_key
         self.lookup_value = lookup_value
-        self.default = default
+        self.default = default or ''
         self.discard_empty_values = discard_empty_values
         self.strict_lookup = strict_lookup \
             if strict_lookup is not None \
@@ -77,7 +77,6 @@ def build_transformers(field_conf: dict) -> list[Transformer]:
                     transform['key'],
                     transform['value'],
                     transform.get('compare_function'),
-                    # todo optional or required?
                     transform.get('default'),
                     transform.get('strict'),
                 )

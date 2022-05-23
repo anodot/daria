@@ -1,12 +1,21 @@
+from copy import deepcopy
 from typing import List
 from agent import source
 
+MASK = '******'
+
 
 def mask(config: dict):
-    keywords = _get_keywords(config['type'])
-    for k in config['config']:
+    return _recursive_mask(deepcopy(config), _get_keywords(config['type']))
+
+
+def _recursive_mask(dict_: dict, keywords: list):
+    for k in dict_:
+        if isinstance(dict_[k], dict):
+            _recursive_mask(dict_[k], keywords)
         if k in keywords:
-            config['config'][k] = '******'
+            dict_[k] = MASK
+    return dict_
 
 
 def _get_keywords(source_type: str) -> List[str]:
@@ -35,7 +44,7 @@ def _get_keywords(source_type: str) -> List[str]:
         source.TYPE_SOLARWINDS: ['username', 'password'],
         source.TYPE_SPLUNK: [],
         source.TYPE_THANOS: ['username', 'password'],
-        source.TYPE_TOPOLOGY: [],
+        source.TYPE_TOPOLOGY: ['username', 'password'],
         source.TYPE_VICTORIA: ['username', 'password'],
         source.TYPE_ZABBIX: ['user', 'password'],
     }
