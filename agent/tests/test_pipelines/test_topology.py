@@ -10,7 +10,8 @@ class TestTopology(TestPipelineBase):
     params = {
         'test_start': [
             {
-                'name': 'topology'
+                'name': 'topology',
+                'sleep': 25
             },
         ],
         'test_force_stop': [
