@@ -9,9 +9,9 @@ DOCKER_TEST_PARALLEL = $(DOCKER_TEST) -n $(THREADS) --dist=loadfile
 ##---------
 ## RELEASE
 ##---------
-all: build-all test-all
+all: build-all run-all sleep setup-all test-all
 
-build-all: get-streamsets-libs build-docker sleep setup-all
+build-all: get-streamsets-libs build-docker
 
 test-all: run-unit-tests test-flask-app test-streamsets test-raw-input test-raw-pipelines test-destination test-run-test-pipeline test-apply test-api test-api-scripts test-input test-export-sources test-streamsets-2 test-send-to-bc test-pipelines test-send-to-watermark test-monitoring-metrics
 
@@ -103,6 +103,8 @@ test-databricks: bootstrap
 build-docker:
 	docker-compose down -v
 	docker-compose build --build-arg GIT_SHA1="$(git describe --tags --dirty --always)"
+
+run-all:
 	docker-compose up -d
 
 test-apply:
