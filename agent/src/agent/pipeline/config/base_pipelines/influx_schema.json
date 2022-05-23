@@ -1192,7 +1192,7 @@
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
-      "instanceName" : "AnodotDestination_01",
+      "instanceName" : "destination_watermark",
       "library" : "anodot",
       "stageName" : "anodot_stage_destination_AnodotDTarget",
       "stageVersion" : "1",

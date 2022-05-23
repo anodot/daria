@@ -17,6 +17,7 @@ def test_apply_sage(cli_runner):
     result = cli_runner.invoke(cli.pipeline.list_pipelines, catch_exceptions=False)
     assert result.exit_code == 0
     assert 'test_sage_apply' in result.output
+    assert 'test_sage_schema_apply' in result.output
     assert 'test_sage_apply_exc' not in result.output
 
 
@@ -24,4 +25,5 @@ def teardown_module(module):
     pipeline.manager.delete_by_id('test_mongo_pipeline_apply')
     source.repository.delete_by_name('test_mongo_apply')
     pipeline.manager.delete_by_id('test_sage_apply')
+    pipeline.manager.delete_by_id('test_sage_schema_apply')
     source.repository.delete_by_name('test_sage_apply')

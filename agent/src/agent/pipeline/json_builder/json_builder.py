@@ -178,9 +178,11 @@ class _PromQLSchemaChooser(_SchemaChooser):
         conf_uses = False if 'uses_schema' not in config else bool(config['uses_schema'])
         # PromQL pipelines support schema only if dimensions and values are specified
         actual_schema = (
-                _SchemaChooser.choose(pipeline_, config, is_edit) and 'dimensions' in config and bool(
-            config['dimensions'])
-                and 'values' in config and bool(config['values'])
+                _SchemaChooser.choose(pipeline_, config, is_edit)
+                and 'dimensions' in config
+                and bool(config['dimensions'])
+                and 'values' in config
+                and bool(config['values'])
         )
         if conf_uses and not actual_schema:
             raise ConfigurationException(
@@ -227,11 +229,19 @@ class Builder(IBuilder):
     def _load_config(self):
         if 'override_source' not in self.config:
             self.config['override_source'] = {}
+        self._validate_periodic_watermark_delay()
         self._load_dvp_config_with_default()
         self._validate_json_schema()
         self.config.pop('source', None)
         self._load_filtering()
         self._load_transformations()
+
+    def _validate_periodic_watermark_delay(self):
+        if (
+                'periodic_watermark' in self.config and 'interval' in self.config
+                and int(self.config['periodic_watermark'].get('delay', 0)) >= int(self.config['interval'])
+        ):
+            raise ConfigurationException('Periodic watermark delay must be less than interval')
 
     def _validate_json_schema(self):
         self._validate_dvp_config_json_schema()

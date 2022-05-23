@@ -74,6 +74,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
     streamsets_id = Column(Integer, ForeignKey('streamsets.id'))
 
     offset = relationship("PipelineOffset", cascade="delete", uselist=False)
+    watermark = relationship("PipelineWatermark", cascade="delete", uselist=False)
     source_ = relationship('Source', back_populates='pipelines')
     destination = relationship('HttpDestination', cascade="merge")
     streamsets = relationship('StreamSets')
@@ -108,9 +109,18 @@ class Pipeline(Entity, sdc_client.IPipeline):
     def source(self) -> Source:
         return self.source_
 
+    def has_periodic_watermark_config(self) -> bool:
+        return bool(self.config.get('periodic_watermark'))
+
+    def has_offset(self) -> bool:
+        return bool(self.offset)
+
+    def has_watermark(self) -> bool:
+        return bool(self.watermark)
+
     @property
     def periodic_watermark_config(self) -> dict:
-        return self.config.get('periodic_watermark')
+        return self.config.get('periodic_watermark', {})
 
     @property
     def watermark_delay(self) -> int:
@@ -173,7 +183,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
     @property
     def dimension_configurations(self) -> Optional[dict]:
         if not isinstance(self.dimensions, list):
-            raise Exception((
+            raise PipelineException((
                 'Pipeline dimensions should be a list in order to build dimension_configurations, '
                 f'but {type(self.dimensions).__name__} provided'
             ))
@@ -327,7 +337,6 @@ class Pipeline(Entity, sdc_client.IPipeline):
     def batch_size(self) -> str:
         return self.config.get('batch_size', '1000')
 
-    @property
     def uses_schema(self) -> bool:
         return bool(self.config.get('uses_schema'))
 
@@ -469,6 +478,17 @@ class PipelineOffset(Entity):
     def __init__(self, pipeline_id: int, offset: str, timestamp: float):
         self.pipeline_id = pipeline_id
         self.offset = offset
+        self.timestamp = timestamp
+
+
+class PipelineWatermark(Entity):
+    __tablename__ = 'pipeline_watermarks'
+
+    pipeline_id = Column(Integer, ForeignKey('pipelines.name'), primary_key=True)
+    timestamp = Column(Float)
+
+    def __init__(self, pipeline_id: str, timestamp: float):
+        self.pipeline_id = pipeline_id
         self.timestamp = timestamp
 
 

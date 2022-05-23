@@ -3,6 +3,7 @@ import agent
 from agent import destination
 from .pipeline import *
 from . import manager
+from . import watermark
 from . import repository
 from . import validators
 from . import json_builder

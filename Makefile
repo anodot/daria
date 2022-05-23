@@ -13,7 +13,7 @@ all: build-all test-all
 
 build-all: get-streamsets-libs build-docker
 
-test-all: run-all sleep setup-all run-unit-tests test-flask-app test-streamsets test-raw-input test-raw-pipelines test-destination test-run-test-pipeline test-apply test-api test-api-scripts test-input test-export-sources test-streamsets-2 test-send-to-bc test-pipelines test-send-to-watermark test-monitoring-metrics
+test-all: run-all sleep setup-all run-unit-tests test-flask-app test-streamsets test-raw-input test-raw-pipelines test-destination test-run-test-pipeline test-apply test-api test-api-scripts test-input test-export-sources test-streamsets-2 test-send-to-bc test-pipelines test-monitoring-metrics
 
 ##-------------
 ## DEVELOPMENT
@@ -113,9 +113,6 @@ test-apply:
 test-send-to-bc:
 	$(DOCKER_TEST) tests/test_send_to_bc.py
 
-test-send-to-watermark:
-	$(DOCKER_TEST) tests/test_send_watermark.py
-
 test-destination:
 	$(DOCKER_TEST) tests/test_destination.py
 
@@ -166,7 +163,7 @@ run-unit-tests:
 
 get-streamsets-libs: install-streamsets-requirements install-streamsets-custom-libs
 	rm -rf containers/streamsets/lib/anodot
-	curl -L https://github.com/anodot/anodot-sdc-stage/releases/download/v2.0.5/anodot-2.0.5.tar.gz -o /tmp/sdc.tar.gz && tar xvfz /tmp/sdc.tar.gz -C containers/streamsets/lib
+	curl -L https://github.com/anodot/anodot-sdc-stage/releases/download/v2.0.6/anodot-2.0.6.tar.gz -o /tmp/sdc.tar.gz && tar xvfz /tmp/sdc.tar.gz -C containers/streamsets/lib
 
 install-streamsets-requirements:
 	rm -rf containers/streamsets/python-libs/*
