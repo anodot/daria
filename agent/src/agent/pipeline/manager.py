@@ -1,10 +1,8 @@
 import logging
 import random
 import string
-import pytz
 import sdc_client
 
-from datetime import datetime, timedelta, timezone
 from agent import source, pipeline, destination, streamsets
 from agent.modules import tools, constants
 from agent.pipeline import Pipeline, TestPipeline, PipelineMetric, PipelineRetries, RawPipeline, EventsPipeline
@@ -110,7 +108,9 @@ def reset_pipeline_retries(pipeline_: Pipeline):
     if pipeline_.retries:
         pipeline_.retries.notification_sent = False
         pipeline_.retries.number_of_error_statuses = 0
-        pipeline.repository.save(pipeline_.retries)
+    else:
+        pipeline_.retries = PipelineRetries(pipeline_)
+    pipeline.repository.save(pipeline_.retries)
 
 
 def _delete_pipeline_retries(pipeline_: Pipeline):
