@@ -108,9 +108,7 @@ def reset_pipeline_retries(pipeline_: Pipeline):
     if pipeline_.retries:
         pipeline_.retries.notification_sent = False
         pipeline_.retries.number_of_error_statuses = 0
-    else:
-        pipeline_.retries = PipelineRetries(pipeline_)
-    pipeline.repository.save(pipeline_.retries)
+        pipeline.repository.save(pipeline_.retries)
 
 
 def _delete_pipeline_retries(pipeline_: Pipeline):
