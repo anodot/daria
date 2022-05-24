@@ -25,9 +25,13 @@ def main():
             continue
 
         try:
-            last_updated_in_min = int((datetime.now() - pipeline_.retries.last_updated).total_seconds() / 60)
-            if last_updated_in_min - constants.STREAMSETS_NOTIFY_RESET_AFTER_MIN > 0:
-                pipeline.manager.reset_pipeline_retries(pipeline_)
+            if not pipeline_.retries.last_updated:
+                pipeline_.retries.last_updated = datetime.now()
+                pipeline.repository.save(pipeline_.retries)
+            else:
+                last_updated_in_min = int((datetime.now() - pipeline_.retries.last_updated).total_seconds() / 60)
+                if last_updated_in_min - constants.STREAMSETS_NOTIFY_RESET_AFTER_MIN > 0:
+                    pipeline.manager.reset_pipeline_retries(pipeline_)
         except Exception:
             num_of_errors = _update_errors_count(num_of_errors)
             logger.error(f'Error resetting pipeline {pipeline_.name} retry counter')
