@@ -19,7 +19,7 @@ class TestMonitoringMetrics(TestInputBase, TestPipelineBase):
             {'name': 'test_dir_monitoring_csv'},
         ],
         'test_metric_pipeline_avg_lag': [
-            {'name': 'test_dir_monitoring_csv', 'metric_type': 'pipeline_avg_lag'},
+            {'name': 'test_dir_monitoring_csv', 'metric_type': 'pipeline_avg_lag_seconds'},
         ],
         'test_delete_pipeline': [
             {'name': 'test_dir_monitoring_csv'},

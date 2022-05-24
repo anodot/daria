@@ -1,2 +1,3 @@
 requests==2.25.0
 pytz
+certifi==2021.10.08
