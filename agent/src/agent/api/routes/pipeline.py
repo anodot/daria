@@ -68,7 +68,7 @@ def start(pipeline_id: str):
         pipeline.manager.start(pipeline.repository.get_by_id(pipeline_id))
     except sdc_client.PipelineFreezeException as e:
         return jsonify(str(e)), 400
-    except sdc_client.PipelineException as e:
+    except pipeline.PipelineException as e:
         return jsonify(str(e)), 409
     return jsonify('')
 
