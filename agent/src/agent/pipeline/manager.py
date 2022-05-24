@@ -1,10 +1,8 @@
 import logging
 import random
 import string
-import pytz
 import sdc_client
 
-from datetime import datetime, timedelta, timezone
 from agent import source, pipeline, destination, streamsets
 from agent.modules import tools, constants
 from agent.pipeline import Pipeline, TestPipeline, PipelineMetric, PipelineRetries, RawPipeline, EventsPipeline
