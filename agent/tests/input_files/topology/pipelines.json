@@ -1,8 +1,90 @@
 [
   {
-    "source": "topology",
-    "pipeline_id": "topology",
+    "source": "topology_region_source",
+    "pipeline_id": "topology_region",
     "interval": 300,
+    "region": {
+      "fields": {
+        "id": {
+          "type": "variable",
+          "value_path": "Full Name"
+        },
+        "name": {
+          "type": "variable",
+          "value_path": "Full Name"
+        },
+        "type": {
+          "type": "constant",
+          "value": "Province"
+        }
+      }
+    },
+    "lookups": {
+      "region": {
+        "type": "file",
+        "format": "CSV",
+        "path": "/usr/src/app/tests/input_files/topology/region.csv"
+      }
+    }
+  },
+  {
+    "source": "topology_site_source",
+    "pipeline_id": "topology_site",
+    "interval": 300,
+    "fields": {
+      "id": {
+        "type": "variable",
+        "value_path": "attributes.name"
+      },
+      "parent_region_dimension_id": {
+        "type": "variable",
+        "value_path": "attributes.name",
+        "transformations": [
+          {
+            "type": "function",
+            "name": "substring",
+            "args": [
+              0,
+              2
+            ]
+          },
+          {
+            "type": "lookup",
+            "name": "region",
+            "key": "Short Name",
+            "value": "Full Name"
+          }
+        ]
+      },
+      "name": {
+        "type": "variable",
+        "value_path": "attributes.name"
+      },
+      "type": {
+        "type": "constant",
+        "value": "Mobile RAN"
+      },
+      "domain": {
+        "type": "constant",
+        "value": "RAN"
+      },
+      "lat": {
+        "type": "variable",
+        "value_path": "attributes.p_lat"
+      },
+      "lon": {
+        "type": "variable",
+        "value_path": "attributes.p_lon"
+      },
+      "address": {
+        "type": "variable",
+        "value_path": [
+          "attributes.street",
+          "attributes.house"
+        ],
+        "concat_by": ", "
+      }
+    },
     "lookups": {
       "region": {
         "type": "file",

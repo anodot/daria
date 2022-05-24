@@ -20,8 +20,9 @@ TYPE = 'pipeline_type'
 REGULAR_PIPELINE = 'regular_pipeline'
 RAW_PIPELINE = 'raw_pipeline'
 EVENTS_PIPELINE = 'events_pipeline'
+TOPOLOGY_PIPELINE = 'topology_pipeline'
 
-PIPELINE_TYPES = [REGULAR_PIPELINE, RAW_PIPELINE, EVENTS_PIPELINE]
+PIPELINE_TYPES = [REGULAR_PIPELINE, RAW_PIPELINE, EVENTS_PIPELINE, TOPOLOGY_PIPELINE]
 
 
 class PipelineException(Exception):
