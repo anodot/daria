@@ -1,16 +1,12 @@
-from agent.pipeline.config.stages.base import JythonDataExtractorSource
+from agent.pipeline.config.stages.base import JythonProcessor
 
 
-class TopologyScript(JythonDataExtractorSource):
-    JYTHON_SCRIPT = 'topology/source.py'
+class TopologyScript(JythonProcessor):
+    JYTHON_SCRIPT = 'topology/transform.py'
     DATA_EXTRACTOR_API_ENDPOINT = 'data_extractors/topology'
 
     def _get_script_params(self) -> list[dict]:
         return [
-            {
-                'key': 'TOPOLOGY_SOURCE_URL',
-                'value': self._get_source_url()
-            },
             {
                 'key': 'INTERVAL_IN_SECONDS',
                 'value': str(self.pipeline.interval)

@@ -74,6 +74,16 @@ def create_events(file):
         raise click.ClickException(str(e)) from e
 
 
+@click.command(name='create-topology')
+@click.option('-f', '--file', type=click.File(), required=True)
+def create_topology(file):
+    check_prerequisites()
+    try:
+        pipeline.json_builder.build_topology_using_file(file)
+    except (sdc_client.ApiClientException, ValidationError, pipeline.PipelineException) as e:
+        raise click.ClickException(str(e)) from e
+
+
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, required=False)
 @click.option('-a', '--advanced', is_flag=True)
@@ -429,6 +439,7 @@ def _build_table(header, rows):
 pipeline_group.add_command(create)
 pipeline_group.add_command(create_raw)
 pipeline_group.add_command(create_events)
+pipeline_group.add_command(create_topology)
 pipeline_group.add_command(list_pipelines)
 pipeline_group.add_command(start)
 pipeline_group.add_command(stop)

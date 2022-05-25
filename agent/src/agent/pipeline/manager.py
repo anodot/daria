@@ -7,7 +7,8 @@ import sdc_client
 from datetime import datetime, timedelta, timezone
 from agent import source, pipeline, destination, streamsets
 from agent.modules import tools, constants
-from agent.pipeline import Pipeline, TestPipeline, PipelineMetric, PipelineRetries, RawPipeline, EventsPipeline
+from agent.pipeline import Pipeline, TestPipeline, PipelineMetric, PipelineRetries, RawPipeline, EventsPipeline, \
+    TopologyPipeline
 from agent.pipeline import extra_setup, json_builder, schema
 from agent.modules.logger import get_logger
 from agent.pipeline.config.handlers.factory import get_config_handler
@@ -19,8 +20,9 @@ LOG_LEVELS = [logging.getLevelName(logging.INFO), logging.getLevelName(logging.E
 MAX_SAMPLE_RECORDS = 3
 
 
+# todo update test with TopologyPipeline
 def supports_schema(pipeline_: Pipeline) -> bool:
-    if isinstance(pipeline_, (TestPipeline, RawPipeline, EventsPipeline)):
+    if isinstance(pipeline_, (TestPipeline, RawPipeline, EventsPipeline, TopologyPipeline)):
         return False
     supported = {
         source.TYPE_CACTI: False,
@@ -68,6 +70,14 @@ def create_raw_pipeline(pipeline_id: str, source_name: str) -> RawPipeline:
 
 def create_events_pipeline(pipeline_id: str, source_name: str) -> EventsPipeline:
     return EventsPipeline(
+        pipeline_id,
+        source.repository.get_by_name(source_name),
+        destination.repository.get(),
+    )
+
+
+def create_topology_pipeline(pipeline_id: str, source_name: str) -> TopologyPipeline:
+    return TopologyPipeline(
         pipeline_id,
         source.repository.get_by_name(source_name),
         destination.repository.get(),

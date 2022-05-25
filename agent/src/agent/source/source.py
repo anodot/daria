@@ -189,6 +189,7 @@ class SageSource(Source):
 
 class APISource(Source):
     URL = 'url'
+    AUTHENTICATION = 'authentication'
     USERNAME = 'username'
     PASSWORD = 'password'
     VERIFY_SSL = 'verify_ssl'
@@ -200,6 +201,10 @@ class APISource(Source):
     @property
     def verify_ssl(self) -> bool:
         return self.config.get('verify_ssl', True)
+
+    @property
+    def authentication(self) -> dict:
+        return self.config.get(self.AUTHENTICATION, {})
 
 
 class SNMPSource(APISource):

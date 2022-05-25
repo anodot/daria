@@ -3,6 +3,7 @@ import requests
 from requests.auth import HTTPBasicAuth
 from agent.modules.data_source import DataSource
 
+# todo delete?
 BASIC_AUTH = 'basic'
 
 

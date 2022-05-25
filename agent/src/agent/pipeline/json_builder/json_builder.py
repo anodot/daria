@@ -8,7 +8,7 @@ from agent import source, pipeline
 from agent.modules import validator
 from agent.modules.logger import get_logger
 from agent.modules.tools import deep_update
-from agent.pipeline import Pipeline
+from agent.pipeline import Pipeline, TopologyPipeline
 from agent.pipeline.config import expression_parser
 
 logger_ = get_logger(__name__, stdout=True)
@@ -32,6 +32,10 @@ def build_raw_using_file(file) -> List[Pipeline]:
 
 def build_events_using_file(file) -> List[Pipeline]:
     return _build_multiple(extract_configs(file), build_events)
+
+
+def build_topology_using_file(file) -> List[Pipeline]:
+    return _build_multiple(extract_configs(file), build_topology)
 
 
 def _build_multiple(configs: list, build_func: Callable) -> List[Pipeline]:
@@ -65,6 +69,12 @@ def build_raw(config: dict) -> Pipeline:
 def build_events(config: dict) -> Pipeline:
     _validate_config_for_create(config)
     pipeline_ = pipeline.manager.create_events_pipeline(config['pipeline_id'], config['source'])
+    return _build(config, pipeline_)
+
+
+def build_topology(config: dict) -> TopologyPipeline:
+    _validate_config_for_create(config)
+    pipeline_ = pipeline.manager.create_topology_pipeline(config['pipeline_id'], config['source'])
     return _build(config, pipeline_)
 
 

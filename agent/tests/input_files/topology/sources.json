@@ -1,0 +1,24 @@
+[
+  {
+    "type": "http",
+    "name": "topology_site_source",
+    "config": {
+      "url": "http://dummy_destination/api/v1/site",
+      "authentication": {
+        "type": "basic",
+        "username": "admin",
+        "password": "admin"
+      }
+    }
+  },
+  {
+    "type": "directory",
+    "name": "topology_region_source",
+    "config": {
+      "type": "file",
+      "conf.dataFormat": "DELIMITED",
+      "conf.spoolDir": "/usr/src/app/tests/input_files/topology/",
+      "conf.filePattern": "region.csv"
+    }
+  }
+]

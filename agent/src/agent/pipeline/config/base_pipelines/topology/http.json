@@ -5,7 +5,7 @@
     "pipelineId" : "directory9f19cdfe-f36c-4c6e-8783-231e6b4218ef",
     "title" : "topology",
     "description" : "",
-    "uuid" : "a6fa48c2-fa33-4326-9b01-05e96a9cd9bf",
+    "uuid" : "64d97183-822a-43e6-aa91-3454cc9413bc",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -20,7 +20,7 @@
       "value" : true
     }, {
       "name" : "retryAttempts",
-      "value" : 5
+      "value" : -1
     }, {
       "name" : "notifyOnStates",
       "value" : [ "RUN_ERROR", "START_ERROR", "STOP_ERROR", "RUNNING_ERROR", "RUNNING", "STOPPED", "FINISHED", "DISCONNECTED", "CONNECTING" ]
@@ -32,6 +32,9 @@
       "value" : [ {
         "key" : "TOKEN",
         "value" : "correct_token"
+      }, {
+        "key" : "AUTH_TOKEN",
+        "value" : "ok"
       }, {
         "key" : "PROTOCOL",
         "value" : "anodot20"
@@ -411,39 +414,540 @@
     "fragments" : [ ],
     "stages" : [ {
       "instanceName" : "source",
-      "library" : "streamsets-datacollector-jython_2_7-lib",
-      "stageName" : "com_streamsets_pipeline_stage_origin_jython_JythonDSource",
-      "stageVersion" : "1",
+      "library" : "streamsets-datacollector-basic-lib",
+      "stageName" : "com_streamsets_pipeline_stage_origin_http_HttpClientDSource",
+      "stageVersion" : "18",
       "configuration" : [ {
-        "name" : "script",
-        "value" : "# Sample Jython code - Data Generator\n#\n# Available constants:\n#   sdc.lastOffsets: Dictionary representing the (string) offset previously reached\n#       for each (string) entityName. Offsets are committed by the pipeline.\n#   sdc.batchSize: Requested record batch size (from UI).\n#   sdc.nThreads: Number of threads to run (from UI).\n#   sdc.userParams: Dictionary of user-specified keys and values (from UI).\n#\n#   These can be used to assign a type to a field with a value null:\n#       sdc.NULL_BOOLEAN, sdc.NULL_CHAR, sdc.NULL_BYTE, sdc.NULL_SHORT, sdc.NULL_INTEGER,\n#       sdc.NULL_LONG, sdc.NULL_FLOAT, sdc.NULL_DOUBLE, sdc.NULL_DATE, sdc.NULL_DATETIME,\n#       sdc.NULL_TIME, sdc.NULL_DECIMAL, sdc.NULL_BYTE_ARRAY, sdc.NULL_STRING, sdc.NULL_LIST,\n#       sdc.NULL_MAP\n#\n# Available functions:\n#   sdc.createBatch(): Return a new batch.\n#   sdc.createRecord(String recordId): Return a new record. Pass a recordId to uniquely identify\n#       the record and include enough information to track down the record source.\n#   sdc.createEvent(String type, int version): Return a new empty event with standard headers.\n#   Batch.add(record): Append a record to the batch.\n#   Batch.add(record[]): Append a list of records to the batch.\n#   Batch.addError(record, msg): Add an error record to the batch with the associated error message.\n#   Batch.addEvent(event): Append an event to the batch.\n#       Only events created with sdc.createEvent() are supported.\n#   Batch.size(): Return the number of records in the batch.\n#   Batch.errorCount(): Return the number of error records in the batch.\n#   Batch.eventCount(): Return the number of events in the batch.\n#   Batch.process(entityName, entityOffSet): Process the batch through the rest of\n#       the pipeline and commit the offset in accordance with the pipeline's\n#       delivery guarantee.\n#   Batch.getSourceResponseRecords(): After a batch is processed, retrieve any\n#       response records returned by downstream stages.\n#   sdc.isStopped(): Return whether or not the pipeline has been stopped.\n#   sdc.isPreview(): Return whether or not the pipeline is in preview mode.\n#   sdc.importLock() and sdc.importUnlock(): Acquire or release a systemwide lock which can be\n#       used to circumvent a known bug with the thread-safety of Jython imports. (https://bugs.jython.org/issue2642)\n#   sdc.log.<loglevel>(msg, obj...): Use instead of print to send log messages to the log4j log instead of stdout.\n#       loglevel is any log4j level: e.g. info, error, warn, trace.\n#   sdc.getFieldNull(Record, 'field path'): Receive a constant defined above\n#       to check if the field is a typed field with value null.\n#   sdc.createMap(boolean listMap): Create a map for use as a field in a record.\n#       Pass true to this function to create a list map (ordered map).\n#\n# Available Record Header Variables:\n#   record.attributes: A map of record header attributes.\n#   record.<header name>: Get the value of 'header name'.\n#\n# Add additional module search paths:\n#   try:\n#       sdc.importLock()\n#       import sys\n#       sys.path.append('/some/other/dir/to/search')\n#       import something\n#   finally:\n#       sdc.importUnlock()\n#\n\ntry:\n    sdc.importLock()\n    import datetime\nfinally:\n    sdc.importUnlock()\n\n# single threaded - no entityName because we need only one offset\nentityName = ''\n\n# get previously committed offset or use 0\nif sdc.lastOffsets.containsKey(entityName):\n    offset = int(sdc.lastOffsets.get(entityName))\nelse:\n    offset = 0\n\n# get record prefix from user parameters or default to empty string\nif sdc.userParams.containsKey('recordPrefix'):\n    prefix = sdc.userParams.get('recordPrefix')\nelse:\n    prefix = ''\n\ncur_batch = sdc.createBatch()\n\nrecord = sdc.createRecord('record created ' + str(datetime.datetime.now()))\nhasNext = True\nwhile hasNext:\n\n    try:\n        offset = offset + 1\n        record = sdc.createRecord('record created ' + str(datetime.datetime.now()))\n        value = prefix + entityName + ':' + str(offset)\n        record.value = value\n        cur_batch.add(record)\n\n        # if the batch is full, process it and start a new one\n        if cur_batch.size() >= sdc.batchSize:\n            # blocks until all records are written to all destinations\n            # (or failure) and updates offset\n            # in accordance with delivery guarantee\n            cur_batch.process(entityName, str(offset))\n            cur_batch = sdc.createBatch()\n            # if the pipeline has been stopped, we should end the script\n            if sdc.isStopped():\n                hasNext = False\n\n    except Exception as e:\n        cur_batch.addError(record, str(e))\n        cur_batch.process(entityName, str(offset))\n        hasNext = False\n\nif cur_batch.size() + cur_batch.errorCount() + cur_batch.eventCount() > 0:\n    cur_batch.process(entityName, str(offset))\n"
-      }, {
-        "name" : "scriptConf.batchSize",
+        "name" : "conf.basic.maxBatchSize",
         "value" : 1000
       }, {
-        "name" : "scriptConf.numThreads",
-        "value" : 1
+        "name" : "conf.basic.maxWaitTime",
+        "value" : 2000
       }, {
-        "name" : "scriptConf.scriptRecordType",
-        "value" : "NATIVE_OBJECTS"
+        "name" : "conf.dataFormatConfig.compression",
+        "value" : "NONE"
       }, {
-        "name" : "scriptConf.params",
+        "name" : "conf.dataFormatConfig.filePatternInArchive",
+        "value" : "*"
+      }, {
+        "name" : "conf.dataFormatConfig.charset",
+        "value" : "UTF-8"
+      }, {
+        "name" : "conf.dataFormatConfig.removeCtrlChars",
+        "value" : false
+      }, {
+        "name" : "conf.dataFormatConfig.textMaxLineLen",
+        "value" : 1024
+      }, {
+        "name" : "conf.dataFormatConfig.useCustomDelimiter",
+        "value" : false
+      }, {
+        "name" : "conf.dataFormatConfig.customDelimiter",
+        "value" : "\\r\\n"
+      }, {
+        "name" : "conf.dataFormatConfig.includeCustomDelimiterInTheText",
+        "value" : false
+      }, {
+        "name" : "conf.dataFormatConfig.jsonContent",
+        "value" : "MULTIPLE_OBJECTS"
+      }, {
+        "name" : "conf.dataFormatConfig.jsonMaxObjectLen",
+        "value" : 4096
+      }, {
+        "name" : "conf.dataFormatConfig.csvFileFormat",
+        "value" : "CSV"
+      }, {
+        "name" : "conf.dataFormatConfig.csvHeader",
+        "value" : "NO_HEADER"
+      }, {
+        "name" : "conf.dataFormatConfig.csvAllowExtraColumns",
+        "value" : false
+      }, {
+        "name" : "conf.dataFormatConfig.csvExtraColumnPrefix",
+        "value" : "_extra_"
+      }, {
+        "name" : "conf.dataFormatConfig.csvMaxObjectLen",
+        "value" : 1024
+      }, {
+        "name" : "conf.dataFormatConfig.csvCustomDelimiter",
+        "value" : "|"
+      }, {
+        "name" : "conf.dataFormatConfig.multiCharacterFieldDelimiter",
+        "value" : "||"
+      }, {
+        "name" : "conf.dataFormatConfig.multiCharacterLineDelimiter",
+        "value" : "${str:unescapeJava('\\\\n')}"
+      }, {
+        "name" : "conf.dataFormatConfig.csvCustomEscape",
+        "value" : "\\"
+      }, {
+        "name" : "conf.dataFormatConfig.csvCustomQuote",
+        "value" : "\""
+      }, {
+        "name" : "conf.dataFormatConfig.csvEnableComments",
+        "value" : false
+      }, {
+        "name" : "conf.dataFormatConfig.csvCommentMarker",
+        "value" : "#"
+      }, {
+        "name" : "conf.dataFormatConfig.csvIgnoreEmptyLines",
+        "value" : true
+      }, {
+        "name" : "conf.dataFormatConfig.csvRecordType",
+        "value" : "LIST_MAP"
+      }, {
+        "name" : "conf.dataFormatConfig.csvSkipStartLines",
+        "value" : 0
+      }, {
+        "name" : "conf.dataFormatConfig.parseNull",
+        "value" : false
+      }, {
+        "name" : "conf.dataFormatConfig.nullConstant",
+        "value" : "\\\\N"
+      }, {
+        "name" : "conf.dataFormatConfig.xmlRecordElement",
+        "value" : null
+      }, {
+        "name" : "conf.dataFormatConfig.preserveRootElement",
+        "value" : true
+      }, {
+        "name" : "conf.dataFormatConfig.includeFieldXpathAttributes",
+        "value" : false
+      }, {
+        "name" : "conf.dataFormatConfig.xPathNamespaceContext",
         "value" : [ ]
+      }, {
+        "name" : "conf.dataFormatConfig.outputFieldAttributes",
+        "value" : false
+      }, {
+        "name" : "conf.dataFormatConfig.xmlMaxObjectLen",
+        "value" : 4096
+      }, {
+        "name" : "conf.dataFormatConfig.logMode",
+        "value" : "COMMON_LOG_FORMAT"
+      }, {
+        "name" : "conf.dataFormatConfig.logMaxObjectLen",
+        "value" : 1024
+      }, {
+        "name" : "conf.dataFormatConfig.retainOriginalLine",
+        "value" : false
+      }, {
+        "name" : "conf.dataFormatConfig.customLogFormat",
+        "value" : "%h %l %u %t \"%r\" %>s %b"
+      }, {
+        "name" : "conf.dataFormatConfig.regex",
+        "value" : "^(\\S+) (\\S+) (\\S+) \\[([\\w:/]+\\s[+\\-]\\d{4})\\] \"(\\S+) (\\S+) (\\S+)\" (\\d{3}) (\\d+)"
+      }, {
+        "name" : "conf.dataFormatConfig.fieldPathsToGroupName",
+        "value" : [ {
+          "fieldPath" : "/",
+          "group" : 1
+        } ]
+      }, {
+        "name" : "conf.dataFormatConfig.grokPatternDefinition",
+        "value" : null
+      }, {
+        "name" : "conf.dataFormatConfig.grokPattern",
+        "value" : "%{COMMONAPACHELOG}"
+      }, {
+        "name" : "conf.dataFormatConfig.onParseError",
+        "value" : "ERROR"
+      }, {
+        "name" : "conf.dataFormatConfig.maxStackTraceLines",
+        "value" : 50
+      }, {
+        "name" : "conf.dataFormatConfig.enableLog4jCustomLogFormat",
+        "value" : false
+      }, {
+        "name" : "conf.dataFormatConfig.log4jCustomLogFormat",
+        "value" : "%r [%t] %-5p %c %x - %m%n"
+      }, {
+        "name" : "conf.dataFormatConfig.avroSchemaSource",
+        "value" : null
+      }, {
+        "name" : "conf.dataFormatConfig.avroSchema",
+        "value" : null
+      }, {
+        "name" : "conf.dataFormatConfig.schemaRegistryUrls",
+        "value" : [ "" ]
+      }, {
+        "name" : "conf.dataFormatConfig.basicAuth",
+        "value" : null
+      }, {
+        "name" : "conf.dataFormatConfig.schemaLookupMode",
+        "value" : "SUBJECT"
+      }, {
+        "name" : "conf.dataFormatConfig.subject",
+        "value" : null
+      }, {
+        "name" : "conf.dataFormatConfig.schemaId",
+        "value" : null
+      }, {
+        "name" : "conf.dataFormatConfig.avroSkipUnionIndex",
+        "value" : false
+      }, {
+        "name" : "conf.dataFormatConfig.protoDescriptorFile",
+        "value" : null
+      }, {
+        "name" : "conf.dataFormatConfig.messageType",
+        "value" : null
+      }, {
+        "name" : "conf.dataFormatConfig.isDelimited",
+        "value" : true
+      }, {
+        "name" : "conf.dataFormatConfig.binaryMaxObjectLen",
+        "value" : 1024
+      }, {
+        "name" : "conf.dataFormatConfig.datagramMode",
+        "value" : "SYSLOG"
+      }, {
+        "name" : "conf.dataFormatConfig.typesDbPath",
+        "value" : null
+      }, {
+        "name" : "conf.dataFormatConfig.convertTime",
+        "value" : false
+      }, {
+        "name" : "conf.dataFormatConfig.excludeInterval",
+        "value" : true
+      }, {
+        "name" : "conf.dataFormatConfig.authFilePath",
+        "value" : null
+      }, {
+        "name" : "conf.dataFormatConfig.netflowOutputValuesMode",
+        "value" : "RAW_AND_INTERPRETED"
+      }, {
+        "name" : "conf.dataFormatConfig.maxTemplateCacheSize",
+        "value" : -1
+      }, {
+        "name" : "conf.dataFormatConfig.templateCacheTimeoutMs",
+        "value" : -1
+      }, {
+        "name" : "conf.dataFormatConfig.netflowOutputValuesModeDatagram",
+        "value" : "RAW_AND_INTERPRETED"
+      }, {
+        "name" : "conf.dataFormatConfig.maxTemplateCacheSizeDatagram",
+        "value" : -1
+      }, {
+        "name" : "conf.dataFormatConfig.templateCacheTimeoutMsDatagram",
+        "value" : -1
+      }, {
+        "name" : "conf.dataFormatConfig.wholeFileMaxObjectLen",
+        "value" : 8192
+      }, {
+        "name" : "conf.dataFormatConfig.rateLimit",
+        "value" : "-1"
+      }, {
+        "name" : "conf.dataFormatConfig.verifyChecksum",
+        "value" : false
+      }, {
+        "name" : "conf.dataFormatConfig.excelHeader",
+        "value" : null
+      }, {
+        "name" : "conf.dataFormatConfig.excelSkipCellsWithNoHeader",
+        "value" : false
+      }, {
+        "name" : "conf.dataFormatConfig.excelReadAllSheets",
+        "value" : true
+      }, {
+        "name" : "conf.dataFormatConfig.excelSheetNames",
+        "value" : [ "" ]
+      }, {
+        "name" : "conf.resourceUrl",
+        "value" : "https://stream.twitter.com/1.1/statuses/sample.json"
+      }, {
+        "name" : "conf.headers",
+        "value" : [ ]
+      }, {
+        "name" : "conf.httpMethod",
+        "value" : "GET"
+      }, {
+        "name" : "conf.timeZoneID",
+        "value" : "UTC"
+      }, {
+        "name" : "conf.requestBody",
+        "value" : null
+      }, {
+        "name" : "conf.defaultRequestContentType",
+        "value" : "application/json"
+      }, {
+        "name" : "conf.client.transferEncoding",
+        "value" : "BUFFERED"
+      }, {
+        "name" : "conf.client.httpCompression",
+        "value" : "NONE"
+      }, {
+        "name" : "conf.client.connectTimeoutMillis",
+        "value" : 250000
+      }, {
+        "name" : "conf.client.readTimeoutMillis",
+        "value" : 30000
+      }, {
+        "name" : "conf.client.authType",
+        "value" : "NONE"
+      }, {
+        "name" : "conf.client.spnegoPrincipal",
+        "value" : null
+      }, {
+        "name" : "conf.client.spnegoPrincipalPassword",
+        "value" : null
+      }, {
+        "name" : "conf.client.spnegoKeytabFile",
+        "value" : null
+      }, {
+        "name" : "conf.client.useOAuth2",
+        "value" : false
+      }, {
+        "name" : "conf.client.oauth.consumerKey",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth.consumerSecret",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth.token",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth.tokenSecret",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth2.credentialsGrantType",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth2.tokenUrl",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth2.clientId",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth2.clientSecret",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth2.username",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth2.password",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth2.resourceOwnerClientId",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth2.resourceOwnerClientSecret",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth2.algorithm",
+        "value" : "NONE"
+      }, {
+        "name" : "conf.client.oauth2.key",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth2.jwtClaims",
+        "value" : null
+      }, {
+        "name" : "conf.client.oauth2.transferEncoding",
+        "value" : "BUFFERED"
+      }, {
+        "name" : "conf.client.oauth2.additionalValues",
+        "value" : [ { } ]
+      }, {
+        "name" : "conf.client.basicAuth.username",
+        "value" : null
+      }, {
+        "name" : "conf.client.basicAuth.password",
+        "value" : null
+      }, {
+        "name" : "conf.client.useProxy",
+        "value" : false
+      }, {
+        "name" : "conf.client.proxy.uri",
+        "value" : null
+      }, {
+        "name" : "conf.client.proxy.username",
+        "value" : null
+      }, {
+        "name" : "conf.client.proxy.password",
+        "value" : null
+      }, {
+        "name" : "conf.client.tlsConfig.tlsEnabled",
+        "value" : false
+      }, {
+        "name" : "conf.client.tlsConfig.useRemoteKeyStore",
+        "value" : false
+      }, {
+        "name" : "conf.client.tlsConfig.keyStoreFilePath",
+        "value" : null
+      }, {
+        "name" : "conf.client.tlsConfig.privateKey",
+        "value" : null
+      }, {
+        "name" : "conf.client.tlsConfig.certificateChain",
+        "value" : [ { } ]
+      }, {
+        "name" : "conf.client.tlsConfig.keyStoreType",
+        "value" : "JKS"
+      }, {
+        "name" : "conf.client.tlsConfig.keyStorePassword",
+        "value" : null
+      }, {
+        "name" : "conf.client.tlsConfig.keyStoreAlgorithm",
+        "value" : "SunX509"
+      }, {
+        "name" : "conf.client.tlsConfig.useRemoteTrustStore",
+        "value" : false
+      }, {
+        "name" : "conf.client.tlsConfig.trustStoreFilePath",
+        "value" : null
+      }, {
+        "name" : "conf.client.tlsConfig.trustedCertificates",
+        "value" : [ { } ]
+      }, {
+        "name" : "conf.client.tlsConfig.trustStoreType",
+        "value" : "JKS"
+      }, {
+        "name" : "conf.client.tlsConfig.trustStorePassword",
+        "value" : null
+      }, {
+        "name" : "conf.client.tlsConfig.trustStoreAlgorithm",
+        "value" : "SunX509"
+      }, {
+        "name" : "conf.client.tlsConfig.useDefaultProtocols",
+        "value" : true
+      }, {
+        "name" : "conf.client.tlsConfig.protocols",
+        "value" : [ "" ]
+      }, {
+        "name" : "conf.client.tlsConfig.useDefaultCiperSuites",
+        "value" : true
+      }, {
+        "name" : "conf.client.tlsConfig.cipherSuites",
+        "value" : [ "" ]
+      }, {
+        "name" : "conf.client.requestLoggingConfig.enableRequestLogging",
+        "value" : false
+      }, {
+        "name" : "conf.client.requestLoggingConfig.logLevel",
+        "value" : "FINE"
+      }, {
+        "name" : "conf.client.requestLoggingConfig.verbosity",
+        "value" : "HEADERS_ONLY"
+      }, {
+        "name" : "conf.client.requestLoggingConfig.maxEntitySize",
+        "value" : 0
+      }, {
+        "name" : "conf.httpMode",
+        "value" : "STREAMING"
+      }, {
+        "name" : "conf.pollingInterval",
+        "value" : 5000
+      }, {
+        "name" : "conf.dataFormat",
+        "value" : "JSON"
+      }, {
+        "name" : "conf.responseStatusActionConfigs",
+        "value" : [ {
+          "statusCode" : 500,
+          "action" : "RETRY_EXPONENTIAL_BACKOFF",
+          "backoffInterval" : 1000,
+          "maxNumRetries" : 10
+        } ]
+      }, {
+        "name" : "conf.propagateAllHttpResponses",
+        "value" : false
+      }, {
+        "name" : "conf.errorResponseField",
+        "value" : "outErrorBody"
+      }, {
+        "name" : "conf.responseTimeoutActionConfig.action",
+        "value" : "RETRY_IMMEDIATELY"
+      }, {
+        "name" : "conf.responseTimeoutActionConfig.backoffInterval",
+        "value" : 1000
+      }, {
+        "name" : "conf.responseTimeoutActionConfig.maxNumRetries",
+        "value" : 10
+      }, {
+        "name" : "conf.pagination.mode",
+        "value" : "NONE"
+      }, {
+        "name" : "conf.pagination.nextPageURLPrefix",
+        "value" : null
+      }, {
+        "name" : "conf.pagination.nextPageFieldPath",
+        "value" : null
+      }, {
+        "name" : "conf.pagination.stopCondition",
+        "value" : null
+      }, {
+        "name" : "conf.pagination.startAt",
+        "value" : null
+      }, {
+        "name" : "conf.pagination.resultFieldPath",
+        "value" : null
+      }, {
+        "name" : "conf.pagination.keepAllFields",
+        "value" : false
+      }, {
+        "name" : "conf.pagination.rateLimit",
+        "value" : 2000
       }, {
         "name" : "stageOnRecordError",
         "value" : "TO_ERROR"
       } ],
       "uiInfo" : {
-        "yPos" : 142,
+        "yPos" : 139,
         "stageType" : "SOURCE",
-        "icon" : "jython.png",
+        "icon" : "httpclient.png",
         "description" : "",
-        "label" : "Source",
-        "xPos" : 510,
+        "label" : "HTTP Client 1",
+        "xPos" : 321,
         "displayMode" : "BASIC"
       },
       "inputLanes" : [ ],
-      "outputLanes" : [ "JythonScripting_01OutputLane16399956762550" ],
+      "outputLanes" : [ "HTTPClient_01OutputLane16534747081550" ],
+      "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
+      "instanceName" : "JythonEvaluator_02",
+      "library" : "streamsets-datacollector-jython_2_7-lib",
+      "stageName" : "com_streamsets_pipeline_stage_processor_jython_JythonDProcessor",
+      "stageVersion" : "3",
+      "configuration" : [ {
+        "name" : "processingMode",
+        "value" : "BATCH"
+      }, {
+        "name" : "initScript",
+        "value" : "# Available Objects:\n#\n#  sdc.state: a dict that is preserved between invocations of this script.\n#         Useful for caching bits of data e.g. counters.\n#  sdc.log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n#                               loglevel is any log4j level: e.g. info, error, warn, trace.\n#  sdc.getFieldNull(Record, 'field path'): Receive a constant defined above\n#                                  to check if the field is typed field with value null\n#  sdc.createMap(boolean listMap): Create a map for use as a field in a record.\n#                            Pass True to this function to create a list map (ordered map).\n#  sdc.createEvent(String type, int version): Creates a new event.\n#                            Create new empty event with standard headers.\n#  sdc.createMap(boolean listMap): Create a map for use as a field in a record.\n#                            Pass True to this function to create a list map (ordered map).\n#\n\n# sdc.state['connection'] = new Connection().open()"
+      }, {
+        "name" : "script",
+        "value" : "global sdc, output, error\n\ntry:\n    sdc.importLock()\n    import sys\n    import os\n\n    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))\n    import requests\n    import re\n    import time\nfinally:\n    sdc.importUnlock()\n\nentityName = ''\n\n\ndef get_interval():\n    return int(sdc.userParams['INTERVAL_IN_SECONDS'])\n\n\ndef get_now_with_delay():\n    return int(time.time()) - int(sdc.userParams['DELAY_IN_MINUTES']) * 60\n\n\ndef main():\n    if sdc.lastOffsets.containsKey(entityName):\n        offset = int(float(sdc.lastOffsets.get(entityName)))\n    else:\n        offset = int(time.time())\n\n    while not sdc.isStopped():\n        now = get_now_with_delay()\n        while offset > now:\n            # todo I guess it might shift data sending all the time because sleep might oversleep a bit\n            # todo and then we add interval, not interval - overslept time\n            time.sleep(1)\n            if sdc.isStopped():\n                return\n        offset = now + get_interval()\n\n        batch = sdc.createBatch()\n        res = requests.get(sdc.userParams['TOPOLOGY_SOURCE_URL'])\n        res.raise_for_status()\n\n        record = sdc.createRecord('record created')\n        record.value = res.json()\n        batch.add(record)\n\n        batch.process(entityName, str(offset))\n\n\nmain()"
+      }, {
+        "name" : "destroyScript",
+        "value" : "# Available Objects:\n#\n#  sdc.state: a dict that is preserved between invocations of this script.\n#         Useful for caching bits of data e.g. counters.\n#  sdc.log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n#                               loglevel is any log4j level: e.g. info, error, warn, trace.\n#  sdc.getFieldNull(Record, 'field path'): Receive a constant defined above \n#                                  to check if the field is typed field with value null.\n#  sdc.createMap(boolean listMap): Create a map for use as a field in a record.\n#                            Pass True to this function to create a list map (ordered map).\n#  sdc.createEvent(String type, int version): Creates a new event.\n#                            Create new empty event with standard headers.\n#  sdc.toEvent(Record): Send event to event stream.\n#                            Only events created with sdcFunctions.createEvent are supported.\n#\n\n# sdc.state['connection'].close()"
+      }, {
+        "name" : "scriptRecordType",
+        "value" : "NATIVE_OBJECTS"
+      }, {
+        "name" : "userParams",
+        "value" : [ ]
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "yPos" : 140,
+        "stageType" : "PROCESSOR",
+        "icon" : "jython.png",
+        "description" : "",
+        "label" : "Transform data",
+        "xPos" : 547,
+        "displayMode" : "ADVANCED"
+      },
+      "inputLanes" : [ "HTTPClient_01OutputLane16534747081550" ],
+      "outputLanes" : [ "JythonEvaluator_02OutputLane16534745876230" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -459,7 +963,7 @@
         "value" : ""
       }, {
         "name" : "script",
-        "value" : "global sdc, output, error\n\ntry:\n    sdc.importLock()\n    import re\n    import time\nfinally:\n    sdc.importUnlock()\n\n\n# todo do we need to?\ndef replace_illegal_chars(value):\n    value = str(value).strip().replace(\".\", \"_\")\n    return re.sub('\\s+', '_', value)\n\n\ndef main():\n    timestamp = time.time()\n    rows = {}\n    base = {\n        \"type\": \"SITE\",\n        # todo what?\n        \"rollupId\": 27,\n        \"timestamp\": timestamp,\n        # todo\n        \"bulkSerNumber\": 1,\n    }\n    for record in sdc.records:\n        try:\n            rows[record.value[sdc.userParams['ID_KEY']]] = {\n                'geoLocation': {\n                    'lat': record.value[sdc.userParams['LAT_KEY']],\n                    'lon': record.value[sdc.userParams['LON_KEY']]\n                },\n                'status': record.value[sdc.userParams['STATUS_KEY']],\n                'regionId': record.value[sdc.userParams['STATUS_KEY']],\n                'name': record.value[sdc.userParams['ID_KEY']],\n                'id': record.value[sdc.userParams['ID_KEY']],\n            }\n        except Exception as e:\n            error.write(record, str(e))\n    base['rows'] = rows\n    base['numberOfRows'] = len(rows)\n\n\nmain()"
+        "value" : "global sdc\n\ntry:\n    sdc.importLock()\n    import re\n    import time\n    import sys\n    import os\n    import json\n\n    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))\n    from anodot_api_client import AnodotApiClient, AnodotUrlBuilder\nfinally:\n    sdc.importUnlock()\n\n\n# todo ?\ndef chunks(lst, n):\n    for i in range(0, len(lst), n):\n        yield lst[i:i + n]\n\n\ndef start_rollup(client):\n    res = client.start_topology_data_load()\n    if res.status_code != 200:\n        sdc.log.error('Error starting rollup')\n        sdc.log.error(str(res.json()))\n    res.raise_for_status()\n    return str(res.json()['rollupId'])\n\n\ndef end_rollup(client, rollup_id):\n    res = client.end_topology_data_load(rollup_id)\n    if res.status_code != 200:\n        sdc.log.error('Error ending rollup')\n        sdc.log.error(str(res.json()))\n    res.raise_for_status()\n\n\ndef build_entities(base_entity, entities, bulk_ser_number):\n    data = base_entity.copy()\n    rows = {}\n    for entity in entities:\n        # row must be a json string, because the topology api requires this format\n        rows[entity['id']] = json.dumps(entity)\n\n    data['rows'] = rows\n    data['numberOfRows'] = len(rows)\n    # i starts from 0 and bulkSerNumber starts from 1 so + 1\n    data['bulkSerNumber'] = bulk_ser_number\n    return data\n\n\ndef send_data(client, data, rollup_id):\n    res = client.send_topology_data(data, rollup_id)\n    if res.status_code != 200:\n        sdc.log.error('ERROR SENDING DATA')\n        sdc.log.error(str(res.text))\n        sdc.log.error('status code ' + str(res.status_code))\n    res.raise_for_status()\n\n\ndef main():\n    now = int(time.time())\n    # todo preview sends data\n    client = AnodotApiClient(\n        sdc.state, sdc.userParams['ANODOT_URL'], sdc.userParams['ACCESS_TOKEN'], sdc.userParams['PROXIES']\n    )\n    rollup_id = start_rollup(client)\n    for record in sdc.records:\n        for entity_type, entities in record.value.items():\n            base = {\n                \"type\": entity_type,\n                \"rollupId\": rollup_id,\n                # todo tests, they'll fail with this field\n                \"timestamp\": now,\n                \"bulkSerNumber\": 1,\n            }\n            for i, chunk in enumerate(chunks(entities, 500)):\n                data = build_entities(base, chunk, i + 1)\n                send_data(client, data, rollup_id)\n\n    end_rollup(client, rollup_id)\n\n\nmain()\n"
       }, {
         "name" : "destroyScript",
         "value" : ""
@@ -468,13 +972,25 @@
         "value" : "NATIVE_OBJECTS"
       }, {
         "name" : "userParams",
-        "value" : [ ]
+        "value" : [ {
+          "key" : "ANODOT_URL",
+          "value" : "http://dummy_destination"
+        }, {
+          "key" : "ACCESS_TOKEN",
+          "value" : "correct_key"
+        }, {
+          "key" : "PROXIES",
+          "value" : {
+            "http" : "http://squid:3128",
+            "https" : "http://squid:3128"
+          }
+        } ]
       }, {
         "name" : "stageOnRecordError",
         "value" : "TO_ERROR"
       }, {
         "name" : "stageRequiredFields",
-        "value" : [ "/ver", "/Country", "/timestamp_datetime" ]
+        "value" : [ ]
       }, {
         "name" : "stageRecordPreconditions",
         "value" : [ ]
@@ -484,11 +1000,11 @@
         "stageType" : "PROCESSOR",
         "icon" : "jython.png",
         "description" : "",
-        "label" : "Send to Anodot",
+        "label" : "Send to Anodot Topology",
         "xPos" : 788,
         "displayMode" : "BASIC"
       },
-      "inputLanes" : [ "JythonScripting_01OutputLane16399956762550" ],
+      "inputLanes" : [ "JythonEvaluator_02OutputLane16534745876230" ],
       "outputLanes" : [ "JythonEvaluator_01OutputLane16363732895470" ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -533,19 +1049,19 @@
       "pipelineId" : "topology",
       "title" : "topology",
       "description" : "",
-      "created" : 1639480887816,
-      "lastModified" : 1639995755474,
+      "created" : 1653471108447,
+      "lastModified" : 1653474713635,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "a6fa48c2-fa33-4326-9b01-05e96a9cd9bf",
+      "uuid" : "64d97183-822a-43e6-aa91-3454cc9413bc",
       "valid" : true,
       "metadata" : {
         "labels" : [ "topology", "http" ]
       },
       "name" : "topology",
       "sdcVersion" : "3.18.0",
-      "sdcId" : "3b6662bd-5c1f-11ec-bcdc-dbc5238e5812"
+      "sdcId" : "0b2e6178-dc0c-11ec-bb5e-8bb7de89e20b"
     },
     "metadata" : {
       "labels" : [ "topology", "http" ]
@@ -886,7 +1402,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1639480887887,
+      "timestamp" : 1653471108508,
       "valid" : true
     }, {
       "id" : "stageErrorAlertID",
@@ -897,7 +1413,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1639480887887,
+      "timestamp" : 1653471108508,
       "valid" : true
     }, {
       "id" : "idleGaugeID",
@@ -908,7 +1424,7 @@
       "condition" : "${time:now() - value() > 120000}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1639480887887,
+      "timestamp" : 1653471108508,
       "valid" : true
     }, {
       "id" : "batchTimeAlertID",
@@ -919,12 +1435,12 @@
       "condition" : "${value() > 200}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1639480887887,
+      "timestamp" : 1653471108508,
       "valid" : true
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "4b7f70ca-b5e5-41b1-8a17-4c4acd770278",
+    "uuid" : "b5de829c-8a01-4fb5-8800-67c1a34efcc9",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : null

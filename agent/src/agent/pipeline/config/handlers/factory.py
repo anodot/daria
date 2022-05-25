@@ -5,6 +5,8 @@ from agent.pipeline.config.handlers.base import ConfigHandler, SchemaConfigHandl
 
 def get_config_handler(pipeline_: Pipeline) -> ConfigHandler:
     base_config = _get_config_loader(pipeline_).load_base_config(pipeline_)
+    if isinstance(pipeline_, pipeline.TopologyPipeline):
+        return _get_topology_handler(pipeline_, base_config)
     if isinstance(pipeline_, pipeline.RawPipeline):
         return _get_raw_handler(pipeline_, base_config)
     if isinstance(pipeline_, pipeline.TestPipeline):
@@ -32,7 +34,6 @@ def _get_no_schema_handler(pipeline_: Pipeline, base_config: dict) -> NoSchemaCo
         source.TYPE_SOLARWINDS: pipeline.config.handlers.solarwinds.SolarWindsConfigHandler,
         source.TYPE_SPLUNK: pipeline.config.handlers.tcp.TCPConfigHandler,
         source.TYPE_THANOS: pipeline.config.handlers.promql.PromQLConfigHandler,
-        source.TYPE_TOPOLOGY: pipeline.config.handlers.topology.TopologyConfigHandler,
         source.TYPE_VICTORIA: pipeline.config.handlers.promql.PromQLConfigHandler,
         source.TYPE_ZABBIX: pipeline.config.handlers.zabbix.ZabbixConfigHandler,
     }
@@ -47,6 +48,14 @@ def _get_raw_handler(pipeline_: Pipeline, base_config: dict) -> ConfigHandler:
         source.TYPE_ORACLE: pipeline.config.handlers.jdbc.JDBCRawConfigHandler,
         source.TYPE_POSTGRES: pipeline.config.handlers.jdbc.JDBCRawConfigHandler,
         source.TYPE_SNMP: pipeline.config.handlers.snmp.SNMPRawConfigHandler,
+    }
+    return handlers[pipeline_.source.type](pipeline_, base_config)
+
+
+def _get_topology_handler(pipeline_: Pipeline, base_config: dict) -> ConfigHandler:
+    handlers = {
+        source.TYPE_HTTP: pipeline.config.handlers.topology.HttpConfigHandler,
+        source.TYPE_DIRECTORY: pipeline.config.handlers.topology.DirectoryConfigHandler,
     }
     return handlers[pipeline_.source.type](pipeline_, base_config)
 
@@ -80,6 +89,7 @@ def _get_test_handler(pipeline_: Pipeline, base_config: dict) -> ConfigHandler:
         source.TYPE_DIRECTORY: pipeline.config.handlers.directory.TestDirectoryConfigHandler,
         source.TYPE_DATABRICKS: pipeline.config.handlers.jdbc.TestJDBCConfigHandler,
         source.TYPE_ELASTIC: pipeline.config.handlers.elastic.TestElasticConfigHandler,
+        source.TYPE_HTTP: pipeline.config.handlers.http.TestHttpConfigHandler,
         source.TYPE_INFLUX: pipeline.config.handlers.influx.TestInfluxConfigHandler,
         source.TYPE_INFLUX_2: pipeline.config.handlers.influx.TestInflux2ConfigHandler,
         source.TYPE_KAFKA: pipeline.config.handlers.kafka.TestKafkaConfigHandler,
@@ -114,6 +124,8 @@ def _get_config_loader(pipeline_: Pipeline):
         return pipeline.config.loader.RawConfigLoader
     if isinstance(pipeline_, pipeline.EventsPipeline):
         return pipeline.config.loader.EventsConfigLoader
+    if isinstance(pipeline_, pipeline.TopologyPipeline):
+        return pipeline.config.loader.TopologyConfigLoader
     if pipeline_.uses_schema():
         return pipeline.config.loader.SchemaConfigLoader
     return pipeline.config.loader.NoSchemaConfigLoader

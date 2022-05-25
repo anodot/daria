@@ -454,6 +454,12 @@ class RawPipeline(Pipeline):
         self.type = RAW_PIPELINE
 
 
+class TopologyPipeline(Pipeline):
+    def __init__(self, pipeline_id: str, source_: Source, destination_: HttpDestination):
+        super(TopologyPipeline, self).__init__(pipeline_id, source_, destination_)
+        self.type = TOPOLOGY_PIPELINE
+
+
 class EventsPipeline(Pipeline):
     def __init__(self, pipeline_id: str, source_: Source, destination_: HttpDestination):
         super(EventsPipeline, self).__init__(pipeline_id, source_, destination_)
