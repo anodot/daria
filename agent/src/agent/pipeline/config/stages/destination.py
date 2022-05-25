@@ -38,7 +38,10 @@ class WatermarkWithMetricsDestination(JythonProcessor):
             {
                 'key': 'WATERMARK_URL',
                 'value': urllib.parse.urljoin(
-                    self.pipeline.streamsets.agent_external_url, f'/pipelines/{self.pipeline.name}/watermark')
+                    self.pipeline.destination.url,
+                    f'/api/v1/metrics/watermark'
+                    f'?token={self.pipeline.destination.token}&protocol={self.pipeline.destination.PROTOCOL_30}',
+                    )
             },
             {
                 'key': 'WATERMARK_DELTA_MONITORING_ENDPOINT',
