@@ -32,6 +32,9 @@ for record in sdc.records:
             json=record.value, proxies=sdc.userParams['PROXIES'], timeout=30
         )
         res.raise_for_status()
+        err_msg = res.json().get('errors')
+        if err_msg:
+            raise requests.RequestException(err_msg)
 
         # send Watermark Metrics
         res = requests.post(
@@ -45,5 +48,5 @@ for record in sdc.records:
         res.raise_for_status()
 
         sdc.output.write(record)
-    except (requests.ConnectionError, requests.HTTPError) as e:
+    except requests.RequestException as e:
         sdc.error.write(record, str(e))
