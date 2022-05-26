@@ -1697,7 +1697,7 @@
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
-      "instanceName" : "LocalFS_01",
+      "instanceName" : "destination_watermark_logs",
       "library" : "streamsets-datacollector-basic-lib",
       "stageName" : "com_streamsets_pipeline_stage_destination_localfilesystem_LocalFileSystemDTarget",
       "stageVersion" : "4",
