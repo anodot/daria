@@ -5,7 +5,7 @@
       "what": "clicks.display",
       "target_type": "gauge",
       "ver": "1",
-      "Country": "USA"
+      "Country": "中国"
     },
     "tags": {
       "source": ["anodot-agent"],
