@@ -986,9 +986,6 @@
         "name" : "conf.agentOffsetUrl",
         "value" : ""
       }, {
-        "name" : "conf.agentWatermarkUrl",
-        "value" : ""
-      }, {
         "name" : "conf.dataGeneratorFormatConfig.csvHeader",
         "value" : "NO_HEADER"
       }, {
