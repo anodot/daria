@@ -18,8 +18,10 @@ class TestMonitoringMetrics(TestInputBase, TestPipelineBase):
         'test_stop': [
             {'name': 'test_dir_monitoring_csv'},
         ],
-        'test_metric_pipeline_avg_lag': [
+        'test_monitoring_metrics': [
             {'name': 'test_dir_monitoring_csv', 'metric_type': 'pipeline_avg_lag_seconds'},
+            {'name': 'test_dir_monitoring_csv', 'metric_type': 'watermark_delta'},
+            {'name': 'test_dir_monitoring_csv', 'metric_type': 'watermark_sent_total'},
         ],
         'test_delete_pipeline': [
             {'name': 'test_dir_monitoring_csv'},
@@ -56,7 +58,7 @@ class TestMonitoringMetrics(TestInputBase, TestPipelineBase):
     def test_output_schema(self, name=None, pipeline_type=None, output=None):
         pytest.skip()
 
-    def test_metric_pipeline_avg_lag(self, api_client, name, metric_type):
+    def test_monitoring_metrics(self, api_client, name, metric_type):
         response = api_client.get('/metrics')
         assert response.status_code == 200
         metrics = response.data.decode('utf-8').split('\n')
