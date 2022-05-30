@@ -12,6 +12,7 @@ class DirectoryConfigHandler(SchemaConfigHandler):
         'destination': stages.destination.Destination,
         'JythonEvaluator_02': stages.jython.CreateWatermark,
         'destination_watermark': stages.destination.WatermarkDestination,
+        'replace_illegal_chars': stages.jython.ReplaceIllegalChars,
     }
 
 
