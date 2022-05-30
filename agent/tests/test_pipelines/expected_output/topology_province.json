@@ -1,18 +1,7 @@
 [
   {
     "bulkSerNumber": 1,
-    "type": "SITE",
-    "rows": {
-      "BB001": "{\"address\": \"5th Ave, 122\", \"parent_region_dimension_id\": \"Battambang\", \"lon\": \"100.01\", \"type\": \"Mobile RAN\", \"domain\": \"RAN\", \"name\": \"BB001\", \"id\": \"BB001\", \"lat\": \"10.005\"}",
-      "BB002": "{\"address\": \"6th Ave, 112\", \"parent_region_dimension_id\": \"Battambang\", \"lon\": \"100.11\", \"type\": \"Mobile RAN\", \"domain\": \"RAN\", \"name\": \"BB002\", \"id\": \"BB002\", \"lat\": \"10.015\"}",
-      "BB003": "{\"address\": \"Brpadway, 113\", \"parent_region_dimension_id\": \"Battambang\", \"lon\": \"100.31\", \"type\": \"Mobile RAN\", \"domain\": \"RAN\", \"name\": \"BB003\", \"id\": \"BB003\", \"lat\": \"10.035\"}"
-    },
-    "numberOfRows": 3,
-    "rollupId": "123456789"
-  },
-  {
-    "bulkSerNumber": 1,
-    "type": "REGION",
+    "type": "PROVINCE",
     "rows": {
       "Phnom Penh": "{\"type\": \"Province\", \"name\": \"Phnom Penh\", \"id\": \"Phnom Penh\"}",
       "Steung Treng": "{\"type\": \"Province\", \"name\": \"Steung Treng\", \"id\": \"Steung Treng\"}",

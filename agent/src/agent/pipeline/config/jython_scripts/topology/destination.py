@@ -1,4 +1,4 @@
-global sdc
+global sdc, output
 
 try:
     sdc.importLock()
@@ -39,14 +39,10 @@ def end_rollup(client, rollup_id):
 
 def build_entities(base_entity, entities, bulk_ser_number):
     data = base_entity.copy()
-    rows = {}
-    for entity in entities:
-        # row must be a json string, because the topology api requires this format
-        rows[entity['id']] = json.dumps(entity)
-
+    # row must be a json string, because the topology api requires this format
+    rows = {entity['id']: json.dumps(entity) for entity in entities}
     data['rows'] = rows
     data['numberOfRows'] = len(rows)
-    # i starts from 0 and bulkSerNumber starts from 1 so + 1
     data['bulkSerNumber'] = bulk_ser_number
     return data
 
@@ -60,27 +56,27 @@ def send_data(client, data, rollup_id):
     res.raise_for_status()
 
 
-def main():
-    now = int(time.time())
-    # todo preview sends data
-    client = AnodotApiClient(
-        sdc.state, sdc.userParams['ANODOT_URL'], sdc.userParams['ACCESS_TOKEN'], sdc.userParams['PROXIES']
-    )
-    rollup_id = start_rollup(client)
-    for record in sdc.records:
-        for entity_type, entities in record.value.items():
-            base = {
-                "type": entity_type,
-                "rollupId": rollup_id,
-                # todo tests, they'll fail with this field
-                "timestamp": now,
-                "bulkSerNumber": 1,
-            }
-            for i, chunk in enumerate(chunks(entities, 500)):
-                data = build_entities(base, chunk, i + 1)
-                send_data(client, data, rollup_id)
+now = int(time.time())
+# todo preview sends data
+client = AnodotApiClient(
+    sdc.state, sdc.userParams['ANODOT_URL'], sdc.userParams['ACCESS_TOKEN'], sdc.userParams['PROXIES']
+)
+rollup_id = start_rollup(client)
+for record in sdc.records:
+    for entity_type, entities in record.value.items():
+        base = {
+            "type": entity_type,
+            "rollupId": rollup_id,
+            "timestamp": now,
+            "bulkSerNumber": 1,
+        }
+        for i, chunk in enumerate(chunks(entities, 500)):
+            # i starts from 0 and bulkSerNumber starts from 1 so + 1
+            data = build_entities(base, chunk, i + 1)
+            send_data(client, data, rollup_id)
 
-    end_rollup(client, rollup_id)
+            new_record = sdc.createRecord(str(i))
+            new_record.value = data
+            output.write(new_record)
 
-
-main()
+end_rollup(client, rollup_id)

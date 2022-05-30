@@ -70,7 +70,7 @@ class AnodotApiClient:
             'Content-Type': 'application/json',
             # it must be explicitly converted to string
             # because streamsets will make it a unicode string and authorization will not work
-            'Authorization': str('Bearer ' + self._get_auth_token()),
+            'Authorization': 'Bearer ' + self._get_auth_token()
         })
 
     def _retrieve_new_auth_token(self):
@@ -82,8 +82,7 @@ class AnodotApiClient:
 
     @staticmethod
     def _is_expired(auth_token):
-        res = auth_token.split('.')[1]
-        res = base64.b64decode(res)
+        res = base64.b64decode(auth_token.split('.')[1] + '==')
         expiration_timestamp = json.loads(res)['exp']
         # refresh token in advance just in case
         return expiration_timestamp < time.time() - 300

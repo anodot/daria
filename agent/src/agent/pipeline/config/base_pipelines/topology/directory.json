@@ -3,9 +3,9 @@
     "schemaVersion" : 6,
     "version" : 19,
     "pipelineId" : "directory9f19cdfe-f36c-4c6e-8783-231e6b4218ef",
-    "title" : "topology",
+    "title" : "topology_region",
     "description" : "",
-    "uuid" : "5b150196-7d73-4e7d-a3f9-f40b1b6d1046",
+    "uuid" : "5639185d-71ae-4a6b-95d6-1b09bcbdd124",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -641,10 +641,10 @@
         "value" : [ "" ]
       }, {
         "name" : "conf.dataFormat",
-        "value" : null
+        "value" : "DELIMITED"
       }, {
         "name" : "conf.spoolDir",
-        "value" : null
+        "value" : "/home/topology/"
       }, {
         "name" : "conf.numberOfThreads",
         "value" : 1
@@ -653,7 +653,7 @@
         "value" : "GLOB"
       }, {
         "name" : "conf.filePattern",
-        "value" : null
+        "value" : "region.csv"
       }, {
         "name" : "conf.useLastModified",
         "value" : "LEXICOGRAPHICAL"
@@ -716,7 +716,7 @@
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
-      "instanceName" : "JythonEvaluator_02",
+      "instanceName" : "JythonEvaluator_03",
       "library" : "streamsets-datacollector-jython_2_7-lib",
       "stageName" : "com_streamsets_pipeline_stage_processor_jython_JythonDProcessor",
       "stageVersion" : "3",
@@ -725,13 +725,13 @@
         "value" : "BATCH"
       }, {
         "name" : "initScript",
-        "value" : "# Available Objects:\n#\n#  sdc.state: a dict that is preserved between invocations of this script.\n#         Useful for caching bits of data e.g. counters.\n#  sdc.log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n#                               loglevel is any log4j level: e.g. info, error, warn, trace.\n#  sdc.getFieldNull(Record, 'field path'): Receive a constant defined above\n#                                  to check if the field is typed field with value null\n#  sdc.createMap(boolean listMap): Create a map for use as a field in a record.\n#                            Pass True to this function to create a list map (ordered map).\n#  sdc.createEvent(String type, int version): Creates a new event.\n#                            Create new empty event with standard headers.\n#  sdc.createMap(boolean listMap): Create a map for use as a field in a record.\n#                            Pass True to this function to create a list map (ordered map).\n#\n\n# sdc.state['connection'] = new Connection().open()"
+        "value" : ""
       }, {
         "name" : "script",
-        "value" : "global sdc, output, error\n\ntry:\n    sdc.importLock()\n    import sys\n    import os\n\n    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))\n    import requests\n    import re\n    import time\nfinally:\n    sdc.importUnlock()\n\nentityName = ''\n\n\ndef get_interval():\n    return int(sdc.userParams['INTERVAL_IN_SECONDS'])\n\n\ndef get_now_with_delay():\n    return int(time.time()) - int(sdc.userParams['DELAY_IN_MINUTES']) * 60\n\n\ndef main():\n    if sdc.lastOffsets.containsKey(entityName):\n        offset = int(float(sdc.lastOffsets.get(entityName)))\n    else:\n        offset = int(time.time())\n\n    while not sdc.isStopped():\n        now = get_now_with_delay()\n        while offset > now:\n            # todo I guess it might shift data sending all the time because sleep might oversleep a bit\n            # todo and then we add interval, not interval - overslept time\n            time.sleep(1)\n            if sdc.isStopped():\n                return\n        offset = now + get_interval()\n\n        batch = sdc.createBatch()\n        res = requests.get(sdc.userParams['TOPOLOGY_SOURCE_URL'])\n        res.raise_for_status()\n\n        record = sdc.createRecord('record created')\n        record.value = res.json()\n        batch.add(record)\n\n        batch.process(entityName, str(offset))\n\n\nmain()"
+        "value" : ""
       }, {
         "name" : "destroyScript",
-        "value" : "# Available Objects:\n#\n#  sdc.state: a dict that is preserved between invocations of this script.\n#         Useful for caching bits of data e.g. counters.\n#  sdc.log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n#                               loglevel is any log4j level: e.g. info, error, warn, trace.\n#  sdc.getFieldNull(Record, 'field path'): Receive a constant defined above \n#                                  to check if the field is typed field with value null.\n#  sdc.createMap(boolean listMap): Create a map for use as a field in a record.\n#                            Pass True to this function to create a list map (ordered map).\n#  sdc.createEvent(String type, int version): Creates a new event.\n#                            Create new empty event with standard headers.\n#  sdc.toEvent(Record): Send event to event stream.\n#                            Only events created with sdcFunctions.createEvent are supported.\n#\n\n# sdc.state['connection'].close()"
+        "value" : ""
       }, {
         "name" : "scriptRecordType",
         "value" : "NATIVE_OBJECTS"
@@ -753,11 +753,60 @@
         "stageType" : "PROCESSOR",
         "icon" : "jython.png",
         "description" : "",
-        "label" : "Transform data",
-        "xPos" : 547,
+        "label" : "Data to dict",
+        "xPos" : 495,
         "displayMode" : "ADVANCED"
       },
       "inputLanes" : [ "Directory_01OutputLane16534746131390" ],
+      "outputLanes" : [ "JythonEvaluator_03OutputLane16535671087100" ],
+      "eventLanes" : [ ],
+      "services" : [ ]
+    }, {
+      "instanceName" : "JythonEvaluator_02",
+      "library" : "streamsets-datacollector-jython_2_7-lib",
+      "stageName" : "com_streamsets_pipeline_stage_processor_jython_JythonDProcessor",
+      "stageVersion" : "3",
+      "configuration" : [ {
+        "name" : "processingMode",
+        "value" : "BATCH"
+      }, {
+        "name" : "initScript",
+        "value" : "# Available Objects:\n#\n#  sdc.state: a dict that is preserved between invocations of this script.\n#         Useful for caching bits of data e.g. counters.\n#  sdc.log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n#                               loglevel is any log4j level: e.g. info, error, warn, trace.\n#  sdc.getFieldNull(Record, 'field path'): Receive a constant defined above\n#                                  to check if the field is typed field with value null\n#  sdc.createMap(boolean listMap): Create a map for use as a field in a record.\n#                            Pass True to this function to create a list map (ordered map).\n#  sdc.createEvent(String type, int version): Creates a new event.\n#                            Create new empty event with standard headers.\n#  sdc.createMap(boolean listMap): Create a map for use as a field in a record.\n#                            Pass True to this function to create a list map (ordered map).\n#\n\n# sdc.state['connection'] = new Connection().open()"
+      }, {
+        "name" : "script",
+        "value" : "global sdc, output, error\n\ntry:\n    sdc.importLock()\n    import sys\n    import os\n\n    sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))\n    import requests\n    import re\n    import time\nfinally:\n    sdc.importUnlock()\n\nentityName = ''\n\n\ndef get_interval():\n    return int(sdc.userParams['INTERVAL_IN_SECONDS'])\n\n\ndef get_now_with_delay():\n    return int(time.time()) - int(sdc.userParams['DELAY_IN_MINUTES']) * 60\n\n\ndef main():\n    data = {}\n    for record in sdc.records:\n        for k, v in record.value.items():\n            data[k] = v\n\n    res = requests.post(sdc.userParams['TOPOLOGY_TRANSFORM_RECORDS_URL'], json=data)\n    res.raise_for_status()\n\n    batch = sdc.createBatch()\n    record = sdc.createRecord('record created')\n    record.value = res.json()\n    batch.add(record)\n    batch.process(entityName, 'bla')\n\n\nmain()\n"
+      }, {
+        "name" : "destroyScript",
+        "value" : "# Available Objects:\n#\n#  sdc.state: a dict that is preserved between invocations of this script.\n#         Useful for caching bits of data e.g. counters.\n#  sdc.log.<loglevel>(msg, obj...): use instead of print to send log messages to the log4j log instead of stdout.\n#                               loglevel is any log4j level: e.g. info, error, warn, trace.\n#  sdc.getFieldNull(Record, 'field path'): Receive a constant defined above \n#                                  to check if the field is typed field with value null.\n#  sdc.createMap(boolean listMap): Create a map for use as a field in a record.\n#                            Pass True to this function to create a list map (ordered map).\n#  sdc.createEvent(String type, int version): Creates a new event.\n#                            Create new empty event with standard headers.\n#  sdc.toEvent(Record): Send event to event stream.\n#                            Only events created with sdcFunctions.createEvent are supported.\n#\n\n# sdc.state['connection'].close()"
+      }, {
+        "name" : "scriptRecordType",
+        "value" : "NATIVE_OBJECTS"
+      }, {
+        "name" : "userParams",
+        "value" : [ {
+          "key" : "TOPOLOGY_TRANSFORM_RECORDS_URL",
+          "value" : "http://anodot-agent/data_extractors/topology/${pipeline:id()}"
+        } ]
+      }, {
+        "name" : "stageOnRecordError",
+        "value" : "TO_ERROR"
+      }, {
+        "name" : "stageRequiredFields",
+        "value" : [ ]
+      }, {
+        "name" : "stageRecordPreconditions",
+        "value" : [ ]
+      } ],
+      "uiInfo" : {
+        "yPos" : 145,
+        "stageType" : "PROCESSOR",
+        "icon" : "jython.png",
+        "description" : "",
+        "label" : "Transform data",
+        "xPos" : 703,
+        "displayMode" : "ADVANCED"
+      },
+      "inputLanes" : [ "JythonEvaluator_03OutputLane16535671087100" ],
       "outputLanes" : [ "JythonEvaluator_02OutputLane16534745876230" ],
       "eventLanes" : [ ],
       "services" : [ ]
@@ -807,12 +856,12 @@
         "value" : [ ]
       } ],
       "uiInfo" : {
-        "yPos" : 141,
+        "yPos" : 146,
         "stageType" : "PROCESSOR",
         "icon" : "jython.png",
         "description" : "",
         "label" : "Send to Anodot Topology",
-        "xPos" : 788,
+        "xPos" : 930,
         "displayMode" : "BASIC"
       },
       "inputLanes" : [ "JythonEvaluator_02OutputLane16534745876230" ],
@@ -826,12 +875,12 @@
       "stageVersion" : "1",
       "configuration" : [ ],
       "uiInfo" : {
-        "yPos" : 139,
+        "yPos" : 147,
         "stageType" : "TARGET",
         "icon" : "trash.png",
         "description" : "",
         "label" : "Trash 1",
-        "xPos" : 1053
+        "xPos" : 1165
       },
       "inputLanes" : [ "JythonEvaluator_01OutputLane16363732895470" ],
       "outputLanes" : [ ],
@@ -857,25 +906,25 @@
       "services" : [ ]
     },
     "info" : {
-      "pipelineId" : "topology",
-      "title" : "topology",
+      "pipelineId" : "topology_region",
+      "title" : "topology_region",
       "description" : "",
-      "created" : 1653471108447,
-      "lastModified" : 1653474641365,
+      "created" : 1653566864938,
+      "lastModified" : 1653567151044,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "5b150196-7d73-4e7d-a3f9-f40b1b6d1046",
-      "valid" : false,
+      "uuid" : "5639185d-71ae-4a6b-95d6-1b09bcbdd124",
+      "valid" : true,
       "metadata" : {
-        "labels" : [ "topology", "http" ]
+        "labels" : [ "directory", "http" ]
       },
-      "name" : "topology",
+      "name" : "topology_region",
       "sdcVersion" : "3.18.0",
-      "sdcId" : "0b2e6178-dc0c-11ec-bb5e-8bb7de89e20b"
+      "sdcId" : "2819906c-dce8-11ec-a24e-876a46b9ce05"
     },
     "metadata" : {
-      "labels" : [ "topology", "http" ]
+      "labels" : [ "directory", "http" ]
     },
     "statsAggregatorStage" : {
       "instanceName" : "statsAggregatorStageInstance",
@@ -1193,45 +1242,13 @@
         } ]
       } ]
     },
-    "valid" : false,
+    "valid" : true,
     "issues" : {
       "pipelineIssues" : [ ],
-      "stageIssues" : {
-        "Directory_01" : [ {
-          "instanceName" : "Directory_01",
-          "serviceName" : null,
-          "level" : "STAGE_CONFIG",
-          "configGroup" : "DATA_FORMAT",
-          "configName" : "conf.dataFormat",
-          "message" : "VALIDATION_0007 - Configuration value is required",
-          "count" : 1,
-          "additionalInfo" : null,
-          "antennaDoctorMessages" : null
-        }, {
-          "instanceName" : "Directory_01",
-          "serviceName" : null,
-          "level" : "STAGE_CONFIG",
-          "configGroup" : "FILES",
-          "configName" : "conf.spoolDir",
-          "message" : "VALIDATION_0007 - Configuration value is required",
-          "count" : 1,
-          "additionalInfo" : null,
-          "antennaDoctorMessages" : null
-        }, {
-          "instanceName" : "Directory_01",
-          "serviceName" : null,
-          "level" : "STAGE_CONFIG",
-          "configGroup" : "FILES",
-          "configName" : "conf.filePattern",
-          "message" : "VALIDATION_0007 - Configuration value is required",
-          "count" : 1,
-          "additionalInfo" : null,
-          "antennaDoctorMessages" : null
-        } ]
-      },
-      "issueCount" : 3
+      "stageIssues" : { },
+      "issueCount" : 0
     },
-    "previewable" : false
+    "previewable" : true
   },
   "pipelineRules" : {
     "schemaVersion" : 3,
@@ -1245,7 +1262,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1653471108508,
+      "timestamp" : 1653566864996,
       "valid" : true
     }, {
       "id" : "stageErrorAlertID",
@@ -1256,7 +1273,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1653471108508,
+      "timestamp" : 1653566864996,
       "valid" : true
     }, {
       "id" : "idleGaugeID",
@@ -1267,7 +1284,7 @@
       "condition" : "${time:now() - value() > 120000}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1653471108508,
+      "timestamp" : 1653566864996,
       "valid" : true
     }, {
       "id" : "batchTimeAlertID",
@@ -1278,12 +1295,12 @@
       "condition" : "${value() > 200}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1653471108508,
+      "timestamp" : 1653566864996,
       "valid" : true
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "b5de829c-8a01-4fb5-8800-67c1a34efcc9",
+    "uuid" : "0ca4c6de-5466-4241-80f9-d1d67aca5da4",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : null
