@@ -58,6 +58,7 @@ def _build(
             return Err('Proxy data is invalid')
         destination_.proxy = proxy_
     if url:
+        url = url.rstrip('/')
         try:
             destination.validator.is_valid_destination_url(url, destination_.proxy)
         except destination.validator.ValidationException as e:

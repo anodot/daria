@@ -79,6 +79,8 @@ def check_pipeline_id(pipeline_id: str):
 
 def start(pipeline_: Pipeline, wait_for_sending_data: bool = False):
     reset_pipeline_retries(pipeline_)
+    if is_running(pipeline_):
+        raise pipeline.exception.PipelineAlreadyRunningException(f"Pipeline {pipeline_.name} already running")
     sdc_client.start(pipeline_, wait_for_sending_data)
 
 

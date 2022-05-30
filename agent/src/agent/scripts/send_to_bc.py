@@ -1,3 +1,4 @@
+import json
 import traceback
 import requests
 
@@ -39,6 +40,7 @@ def main():
                 }
             api_client.send_pipeline_data_to_bc(pipeline_data)
             if should_send_error_notification:
+                logger.info(f'Error notification sent for pipeline {pipeline_.name}')
                 # set 'notification_sent' flag to True
                 pipeline_.retries.notification_sent = True
                 pipeline.repository.save(pipeline_.retries)
