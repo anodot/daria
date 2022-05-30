@@ -41,18 +41,18 @@ di.init()
 # row = {
 #     "address": "5th Ave, 122",
 #     "parent_region_dimension_id": "Battambang",
-#     "lon": 100.01,
+#     "longitude": 100.01,
 #     "type": "Mobile RAN",
 #     "domain": "RAN",
 #     "name": "BB001",
 #     "id": "BB001",
-#     "lat": 10.005
+#     "latitude": 10.005
 # }
 # s_row = json.dumps(row)
 # rows = {
 #     "BB001": s_row
 # }
-# s_rows = {"BB001": "{\"address\": \"5th Ave, 122\",\"parent_region_dimension_id\": \"Battambang\",\"lon\": 100.01,\"type\": \"Mobile RAN\",\"domain\": \"RAN\",\"name\": \"BB001\",\"id\": \"BB001\",\"lat\": 10.005}"}
+# s_rows = {"BB001": "{\"address\": \"5th Ave, 122\",\"parent_region_dimension_id\": \"Battambang\",\"longitude\": 100.01,\"type\": \"Mobile RAN\",\"domain\": \"RAN\",\"name\": \"BB001\",\"id\": \"BB001\",\"latitude\": 10.005}"}
 #
 # data = {
 #     "bulkSerNumber": 1,

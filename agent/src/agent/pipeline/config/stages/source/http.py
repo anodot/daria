@@ -1,6 +1,6 @@
 from agent.pipeline.config.stages.base import Stage
 
-# todo move
+# todo move? this stage is not used yet but I keep it for future
 BASIC_AUTH = 'BASIC'
 
 

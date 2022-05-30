@@ -20,7 +20,6 @@ LOG_LEVELS = [logging.getLevelName(logging.INFO), logging.getLevelName(logging.E
 MAX_SAMPLE_RECORDS = 3
 
 
-# todo update test with TopologyPipeline
 def supports_schema(pipeline_: Pipeline) -> bool:
     if isinstance(pipeline_, (TestPipeline, RawPipeline, EventsPipeline, TopologyPipeline)):
         return False
@@ -30,6 +29,7 @@ def supports_schema(pipeline_: Pipeline) -> bool:
         source.TYPE_DIRECTORY: True,
         source.TYPE_DATABRICKS: True,
         source.TYPE_ELASTIC: False,
+        source.TYPE_HTTP: True,
         source.TYPE_INFLUX: True,
         source.TYPE_INFLUX_2: True,
         source.TYPE_KAFKA: True,

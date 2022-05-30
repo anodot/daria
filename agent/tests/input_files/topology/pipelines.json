@@ -4,7 +4,7 @@
     "pipeline_id": "topology_region",
     "interval": 300,
     "entity": {
-      "province": {
+      "region": {
         "fields": {
           "id": {
             "type": "variable",
@@ -33,7 +33,7 @@
             "type": "variable",
             "value_path": "attributes.name"
           },
-          "parent_region_dimension_id": {
+          "parentRegionId": {
             "type": "variable",
             "value_path": "attributes.name",
             "transformations": [
@@ -65,11 +65,11 @@
             "type": "constant",
             "value": "RAN"
           },
-          "lat": {
+          "latitude": {
             "type": "variable",
             "value_path": "attributes.p_lat"
           },
-          "lon": {
+          "longitude": {
             "type": "variable",
             "value_path": "attributes.p_lon"
           },

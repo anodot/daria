@@ -14,7 +14,6 @@ finally:
     sdc.importUnlock()
 
 
-# todo ?
 def chunks(lst, n):
     for i in range(0, len(lst), n):
         yield lst[i:i + n]
@@ -56,27 +55,34 @@ def send_data(client, data, rollup_id):
     res.raise_for_status()
 
 
-now = int(time.time())
-# todo preview sends data
-client = AnodotApiClient(
-    sdc.state, sdc.userParams['ANODOT_URL'], sdc.userParams['ACCESS_TOKEN'], sdc.userParams['PROXIES']
-)
-rollup_id = start_rollup(client)
-for record in sdc.records:
-    for entity_type, entities in record.value.items():
-        base = {
-            "type": entity_type,
-            "rollupId": rollup_id,
-            "timestamp": now,
-            "bulkSerNumber": 1,
-        }
-        for i, chunk in enumerate(chunks(entities, 500)):
-            # i starts from 0 and bulkSerNumber starts from 1 so + 1
-            data = build_entities(base, chunk, i + 1)
-            send_data(client, data, rollup_id)
+def main():
+    now = int(time.time())
+    # todo preview sends data
+    # todo it creates empty records when there's no data
+    # todo it should send entities in order
+    # todo validation for entity types is not done yet
+    client = AnodotApiClient(
+        sdc.state, sdc.userParams['ANODOT_URL'], sdc.userParams['ACCESS_TOKEN'], sdc.userParams['PROXIES']
+    )
+    rollup_id = start_rollup(client)
+    for record in sdc.records:
+        for entity_type, entities in record.value.items():
+            base = {
+                "type": entity_type,
+                "rollupId": rollup_id,
+                "timestamp": now,
+                "bulkSerNumber": 1,
+            }
+            for i, chunk in enumerate(chunks(entities, 500)):
+                # i starts from 0 and bulkSerNumber starts from 1 so + 1
+                data = build_entities(base, chunk, i + 1)
+                send_data(client, data, rollup_id)
 
-            new_record = sdc.createRecord(str(i))
-            new_record.value = data
-            output.write(new_record)
+                new_record = sdc.createRecord(str(i))
+                new_record.value = data
+                output.write(new_record)
 
-end_rollup(client, rollup_id)
+    end_rollup(client, rollup_id)
+
+
+main()

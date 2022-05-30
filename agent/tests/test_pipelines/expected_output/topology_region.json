@@ -1,7 +1,7 @@
 [
   {
     "bulkSerNumber": 1,
-    "type": "PROVINCE",
+    "type": "REGION",
     "rows": {
       "Phnom Penh": "{\"type\": \"Province\", \"name\": \"Phnom Penh\", \"id\": \"Phnom Penh\"}",
       "Steung Treng": "{\"type\": \"Province\", \"name\": \"Steung Treng\", \"id\": \"Steung Treng\"}",

@@ -57,7 +57,6 @@ class AnodotApiClient:
             timeout=timeout,
         )
 
-    # todo this shit regularly returns 401 and it can't re-authorize
     def _get_auth_token(self):
         auth_token = self.sdc_state.get('auth_token')
         if auth_token is None or self._is_expired(auth_token):

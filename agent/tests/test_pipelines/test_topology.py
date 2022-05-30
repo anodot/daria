@@ -17,7 +17,7 @@ class TestTopology(TestPipelineBase):
         ],
         'test_output': [
             {'name': 'topology', 'output_file': 'topology_site.json', 'pipeline_type': 'SITE'},
-            {'name': 'topology', 'output_file': 'topology_province.json', 'pipeline_type': 'PROVINCE'},
+            {'name': 'topology', 'output_file': 'topology_region.json', 'pipeline_type': 'REGION'},
         ],
         'test_delete_pipeline': [
             {'name': 'topology_site'},
