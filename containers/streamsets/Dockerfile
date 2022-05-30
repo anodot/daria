@@ -1,7 +1,7 @@
 FROM streamsets/datacollector:3.18.0-latest
 
 ENV SDC_CONF_PARSER_LIMIT=5048576 SDC_CONF_RUNNER_THREAD_POOL_SIZE="100" STREAMSETS_LIBRARIES_EXTRA_DIR="/opt/sdc-extras/" \
-SDC_LOG="/data/logs"
+SDC_LOG="/data/logs" SDC_JAVA_KEYSTORE_PATH="${SDC_DATA}/security/"
 
 COPY sdc-security.policy ${SDC_CONF}/sdc-security.policy
 COPY credential-stores.properties ${SDC_CONF}/credential-stores.properties
@@ -10,6 +10,7 @@ COPY lib ${USER_LIBRARIES_DIR}
 COPY configure_image.sh /tmp/configure_image.sh
 COPY custom_entrypoint.sh /
 
+RUN mkdir -p ${SDC_JAVA_KEYSTORE_PATH}
 RUN sudo chmod +x /tmp/configure_image.sh && /tmp/configure_image.sh
 
 ## This build uses variable sasl.kerberos.domain.name
