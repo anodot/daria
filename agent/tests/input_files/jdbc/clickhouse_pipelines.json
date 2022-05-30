@@ -27,6 +27,6 @@
     },
     "properties": {"key1": "val1", "key2":  "val2"},
     "interval": 86400,
-    "query": "SELECT * FROM test WHERE {TIMESTAMP_CONDITION} AND country = 'USA'"
+    "query": "SELECT * FROM test WHERE {TIMESTAMP_CONDITION}"
   }
 ]
