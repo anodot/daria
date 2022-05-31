@@ -88,7 +88,7 @@
       "region": {
         "type": "file",
         "format": "CSV",
-        "path": "/home/topology/region_1653903037.csv"
+        "path": "/home/test-datasets/topology/region_1653903037.csv"
       }
     }
   }

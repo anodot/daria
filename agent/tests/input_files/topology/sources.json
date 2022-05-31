@@ -5,7 +5,7 @@
     "config": {
       "type": "file",
       "conf.dataFormat": "DELIMITED",
-      "conf.spoolDir": "/home/topology/",
+      "conf.spoolDir": "/home/test-datasets/topology/",
       "conf.filePattern": "site_*.csv"
     }
   },
@@ -15,7 +15,7 @@
     "config": {
       "type": "file",
       "conf.dataFormat": "DELIMITED",
-      "conf.spoolDir": "/home/topology/",
+      "conf.spoolDir": "/home/test-datasets/topology/",
       "conf.filePattern": "region_*.csv"
     }
   }

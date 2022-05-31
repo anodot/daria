@@ -28,7 +28,7 @@
       "key_"
     ],
     "transform": {
-      "file": "/home/zabbix_transform_value.csv",
+      "file": "/home/test-datasets/zabbix_transform_value.csv",
       "config": "content-provider,\"str:regExCapture(name, '(.+)\\\\s-\\\\s(.+)\\\\s-\\\\s(.+)', 1)\"\nwhat,\"str:regExCapture(name, '(.+)\\\\s-\\\\s(.+)\\\\s-\\\\s(.+)', 2)\"\nservice-provider,\"str:regExCapture(name, '(.+)\\\\s-\\\\s(.+)\\\\s-\\\\s(.+)', 3)\"\n"
     },
     "properties": {

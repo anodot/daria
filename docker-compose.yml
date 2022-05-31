@@ -10,7 +10,7 @@ services:
     volumes:
       - sdc-data:/data
       - ./certs:/home/certs
-      - ./test-datasets:/home
+      - ./test-datasets:/home/test-datasets
     #      - ./test-datasets:/kerberos
     #      - ./test-datasets/krb5.conf:/etc/krb5.conf
     environment:

@@ -12,7 +12,7 @@ services:
       - ./sdc-data:/data
       - ./sdc-conf:/etc/sdc_conf
       - ./certs:/home/certs
-      - ./test-datasets:/home
+      - ./test-datasets:/home/test-datasets
       - ./containers/streamsets/lib/anodot/lib:/opt/streamsets-datacollector-user-libs/anodot/lib/
 #    environment:
 #      SDC_CONF_PARSER_LIMIT: 2048576

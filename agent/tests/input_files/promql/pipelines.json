@@ -82,7 +82,7 @@
     "days_to_backfill": 581,
     "interval": 10000,
     "transform": {
-      "file": "/home/victoria_transform.csv"
+      "file": "/home/test-datasets/victoria_transform.csv"
     }
   },
   {
