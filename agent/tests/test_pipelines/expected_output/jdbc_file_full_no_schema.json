@@ -22,7 +22,7 @@
     "timestamp": 1512867600,
     "properties": {
       "adsize": "Sma_ll",
-      "country": "USA",
+      "country": "中国",
       "what": "impressions",
       "target_type": "gauge",
       "key1": "val1",
@@ -41,7 +41,7 @@
     "timestamp": 1512867600,
     "properties": {
       "adsize": "Sma_ll",
-      "country": "USA",
+      "country": "中国",
       "what": "test",
       "target_type": "counter",
       "key1": "val1",
