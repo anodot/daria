@@ -31,8 +31,7 @@ services:
     volumes:
       - sdc-data2:/data
       - ./certs:/home/certs
-      - ./test-datasets/test-directory-collector:/home/test-directory-collector
-      - ./test-datasets/events-directory:/home/events-directory
+      - ./test-datasets:/home/test-datasets
     environment:
       SDC_CONF_PRODUCTION_MAXBATCHSIZE: "50"
       SDC_CONF_RUNNER_THREAD_POOL_SIZE: "2000"
@@ -63,7 +62,7 @@ services:
       - ./agent/backup-data:/usr/src/app/backup-data
       #      - ./scripts:/usr/src/app/scripts
       - dummy-destination-data:/output
-      - ./test-datasets:/home
+      - ./test-datasets:/home/test-datasets
 
   db:
     container_name: db

@@ -101,7 +101,7 @@ def update_schema_mock():
 def access_token_mock():
     if request.json['refreshToken'] == 'incorrect_key':
         return 'Incorrect key', 401
-    return 'first_part.eyJkYXRhIjoic29tZWRhdGEiLCJpYXQiOjE2NTM5MDQ2MjIsImV4cCI6MjI1MzkwNzg2MX0.third_part', 200
+    return AUTH_TOKEN, 200
 
 
 @app.route('/api/v2/stream-schemas', methods=['POST'])

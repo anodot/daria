@@ -13,6 +13,8 @@ try:
 finally:
     sdc.importUnlock()
 
+REQUEST_RETRIES = 3
+
 
 class RollupProvider:
     def __init__(self, client):
@@ -71,6 +73,21 @@ def send_data(client, data, rollup_id):
     res.raise_for_status()
 
 
+def retry(func):
+    i = 0
+    while True:
+        i += 1
+        try:
+            func()
+        except Exception as e:
+            if i < REQUEST_RETRIES:
+                time.sleep(10)
+                continue
+            raise e
+        break
+
+
+@retry
 def main():
     now = int(time.time())
     # what todo if I get end rollup error for an entity? retry and fail after, as usually
