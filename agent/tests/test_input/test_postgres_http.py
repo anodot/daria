@@ -33,5 +33,5 @@ class TestPostgreSQL(TestInputBase):
     def test_create_advanced(self, cli_runner, name, source):
         days_to_backfill = (datetime.now() - datetime(year=2017, month=12, day=10)).days + 1
         result = cli_runner.invoke(cli.pipeline.create, ['-a'], catch_exceptions=False,
-                                   input=f'{source}\n{name}\nSELECT * FROM test WHERE {{TIMESTAMP_CONDITION}} AND country = \'USA\'\n\n86400\n{days_to_backfill}\n1\ntimestamp_unix\nunix\ny\ntest\nclicks:gauge impressions:gauge\nadsize country\nkey1:val1 key2:val2\n\n\n\n')
+                                   input=f'{source}\n{name}\nSELECT * FROM test WHERE {{TIMESTAMP_CONDITION}} AND not country is NULL\n\n86400\n{days_to_backfill}\n1\ntimestamp_unix\nunix\ny\ntest\nclicks:gauge impressions:gauge\nadsize country\nkey1:val1 key2:val2\n\n\n\n')
         assert result.exit_code == 0
