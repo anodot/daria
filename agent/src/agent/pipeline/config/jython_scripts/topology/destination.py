@@ -14,6 +14,22 @@ finally:
     sdc.importUnlock()
 
 
+class RollupProvider:
+    def __init__(self, client):
+        self.client = client
+        self.rollup_id = None
+
+    def __enter__(self):
+        if sdc.isPreview():
+            return 'dummy_rollup_id'
+        self.rollup_id = start_rollup(self.client)
+        return self.rollup_id
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        if not sdc.isPreview() and not exc_value:
+            end_rollup(self.client, self.rollup_id)
+
+
 def chunks(lst, n):
     for i in range(0, len(lst), n):
         yield lst[i:i + n]
@@ -57,31 +73,29 @@ def send_data(client, data, rollup_id):
 
 def main():
     now = int(time.time())
-    # todo preview sends data. is preview method?
     # what todo if I get end rollup error for an entity? retry and fail after, as usually
     # todo validation for entity types is not done yet
     client = AnodotApiClient(
         sdc.state, sdc.userParams['ANODOT_URL'], sdc.userParams['ACCESS_TOKEN'], sdc.userParams['PROXIES']
     )
-    rollup_id = start_rollup(client)
-    for record in sdc.records:
-        for entity_type, entities in record.value.items():
-            base = {
-                "type": entity_type,
-                "rollupId": rollup_id,
-                "timestamp": now,
-                "bulkSerNumber": 1,
-            }
-            for i, chunk in enumerate(chunks(entities, 500)):
-                # i starts from 0 and bulkSerNumber starts from 1 so + 1
-                data = build_entities(base, chunk, i + 1)
-                send_data(client, data, rollup_id)
+    with RollupProvider(client) as rollup_id:
+        for record in sdc.records:
+            for entity_type, entities in record.value.items():
+                base = {
+                    "type": entity_type,
+                    "rollupId": rollup_id,
+                    "timestamp": now,
+                    "bulkSerNumber": 1,
+                }
+                for i, chunk in enumerate(chunks(entities, 500)):
+                    # i starts from 0 and bulkSerNumber starts from 1 so + 1
+                    data = build_entities(base, chunk, i + 1)
+                    if not sdc.isPreview():
+                        send_data(client, data, rollup_id)
 
-                new_record = sdc.createRecord(str(i))
-                new_record.value = data
-                output.write(new_record)
-
-    end_rollup(client, rollup_id)
+                    new_record = sdc.createRecord(str(i))
+                    new_record.value = data
+                    output.write(new_record)
 
 
 main()
