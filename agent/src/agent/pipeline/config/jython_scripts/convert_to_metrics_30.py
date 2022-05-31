@@ -14,7 +14,9 @@ def extract_value(obj, path):
 
 
 def replace_illegal_chars(value):
-    value = str(value).strip().replace(".", "_")
+    if type(value).__name__ not in ['unicode', 'str']:
+        value = str(value)
+    value = value.strip().replace(".", "_")
     return re.sub('\s+', '_', value)
 
 
@@ -22,7 +24,7 @@ def get_dimensions(record):
     dimensions = {}
     for dimension_path, name in sdc.userParams['DIMENSIONS'].items():
         dimension_value = extract_value(record.value, dimension_path)
-        if not dimension_value:
+        if not dimension_value or dimension_value is None:
             continue
         dimension_value = replace_illegal_chars(dimension_value)
         if dimension_value == '':
