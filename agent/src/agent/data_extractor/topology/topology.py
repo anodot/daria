@@ -14,7 +14,6 @@ LOGICAL_GROUP = 'LOGICAL_GROUP'
 APPLICATION = 'APPLICATION'
 
 TOPOLOGY_ENTITIES = [REGION, SITE, NODE, CARD, INTERFACE, CELL, LINK, SERVICE, LOGICAL_GROUP, APPLICATION]
-# todo add jsonschema definition for topology, now it's almost empty
 
 
 def transform_metrics(pipeline_: Pipeline, data: dict) -> dict:

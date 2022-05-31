@@ -1,6 +1,5 @@
 import json
 import traceback
-
 import jsonschema
 
 from typing import List

@@ -57,9 +57,8 @@ def send_data(client, data, rollup_id):
 
 def main():
     now = int(time.time())
-    # todo preview sends data
-    # todo it creates empty records when there's no data
-    # todo it should send entities in order
+    # todo preview sends data. is preview method?
+    # what todo if I get end rollup error for an entity? retry and fail after, as usually
     # todo validation for entity types is not done yet
     client = AnodotApiClient(
         sdc.state, sdc.userParams['ANODOT_URL'], sdc.userParams['ACCESS_TOKEN'], sdc.userParams['PROXIES']
