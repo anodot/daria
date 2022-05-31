@@ -181,9 +181,9 @@ run-dev:
 bootstrap: clean-docker-volumes run-base-services test-streamsets test-destination
 
 clean-docker-volumes:
-	rm -rf sdc-data
-	rm -rf sdc-data2
-	rm -rf agent/output
+	sudo rm -rf sdc-data/*
+	sudo rm -rf sdc-data2/*
+	sudo rm -rf agent/output/*
 	$(DOCKER_COMPOSE_DEV) down -v --remove-orphans
 
 run-base-services: _run-base-services half-sleep
@@ -258,7 +258,7 @@ _run-zabbix:
 setup-kafka:
 	./scripts/upload-test-data-to-kafka.sh
 
-setup-elastic:
+setup-elastic: nap
 	./scripts/upload-test-data-to-elastic.sh
 
 setup-victoria:
