@@ -74,23 +74,26 @@ def send_data(client, data, rollup_id):
 
 
 def retry(func):
-    i = 0
-    while True:
-        i += 1
-        try:
-            func()
-        except Exception as e:
-            if i < REQUEST_RETRIES:
-                time.sleep(10)
-                continue
-            raise e
-        break
+    def wrapper(*args, **kwargs):
+        i = 0
+        while True:
+            i += 1
+            try:
+                func(*args, **kwargs)
+            except Exception as e:
+                if i < REQUEST_RETRIES:
+                    time.sleep(10)
+                    continue
+                raise e
+            break
+
+    return wrapper
 
 
 @retry
 def main():
     now = int(time.time())
-    # what todo if I get end rollup error for an entity? retry and fail after, as usually
+    # todo it STILL PROCESSES EMPTY BATCHES!!!
     # todo validation for entity types is not done yet
     client = AnodotApiClient(
         sdc.state, sdc.userParams['ANODOT_URL'], sdc.userParams['ACCESS_TOKEN'], sdc.userParams['PROXIES']

@@ -25,6 +25,7 @@ RUN rm -rf /opt/streamsets-datacollector-3.18.0/streamsets-libs/streamsets-datac
 COPY daily-website-visitors.csv /home/sdc/tmp/daily-website-visitors.csv
 
 COPY python-libs ${SDC_DIST}/python-libs
+COPY custom_libs/* ${SDC_DIST}/python-libs/
 
 VOLUME /data
 
