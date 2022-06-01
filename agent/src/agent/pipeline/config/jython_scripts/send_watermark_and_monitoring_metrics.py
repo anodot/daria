@@ -17,7 +17,8 @@ finally:
 
 
 def _get_watermark_delta(watermark):
-    return str(calendar.timegm(datetime.now(pytz.utc).timetuple()) - watermark)
+    tz = sdc.userParams['TIMEZONE'] if sdc.userParams['WATERMARK_IN_LOCAL_TIMEZONE'] == 'True' and sdc.userParams['TIMEZONE'] else 'UTC'
+    return str(calendar.timegm(datetime.now(pytz.timezone(tz)).timetuple()) - watermark)
 
 
 for record in sdc.records:

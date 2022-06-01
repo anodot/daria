@@ -53,6 +53,14 @@ class WatermarkWithMetricsDestination(JythonProcessor):
                 'value': urllib.parse.urljoin(
                     self.pipeline.streamsets.agent_external_url, f'/monitoring/watermark_sent/{self.pipeline.name}')
             },
+            {
+                'key': 'WATERMARK_IN_LOCAL_TIMEZONE',
+                'value': str(self.pipeline.watermark_in_local_timezone),
+            },
+            {
+                'key': 'TIMEZONE',
+                'value': str(self.pipeline.timezone),
+            },
         ]
 
 
