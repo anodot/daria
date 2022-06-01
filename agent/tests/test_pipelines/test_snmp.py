@@ -9,7 +9,7 @@ class TestSNMP(TestPipelineBase):
     __test__ = True
     params = {
         'test_start': [
-            {'name': 'snmp', 'sleep': 120},
+            {'name': 'snmp', 'sleep': 60},
         ],
         'test_force_stop': [{'name': 'snmp'}],
         'test_output_schema': [
