@@ -1,0 +1,13 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {"type": "object"},
+    "name": {"type": "object"},
+    "type": {"type": "object"},
+    "relatedEntityType": {"type": "object"},
+    "relatedEntityId": {"type": "object"},
+    "description": {"type": "object"}
+  },
+  "required": ["id", "name", "relatedEntityType", "relatedEntityId"],
+  "additionalProperties": false
+}
