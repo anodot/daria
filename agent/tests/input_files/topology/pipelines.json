@@ -5,19 +5,17 @@
     "interval": 300,
     "entity": {
       "region": {
-        "fields": {
-          "id": {
-            "type": "variable",
-            "value_path": "Full Name"
-          },
-          "name": {
-            "type": "variable",
-            "value_path": "Full Name"
-          },
-          "type": {
-            "type": "constant",
-            "value": "Province"
-          }
+        "id": {
+          "type": "variable",
+          "value_path": "Full Name"
+        },
+        "name": {
+          "type": "variable",
+          "value_path": "Full Name"
+        },
+        "type": {
+          "type": "constant",
+          "value": "Province"
         }
       }
     }
@@ -28,59 +26,57 @@
     "interval": 300,
     "entity": {
       "site": {
-        "fields": {
-          "id": {
-            "type": "variable",
-            "value_path": "attributes.name"
-          },
-          "parentRegionId": {
-            "type": "variable",
-            "value_path": "attributes.name",
-            "transformations": [
-              {
-                "type": "function",
-                "name": "substring",
-                "args": [
-                  0,
-                  2
-                ]
-              },
-              {
-                "type": "lookup",
-                "name": "region",
-                "key": "Short Name",
-                "value": "Full Name"
-              }
-            ]
-          },
-          "name": {
-            "type": "variable",
-            "value_path": "attributes.name"
-          },
-          "type": {
-            "type": "constant",
-            "value": "Mobile RAN"
-          },
-          "domain": {
-            "type": "constant",
-            "value": "RAN"
-          },
-          "latitude": {
-            "type": "variable",
-            "value_path": "attributes.p_lat"
-          },
-          "longitude": {
-            "type": "variable",
-            "value_path": "attributes.p_lon"
-          },
-          "address": {
-            "type": "variable",
-            "value_path": [
-              "attributes.street",
-              "attributes.house"
-            ],
-            "concat_by": ", "
-          }
+        "id": {
+          "type": "variable",
+          "value_path": "attributes.name"
+        },
+        "parentRegionId": {
+          "type": "variable",
+          "value_path": "attributes.name",
+          "transformations": [
+            {
+              "type": "function",
+              "name": "substring",
+              "args": [
+                0,
+                2
+              ]
+            },
+            {
+              "type": "lookup",
+              "name": "region",
+              "key": "Short Name",
+              "value": "Full Name"
+            }
+          ]
+        },
+        "name": {
+          "type": "variable",
+          "value_path": "attributes.name"
+        },
+        "type": {
+          "type": "constant",
+          "value": "Mobile RAN"
+        },
+        "domain": {
+          "type": "constant",
+          "value": "RAN"
+        },
+        "latitude": {
+          "type": "variable",
+          "value_path": "attributes.p_lat"
+        },
+        "longitude": {
+          "type": "variable",
+          "value_path": "attributes.p_lon"
+        },
+        "address": {
+          "type": "variable",
+          "value_path": [
+            "attributes.street",
+            "attributes.house"
+          ],
+          "concat_by": ", "
         }
       }
     },

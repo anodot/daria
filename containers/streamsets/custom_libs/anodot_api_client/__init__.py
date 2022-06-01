@@ -6,8 +6,7 @@ import requests
 
 class AnodotUrlBuilder:
     def __init__(self, base_url):
-        self.base_url = base_url
-        self.base_url = self.base_url.rstrip('/')
+        self.base_url = base_url.rstrip('/')
 
     def build(self, *args):
         paths = ['/api/v2']

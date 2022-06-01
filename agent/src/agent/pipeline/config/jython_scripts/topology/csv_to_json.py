@@ -14,6 +14,7 @@ entityName = ''
 
 
 def main():
+    # we need one header and at least one row
     if len(sdc.records) <= 1:
         return
 

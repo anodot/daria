@@ -81,6 +81,8 @@ def retry(func):
             try:
                 func(*args, **kwargs)
             except Exception as e:
+                sdc.log.error('EXCEPTION OCCURRED, RETRYING')
+                sdc.log.error(str(e))
                 if i < REQUEST_RETRIES:
                     time.sleep(10)
                     continue
@@ -93,8 +95,6 @@ def retry(func):
 @retry
 def main():
     now = int(time.time())
-    # todo it STILL PROCESSES EMPTY BATCHES!!!
-    # todo validation for entity types is not done yet
     client = AnodotApiClient(
         sdc.state, sdc.userParams['ANODOT_URL'], sdc.userParams['ACCESS_TOKEN'], sdc.userParams['PROXIES']
     )
@@ -118,4 +118,5 @@ def main():
                     output.write(new_record)
 
 
-main()
+if len(sdc.records) > 0:
+    main()

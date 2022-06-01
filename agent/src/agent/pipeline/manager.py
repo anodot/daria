@@ -1,10 +1,8 @@
 import logging
 import random
 import string
-import pytz
 import sdc_client
 
-from datetime import datetime, timedelta, timezone
 from agent import source, pipeline, destination, streamsets
 from agent.modules import tools, constants
 from agent.pipeline import Pipeline, TestPipeline, PipelineMetric, PipelineRetries, RawPipeline, EventsPipeline, \
@@ -132,7 +130,7 @@ def _load_config(pipeline_: Pipeline, config: dict, is_edit=False):
     config['uses_schema'] = json_builder.get_schema_chooser(pipeline_).choose(pipeline_, config, is_edit)
     json_builder.get(pipeline_, config, is_edit).build()
     # todo too many validations, 4 validations here
-    pipeline.config.validators.get_config_validator(pipeline_.source.type).validate(pipeline_)
+    pipeline.config.validators.get_config_validator(pipeline_).validate(pipeline_)
 
 
 def update(pipeline_: Pipeline, config_: dict = None):

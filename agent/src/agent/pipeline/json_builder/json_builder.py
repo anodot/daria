@@ -5,11 +5,10 @@ import jsonschema
 from abc import ABC, abstractmethod
 from typing import List, Callable
 from agent import source, pipeline
-from agent.modules import validator
+from agent.modules import validator, expression_parser
 from agent.modules.logger import get_logger
 from agent.modules.tools import deep_update
 from agent.pipeline import Pipeline, TopologyPipeline
-from agent.pipeline.config import expression_parser
 
 logger_ = get_logger(__name__, stdout=True)
 

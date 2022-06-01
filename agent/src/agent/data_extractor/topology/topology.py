@@ -13,7 +13,7 @@ SERVICE = 'SERVICE'
 LOGICAL_GROUP = 'LOGICAL_GROUP'
 APPLICATION = 'APPLICATION'
 
-TOPOLOGY_ENTITIES = [REGION, SITE, NODE, CARD, INTERFACE, CELL, LINK, SERVICE, LOGICAL_GROUP, APPLICATION]
+ENTITIES = [REGION, SITE, NODE, CARD, INTERFACE, CELL, LINK, SERVICE, LOGICAL_GROUP, APPLICATION]
 
 
 def transform_metrics(pipeline_: Pipeline, data: dict) -> dict:
@@ -25,7 +25,7 @@ def transform_metrics(pipeline_: Pipeline, data: dict) -> dict:
 class Entity(ABC):
     def __init__(self, name: str, config: dict):
         self.name: str = name
-        self.fields: list[field.Field] = field.build_fields(config['fields'])
+        self.fields: list[field.Field] = field.build_fields(config)
 
 
 def _create_topology_records(entities: list[Entity], data: dict) -> dict:
