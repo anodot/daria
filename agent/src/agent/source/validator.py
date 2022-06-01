@@ -198,19 +198,22 @@ class MongoValidator(Validator):
 
 class SNMPValidator(Validator):
     def validate(self):
-        url = urllib.parse.urlparse(self.source.url)
-        iterator = getCmd(
-            SnmpEngine(),
-            CommunityData(self.source.read_community, mpModel=0),
-            UdpTransportTarget((url.hostname, url.port), timeout=10, retries=0),
-            ContextData(),
-            ObjectType(ObjectIdentity('1.3.6.1.2.1.1.5.0')),
-            lookupNames=True,
-            lookupMib=True
-        )
-        for response in iterator:
-            if type(response[0]).__name__ == 'RequestTimedOut':
-                raise ValidationException(f'Couldn\'t get response from `{self.source.url}`')
+        snmp_hosts = [self.source.url] if self.source.url else self.source.hosts
+        for host in snmp_hosts:
+            host_ = host if '://' in host else f'//{host}'
+            url = urllib.parse.urlparse(host_)
+            iterator = getCmd(
+                SnmpEngine(),
+                CommunityData(self.source.read_community, mpModel=0),
+                UdpTransportTarget((url.hostname, url.port), timeout=10, retries=0),
+                ContextData(),
+                ObjectType(ObjectIdentity('1.3.6.1.2.1.1.5.0')),
+                lookupNames=True,
+                lookupMib=True
+            )
+            for response in iterator:
+                if type(response[0]).__name__ == 'RequestTimedOut':
+                    raise ValidationException(f'Couldn\'t get response from `{host}`')
 
     @if_validation_enabled
     def validate_connection(self):
