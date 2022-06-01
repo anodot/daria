@@ -7,6 +7,7 @@ from agent.data_extractor.snmp.delta_calculator import DeltaCalculator
 from agent.modules import logger
 from agent.pipeline import Pipeline
 from urllib.parse import urlparse
+from itertools import chain
 
 logger_ = logger.get_logger(__name__, stdout=True)
 delta_calculator = DeltaCalculator()
@@ -21,7 +22,8 @@ def extract_metrics(pipeline_: Pipeline) -> list:
     for response in _fetch_data(pipeline_):
         var_binds = _get_var_binds(response)
         metric = _create_metric(pipeline_, var_binds)
-        metrics.append(metric)
+        if metric['measurements']:
+            metrics.append(metric)
     return metrics
 
 
@@ -54,16 +56,21 @@ def _get_var_binds(response):
 
 
 def _fetch_data(pipeline_: Pipeline):
-    url = urlparse(pipeline_.source.url)
-    return getCmd(
-        SnmpEngine(),
-        CommunityData(pipeline_.source.read_community, mpModel=0),
-        UdpTransportTarget((url.hostname, url.port), timeout=pipeline_.source.query_timeout, retries=0),
-        ContextData(),
-        *[ObjectType(ObjectIdentity(mib)) for mib in pipeline_.config['oids']],
-        lookupNames=True,
-        lookupMib=True
-    )
+    binds = []
+    snmp_hosts = [pipeline_.source.url] if pipeline_.source.url else pipeline_.source.hosts
+    for host in snmp_hosts:
+        host_ = host if '://' in host else f'//{host}'
+        url = urlparse(host_)
+        binds.append(getCmd(
+            SnmpEngine(),
+            CommunityData(pipeline_.source.read_community, mpModel=0),
+            UdpTransportTarget((url.hostname, url.port), timeout=pipeline_.source.query_timeout, retries=0),
+            ContextData(),
+            *[ObjectType(ObjectIdentity(mib)) for mib in pipeline_.config['oids']],
+            lookupNames=True,
+            lookupMib=True
+        ))
+    return chain(*binds)
 
 
 def _create_metric(pipeline_: Pipeline, var_binds: list) -> dict:
