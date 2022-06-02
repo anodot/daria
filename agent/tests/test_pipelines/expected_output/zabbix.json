@@ -2,9 +2,9 @@
   {
     "timestamp": 1611322470,
     "properties": {
-      "host": "zabbixagentґ",
+      "host": "zabbixagent",
       "content-provider": "agent",
-      "service-provider": "anodot",
+      "service-provider": "anodotґ",
       "what": "Memory",
       "target_type": "gauge",
       "test_type": "input",
@@ -35,9 +35,9 @@
   {
     "timestamp": 1611322470,
     "properties": {
-      "host": "zabbixagentґ",
+      "host": "zabbixagent",
       "content-provider": "agent",
-      "service-provider": "anodot",
+      "service-provider": "anodotґ",
       "what": "counter",
       "target_type": "counter",
       "test_type": "input",
@@ -68,9 +68,9 @@
   {
     "timestamp": 1611322520,
     "properties": {
-      "host": "zabbixagentґ",
+      "host": "zabbixagent",
       "content-provider": "agent",
-      "service-provider": "anodot",
+      "service-provider": "anodotґ",
       "what": "Memory",
       "target_type": "gauge",
       "test_type": "input",
@@ -101,9 +101,9 @@
   {
     "timestamp": 1611322520,
     "properties": {
-      "host": "zabbixagentґ",
+      "host": "zabbixagent",
       "content-provider": "agent",
-      "service-provider": "anodot",
+      "service-provider": "anodotґ",
       "what": "counter",
       "target_type": "counter",
       "test_type": "input",
@@ -134,9 +134,9 @@
   {
     "timestamp": 1611322550,
     "properties": {
-      "host": "zabbixagentґ",
+      "host": "zabbixagent",
       "content-provider": "agent",
-      "service-provider": "anodot",
+      "service-provider": "anodotґ",
       "what": "Memory",
       "target_type": "gauge",
       "test_type": "input",
@@ -167,9 +167,9 @@
   {
     "timestamp": 1611322550,
     "properties": {
-      "host": "zabbixagentґ",
+      "host": "zabbixagent",
       "content-provider": "agent",
-      "service-provider": "anodot",
+      "service-provider": "anodotґ",
       "what": "counter",
       "target_type": "counter",
       "test_type": "input",

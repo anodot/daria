@@ -2,7 +2,7 @@
   {
     "timestamp": 1611322479,
     "properties": {
-      "host": "zabbixagentґ",
+      "host": "zabbixagent",
       "key_": "system_cpu_load",
       "what": "null",
       "target_type": "gauge",
@@ -33,7 +33,7 @@
   {
     "timestamp": 1611322479,
     "properties": {
-      "host": "zabbixagentґ",
+      "host": "zabbixagent",
       "key_": "system_cpu_load",
       "what": "counter",
       "target_type": "counter",
@@ -64,7 +64,7 @@
   {
     "timestamp": 1611322529,
     "properties": {
-      "host": "zabbixagentґ",
+      "host": "zabbixagent",
       "key_": "system_cpu_load",
       "what": "null",
       "target_type": "gauge",
@@ -95,7 +95,7 @@
   {
     "timestamp": 1611322529,
     "properties": {
-      "host": "zabbixagentґ",
+      "host": "zabbixagent",
       "key_": "system_cpu_load",
       "what": "counter",
       "target_type": "counter",
@@ -126,7 +126,7 @@
   {
     "timestamp": 1611322559,
     "properties": {
-      "host": "zabbixagentґ",
+      "host": "zabbixagent",
       "key_": "system_cpu_load",
       "what": "null",
       "target_type": "gauge",
@@ -157,7 +157,7 @@
   {
     "timestamp": 1611322559,
     "properties": {
-      "host": "zabbixagentґ",
+      "host": "zabbixagent",
       "key_": "system_cpu_load",
       "what": "counter",
       "target_type": "counter",
@@ -188,9 +188,9 @@
   {
     "timestamp": 1611322470,
     "properties": {
-      "host": "zabbixagentґ",
+      "host": "zabbixagent",
       "content-provider": "agent",
-      "service-provider": "anodot",
+      "service-provider": "anodotґ",
       "key_": "vm_memory_size[macro_value,macro_value_2]",
       "what": "Memory",
       "target_type": "gauge",
@@ -221,9 +221,9 @@
   {
     "timestamp": 1611322470,
     "properties": {
-      "host": "zabbixagentґ",
+      "host": "zabbixagent",
       "content-provider": "agent",
-      "service-provider": "anodot",
+      "service-provider": "anodotґ",
       "key_": "vm_memory_size[macro_value,macro_value_2]",
       "what": "counter",
       "target_type": "counter",
@@ -254,9 +254,9 @@
   {
     "timestamp": 1611322520,
     "properties": {
-      "host": "zabbixagentґ",
+      "host": "zabbixagent",
       "content-provider": "agent",
-      "service-provider": "anodot",
+      "service-provider": "anodotґ",
       "key_": "vm_memory_size[macro_value,macro_value_2]",
       "what": "Memory",
       "target_type": "gauge",
@@ -287,9 +287,9 @@
   {
     "timestamp": 1611322520,
     "properties": {
-      "host": "zabbixagentґ",
+      "host": "zabbixagent",
       "content-provider": "agent",
-      "service-provider": "anodot",
+      "service-provider": "anodotґ",
       "key_": "vm_memory_size[macro_value,macro_value_2]",
       "what": "counter",
       "target_type": "counter",
@@ -320,9 +320,9 @@
   {
     "timestamp": 1611322550,
     "properties": {
-      "host": "zabbixagentґ",
+      "host": "zabbixagent",
       "content-provider": "agent",
-      "service-provider": "anodot",
+      "service-provider": "anodotґ",
       "key_": "vm_memory_size[macro_value,macro_value_2]",
       "what": "Memory",
       "target_type": "gauge",
@@ -353,9 +353,9 @@
   {
     "timestamp": 1611322550,
     "properties": {
-      "host": "zabbixagentґ",
+      "host": "zabbixagent",
       "content-provider": "agent",
-      "service-provider": "anodot",
+      "service-provider": "anodotґ",
       "key_": "vm_memory_size[macro_value,macro_value_2]",
       "what": "counter",
       "target_type": "counter",

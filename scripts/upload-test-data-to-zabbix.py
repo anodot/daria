@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from agent.modules import zabbix
 
 
-HOSTNAME = 'zabbixagentґ'
+HOSTNAME = 'zabbixagent'
 
 client = zabbix.Client('http://zabbix-web:8080', 'Admin', 'zabbix')
 print('Auth successful')
@@ -34,7 +34,7 @@ print('CPU item created')
 
 memory_item = client.post('item.create', {
     'hostid': host_id,
-    'name': 'agent - Memory - anodot',
+    'name': 'agent - Memory - anodotґ',
     'key_': 'vm.memory.size[{$MY_MACRO},{$MY_MACRO_2}]',
     'type': 0,
     'value_type': 3,
