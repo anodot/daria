@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from agent.modules import zabbix
 
 
-HOSTNAME = 'zabbixagent'
+HOSTNAME = 'zabbixagentґ'
 
 client = zabbix.Client('http://zabbix-web:8080', 'Admin', 'zabbix')
 print('Auth successful')

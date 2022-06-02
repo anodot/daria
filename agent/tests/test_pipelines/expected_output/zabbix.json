@@ -2,7 +2,7 @@
   {
     "timestamp": 1611322470,
     "properties": {
-      "host": "zabbixagent",
+      "host": "zabbixagentґ",
       "content-provider": "agent",
       "service-provider": "anodot",
       "what": "Memory",
@@ -35,7 +35,7 @@
   {
     "timestamp": 1611322470,
     "properties": {
-      "host": "zabbixagent",
+      "host": "zabbixagentґ",
       "content-provider": "agent",
       "service-provider": "anodot",
       "what": "counter",
@@ -68,7 +68,7 @@
   {
     "timestamp": 1611322520,
     "properties": {
-      "host": "zabbixagent",
+      "host": "zabbixagentґ",
       "content-provider": "agent",
       "service-provider": "anodot",
       "what": "Memory",
@@ -101,7 +101,7 @@
   {
     "timestamp": 1611322520,
     "properties": {
-      "host": "zabbixagent",
+      "host": "zabbixagentґ",
       "content-provider": "agent",
       "service-provider": "anodot",
       "what": "counter",
@@ -134,7 +134,7 @@
   {
     "timestamp": 1611322550,
     "properties": {
-      "host": "zabbixagent",
+      "host": "zabbixagentґ",
       "content-provider": "agent",
       "service-provider": "anodot",
       "what": "Memory",
@@ -167,7 +167,7 @@
   {
     "timestamp": 1611322550,
     "properties": {
-      "host": "zabbixagent",
+      "host": "zabbixagentґ",
       "content-provider": "agent",
       "service-provider": "anodot",
       "what": "counter",
