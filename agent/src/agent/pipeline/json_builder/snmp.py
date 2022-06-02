@@ -19,7 +19,7 @@ class SNMPBuilder(Builder):
         self.config['dimensions'].append(snmp.HOSTNAME_NAME)
         if 'dimension_value_paths' not in self.config:
             self.config['dimension_value_paths'] = {}
-        self.config['dimension_value_paths'][snmp.HOSTNAME_PATH] = snmp.HOSTNAME_NAME
+        self.config['dimension_value_paths'][snmp.HOSTNAME_NAME] = snmp.HOSTNAME_PATH
 
 
 class SNMPRawBuilder(Builder):
