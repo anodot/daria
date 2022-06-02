@@ -62,7 +62,7 @@
     },
     "query": "SELECT hdd_sum,host,usage_active::field FROM cpu_test,hdd_test WHERE {TIMESTAMP_CONDITION} AND 1=1",
     "transform": {
-      "file": "/home/influx_transform.csv"
+      "file": "/home/test-datasets/influx_transform.csv"
     },
     "properties": {"test": "val"},
     "interval": 86400000,
@@ -78,7 +78,7 @@
     },
     "query": "SELECT hdd_idle,zone,host,usage_active::field FROM cpu_test,hdd_test WHERE {TIMESTAMP_CONDITION} AND 1=1",
     "transform": {
-      "file": "/home/influx_schema_transform.csv"
+      "file": "/home/test-datasets/influx_schema_transform.csv"
     },
     "properties": {"test": "val"},
     "interval": 86400000
@@ -124,7 +124,7 @@
     },
     "query": "from(bucket:\"test\") |> {TIMESTAMP_CONDITION} |> filter(fn: (r) => (r._measurement == \"cpu_test\" or r._measurement == \"hdd_test\"))",
     "transform": {
-      "file": "/home/influx_schema_transform.csv"
+      "file": "/home/test-datasets/influx_schema_transform.csv"
     },
     "properties": {"test": "val"},
     "interval": 1200000

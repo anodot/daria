@@ -20,6 +20,10 @@ def divide(numerator: int | float, denominator: int | float) -> float:
     return numerator / denominator
 
 
+def substring(string: str, from_index: int, to_index: int) -> str:
+    return string[from_index:to_index]
+
+
 def get_by_name(name: str) -> Callable:
     try:
         return getattr(sys.modules[__name__], name)

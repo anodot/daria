@@ -1,6 +1,9 @@
 {
   "type": "object",
   "properties": {
+    "interval": {"type": "integer"},
+    "entity": {"type": "object"},
+    "lookups": {"type": "object"}
   },
-  "required": []
+  "required": ["interval", "entity"]
 }

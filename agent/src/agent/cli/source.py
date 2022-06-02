@@ -65,6 +65,7 @@ def delete(name):
     except source.repository.SourceNotExists as e:
         raise click.ClickException(str(e))
 
+
 @click.command()
 @click.option('-d', '--dir-path', type=click.Path())
 @click.option('-p', '--plain-text-credentials', is_flag=True, default=False)
@@ -78,8 +79,8 @@ def export(dir_path, plain_text_credentials):
     for source_ in sources:
         config = source_.to_dict()
         if not plain_text_credentials:
-            source.sensitive_data.mask(config)
-        with open(os.path.join(dir_path, source_.name + '.json'), 'w+') as f:
+            config = source.sensitive_data.mask(config)
+        with open(os.path.join(dir_path, f'{source_.name}.json'), 'w+') as f:
             json.dump([config], f)
 
     click.echo(f'All sources exported to the `{dir_path}` directory')

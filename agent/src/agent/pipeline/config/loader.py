@@ -45,7 +45,6 @@ class ConfigLoader(ABC):
             source.TYPE_SPLUNK: 'tcp_server_http.json',
             source.TYPE_SOLARWINDS: 'solarwinds.json',
             source.TYPE_THANOS: 'promql.json',
-            source.TYPE_TOPOLOGY: 'topology.json',
             source.TYPE_VICTORIA: 'promql.json',
             source.TYPE_ZABBIX: 'zabbix_http.json',
         }[pipeline.source.type]
@@ -102,6 +101,20 @@ class EventsConfigLoader(ConfigLoader):
         }[pipeline.source.type]
 
 
+class TopologyConfigLoader(ConfigLoader):
+    BASE_PIPELINE_CONFIGS_PATH = 'base_pipelines/topology'
+
+    def _check_pipeline(self, pipeline_: Pipeline):
+        pass
+
+    @classmethod
+    def _get_config_file(cls, pipeline: Pipeline) -> str:
+        return {
+            source.TYPE_DIRECTORY: 'directory.json',
+            source.TYPE_HTTP: 'http.json',
+        }[pipeline.source.type]
+
+
 class TestPipelineConfigLoader(ConfigLoader):
     BASE_PIPELINE_CONFIGS_PATH = 'test_pipelines'
 
@@ -115,6 +128,7 @@ class TestPipelineConfigLoader(ConfigLoader):
             source.TYPE_DIRECTORY: 'test_directory_ksdjfjk21.json',
             source.TYPE_DATABRICKS: 'test_jdbc_pdsf4587.json',
             source.TYPE_ELASTIC: 'test_elastic_asdfs3245.json',
+            source.TYPE_HTTP: 'test_http.json',
             source.TYPE_INFLUX: 'test_influx_qwe093.json',
             source.TYPE_INFLUX_2: 'test_influx2_x1ccwlf.json',
             source.TYPE_MONGO: 'test_mongo_rand847.json',

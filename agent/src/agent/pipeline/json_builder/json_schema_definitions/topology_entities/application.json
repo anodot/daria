@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {"type": "object"},
+    "name": {"type": "object"},
+    "type": {"type": "object"},
+    "relatedNodeId": {"type": "object"},
+    "description": {"type": "object"}
+  },
+  "required": ["id", "name"],
+  "additionalProperties": false
+}

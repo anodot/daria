@@ -12,8 +12,7 @@ services:
       - ./sdc-data:/data
       - ./sdc-conf:/etc/sdc_conf
       - ./certs:/home/certs
-      - ./test-datasets/test-directory-collector:/home/test-directory-collector
-      - ./test-datasets/events-directory:/home/events-directory
+      - ./test-datasets:/home/test-datasets
       - ./containers/streamsets/lib/anodot/lib:/opt/streamsets-datacollector-user-libs/anodot/lib/
 #    environment:
 #      SDC_CONF_PARSER_LIMIT: 2048576
@@ -32,8 +31,7 @@ services:
     volumes:
       - ./sdc-data2:/data
       - ./certs:/home/certs
-      - ./test-datasets/test-directory-collector:/home/test-directory-collector
-      - ./test-datasets/events-directory:/home/events-directory
+      - ./test-datasets:/home/test-datasets
     environment:
       SDC_CONF_PRODUCTION_MAXBATCHSIZE: "50"
       SDC_CONF_RUNNER_THREAD_POOL_SIZE: "2000"
@@ -65,7 +63,7 @@ services:
       - ./agent/output:/output
       - ./agent:/usr/src/app
 #      - ./scripts:/usr/src/app/scripts
-      - ./test-datasets:/home
+      - ./test-datasets:/home/test-datasets
     ports:
       - "80:80"
 

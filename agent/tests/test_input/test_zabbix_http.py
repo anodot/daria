@@ -78,7 +78,7 @@ class TestZabbix(TestInputBase):
             'measurement names': '',
             'dimensions': '',
             'delay': '',
-            'transform file': '/home/zabbix_transform_value.csv',
+            'transform file': '/home/test-datasets/zabbix_transform_value.csv',
             'static props': 'test_type:input',
             'tags': 'test:zabbix',
             'preview': 'y',

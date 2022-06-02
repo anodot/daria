@@ -3,6 +3,7 @@ from . import cacti
 from . import directory
 from . import elastic
 from . import factory
+from . import http
 from . import influx
 from . import jdbc
 from . import kafka

@@ -5,7 +5,8 @@ import sdc_client
 
 from agent import source, pipeline, destination, streamsets
 from agent.modules import tools, constants
-from agent.pipeline import Pipeline, TestPipeline, PipelineMetric, PipelineRetries, RawPipeline, EventsPipeline
+from agent.pipeline import Pipeline, TestPipeline, PipelineMetric, PipelineRetries, RawPipeline, EventsPipeline, \
+    TopologyPipeline
 from agent.pipeline import extra_setup, json_builder, schema
 from agent.modules.logger import get_logger
 from agent.pipeline.config.handlers.factory import get_config_handler
@@ -18,7 +19,7 @@ MAX_SAMPLE_RECORDS = 3
 
 
 def supports_schema(pipeline_: Pipeline) -> bool:
-    if isinstance(pipeline_, (TestPipeline, RawPipeline, EventsPipeline)):
+    if isinstance(pipeline_, (TestPipeline, RawPipeline, EventsPipeline, TopologyPipeline)):
         return False
     supported = {
         source.TYPE_CACTI: False,
@@ -26,6 +27,7 @@ def supports_schema(pipeline_: Pipeline) -> bool:
         source.TYPE_DIRECTORY: True,
         source.TYPE_DATABRICKS: True,
         source.TYPE_ELASTIC: False,
+        source.TYPE_HTTP: True,
         source.TYPE_INFLUX: True,
         source.TYPE_INFLUX_2: True,
         source.TYPE_KAFKA: True,
@@ -66,6 +68,14 @@ def create_raw_pipeline(pipeline_id: str, source_name: str) -> RawPipeline:
 
 def create_events_pipeline(pipeline_id: str, source_name: str) -> EventsPipeline:
     return EventsPipeline(
+        pipeline_id,
+        source.repository.get_by_name(source_name),
+        destination.repository.get(),
+    )
+
+
+def create_topology_pipeline(pipeline_id: str, source_name: str) -> TopologyPipeline:
+    return TopologyPipeline(
         pipeline_id,
         source.repository.get_by_name(source_name),
         destination.repository.get(),
@@ -122,7 +132,7 @@ def _load_config(pipeline_: Pipeline, config: dict, is_edit=False):
     config['uses_schema'] = json_builder.get_schema_chooser(pipeline_).choose(pipeline_, config, is_edit)
     json_builder.get(pipeline_, config, is_edit).build()
     # todo too many validations, 4 validations here
-    pipeline.config.validators.get_config_validator(pipeline_.source.type).validate(pipeline_)
+    pipeline.config.validators.get_config_validator(pipeline_).validate(pipeline_)
 
 
 def update(pipeline_: Pipeline, config_: dict = None):

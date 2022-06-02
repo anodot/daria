@@ -1,0 +1,17 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {"type": "object"},
+    "name": {"type": "object"},
+    "sourceNodeId": {"type": "object"},
+    "type": {"type": "object"},
+    "destNodeId": {"type": "object"},
+    "sourceInterfaceId": {"type": "object"},
+    "destInterfaceId": {"type": "object"},
+    "status": {"type": "object"},
+    "description": {"type": "object"},
+    "customer": {"type": "object"}
+  },
+  "required": ["id", "name", "sourceNodeId", "destNodeId"],
+  "additionalProperties": false
+}
