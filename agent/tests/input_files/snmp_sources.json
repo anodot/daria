@@ -7,5 +7,14 @@
       "read_community": "public",
       "query_timeout": 30
     }
+  },
+  {
+    "type": "snmp",
+    "name": "snmp_multi",
+    "config": {
+      "hosts": ["snmpsim:1161", "snmpsim:1161"],
+      "read_community": "public",
+      "query_timeout": 30
+    }
   }
 ]
