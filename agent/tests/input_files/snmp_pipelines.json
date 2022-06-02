@@ -12,7 +12,7 @@
       "config": "dimensions/host_name,zeus.snmplabs.com,'dimensions/host_name' == 'value=zeus.snmplabs.com (you can change this!)'"
     }
   },
-    {
+  {
     "source": "snmp_multi",
     "pipeline_id": "snmp_multi",
     "oids": ["1.3.6.1.2.1.5.1.0", "1.3.6.1.2.1.5.14.0", "1.3.6.1.2.1.1.1.0", "1.3.6.1.2.1.1.6.0"],
