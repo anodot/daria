@@ -200,6 +200,3 @@ class AnodotApiClient:
 
     def get_refresh_token_url(self) -> str:
         return self.url_builder.build('access-token')
-
-    def get_events_url(self) -> str:
-        return self.url_builder.build('user-events')

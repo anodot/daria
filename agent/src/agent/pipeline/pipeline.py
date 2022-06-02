@@ -20,8 +20,9 @@ TYPE = 'pipeline_type'
 REGULAR_PIPELINE = 'regular_pipeline'
 RAW_PIPELINE = 'raw_pipeline'
 EVENTS_PIPELINE = 'events_pipeline'
+TOPOLOGY_PIPELINE = 'topology_pipeline'
 
-PIPELINE_TYPES = [REGULAR_PIPELINE, RAW_PIPELINE, EVENTS_PIPELINE]
+PIPELINE_TYPES = [REGULAR_PIPELINE, RAW_PIPELINE, EVENTS_PIPELINE, TOPOLOGY_PIPELINE]
 
 
 class PipelineException(Exception):
@@ -451,6 +452,12 @@ class RawPipeline(Pipeline):
     def __init__(self, pipeline_id: str, source_: Source):
         super(RawPipeline, self).__init__(pipeline_id, source_, DummyHttpDestination())
         self.type = RAW_PIPELINE
+
+
+class TopologyPipeline(Pipeline):
+    def __init__(self, pipeline_id: str, source_: Source, destination_: HttpDestination):
+        super(TopologyPipeline, self).__init__(pipeline_id, source_, destination_)
+        self.type = TOPOLOGY_PIPELINE
 
 
 class EventsPipeline(Pipeline):

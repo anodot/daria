@@ -1,4 +1,5 @@
 import json
+import traceback
 import jsonschema
 
 from typing import List
@@ -31,6 +32,7 @@ def build_multiple(configs: list) -> List[Source]:
         except Exception as e:
             exceptions[config['name']] = f'{type(e).__name__}: {e}\n'
             logger_.debug(e, exc_info=True)
+            logger_.debug(traceback.format_exc())
     if exceptions:
         raise source.SourceException(json.dumps(exceptions))
     return sources

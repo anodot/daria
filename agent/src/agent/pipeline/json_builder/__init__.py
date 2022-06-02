@@ -18,12 +18,15 @@ from .tcp import TcpBuilder
 from .topology import TopologyBuilder
 from .zabbix import ZabbixBuilder
 from .json_builder import (
-    build, build_raw, build_using_file, build_raw_using_file, build_events_using_file, build_multiple
+    build, build_raw, build_using_file, build_raw_using_file, build_events_using_file, build_multiple,
+    build_topology_using_file
 )
 from .json_builder import edit, edit_using_file, edit_multiple, extract_configs, get_schema_chooser
 
 
 def get(pipeline_: Pipeline, config: dict, is_edit=False) -> IBuilder:
+    if isinstance(pipeline_, pipeline.TopologyPipeline):
+        return _get_topology_handler(pipeline_, config, is_edit)
     if isinstance(pipeline_, pipeline.RawPipeline):
         return _get_raw_builder(pipeline_, config, is_edit)
     elif isinstance(pipeline_, pipeline.EventsPipeline):
@@ -59,6 +62,10 @@ def _get_builder(pipeline_: Pipeline, config: dict, is_edit: bool) -> IBuilder:
         source.TYPE_ZABBIX: ZabbixBuilder,
     }
     return loaders[pipeline_.source.type](pipeline_, config, is_edit)
+
+
+def _get_topology_handler(pipeline_: Pipeline, config: dict, is_edit: bool) -> IBuilder:
+    return TopologyBuilder(pipeline_, config, is_edit)
 
 
 def _get_raw_builder(pipeline_: Pipeline, config: dict, is_edit: bool) -> IBuilder:

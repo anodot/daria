@@ -3,7 +3,7 @@
     "type": "directory",
     "name": "test_dir_json",
     "config": {
-      "conf.spoolDir": "/home/test-directory-collector",
+      "conf.spoolDir": "/home/test-datasets/test-directory-collector",
       "conf.filePattern": "*.json",
       "conf.dataFormat": "JSON"
     }
@@ -12,7 +12,7 @@
     "type": "directory",
     "name": "test_dir_log",
     "config": {
-      "conf.spoolDir": "/home/test-directory-collector",
+      "conf.spoolDir": "/home/test-datasets/test-directory-collector",
       "conf.filePattern": "*.txt",
       "conf.dataFormat": "LOG",
       "conf.dataFormatConfig.grokPattern": "%{NONNEGINT:timestamp_unix_ms} %{TIMESTAMP:timestamp_string} %{NONNEGINT:ver} %{WORD} %{WORD:Country} %{WORD:AdType} %{WORD:Exchange} %{NUMBER:Clicks}",
@@ -23,7 +23,7 @@
     "type": "directory",
     "name": "test_dir_csv",
     "config": {
-      "conf.spoolDir": "/home/test-directory-collector",
+      "conf.spoolDir": "/home/test-datasets/test-directory-collector",
       "conf.filePattern": "*.csv",
       "conf.dataFormat": "DELIMITED"
     }
@@ -32,7 +32,7 @@
     "type": "directory",
     "name": "events_directory",
     "config": {
-      "conf.spoolDir": "/home/events-directory",
+      "conf.spoolDir": "/home/test-datasets/events-directory",
       "conf.filePattern": "*.csv",
       "conf.dataFormat": "DELIMITED"
     }

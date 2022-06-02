@@ -1,3 +1,4 @@
 requests==2.25.0
 pytz
 certifi==2021.10.08
+./containers/streamsets/custom_libs/anodot_api_client

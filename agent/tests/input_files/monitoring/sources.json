@@ -3,7 +3,7 @@
     "type": "directory",
     "name": "test_dir_monitoring_csv",
     "config": {
-      "conf.spoolDir": "/home/test-directory-collector",
+      "conf.spoolDir": "/home/test-datasets/test-directory-collector",
       "conf.filePattern": "*.csv",
       "conf.dataFormat": "DELIMITED"
     }

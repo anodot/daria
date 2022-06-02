@@ -1,0 +1,4 @@
+attributes.name,attributes.p_lat,attributes.p_lon,attributes.street,attributes.house
+BB001,10.005,100.01,5th Ave,122
+BB002,10.015,100.11,6th Ave,112
+BB003,10.035,100.31,Broadway,113
