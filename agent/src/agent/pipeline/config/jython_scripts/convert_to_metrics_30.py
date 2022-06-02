@@ -24,7 +24,7 @@ def get_dimensions(record):
     dimensions = {}
     for dimension_path, name in sdc.userParams['DIMENSIONS'].items():
         dimension_value = extract_value(record.value, dimension_path)
-        if not dimension_value or dimension_value is None:
+        if not dimension_value:
             continue
         dimension_value = replace_illegal_chars(dimension_value)
         if dimension_value == '':
