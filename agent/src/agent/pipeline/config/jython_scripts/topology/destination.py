@@ -13,7 +13,7 @@ try:
 finally:
     sdc.importUnlock()
 
-REQUEST_RETRIES = 3
+MAX_ENTITY_ROWS = 500
 
 
 class RollupProvider:
@@ -74,17 +74,17 @@ def send_data(client, data, rollup_id):
 
 
 def retry(func):
-    def wrapper(*args, **kwargs):
+    def wrapper():
         i = 0
         while True:
             i += 1
             try:
-                func(*args, **kwargs)
+                func()
             except Exception as e:
                 sdc.log.error('EXCEPTION OCCURRED, RETRYING')
                 sdc.log.error(str(e))
-                if i < REQUEST_RETRIES:
-                    time.sleep(10)
+                if i < int(sdc.userParams['REQUEST_RETRIES']):
+                    time.sleep(int(sdc.userParams['RETRY_SLEEP_TIME_SECONDS']))
                     continue
                 raise e
             break
@@ -105,9 +105,8 @@ def main():
                     "type": entity_type,
                     "rollupId": rollup_id,
                     "timestamp": now,
-                    "bulkSerNumber": 1,
                 }
-                for i, chunk in enumerate(chunks(entities, 500)):
+                for i, chunk in enumerate(chunks(entities, MAX_ENTITY_ROWS)):
                     # i starts from 0 and bulkSerNumber starts from 1 so + 1
                     data = build_entities(base, chunk, i + 1)
                     if not sdc.isPreview():

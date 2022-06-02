@@ -5,7 +5,7 @@ from agent import source
 MASK = '******'
 
 
-def mask(config: dict):
+def mask(config: dict) -> dict:
     return _recursive_mask(deepcopy(config), _get_keywords(config['type']))
 
 

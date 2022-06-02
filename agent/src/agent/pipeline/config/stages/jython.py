@@ -1,6 +1,6 @@
 import urllib.parse
 
-from agent.modules import proxy
+from agent.modules import proxy, constants
 from .base import JythonProcessor
 
 
@@ -118,6 +118,14 @@ class TopologyDestination(JythonProcessor):
 
     def _get_script_params(self) -> list[dict]:
         return [
+            {
+                'key': 'REQUEST_RETRIES',
+                'value': constants.PIPELINE_REQUEST_RETRIES
+            },
+            {
+                'key': 'RETRY_SLEEP_TIME_SECONDS',
+                'value': constants.PIPELINE_RETRY_SLEEP_TIME_SECONDS
+            },
             {
                 'key': 'ANODOT_URL',
                 'value': self.pipeline.destination.url

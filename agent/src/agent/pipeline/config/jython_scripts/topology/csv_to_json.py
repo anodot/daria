@@ -13,11 +13,8 @@ finally:
 entityName = ''
 
 
-def main():
-    # we need one header and at least one row
-    if len(sdc.records) <= 1:
-        return
-
+# we need one header and at least one row
+if len(sdc.records) > 1:
     data = []
     # headers is a dict {"0": "column_name"}
     headers = sdc.records[0].value
@@ -30,6 +27,3 @@ def main():
         record = sdc.createRecord('record created')
         record.value = data
         output.write(record)
-
-
-main()
