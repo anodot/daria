@@ -82,7 +82,7 @@ elif [[ $1 == 'diagnostics-info' ]]; then
   echo "Exported streamsets container info to the $dest_path/streamsets-container-info.txt"
 
   echo "Archiving"
-  tar -cvf agent-diagnostics-info.tar $dest_path
+  tar -czvf agent-diagnostics-info.tar $dest_path
   rm -r $dest_path
 
   echo "Exported anodot-agent diagnostics info to the agent-diagnostics-info.tar archive"

@@ -2,7 +2,7 @@ import csv
 
 from agent.modules.tools import escape_quotes
 from .base import Stage
-from agent.pipeline.config.expression_parser import condition
+from agent.modules.expression_parser import condition
 from agent.pipeline import pipeline, Pipeline
 
 

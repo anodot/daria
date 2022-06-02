@@ -10,7 +10,12 @@ from . import json_builder
 from . import jdbc
 from . import exception
 
-TYPES = {REGULAR_PIPELINE: Pipeline, RAW_PIPELINE: RawPipeline, EVENTS_PIPELINE: EventsPipeline}
+TYPES = {
+    REGULAR_PIPELINE: Pipeline,
+    RAW_PIPELINE: RawPipeline,
+    EVENTS_PIPELINE: EventsPipeline,
+    TOPOLOGY_PIPELINE: TopologyPipeline,
+}
 
 
 def check_prerequisites() -> list:

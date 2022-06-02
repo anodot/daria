@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import Mock
 from agent import pipeline
 from agent import source
-from agent.pipeline import RawPipeline, TestPipeline
+from agent.pipeline import RawPipeline, TestPipeline, TopologyPipeline
 
 
 class TestPipelineSupportsSchema(unittest.TestCase):
@@ -35,5 +35,12 @@ class TestPipelineSupportsSchema(unittest.TestCase):
         source_ = Mock()
         source_.type = 'some_type'
         pipeline_ = Mock(spec=RawPipeline)
+        pipeline_.source = source_
+        self.assertFalse(pipeline.manager.supports_schema(pipeline_))
+
+    def test_supports_schema_TopologyPipeline(self):
+        source_ = Mock()
+        source_.type = 'some_type'
+        pipeline_ = Mock(spec=TopologyPipeline)
         pipeline_.source = source_
         self.assertFalse(pipeline.manager.supports_schema(pipeline_))

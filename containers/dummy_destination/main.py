@@ -5,6 +5,8 @@ import time
 from flask import Flask, request, jsonify
 
 OUTPUT_DIR = os.environ.get('OUTPUT_DIR', 'log')
+ROLLUP_ID = '123456789'
+AUTH_TOKEN = 'first_part.eyJkYXRhIjoic29tZWRhdGEiLCJpYXQiOjE2NTM5MDQ2MjIsImV4cCI6MjI1MzkwNzg2MX0.third_part'
 
 app = Flask(__name__)
 app.secret_key = b"\xf9\x19\x8d\xd2\xb7N\x84\xae\x16\x0f'`U\x88x&\nF\xa2\xe9\xa1\xd7\x8b\t"
@@ -22,7 +24,7 @@ def to_file():
 
 @app.route('/api/v2/user-events', methods=['POST'])
 def event_to_file():
-    if request.headers.get('Authorization') != 'Bearer ok':
+    if request.headers.get('Authorization') != f'Bearer {AUTH_TOKEN}':
         return json.dumps({'errors': ['Data collection token is invalid']}), 401
     _write_to_file(_extract_events_file_name(request.json), request.json)
     return json.dumps({'errors': []})
@@ -99,7 +101,7 @@ def update_schema_mock():
 def access_token_mock():
     if request.json['refreshToken'] == 'incorrect_key':
         return 'Incorrect key', 401
-    return 'ok', 200
+    return AUTH_TOKEN, 200
 
 
 @app.route('/api/v2/stream-schemas', methods=['POST'])
@@ -213,6 +215,34 @@ def topology_site_entity():
         return json.dumps({'error': 'Wrong user or pass'}), 401
     with open('data/site_entity.json') as f:
         return jsonify(json.load(f))
+
+
+@app.route('/api/v2/topology/map/load/start', methods=['POST'])
+def topology_load_start():
+    if request.headers.get('Authorization') != f'Bearer {AUTH_TOKEN}':
+        return json.dumps({'errors': ['Data collection token is invalid']}), 401
+    return {'rollupId': ROLLUP_ID}
+
+
+@app.route('/api/v2/topology/map/load/<rollup_id>', methods=['PUT'])
+def topology_load_data(rollup_id):
+    if rollup_id != ROLLUP_ID:
+        return {'errors': ['Wrong rollup id']}, 500
+    if request.headers.get('Authorization') != f'Bearer {AUTH_TOKEN}':
+        return json.dumps({'errors': ['Data collection token is invalid']}), 401
+    if data := [request.json]:
+        for obj in data:
+            _write_to_file(f'topology_{obj["type"]}.json', data)
+    return {}
+
+
+@app.route('/api/v2/topology/map/load/<rollup_id>/end', methods=['POST'])
+def topology_load_end(rollup_id):
+    if rollup_id != ROLLUP_ID:
+        return {'errors': ['Wrong rollup id']}, 500
+    if request.headers.get('Authorization') != f'Bearer {AUTH_TOKEN}':
+        return json.dumps({'errors': ['Data collection token is invalid']}), 401
+    return {}
 
 
 if __name__ == '__main__':

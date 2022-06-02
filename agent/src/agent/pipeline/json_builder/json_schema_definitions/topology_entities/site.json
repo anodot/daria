@@ -1,0 +1,17 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {"type": "object"},
+    "parentRegionId": {"type": "object"},
+    "name": {"type": "object"},
+    "type": {"type": "object"},
+    "domain": {"type": "object"},
+    "latitude": {"type": "object"},
+    "longitude": {"type": "object"},
+    "address": {"type": "object"},
+    "zipcode": {"type": "object"},
+    "customer": {"type": "object"}
+  },
+  "required": ["id", "name"],
+  "additionalProperties": false
+}

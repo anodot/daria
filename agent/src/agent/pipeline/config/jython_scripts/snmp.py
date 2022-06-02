@@ -38,7 +38,9 @@ def main():
         if sdc.isStopped():
             return
         while offset > get_now():
-            time.sleep(2)
+            # todo I guess it might shift data sending all the time because sleep might oversleep a bit
+            # todo and then we add interval, not interval - overslept time
+            time.sleep(1)
             if sdc.isStopped():
                 return
         offset = now + get_interval()

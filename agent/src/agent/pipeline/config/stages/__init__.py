@@ -8,3 +8,4 @@ from . import jdbc
 from . import field_renamer
 from . import jython
 from . import field_type_converter
+from . import topology

@@ -62,12 +62,13 @@ class TestPipelineBase(object):
         assert not source.repository.exists(name)
 
 
-def get_expected_output(pipeline_id: str, expected_output_file: str, pipeline_type: str) -> list:
+def get_expected_output(pipeline_id: str, expected_output_file: str, pipeline_type: str = None) -> list:
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), f'expected_output/{expected_output_file}')) as f:
         expected_output = json.load(f)
         for item in expected_output:
-            item['tags']['pipeline_id'] = [pipeline_id]
-            item['tags']['pipeline_type'] = [pipeline_type]
+            if 'tags' in item:
+                item['tags']['pipeline_id'] = [pipeline_id]
+                item['tags']['pipeline_type'] = [pipeline_type]
     return expected_output
 
 
