@@ -5,7 +5,7 @@ class TestDirectory:
                 'name': 'directory',
                 'type': 'directory',
                 'config': {
-                    'conf.spoolDir': '/home/test-directory-collector',
+                    'conf.spoolDir': '/home/test-datasets/test-directory-collector',
                     'conf.filePattern': '*.csv',
                     'conf.dataFormat': 'DELIMITED',
                     'conf.dataFormatConfig.csvFileFormat': 'CUSTOM',
@@ -14,7 +14,7 @@ class TestDirectory:
             }],
             'er': [{"config": {"conf.dataFormat": "DELIMITED", "conf.dataFormatConfig.csvCustomDelimiter": "|",
                                "conf.dataFormatConfig.csvFileFormat": "CUSTOM", "conf.filePattern": "*.csv",
-                               "conf.spoolDir": "/home/test-directory-collector"}, "name": "directory",
+                               "conf.spoolDir": "/home/test-datasets/test-directory-collector"}, "name": "directory",
                     "type": "directory"}]
         }],
         'test_edit': [{
@@ -22,7 +22,7 @@ class TestDirectory:
                 'name': 'directory',
                 'type': 'directory',
                 'config': {
-                    'conf.spoolDir': '/home/test-directory-collector',
+                    'conf.spoolDir': '/home/test-datasets/test-directory-collector',
                     'conf.filePattern': '*1.csv',
                     'conf.dataFormat': 'DELIMITED',
                     'conf.dataFormatConfig.csvFileFormat': 'CUSTOM',
@@ -31,7 +31,7 @@ class TestDirectory:
             }],
             'er': [{"config": {"conf.dataFormat": "DELIMITED", "conf.dataFormatConfig.csvCustomDelimiter": "~",
                                "conf.dataFormatConfig.csvFileFormat": "CUSTOM", "conf.filePattern": "*1.csv",
-                               "conf.spoolDir": "/home/test-directory-collector"}, "name": "directory",
+                               "conf.spoolDir": "/home/test-datasets/test-directory-collector"}, "name": "directory",
                     "type": "directory"}]
         }]
     }

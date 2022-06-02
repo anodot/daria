@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {"type": "object"},
+    "name": {"type": "object"},
+    "type": {"type": "object"},
+    "siteId": {"type": "object"},
+    "keywords": {"type": "object"},
+    "domain": {"type": "object"},
+    "description": {"type": "object"},
+    "status": {"type": "object"},
+    "vendor": {"type": "object"},
+    "ip": {"type": "object"},
+    "customer": {"type": "object"},
+    "relatedNodeId": {"type": "object"}
+  },
+  "required": ["id", "name", "siteId", "keywords"],
+  "additionalProperties": false
+}

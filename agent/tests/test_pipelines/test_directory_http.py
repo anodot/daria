@@ -67,7 +67,7 @@ class TestDirectory(TestPipelineBase):
             "version": 2,
             "offsets": {
                 "$com.streamsets.pipeline.stage.origin.spooldir.SpoolDirSource.offset.version$": "1",
-                "/home/test-directory-collector/12102017_test.csv": "{\"POS\":\"-1\"}"
+                "/home/test-datasets/test-directory-collector/12102017_test.csv": "{\"POS\":\"-1\"}"
             }
         }
 

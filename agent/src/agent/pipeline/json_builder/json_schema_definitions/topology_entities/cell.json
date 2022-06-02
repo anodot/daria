@@ -1,0 +1,23 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {"type": "object"},
+    "name": {"type": "object"},
+    "relatedNodeId": {"type": "object"},
+    "azimuth": {"type": "object"},
+    "band": {"type": "object"},
+    "domain": {"type": "object"},
+    "status": {"type": "object"},
+    "vendor": {"type": "object"},
+    "latitude": {"type": "object"},
+    "longitude": {"type": "object"},
+    "lac": {"type": "object"},
+    "rac": {"type": "object"},
+    "ci": {"type": "object"},
+    "neighbourcells": {"type": "object"},
+    "tilt": {"type": "object"},
+    "description": {"type": "object"}
+  },
+  "required": ["id", "name", "relatedNodeId", "azimuth  "],
+  "additionalProperties": false
+}

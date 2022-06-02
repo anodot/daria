@@ -43,11 +43,10 @@ def delete(source_id):
 @sources.route('/sources/<source_id>', methods=['GET'])
 def get(source_id):
     try:
-        source_ = source.repository.get_by_name(source_id)
+        config = source.repository.get_by_name(source_id).to_dict()
         with_credentials = request.args.get('with_credentials', default=False, type=bool)
-        config = source_.to_dict()
         if not with_credentials:
-            source.sensitive_data.mask(config)
+            config = source.sensitive_data.mask(config)
     except (source.repository.SourceNotExists, source.SourceException) as e:
         return jsonify(str(e)), 400
     return jsonify(config)

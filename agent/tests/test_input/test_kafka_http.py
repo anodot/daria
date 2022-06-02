@@ -34,7 +34,7 @@ class TestKafka(TestInputBase):
                 'options': ['-a'],
                 'value': 'y\nclicks\ny\n\n \n ',
                 'timestamp': 'timestamp_string\nstring\nM/d/yyyy H:mm:ss\n',
-                'advanced_options': 'key1:val1\ntag1:tagval tag2:tagval\n"Country" == "USA"\n/home/kafka_transform.csv'
+                'advanced_options': 'key1:val1\ntag1:tagval tag2:tagval\n"Country" == "USA"\n/home/test-datasets/kafka_transform.csv'
             },
             {
                 'source_name': 'test_running_counters',
@@ -84,11 +84,11 @@ class TestKafka(TestInputBase):
         'test_create_transform_value': [
             {
                 'pipeline_id': 'test_transform_value',
-                'transform_file': '/home/kafka_transform_value.csv'
+                'transform_file': '/home/test-datasets/kafka_transform_value.csv'
             },
             {
                 'pipeline_id': 'test_transform_value_2',
-                'transform_file': '/home/kafka_transform_value_2.csv'
+                'transform_file': '/home/test-datasets/kafka_transform_value_2.csv'
             },
         ],
         'test_create_source_with_file': [{'file_name': 'kafka_sources'}],

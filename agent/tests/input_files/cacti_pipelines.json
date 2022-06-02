@@ -28,7 +28,7 @@
       "query_ifName": "name"
     },
     "transform": {
-      "file": "/home/cacti_transform.csv"
+      "file": "/home/test-datasets/cacti_transform.csv"
     },
     "tags": {
       "tag": [
@@ -50,7 +50,7 @@
       "query_ifName": "name"
     },
     "transform": {
-      "file": "/home/cacti_transform.csv"
+      "file": "/home/test-datasets/cacti_transform.csv"
     },
     "properties": {
       "static_dim": "cacti"
@@ -74,7 +74,7 @@
       "query_ifName": "name"
     },
     "transform": {
-      "file": "/home/cacti_transform.csv"
+      "file": "/home/test-datasets/cacti_transform.csv"
     },
     "properties": {
       "static_dim": "cacti"

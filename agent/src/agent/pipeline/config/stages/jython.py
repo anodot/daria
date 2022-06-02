@@ -1,5 +1,6 @@
 import urllib.parse
 
+from agent.modules import proxy, constants
 from .base import JythonProcessor
 
 
@@ -112,12 +113,32 @@ class CreateEvents(JythonProcessor):
         return [f'/{field}' for field in self.REQUIRED_EVENT_FIELDS]
 
 
-# todo probably on pipeline creation we should create a topology user
 class TopologyDestination(JythonProcessor):
-    JYTHON_SCRIPT = 'topology_destination.py'
+    JYTHON_SCRIPT = 'topology/destination.py'
 
     def _get_script_params(self) -> list[dict]:
-        return []
+        return [
+            {
+                'key': 'REQUEST_RETRIES',
+                'value': constants.PIPELINE_REQUEST_RETRIES
+            },
+            {
+                'key': 'RETRY_SLEEP_TIME_SECONDS',
+                'value': constants.PIPELINE_RETRY_SLEEP_TIME_SECONDS
+            },
+            {
+                'key': 'ANODOT_URL',
+                'value': self.pipeline.destination.url
+            },
+            {
+                'key': 'ACCESS_TOKEN',
+                'value': self.pipeline.destination.access_key
+            },
+            {
+                'key': 'PROXIES',
+                'value': proxy.get_config(self.pipeline.destination.proxy)
+            },
+        ]
 
 
 class ReplaceIllegalChars(JythonProcessor):
