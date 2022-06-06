@@ -24,7 +24,7 @@ def search():
         return 'Fake server error', 500
 
     data = [
-        {"ver": 1, "Country": "USA", "AdType": "Display",
+        {"ver": 1, "Country": "中国", "AdType": "Display",
          "Exchange": "DoubleClick", "Clicks": 6784.6904, "@timestamp": "2017-12-10T01:00:00Z"},
         {"ver": 1, "Country": "USA", "AdType": "Display",
          "Exchange": "DoubleClick", "Clicks": 6839, "@timestamp": "2017-12-10T02:00:00Z"},
