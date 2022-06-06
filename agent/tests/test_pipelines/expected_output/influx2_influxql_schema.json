@@ -4,7 +4,7 @@
     "dimensions": {
       "cpu": "cpu-total-usage",
       "zone": "GEO",
-      "host": "msk-air-trn5"
+      "host": "msk-air-trn5ґ"
     },
     "measurements": {
       "usage_active": 0.204,

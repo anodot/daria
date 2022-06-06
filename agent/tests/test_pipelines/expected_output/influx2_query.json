@@ -3,7 +3,7 @@
     "timestamp": 1552654426,
     "dimensions": {
       "cpu": "cpu-total-usage",
-      "host": "msk-air-trn5",
+      "host": "msk-air-trn5ґ",
       "zone": "US",
       "test": "val"
     },
@@ -32,7 +32,7 @@
   {
     "timestamp": 1552654426,
     "dimensions": {
-      "host": "msk-air-trn5",
+      "host": "msk-air-trn5ґ",
       "zone": "US",
       "test": "val"
     },

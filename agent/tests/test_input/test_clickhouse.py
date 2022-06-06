@@ -64,7 +64,7 @@ class TestClickhouse(TestInputBase):
         input_ = {
             "source name": source,
             "pipeline name": name,
-            "query": "SELECT * FROM test WHERE {TIMESTAMP_CONDITION} AND country = 'USA'",
+            "query": "SELECT * FROM test WHERE {TIMESTAMP_CONDITION} AND (country = 'USA' or country = '中国')",
             "see preview": "",
             "interval": 86400,
             "days to backfill": _get_days_to_backfill(),

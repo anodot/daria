@@ -30,7 +30,7 @@ def _filter(list_):
 
 
 def csv_to_json(csv_data, last_timestamp):
-    if not str(csv_data).strip():
+    if not str(csv_data.encode('utf-8')).strip():
         return []
     results = _filter(csv_data.split('\r\n\r\n'))
     data = []
