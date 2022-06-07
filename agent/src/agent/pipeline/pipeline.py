@@ -128,6 +128,10 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return self.config.get('periodic_watermark', {}).get('delay', 0)
 
     @property
+    def watermark_logs_enabled(self) -> bool:
+        return self.config.get('watermark_logs_enabled', False)
+
+    @property
     def flush_bucket_size(self) -> FlushBucketSize:
         return FlushBucketSize(self.config.get(self.FLUSH_BUCKET_SIZE, '1d'))
 

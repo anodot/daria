@@ -60,6 +60,10 @@ class WatermarkWithMetricsDestination(JythonProcessor):
                 'key': 'TIMEZONE',
                 'value': str(self.pipeline.timezone),
             },
+            {
+                'key': 'WATERMARK_LOGS',
+                'value': str(self.pipeline.watermark_logs_enabled)
+            },
         ]
 
 
