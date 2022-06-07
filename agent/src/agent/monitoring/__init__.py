@@ -18,15 +18,18 @@ def pull_latest():
 def get_monitoring_metrics() -> list[dict]:
     pull_latest()
     data = []
-    pipeline_ids = {p.name for p in pipeline.repository.get_all()}
+    pipelines = pipeline.repository.get_all()
+    pipelines: Dict[str, Pipeline] = dict(zip({p.name for p in pipelines}, pipelines))
     for metric in metrics.registry.collect():
         target_type = anodot.TargetType.COUNTER if metric.type == 'counter' else anodot.TargetType.GAUGE
         for sample in metric.samples:
             if sample.name.endswith('_created'):
                 continue
-            if 'pipeline_id' in sample.labels and sample.labels['pipeline_id'] not in pipeline_ids:
+            if 'pipeline_id' in sample.labels and sample.labels['pipeline_id'] not in pipelines:
                 continue
-
+            if streamsets_url := sample.labels.get('streamsets_url') and\
+                                 streamsets_url != pipelines['pipeline_id'].streamsets.url:
+                continue
             dims = {**sample.labels, 'host_name': constants.HOSTNAME, 'source': 'agent_monitoring'}
             data.append(
                 anodot.Metric20(sample.name, sample.value, target_type, datetime.utcnow(), dimensions=dims).to_dict()
