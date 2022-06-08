@@ -70,6 +70,7 @@ class InfluxValidator(Validator):
             host=self.source.config['host'],
             username=self.source.config.get('username'),
             password=self.source.config.get('password'),
+            db=self.source.config.get('db'),
         )
         client.ping()
 
