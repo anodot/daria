@@ -8,8 +8,8 @@ class TestRRD(TestPipelineBase):
     __test__ = True
     params = {
         'test_start': [
-            {'name': 'rrd', 'sleep': 35},
-            {'name': 'rrd_archive', 'sleep': 35},
+            {'name': 'rrd', 'sleep': 40},
+            {'name': 'rrd_archive', 'sleep': 40},
         ],
         'test_force_stop': [
             {'name': 'rrd'},
