@@ -4,7 +4,7 @@
     "properties": {
       "target_type": "gauge",
       "test": "val",
-      "host": "msk-air-trn5",
+      "host": "msk-air-trn5ґ",
       "zone": "US",
       "measurement_category": "cpu_test",
       "what": "usage_active"
@@ -178,7 +178,7 @@
     "properties": {
       "target_type": "gauge",
       "test": "val",
-      "host": "msk-air-trn5",
+      "host": "msk-air-trn5ґ",
       "zone": "US",
       "measurement_category": "hdd_test",
       "what": "hdd_sum"

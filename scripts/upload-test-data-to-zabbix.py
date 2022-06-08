@@ -34,7 +34,7 @@ print('CPU item created')
 
 memory_item = client.post('item.create', {
     'hostid': host_id,
-    'name': 'agent - Memory - anodot',
+    'name': 'agent - Memory - anodotґ',
     'key_': 'vm.memory.size[{$MY_MACRO},{$MY_MACRO_2}]',
     'type': 0,
     'value_type': 3,

@@ -17,7 +17,7 @@ CREATE TABLE if not exists test.test(
 PRIMARY KEY id;
 
 INSERT INTO test.test (timestamp_unix,timestamp_unix_ms,ver,adsize,country,adtype,exchange,clicks,impressions,timestamp_datetime,timestamp_string)
-VALUES (1512867600,1512867600000,'AD200',' Sma.ll ','USA','Display','DoubleClick',6784.69,123,'2017-12-10 01:00:00','12/10/2017 1:00:00');
+VALUES (1512867600,1512867600000,'AD200',' Sma.ll ','中国','Display','DoubleClick',6784.69,123,'2017-12-10 01:00:00','12/10/2017 1:00:00');
 
 INSERT INTO test.test (timestamp_unix,timestamp_unix_ms,ver,adsize,country,adtype,exchange,clicks,impressions,timestamp_datetime,timestamp_string)
 VALUES (1512871200,1512871200000,'AD200','Sma.ll','USA','Display','DoubleClick',6839,22,'2017-12-10 02:00:00','12/10/2017 2:00:00');
@@ -53,7 +53,7 @@ CREATE TABLE if not exists test.tags(
 PRIMARY KEY id;
 
 INSERT INTO test.tags (timestamp_unix,timestamp_unix_ms,ver,adsize,country,adtype,exchange,clicks,impressions,timestamp_datetime,timestamp_string, tags)
-VALUES (1512867600,1512867600000,'AD200',' Sma.ll ','USA','Display','DoubleClick',6784.69,123,'2017-12-10 01:00:00','12/10/2017 1:00:00', [('tag1', 'val1'), ('tag2', 'val2')]);
+VALUES (1512867600,1512867600000,'AD200',' Sma.ll ','中国','Display','DoubleClick',6784.69,123,'2017-12-10 01:00:00','12/10/2017 1:00:00', [('tag1', 'val1'), ('tag2', 'val2')]);
 
 INSERT INTO test.tags (timestamp_unix,timestamp_unix_ms,ver,adsize,country,adtype,exchange,clicks,impressions,timestamp_datetime,timestamp_string, tags)
 VALUES (1512871200,1512871200000,'AD200','Sma.ll','USA','Display','DoubleClick',6839,22,'2017-12-10 02:00:00','12/10/2017 2:00:00', [('tag3', 'val3'), ('tag4', 'val4')]);
