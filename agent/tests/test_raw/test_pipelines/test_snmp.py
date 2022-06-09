@@ -7,7 +7,7 @@ class TestRawSNMP(TestRawPipelineBase):
         'test_start': [{'name': 'snmp_raw', 'sleep': 30}],
         'test_force_stop': [{'name': 'snmp_raw'}],
         'test_output': [
-            {'file_name': 'snmp_raw.csv', 'output_file': 'snmp.json', 'pipeline_type': 'mysql'},
+            {'file_name': 'snmp_raw.csv', 'output_file': 'snmp.json', 'pipeline_type': 'snmp'},
         ],
         'test_delete_pipeline': [{'name': 'snmp_raw'}],
         'test_source_delete': [{'name': 'snmp_raw'}]
