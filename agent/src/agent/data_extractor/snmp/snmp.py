@@ -23,8 +23,7 @@ def extract_metrics(pipeline_: Pipeline) -> list:
     for response in _fetch_data(pipeline_):
         var_binds = _get_var_binds(response)
         metric = _create_metric(pipeline_, var_binds)
-        if metric['measurements']:
-            metrics.append(metric)
+        metrics.append(metric)
     return metrics
 
 
@@ -82,10 +81,18 @@ def _create_metric(pipeline_: Pipeline, var_binds: list) -> dict:
     }
 
     for var_bind in var_binds:
+        logger_.debug(f'Processing OID: {str(var_bind[0])}')
         if _is_value(str(var_bind[0]), pipeline_):
-            metric['measurements'][_get_measurement_name(var_bind[0], pipeline_)] = _get_value(var_bind, pipeline_)
+            measurement_name = _get_measurement_name(var_bind[0], pipeline_)
+            measurement_value = _get_value(var_bind, pipeline_)
+            metric['measurements'][measurement_name] = measurement_value
+            logger_.debug(f'Measurement `{measurement_name}` with a value: {measurement_value}')
         elif _is_dimension(str(var_bind[0]), pipeline_):
-            metric['dimensions'][_get_dimension_name(var_bind[0], pipeline_)] = str(var_bind[1])
+            dimension_name = _get_dimension_name(var_bind[0], pipeline_)
+            metric['dimensions'][dimension_name] = str(var_bind[1])
+            logger_.debug(f'Dimension `{dimension_name}` with a value: {str(var_bind[1])}')
+    if not metric['measurements'] or not metric['dimensions']:
+        raise SNMPError('No metrics extracted')
     metric['timestamp'] = int(time.time())
     return metric
 
