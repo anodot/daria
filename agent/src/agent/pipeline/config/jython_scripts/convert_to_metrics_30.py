@@ -14,7 +14,9 @@ def extract_value(obj, path):
 
 
 def replace_illegal_chars(value):
-    value = str(value).strip().replace(".", "_")
+    if type(value).__name__ not in ['unicode', 'str']:
+        value = str(value)
+    value = value.strip().replace(".", "_")
     return re.sub('\s+', '_', value)
 
 

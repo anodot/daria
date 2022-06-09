@@ -66,7 +66,12 @@ class InfluxValidator(Validator):
             validator.validate_url_format_with_port(self.source.config['host'])
         except validator.ValidationException as e:
             raise ValidationException(str(e))
-        client = source.db.get_influx_client(self.source.config['host'])
+        client = source.db.get_influx_client(
+            host=self.source.config['host'],
+            username=self.source.config.get('username'),
+            password=self.source.config.get('password'),
+            db=self.source.config.get('db'),
+        )
         client.ping()
 
     @if_validation_enabled

@@ -5,7 +5,7 @@
       "target_type": "gauge",
       "cpu": "cpu-total-usage",
       "zone": "GEO",
-      "host": "msk-air-trn5",
+      "host": "msk-air-trn5ґ",
       "measurement_category": "cpu_test",
       "what": "usage_active"
     },
@@ -24,7 +24,7 @@
       "target_type": "gauge",
       "cpu": "cpu-total-usage",
       "zone": "GEO",
-      "host": "msk-air-trn5",
+      "host": "msk-air-trn5ґ",
       "measurement_category": "cpu_test",
       "what": "usage_idle"
     },

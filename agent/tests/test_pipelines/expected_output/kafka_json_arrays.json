@@ -3,7 +3,7 @@
     "timestamp": 1512867600,
     "dimensions": {
       "ver": "1",
-      "Country": "USA"
+      "Country": "中国"
     },
     "measurements": {
       "clicks": 6784.6904
@@ -31,7 +31,7 @@
     "timestamp": 1512867600,
     "dimensions": {
       "ver": "1",
-      "Country": "USA"
+      "Country": "中国"
     },
     "measurements": {
       "clicks": 111
@@ -59,7 +59,7 @@
     "timestamp": 1512867600,
     "dimensions": {
       "ver": "1",
-      "Country": "USA"
+      "Country": "中国"
     },
     "measurements": {
       "clicks": 111
