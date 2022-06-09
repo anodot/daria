@@ -85,8 +85,8 @@ def _create_metric(pipeline_: Pipeline, var_binds: list) -> dict:
     for var_bind in var_binds:
         if _is_value(str(var_bind[0]), pipeline_):
             metric['measurements'][_get_measurement_name(var_bind[0], pipeline_)] = _get_value(var_bind, pipeline_)
-        elif _is_dimension(str(var_bind[0].getMibNode().label), pipeline_):
-            metric['dimensions'][_get_dimension_name(var_bind[0].getMibNode().label, pipeline_)] = str(var_bind[1])
+        elif _is_dimension(str(var_bind[0]), pipeline_):
+            metric['dimensions'][_get_dimension_name(var_bind[0], pipeline_)] = str(var_bind[1])
     metric['timestamp'] = int(time.time())
     return metric
 
@@ -99,8 +99,8 @@ def _is_dimension(key: str, pipeline_: Pipeline) -> bool:
     return key in pipeline_.dimension_paths
 
 
-def _get_dimension_name(dim_path: str, pipeline_: Pipeline) -> str:
-    return pipeline_.dimension_paths_with_names[dim_path]
+def _get_dimension_name(dim_path: ObjectIdentity, pipeline_: Pipeline) -> str:
+    return pipeline_.dimension_paths_with_names[str(dim_path)]
 
 
 def _get_measurement_name(oid: ObjectIdentity, pipeline_: Pipeline) -> str:

@@ -10,18 +10,22 @@ class SNMPBuilder(Builder):
         self.config['timestamp'] = {'type': 'unix'}
         self.config['uses_schema'] = True
         self._add_default_dimensions()
+        self._add_default_oids()
         return self.config
 
     def _add_default_dimensions(self):
         if 'dimensions' not in self.config:
             self.config['dimensions'] = []
-        if snmp.HOSTNAME_OID not in self.config['oids']:
-            self.config['oids'].append(snmp.HOSTNAME_OID)
         if snmp.HOSTNAME_NAME not in self.config['dimensions']:
             self.config['dimensions'].append(snmp.HOSTNAME_NAME)
-        if 'dimension_value_paths' not in self.config:
-            self.config['dimension_value_paths'] = {}
-        self.config['dimension_value_paths'][snmp.HOSTNAME_NAME] = snmp.HOSTNAME_PATH
+        self.config['dimension_value_paths'][snmp.HOSTNAME_NAME] = snmp.HOSTNAME_OID
+
+    def _add_default_oids(self):
+        oids = set(self.config.get('oids', []))
+        oids = oids.union(self.config['dimension_value_paths'].values())
+        oids = oids.union(self.config['values'].keys())
+        oids.add(snmp.HOSTNAME_OID)
+        self.config['oids'] = list(oids)
 
 
 class SNMPRawBuilder(Builder):
