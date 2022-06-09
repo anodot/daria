@@ -5,6 +5,7 @@ from pysnmp.hlapi import getCmd, CommunityData, UdpTransportTarget, ContextData
 from pysnmp.smi.rfc1902 import ObjectType, ObjectIdentity
 from agent.data_extractor.snmp.delta_calculator import DeltaCalculator
 from agent.modules import logger
+from agent.modules.constants import SNMP_DEFAULT_PORT
 from agent.pipeline import Pipeline
 from urllib.parse import urlparse
 from itertools import chain
@@ -64,7 +65,7 @@ def _fetch_data(pipeline_: Pipeline):
         binds.append(getCmd(
             SnmpEngine(),
             CommunityData(pipeline_.source.read_community, mpModel=0),
-            UdpTransportTarget((url.hostname, url.port), timeout=pipeline_.source.query_timeout, retries=0),
+            UdpTransportTarget((url.hostname, url.port or SNMP_DEFAULT_PORT), timeout=pipeline_.source.query_timeout, retries=0),
             ContextData(),
             *[ObjectType(ObjectIdentity(mib)) for mib in pipeline_.config['oids']],
             lookupNames=True,
