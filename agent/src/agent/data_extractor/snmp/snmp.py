@@ -58,8 +58,7 @@ def _get_var_binds(response):
 
 def _fetch_data(pipeline_: Pipeline):
     binds = []
-    snmp_hosts = [pipeline_.source.url] if pipeline_.source.url else pipeline_.source.hosts
-    for host in snmp_hosts:
+    for host in pipeline_.source.hosts:
         host_ = host if '://' in host else f'//{host}'
         url = urlparse(host_)
         binds.append(getCmd(

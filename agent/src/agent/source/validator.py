@@ -204,8 +204,7 @@ class MongoValidator(Validator):
 
 class SNMPValidator(Validator):
     def validate(self):
-        snmp_hosts = [self.source.url] if self.source.url else self.source.hosts
-        for host in snmp_hosts:
+        for host in self.source.hosts:
             host_ = host if '://' in host else f'//{host}'
             url = urllib.parse.urlparse(host_)
             iterator = getCmd(

@@ -1,14 +1,10 @@
 {
   "type": "object",
   "properties": {
-    "url": {"type": "string"},
     "hosts": {"type": "array"},
     "read_community": {"type": "string"},
     "verify_ssl": {"type": "boolean"},
     "query_timeout": {"type": "integer"}
   },
-  "oneOf": [
-    {"required": ["url", "read_community"]},
-    {"required": ["hosts", "read_community"]}
-  ]
+  "required": ["hosts", "read_community"]
 }
