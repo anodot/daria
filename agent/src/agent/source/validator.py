@@ -204,6 +204,7 @@ class MongoValidator(Validator):
 
 class SNMPValidator(Validator):
     def validate(self):
+        errors = []
         for host in self.source.hosts:
             host_ = host if '://' in host else f'//{host}'
             url = urllib.parse.urlparse(host_)
@@ -218,7 +219,10 @@ class SNMPValidator(Validator):
             )
             for response in iterator:
                 if type(response[0]).__name__ == 'RequestTimedOut':
-                    raise ValidationException(f'Couldn\'t get response from `{host}`')
+                    errors.append(f'Couldn\'t get response from `{host}`: {type(response[0]).__name__}')
+                    break
+        if errors:
+            raise ValidationException(errors)
 
     @if_validation_enabled
     def validate_connection(self):
