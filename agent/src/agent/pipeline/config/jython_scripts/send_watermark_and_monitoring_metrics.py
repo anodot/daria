@@ -28,9 +28,6 @@ for record in sdc.records:
 
     try:
         # send Watermark
-        if sdc.userParams['WATERMARK_LOGS'] == 'True':
-            sdc.log.info('Sending watermark: ' + str(record.value['watermark']))
-
         res = requests.post(
             sdc.userParams['WATERMARK_URL'],
             json=record.value, proxies=sdc.userParams['PROXIES'], timeout=30
