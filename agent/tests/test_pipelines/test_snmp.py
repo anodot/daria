@@ -9,14 +9,25 @@ class TestSNMP(TestPipelineBase):
     __test__ = True
     params = {
         'test_start': [
-            {'name': 'snmp', 'sleep': 30},
+            {'name': 'snmp', 'sleep': 35},
+            {'name': 'snmp_multi', 'sleep': 35},
         ],
-        'test_force_stop': [{'name': 'snmp'}],
+        'test_force_stop': [
+            {'name': 'snmp'},
+            {'name': 'snmp_multi'},
+        ],
         'test_output_schema': [
             {'name': 'snmp', 'output': 'snmp.json', 'pipeline_type': 'snmp'},
+            {'name': 'snmp_multi', 'output': 'snmp_multi.json', 'pipeline_type': 'snmp'},
         ],
-        'test_delete_pipeline': [{'name': 'snmp'}],
-        'test_source_delete': [{'name': 'snmp'}],
+        'test_delete_pipeline': [
+            {'name': 'snmp'},
+            {'name': 'snmp_multi'},
+        ],
+        'test_source_delete': [
+            {'name': 'snmp'},
+            {'name': 'snmp_multi'},
+        ],
     }
 
     def test_info(self, cli_runner, name=None):
@@ -41,7 +52,9 @@ class TestSNMP(TestPipelineBase):
         expected_output = get_expected_schema_output(name, output, pipeline_type)
         actual_output = get_output(f'{name}_{pipeline_type}.json')
         # we send current timestamp, it's hard to test, so I check only that data was sent during the last two minutes
-        timestamp = actual_output[0].pop('timestamp')
+        timestamp = actual_output[0].get('timestamp')
+        for output in actual_output:
+            output.pop('timestamp')
         assert int(time.time()) - timestamp < 120
         assert actual_output == expected_output
         schema_id = get_schema_id(name)
