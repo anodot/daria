@@ -314,6 +314,13 @@ class ObserviumValidator(Validator):
             )
 
 
+class PrtgValidator(HttpValidator):
+    VALIDATION_SCHEMA_FILE = 'http.json'
+
+    def validate_connection(self):
+        pass
+
+
 class ZabbixValidator(Validator):
     VALIDATION_SCHEMA_FILE = 'zabbix.json'
 
@@ -381,6 +388,7 @@ def get_validator(source_: Source) -> Validator:
         source.TYPE_ORACLE: OracleValidator,
         source.TYPE_POSTGRES: JDBCValidator,
         source.TYPE_PROMETHEUS: PromQLValidator,
+        source.TYPE_PRTG: PrtgValidator,
         source.TYPE_RRD: RRDValidator,
         source.TYPE_SAGE: SageValidator,
         source.TYPE_SNMP: SNMPValidator,
