@@ -55,7 +55,7 @@ services:
       AGENT_URL: 'http://anodot-agent'
       PGPASSWORD: 'agent'
       TLS_VERSION: '1.1'
-      LOGGER_LEVEL: 'DEBUG'
+      LOG_LEVEL: 'INFO'
     depends_on:
       - dc
       - db

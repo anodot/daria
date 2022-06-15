@@ -19,9 +19,7 @@ levels = {
 
 def get_logger(name, level=None, stdout=False):
     logger = logging.getLogger(name)
-
-    if not level:
-        level = levels.get(os.environ.get('LOGGER_LEVEL'), logging.DEBUG)
+    level = level or levels.get(os.environ.get('LOG_LEVEL'), logging.INFO)
     logger.setLevel(level)
 
     file_handler = RotatingFileHandler(os.environ.get('LOG_FILE_PATH', 'agent.log'), maxBytes=2000)
