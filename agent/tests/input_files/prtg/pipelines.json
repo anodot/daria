@@ -1,0 +1,19 @@
+[
+  {
+    "source": "test_prtg_1",
+    "pipeline_id": "test_prtg_2",
+    "values": {
+      "Common SaaS": "gauge",
+      "Core Health": "gauge"
+    },
+    "dimensions": {
+      "required": ["Host Name", "Sensor name"],
+      "optional": []
+    },
+    "tags": {
+      "Group": ["Group_value"],
+      "Location": ["Location_value"]
+    },
+    "interval": 60
+  }
+]
