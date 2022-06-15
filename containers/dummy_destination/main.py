@@ -2,7 +2,7 @@ import os
 import json
 import time
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 
 OUTPUT_DIR = os.environ.get('OUTPUT_DIR', 'log')
 ROLLUP_ID = '123456789'
@@ -243,6 +243,17 @@ def topology_load_end(rollup_id):
     if request.headers.get('Authorization') != f'Bearer {AUTH_TOKEN}':
         return json.dumps({'errors': ['Data collection token is invalid']}), 401
     return {}
+
+
+@app.route('/api/v1/prtg/<filename>', methods=['GET'])
+def prtg_xml_sample(filename):
+    file_path = f'data/{filename}'
+    # basic auth admin:admin
+    if request.headers.get('Authorization') != 'Basic YWRtaW46YWRtaW4=':
+        return json.dumps({'error': 'Wrong user or pass'}), 401
+    if not os.path.exists(file_path):
+        return json.dumps({'error': 'No such file'}), 404
+    return send_file(file_path)
 
 
 if __name__ == '__main__':
