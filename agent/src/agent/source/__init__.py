@@ -52,7 +52,7 @@ types = {
     TYPE_ORACLE: JDBCSource,
     TYPE_POSTGRES: JDBCSource,
     TYPE_PROMETHEUS: PromQLSource,
-    TYPE_PRTG: PrtgSource,
+    TYPE_PRTG: PRTGSource,
     TYPE_RRD: RRDSource,
     TYPE_SAGE: SageSource,
     TYPE_SNMP: SNMPSource,

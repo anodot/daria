@@ -237,7 +237,7 @@ class PromQLSource(APISource):
     pass
 
 
-class PrtgSource(APISource):
+class PRTGSource(APISource):
     pass
 
 

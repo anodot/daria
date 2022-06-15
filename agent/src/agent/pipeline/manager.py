@@ -38,6 +38,7 @@ def supports_schema(pipeline_: Pipeline) -> bool:
         source.TYPE_ORACLE: True,
         source.TYPE_POSTGRES: True,
         source.TYPE_PROMETHEUS: True,
+        source.TYPE_PRTG: True,
         source.TYPE_RRD: False,
         source.TYPE_SAGE: True,
         source.TYPE_SNMP: False,
