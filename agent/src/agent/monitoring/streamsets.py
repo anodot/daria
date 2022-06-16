@@ -3,8 +3,6 @@ import urllib
 import prometheus_client
 import sdc_client
 import re
-import asyncio
-import aiohttp
 
 from typing import List, Tuple, Dict
 from agent import streamsets, pipeline, source
