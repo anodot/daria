@@ -7,6 +7,7 @@ from agent.modules import constants, logger
 from datetime import datetime
 from agent import pipeline
 from agent.pipeline import Pipeline
+from typing import Dict
 
 logger_ = logger.get_logger(__name__)
 
