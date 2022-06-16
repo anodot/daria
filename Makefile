@@ -307,3 +307,12 @@ half-sleep:
 
 nap:
 	sleep $(NAP)
+
+show-all-logs:
+	docker logs anodot-agent;
+	echo "DC logs "; docker logs dc;
+	echo "DC 2 logs"; docker logs dc2;
+	echo "Kafka logs"; docker logs agent-kafka;
+	echo "Dummy logs"; docker logs dummy_destination;
+	echo "Agent logs"; docker exec -i anodot-agent cat /var/log/agent/agent.log;
+	echo "VictoriaMetrics logs"; docker logs victoriametrics;
