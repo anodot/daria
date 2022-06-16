@@ -15,7 +15,8 @@ services:
     #      - ./test-datasets/krb5.conf:/etc/krb5.conf
     environment:
       SDC_CONF_PRODUCTION_MAXBATCHSIZE: "50"
-      #      SDC_JAVA_OPTS: "-Djava.security.auth.login.config=/kerberos/kafka-consumer_jaas.conf -Dsun.security.krb5.debug=true -Djava.security.krb5.conf=/etc/krb5.conf"
+      SDC_JAVA_OPTS: "-Xmx4096m -Xms4096m -server"
+#      SDC_JAVA_OPTS: "-Djava.security.auth.login.config=/kerberos/kafka-consumer_jaas.conf -Dsun.security.krb5.debug=true -Djava.security.krb5.conf=/etc/krb5.conf"
       #      SDC_CONF_PARSER_LIMIT: 2048576
       SDC_CONF_RUNNER_THREAD_POOL_SIZE: "2000"
   #    extra_hosts:
