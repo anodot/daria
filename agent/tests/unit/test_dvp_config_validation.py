@@ -21,7 +21,7 @@ class TestDvpConfigValidation(unittest.TestCase):
         builder = Builder(self.pipeline_, config, False)
         self.assertIsNone(builder._validate_dvp_config_json_schema())
 
-    def test_dvp_config_fail_SHORTROLLUP(self):
+    def test_dvp_config_ok_SHORTROLLUP(self):
         config = {
             "dvpConfig": {
                 "baseRollup": "SHORTROLLUP",
@@ -32,7 +32,6 @@ class TestDvpConfigValidation(unittest.TestCase):
         }
         builder = Builder(self.pipeline_, config, False)
         self.assertIsNone(builder._validate_dvp_config_json_schema())
-
 
     def test_dvp_config_fail_maxDVPDurationHours(self):
         config = {
