@@ -31,8 +31,8 @@ class TestDvpConfigValidation(unittest.TestCase):
             }
         }
         builder = Builder(self.pipeline_, config, False)
-        with self.assertRaises(ValidationError):
-            builder._validate_dvp_config_json_schema()
+        self.assertIsNone(builder._validate_dvp_config_json_schema())
+
 
     def test_dvp_config_fail_maxDVPDurationHours(self):
         config = {
