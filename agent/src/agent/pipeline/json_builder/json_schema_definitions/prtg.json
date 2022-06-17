@@ -17,6 +17,7 @@
     },
     "delay": {"type": "string"},
     "interval": {"type": "integer"},
+    "watermark_in_local_timezone": {"type": "boolean"},
     "transform": {
       "type": "object",
       "properties": {

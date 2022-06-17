@@ -28,4 +28,12 @@ class PRTGSource(JythonSource):
                 'key': 'REQUEST_TIMEOUT',
                 'value': 10
             },
+            {
+                'key': 'WATERMARK_IN_LOCAL_TIMEZONE',
+                'value': str(self.pipeline.watermark_in_local_timezone),
+            },
+            {
+                'key': 'TIMEZONE',
+                'value': str(self.pipeline.timezone),
+            },
         ]

@@ -6,6 +6,7 @@ try:
     from datetime import datetime, timedelta
     import sys
     import os
+    import pytz
     sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))
     import requests
 finally:
@@ -25,8 +26,8 @@ def to_timestamp(date):
     return int((date - epoch).total_seconds())
 
 
-def to_timestamp2(date):
-    return 0
+def prtg_ts_to_unix_ts(prtg_ts, tz=pytz.timezone(sdc.userParams['TIMEZONE'])):
+    return datetime.fromtimestamp((prtg_ts - 25569) * 86400, tz=tz)
 
 
 def _filter(list_):
