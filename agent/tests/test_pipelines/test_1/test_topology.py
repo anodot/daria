@@ -8,8 +8,8 @@ class TestTopology(TestPipelineBase):
     __test__ = True
     params = {
         'test_start': [
-            {'name': 'topology_site', 'sleep': 30},
-            {'name': 'topology_region', 'sleep': 30},
+            {'name': 'topology_site', 'sleep': 60},
+            {'name': 'topology_region', 'sleep': 60},
         ],
         'test_force_stop': [
             {'name': 'topology_site'},
