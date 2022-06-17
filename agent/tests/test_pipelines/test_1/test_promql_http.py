@@ -19,7 +19,8 @@ class TestPromQL(TestPipelineBase):
                 'name': 'test_victoria_a'
             },
             {
-                'name': 'test_victoria_dvp'
+                'name': 'test_victoria_dvp',
+                'sleep': 30
             },
             {
                 'name': 'test_thanos'

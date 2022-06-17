@@ -19,6 +19,9 @@ jobs:
       - name: Increase vm memory
         run: sudo sysctl -w vm.max_map_count=262144
 
+      - name: Build
+        run: make build-all
+
       - name: Test
         run: make test-general
 
@@ -34,6 +37,9 @@ jobs:
       - name: Increase vm memory
         run: sudo sysctl -w vm.max_map_count=262144
 
+      - name: Build
+        run: make build-all
+
       - name: Test
         run: make test-pipelines-1
 
@@ -48,6 +54,9 @@ jobs:
 
       - name: Increase vm memory
         run: sudo sysctl -w vm.max_map_count=262144
+
+      - name: Build
+        run: make build-all
 
       - name: Test
         run: make test-pipelines-2
