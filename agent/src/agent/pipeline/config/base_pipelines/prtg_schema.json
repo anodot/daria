@@ -2,10 +2,10 @@
   "pipelineConfig" : {
     "schemaVersion" : 6,
     "version" : 19,
-    "pipelineId" : "prtgschem46419ed0-7e04-450e-8a70-185c48c42ca1",
+    "pipelineId" : "prtgschema0f84a2b-1e40-4fe7-b1e9-1d7d5eb3a7a8",
     "title" : "prtg_schema",
     "description" : "",
-    "uuid" : "f272d6f4-432b-405f-aa30-00383f1bd874",
+    "uuid" : "803f11c1-a02b-4f70-8d18-ad0ce691bda9",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -459,12 +459,12 @@
         "value" : "TO_ERROR"
       } ],
       "uiInfo" : {
-        "yPos" : 119.74232482910156,
+        "yPos" : 123.16278076171875,
         "stageType" : "SOURCE",
         "icon" : "jython.png",
         "description" : "",
         "label" : "Source",
-        "xPos" : 147.51699829101562,
+        "xPos" : 304.8574676513672,
         "displayMode" : "ADVANCED"
       },
       "inputLanes" : [ ],
@@ -496,65 +496,16 @@
         "value" : [ ]
       } ],
       "uiInfo" : {
-        "yPos" : 121.829345703125,
+        "yPos" : 122.96949768066406,
         "stageType" : "PROCESSOR",
         "icon" : "expression.png",
         "description" : "",
         "label" : "Transformations",
-        "xPos" : 352.23345947265625,
+        "xPos" : 531.2367248535156,
         "displayMode" : "BASIC"
       },
       "inputLanes" : [ "JythonScripting_01OutputLane16013726491540" ],
       "outputLanes" : [ "ExpressionEvaluator_03OutputLane16436446664970" ],
-      "eventLanes" : [ ],
-      "services" : [ ]
-    }, {
-      "instanceName" : "jython_transform_records",
-      "library" : "streamsets-datacollector-jython_2_7-lib",
-      "stageName" : "com_streamsets_pipeline_stage_processor_jython_JythonDProcessor",
-      "stageVersion" : "3",
-      "configuration" : [ {
-        "name" : "processingMode",
-        "value" : "BATCH"
-      }, {
-        "name" : "initScript",
-        "value" : ""
-      }, {
-        "name" : "script",
-        "value" : ""
-      }, {
-        "name" : "destroyScript",
-        "value" : ""
-      }, {
-        "name" : "scriptRecordType",
-        "value" : "NATIVE_OBJECTS"
-      }, {
-        "name" : "userParams",
-        "value" : [ {
-          "key" : "TIMESTAMP_COLUMN",
-          "value" : "_time"
-        } ]
-      }, {
-        "name" : "stageOnRecordError",
-        "value" : "TO_ERROR"
-      }, {
-        "name" : "stageRequiredFields",
-        "value" : [ ]
-      }, {
-        "name" : "stageRecordPreconditions",
-        "value" : [ ]
-      } ],
-      "uiInfo" : {
-        "yPos" : 121.7423095703125,
-        "stageType" : "PROCESSOR",
-        "icon" : "jython.png",
-        "description" : "",
-        "label" : "Transform records",
-        "xPos" : 551.0808868408203,
-        "displayMode" : "ADVANCED"
-      },
-      "inputLanes" : [ "ExpressionEvaluator_03OutputLane16436446664970" ],
-      "outputLanes" : [ "JythonEvaluator_01OutputLane16282574993230" ],
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
@@ -598,7 +549,7 @@
         "xPos" : 749.1023254394531,
         "displayMode" : "ADVANCED"
       },
-      "inputLanes" : [ "JythonEvaluator_01OutputLane16282574993230" ],
+      "inputLanes" : [ "ExpressionEvaluator_03OutputLane16436446664970" ],
       "outputLanes" : [ "destination_OutputLane" ],
       "eventLanes" : [ "transform_records_EventLane" ],
       "services" : [ ]
@@ -1015,6 +966,9 @@
       }, {
         "name" : "conf.maxSendResponseWait",
         "value" : 60000
+      }, {
+        "name" : "conf.agentWatermarkUrl",
+        "value" : null
       } ],
       "uiInfo" : {
         "yPos" : 258.8929977416992,
@@ -1475,6 +1429,9 @@
       }, {
         "name" : "conf.maxSendResponseWait",
         "value" : 60000
+      }, {
+        "name" : "conf.agentWatermarkUrl",
+        "value" : null
       } ],
       "uiInfo" : {
         "yPos" : 117.64195251464844,
@@ -1508,22 +1465,22 @@
       "services" : [ ]
     },
     "info" : {
-      "pipelineId" : "prtgschem46419ed0-7e04-450e-8a70-185c48c42ca1",
+      "pipelineId" : "prtgschema0f84a2b-1e40-4fe7-b1e9-1d7d5eb3a7a8",
       "title" : "prtg_schema",
       "description" : "",
-      "created" : 1655317772958,
-      "lastModified" : 1655317911692,
+      "created" : 1655753314213,
+      "lastModified" : 1655753340339,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "f272d6f4-432b-405f-aa30-00383f1bd874",
+      "uuid" : "803f11c1-a02b-4f70-8d18-ad0ce691bda9",
       "valid" : true,
       "metadata" : {
         "labels" : [ "influx2", "http" ]
       },
-      "name" : "prtgschem46419ed0-7e04-450e-8a70-185c48c42ca1",
+      "name" : "prtgschema0f84a2b-1e40-4fe7-b1e9-1d7d5eb3a7a8",
       "sdcVersion" : "3.18.0",
-      "sdcId" : "32d543c2-eaff-11ec-bb2d-65bcb45f89ab"
+      "sdcId" : "c35a90ae-f0b2-11ec-9d2f-69223eb04ed4"
     },
     "metadata" : {
       "labels" : [ "influx2", "http" ]
@@ -1902,7 +1859,7 @@
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "24e1ef32-2d26-4e3c-852f-324965807cfd",
+    "uuid" : "4df467ca-906a-4aa6-9893-342c74704148",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : null

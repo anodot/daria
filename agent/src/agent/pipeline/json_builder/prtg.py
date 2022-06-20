@@ -13,6 +13,6 @@ class PRTGBuilder(Builder):
     def _load_config(self):
         super()._load_config()
         self._load_dimensions()
-        self._set_timestamp()
+        # self._set_timestamp()
         self.config['uses_schema'] = True
         return self.config
