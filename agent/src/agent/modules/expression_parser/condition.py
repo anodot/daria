@@ -138,10 +138,13 @@ def _get_function_name(function: str) -> str:
 
 
 def get_number_of_arguments(function: str) -> int:
+    flatten = lambda l: sum(map(flatten, l), []) if isinstance(l, list) else [l]
     args = extract_arguments(function)
     if not args:
         return 0
-    args = list(filter(bool, re.split("\".*\"|\'.*\'|\s*,\s*", args))) + re.findall("\'.*?\'|\".*?\"", args)
+    # Split by comma or values in quotes + add values in qoutes
+    raw_args = re.split("\".*?\"|\'.*?\'|\s*,\s*", args) + re.findall("\'(.*?)\'|\"(.*?)\"", args)
+    args = list(filter(bool, flatten(raw_args)))
     return len(args)
 
 
