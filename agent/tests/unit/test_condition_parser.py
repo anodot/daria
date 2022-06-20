@@ -135,7 +135,7 @@ def test_get_filtering_expression(condition, expected_result):
 @pytest.mark.parametrize("value, expected_result", [
     ('test', '\'test\''),
     ('(some == thing)', '\'(some == thing)\''),
-    ('str:regExCapture(test, regex, 3)', 'str:regExCapture(record:value(\'/test\'), regex, 3)'),
+    ('str:regExCapture(test, "regex", 3)', 'str:regExCapture(record:value(\'/test\'), "regex", 3)'),
 ])
 def test_process_value(value, expected_result):
     assert expression_parser.condition.process_value(value) == expected_result
