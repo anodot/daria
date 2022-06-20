@@ -141,7 +141,7 @@ def get_number_of_arguments(function: str) -> int:
     args = extract_arguments(function)
     if not args:
         return 0
-    args = re.split('\s*,\s*', args)
+    args = list(filter(bool, re.split("\'.*\'|\s*,\s*", args))) + re.findall("\'.*?\'", args)[0][0:-1]
     return len(args)
 
 
