@@ -4,15 +4,41 @@
     "pipeline_id": "test_prtg_1",
     "values": {
       "Common SaaS": "gauge",
-      "Core Health": "gauge"
+      "Core Health": "gauge",
+      "Core Health (Autonomous)": "gauge",
+      "HTTP": "gauge",
+      "HTTP Full Web Page": "gauge",
+      "Cisco IP SLA": "gauge",
+      "NetFlow v9": "gauge",
+      "Ping": "gauge",
+      "Probe Health": "gauge",
+      "SNMP Cisco System Health": "gauge",
+      "SNMP CPU Load": "gauge",
+      "SNMP Custom": "gauge",
+      "SNMP Custom Advanced": "gauge",
+      "SNMP Custom String": "gauge",
+      "SNMP Disk Free": "gauge",
+      "SNMP Library": "gauge",
+      "SNMP Linux Disk Free": "gauge",
+      "SNMP Linux Load Average": "gauge",
+      "SNMP Linux Meminfo": "gauge",
+      "SNMP Linux Physical Disk": "gauge",
+      "SNMP Memory": "gauge",
+      "SNMP Traffic": "gauge",
+      "SNMP System Uptime": "gauge",
+      "SSL Security Check": "gauge",
+      "SSL Certificate": "gauge",
+      "System Health": "gauge",
+      "WMI Free Disk Space (Multi Disk)": "gauge",
+      "Windows Network Card": "gauge"
     },
     "dimensions": {
       "required": ["Host Name", "Sensor name"],
       "optional": []
     },
-    "tags": {
-      "Group": ["Group_value"],
-      "Location": ["Location_value"]
+    "timestamp": {
+      "name": "timestamp_unix",
+      "type": "unix"
     },
     "interval": 300
   }
