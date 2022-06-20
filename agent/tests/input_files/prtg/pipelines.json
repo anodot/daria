@@ -1,7 +1,7 @@
 [
   {
     "source": "test_prtg_1",
-    "pipeline_id": "test_prtg_2",
+    "pipeline_id": "test_prtg_1",
     "values": {
       "Common SaaS": "gauge",
       "Core Health": "gauge"

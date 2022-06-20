@@ -25,8 +25,8 @@ class PRTGSource(JythonSource):
                 'value': '1' if self.pipeline.source.config.get(source.APISource.VERIFY_SSL, True) else ''
             },
             {
-                'key': 'REQUEST_TIMEOUT',
-                'value': 10
+                'key': 'INTERVAL_IN_SECONDS',
+                'value': str(self.pipeline.interval)
             },
             {
                 'key': 'WATERMARK_IN_LOCAL_TIMEZONE',

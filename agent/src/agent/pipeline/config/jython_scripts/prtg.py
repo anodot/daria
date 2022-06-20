@@ -6,9 +6,9 @@ try:
     from datetime import datetime, timedelta
     import sys
     import os
-    import pytz
     sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))
     import requests
+    import pytz
 finally:
     sdc.importUnlock()
 
@@ -17,8 +17,8 @@ def get_interval():
     return int(sdc.userParams['INTERVAL_IN_SECONDS'])
 
 
-def get_now_with_delay():
-    return int(time.time()) - int(sdc.userParams['DELAY_IN_SECONDS'])
+def get_now():
+    return int(time.time())
 
 
 def to_timestamp(date):
@@ -54,52 +54,37 @@ entityName = ''
 
 def main():
     interval = timedelta(seconds=get_interval())
-
     if sdc.lastOffsets.containsKey(entityName):
         offset = int(float(sdc.lastOffsets.get(entityName)))
-    elif sdc.userParams['INITIAL_OFFSET']:
-        offset = to_timestamp(datetime.strptime(sdc.userParams['INITIAL_OFFSET'], '%d/%m/%Y %H:%M'))
     else:
-        offset = to_timestamp(datetime.utcnow().replace(second=0, microsecond=0) - interval)
+        offset = to_timestamp(datetime.utcnow().replace(minute=0, second=0, microsecond=0))
 
     sdc.log.info('OFFSET: ' + str(offset))
-
-    N_REQUESTS_TRIES = 3
 
     while True:
         if sdc.isStopped():
             break
-        while offset > get_now_with_delay() - interval.total_seconds():
-            time.sleep(2)
+        while offset > get_now():
+            time.sleep(1)
             if sdc.isStopped():
                 return
 
         session = requests.Session()
-        session.headers = sdc.userParams['HEADERS']
-        for i in range(1, N_REQUESTS_TRIES + 1):
-            try:
-                res = session.get(
-                    sdc.userParams['URL'],
-                    timeout=sdc.userParams['TIMEOUT']
-                )
-                res.raise_for_status()
-            except requests.HTTPError as e:
-                requests.post(sdc.userParams['MONITORING_URL'] + str(e.response.status_code))
-                sdc.log.error(str(e))
-                if i == N_REQUESTS_TRIES:
-                    raise
-                time.sleep(2 ** i)
+        if sdc.userParams['USERNAME']:
+            session.auth = (sdc.userParams['USERNAME'], sdc.userParams['PASSWORD'])
+        if offset - get_interval() < get_now():
+            offset = get_now() + get_interval()
+        try:
+            res = session.get(sdc.userParams['URL'], verify=sdc.userParams['VERIFY_SSL'])
+            res.raise_for_status()
+        except requests.HTTPError as e:
+            requests.post(sdc.userParams['MONITORING_URL'] + str(e.response.status_code))
+            sdc.log.error(str(e))
 
         cur_batch = sdc.createBatch()
-        for obj in csv_to_json(res.text, int(offset)):
-            record = sdc.createRecord('record created ' + str(datetime.now()))
-            record.value = obj
-            cur_batch.add(record)
-            if cur_batch.size() == sdc.batchSize:
-                cur_batch.process(entityName, str(offset))
-                cur_batch = sdc.createBatch()
-                if sdc.isStopped():
-                    break
+        record = sdc.createRecord('record created ' + str(datetime.now()))
+        record.value = {'last_timestamp': int(offset)}
+        cur_batch.add(record)
         cur_batch.process(entityName, str(offset))
         offset += interval.total_seconds()
 
