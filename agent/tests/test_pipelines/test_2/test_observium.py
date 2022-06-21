@@ -24,6 +24,7 @@ class TestObservium(TestPipelineBase):
             },
             {
                 'name': 'observium_storage_transform',
+                'sleep': 30
             },
         ],
         'test_force_stop': [
