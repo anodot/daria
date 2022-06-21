@@ -1,6 +1,6 @@
 NAP = 15
 SLEEP = 60
-THREADS = 8
+THREADS = 4
 DOCKER_COMPOSE_DEV_FILE = docker-compose-dev.yml
 DOCKER_COMPOSE_DEV = docker-compose -f $(DOCKER_COMPOSE_DEV_FILE)
 DOCKER_TEST = docker exec -i anodot-agent pytest -x -vv --disable-pytest-warnings
@@ -9,11 +9,41 @@ DOCKER_TEST_PARALLEL = $(DOCKER_TEST) -n $(THREADS) --dist=loadfile
 ##---------
 ## RELEASE
 ##---------
-all: build-all test-all
+all: build-all test-general test-pipelines-1 test-pipelines-2
 
 build-all: get-streamsets-libs build-docker
 
-test-all: run-all sleep setup-all run-unit-tests test-flask-app test-streamsets test-raw-input test-raw-pipelines test-destination test-run-test-pipeline test-apply test-api test-api-scripts test-input test-export-sources test-streamsets-2 test-send-to-bc test-pipelines test-monitoring-metrics
+test-all: test-general test-pipelines-1 test-pipelines-2
+
+test-general: run-base-services run-unit-tests test-flask-app test-streamsets run-general-test-services test-raw-input test-raw-pipelines test-destination test-run-test-pipeline test-apply test-api test-api-scripts test-export-sources test-streamsets-2 test-send-to-bc test-monitoring-metrics
+
+test-pipelines-1: bootstrap-test-pipelines run-services-for-test-1
+	$(DOCKER_TEST_PARALLEL) tests/test_input/test_1
+	$(DOCKER_TEST_PARALLEL) tests/test_pipelines/test_1
+
+test-pipelines-2: bootstrap-test-pipelines run-services-for-test-2
+	$(DOCKER_TEST_PARALLEL) tests/test_input/test_2
+	$(DOCKER_TEST_PARALLEL) tests/test_pipelines/test_2
+
+bootstrap-test-pipelines: run-base-services test-streamsets test-destination
+	docker exec -i dc bash -c '$$SDC_DIST/bin/streamsets stagelib-cli jks-credentialstore add -i jks -n testmongopass -c root'
+	docker exec -i dc2 bash -c '$$SDC_DIST/bin/streamsets stagelib-cli jks-credentialstore add -i jks -n testmongopass -c root'
+
+run-services-for-test-1: _run-services-for-test-1 half-sleep setup-victoria setup-kafka
+_run-services-for-test-1:
+	docker-compose up -d mongo zookeeper kafka influx influx-2 postgres victoriametrics
+
+run-services-for-test-2: _run-services-for-test-2 sleep setup-elastic setup-zabbix
+_run-services-for-test-2:
+	docker-compose up -d mysql es zabbix-server zabbix-web zabbix-agent clickhouse snmpsim sage
+
+run-base-services:
+	docker-compose up -d agent dc dc2 squid dummy_destination
+	sleep 60
+
+run-general-test-services: _run-general-test-services half-sleep setup-elastic setup-kafka
+_run-general-test-services:
+	docker-compose up -d es influx mongo sage mysql snmpsim kafka
 
 ##-------------
 ## DEVELOPMENT
@@ -35,67 +65,67 @@ stop: clean-docker-volumes
 ## TEST SEPARATE SOURCES
 ##-----------------------
 test-directory: bootstrap
-	$(DOCKER_TEST) tests/test_input/test_directory_http.py
-	$(DOCKER_TEST) tests/test_pipelines/test_directory_http.py
+	$(DOCKER_TEST) tests/test_input/test_1/test_directory_http.py
+	$(DOCKER_TEST) tests/test_pipelines/test_1/test_directory_http.py
 
 test-elastic: bootstrap run-elastic setup-elastic
-	$(DOCKER_TEST) tests/test_input/test_elastic_http.py
-	$(DOCKER_TEST) tests/test_pipelines/test_elastic_http.py
+	$(DOCKER_TEST) tests/test_input/test_2/test_elastic_http.py
+	$(DOCKER_TEST) tests/test_pipelines/test_2/test_elastic_http.py
 
 test-promql: bootstrap run-victoria
-	$(DOCKER_TEST) tests/test_input/test_promql_http.py
-	$(DOCKER_TEST) tests/test_pipelines/test_promql_http.py
+	$(DOCKER_TEST) tests/test_input/test_1/test_promql_http.py
+	$(DOCKER_TEST) tests/test_pipelines/test_1/test_promql_http.py
 
 test-influx: bootstrap run-influx run-influx-2 nap
-	$(DOCKER_TEST) tests/test_input/test_influx_http.py
-	$(DOCKER_TEST) tests/test_pipelines/test_influx_http.py
+	$(DOCKER_TEST) tests/test_input/test_1/test_influx_http.py
+	$(DOCKER_TEST) tests/test_pipelines/test_1/test_influx_http.py
 
 test-kafka: bootstrap run-kafka setup-kafka
-	$(DOCKER_TEST) tests/test_input/test_kafka_http.py
-	$(DOCKER_TEST) tests/test_pipelines/test_kafka_http.py
+	$(DOCKER_TEST) tests/test_input/test_1/test_kafka_http.py
+	$(DOCKER_TEST) tests/test_pipelines/test_1/test_kafka_http.py
 
 test-mongo: bootstrap run-mongo
 	docker exec -i dc bash -c '$$SDC_DIST/bin/streamsets stagelib-cli jks-credentialstore add -i jks -n testmongopass -c root'
-	$(DOCKER_TEST) tests/test_input/test_mongo_http.py
-	$(DOCKER_TEST) tests/test_pipelines/test_mongo_http.py
+	$(DOCKER_TEST) tests/test_input/test_1/test_mongo_http.py
+	$(DOCKER_TEST) tests/test_pipelines/test_1/test_mongo_http.py
 
 test-mysql: bootstrap run-mysql sleep
-	$(DOCKER_TEST) tests/test_input/test_mysql_http.py
-	$(DOCKER_TEST) tests/test_pipelines/test_mysql_http.py
+	$(DOCKER_TEST) tests/test_input/test_2/test_mysql_http.py
+	$(DOCKER_TEST) tests/test_pipelines/test_2/test_mysql_http.py
 
 test-postgres: bootstrap run-postgres sleep
-	$(DOCKER_TEST) tests/test_input/test_postgres_http.py
-	$(DOCKER_TEST) tests/test_pipelines/test_postgres_http.py
+	$(DOCKER_TEST) tests/test_input/test_1/test_postgres_http.py
+	$(DOCKER_TEST) tests/test_pipelines/test_1/test_postgres_http.py
 
 test-clickhouse: bootstrap run-clickhouse sleep
-	$(DOCKER_TEST) tests/test_input/test_clickhouse.py
-	$(DOCKER_TEST) tests/test_pipelines/test_clickhouse.py
+	$(DOCKER_TEST) tests/test_input/test_2/test_clickhouse.py
+	$(DOCKER_TEST) tests/test_pipelines/test_2/test_clickhouse.py
 
 test-tcp: bootstrap
-	$(DOCKER_TEST) tests/test_input/test_tcp_http.py
-	$(DOCKER_TEST) tests/test_pipelines/test_tcp_http.py
+	$(DOCKER_TEST) tests/test_input/test_1/test_tcp_http.py
+	$(DOCKER_TEST) tests/test_pipelines/test_1/test_tcp_http.py
 
 test-sage: bootstrap run-sage
-	$(DOCKER_TEST) tests/test_input/test_sage_http.py
-	$(DOCKER_TEST) tests/test_pipelines/test_sage_http.py
+	$(DOCKER_TEST) tests/test_input/test_2/test_sage_http.py
+	$(DOCKER_TEST) tests/test_pipelines/test_2/test_sage_http.py
 
 test-zabbix: bootstrap run-zabbix
-	$(DOCKER_TEST) tests/test_input/test_zabbix_http.py
-	$(DOCKER_TEST) tests/test_pipelines/test_zabbix_http.py
+	$(DOCKER_TEST) tests/test_input/test_2/test_zabbix_http.py
+	$(DOCKER_TEST) tests/test_pipelines/test_2/test_zabbix_http.py
 
 test-cacti: bootstrap run-mysql sleep
-	$(DOCKER_TEST) tests/test_input/test_cacti.py
-	$(DOCKER_TEST) tests/test_pipelines/test_cacti.py
+	$(DOCKER_TEST) tests/test_input/test_2/test_cacti.py
+	$(DOCKER_TEST) tests/test_pipelines/test_2/test_cacti.py
 
 test-oracle: bootstrap
 	$(DOCKER_TEST) tests/test_input/test_2/test_oracle.py
 
 test-mssql: bootstrap
 	docker exec -i dc bash -c '$$SDC_DIST/bin/streamsets stagelib-cli jks-credentialstore add -i jks -n testmssql -c UserTest123$$'
-	$(DOCKER_TEST) tests/test_input/test_mssql.py
+	$(DOCKER_TEST) tests/test_input/test_1/test_mssql.py
 
 test-databricks: bootstrap
-	$(DOCKER_TEST) tests/test_input/test_2/test_databricks.py
+	$(DOCKER_TEST) tests/test_input/test_1/test_databricks.py
 
 ##---------------------------
 ## RELEASE DEPENDENCY TARGETS
@@ -133,12 +163,6 @@ test-input:
 
 test-export-sources:
 	$(DOCKER_TEST_PARALLEL) tests/test_export_sources.py
-
-test-pipelines:
-	docker exec -i dc bash -c '$$SDC_DIST/bin/streamsets stagelib-cli jks-credentialstore add -i jks -n testmongopass -c root'
-	docker exec -i dc2 bash -c '$$SDC_DIST/bin/streamsets stagelib-cli jks-credentialstore add -i jks -n testmongopass -c root'
-	sleep 15
-	$(DOCKER_TEST_PARALLEL) tests/test_pipelines/
 
 test-run-test-pipeline:
 	$(DOCKER_TEST) tests/test_run_test_pipeline.py
@@ -180,17 +204,18 @@ build-dev:
 run-dev:
 	$(DOCKER_COMPOSE_DEV) up -d
 
-bootstrap: clean-docker-volumes run-base-services test-streamsets test-destination
+bootstrap: clean-docker-volumes run-base-services-dev test-streamsets test-destination
 
 clean-docker-volumes:
-	sudo rm -rf sdc-data/*
-	sudo rm -rf sdc-data2/*
-	sudo rm -rf agent/output/*
+	rm -rf sdc-data/*
+	rm -rf sdc-data2/*
+	rm -rf agent/output/*
 	$(DOCKER_COMPOSE_DEV) down -v --remove-orphans
 
-run-base-services: _run-base-services half-sleep
 
-_run-base-services:
+run-base-services-dev: _run-base-services-dev sleep
+
+_run-base-services-dev:
 	$(DOCKER_COMPOSE_DEV) up -d agent dc squid dummy_destination
 	#docker exec -i anodot-agent python setup.py develop
 
@@ -260,7 +285,7 @@ _run-zabbix:
 setup-kafka:
 	./scripts/upload-test-data-to-kafka.sh
 
-setup-elastic: nap
+setup-elastic:
 	./scripts/upload-test-data-to-elastic.sh
 
 setup-victoria:
@@ -282,3 +307,12 @@ half-sleep:
 
 nap:
 	sleep $(NAP)
+
+show-all-logs:
+	docker logs anodot-agent;
+	echo "DC logs "; docker logs dc;
+	echo "DC 2 logs"; docker logs dc2;
+	echo "Kafka logs"; docker logs agent-kafka;
+	echo "Dummy logs"; docker logs dummy_destination;
+	echo "Agent logs"; docker exec -i anodot-agent cat /var/log/agent/agent.log;
+	echo "VictoriaMetrics logs"; docker logs victoriametrics;
