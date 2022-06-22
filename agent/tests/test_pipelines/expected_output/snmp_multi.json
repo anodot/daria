@@ -1,0 +1,60 @@
+[
+  {
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "snmp_multi"
+      ],
+      "pipeline_type": [
+        "snmp"
+      ]
+    },
+    "schemaId": "snmp_multi-1234",
+    "dimensions": {
+      "system_location": "San Francisco, California, United States",
+      "system_description": "Linux zeus 4.8.6.5-smp #2 SMP Sun Nov 13 14:58:11 CDT 2016 i686",
+      "host_name": "zeus.snmplabs.com"
+    },
+    "measurements": {
+      "icmp_in_msgs": 324.0,
+      "icmp_out_msgs": 2735.0
+    }
+  },
+  {
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "snmp_multi"
+      ],
+      "pipeline_type": [
+        "snmp"
+      ]
+    },
+    "schemaId": "snmp_multi-1234",
+    "dimensions": {
+      "system_location": "San Francisco, California, United States",
+      "system_description": "Linux zeus 4.8.6.5-smp #2 SMP Sun Nov 13 14:58:11 CDT 2016 i686",
+      "host_name": "zeus.snmplabs.com"
+    },
+    "measurements": {
+      "icmp_in_msgs": 324.0,
+      "icmp_out_msgs": 2735.0
+    }
+  }
+]
