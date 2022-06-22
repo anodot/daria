@@ -21,7 +21,6 @@ class TestRawMySQL(TestRawPipelineBase):
             {'name': 'mysql_raw_csv'}
         ],
         'test_source_delete': [
-            {'name': 'mysql_raw_json'},
-            {'name': 'mysql_raw_csv'}
+            {'name': 'mysql_raw'},
         ]
     }
