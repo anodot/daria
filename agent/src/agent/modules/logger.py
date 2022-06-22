@@ -5,8 +5,9 @@ import sys
 from logging.handlers import RotatingFileHandler
 
 
-def get_logger(name, level=logging.DEBUG, stdout=False):
+def get_logger(name, level=None, stdout=False):
     logger = logging.getLogger(name)
+    level = level or os.environ.get('LOG_LEVEL', logging.INFO)
     logger.setLevel(level)
 
     file_handler = RotatingFileHandler(os.environ.get('LOG_FILE_PATH', 'agent.log'), maxBytes=2000)
