@@ -15,7 +15,7 @@ for record in sdc.records:
 
 sent_query = False
 for record in recs:
-    rec = sdc.createRecord('record query')
+    rec = sdc.createRecord('record')
     rec.value = sdc.createMap(True)
     for key in record.value:
       rec.value[key] = record.value[key]
