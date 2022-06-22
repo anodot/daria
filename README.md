@@ -38,7 +38,7 @@ or
 ```
 make all-dev
 ```
-correspondingly. It will build all containers and run all tests.
+correspondingly. It will build all containers and run all tests
 
 You can also test only a specific source, to do that you can run ```make test-resource-name```, for example
 ```

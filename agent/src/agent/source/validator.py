@@ -10,6 +10,7 @@ from datetime import datetime
 from pysnmp.entity.engine import SnmpEngine
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 from agent import source
+from agent.modules.constants import SNMP_DEFAULT_PORT
 from agent.modules.mysql import MySQL
 from agent.modules.tools import if_validation_enabled
 from agent.modules import validator, http
@@ -66,7 +67,12 @@ class InfluxValidator(Validator):
             validator.validate_url_format_with_port(self.source.config['host'])
         except validator.ValidationException as e:
             raise ValidationException(str(e))
-        client = source.db.get_influx_client(self.source.config['host'])
+        client = source.db.get_influx_client(
+            host=self.source.config['host'],
+            username=self.source.config.get('username'),
+            password=self.source.config.get('password'),
+            db=self.source.config.get('db'),
+        )
         client.ping()
 
     @if_validation_enabled
@@ -198,19 +204,25 @@ class MongoValidator(Validator):
 
 class SNMPValidator(Validator):
     def validate(self):
-        url = urllib.parse.urlparse(self.source.url)
-        iterator = getCmd(
-            SnmpEngine(),
-            CommunityData(self.source.read_community, mpModel=0),
-            UdpTransportTarget((url.hostname, url.port), timeout=10, retries=0),
-            ContextData(),
-            ObjectType(ObjectIdentity('1.3.6.1.2.1.1.5.0')),
-            lookupNames=True,
-            lookupMib=True
-        )
-        for response in iterator:
-            if type(response[0]).__name__ == 'RequestTimedOut':
-                raise ValidationException(f'Couldn\'t get response from `{self.source.url}`')
+        errors = []
+        for host in self.source.hosts:
+            host_ = host if '://' in host else f'//{host}'
+            url = urllib.parse.urlparse(host_)
+            iterator = getCmd(
+                SnmpEngine(),
+                CommunityData(self.source.read_community, mpModel=0),
+                UdpTransportTarget((url.hostname, url.port or SNMP_DEFAULT_PORT), timeout=10, retries=0),
+                ContextData(),
+                ObjectType(ObjectIdentity('1.3.6.1.2.1.1.5.0')),
+                lookupNames=True,
+                lookupMib=True
+            )
+            for response in iterator:
+                if type(response[0]).__name__ == 'RequestTimedOut':
+                    errors.append(f'Couldn\'t get response from `{host}`: {type(response[0]).__name__}')
+                    break
+        if errors:
+            raise ValidationException(errors)
 
     @if_validation_enabled
     def validate_connection(self):
