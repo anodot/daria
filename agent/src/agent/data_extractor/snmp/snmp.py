@@ -5,8 +5,10 @@ from pysnmp.hlapi import getCmd, CommunityData, UdpTransportTarget, ContextData
 from pysnmp.smi.rfc1902 import ObjectType, ObjectIdentity
 from agent.data_extractor.snmp.delta_calculator import DeltaCalculator
 from agent.modules import logger
+from agent.modules.constants import SNMP_DEFAULT_PORT
 from agent.pipeline import Pipeline
 from urllib.parse import urlparse
+from itertools import chain
 
 logger_ = logger.get_logger(__name__, stdout=True)
 delta_calculator = DeltaCalculator()
@@ -54,16 +56,20 @@ def _get_var_binds(response):
 
 
 def _fetch_data(pipeline_: Pipeline):
-    url = urlparse(pipeline_.source.url)
-    return getCmd(
-        SnmpEngine(),
-        CommunityData(pipeline_.source.read_community, mpModel=0),
-        UdpTransportTarget((url.hostname, url.port), timeout=pipeline_.source.query_timeout, retries=0),
-        ContextData(),
-        *[ObjectType(ObjectIdentity(mib)) for mib in pipeline_.config['oids']],
-        lookupNames=True,
-        lookupMib=True
-    )
+    binds = []
+    for host in pipeline_.source.hosts:
+        host_ = host if '://' in host else f'//{host}'
+        url = urlparse(host_)
+        binds.append(getCmd(
+            SnmpEngine(),
+            CommunityData(pipeline_.source.read_community, mpModel=0),
+            UdpTransportTarget((url.hostname, url.port or SNMP_DEFAULT_PORT), timeout=pipeline_.source.query_timeout, retries=0),
+            ContextData(),
+            *[ObjectType(ObjectIdentity(mib)) for mib in pipeline_.config['oids']],
+            lookupNames=True,
+            lookupMib=True
+        ))
+    return chain(*binds)
 
 
 def _create_metric(pipeline_: Pipeline, var_binds: list) -> dict:
@@ -75,10 +81,18 @@ def _create_metric(pipeline_: Pipeline, var_binds: list) -> dict:
     }
 
     for var_bind in var_binds:
+        logger_.debug(f'Processing OID: {str(var_bind[0])}')
         if _is_value(str(var_bind[0]), pipeline_):
-            metric['measurements'][_get_measurement_name(var_bind[0], pipeline_)] = _get_value(var_bind, pipeline_)
-        elif _is_dimension(str(var_bind[0].getMibNode().label), pipeline_):
-            metric['dimensions'][_get_dimension_name(var_bind[0].getMibNode().label, pipeline_)] = str(var_bind[1])
+            measurement_name = _get_measurement_name(var_bind[0], pipeline_)
+            measurement_value = _get_value(var_bind, pipeline_)
+            metric['measurements'][measurement_name] = measurement_value
+            logger_.debug(f'Measurement `{measurement_name}` with a value: {measurement_value}')
+        elif _is_dimension(str(var_bind[0]), pipeline_):
+            dimension_name = _get_dimension_name(var_bind[0], pipeline_)
+            metric['dimensions'][dimension_name] = str(var_bind[1])
+            logger_.debug(f'Dimension `{dimension_name}` with a value: {str(var_bind[1])}')
+    if not metric['measurements'] or not metric['dimensions']:
+        raise SNMPError('No metrics extracted')
     metric['timestamp'] = int(time.time())
     return metric
 
@@ -91,8 +105,8 @@ def _is_dimension(key: str, pipeline_: Pipeline) -> bool:
     return key in pipeline_.dimension_paths
 
 
-def _get_dimension_name(dim_path: str, pipeline_: Pipeline) -> str:
-    return pipeline_.dimension_paths_with_names[dim_path]
+def _get_dimension_name(dim_path: ObjectIdentity, pipeline_: Pipeline) -> str:
+    return pipeline_.dimension_paths_with_names[str(dim_path)]
 
 
 def _get_measurement_name(oid: ObjectIdentity, pipeline_: Pipeline) -> str:
