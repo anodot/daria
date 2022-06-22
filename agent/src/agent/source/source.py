@@ -189,6 +189,7 @@ class SageSource(Source):
 
 class APISource(Source):
     URL = 'url'
+    HOSTS = 'hosts'
     AUTHENTICATION = 'authentication'
     USERNAME = 'username'
     PASSWORD = 'password'
@@ -196,7 +197,11 @@ class APISource(Source):
 
     @property
     def url(self) -> str:
-        return self.config[self.URL]
+        return self.config.get(self.URL)
+
+    @property
+    def hosts(self) -> str:
+        return self.config.get(self.HOSTS)
 
     @property
     def verify_ssl(self) -> bool:
