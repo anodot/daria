@@ -13,9 +13,9 @@ class SNMPBuilder(Builder):
         return self.config
 
     def _add_default_dimensions(self):
-        if 'dimensions' not in self.config:
-            self.config['dimensions'] = []
-        self.config['dimensions'].extend(list(self.config['dimension_value_paths']))
+        dimensions = set(self.config.get('dimensions', []))
+        dimensions = dimensions.union(self.config['dimension_value_paths'])
+        self.config['dimensions'] = list(dimensions)
 
     def _add_default_oids(self):
         oids = set(self.config.get('oids', []))
