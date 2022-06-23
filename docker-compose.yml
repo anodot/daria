@@ -54,6 +54,7 @@ services:
       PGPASSWORD: 'agent'
       AGENT_URL: 'http://anodot-agent'
       TLS_VERSION: '1.1'
+      LOG_LEVEL: 'INFO'
     #      VALIDATION_ENABLED: 'false'
     stdin_open: true
     tty: true
