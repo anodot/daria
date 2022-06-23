@@ -9,8 +9,8 @@ class TestSNMP(TestPipelineBase):
     __test__ = True
     params = {
         'test_start': [
-            {'name': 'snmp', 'sleep': 35},
-            {'name': 'snmp_multi', 'sleep': 35},
+            {'name': 'snmp', 'sleep': 45},
+            {'name': 'snmp_multi', 'sleep': 45},
         ],
         'test_force_stop': [
             {'name': 'snmp'},
