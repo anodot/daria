@@ -3,7 +3,7 @@ from ..test_zpipeline_base import TestInputBase
 
 
 def _get_days_to_backfill():
-    return (datetime.now() - datetime(year=2020, month=7, day=7)).days + 1
+    return (datetime.now() - datetime(year=2022, month=2, day=1)).days + 1
 
 
 class TestPromQL(TestInputBase):
