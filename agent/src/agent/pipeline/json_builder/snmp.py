@@ -1,5 +1,4 @@
 from agent.pipeline.json_builder import Builder
-from agent.data_extractor.snmp import snmp
 
 
 class SNMPBuilder(Builder):
@@ -14,17 +13,14 @@ class SNMPBuilder(Builder):
         return self.config
 
     def _add_default_dimensions(self):
-        if 'dimensions' not in self.config:
-            self.config['dimensions'] = []
-        if snmp.HOSTNAME_NAME not in self.config['dimensions']:
-            self.config['dimensions'].append(snmp.HOSTNAME_NAME)
-        self.config['dimension_value_paths'][snmp.HOSTNAME_NAME] = snmp.HOSTNAME_OID
+        dimensions = set(self.config.get('dimensions', []))
+        dimensions = dimensions.union(self.config['dimension_value_paths'])
+        self.config['dimensions'] = list(dimensions)
 
     def _add_default_oids(self):
         oids = set(self.config.get('oids', []))
         oids = oids.union(self.config['dimension_value_paths'].values())
         oids = oids.union(self.config['values'].keys())
-        oids.add(snmp.HOSTNAME_OID)
         self.config['oids'] = list(oids)
 
 

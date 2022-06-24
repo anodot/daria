@@ -15,7 +15,11 @@ for record in sdc.records:
 
 sent_query = False
 for record in recs:
-    sdc.output.write(record)
+    rec = sdc.createRecord('record')
+    rec.value = sdc.createMap(True)
+    for key in record.value:
+      rec.value[key] = record.value[key]
+    sdc.output.write(rec)
 if recs and not sent_query and sdc.userParams['LOGGING_OF_QUERIES_ENABLED']:
     rec = sdc.createRecord('record query')
     rec.value = sdc.createMap(True)
