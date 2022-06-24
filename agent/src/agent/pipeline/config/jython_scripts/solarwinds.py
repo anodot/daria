@@ -84,6 +84,11 @@ def main():
                 record.value = row
                 cur_batch.add(record)
 
+                if cur_batch.size() == sdc.batchSize:
+                    offset = end
+                    cur_batch.process(entityName, str(offset))
+                    cur_batch = sdc.createBatch()
+
             # send batch and save offset
             offset = end
             cur_batch.process(entityName, str(offset))
