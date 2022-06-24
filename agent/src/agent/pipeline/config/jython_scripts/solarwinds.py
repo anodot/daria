@@ -17,7 +17,7 @@ finally:
 
 # single threaded - no entityName because we need only one offset
 entityName = ''
-DATEFORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DATEFORMAT = '%Y-%m-%dT%H:%M:%S'
 LAST_TIMESTAMP = '%last_timestamp%'
 
 
