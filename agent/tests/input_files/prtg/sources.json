@@ -3,7 +3,7 @@
     "name": "test_prtg_xml",
     "type": "prtg",
     "config": {
-      "url": "http://dummy_destination:80/api/v1/prtg/prtg_table2.xml?content=sensortree",
+      "url": "http://dummy_destination:80/api/v1/prtg/prtg_table.xml?content=sensortree",
       "authentication": {
         "type": "basic",
         "username": "admin",
