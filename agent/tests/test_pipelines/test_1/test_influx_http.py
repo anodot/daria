@@ -18,7 +18,7 @@ class TestInflux(TestPipelineBase):
             {'name': 'test_influx2'},
             {'name': 'test_influx2_file_full'},
             {'name': 'test_influx2_query'},
-            {'name': 'influx2_influxql_pipeline'},
+            {'name': 'influx2_influxql_pipeline', 'sleep': 30},
             {'name': 'test_influx_adv'}
         ],
         'test_force_stop': [
