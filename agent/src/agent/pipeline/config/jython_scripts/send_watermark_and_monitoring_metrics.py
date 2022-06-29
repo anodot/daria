@@ -28,6 +28,9 @@ for record in sdc.records:
 
     try:
         # send Watermark
+        if sdc.userParams['WATERMARK_LOGS'] == 'True':
+            sdc.log.info('Sending watermark: ' + str(record.value['watermark']))
+
         res = requests.post(
             sdc.userParams['WATERMARK_URL'],
             json=record.value, proxies=sdc.userParams['PROXIES'], timeout=30
@@ -39,15 +42,11 @@ for record in sdc.records:
 
         # send Watermark Metrics
         watermark_delta = _get_watermark_delta(record.value['watermark'])
-        if sdc.userParams['WATERMARK_LOGS'] == 'True':
-            sdc.log.info('Sending watermark metric `watermark_delta`: ' + str(watermark_delta))
         res = requests.post(
             sdc.userParams['WATERMARK_DELTA_MONITORING_ENDPOINT'],
             params={'delta': watermark_delta}
         )
         res.raise_for_status()
-        if sdc.userParams['WATERMARK_LOGS'] == 'True':
-            sdc.log.info('Sending watermark metric `watermark_sent`')
         requests.post(
             sdc.userParams['WATERMARK_SENT_MONITORING_ENDPOINT']
         )
