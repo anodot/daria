@@ -2,6 +2,7 @@ global sdc
 
 try:
     sdc.importLock()
+    import json
     import time
     import sys
     import os
@@ -62,8 +63,8 @@ def _process_response_xml(content, offset):
                 sensortype.text: value.text,
                 'Host Name': device_name.text,
                 'Sensor name': name.text,
-                'timestamp_unix': to_timestamp(prtg_ts_to_unix_ts(float(prtg_ts.text))),
-                'last_timestamp': int(offset),
+                'timestamp_unix': offset,
+                'last_timestamp': offset,
                 '__tags': {
                     'Group': [tag_group.text],
                     'Location': [tag_location.text],
@@ -72,8 +73,25 @@ def _process_response_xml(content, offset):
     return ret
 
 
-def _process_response_json(content):
-    return []
+def _process_response_json(content, offset):
+    ret = []
+    json_data = json.loads(content)
+
+    if 'sensors' not in json_data:
+        return ret
+    for item in json_data['sensors']:
+        ret.append({
+            item['sensor_raw']: item.get('lastvalue_raw') or None,
+            'Host Name': item.get('device_raw'),
+            'Sensor name': item.get('sensor'),
+            'last_timestamp': offset,
+            'timestamp_unix': offset,
+            '__tags': {
+                'Group': [item.get('group_raw')],
+                'Location': ['Location'],
+            },
+        })
+    return ret
 
 
 entityName = ''
@@ -111,7 +129,7 @@ def main():
             if url_parsed.path.endswith('.xml'):
                 data = _process_response_xml(res.content, offset)
             elif url_parsed.path.endswith('.json'):
-                data = _process_response_json(res.content)
+                data = _process_response_json(res.content, offset)
 
             for value_dict in data:
                 record = sdc.createRecord('record created ' + str(datetime.now()))
