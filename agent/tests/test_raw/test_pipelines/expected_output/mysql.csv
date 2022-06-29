@@ -1,0 +1,6 @@
+id,timestamp_unix,timestamp_unix_ms,ver,adsize,country,adtype,exchange,clicks,impressions,timestamp_datetime,timestamp_string
+2,1512871200,1512871200000,1,Sma.ll,USA,Display,DoubleClick,6839.0,22,Sun Dec 10 02:00:00 GMT 2017,12/10/2017 2:00:00
+3,1512874800,1512874800000,1,Sma.ll,USA,Display,DoubleClick,690999.0,15,Sun Dec 10 03:00:00 GMT 2017,12/10/2017 3:00:00
+4,1512878400,1512878400000,1,null,USA,Display,DoubleClick,7158.97021484375,3,Sun Dec 10 04:00:00 GMT 2017,12/10/2017 4:00:00
+5,1512885600,1512885600000,1,Sma ll,USA,Display,DoubleClick,,4,Sun Dec 10 06:00:00 GMT 2017,12/10/2017 6:00:00
+SELECT * FROM test WHERE timestamp_unix_ms/1000 >= 1512864000 AND timestamp_unix_ms/1000 < 1512864000 + 86400 AND Country = 'USA' ORDER BY timestamp_unix_ms

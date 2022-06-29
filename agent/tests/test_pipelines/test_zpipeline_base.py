@@ -16,7 +16,7 @@ class TestPipelineBase(object):
         result = cli_runner.invoke(cli.pipeline.start, [name], catch_exceptions=False)
         assert result.exit_code == 0
         if not sleep:
-            sleep = 15
+            sleep = 20
         time.sleep(sleep)
 
         pipeline_ = pipeline.repository.get_by_id(name)

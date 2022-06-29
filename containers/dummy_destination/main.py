@@ -154,8 +154,8 @@ def solarwinds_data_example():
         return json.dumps({'error': 'Wrong user or pass'}), 401
     predefined_query = 'SELECT TOP 1000 NodeID, DateTime, Archive, MinLoad, MaxLoad, AvgLoad, TotalMemory,' \
                        ' MinMemoryUsed, MaxMemoryUsed, AvgMemoryUsed, AvgPercentMemoryUsed FROM Orion.CPULoad' \
-                       ' WHERE DateTime > DateTime(\'2021-03-30T00:00:00Z\')' \
-                       ' AND DateTime <= AddSecond(86400, DateTime(\'2021-03-30T00:00:00Z\')) ORDER BY DateTime'
+                       ' WHERE DateTime > DateTime(\'2021-03-30T00:00:00\')' \
+                       ' AND DateTime <= AddSecond(86400, DateTime(\'2021-03-30T00:00:00\')) ORDER BY DateTime'
     if "query" in request.args and request.args["query"] == predefined_query:
         with open('data/solarwinds_data_example.json') as f:
             return json.load(f)
