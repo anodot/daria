@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import urllib.parse
 import jsonschema
@@ -203,9 +204,16 @@ class MongoValidator(Validator):
 
 
 class SNMPValidator(Validator):
+    VALIDATION_SCHEMA_FILE = 'snmp.json'
+
     def validate(self):
+        super().validate()
+
+    @if_validation_enabled
+    def validate_connection(self):
         errors = []
         snmp_version = 0 if self.source.version == 'v1' else 1
+        snmp_hosts_count = len(self.source.hosts)
         for host in self.source.hosts:
             host_ = host if '://' in host else f'//{host}'
             url = urllib.parse.urlparse(host_)
@@ -221,13 +229,10 @@ class SNMPValidator(Validator):
             for response in iterator:
                 if type(response[0]).__name__ == 'RequestTimedOut':
                     errors.append(f'Couldn\'t get response from `{host}`: {type(response[0]).__name__}')
-                    break
-        if errors:
+                    logging.warning(f'Couldn\'t connect to {host}. It will be skipped')
+                    self.source.hosts.remove(host)
+        if len(errors) == snmp_hosts_count:
             raise ValidationException(errors)
-
-    @if_validation_enabled
-    def validate_connection(self):
-        pass
 
 
 class SageValidator(Validator):
