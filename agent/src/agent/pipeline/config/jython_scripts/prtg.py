@@ -37,7 +37,7 @@ def _filter(list_):
     return list(filter(lambda x: bool(x), list_))
 
 
-def _process_response_xml(content, offset):
+def _process_response_xml(content):
     ret = []
     tree = ET.fromstring(content)
 
@@ -50,6 +50,7 @@ def _process_response_xml(content, offset):
     tag_location = tags_element.find('group/name')
 
     # metrics
+    ts_unix = get_now()
     devices = tree.findall('*//device')
     for device in devices:
         device_name = device.find('name')
@@ -63,8 +64,7 @@ def _process_response_xml(content, offset):
                 sensortype.text: value.text,
                 'Host Name': device_name.text,
                 'Sensor name': name.text,
-                'timestamp_unix': offset,
-                'last_timestamp': offset,
+                'timestamp_unix': ts_unix,
                 '__tags': {
                     'Group': [tag_group.text],
                     'Location': [tag_location.text],
@@ -73,19 +73,19 @@ def _process_response_xml(content, offset):
     return ret
 
 
-def _process_response_json(content, offset):
+def _process_response_json(content):
     ret = []
     json_data = json.loads(content)
 
     if 'sensors' not in json_data:
         return ret
+    ts_unix = get_now()
     for item in json_data['sensors']:
         ret.append({
             item['sensor_raw']: item.get('lastvalue_raw') or None,
             'Host Name': item.get('device_raw'),
             'Sensor name': item.get('sensor'),
-            'last_timestamp': offset,
-            'timestamp_unix': offset,
+            'timestamp_unix': ts_unix,
             '__tags': {
                 'Group': [item.get('group_raw')],
                 'Location': ['Location'],
@@ -102,7 +102,7 @@ def main():
     if sdc.lastOffsets.containsKey(entityName):
         offset = int(float(sdc.lastOffsets.get(entityName)))
     else:
-        offset = to_timestamp(datetime.utcnow().replace(minute=0, second=0, microsecond=0))
+        offset = to_timestamp(datetime.utcnow().replace(second=0, microsecond=0))
 
     sdc.log.info('OFFSET: ' + str(offset))
 
@@ -127,16 +127,17 @@ def main():
             res.raise_for_status()
             url_parsed = urlparse(sdc.userParams['URL'])
             if url_parsed.path.endswith('.xml'):
-                data = _process_response_xml(res.content, offset)
+                data = _process_response_xml(res.content)
             elif url_parsed.path.endswith('.json'):
-                data = _process_response_json(res.content, offset)
+                data = _process_response_json(res.content)
 
             for value_dict in data:
                 record = sdc.createRecord('record created ' + str(datetime.now()))
                 record.value = value_dict
+                record.value['last_timestamp'] = int(offset)
                 cur_batch.add(record)
                 if cur_batch.size() == sdc.batchSize:
-                    cur_batch.process(entityName, str(offset))
+                    cur_batch.process(entityName)
                     cur_batch = sdc.createBatch()
                     if sdc.isStopped():
                         break
@@ -145,7 +146,7 @@ def main():
                 record.value = {'last_timestamp': int(offset)}
                 cur_batch.add(record)
 
-            cur_batch.process(entityName, str(offset))
+            cur_batch.process(entityName)
             offset += interval.total_seconds()
         except requests.HTTPError as e:
             requests.post(sdc.userParams['MONITORING_URL'] + str(e.response.status_code))
