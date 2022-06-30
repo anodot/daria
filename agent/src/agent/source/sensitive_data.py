@@ -39,6 +39,7 @@ def _get_keywords(source_type: str) -> List[str]:
         source.TYPE_ORACLE: ['connection_string', 'hikariConfigBean.username', 'hikariConfigBean.password'],
         source.TYPE_POSTGRES: ['connection_string', 'hikariConfigBean.username', 'hikariConfigBean.password'],
         source.TYPE_PROMETHEUS: ['username', 'password'],
+        source.TYPE_PRTG: ['username', 'password'],
         source.TYPE_RRD: [],
         source.TYPE_SAGE: ['token'],
         source.TYPE_SNMP: [],
