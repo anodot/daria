@@ -13,6 +13,7 @@
     "name": "snmp_multi",
     "config": {
       "hosts": ["snmpsim:1161", "snmpsim:1161"],
+      "version": "v2c",
       "read_community": "public",
       "query_timeout": 30
     }

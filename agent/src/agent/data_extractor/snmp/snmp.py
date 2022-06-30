@@ -57,12 +57,13 @@ def _get_var_binds(response):
 
 def _fetch_data(pipeline_: Pipeline):
     binds = []
+    snmp_version = 0 if pipeline_.source.version == 'v1' else 1
     for host in pipeline_.source.hosts:
         host_ = host if '://' in host else f'//{host}'
         url = urlparse(host_)
         binds.append(getCmd(
             SnmpEngine(),
-            CommunityData(pipeline_.source.read_community, mpModel=0),
+            CommunityData(pipeline_.source.read_community, mpModel=snmp_version),
             UdpTransportTarget((url.hostname, url.port or SNMP_DEFAULT_PORT), timeout=pipeline_.source.query_timeout, retries=0),
             ContextData(),
             *[ObjectType(ObjectIdentity(mib)) for mib in pipeline_.config['oids']],

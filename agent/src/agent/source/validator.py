@@ -205,12 +205,13 @@ class MongoValidator(Validator):
 class SNMPValidator(Validator):
     def validate(self):
         errors = []
+        snmp_version = 0 if self.source.version == 'v1' else 1
         for host in self.source.hosts:
             host_ = host if '://' in host else f'//{host}'
             url = urllib.parse.urlparse(host_)
             iterator = getCmd(
                 SnmpEngine(),
-                CommunityData(self.source.read_community, mpModel=0),
+                CommunityData(self.source.read_community, mpModel=snmp_version),
                 UdpTransportTarget((url.hostname, url.port or SNMP_DEFAULT_PORT), timeout=10, retries=0),
                 ContextData(),
                 ObjectType(ObjectIdentity('1.3.6.1.2.1.1.5.0')),
