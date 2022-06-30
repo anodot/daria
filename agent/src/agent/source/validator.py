@@ -214,7 +214,7 @@ class SNMPValidator(Validator):
         errors = []
         snmp_version = 0 if self.source.version == 'v1' else 1
         snmp_hosts_count = len(self.source.hosts)
-        for host in self.source.hosts:
+        for host in self.source.hosts[:]:
             host_ = host if '://' in host else f'//{host}'
             url = urllib.parse.urlparse(host_)
             iterator = getCmd(
