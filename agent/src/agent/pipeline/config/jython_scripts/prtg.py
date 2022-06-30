@@ -137,7 +137,7 @@ def main():
                 record.value['last_timestamp'] = int(offset)
                 cur_batch.add(record)
                 if cur_batch.size() == sdc.batchSize:
-                    cur_batch.process(entityName)
+                    cur_batch.process(entityName, str(offset))
                     cur_batch = sdc.createBatch()
                     if sdc.isStopped():
                         break
@@ -146,7 +146,7 @@ def main():
                 record.value = {'last_timestamp': int(offset)}
                 cur_batch.add(record)
 
-            cur_batch.process(entityName)
+            cur_batch.process(entityName, str(offset))
             offset += interval.total_seconds()
         except requests.HTTPError as e:
             requests.post(sdc.userParams['MONITORING_URL'] + str(e.response.status_code))
