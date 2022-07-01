@@ -30,11 +30,14 @@ def to_timestamp(date):
 
 
 def _process_response_xml(content):
-    ret = []
-    tree = ET.fromstring(content)
+    try:
+        tree = ET.fromstring(content)
+    except ET.ParseError as e:
+        sdc.log.error('XML parse error: ' + str(e))
+        return []
 
     if not tree:
-        return ret
+        return []
 
     # tags
     tags_element = tree.find('sensortree/nodes/group/probenode/group')
@@ -44,6 +47,7 @@ def _process_response_xml(content):
     # metrics
     ts_unix = get_now()
     devices = tree.findall('*//device')
+    ret = []
     for device in devices:
         device_name = device.find('name')
         sensors = device.findall('sensor')
@@ -65,11 +69,16 @@ def _process_response_xml(content):
 
 
 def _process_response_json(content):
-    ret = []
-    json_data = json.loads(content)
+    try:
+        json_data = json.loads(content)
+    except (json.JSONDecodeError, TypeError) as e:
+        sdc.log.error('JSON parse error: ' + str(e))
+        return []
 
     if 'sensors' not in json_data:
-        return ret
+        return []
+
+    ret = []
     ts_unix = get_now()
     for item in json_data['sensors']:
         ret.append({
