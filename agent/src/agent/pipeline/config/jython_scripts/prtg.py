@@ -29,14 +29,6 @@ def to_timestamp(date):
     return int((date - epoch).total_seconds())
 
 
-def prtg_ts_to_unix_ts(prtg_ts, tz=pytz.timezone(sdc.userParams['TIMEZONE'])):
-    return datetime.fromtimestamp((prtg_ts - 25569) * 86400)
-
-
-def _filter(list_):
-    return list(filter(lambda x: bool(x), list_))
-
-
 def _process_response_xml(content):
     ret = []
     tree = ET.fromstring(content)
@@ -59,7 +51,6 @@ def _process_response_xml(content):
             sensortype = sensor.find('sensortype')
             name = sensor.find('name')
             value = sensor.find('lastvalue_raw')
-            prtg_ts = sensor.find('lasttime_raw_utc')
             ret.append({
                 sensortype.text: value.text,
                 'Host Name': device_name.text,
