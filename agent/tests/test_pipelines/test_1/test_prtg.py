@@ -1,15 +1,21 @@
 import pytest
-from ..test_zpipeline_base import TestPipelineBase
+import time
+from ..test_zpipeline_base import TestPipelineBase, get_schema_id
+from ...conftest import get_output
 
 
 class TestPrtg(TestPipelineBase):
     __test__ = True
     params = {
         'test_start': [
+            {'name': 'test_prtg_xml', 'sleep': 60},
+            {'name': 'test_prtg_json', 'sleep': 30},
+        ],
+        'test_force_stop': [
             {'name': 'test_prtg_xml'},
             {'name': 'test_prtg_json'},
         ],
-        'test_force_stop': [
+        'test_watermark': [
             {'name': 'test_prtg_xml'},
             {'name': 'test_prtg_json'},
         ],
@@ -43,3 +49,10 @@ class TestPrtg(TestPipelineBase):
 
     def test_force_stop(self, cli_runner, name):
         super().test_force_stop(cli_runner, name)
+
+    def test_watermark(self, name):
+        schema_id = get_schema_id(name)
+        watermark_output = get_output(f'{schema_id}_watermark.json')
+        assert schema_id == watermark_output.get('schemaId')
+        timestamp = watermark_output.get('watermark')
+        assert int(time.time()) - timestamp < 300
