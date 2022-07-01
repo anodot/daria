@@ -9,7 +9,7 @@ class TestPrtg(TestPipelineBase):
     params = {
         'test_start': [
             {'name': 'test_prtg_xml', 'sleep': 60},
-            {'name': 'test_prtg_json', 'sleep': 30},
+            {'name': 'test_prtg_json', 'sleep': 45},
         ],
         'test_force_stop': [
             {'name': 'test_prtg_xml'},
