@@ -214,10 +214,15 @@ class APISource(Source):
 
 class SNMPSource(APISource):
     READ_COMMUNITY = 'read_community'
+    VERSION = 'version'
 
     @property
     def read_community(self) -> str:
         return self.config[self.READ_COMMUNITY]
+
+    @property
+    def version(self) -> str:
+        return self.config.get(self.VERSION, 'v2c')
 
 
 class ObserviumSource(Source):
