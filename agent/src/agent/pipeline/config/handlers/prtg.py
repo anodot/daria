@@ -1,9 +1,6 @@
-import json
-
-from agent.modules import tools
 from agent.modules.logger import get_logger
 from agent.pipeline.config import stages
-from agent.pipeline.config.handlers.base import TestConfigHandler, SchemaConfigHandler
+from agent.pipeline.config.handlers.base import SchemaConfigHandler
 
 logger = get_logger(__name__)
 
@@ -17,4 +14,5 @@ class PRTGSchemaConfigHandler(SchemaConfigHandler):
         'filtering': stages.expression_evaluator.Filtering,
         'destination': stages.destination.Destination,
         'destination_watermark': stages.destination.WatermarkDestination,
+        'destination_watermark_with_metrics': stages.destination.WatermarkWithMetricsDestination,
     }
