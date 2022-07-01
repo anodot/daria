@@ -1,5 +1,4 @@
-
-from agent import source
+from agent import source, monitoring
 from agent.pipeline.config.stages.base import JythonSource
 
 
@@ -35,5 +34,9 @@ class PRTGSource(JythonSource):
             {
                 'key': 'TIMEZONE',
                 'value': str(self.pipeline.timezone),
+            },
+            {
+                'key': 'MONITORING_URL',
+                'value': monitoring.get_monitoring_source_error_url(self.pipeline)
             },
         ]
