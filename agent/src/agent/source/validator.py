@@ -213,8 +213,7 @@ class SNMPValidator(Validator):
     def validate_connection(self):
         errors = []
         snmp_version = 0 if self.source.version == 'v1' else 1
-        snmp_hosts_count = len(self.source.hosts)
-        for host in self.source.hosts[:]:
+        for host in self.source.hosts:
             host_ = host if '://' in host else f'//{host}'
             url = urllib.parse.urlparse(host_)
             iterator = getCmd(
@@ -229,9 +228,8 @@ class SNMPValidator(Validator):
             for response in iterator:
                 if type(response[0]).__name__ == 'RequestTimedOut':
                     errors.append(f'Couldn\'t get response from `{host}`: {type(response[0]).__name__}')
-                    logging.warning(f'Couldn\'t connect to {host}. It will be skipped')
-                    self.source.hosts.remove(host)
-        if len(errors) == snmp_hosts_count:
+                    logging.warning(f'Couldn\'t connect to {host}')
+        if len(errors) == len(self.source.hosts):
             raise ValidationException(errors)
 
 
