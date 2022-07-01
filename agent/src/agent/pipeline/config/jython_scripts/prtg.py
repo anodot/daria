@@ -88,7 +88,6 @@ def _process_response_json(content):
             'timestamp_unix': ts_unix,
             '__tags': {
                 'Group': [item.get('group_raw')],
-                'Location': ['Location'],
             },
         })
     return ret
