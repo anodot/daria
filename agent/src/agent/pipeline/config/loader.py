@@ -74,6 +74,7 @@ class SchemaConfigLoader(ConfigLoader):
             source.TYPE_OBSERVIUM: 'observium_schema.json',
             source.TYPE_POSTGRES: 'jdbc_schema.json',
             source.TYPE_PROMETHEUS: 'promql_schema.json',
+            source.TYPE_PRTG: 'prtg_schema.json',
             source.TYPE_SAGE: 'sage_schema.json',
             source.TYPE_SNMP: 'snmp_schema.json',
             source.TYPE_THANOS: 'promql_schema.json',
