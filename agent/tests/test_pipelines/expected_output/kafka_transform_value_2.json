@@ -142,8 +142,7 @@
   {
     "timestamp": 1512889200,
     "dimensions": {
-      "title": "CLICKS_DISPLAY",
-      "Country": "USA"
+      "title": "CLICKS_DISPLAY"
     },
     "measurements": {
       "clicks": 7427.7744
