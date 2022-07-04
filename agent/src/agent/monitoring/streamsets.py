@@ -1,10 +1,8 @@
-import urllib
-
 import prometheus_client
 import sdc_client
 import re
 
-from typing import List, Tuple, Dict
+from typing import List
 from agent import streamsets, pipeline, source
 from agent.monitoring import metrics
 from agent.modules import constants
@@ -32,7 +30,6 @@ def _is_influx(pipeline_: pipeline.Pipeline):
 
 
 def _pull_pipeline_metrics(pipeline_: pipeline.Pipeline, jmx=None):
-    jmx = jmx or sdc_client.get_jmx(pipeline_.streamsets, f'metrics:name=sdc.pipeline.{pipeline_.name}.*')
     labels = (pipeline_.streamsets.url, pipeline_.name, pipeline_.source.type)
     for bean in jmx['beans']:
         if bean['name'].endswith('source.batchProcessing.timer'):
@@ -85,28 +82,25 @@ def pull_metrics():
 
 def _process_pipeline_metrics(pipelines: List[pipeline.Pipeline], asynchronous: bool = False) -> None:
     if not asynchronous:
-        for pipeline_ in pipelines:
-            _pull_pipeline_metrics(pipeline_)
+        jmxes = [sdc_client.get_jmx(pipeline_.streamsets, f'metrics:name=sdc.pipeline.{pipeline_.name}.*')
+                 for pipeline_ in pipelines]
     else:
-
         jmxes = sdc_client.get_jmxes_async([
             (pipeline_.streamsets, f'metrics:name=sdc.pipeline.{pipeline_.name}.*',)
             for pipeline_ in pipelines])
-        for pipeline_, jmx in zip(pipelines, jmxes):
-            _pull_pipeline_metrics(pipeline_, jmx)
+    for pipeline_, jmx in zip(pipelines, jmxes):
+        _pull_pipeline_metrics(pipeline_, jmx)
 
 
 def _process_streamsets_metrics(streamsets_: List[streamsets.StreamSets], asynchronous: bool = False) -> None:
+    sys_queries = [(streamset_, 'java.lang:type=*',) for streamset_ in streamsets_]
+    kafka_queries = [
+        (streamset_, 'kafka.consumer:type=consumer-fetch-manager-metrics,client-id=*,topic=*,partition=*',)
+        for streamset_ in streamsets_]
     if not asynchronous:
-        for streamset_ in streamsets_:
-            _pull_system_metrics(streamset_)
-            _pull_kafka_metrics(streamset_)
+        jmxes = [sdc_client.get_jmx(streamset_, query) for streamset_, query in sys_queries + kafka_queries]
     else:
-        sys_queries = [(streamset_, 'java.lang:type=*',) for streamset_ in streamsets_]
-        kafka_queries = [
-            (streamset_, 'kafka.consumer:type=consumer-fetch-manager-metrics,client-id=*,topic=*,partition=*',)
-            for streamset_ in streamsets_]
         jmxes = sdc_client.get_jmxes_async(sys_queries + kafka_queries)
-        for index, streamset_ in enumerate(streamsets_):
-            _pull_system_metrics(streamset_, jmxes[index])
-            _pull_kafka_metrics(streamset_, jmxes[index + len(streamsets_)])
+    for index, streamset_ in enumerate(streamsets_):
+        _pull_system_metrics(streamset_, jmxes[index])
+        _pull_kafka_metrics(streamset_, jmxes[index + len(streamsets_)])
