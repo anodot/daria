@@ -10,16 +10,16 @@ from agent import pipeline, source, cli
 class TestPipelineBase(object):
     __test__ = False
 
-    MAX_TIMES_TO_WAIT = 5
+    MAX_TIMES_TO_WAIT = 30
 
     params = {}
 
     def test_start(self, cli_runner, name: str, sleep: int):
         result = cli_runner.invoke(cli.pipeline.start, [name], catch_exceptions=False)
         assert result.exit_code == 0
-        if not sleep:
-            sleep = 20
-        time.sleep(sleep)
+        # if not sleep:
+        #     sleep = 20
+        # time.sleep(sleep)
 
         pipeline_ = pipeline.repository.get_by_id(name)
         assert sdc_client.get_pipeline_status(pipeline_) == pipeline.Pipeline.STATUS_RUNNING
