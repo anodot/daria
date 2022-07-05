@@ -13,7 +13,7 @@ class TestSNMP(TestPipelineBase):
             {'name': 'snmp_multi'},
         ],
         'test_force_stop': [
-            {'name': 'snmp', 'check_output_file_name': 'snmp_snmp.json'},
+            {'name': 'snmp', 'check_output_file_name': f'{get_schema_id("snmp")}_watermark.json'},
             {'name': 'snmp_multi', 'check_output_file_name': 'snmp_multi_snmp.json'},
         ],
         'test_output_schema': [

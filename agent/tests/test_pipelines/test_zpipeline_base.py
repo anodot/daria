@@ -49,18 +49,19 @@ class TestPipelineBase(object):
         result = cli_runner.invoke(cli.pipeline.info, [name], catch_exceptions=False)
         assert result.exit_code == 0
 
+    def _check_output_file(self, file_name):
+        if file_name:
+            self._wait(lambda: get_output(file_name))
+            assert get_output(file_name)
+
     def test_stop(self, cli_runner, name, check_output_file_name):
-        if check_output_file_name:
-            self._wait(lambda: get_output(check_output_file_name))
-            assert get_output(check_output_file_name)
+        self._check_output_file(check_output_file_name)
         result = cli_runner.invoke(cli.pipeline.stop, [name], catch_exceptions=False)
         assert result.exit_code == 0
         assert sdc_client.get_pipeline_status(pipeline.repository.get_by_id(name)) == pipeline.Pipeline.STATUS_STOPPED
 
     def test_force_stop(self, cli_runner, name, check_output_file_name):
-        if check_output_file_name:
-            self._wait(lambda: get_output(check_output_file_name))
-            assert get_output(check_output_file_name)
+        self._check_output_file(check_output_file_name)
         result = cli_runner.invoke(cli.pipeline.force_stop, [name], catch_exceptions=False)
         assert result.exit_code == 0
 

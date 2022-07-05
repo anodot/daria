@@ -22,6 +22,11 @@ class TestRawPipelineBase(TestPipelineBase):
     def test_output_schema(self, name=None, pipeline_type=None, output=None):
         pytest.skip()
 
+    def _check_output_file(self, file_name):
+        if file_name:
+            self._wait(lambda: get_output(file_name))
+            assert get_output(file_name)
+
     def test_start(self, cli_runner, name: str, sleep: int):
         super(TestRawPipelineBase, self).test_start(cli_runner, name, sleep)
 
