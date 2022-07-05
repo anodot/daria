@@ -18,9 +18,11 @@ class TestSage(TestPipelineBase):
         'test_force_stop': [
             {'name': 'test_sage_value_const', 'check_output_file_name': 'test_sage_value_const_sage.json'},
             {'name': 'test_sage', 'check_output_file_name': 'test_sage_sage.json'},
-            {'name': 'test_sage_file', 'check_output_file_name': 'test_sage_file_sage.json'},
+            {'name': 'test_sage_file'},
             {'name': 'test_sage_schema_file', 'check_output_file_name': 'test_sage_schema_file_sage.json'},
-            {'name': 'test_sage_schema_file_dvp', 'check_output_file_name': 'test_sage_schema_file_dvp_sage.json'},
+            {
+                'name': 'test_sage_schema_file_dvp',
+                'check_output_file_name': f'{get_schema_id("test_sage_schema_file_dvp")}_watermark.json'},
         ],
         'test_reset': [
             {'name': 'test_sage_value_const'},

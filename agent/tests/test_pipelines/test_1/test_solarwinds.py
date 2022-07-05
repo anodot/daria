@@ -8,7 +8,10 @@ class TestSolarWinds(TestPipelineBase):
     __test__ = True
     params = {
         'test_start': [{'name': 'solarwinds'}, {'name': 'solarwinds_file'}],
-        'test_force_stop': [{'name': 'solarwinds'}, {'name': 'solarwinds_file'}],
+        'test_force_stop': [
+            {'name': 'solarwinds', 'check_output_file_name': 'solarwinds_solarwinds.json'},
+            {'name': 'solarwinds_file'}
+        ],
         'test_output': [
             {'name': 'solarwinds', 'output': 'solarwinds.json', 'pipeline_type': source.TYPE_SOLARWINDS},
         ],
