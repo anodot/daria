@@ -48,7 +48,8 @@ class TestPromQL(TestPipelineBase):
                 'name': 'test_victoria_a'
             },
             {
-                'name': 'test_victoria_dvp'
+                'name': 'test_victoria_dvp',
+                'check_output_file_name': f'{get_schema_id("test_victoria_dvp")}_watermark.json'
             },
             {
                 'name': 'test_thanos'
@@ -57,7 +58,8 @@ class TestPromQL(TestPipelineBase):
                 'name': 'test_prometheus'
             },
             {
-                'name': 'test_promql_schema'
+                'name': 'test_promql_schema',
+                'check_output_file_name': f'{get_schema_id("test_promql_schema")}_watermark.json'
             },
             {
                 'name': 'test_promql_schema_rate'

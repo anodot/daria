@@ -24,7 +24,11 @@ class TestMySQL(TestPipelineBase):
             },
             {'name': 'test_jdbc_file_short_mysql'},
             {'name': 'test_jdbc_file_full_mysql'}, {'name': 'test_mysql_timezone_datetime'},
-            {'name': 'test_mysql_no_schema'}, {'name': 'test_watermark_local_timezone'},
+            {'name': 'test_mysql_no_schema'},
+            {
+                'name': 'test_watermark_local_timezone',
+                'check_output_file_name': f'{get_schema_id("test_watermark_local_timezone")}_watermark.json'
+            },
             {'name': 'test_jdbc_no_timestamp_condition'}
         ],
         'test_output': [

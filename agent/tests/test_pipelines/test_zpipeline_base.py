@@ -5,6 +5,7 @@ import sdc_client
 
 from ..conftest import get_output
 from agent import pipeline, source, cli
+from typing import Callable
 
 
 class TestPipelineBase(object):
@@ -14,7 +15,7 @@ class TestPipelineBase(object):
 
     params = {}
 
-    def _wait(self, condition):
+    def _wait(self, condition: Callable):
         i = 0
         while i < self.MAX_TIMES_TO_WAIT and not condition():
             time.sleep(2)
