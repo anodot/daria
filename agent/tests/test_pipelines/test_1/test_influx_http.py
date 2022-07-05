@@ -28,7 +28,7 @@ class TestInflux(TestPipelineBase):
             {'name': 'test_influx_file_full'},
             {'name': 'test_influx_file_transform'},
             {'name': 'test_influx_schema_query'},
-            {'name': 'test_influx2'},
+            {'name': 'test_influx2', 'check_output_file_name': 'test_influx2_influx.json'},
             {'name': 'test_influx2_file_full'},
             {'name': 'test_influx2_query'},
             {'name': 'influx2_influxql_pipeline'},

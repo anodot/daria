@@ -15,10 +15,10 @@ class TestCacti(TestPipelineBase):
             {'name': 'cacti_file'}
         ],
         'test_force_stop': [
-            {'name': 'cacti_archive'},
-            {'name': 'cacti_dir'},
-            {'name': 'cacti_dir_flex'},
-            {'name': 'cacti_file'}
+            {'name': 'cacti_archive', 'check_output_file_name': 'cacti_archive_cacti.json'},
+            {'name': 'cacti_dir', 'check_output_file_name': 'cacti_dir_cacti.json'},
+            {'name': 'cacti_dir_flex', 'check_output_file_name': 'cacti_dir_flex_cacti.json'},
+            {'name': 'cacti_file', 'check_output_file_name': 'cacti_file_cacti.json'}
         ],
         'test_output': [
             {'name': 'cacti_archive', 'output': 'cacti_archive.json', 'pipeline_type': source.TYPE_CACTI},
