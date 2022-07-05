@@ -43,14 +43,14 @@ class TestMySQL(TestPipelineBase):
     def test_info(self, cli_runner, name=None):
         pytest.skip()
 
-    def test_stop(self, cli_runner, name=None):
+    def test_stop(self, cli_runner, name=None, check_output_file_name=None):
         pytest.skip()
 
     def test_start(self, cli_runner, name, sleep):
         super().test_start(cli_runner, name, sleep)
 
-    def test_force_stop(self, cli_runner, name):
-        super().test_force_stop(cli_runner, name)
+    def test_force_stop(self, cli_runner, name, check_output_file_name):
+        super().test_force_stop(cli_runner, name, check_output_file_name)
 
     def test_watermark(self):
         schema_id = get_schema_id('test_mysql_advanced')

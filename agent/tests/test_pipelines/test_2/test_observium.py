@@ -24,7 +24,6 @@ class TestObservium(TestPipelineBase):
             },
             {
                 'name': 'observium_storage_transform',
-                'sleep': 30
             },
         ],
         'test_force_stop': [
@@ -44,7 +43,8 @@ class TestObservium(TestPipelineBase):
                 'name': 'observium_storage'
             },
             {
-                'name': 'observium_storage_transform'
+                'name': 'observium_storage_transform',
+                'check_output_file_name': 'observium_storage_transform_observium.json'
             },
         ],
         'test_output_schema': [
@@ -138,7 +138,7 @@ class TestObservium(TestPipelineBase):
     def test_reset(self, cli_runner, name=None):
         pytest.skip()
 
-    def test_stop(self, cli_runner, name=None):
+    def test_stop(self, cli_runner, name=None, check_output_file_name=None):
         pytest.skip()
 
     def test_output(self, name=None, pipeline_type=None, output=None):
@@ -147,5 +147,5 @@ class TestObservium(TestPipelineBase):
     def test_start(self, cli_runner, name, sleep):
         super().test_start(cli_runner, name, sleep)
 
-    def test_force_stop(self, cli_runner, name):
-        super().test_force_stop(cli_runner, name)
+    def test_force_stop(self, cli_runner, name, check_output_file_name):
+        super().test_force_stop(cli_runner, name, check_output_file_name)

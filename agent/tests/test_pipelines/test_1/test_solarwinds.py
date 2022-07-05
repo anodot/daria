@@ -22,7 +22,7 @@ class TestSolarWinds(TestPipelineBase):
     def test_start(self, cli_runner, name, sleep):
         super().test_start(cli_runner, name, sleep)
 
-    def test_stop(self, cli_runner, name=None):
+    def test_stop(self, cli_runner, name=None, check_output_file_name=None):
         pytest.skip()
 
     def test_reset(self, cli_runner, name=None):
@@ -31,8 +31,8 @@ class TestSolarWinds(TestPipelineBase):
     def test_watermark(self):
         pytest.skip()
 
-    def test_force_stop(self, cli_runner, name):
-        super().test_force_stop(cli_runner, name)
+    def test_force_stop(self, cli_runner, name, check_output_file_name):
+        super().test_force_stop(cli_runner, name, check_output_file_name)
 
     def test_output_schema(self, name=None, pipeline_type=None, output=None):
         pytest.skip()

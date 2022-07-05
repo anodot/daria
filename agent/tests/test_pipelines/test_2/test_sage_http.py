@@ -9,18 +9,18 @@ class TestSage(TestPipelineBase):
     __test__ = True
     params = {
         'test_start': [
-            {'name': 'test_sage_value_const', 'sleep': 20},
-            {'name': 'test_sage', 'sleep': 20},
-            {'name': 'test_sage_file', 'sleep': 20},
-            {'name': 'test_sage_schema_file', 'sleep': 20},
-            {'name': 'test_sage_schema_file_dvp', 'sleep': 20},
-        ],
-        'test_force_stop': [
             {'name': 'test_sage_value_const'},
             {'name': 'test_sage'},
             {'name': 'test_sage_file'},
             {'name': 'test_sage_schema_file'},
             {'name': 'test_sage_schema_file_dvp'},
+        ],
+        'test_force_stop': [
+            {'name': 'test_sage_value_const', 'check_output_file_name': 'test_sage_value_const_sage.json'},
+            {'name': 'test_sage', 'check_output_file_name': 'test_sage_sage.json'},
+            {'name': 'test_sage_file', 'check_output_file_name': 'test_sage_file_sage.json'},
+            {'name': 'test_sage_schema_file', 'check_output_file_name': 'test_sage_schema_file_sage.json'},
+            {'name': 'test_sage_schema_file_dvp', 'check_output_file_name': 'test_sage_schema_file_dvp_sage.json'},
         ],
         'test_reset': [
             {'name': 'test_sage_value_const'},
@@ -51,14 +51,14 @@ class TestSage(TestPipelineBase):
     def test_info(self, cli_runner, name=None):
         pytest.skip()
 
-    def test_stop(self, cli_runner, name=None):
+    def test_stop(self, cli_runner, name=None, check_output_file_name=None):
         pytest.skip()
 
     def test_start(self, cli_runner, name, sleep):
         super().test_start(cli_runner, name, sleep)
 
-    def test_force_stop(self, cli_runner, name):
-        super().test_force_stop(cli_runner, name)
+    def test_force_stop(self, cli_runner, name, check_output_file_name):
+        super().test_force_stop(cli_runner, name, check_output_file_name)
 
     def test_watermark(self):
         schema_id = get_schema_id('test_sage_schema_file_dvp')

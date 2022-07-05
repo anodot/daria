@@ -44,7 +44,7 @@ class TestTCPServer(TestPipelineBase):
     def test_reset(self, cli_runner, name=None):
         pytest.skip()
 
-    def test_force_stop(self, cli_runner, name=None):
+    def test_force_stop(self, cli_runner, name=None, check_output_file_name=None):
         pytest.skip()
 
     def test_output_schema(self, name=None, pipeline_type=None, output=None):

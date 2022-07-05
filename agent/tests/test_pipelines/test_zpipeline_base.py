@@ -10,6 +10,8 @@ from agent import pipeline, source, cli
 class TestPipelineBase(object):
     __test__ = False
 
+    MAX_TIMES_TO_WAIT = 5
+
     params = {}
 
     def test_start(self, cli_runner, name: str, sleep: int):
@@ -29,12 +31,20 @@ class TestPipelineBase(object):
         result = cli_runner.invoke(cli.pipeline.info, [name], catch_exceptions=False)
         assert result.exit_code == 0
 
-    def test_stop(self, cli_runner, name):
+    def _wait_for_output(self, check_output_file_name):
+        i = 0
+        while check_output_file_name and i < self.MAX_TIMES_TO_WAIT and not get_output(check_output_file_name):
+            time.sleep(2)
+            i += 1
+
+    def test_stop(self, cli_runner, name, check_output_file_name):
+        self._wait_for_output(check_output_file_name)
         result = cli_runner.invoke(cli.pipeline.stop, [name], catch_exceptions=False)
         assert result.exit_code == 0
         assert sdc_client.get_pipeline_status(pipeline.repository.get_by_id(name)) == pipeline.Pipeline.STATUS_STOPPED
 
-    def test_force_stop(self, cli_runner, name):
+    def test_force_stop(self, cli_runner, name, check_output_file_name):
+        self._wait_for_output(check_output_file_name)
         result = cli_runner.invoke(cli.pipeline.force_stop, [name], catch_exceptions=False)
         assert result.exit_code == 0
 

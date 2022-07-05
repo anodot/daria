@@ -9,12 +9,12 @@ class TestSNMP(TestPipelineBase):
     __test__ = True
     params = {
         'test_start': [
-            {'name': 'snmp', 'sleep': 45},
-            {'name': 'snmp_multi', 'sleep': 45},
-        ],
-        'test_force_stop': [
             {'name': 'snmp'},
             {'name': 'snmp_multi'},
+        ],
+        'test_force_stop': [
+            {'name': 'snmp', 'check_output_file_name': 'snmp_snmp.json'},
+            {'name': 'snmp_multi', 'check_output_file_name': 'snmp_multi_snmp.json'},
         ],
         'test_output_schema': [
             {'name': 'snmp', 'output': 'snmp.json', 'pipeline_type': 'snmp'},
@@ -36,7 +36,7 @@ class TestSNMP(TestPipelineBase):
     def test_reset(self, cli_runner, name=None):
         pytest.skip()
 
-    def test_stop(self, cli_runner, name=None):
+    def test_stop(self, cli_runner, name=None, check_output_file_name=None):
         pytest.skip()
 
     def test_output(self, name=None, pipeline_type=None, output=None):
@@ -45,8 +45,8 @@ class TestSNMP(TestPipelineBase):
     def test_start(self, cli_runner, name, sleep):
         super().test_start(cli_runner, name, sleep)
 
-    def test_force_stop(self, cli_runner, name):
-        super().test_force_stop(cli_runner, name)
+    def test_force_stop(self, cli_runner, name, check_output_file_name):
+        super().test_force_stop(cli_runner, name, check_output_file_name)
 
     def test_output_schema(self, name, pipeline_type, output):
         expected_output = get_expected_schema_output(name, output, pipeline_type)
