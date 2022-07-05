@@ -11,10 +11,14 @@ class TestPostgreSQL(TestPipelineBase):
                        {'name': 'test_postgres_advanced'}, {'name': 'test_jdbc_file_short_postgres'},
                        {'name': 'test_jdbc_file_full_postgres'}],
         'test_reset': [{'name': 'test_postgres'}],
-        'test_force_stop': [{'name': 'test_postgres'}, {'name': 'test_postgres_timestamp_ms'},
-                      {'name': 'test_postgres_timestamp_datetime'},
-                      {'name': 'test_postgres_advanced'}, {'name': 'test_jdbc_file_short_postgres'},
-                      {'name': 'test_jdbc_file_full_postgres'}],
+        'test_force_stop': [
+            {'name': 'test_postgres', 'check_output_file_name': 'test_postgres_postgres.json'},
+            {'name': 'test_postgres_timestamp_ms', 'check_output_file_name': 'test_postgres_timestamp_ms_postgres.json'},
+            {'name': 'test_postgres_timestamp_datetime', 'check_output_file_name': 'test_postgres_timestamp_ms_postgres.json'},
+            {'name': 'test_postgres_advanced', 'check_output_file_name': 'test_postgres_advanced_postgres.json'},
+            {'name': 'test_jdbc_file_short_postgres'},
+            {'name': 'test_jdbc_file_full_postgres'}
+        ],
         'test_output_schema': [{'name': 'test_postgres', 'output': 'jdbc.json', 'pipeline_type': 'postgres'},
                         {'name': 'test_postgres_timestamp_ms', 'output': 'jdbc.json', 'pipeline_type': 'postgres'},
                         {'name': 'test_postgres_timestamp_datetime', 'output': 'jdbc.json',
