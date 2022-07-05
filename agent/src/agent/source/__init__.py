@@ -24,6 +24,7 @@ TYPE_ORACLE = 'oracle'
 TYPE_OBSERVIUM = 'observium'
 TYPE_POSTGRES = 'postgres'
 TYPE_PROMETHEUS = 'prometheus'
+TYPE_PRTG = 'prtg'
 TYPE_RRD = 'rrd'
 TYPE_SAGE = 'sage'
 TYPE_SNMP = 'snmp'
@@ -51,6 +52,7 @@ types = {
     TYPE_ORACLE: JDBCSource,
     TYPE_POSTGRES: JDBCSource,
     TYPE_PROMETHEUS: PromQLSource,
+    TYPE_PRTG: PRTGSource,
     TYPE_RRD: RRDSource,
     TYPE_SAGE: SageSource,
     TYPE_SNMP: SNMPSource,

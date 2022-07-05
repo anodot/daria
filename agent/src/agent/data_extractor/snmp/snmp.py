@@ -8,7 +8,6 @@ from agent.modules import logger
 from agent.modules.constants import SNMP_DEFAULT_PORT
 from agent.pipeline import Pipeline
 from urllib.parse import urlparse
-from itertools import chain
 
 logger_ = logger.get_logger(__name__, stdout=True)
 delta_calculator = DeltaCalculator()
@@ -20,17 +19,17 @@ HOSTNAME_PATH = 'sysName'
 
 def extract_metrics(pipeline_: Pipeline) -> list:
     metrics = []
-    for response in _fetch_data(pipeline_):
-        var_binds = _get_var_binds(response)
-        metric = _create_metric(pipeline_, var_binds)
-        metrics.append(metric)
+    for response, host in _fetch_data(pipeline_):
+        var_binds = _get_var_binds(response, host)
+        if metric := _create_metric(pipeline_, var_binds):
+            metrics.append(metric)
     return metrics
 
 
 def fetch_raw_data(pipeline_: Pipeline) -> dict:
     data = {}
-    for response in _fetch_data(pipeline_):
-        var_binds = _get_var_binds(response)
+    for response, host in _fetch_data(pipeline_):
+        var_binds = _get_var_binds(response, host)
         for var_bind in var_binds:
             k = str(var_bind[0])
             v = str(var_bind[1])
@@ -40,36 +39,37 @@ def fetch_raw_data(pipeline_: Pipeline) -> dict:
     return data
 
 
-def _get_var_binds(response):
+def _get_var_binds(response, host):
     error_indication, error_status, error_index, var_binds = response
     if error_indication:
-        logger_.error(error_indication)
-        raise SNMPError(error_indication)
+        logger_.warning(f'{error_indication} for the {host}')
+        return []
     elif error_status:
         message = '%s at %s' % (
             error_status.prettyPrint(),
             error_index and var_binds[int(error_index) - 1][0] or '?'
         )
-        logger_.error(message)
-        raise SNMPError(message)
+        logger_.warning(f'{message} for the {host}')
+        return []
     return var_binds
 
 
 def _fetch_data(pipeline_: Pipeline):
-    binds = []
+    snmp_version = 0 if pipeline_.source.version == 'v1' else 1
     for host in pipeline_.source.hosts:
         host_ = host if '://' in host else f'//{host}'
         url = urlparse(host_)
-        binds.append(getCmd(
+        iterator = getCmd(
             SnmpEngine(),
-            CommunityData(pipeline_.source.read_community, mpModel=0),
+            CommunityData(pipeline_.source.read_community, mpModel=snmp_version),
             UdpTransportTarget((url.hostname, url.port or SNMP_DEFAULT_PORT), timeout=pipeline_.source.query_timeout, retries=0),
             ContextData(),
             *[ObjectType(ObjectIdentity(mib)) for mib in pipeline_.config['oids']],
             lookupNames=True,
             lookupMib=True
-        ))
-    return chain(*binds)
+        )
+        for i in iterator:
+            yield i, host
 
 
 def _create_metric(pipeline_: Pipeline, var_binds: list) -> dict:
@@ -92,7 +92,8 @@ def _create_metric(pipeline_: Pipeline, var_binds: list) -> dict:
             metric['dimensions'][dimension_name] = str(var_bind[1])
             logger_.debug(f'Dimension `{dimension_name}` with a value: {str(var_bind[1])}')
     if not metric['measurements'] or not metric['dimensions']:
-        raise SNMPError('No metrics extracted')
+        logger_.warning('No metrics extracted')
+        return {}
     metric['timestamp'] = int(time.time())
     return metric
 

@@ -3,6 +3,7 @@
   "properties": {
     "hosts": {"type": "array"},
     "read_community": {"type": "string"},
+    "version": {"type": "string", "enum" : ["v1", "v2c"]},
     "verify_ssl": {"type": "boolean"},
     "query_timeout": {"type": "integer"}
   },
