@@ -113,7 +113,7 @@ test-zabbix: bootstrap run-zabbix
 	$(DOCKER_TEST) tests/test_input/test_2/test_zabbix_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_2/test_zabbix_http.py
 
-test-cacti: bootstrap run-mysql sleep
+test-cacti: bootstrap run-mysql half-sleep
 	$(DOCKER_TEST) tests/test_input/test_2/test_cacti.py
 	$(DOCKER_TEST) tests/test_pipelines/test_2/test_cacti.py
 

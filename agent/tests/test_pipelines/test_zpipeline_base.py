@@ -14,6 +14,12 @@ class TestPipelineBase(object):
 
     params = {}
 
+    def _wait(self, condition):
+        i = 0
+        while i < self.MAX_TIMES_TO_WAIT and not condition():
+            time.sleep(2)
+            i += 1
+
     def test_start(self, cli_runner, name: str, sleep: int):
         result = cli_runner.invoke(cli.pipeline.start, [name], catch_exceptions=False)
         assert result.exit_code == 0
@@ -22,29 +28,27 @@ class TestPipelineBase(object):
         # time.sleep(sleep)
 
         pipeline_ = pipeline.repository.get_by_id(name)
+        self._wait(lambda: sdc_client.get_pipeline_status(pipeline_) == pipeline.Pipeline.STATUS_RUNNING)
         assert sdc_client.get_pipeline_status(pipeline_) == pipeline.Pipeline.STATUS_RUNNING
         # give pipelines some time to send data
         # at high load there might be lag before status is updated in the db, so checking after some time
+        self._wait(lambda: pipeline_.status == pipeline.Pipeline.STATUS_RUNNING)
         assert pipeline_.status == pipeline.Pipeline.STATUS_RUNNING
 
     def test_info(self, cli_runner, name):
         result = cli_runner.invoke(cli.pipeline.info, [name], catch_exceptions=False)
         assert result.exit_code == 0
 
-    def _wait_for_output(self, check_output_file_name):
-        i = 0
-        while check_output_file_name and i < self.MAX_TIMES_TO_WAIT and not get_output(check_output_file_name):
-            time.sleep(2)
-            i += 1
-
     def test_stop(self, cli_runner, name, check_output_file_name):
-        self._wait_for_output(check_output_file_name)
+        if check_output_file_name:
+            self._wait(lambda: get_output(check_output_file_name))
         result = cli_runner.invoke(cli.pipeline.stop, [name], catch_exceptions=False)
         assert result.exit_code == 0
         assert sdc_client.get_pipeline_status(pipeline.repository.get_by_id(name)) == pipeline.Pipeline.STATUS_STOPPED
 
     def test_force_stop(self, cli_runner, name, check_output_file_name):
-        self._wait_for_output(check_output_file_name)
+        if check_output_file_name:
+            self._wait(lambda: get_output(check_output_file_name))
         result = cli_runner.invoke(cli.pipeline.force_stop, [name], catch_exceptions=False)
         assert result.exit_code == 0
 
