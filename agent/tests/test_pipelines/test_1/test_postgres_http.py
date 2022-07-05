@@ -14,7 +14,10 @@ class TestPostgreSQL(TestPipelineBase):
         'test_force_stop': [
             {'name': 'test_postgres', 'check_output_file_name': 'test_postgres_postgres.json'},
             {'name': 'test_postgres_timestamp_ms', 'check_output_file_name': 'test_postgres_timestamp_ms_postgres.json'},
-            {'name': 'test_postgres_timestamp_datetime', 'check_output_file_name': 'test_postgres_timestamp_ms_postgres.json'},
+            {
+                'name': 'test_postgres_timestamp_datetime',
+                'check_output_file_name': 'test_postgres_timestamp_datetime_postgres.json'
+            },
             {'name': 'test_postgres_advanced', 'check_output_file_name': 'test_postgres_advanced_postgres.json'},
             {'name': 'test_jdbc_file_short_postgres'},
             {'name': 'test_jdbc_file_full_postgres'}
