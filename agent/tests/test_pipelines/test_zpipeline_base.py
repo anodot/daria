@@ -33,8 +33,8 @@ class TestPipelineBase(object):
         assert sdc_client.get_pipeline_status(pipeline_) == pipeline.Pipeline.STATUS_RUNNING
         # give pipelines some time to send data
         # at high load there might be lag before status is updated in the db, so checking after some time
-        self._wait(lambda: pipeline.repository.get_by_id(name).status == pipeline.Pipeline.STATUS_RUNNING)
-        assert pipeline.repository.get_by_id(name).status == pipeline.Pipeline.STATUS_RUNNING
+        self._wait(lambda: pipeline.repository.get_by_id_without_session(name).status == pipeline.Pipeline.STATUS_RUNNING)
+        assert pipeline.repository.get_by_id_without_session(name).status == pipeline.Pipeline.STATUS_RUNNING
 
     def test_info(self, cli_runner, name):
         result = cli_runner.invoke(cli.pipeline.info, [name], catch_exceptions=False)
