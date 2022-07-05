@@ -19,8 +19,7 @@ class TestPromQL(TestPipelineBase):
                 'name': 'test_victoria_a'
             },
             {
-                'name': 'test_victoria_dvp',
-                'sleep': 60
+                'name': 'test_victoria_dvp'
             },
             {
                 'name': 'test_thanos'
@@ -165,18 +164,23 @@ class TestPromQL(TestPipelineBase):
     def test_start(self, cli_runner, name: str, sleep: int):
         super().test_start(cli_runner, name, sleep)
 
+    def test_watermark_dvp(self):
+        schema_id = get_schema_id('test_victoria_dvp')
+        current_day = datetime.now(timezone.utc)
+        day_start_ts = current_day.replace(hour=0, minute=0, second=0, microsecond=0).timestamp()
+
+        def correct_watermark():
+            return get_output(f'{schema_id}_watermark.json') == {'watermark': day_start_ts, 'schemaId': schema_id}
+
+        self._wait(correct_watermark)
+        assert correct_watermark()
+
     def test_force_stop(self, cli_runner, name, check_output_file_name):
         super().test_force_stop(cli_runner, name, check_output_file_name)
 
     def test_watermark(self):
         schema_id = get_schema_id('test_promql_schema')
         assert get_output(f'{schema_id}_watermark.json') == {'watermark': 1644117200, 'schemaId': schema_id}
-
-    def test_watermark_dvp(self):
-        schema_id = get_schema_id('test_victoria_dvp')
-        current_day = datetime.now(timezone.utc)
-        day_start_timestamp = current_day.replace(hour=0, minute=0, second=0, microsecond=0).timestamp()
-        assert get_output(f'{schema_id}_watermark.json') == {'watermark': day_start_timestamp, 'schemaId': schema_id}
 
     def test_output(self, name, pipeline_type, output):
         super().test_output(name, pipeline_type, output)

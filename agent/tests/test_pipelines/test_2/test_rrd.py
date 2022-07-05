@@ -13,7 +13,7 @@ class TestRRD(TestPipelineBase):
         ],
         'test_force_stop': [
             {'name': 'rrd', 'check_output_file_name': 'rrd_rrd.json'},
-            {'name': 'rrd_archive', 'check_output_file_name': 'rrd_archive.json'},
+            {'name': 'rrd_archive', 'check_output_file_name': 'rrd_archive_rrd.json'},
         ],
         'test_output': [
             {'name': 'rrd', 'output': 'rrd_dir.json', 'pipeline_type': source.TYPE_RRD},
