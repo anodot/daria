@@ -306,11 +306,16 @@ def reset(pipeline_id: str):
 
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, required=False)
-def update(pipeline_id: str):
+@click.option('--asynchronous', '-a', is_flag=True, default=False, help="Asynchronous mode")
+def update(pipeline_id: str, asynchronous: bool):
     """
     Update all pipelines configuration, recreate and restart them
     """
     pipelines = [pipeline.repository.get_by_id(pipeline_id)] if pipeline_id else pipeline.repository.get_all()
+    if asynchronous:
+        sdc_client.update_async(pipelines)
+        click.secho('Pipelines update finished', fg='green')
+        return
     for p in pipelines:
         try:
             sdc_client.update(p)
