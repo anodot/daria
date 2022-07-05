@@ -8,12 +8,12 @@ class TestPrtg(TestPipelineBase):
     __test__ = True
     params = {
         'test_start': [
-            {'name': 'test_prtg_xml', 'sleep': 60},
-            {'name': 'test_prtg_json', 'sleep': 45},
-        ],
-        'test_force_stop': [
             {'name': 'test_prtg_xml'},
             {'name': 'test_prtg_json'},
+        ],
+        'test_force_stop': [
+            {'name': 'test_prtg_xml', 'check_output_file_name': f'{get_schema_id("test_prtg_xml")}_watermark.json'},
+            {'name': 'test_prtg_json', 'check_output_file_name': f'{get_schema_id("test_prtg_json")}_watermark.json'},
         ],
         'test_watermark': [
             {'name': 'test_prtg_xml'},

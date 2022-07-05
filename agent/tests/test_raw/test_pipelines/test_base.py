@@ -16,7 +16,7 @@ class TestRawPipelineBase(TestPipelineBase):
     def test_info(self, cli_runner, name=None):
         pytest.skip()
 
-    def test_stop(self, cli_runner, name=None):
+    def test_stop(self, cli_runner, name=None, check_output_file_name=None):
         pytest.skip()
 
     def test_output_schema(self, name=None, pipeline_type=None, output=None):
@@ -25,8 +25,8 @@ class TestRawPipelineBase(TestPipelineBase):
     def test_start(self, cli_runner, name: str, sleep: int):
         super(TestRawPipelineBase, self).test_start(cli_runner, name, sleep)
 
-    def test_force_stop(self, cli_runner, name):
-        super(TestRawPipelineBase, self).test_force_stop(cli_runner, name)
+    def test_force_stop(self, cli_runner, name, check_output_file_name):
+        super(TestRawPipelineBase, self).test_force_stop(cli_runner, name, check_output_file_name)
         # give Streamsets time to send status change to agent
         time.sleep(1)
 

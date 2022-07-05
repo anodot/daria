@@ -28,19 +28,24 @@ class TestObservium(TestPipelineBase):
         ],
         'test_force_stop': [
             {
-                'name': 'observium_ports'
+                'name': 'observium_ports',
+                'check_output_file_name': 'observium_ports_observium.json'
             },
             {
-                'name': 'observium_mempools'
+                'name': 'observium_mempools',
+                'check_output_file_name': 'observium_mempools_observium.json'
             },
             {
-                'name': 'observium_mempools_edit'
+                'name': 'observium_mempools_edit',
+                'check_output_file_name': 'observium_mempools_edit_observium.json'
             },
             {
-                'name': 'observium_processors'
+                'name': 'observium_processors',
+                'check_output_file_name': 'observium_processors_observium.json'
             },
             {
-                'name': 'observium_storage'
+                'name': 'observium_storage',
+                'check_output_file_name': 'observium_storage_observium.json'
             },
             {
                 'name': 'observium_storage_transform',
