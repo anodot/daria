@@ -14,7 +14,7 @@ class TestSNMP(TestPipelineBase):
         ],
         'test_force_stop': [
             {'name': 'snmp', 'check_output_file_name': f'{get_schema_id("snmp")}_watermark.json'},
-            {'name': 'snmp_multi', 'check_output_file_name': 'snmp_multi_snmp.json'},
+            {'name': 'snmp_multi', 'check_output_file_name': f'{get_schema_id("snmp_multi")}_watermark.json'},
         ],
         'test_output_schema': [
             {'name': 'snmp', 'output': 'snmp.json', 'pipeline_type': 'snmp'},

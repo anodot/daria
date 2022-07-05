@@ -48,7 +48,9 @@ class TestRawPipelineBase(TestPipelineBase):
         super(TestRawPipelineBase, self).test_source_delete(cli_runner, name)
 
 
-def get_output(file_name) -> list:
+def get_output(file_name) -> list | None:
+    if not os.path.isdir(LOCAL_DESTINATION_OUTPUT_DIR):
+        return None
     for filename in os.listdir(LOCAL_DESTINATION_OUTPUT_DIR):
         if filename == file_name:
             return read_file(os.path.join(LOCAL_DESTINATION_OUTPUT_DIR, filename))
