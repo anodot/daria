@@ -16,4 +16,5 @@ from . import solarwinds
 from . import tcp
 from . import topology
 from . import promql
+from . import prtg
 from . import zabbix

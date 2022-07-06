@@ -242,6 +242,10 @@ class PromQLSource(APISource):
     pass
 
 
+class PRTGSource(APISource):
+    pass
+
+
 class RRDSource(Source):
     RRD_DIR_PATH = 'rrd_dir_path'
     RRD_ARCHIVE_PATH = 'rrd_archive_path'
