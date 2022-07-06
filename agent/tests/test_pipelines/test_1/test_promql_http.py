@@ -1,3 +1,5 @@
+import json
+
 import pytest
 
 from datetime import datetime, timezone
@@ -166,11 +168,18 @@ class TestPromQL(TestPipelineBase):
 
     def test_watermark_dvp(self):
         schema_id = get_schema_id('test_victoria_dvp')
-        current_day = datetime.now(timezone.utc)
-        day_start_ts = current_day.replace(hour=0, minute=0, second=0, microsecond=0).timestamp()
+        # current_day = datetime.now(timezone.utc)
+        # month_after_data = current_day.replace(hour=0, minute=0, second=0, microsecond=0).timestamp()
+        months_after_data = datetime(year=2022, month=4, day=1, hour=0, minute=0, second=0, microsecond=0).timestamp()
 
         def correct_watermark():
-            return get_output(f'{schema_id}_watermark.json') == {'watermark': day_start_ts, 'schemaId': schema_id}
+            try:
+                output = get_output(f'{schema_id}_watermark.json')
+            except json.JSONDecodeError:
+                return False
+            if not output:
+                return False
+            return output['watermark'] >= months_after_data
 
         self._wait(correct_watermark)
         assert correct_watermark()
