@@ -96,7 +96,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
         self.streamsets_id = None
         self.streamsets = None
         self.type = REGULAR_PIPELINE
-        self.notifications = None
+        self.notifications: PiplineNotifications = None
 
     def config_changed(self) -> bool:
         if not hasattr(self, '_previous_config'):

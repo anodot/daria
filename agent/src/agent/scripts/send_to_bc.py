@@ -32,7 +32,9 @@ def main():
     for pipeline_ in pipelines:
         try:
             pipeline_data = pipeline.manager.transform_for_bc(pipeline_)
-            should_send_error_notification = pipeline.manager.should_send_error_notification(pipeline_)
+            should_send_error_notification = pipeline.manager.should_send_retries_error_notification(pipeline_)
+            should_send_no_data = pipeline.manager.should_send_no_data_error_notification(pipeline_)
+            raise Exception(should_send_no_data, pipeline_.id, pipeline_.notifications.no_data_notification.notification_period)
             if should_send_error_notification:
                 pipeline_data['notification'] = {
                     'code': GENERAL_PIPELINE_ERROR_CODE,

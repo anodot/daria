@@ -3,6 +3,7 @@ import random
 import string
 import sdc_client
 
+from datetime import datetime, timedelta
 from agent import source, pipeline, destination, streamsets
 from agent.modules import tools, constants
 from agent.pipeline import Pipeline, TestPipeline, PipelineMetric, PipelineRetries, RawPipeline, EventsPipeline, \
@@ -313,16 +314,31 @@ def transform_for_bc(pipeline_: Pipeline) -> dict:
 
 
 def should_send_error_notification(pipeline_: Pipeline) -> bool:
-    # number of error statuses = number of retries + 1
     return not constants.DISABLE_PIPELINE_ERROR_NOTIFICATIONS \
-           and pipeline_.error_notification_enabled() \
+           and pipeline_.error_notification_enabled()
+
+
+def should_send_retries_error_notification(pipeline_: Pipeline) -> bool:
+    # number of error statuses = number of retries + 1
+    return should_send_error_notification(pipeline_) \
            and pipeline_.retries \
            and pipeline_.retries.number_of_error_statuses - 1 >= constants.STREAMSETS_NOTIFY_AFTER_RETRY_ATTEMPTS \
            and not pipeline_.retries.notification_sent
 
 
-def should_send_no_data_notification(pipline_: Pipeline) -> bool:
-    pass
+def should_send_no_data_error_notification(pipeline_: Pipeline) -> bool:
+    if pipeline_.notifications \
+            and pipeline_.notifications.no_data_notification \
+            and pipeline_.notifications.no_data_notification.notification_period:
+
+        no_data_notification_period = timedelta(
+            minutes=pipeline_.notifications.no_data_notification.notification_period
+        ) + timedelta(seconds=pipeline_.interval or 0)
+        return should_send_error_notification(pipeline_) \
+               and not pipeline_.notifications.no_data_notification.notification_sent \
+               and pipeline_.watermark \
+               and (datetime.now() - datetime.fromtimestamp(pipeline_.watermark.timestamp)) >= no_data_notification_period
+    return False
 
 
 def get_sample_records(pipeline_: Pipeline) -> (list, list):
