@@ -76,7 +76,8 @@ def delete(url):
 
 
 @click.command()
-def balance():
+@click.option('--asynchronous', '-a', is_flag=True, default=False, help="Asynchronous mode")
+def balance(asynchronous):
     streamsets_ = streamsets.repository.get_all()
     if len(streamsets_) == 1:
         logger.info('You have only one streamsets instance, can\'t balance')
@@ -84,7 +85,7 @@ def balance():
     elif len(streamsets_) == 0:
         logger.info('You don\'t have any streamsets instances, can\'t balance')
         return
-    sdc_client.StreamsetsBalancer().balance()
+    sdc_client.StreamsetsBalancer().balance(asynchronous)
     click.secho('Done', fg='green')
 
 
