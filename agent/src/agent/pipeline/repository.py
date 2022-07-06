@@ -4,6 +4,7 @@ from agent import source, pipeline
 from agent.destination import HttpDestination
 from agent.modules.db import Session, engine, Entity
 from agent.pipeline import PipelineOffset, Pipeline, PipelineRetries
+from agent.pipeline.notifications import notification, no_data
 from sqlalchemy.orm import Query
 
 
@@ -53,6 +54,18 @@ def get_by_source(source_name: str) -> List[Pipeline]:
 @typed
 def get_all() -> List[Pipeline]:
     return Session.query(Pipeline).all()
+
+
+def create_notifications(pipeline_: Pipeline, session: Session):
+    if notifies := pipeline_.config.get("notifications"):
+        pipeline_.notifications = notification.PiplineNotifications()
+        if notifies.get('no_data'):
+            pipeline_.notifications.no_data_notification = no_data.NoDataNotifications(
+                pipeline_,
+                notifies['no_data'],
+            )
+            session.add(pipeline_.notifications.no_data_notification)
+        session.add(pipeline_.notifications)
 
 
 def save(entity: Entity):

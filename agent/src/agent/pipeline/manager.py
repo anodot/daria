@@ -151,12 +151,13 @@ def update(pipeline_: Pipeline, config_: dict = None):
 
 
 def create(pipeline_: Pipeline, config_: dict = None):
-    with pipeline.repository.SessionManager(pipeline_):
+    with pipeline.repository.SessionManager(pipeline_) as session:
         if config_:
             _load_config(pipeline_, config_)
         extra_setup.do(pipeline_)
         if pipeline_.uses_schema():
             _update_schema(pipeline_)
+        pipeline.repository.create_notifications(pipeline_, session)
         sdc_client.create(pipeline_)
 
 
@@ -318,6 +319,10 @@ def should_send_error_notification(pipeline_: Pipeline) -> bool:
            and pipeline_.retries \
            and pipeline_.retries.number_of_error_statuses - 1 >= constants.STREAMSETS_NOTIFY_AFTER_RETRY_ATTEMPTS \
            and not pipeline_.retries.notification_sent
+
+
+def should_send_no_data_notification(pipline_: Pipeline) -> bool:
+    pass
 
 
 def get_sample_records(pipeline_: Pipeline) -> (list, list):
