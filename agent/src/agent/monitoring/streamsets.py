@@ -8,8 +8,7 @@ from agent.monitoring import metrics
 from agent.modules import constants
 
 
-def _pull_system_metrics(streamsets_: streamsets.StreamSets, jmx=None):
-    jmx = jmx or sdc_client.get_jmx(streamsets_, 'java.lang:type=*')
+def _pull_system_metrics(streamsets_: streamsets.StreamSets, jmx: dict):
     for bean in jmx['beans']:
         if bean['name'] == 'java.lang:type=Memory':
             metrics.STREAMSETS_HEAP_MEMORY.labels(streamsets_.url).set(bean['HeapMemoryUsage']['used'])
@@ -29,7 +28,7 @@ def _is_influx(pipeline_: pipeline.Pipeline):
     return pipeline_.source.type == source.TYPE_INFLUX
 
 
-def _pull_pipeline_metrics(pipeline_: pipeline.Pipeline, jmx=None):
+def _pull_pipeline_metrics(pipeline_: pipeline.Pipeline, jmx: dict):
     labels = (pipeline_.streamsets.url, pipeline_.name, pipeline_.source.type)
     for bean in jmx['beans']:
         if bean['name'].endswith('source.batchProcessing.timer'):
@@ -57,11 +56,7 @@ def _pull_pipeline_metrics(pipeline_: pipeline.Pipeline, jmx=None):
                 bean['999thPercentile'] / 1000)
 
 
-def _pull_kafka_metrics(streamsets_: streamsets.StreamSets, jmx=None):
-    jmx = jmx or sdc_client.get_jmx(
-        streamsets_,
-        'kafka.consumer:type=consumer-fetch-manager-metrics,client-id=*,topic=*,partition=*'
-    )
+def _pull_kafka_metrics(jmx: dict):
     for bean in jmx['beans']:
         name = dict(item.split('=') for item in bean['name'].split(','))
         metrics.KAFKA_CONSUMER_LAG.labels(name['topic']).set(bean['records-lag-avg'])
@@ -93,6 +88,7 @@ def _process_pipeline_metrics(pipelines: List[pipeline.Pipeline], asynchronous: 
 
 
 def _process_streamsets_metrics(streamsets_: List[streamsets.StreamSets], asynchronous: bool = False) -> None:
+    # raise Exception(streamsets_[0].get_id())
     sys_queries = [(streamset_, 'java.lang:type=*',) for streamset_ in streamsets_]
     kafka_queries = [
         (streamset_, 'kafka.consumer:type=consumer-fetch-manager-metrics,client-id=*,topic=*,partition=*',)
@@ -103,4 +99,4 @@ def _process_streamsets_metrics(streamsets_: List[streamsets.StreamSets], asynch
         jmxes = sdc_client.get_jmxes_async(sys_queries + kafka_queries)
     for index, streamset_ in enumerate(streamsets_):
         _pull_system_metrics(streamset_, jmxes[index])
-        _pull_kafka_metrics(streamset_, jmxes[index + len(streamsets_)])
+        _pull_kafka_metrics(jmxes[index + len(streamsets_)])
