@@ -1,6 +1,7 @@
 import pytest
 import time
-from ..test_zpipeline_base import TestPipelineBase, get_schema_id
+from agent import source
+from ..test_zpipeline_base import TestPipelineBase, get_schema_id, get_expected_schema_output, drop_key_value
 from ...conftest import get_output
 
 
@@ -8,12 +9,16 @@ class TestPrtg(TestPipelineBase):
     __test__ = True
     params = {
         'test_start': [
-            {'name': 'test_prtg_xml', 'sleep': 60},
+            {'name': 'test_prtg_xml', 'sleep': 45},
             {'name': 'test_prtg_json', 'sleep': 45},
         ],
         'test_force_stop': [
             {'name': 'test_prtg_xml'},
             {'name': 'test_prtg_json'},
+        ],
+        'test_output_schema': [
+            {'name': 'test_prtg_xml', 'output': 'prtg_xml.json', 'pipeline_type': source.TYPE_PRTG},
+            {'name': 'test_prtg_json', 'output': 'prtg_json.json', 'pipeline_type': source.TYPE_PRTG},
         ],
         'test_watermark': [
             {'name': 'test_prtg_xml'},
@@ -41,9 +46,6 @@ class TestPrtg(TestPipelineBase):
     def test_output(self, name=None, pipeline_type=None, output=None):
         pytest.skip()
 
-    def test_output_schema(self, name=None, pipeline_type=None, output=None):
-        pytest.skip()
-
     def test_start(self, cli_runner, name, sleep):
         super().test_start(cli_runner, name, sleep)
 
@@ -56,3 +58,11 @@ class TestPrtg(TestPipelineBase):
         assert schema_id == watermark_output.get('schemaId')
         timestamp = watermark_output.get('watermark')
         assert int(time.time()) - timestamp < 300
+
+    def test_output_schema(self, name, pipeline_type, output):
+        expected_output = get_expected_schema_output(name, output, pipeline_type)
+        actual_output = get_output(f'{name}_{pipeline_type}.json')
+        # because PRTG uses current timestamp, we drop them output check
+        expected_output = [drop_key_value(item, 'timestamp') for item in expected_output]
+        actual_output = [drop_key_value(item, 'timestamp') for item in actual_output]
+        assert actual_output == expected_output
