@@ -1,6 +1,6 @@
 NAP = 15
 SLEEP = 60
-THREADS = 4
+THREADS = 2
 DOCKER_COMPOSE_DEV_FILE = docker-compose-dev.yml
 DOCKER_COMPOSE_DEV = docker-compose -f $(DOCKER_COMPOSE_DEV_FILE)
 DOCKER_TEST = docker exec -i anodot-agent pytest -x -vv --disable-pytest-warnings
@@ -113,7 +113,7 @@ test-zabbix: bootstrap run-zabbix
 	$(DOCKER_TEST) tests/test_input/test_2/test_zabbix_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_2/test_zabbix_http.py
 
-test-cacti: bootstrap run-mysql sleep
+test-cacti: bootstrap run-mysql half-sleep
 	$(DOCKER_TEST) tests/test_input/test_2/test_cacti.py
 	$(DOCKER_TEST) tests/test_pipelines/test_2/test_cacti.py
 
@@ -312,7 +312,5 @@ show-all-logs:
 	docker logs anodot-agent;
 	echo "DC logs "; docker logs dc;
 	echo "DC 2 logs"; docker logs dc2;
-	echo "Kafka logs"; docker logs agent-kafka;
 	echo "Dummy logs"; docker logs dummy_destination;
 	echo "Agent logs"; docker exec -i anodot-agent cat /var/log/agent/agent.log;
-	echo "VictoriaMetrics logs"; docker logs victoriametrics;
