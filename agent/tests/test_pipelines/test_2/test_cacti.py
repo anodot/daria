@@ -15,10 +15,10 @@ class TestCacti(TestPipelineBase):
             {'name': 'cacti_file'}
         ],
         'test_force_stop': [
-            {'name': 'cacti_archive', 'check_output_file_name': 'cacti_archive_cacti.json'},
-            {'name': 'cacti_dir', 'check_output_file_name': 'cacti_dir_cacti.json'},
-            {'name': 'cacti_dir_flex', 'check_output_file_name': 'cacti_dir_flex_cacti.json'},
-            {'name': 'cacti_file', 'check_output_file_name': 'cacti_file_cacti.json'}
+            {'name': 'cacti_archive'},
+            {'name': 'cacti_dir'},
+            {'name': 'cacti_dir_flex'},
+            {'name': 'cacti_file'}
         ],
         'test_output': [
             {'name': 'cacti_archive', 'output': 'cacti_archive.json', 'pipeline_type': source.TYPE_CACTI},
@@ -56,13 +56,14 @@ class TestCacti(TestPipelineBase):
     def test_output_schema(self, name=None, pipeline_type=None, output=None):
         pytest.skip()
 
-    def test_force_stop(self, cli_runner, name, check_output_file_name):
-        super().test_force_stop(cli_runner, name, check_output_file_name)
-
     def test_output(self, name, pipeline_type, output):
         expected_output = get_expected_output(name, output, pipeline_type)
+        self._wait(lambda: get_output(f'{name}_{pipeline_type}.json'))
         actual_output = get_output(f'{name}_{pipeline_type}.json')
         if name in ['cacti_dir_flex']:
             expected_output = sorted(expected_output, key=lambda x: (x['timestamp'], x['value']))
             actual_output = sorted(actual_output, key=lambda x: (x['timestamp'], x['value']))
         assert actual_output == expected_output
+
+    def test_force_stop(self, cli_runner, name, check_output_file_name):
+        super().test_force_stop(cli_runner, name, check_output_file_name)
