@@ -121,3 +121,9 @@ def sort_output(output: list) -> list:
 
 def sort_output_schema(output: list) -> list:
     return sorted(output, key=lambda x: x['timestamp'])
+
+
+def drop_key_value(item: dict, key: str):
+    new_item = item.copy()
+    new_item.pop(key, None)
+    return new_item

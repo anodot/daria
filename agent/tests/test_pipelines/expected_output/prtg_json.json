@@ -1,0 +1,405 @@
+[
+  {
+    "timestamp": 1657106340,
+    "dimensions": {
+      "Host_Name": "Probe_Device",
+      "Sensor_name": "System_Health"
+    },
+    "measurements": {
+      "System_Health": 100.0
+    },
+    "schemaId": "test_prtg_json-1234",
+    "tags": {
+      "Group": [
+        "Local probe"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_json"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657106340,
+    "dimensions": {
+      "Host_Name": "Probe_Device",
+      "Sensor_name": "Probe_Health"
+    },
+    "measurements": {
+      "Probe_Health": 100.0
+    },
+    "schemaId": "test_prtg_json-1234",
+    "tags": {
+      "Group": [
+        "Local probe"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_json"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657106340,
+    "dimensions": {
+      "Host_Name": "PRTG_Core_Server",
+      "Sensor_name": "Core_Health_(Autonomous)"
+    },
+    "measurements": {
+      "Core_Health_(Autonomous)": 100.0
+    },
+    "schemaId": "test_prtg_json-1234",
+    "tags": {
+      "Group": [
+        "Root"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_json"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657106340,
+    "dimensions": {
+      "Host_Name": "Telx-3560-48-Ext-Pri",
+      "Sensor_name": "Ping"
+    },
+    "measurements": {
+      "Ping": 0.4
+    },
+    "schemaId": "test_prtg_json-1234",
+    "tags": {
+      "Group": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_json"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657106340,
+    "dimensions": {
+      "Host_Name": "Telx-3560-24-Ext-Sec",
+      "Sensor_name": "Ping"
+    },
+    "measurements": {
+      "Ping": 1.6
+    },
+    "schemaId": "test_prtg_json-1234",
+    "tags": {
+      "Group": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_json"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657106340,
+    "dimensions": {
+      "Host_Name": "Telx-3560-Pri-int-Rack-14",
+      "Sensor_name": "Ping"
+    },
+    "measurements": {
+      "Ping": 2.0
+    },
+    "schemaId": "test_prtg_json-1234",
+    "tags": {
+      "Group": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_json"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657106340,
+    "dimensions": {
+      "Host_Name": "Telx-3560-sec-int-Rack-15",
+      "Sensor_name": "Ping"
+    },
+    "measurements": {
+      "Ping": 2.4
+    },
+    "schemaId": "test_prtg_json-1234",
+    "tags": {
+      "Group": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_json"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657106340,
+    "dimensions": {
+      "Host_Name": "Telx-N5K-Sec",
+      "Sensor_name": "Ping"
+    },
+    "measurements": {
+      "Ping": 0.2
+    },
+    "schemaId": "test_prtg_json-1234",
+    "tags": {
+      "Group": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_json"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657106340,
+    "dimensions": {
+      "Host_Name": "TelX-f5-Pri",
+      "Sensor_name": "Ping"
+    },
+    "measurements": {
+      "Ping": 0.4
+    },
+    "schemaId": "test_prtg_json-1234",
+    "tags": {
+      "Group": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_json"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657106340,
+    "dimensions": {
+      "Host_Name": "Telx-Office-2960-Pri",
+      "Sensor_name": "Ping"
+    },
+    "measurements": {
+      "Ping": 3.2
+    },
+    "schemaId": "test_prtg_json-1234",
+    "tags": {
+      "Group": [
+        "TelX-Office"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_json"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657106340,
+    "dimensions": {
+      "Host_Name": "Telx-Office-2960-Sec",
+      "Sensor_name": "Ping"
+    },
+    "measurements": {
+      "Ping": 8.4
+    },
+    "schemaId": "test_prtg_json-1234",
+    "tags": {
+      "Group": [
+        "TelX-Office"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_json"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657106340,
+    "dimensions": {
+      "Host_Name": "Telx-Office-3560_Pri",
+      "Sensor_name": "Ping"
+    },
+    "measurements": {
+      "Ping": 3.4
+    },
+    "schemaId": "test_prtg_json-1234",
+    "tags": {
+      "Group": [
+        "TelX-Office"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_json"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657106340,
+    "dimensions": {
+      "Host_Name": "Telx-Office-3560_Sec",
+      "Sensor_name": "Ping"
+    },
+    "measurements": {
+      "Ping": 4.2
+    },
+    "schemaId": "test_prtg_json-1234",
+    "tags": {
+      "Group": [
+        "TelX-Office"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_json"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  }
+]

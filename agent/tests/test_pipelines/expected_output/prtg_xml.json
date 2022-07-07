@@ -1,0 +1,3776 @@
+[
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Probe_Device",
+      "Sensor_name": "Probe_Health"
+    },
+    "measurements": {
+      "Probe_Health": 100.0
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Probe_Device",
+      "Sensor_name": "System_Health"
+    },
+    "measurements": {
+      "System_Health": 100.0
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Probe_Device",
+      "Sensor_name": "Disk_Free"
+    },
+    "measurements": {
+      "WMI_Free_Disk_Space_(Multi_Disk)": 37.0
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Probe_Device",
+      "Sensor_name": "Common_SaaS_Check"
+    },
+    "measurements": {
+      "Common_SaaS": 100.0
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Probe_Device",
+      "Sensor_name": "vmxnet3_Ethernet_Adapter"
+    },
+    "measurements": {
+      "Windows_Network_Card": 133287.2021
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "TelX-f5-Pri",
+      "Sensor_name": "Ping"
+    },
+    "measurements": {
+      "Ping": 0.0
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "TelX-f5-Pri",
+      "Sensor_name": "CPU"
+    },
+    "measurements": {
+      "SNMP_CPU_Load": 10.0
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "TelX-f5-Pri",
+      "Sensor_name": "Active_Connections"
+    },
+    "measurements": {
+      "SNMP_Custom": 63.0
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "TelX-f5-Pri",
+      "Sensor_name": "Memory:_Swap_space"
+    },
+    "measurements": {
+      "SNMP_Memory": 7.8209
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "TelX-f5-Pri",
+      "Sensor_name": "Memory:_Physical_memory"
+    },
+    "measurements": {
+      "SNMP_Memory": 1.5013
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "TelX-f5-Pri",
+      "Sensor_name": "Memory:_Virtual_memory"
+    },
+    "measurements": {
+      "SNMP_Memory": 2.22
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "TelX-f5-Pri",
+      "Sensor_name": "(032)_mgmt_Traffic"
+    },
+    "measurements": {
+      "SNMP_Traffic": 9878.3703
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "TelX-f5-Pri",
+      "Sensor_name": "(048)_1_1_Traffic"
+    },
+    "measurements": {
+      "SNMP_Traffic": 17945.5757
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "TelX-f5-Pri",
+      "Sensor_name": "(080)_1_3_Traffic"
+    },
+    "measurements": {
+      "SNMP_Traffic": 8040.5635
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "TelX-f5-Pri",
+      "Sensor_name": "(192)_/Telx-Office-Web/TeOf-200-Prod-Web-Real_Traffic"
+    },
+    "measurements": {
+      "SNMP_Traffic": 6791.868
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "TelX-f5-Pri",
+      "Sensor_name": "(208)_/Telx-Office-Web/TeOf-204-Prod-Web-Vip_Traffic"
+    },
+    "measurements": {
+      "SNMP_Traffic": 305.849
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "TelX-f5-Pri",
+      "Sensor_name": "(160)_/Telx-APP/Telx-APP-Real_Traffic"
+    },
+    "measurements": {
+      "SNMP_Traffic": 34806.6033
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "TelX-f5-Pri",
+      "Sensor_name": "(176)_/Telx-APP/Telx-APP-VIP_Traffic"
+    },
+    "measurements": {
+      "SNMP_Traffic": 147.0245
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "TelX-f5-Pri",
+      "Sensor_name": "(224)_/Telx-Secure-APP/Telx-Secure-APP-Real_Traffic"
+    },
+    "measurements": {
+      "SNMP_Traffic": 2262.1541
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "TelX-f5-Pri",
+      "Sensor_name": "(240)_/Telx-Secure-APP/Telx-Secure-APP-VIP_Traffic"
+    },
+    "measurements": {
+      "SNMP_Traffic": 147.0735
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "TelX-f5-Pri",
+      "Sensor_name": "SSL_Security_Check"
+    },
+    "measurements": {
+      "SSL_Security_Check": 3.0
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "TelX-f5-Pri",
+      "Sensor_name": "(144)_/Common/vlan-sync_Traffic"
+    },
+    "measurements": {
+      "SNMP_Traffic": 13630.3551
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "TelX-f5-Sec",
+      "Sensor_name": "Ping"
+    },
+    "measurements": {
+      "Ping": 0.0
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "TelX-f5-Sec",
+      "Sensor_name": "CPU"
+    },
+    "measurements": {
+      "SNMP_CPU_Load": 10.0
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "TelX-f5-Sec",
+      "Sensor_name": "Active_Connections"
+    },
+    "measurements": {
+      "SNMP_Custom": 88.0
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "TelX-f5-Sec",
+      "Sensor_name": "Memory:_Swap_space"
+    },
+    "measurements": {
+      "SNMP_Memory": 7.6836
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "TelX-f5-Sec",
+      "Sensor_name": "Memory:_Physical_memory"
+    },
+    "measurements": {
+      "SNMP_Memory": 1.4906
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "TelX-f5-Sec",
+      "Sensor_name": "Memory:_Virtual_memory"
+    },
+    "measurements": {
+      "SNMP_Memory": 2.1931
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "TelX-f5-Sec",
+      "Sensor_name": "(032)_mgmt_Traffic"
+    },
+    "measurements": {
+      "SNMP_Traffic": 9812.9522
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "TelX-f5-Sec",
+      "Sensor_name": "(048)_1_1_Traffic"
+    },
+    "measurements": {
+      "SNMP_Traffic": 61234.7667
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "TelX-f5-Sec",
+      "Sensor_name": "(080)_1_3_Traffic"
+    },
+    "measurements": {
+      "SNMP_Traffic": 7991.4514
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "TelX-f5-Sec",
+      "Sensor_name": "(192)_/Telx-Office-Web/TeOf-200-Prod-Web-Real_Traffic"
+    },
+    "measurements": {
+      "SNMP_Traffic": 20297.3996
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "TelX-f5-Sec",
+      "Sensor_name": "(208)_/Telx-Office-Web/TeOf-204-Prod-Web-Vip_Traffic"
+    },
+    "measurements": {
+      "SNMP_Traffic": 5016.2806
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "TelX-f5-Sec",
+      "Sensor_name": "(160)_/Telx-APP/Telx-APP-Real_Traffic"
+    },
+    "measurements": {
+      "SNMP_Traffic": 68328.1333
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "TelX-f5-Sec",
+      "Sensor_name": "(176)_/Telx-APP/Telx-APP-VIP_Traffic"
+    },
+    "measurements": {
+      "SNMP_Traffic": 8431.6
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "TelX-f5-Sec",
+      "Sensor_name": "(224)_/Telx-Secure-APP/Telx-Secure-APP-Real_Traffic"
+    },
+    "measurements": {
+      "SNMP_Traffic": 2769.1282
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "TelX-f5-Sec",
+      "Sensor_name": "(240)_/Telx-Secure-APP/Telx-Secure-APP-VIP_Traffic"
+    },
+    "measurements": {
+      "SNMP_Traffic": 628.8619
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "TelX-f5-Sec",
+      "Sensor_name": "SSL_Security_Check"
+    },
+    "measurements": {
+      "SSL_Security_Check": 3.0
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "TelX-f5-Sec",
+      "Sensor_name": "(144)_/Common/vlan-sync_Traffic"
+    },
+    "measurements": {
+      "SNMP_Traffic": 13692.4987
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-48-Ext-Pri",
+      "Sensor_name": "Ping"
+    },
+    "measurements": {
+      "Ping": 5.2
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-48-Ext-Pri",
+      "Sensor_name": "System_Health_CPU"
+    },
+    "measurements": {
+      "SNMP_Cisco_System_Health": 23.0
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-48-Ext-Pri",
+      "Sensor_name": "System_Health_Fans"
+    },
+    "measurements": {
+      "SNMP_Cisco_System_Health": 1.0
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-48-Ext-Pri",
+      "Sensor_name": "System_Health_Memory"
+    },
+    "measurements": {
+      "SNMP_Cisco_System_Health": 1.45231712E8
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-48-Ext-Pri",
+      "Sensor_name": "System_Health_Power_Supplies"
+    },
+    "measurements": {
+      "SNMP_Cisco_System_Health": 1.0
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-48-Ext-Pri",
+      "Sensor_name": "System_Health_Temperatures"
+    },
+    "measurements": {
+      "SNMP_Cisco_System_Health": 30.0
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-48-Ext-Pri",
+      "Sensor_name": "System_Health_Voltages"
+    },
+    "measurements": {
+      "SNMP_Cisco_System_Health": 3.29
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-48-Ext-Pri",
+      "Sensor_name": "(Gi0/2)***_telx-console-2901_***"
+    },
+    "measurements": {
+      "SNMP_Traffic": 9930.8615
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-48-Ext-Pri",
+      "Sensor_name": "(Gi0/3)***_AudioCodes_Mediant_1000_WAN_(to_Pure_IP)_10_19_13_50_***"
+    },
+    "measurements": {
+      "SNMP_Traffic": 344.1853
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-48-Ext-Pri",
+      "Sensor_name": "(Gi0/13)***_ext_link_to_Telx_Office_via_LightPAth_-_06LVXS-610659_***"
+    },
+    "measurements": {
+      "SNMP_Traffic": 33.0556
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-48-Ext-Pri",
+      "Sensor_name": "(Gi0/23)***_ATS_-_Rack_10_***"
+    },
+    "measurements": {
+      "SNMP_Traffic": 68.0387
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-48-Ext-Pri",
+      "Sensor_name": "(Gi0/24)***_TelX-EMX_***"
+    },
+    "measurements": {
+      "SNMP_Traffic": 65.9167
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-48-Ext-Pri",
+      "Sensor_name": "(Gi0/25)***_ArchSight_Express_***"
+    },
+    "measurements": {
+      "SNMP_Traffic": 9725.8457
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-48-Ext-Pri",
+      "Sensor_name": "(Gi0/26)ArchSightExpress_Port_Eth1"
+    },
+    "measurements": {
+      "SNMP_Traffic": 66.9387
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-48-Ext-Pri",
+      "Sensor_name": "(Gi0/28)***_uplink_to_N5K-Pri_port_G0/1_***"
+    },
+    "measurements": {
+      "SNMP_Traffic": 2173011.5891
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-48-Ext-Pri",
+      "Sensor_name": "(Gi0/29)***_uplink_to_N5K-Sec_port_G0/1_***"
+    },
+    "measurements": {
+      "SNMP_Traffic": 4111229.2215
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-48-Ext-Pri",
+      "Sensor_name": "(Gi0/38)***_AudioCodes_Mediant_1000_LAN_-_10_19_50_20_***"
+    },
+    "measurements": {
+      "SNMP_Traffic": 2183.6
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-48-Ext-Pri",
+      "Sensor_name": "(Gi0/39)***_Reserved_Junos_Pulse_Gateway_MAG2600_***"
+    },
+    "measurements": {
+      "SNMP_Traffic": 9988.104
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-48-Ext-Pri",
+      "Sensor_name": "(Gi0/44)***_outside_Ext_link_to_Telx_179364_301_02_01_04_port_2_***"
+    },
+    "measurements": {
+      "SNMP_Traffic": 4988745.6
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-48-Ext-Pri",
+      "Sensor_name": "(Gi0/45)***_uplink_to_N5K-Pri_port_G0/9_***"
+    },
+    "measurements": {
+      "SNMP_Traffic": 3186558.2903
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-48-Ext-Pri",
+      "Sensor_name": "(Gi0/46)***_uplink_to_N5K-sec_port_G0/9_***"
+    },
+    "measurements": {
+      "SNMP_Traffic": 5946684.9384
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-48-Ext-Pri",
+      "Sensor_name": "(Gi0/47)***_cross_to_3560-ext-sec_port_0/23_***"
+    },
+    "measurements": {
+      "SNMP_Traffic": 292273.0487
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-48-Ext-Pri",
+      "Sensor_name": "(Gi0/48)***_cross_to_3560-ext-sec_port_0/24_***"
+    },
+    "measurements": {
+      "SNMP_Traffic": 7634.8058
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-48-Ext-Pri",
+      "Sensor_name": "(Gi1/1)***_link_to_AC_-_Circuit_ID_:_HFN00740_(Hudson_Fibre)_***"
+    },
+    "measurements": {
+      "SNMP_Traffic": 694.0187
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-48-Ext-Pri",
+      "Sensor_name": "(Vl1910)Vlan1910"
+    },
+    "measurements": {
+      "SNMP_Traffic": 24.5041
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-48-Ext-Pri",
+      "Sensor_name": "(Vl1911)Vlan1911"
+    },
+    "measurements": {
+      "SNMP_Traffic": 5443.6218
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-48-Ext-Pri",
+      "Sensor_name": "(Vl1950)Vlan1950"
+    },
+    "measurements": {
+      "SNMP_Traffic": 2.0003
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-48-Ext-Pri",
+      "Sensor_name": "(Vl2003)Vlan2003"
+    },
+    "measurements": {
+      "SNMP_Traffic": 6.3333
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-48-Ext-Pri",
+      "Sensor_name": "(Po1)***_uplink_to_N5K-Pri_ports_28+45_***"
+    },
+    "measurements": {
+      "SNMP_Traffic": 5435635.045
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-48-Ext-Pri",
+      "Sensor_name": "(Po2)***_uplink_to_N5K-sec_ports_29+46_***"
+    },
+    "measurements": {
+      "SNMP_Traffic": 1.07795696348E7
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-48-Ext-Pri",
+      "Sensor_name": "(Po3)***_cross_to_3560-ext-sec_port_0/23+24_***"
+    },
+    "measurements": {
+      "SNMP_Traffic": 298162.8519
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-48-Ext-Pri",
+      "Sensor_name": "(Gi0/29)***_uplink_to_N5K-Sec_port_G0/1_***"
+    },
+    "measurements": {
+      "SNMP_Traffic": 5098659.0432
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-24-Ext-Sec",
+      "Sensor_name": "Ping"
+    },
+    "measurements": {
+      "Ping": 1.6
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-24-Ext-Sec",
+      "Sensor_name": "System_Health_CPU"
+    },
+    "measurements": {
+      "SNMP_Cisco_System_Health": 13.0
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-24-Ext-Sec",
+      "Sensor_name": "System_Health_Fans"
+    },
+    "measurements": {
+      "SNMP_Cisco_System_Health": 1.0
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-24-Ext-Sec",
+      "Sensor_name": "System_Health_Memory"
+    },
+    "measurements": {
+      "SNMP_Cisco_System_Health": 1.46336088E8
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-24-Ext-Sec",
+      "Sensor_name": "System_Health_Power_Supplies"
+    },
+    "measurements": {
+      "SNMP_Cisco_System_Health": 1.0
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-24-Ext-Sec",
+      "Sensor_name": "System_Health_Temperatures"
+    },
+    "measurements": {
+      "SNMP_Cisco_System_Health": 26.0
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-24-Ext-Sec",
+      "Sensor_name": "System_Health_Voltages"
+    },
+    "measurements": {
+      "SNMP_Cisco_System_Health": 3.32
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-24-Ext-Sec",
+      "Sensor_name": "(Gi0/1)***_outside_Ext_link_to_Telx_201623_301_02_01_07_port_6_***"
+    },
+    "measurements": {
+      "SNMP_Traffic": 258011.4872
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-24-Ext-Sec",
+      "Sensor_name": "(Gi0/6)***_uplink_to_N5K-Pri_port_G0/17_***"
+    },
+    "measurements": {
+      "SNMP_Traffic": 26415.3859
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-24-Ext-Sec",
+      "Sensor_name": "(Gi0/7)***_uplink_to_N5K-Sec_port_G0/17_***"
+    },
+    "measurements": {
+      "SNMP_Traffic": 329838.0563
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-24-Ext-Sec",
+      "Sensor_name": "(Gi0/19)***_ext_link_to_Telx_Office_-_via_LightPath_06LVXS-61173_***"
+    },
+    "measurements": {
+      "SNMP_Traffic": 282388.7444
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-24-Ext-Sec",
+      "Sensor_name": "(Gi0/21)***_uplink_to_N5K-Pri_port_G0/25_***"
+    },
+    "measurements": {
+      "SNMP_Traffic": 7683.1249
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-24-Ext-Sec",
+      "Sensor_name": "(Gi0/22)***_uplink_to_N5K-Sec_port_G0/25_***"
+    },
+    "measurements": {
+      "SNMP_Traffic": 12323.3667
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-24-Ext-Sec",
+      "Sensor_name": "(Gi0/23)***_cross_to_3560-ext-Pri_port_0/47_***"
+    },
+    "measurements": {
+      "SNMP_Traffic": 303794.9492
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-24-Ext-Sec",
+      "Sensor_name": "(Gi0/24)***_cross_to_3560-ext-Pri_port_0/48_***"
+    },
+    "measurements": {
+      "SNMP_Traffic": 8499.3334
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-24-Ext-Sec",
+      "Sensor_name": "(Vl1911)***_MGT_***"
+    },
+    "measurements": {
+      "SNMP_Traffic": 5684.4948
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-24-Ext-Sec",
+      "Sensor_name": "(Po1)***_uplink_to_N5K-Pri_port_6+21_***"
+    },
+    "measurements": {
+      "SNMP_Traffic": 38983.1805
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-24-Ext-Sec",
+      "Sensor_name": "(Po2)***_uplink_to_N5K-Sec_port_7+22_***"
+    },
+    "measurements": {
+      "SNMP_Traffic": 327773.9036
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-24-Ext-Sec",
+      "Sensor_name": "(Po3)***_cross_to_3560-ext-Pri_port_0/23+24_***"
+    },
+    "measurements": {
+      "SNMP_Traffic": 296422.3463
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-24-Ext-Sec",
+      "Sensor_name": "(Vl900)***_OOB_***"
+    },
+    "measurements": {
+      "SNMP_Traffic": 0.0
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-RTR-Console-2901",
+      "Sensor_name": "Ping"
+    },
+    "measurements": {
+      "Ping": 0.0
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-RTR-Console-2901",
+      "Sensor_name": "System_Health_CPU"
+    },
+    "measurements": {
+      "SNMP_Cisco_System_Health": 2.0
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-RTR-Console-2901",
+      "Sensor_name": "System_Health_Fans"
+    },
+    "measurements": {
+      "SNMP_Cisco_System_Health": 1.0
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-RTR-Console-2901",
+      "Sensor_name": "System_Health_Memory"
+    },
+    "measurements": {
+      "SNMP_Cisco_System_Health": 2.49888808E8
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-RTR-Console-2901",
+      "Sensor_name": "System_Health_Power_Supplies"
+    },
+    "measurements": {
+      "SNMP_Cisco_System_Health": 1.0
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-RTR-Console-2901",
+      "Sensor_name": "System_Health_Temperatures"
+    },
+    "measurements": {
+      "SNMP_Cisco_System_Health": 54.0
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-RTR-Console-2901",
+      "Sensor_name": "System_Health_Voltages"
+    },
+    "measurements": {
+      "SNMP_Cisco_System_Health": 1.0
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-RTR-Console-2901",
+      "Sensor_name": "(Gi0/0)***_OOB_Internet_5M_Link_WO_TST#_186071_,Circuit_ID:_TELXDIA0018"
+    },
+    "measurements": {
+      "SNMP_Traffic": 17.6471
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-RTR-Console-2901",
+      "Sensor_name": "(Gi0/1)***_Mgt_Access_To_Cisco2911_Console_3560_Extension_Gi_0/36_***"
+    },
+    "measurements": {
+      "SNMP_Traffic": 2478.8465
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-RTR-Console-2901",
+      "Sensor_name": "(Gi0/3)GigabitEthernet0/3"
+    },
+    "measurements": {
+      "SNMP_Traffic": 0.0
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-RTR-Console-2901",
+      "Sensor_name": "(Lo0)Connection_to_other_devices"
+    },
+    "measurements": {
+      "SNMP_Traffic": 0.0
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-Pri-int-Rack-14",
+      "Sensor_name": "Ping"
+    },
+    "measurements": {
+      "Ping": 2.2
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-Pri-int-Rack-14",
+      "Sensor_name": "System_Health_CPU"
+    },
+    "measurements": {
+      "SNMP_Cisco_System_Health": 26.0
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-Pri-int-Rack-14",
+      "Sensor_name": "System_Health_Fans"
+    },
+    "measurements": {
+      "SNMP_Cisco_System_Health": 1.0
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-Pri-int-Rack-14",
+      "Sensor_name": "System_Health_Memory"
+    },
+    "measurements": {
+      "SNMP_Cisco_System_Health": 1.68031664E8
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-Pri-int-Rack-14",
+      "Sensor_name": "System_Health_Power_Supplies"
+    },
+    "measurements": {
+      "SNMP_Cisco_System_Health": 1.0
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-Pri-int-Rack-14",
+      "Sensor_name": "System_Health_Temperatures"
+    },
+    "measurements": {
+      "SNMP_Cisco_System_Health": 31.0
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-Pri-int-Rack-14",
+      "Sensor_name": "(Vl1)Vlan1"
+    },
+    "measurements": {
+      "SNMP_Traffic": 0.0
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-Pri-int-Rack-14",
+      "Sensor_name": "(Gi0/1)***_uplink_to_N5k-Pri_-_port_2_***"
+    },
+    "measurements": {
+      "SNMP_Traffic": 25852.6325
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  },
+  {
+    "timestamp": 1657105658,
+    "dimensions": {
+      "Host_Name": "Telx-3560-Pri-int-Rack-14",
+      "Sensor_name": "(Gi0/2)***_uplink_to_N5k-sec_-_port_2_***"
+    },
+    "measurements": {
+      "SNMP_Traffic": 42517.2086
+    },
+    "schemaId": "test_prtg_xml-1234",
+    "tags": {
+      "Group": [
+        "USA"
+      ],
+      "Location": [
+        "TelX"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_prtg_xml"
+      ],
+      "pipeline_type": [
+        "prtg"
+      ]
+    }
+  }
+]
