@@ -22,8 +22,9 @@ def upgrade():
         sa.Column('id', sa.Integer, autoincrement=True, primary_key=True),
         sa.Column('pipeline_id', sa.String, nullable=False),
         sa.Column('notification_id', sa.Integer, sa.ForeignKey('pipeline_notifications.id')),
-        sa.Column('notification_period', sa.Integer),
-        sa.Column('notification_sent', sa.Boolean),
+        sa.Column('notification_period', sa.Integer, nullable=False),
+        sa.Column('notification_sent', sa.Boolean, default=False),
+        sa.Column('last_updated', sa.TIMESTAMP),
     )
 
 

@@ -142,8 +142,12 @@ def _validate_configs_for_create(configs: list):
                     'minLength': 1,
                     'maxLength': 100
                 },
-                "notifications": {
-                    "no_data": {"type": "string", "pattern": r"(?![0])\d{1,}[hm]"}
+                'notifications': {
+                    'type': 'object',
+                    'properties': {
+                        'no_data':
+                            {'type': 'string', 'pattern': r'(?![0])\d{1,}[hm]'}
+                    },
                 },
             },
             'required': ['source', 'pipeline_id']
@@ -165,8 +169,12 @@ def _validate_config_for_create(config: dict):
                 'minLength': 1,
                 'maxLength': 100
             },
-            "notifications": {
-                "no_data": {"type": "string", "pattern": r"(?![0])\d{1,}[hm]"}
+            'notifications': {
+                'type': 'object',
+                'properties': {
+                    'no_data':
+                        {'type': 'string', 'pattern': r'(?![0])\d{1,}[hm]'}
+                },
             },
             'pipeline_type': {'type': 'string', 'enum': pipeline.PIPELINE_TYPES},
         },

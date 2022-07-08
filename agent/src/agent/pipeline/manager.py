@@ -4,6 +4,8 @@ import string
 import sdc_client
 
 from datetime import datetime, timedelta
+
+import agent.modules.expression_parser.condition
 from agent import source, pipeline, destination, streamsets
 from agent.modules import tools, constants
 from agent.pipeline import Pipeline, TestPipeline, PipelineMetric, PipelineRetries, RawPipeline, EventsPipeline, \
@@ -12,6 +14,7 @@ from agent.pipeline import extra_setup, json_builder, schema
 from agent.modules.logger import get_logger
 from agent.pipeline.config.handlers.factory import get_config_handler
 from agent.source import Source
+from agent.pipeline import notifications
 
 logger_ = get_logger(__name__, stdout=True)
 
@@ -124,6 +127,13 @@ def reset_pipeline_retries(pipeline_: Pipeline):
         pipeline.repository.save(pipeline_.retries)
 
 
+def reset_pipeline_notifications(pipeline_: Pipeline):
+    if pipeline_.notifications:
+        if pipeline_.notifications.no_data_notification:
+            pipeline_.notifications.no_data_notification.notification_sent = False
+            pipeline.repository.save(pipeline_.notifications.no_data_notification)
+
+
 def _delete_pipeline_retries(pipeline_: Pipeline):
     if pipeline_.retries:
         pipeline.repository.delete_pipeline_retries(pipeline_.retries)
@@ -158,7 +168,7 @@ def create(pipeline_: Pipeline, config_: dict = None):
         extra_setup.do(pipeline_)
         if pipeline_.uses_schema():
             _update_schema(pipeline_)
-        pipeline.repository.create_notifications(pipeline_, session)
+        notifications.repository.create_notifications(pipeline_, session)
         sdc_client.create(pipeline_)
 
 
@@ -328,15 +338,14 @@ def should_send_retries_error_notification(pipeline_: Pipeline) -> bool:
 
 def should_send_no_data_error_notification(pipeline_: Pipeline) -> bool:
     if pipeline_.notifications \
-            and pipeline_.notifications.no_data_notification \
-            and pipeline_.notifications.no_data_notification.notification_period:
+            and pipeline_.notifications.no_data_notification:
 
         no_data_notification_period = timedelta(
             minutes=pipeline_.notifications.no_data_notification.notification_period
         ) + timedelta(seconds=pipeline_.interval or 0)
         return should_send_error_notification(pipeline_) \
                and not pipeline_.notifications.no_data_notification.notification_sent \
-               and pipeline_.watermark \
+               and bool(pipeline_.watermark) \
                and (datetime.now() - datetime.fromtimestamp(pipeline_.watermark.timestamp)) >= no_data_notification_period
     return False
 

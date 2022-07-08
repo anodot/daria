@@ -1,7 +1,8 @@
 import re
 from agent.modules.db import Entity
-from sqlalchemy import Column, Integer, String, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, func
 from sqlalchemy.orm import relationship
+from sqlalchemy.dialects.postgresql import TIMESTAMP
 # from agent import pipeline
 
 
@@ -19,8 +20,10 @@ class NoDataNotifications(Entity):
     pipeline_id: str = Column(String, ForeignKey('pipelines.name'), primary_key=True)
     notification_id: str = Column(Integer, ForeignKey('pipeline_notifications.id'), primary_key=True)
 
-    notification_period: int = Column(Integer)  # In minutes
+    notification_period: int = Column(Integer, nullable=False)  # In minutes
     notification_sent: bool = Column(Boolean, default=False)
+
+    last_updated = Column(TIMESTAMP(timezone=True), default=func.now(), onupdate=func.now())
 
     def __init__(self, pipeline_, notification_period: str):
         self.pipeline_id = pipeline_.name
