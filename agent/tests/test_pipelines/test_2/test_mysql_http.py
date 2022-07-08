@@ -14,12 +14,23 @@ class TestMySQL(TestPipelineBase):
                        {'name': 'test_mysql_no_schema'}, {'name': 'test_watermark_local_timezone'},
                        {'name': 'test_jdbc_no_timestamp_condition'}],
         'test_reset': [{'name': 'test_mysql'}],
-        'test_force_stop': [{'name': 'test_mysql'}, {'name': 'test_mysql_timestamp_ms'},
-                            {'name': 'test_mysql_timestamp_datetime'},
-                            {'name': 'test_mysql_advanced'}, {'name': 'test_jdbc_file_short_mysql'},
-                            {'name': 'test_jdbc_file_full_mysql'}, {'name': 'test_mysql_timezone_datetime'},
-                            {'name': 'test_mysql_no_schema'}, {'name': 'test_watermark_local_timezone'},
-                            {'name': 'test_jdbc_no_timestamp_condition'}],
+        'test_force_stop': [
+            {'name': 'test_mysql'},
+            {'name': 'test_mysql_timestamp_ms'},
+            {'name': 'test_mysql_timestamp_datetime'},
+            {
+                'name': 'test_mysql_advanced',
+                'check_output_file_name': f'{get_schema_id("test_mysql_advanced")}_watermark.json'
+            },
+            {'name': 'test_jdbc_file_short_mysql'},
+            {'name': 'test_jdbc_file_full_mysql'}, {'name': 'test_mysql_timezone_datetime'},
+            {'name': 'test_mysql_no_schema'},
+            {
+                'name': 'test_watermark_local_timezone',
+                'check_output_file_name': f'{get_schema_id("test_watermark_local_timezone")}_watermark.json'
+            },
+            {'name': 'test_jdbc_no_timestamp_condition'}
+        ],
         'test_output': [
             {'name': 'test_mysql_no_schema', 'output': 'jdbc_file_full_no_schema.json', 'pipeline_type': 'mysql'},
         ],
@@ -43,14 +54,14 @@ class TestMySQL(TestPipelineBase):
     def test_info(self, cli_runner, name=None):
         pytest.skip()
 
-    def test_stop(self, cli_runner, name=None):
+    def test_stop(self, cli_runner, name=None, check_output_file_name=None):
         pytest.skip()
 
     def test_start(self, cli_runner, name, sleep):
         super().test_start(cli_runner, name, sleep)
 
-    def test_force_stop(self, cli_runner, name):
-        super().test_force_stop(cli_runner, name)
+    def test_force_stop(self, cli_runner, name, check_output_file_name):
+        super().test_force_stop(cli_runner, name, check_output_file_name)
 
     def test_watermark(self):
         schema_id = get_schema_id('test_mysql_advanced')
