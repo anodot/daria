@@ -66,12 +66,12 @@ def pull_metrics():
     streamsets_ = streamsets.repository.get_all()
     _process_streamsets_metrics(
         streamsets_=streamsets_,
-        asynchronous=True
+        asynchronous=len(streamsets_) >= 2
     )
     pipelines = pipeline.repository.get_all()
     _process_pipeline_metrics(
         pipelines=pipelines,
-        asynchronous=True
+        asynchronous=len(pipelines) >= 2
     )
 
 
