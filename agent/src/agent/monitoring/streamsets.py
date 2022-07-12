@@ -82,8 +82,10 @@ def _process_pipeline_metrics(pipelines: List[pipeline.Pipeline], asynchronous: 
     else:
         jmxes = sdc_client.get_jmxes_async([
             (pipeline_.streamsets, f'metrics:name=sdc.pipeline.{pipeline_.name}.*',)
-            for pipeline_ in pipelines])
+            for pipeline_ in pipelines], return_exceptions=constants.IGNORE_REQUEST_EXCEPTIONS)
     for pipeline_, jmx in zip(pipelines, jmxes):
+        if constants.IGNORE_REQUEST_EXCEPTIONS and isinstance(jmx, Exception):
+            continue
         _pull_pipeline_metrics(pipeline_, jmx)
 
 
@@ -96,7 +98,11 @@ def _process_streamsets_metrics(streamsets_: List[streamsets.StreamSets], asynch
     if not asynchronous:
         jmxes = [sdc_client.get_jmx(streamset_, query) for streamset_, query in sys_queries + kafka_queries]
     else:
-        jmxes = sdc_client.get_jmxes_async(sys_queries + kafka_queries)
+        jmxes = sdc_client.get_jmxes_async(sys_queries + kafka_queries,
+                                           return_exceptions=constants.IGNORE_REQUEST_EXCEPTIONS)
     for index, streamset_ in enumerate(streamsets_):
-        _pull_system_metrics(streamset_, jmxes[index])
-        _pull_kafka_metrics(jmxes[index + len(streamsets_)])
+        if constants.IGNORE_REQUEST_EXCEPTIONS:
+            if not isinstance(jmxes[index], Exception):
+                _pull_system_metrics(streamset_, jmxes[index])
+            if not isinstance(jmxes[index + len(streamsets_)], Exception):
+                _pull_kafka_metrics(jmxes[index + len(streamsets_)])
