@@ -66,12 +66,12 @@ def pull_metrics():
     streamsets_ = streamsets.repository.get_all()
     _process_streamsets_metrics(
         streamsets_=streamsets_,
-        asynchronous=len(streamsets_) >= 2
+        asynchronous=True
     )
     pipelines = pipeline.repository.get_all()
     _process_pipeline_metrics(
         pipelines=pipelines,
-        asynchronous=len(pipelines) >= 2
+        asynchronous=True
     )
 
 
@@ -90,7 +90,6 @@ def _process_pipeline_metrics(pipelines: List[pipeline.Pipeline], asynchronous: 
 
 
 def _process_streamsets_metrics(streamsets_: List[streamsets.StreamSets], asynchronous: bool = False) -> None:
-    # raise Exception(streamsets_[0].get_id())
     sys_queries = [(streamset_, 'java.lang:type=*',) for streamset_ in streamsets_]
     kafka_queries = [
         (streamset_, 'kafka.consumer:type=consumer-fetch-manager-metrics,client-id=*,topic=*,partition=*',)
