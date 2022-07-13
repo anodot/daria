@@ -1,4 +1,5 @@
 alabaster==0.7.12
+aiohttp==3.8.1
 atomicwrites==1.2.1
 attrs==19.2.0
 Babel==2.9.1
@@ -53,7 +54,7 @@ alembic==1.4.2
 regex==2020.11.13
 inject==4.3.1
 prometheus-client==0.9.0
-git+https://github.com/anodot/sdc-client.git@1.1.14
+git+https://github.com/anodot/sdc-client.git@16f02fdfc52b287d35484664711e48e11f0d1fd5
 rrdtool==0.1.15
 pysnmp==4.4.12
 psycopg2==2.9.1
