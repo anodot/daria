@@ -20,10 +20,12 @@ def get_interval():
     return int(sdc.userParams['INTERVAL_IN_SECONDS'])
 
 
-def get_now(clear_sec=False):
-    if clear_sec:
-        return int(time.mktime(datetime.now(pytz.timezone(sdc.userParams['TIMEZONE'])).replace(second=0, microsecond=0).timetuple()))
+def get_now():
     return int(time.mktime(datetime.now(pytz.timezone(sdc.userParams['TIMEZONE'])).timetuple()))
+
+
+def get_now_zero_sec():
+    return int(time.mktime(datetime.now(pytz.timezone(sdc.userParams['TIMEZONE'])).replace(second=0, microsecond=0).timetuple()))
 
 
 def _process_response_xml(content):
@@ -98,7 +100,7 @@ def main():
     if sdc.lastOffsets.containsKey(entityName):
         offset = int(float(sdc.lastOffsets.get(entityName)))
     else:
-        offset = get_now(clear_sec=True)
+        offset = get_now_zero_sec()
 
     sdc.log.info('OFFSET: ' + str(offset))
 
