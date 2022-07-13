@@ -5,7 +5,6 @@ import sdc_client
 
 from datetime import datetime, timedelta
 
-import agent.modules.expression_parser.condition
 from agent import source, pipeline, destination, streamsets
 from agent.modules import tools, constants
 from agent.pipeline import Pipeline, TestPipeline, PipelineMetric, PipelineRetries, RawPipeline, EventsPipeline, \

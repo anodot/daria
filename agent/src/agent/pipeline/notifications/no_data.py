@@ -1,9 +1,7 @@
 import re
 from agent.modules.db import Entity
 from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, func
-from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import TIMESTAMP
-# from agent import pipeline
 
 
 def get_period_in_minutes(param: str) -> int:

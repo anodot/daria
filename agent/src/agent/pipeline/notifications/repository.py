@@ -1,6 +1,4 @@
-# from agent import pipeline
 from agent.pipeline.notifications import PiplineNotifications, NoDataNotifications
-from agent.pipeline.notifications.no_data import get_period_in_minutes
 from agent.modules.db import Session
 
 

@@ -4,7 +4,6 @@ from agent import source, pipeline
 from agent.destination import HttpDestination
 from agent.modules.db import Session, engine, Entity
 from agent.pipeline import PipelineOffset, Pipeline, PipelineRetries
-from agent.pipeline.notifications import notification, no_data
 from sqlalchemy.orm import Query
 
 

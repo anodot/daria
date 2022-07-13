@@ -18,6 +18,7 @@ def _update_errors_count():
 
 def log_error(message):
     _update_errors_count()
+    logger.error(message)
     logger.error(traceback.format_exc())
 
 
@@ -52,7 +53,6 @@ def _reset_notifications(pipeline_: Pipeline):
 
 
 def main():
-    num_of_errors = 0
     try:
         pipelines = pipeline.repository.get_all()
     except Exception:
@@ -62,8 +62,6 @@ def main():
     for pipeline_ in pipelines:
         _reset_retries(pipeline_)
         _reset_notifications(pipeline_)
-
-    return num_of_errors
 
 
 if __name__ == '__main__':
