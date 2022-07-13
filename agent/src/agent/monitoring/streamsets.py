@@ -6,6 +6,10 @@ from typing import List
 from agent import streamsets, pipeline, source
 from agent.monitoring import metrics
 from agent.modules import constants
+from agent.modules import logger
+
+
+logger_ = logger.get_logger(__name__, stdout=True)
 
 
 def _pull_system_metrics(streamsets_: streamsets.StreamSets, jmx: dict):
@@ -82,11 +86,10 @@ def _process_pipeline_metrics(pipelines: List[pipeline.Pipeline], asynchronous: 
     else:
         jmxes = sdc_client.get_jmxes_async([
             (pipeline_.streamsets, f'metrics:name=sdc.pipeline.{pipeline_.name}.*',)
-            for pipeline_ in pipelines], return_exceptions=constants.IGNORE_REQUEST_EXCEPTIONS)
+            for pipeline_ in pipelines], return_exceptions=True)
     for pipeline_, jmx in zip(pipelines, jmxes):
-        if constants.IGNORE_REQUEST_EXCEPTIONS and isinstance(jmx, Exception):
-            continue
-        _pull_pipeline_metrics(pipeline_, jmx)
+        _pull_pipeline_metrics(pipeline_, jmx) if not isinstance(jmx, Exception) \
+            else logger_.error(f"Error: {jmx} for pipeline {pipeline_.name}")
 
 
 def _process_streamsets_metrics(streamsets_: List[streamsets.StreamSets], asynchronous: bool = False) -> None:
@@ -97,11 +100,9 @@ def _process_streamsets_metrics(streamsets_: List[streamsets.StreamSets], asynch
     if not asynchronous:
         jmxes = [sdc_client.get_jmx(streamset_, query) for streamset_, query in sys_queries + kafka_queries]
     else:
-        jmxes = sdc_client.get_jmxes_async(sys_queries + kafka_queries,
-                                           return_exceptions=constants.IGNORE_REQUEST_EXCEPTIONS)
+        jmxes = sdc_client.get_jmxes_async(sys_queries + kafka_queries, return_exceptions=True)
     for index, streamset_ in enumerate(streamsets_):
-        if constants.IGNORE_REQUEST_EXCEPTIONS:
-            if not isinstance(jmxes[index], Exception):
-                _pull_system_metrics(streamset_, jmxes[index])
-            if not isinstance(jmxes[index + len(streamsets_)], Exception):
-                _pull_kafka_metrics(jmxes[index + len(streamsets_)])
+        _pull_system_metrics(streamset_, jmxes[index]) if not isinstance(jmxes[index], Exception) \
+            else logger_.error(f"Error: {jmxes[index]} for streamset {streamset_.url}")
+        _pull_kafka_metrics(jmxes[index + len(streamsets_)]) if not isinstance(jmxes[index + len(streamsets_)], Exception) \
+            else logger_.error(f"Error: {jmxes[index + len(streamsets_)]} for streamset {streamset_.url}")
