@@ -1,2 +1,3 @@
 title,"str:regExCapture(metric, '(.+)\\.(.+)', 1)"
 subtitle,"str:regExCapture(metric, '(.+)\\.(.+)', 2)"
+Country,"str:regExCapture(Country, '([^?^,]+)', 1)"

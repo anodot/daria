@@ -18,7 +18,7 @@ class TestInflux(TestPipelineBase):
             {'name': 'test_influx2'},
             {'name': 'test_influx2_file_full'},
             {'name': 'test_influx2_query'},
-            {'name': 'influx2_influxql_pipeline', 'sleep': 30},
+            {'name': 'influx2_influxql_pipeline'},
             {'name': 'test_influx_adv'}
         ],
         'test_force_stop': [
@@ -28,7 +28,7 @@ class TestInflux(TestPipelineBase):
             {'name': 'test_influx_file_full'},
             {'name': 'test_influx_file_transform'},
             {'name': 'test_influx_schema_query'},
-            {'name': 'test_influx2'},
+            {'name': 'test_influx2', 'check_output_file_name': 'test_influx2_influx2.json'},
             {'name': 'test_influx2_file_full'},
             {'name': 'test_influx2_query'},
             {'name': 'influx2_influxql_pipeline'},
@@ -76,14 +76,14 @@ class TestInflux(TestPipelineBase):
     def test_info(self, cli_runner, name=None):
         pytest.skip()
 
-    def test_stop(self, cli_runner, name=None):
+    def test_stop(self, cli_runner, name=None, check_output_file_name=None):
         pytest.skip()
 
     def test_start(self, cli_runner, name, sleep):
         super().test_start(cli_runner, name, sleep)
 
-    def test_force_stop(self, cli_runner, name):
-        super().test_force_stop(cli_runner, name)
+    def test_force_stop(self, cli_runner, name, check_output_file_name):
+        super().test_force_stop(cli_runner, name, check_output_file_name)
 
     def test_watermark(self):
         initial_offset = 1552222380

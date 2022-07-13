@@ -96,7 +96,8 @@ def validate(condition: str) -> bool:
     for expression in expressions:
         literals = split_to_literals(expression)
         if len(literals) != 3:
-            raise ConditionException('Wrong format. Example: "property" == "value" && "property2" contains "value": ' + condition)
+            raise ConditionException(
+                'Wrong format. Example: "property" == "value" && "property2" contains "value": ' + condition)
 
         operand = replace_conjunction_operator(literals[0])
         parentheses_count_total += count_opened_parenthesis(operand)
@@ -105,7 +106,8 @@ def validate(condition: str) -> bool:
 
         if not validate_comparison_literal(literals[1]):
             raise ConditionException(
-                f'Unsupported literal {literals[1]}. Please use ' + ', '.join(COMPARISON_FUNCTIONS + COMPARISON_LITERALS))
+                f'Unsupported literal {literals[1]}. Please use ' + ', '.join(
+                    COMPARISON_FUNCTIONS + COMPARISON_LITERALS))
 
         parentheses_count_total -= count_closed_parenthesis(literals[2])
         if not last_operand_enclosed_in_quotes_or_null(literals[2]):
@@ -138,10 +140,13 @@ def _get_function_name(function: str) -> str:
 
 
 def get_number_of_arguments(function: str) -> int:
+    function = function.replace(' ', '')
     args = extract_arguments(function)
     if not args:
         return 0
-    args = re.split('\s*,\s*', args)
+    # Split by comma or values in quotes + add values in qoutes
+    args = re.split(",\'.*?\',|,\".*?\",|\s*,\s*", args) + re.findall("(,\'.*?\',|,\".*?\",)", args)
+    args = list(filter(bool, args))
     return len(args)
 
 

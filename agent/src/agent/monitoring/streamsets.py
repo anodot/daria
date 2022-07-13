@@ -2,13 +2,17 @@ import prometheus_client
 import sdc_client
 import re
 
+from typing import List
 from agent import streamsets, pipeline, source
 from agent.monitoring import metrics
 from agent.modules import constants
+from agent.modules import logger
 
 
-def _pull_system_metrics(streamsets_: streamsets.StreamSets):
-    jmx = sdc_client.get_jmx(streamsets_, 'java.lang:type=*')
+logger_ = logger.get_logger(__name__, stdout=True)
+
+
+def _pull_system_metrics(streamsets_: streamsets.StreamSets, jmx: dict):
     for bean in jmx['beans']:
         if bean['name'] == 'java.lang:type=Memory':
             metrics.STREAMSETS_HEAP_MEMORY.labels(streamsets_.url).set(bean['HeapMemoryUsage']['used'])
@@ -28,8 +32,7 @@ def _is_influx(pipeline_: pipeline.Pipeline):
     return pipeline_.source.type == source.TYPE_INFLUX
 
 
-def _pull_pipeline_metrics(pipeline_: pipeline.Pipeline):
-    jmx = sdc_client.get_jmx(pipeline_.streamsets, f'metrics:name=sdc.pipeline.{pipeline_.name}.*')
+def _pull_pipeline_metrics(pipeline_: pipeline.Pipeline, jmx: dict):
     labels = (pipeline_.streamsets.url, pipeline_.name, pipeline_.source.type)
     for bean in jmx['beans']:
         if bean['name'].endswith('source.batchProcessing.timer'):
@@ -57,19 +60,49 @@ def _pull_pipeline_metrics(pipeline_: pipeline.Pipeline):
                 bean['999thPercentile'] / 1000)
 
 
-def _pull_kafka_metrics(streamsets_: streamsets.StreamSets):
-    jmx = sdc_client.get_jmx(
-        streamsets_,
-        'kafka.consumer:type=consumer-fetch-manager-metrics,client-id=*,topic=*,partition=*'
-    )
+def _pull_kafka_metrics(jmx: dict):
     for bean in jmx['beans']:
         name = dict(item.split('=') for item in bean['name'].split(','))
         metrics.KAFKA_CONSUMER_LAG.labels(name['topic']).set(bean['records-lag-avg'])
 
 
 def pull_metrics():
-    for streamsets_ in streamsets.repository.get_all():
-        _pull_system_metrics(streamsets_)
-        _pull_kafka_metrics(streamsets_)
-    for pipeline_ in pipeline.repository.get_all():
-        _pull_pipeline_metrics(pipeline_)
+    streamsets_ = streamsets.repository.get_all()
+    _process_streamsets_metrics(
+        streamsets_=streamsets_,
+        asynchronous=len(streamsets_) >= 2
+    )
+    pipelines = pipeline.repository.get_all()
+    _process_pipeline_metrics(
+        pipelines=pipelines,
+        asynchronous=len(pipelines) >= 2
+    )
+
+
+def _process_pipeline_metrics(pipelines: List[pipeline.Pipeline], asynchronous: bool = False) -> None:
+    if not asynchronous:
+        jmxes = [sdc_client.get_jmx(pipeline_.streamsets, f'metrics:name=sdc.pipeline.{pipeline_.name}.*')
+                 for pipeline_ in pipelines]
+    else:
+        jmxes = sdc_client.get_jmxes_async([
+            (pipeline_.streamsets, f'metrics:name=sdc.pipeline.{pipeline_.name}.*',)
+            for pipeline_ in pipelines], return_exceptions=True)
+    for pipeline_, jmx in zip(pipelines, jmxes):
+        _pull_pipeline_metrics(pipeline_, jmx) if not isinstance(jmx, Exception) \
+            else logger_.error(f"Error: {jmx} for pipeline {pipeline_.name}")
+
+
+def _process_streamsets_metrics(streamsets_: List[streamsets.StreamSets], asynchronous: bool = False) -> None:
+    sys_queries = [(streamset_, 'java.lang:type=*',) for streamset_ in streamsets_]
+    kafka_queries = [
+        (streamset_, 'kafka.consumer:type=consumer-fetch-manager-metrics,client-id=*,topic=*,partition=*',)
+        for streamset_ in streamsets_]
+    if not asynchronous:
+        jmxes = [sdc_client.get_jmx(streamset_, query) for streamset_, query in sys_queries + kafka_queries]
+    else:
+        jmxes = sdc_client.get_jmxes_async(sys_queries + kafka_queries, return_exceptions=True)
+    for index, streamset_ in enumerate(streamsets_):
+        _pull_system_metrics(streamset_, jmxes[index]) if not isinstance(jmxes[index], Exception) \
+            else logger_.error(f"Error: {jmxes[index]} for streamset {streamset_.url}")
+        _pull_kafka_metrics(jmxes[index + len(streamsets_)]) if not isinstance(jmxes[index + len(streamsets_)], Exception) \
+            else logger_.error(f"Error: {jmxes[index + len(streamsets_)]} for streamset {streamset_.url}")

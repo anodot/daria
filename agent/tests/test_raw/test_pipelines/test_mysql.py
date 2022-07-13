@@ -9,8 +9,8 @@ class TestRawMySQL(TestRawPipelineBase):
             {'name': 'mysql_raw_csv'}
         ],
         'test_force_stop': [
-            {'name': 'mysql_raw_json'},
-            {'name': 'mysql_raw_csv'}
+            {'name': 'mysql_raw_json', 'check_output_file_name': 'mysql_raw_json.json'},
+            {'name': 'mysql_raw_csv', 'check_output_file_name': 'mysql_raw_csv.csv'}
         ],
         'test_output': [
             {'file_name': 'mysql_raw_json.json', 'output_file': 'mysql.json', 'pipeline_type': 'mysql'},
