@@ -9,10 +9,10 @@ class TestCacti(TestPipelineBase):
     __test__ = True
     params = {
         'test_start': [
-            {'name': 'cacti_archive', 'sleep': 30},
-            {'name': 'cacti_dir', 'sleep': 30},
-            {'name': 'cacti_dir_flex', 'sleep': 30},
-            {'name': 'cacti_file', 'sleep': 30}
+            {'name': 'cacti_archive', 'sleep': 45},
+            {'name': 'cacti_dir', 'sleep': 45},
+            {'name': 'cacti_dir_flex', 'sleep': 45},
+            {'name': 'cacti_file', 'sleep': 45}
         ],
         'test_force_stop': [
             {'name': 'cacti_archive'},
