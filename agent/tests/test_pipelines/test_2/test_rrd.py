@@ -1,7 +1,8 @@
 import pytest
 
 from agent import source
-from ..test_zpipeline_base import TestPipelineBase
+from ..test_zpipeline_base import TestPipelineBase, get_expected_output
+from ...conftest import get_output
 
 
 class TestRRD(TestPipelineBase):
@@ -46,6 +47,12 @@ class TestRRD(TestPipelineBase):
 
     def test_output_schema(self, name=None, pipeline_type=None, output=None):
         pytest.skip()
+
+    def test_output(self, name, pipeline_type, output):
+        expected_output = get_expected_output(name, output, pipeline_type)
+        self._wait(lambda: get_output(f'{name}_{pipeline_type}.json'))
+        actual_output = get_output(f'{name}_{pipeline_type}.json')
+        assert actual_output == expected_output
 
     def test_force_stop(self, cli_runner, name, check_output_file_name):
         super().test_force_stop(cli_runner, name, check_output_file_name)
