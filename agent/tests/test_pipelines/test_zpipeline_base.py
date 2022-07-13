@@ -24,9 +24,8 @@ class TestPipelineBase(object):
     def test_start(self, cli_runner, name: str, sleep: int):
         result = cli_runner.invoke(cli.pipeline.start, [name], catch_exceptions=False)
         assert result.exit_code == 0
-        # if not sleep:
-        #     sleep = 20
-        # time.sleep(sleep)
+        if sleep:
+            time.sleep(sleep)
 
         pipeline_ = pipeline.repository.get_by_id(name)
 
