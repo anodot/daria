@@ -8,7 +8,8 @@
         "type": "basic",
         "username": "admin",
         "password": "admin"
-      }
+      },
+      "verify_ssl": false
     }
   },
   {
