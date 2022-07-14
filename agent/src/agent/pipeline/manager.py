@@ -162,13 +162,9 @@ def create(pipeline_: Pipeline, config_: dict = None):
 
 
 def update_source_pipelines(source_: Source):
-    for pipeline_ in pipeline.repository.get_by_source(source_.name):
-        try:
-            sdc_client.update(pipeline_)
-        except streamsets.manager.StreamsetsException as e:
-            logger_.debug(str(e), exc_info=True)
-            continue
-        logger_.info(f'Pipeline {pipeline_.name} updated')
+    pipelines = pipeline.repository.get_by_source(source_.name)
+    sdc_client.update_async(pipelines)
+    logger_.info(f'Pipelines {[p.name for p in pipelines]} updated')
 
 
 def update_pipeline_offset(pipeline_: Pipeline, timestamp: float):
