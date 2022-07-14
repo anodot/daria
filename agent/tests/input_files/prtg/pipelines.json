@@ -36,10 +36,6 @@
       "required": ["Host Name", "Sensor name"],
       "optional": []
     },
-    "timestamp": {
-      "name": "timestamp_unix",
-      "type": "unix"
-    },
     "interval": 300
   },
     {
@@ -76,12 +72,8 @@
       "Windows Network Card": "gauge"
     },
     "dimensions": {
-      "required": ["Host Name", "Sensor name"],
-      "optional": []
-    },
-    "timestamp": {
-      "name": "timestamp_unix",
-      "type": "unix"
+      "required": [],
+      "optional": ["Host Name", "Sensor name"]
     },
     "interval": 300
   }
