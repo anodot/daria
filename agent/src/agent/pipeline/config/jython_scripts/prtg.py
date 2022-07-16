@@ -21,12 +21,11 @@ def get_interval():
 
 
 def get_now():
-    return int(time.time())
+    return int(time.mktime(datetime.now(pytz.timezone(sdc.userParams['TIMEZONE'])).timetuple()))
 
 
-def to_timestamp(date):
-    epoch = datetime(1970, 1, 1)
-    return int((date - epoch).total_seconds())
+def get_now_zero_sec():
+    return int(time.mktime(datetime.now(pytz.timezone(sdc.userParams['TIMEZONE'])).replace(second=0, microsecond=0).timetuple()))
 
 
 def _process_response_xml(content):
@@ -101,7 +100,7 @@ def main():
     if sdc.lastOffsets.containsKey(entityName):
         offset = int(float(sdc.lastOffsets.get(entityName)))
     else:
-        offset = to_timestamp(datetime.utcnow().replace(second=0, microsecond=0))
+        offset = get_now_zero_sec()
 
     sdc.log.info('OFFSET: ' + str(offset))
 
@@ -131,7 +130,7 @@ def main():
                 data = _process_response_json(res.content)
 
             for value_dict in data:
-                record = sdc.createRecord('record created ' + str(datetime.now()))
+                record = sdc.createRecord('record created ' + str(offset))
                 record.value = value_dict
                 record.value['last_timestamp'] = int(offset)
                 cur_batch.add(record)
@@ -141,7 +140,7 @@ def main():
                     if sdc.isStopped():
                         break
             else:
-                record = sdc.createRecord('record created ' + str(datetime.now()))
+                record = sdc.createRecord('record created ' + str(offset))
                 record.value = {'last_timestamp': int(offset)}
                 cur_batch.add(record)
 
