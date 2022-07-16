@@ -128,10 +128,9 @@ def reset_pipeline_retries(pipeline_: Pipeline):
 
 
 def reset_pipeline_notifications(pipeline_: Pipeline):
-    if pipeline_.notifications:
-        if pipeline_.notifications.no_data_notification:
-            pipeline_.notifications.no_data_notification.notification_sent = False
-            pipeline.repository.save(pipeline_.notifications.no_data_notification)
+    if pipeline_.notifications and pipeline_.notifications.no_data_notification:
+        pipeline_.notifications.no_data_notification.notification_sent = False
+        pipeline.repository.save(pipeline_.notifications.no_data_notification)
 
 
 def _delete_pipeline_retries(pipeline_: Pipeline):
@@ -331,15 +330,13 @@ def should_send_error_notification(pipeline_: Pipeline) -> bool:
 def should_send_retries_error_notification(pipeline_: Pipeline) -> bool:
     # number of error statuses = number of retries + 1
     return should_send_error_notification(pipeline_) \
-           and pipeline_.retries \
+           and bool(pipeline_.retries) \
            and pipeline_.retries.number_of_error_statuses - 1 >= constants.STREAMSETS_NOTIFY_AFTER_RETRY_ATTEMPTS \
            and not pipeline_.retries.notification_sent
 
 
 def should_send_no_data_error_notification(pipeline_: Pipeline) -> bool:
-    if pipeline_.notifications \
-            and pipeline_.notifications.no_data_notification:
-
+    if pipeline_.notifications and pipeline_.notifications.no_data_notification:
         no_data_notification_period = timedelta(
             minutes=pipeline_.notifications.no_data_notification.notification_period
         ) + timedelta(seconds=pipeline_.interval or 0)

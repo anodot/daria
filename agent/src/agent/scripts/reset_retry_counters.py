@@ -3,7 +3,7 @@ from datetime import datetime
 from agent import pipeline, monitoring
 from agent.modules.logger import get_logger
 from agent.modules import constants
-from agent.pipeline import Pipeline, notifications
+from agent.pipeline import Pipeline
 
 logger = get_logger(__name__, stdout=True)
 

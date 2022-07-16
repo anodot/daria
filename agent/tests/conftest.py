@@ -2,9 +2,15 @@ import json
 import os
 import pytest
 
+from unittest.mock import Mock
+from datetime import datetime
 from click.testing import CliRunner
 from agent import di
 from agent.api import main
+from agent.pipeline.pipeline import TestPipeline, PipelineWatermark, PipelineRetries
+from agent.pipeline.notifications import NoDataNotifications, PiplineNotifications
+from agent.modules import constants
+
 
 DUMMY_DESTINATION_OUTPUT_PATH = '/output'
 TEST_DATASETS_PATH = '/home/test-datasets'
@@ -52,3 +58,51 @@ def generate_input(input_: dict) -> str:
         lambda x: str(x),
         input_.values()
     ))
+
+
+@pytest.fixture
+def test_pipeline() -> TestPipeline:
+    source_ = Mock()
+    source_.type = 'some_type'
+    pipeline_: TestPipeline = Mock(spec=TestPipeline)
+    pipeline_.source = source_
+    pipeline_.notifications = PiplineNotifications(
+        pipeline_id=pipeline_.name,
+        no_data_notification=NoDataNotifications(
+            pipeline_=pipeline_,
+            notification_period="60m",
+        )
+    )
+    pipeline_.watermark = PipelineWatermark(
+        pipeline_id=pipeline_.name,
+        timestamp=int(datetime.now().timestamp())
+    )
+    pipeline_.retries = PipelineRetries(
+        pipeline_=pipeline_,
+    )
+    pipeline_.interval = 60
+    return pipeline_
+
+
+@pytest.fixture
+def pipeline_builder(test_pipeline: TestPipeline):
+    def builder(
+        no_data_notification_period=60,
+        no_data_notification_sent=False,
+        watermark_timestamp=datetime.now().timestamp() - 7200,
+        error_notification_enabled=True,
+        retries_error_statuses=constants.STREAMSETS_NOTIFY_AFTER_RETRY_ATTEMPTS + 1,
+        retries_notification_sent=False,
+        retries_last_updated=None,
+        no_data_last_updated=None,
+    ):
+        test_pipeline.notifications.no_data_notification.notification_period = no_data_notification_period
+        test_pipeline.notifications.no_data_notification.notification_sent = no_data_notification_sent
+        test_pipeline.notifications.no_data_notification.last_updated = no_data_last_updated
+        test_pipeline.watermark.timestamp = watermark_timestamp
+        test_pipeline.error_notification_enabled = lambda: error_notification_enabled
+        test_pipeline.retries.number_of_error_statuses = retries_error_statuses
+        test_pipeline.retries.notification_sent = retries_notification_sent
+        test_pipeline.retries.last_updated = retries_last_updated
+        return test_pipeline
+    return builder

@@ -35,9 +35,10 @@ def _get_notification_for_pipeline(pipeline_: pipeline.Pipeline) -> Optional[Err
             description='pipeline error',
         )
     if pipeline.manager.should_send_no_data_error_notification(pipeline_):
+        no_data_period = int(pipeline_.notifications.no_data_notification.notification_period / 60)
         return ErrorNotification(
             code=PIPLINE_NO_DATA_ERROR_CODE,
-            description=f'No data for at least {pipeline_.notifications.no_data_notification.notification_period / 60} hours'
+            description=f'No data for at least {no_data_period} hours'
         )
 
 

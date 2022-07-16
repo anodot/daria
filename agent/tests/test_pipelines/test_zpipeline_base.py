@@ -20,7 +20,6 @@ class TestPipelineBase(object):
         while i < self.MAX_TIMES_TO_WAIT and not condition():
             time.sleep(2)
             i += 1
-        time.sleep(10)
 
     def test_start(self, cli_runner, name: str, sleep: int):
         result = cli_runner.invoke(cli.pipeline.start, [name], catch_exceptions=False)

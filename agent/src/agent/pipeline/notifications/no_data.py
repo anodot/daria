@@ -16,7 +16,7 @@ class NoDataNotifications(Entity):
 
     id: int = Column(Integer, primary_key=True)
     pipeline_id: str = Column(String, ForeignKey('pipelines.name'), primary_key=True)
-    notification_id: str = Column(Integer, ForeignKey('pipeline_notifications.id'), primary_key=True)
+    notification_id: int = Column(Integer, ForeignKey('pipeline_notifications.id'), primary_key=True)
 
     notification_period: int = Column(Integer, nullable=False)  # In minutes
     notification_sent: bool = Column(Boolean, default=False)
