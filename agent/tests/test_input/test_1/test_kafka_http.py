@@ -10,7 +10,12 @@ from ...conftest import get_input_file_path
 class TestKafka(TestInputBase):
     __test__ = True
     params = {
-        'test_source_create': [{'name': 'test_kfk'}, {'name': 'test_running_counters'}, {'name': 'test_json_arrays'}],
+        'test_source_create': [
+            {'name': 'test_kfk'},
+            {'name': 'test_running_counters'},
+            {'name': 'test_json_arrays'},
+            {'name': 'test-partitions'}
+        ],
         'test_create': [
             {
                 'source_name': 'test_kfk',
@@ -18,7 +23,8 @@ class TestKafka(TestInputBase):
                 'options': ['-a'],
                 'value': 'y\nclicks\ny\n\n \n ',
                 'timestamp': 'timestamp_unix\nunix',
-                'advanced_options': 'key1:val1\n\n\n\n'
+                'advanced_options': 'key1:val1\n\n\n\n',
+                'partitions': [1, 2]
             },
             {
                 'source_name': 'test_kfk',
