@@ -85,8 +85,14 @@ def balance(asynchronous):
     elif len(streamsets_) == 0:
         logger.info('You don\'t have any streamsets instances, can\'t balance')
         return
-    sdc_client.StreamsetsBalancer().balance(asynchronous)
-    click.secho('Done', fg='green')
+    try:
+        if asynchronous and click.confirm('It is recommended to perform backup before asynchronous balancing. '
+                                          'Are you sure you want to continue?') or not asynchronous:
+            sdc_client.StreamsetsBalancer().balance(asynchronous)
+            click.secho('Done', fg='green')
+    except sdc_client.StreamsetsException as e:
+        click.echo(str(e))
+        click.echo('Use `agent pipeline restore` to rollback all pipelines')
 
 
 @click.command()

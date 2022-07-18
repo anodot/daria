@@ -313,16 +313,22 @@ def update(pipeline_id: str, asynchronous: bool):
     """
     pipelines = [pipeline.repository.get_by_id(pipeline_id)] if pipeline_id else pipeline.repository.get_all()
     if asynchronous:
-        sdc_client.update_async(pipelines)
-        click.secho('Pipelines update finished', fg='green')
-        return
-    for p in pipelines:
         try:
-            sdc_client.update(p)
-            click.secho(f'Pipeline {p.name} updated', fg='green')
-        except streamsets.manager.StreamsetsException as e:
+            if click.confirm('It is recommended to perform backup before asynchronous update.'
+                             'Are you sure you want to continue?'):
+                sdc_client.update_async(pipelines)
+                click.secho('Pipelines update finished', fg='green')
+        except sdc_client.StreamsetsException as e:
             click.echo(str(e))
-            continue
+            click.echo('Use `agent pipeline restore` to rollback all pipelines')
+    else:
+        for p in pipelines:
+            try:
+                sdc_client.update(p)
+                click.secho(f'Pipeline {p.name} updated', fg='green')
+            except streamsets.manager.StreamsetsException as e:
+                click.echo(str(e))
+                continue
 
 
 @click.command()
