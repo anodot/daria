@@ -136,6 +136,8 @@ class JDBCValidator(Validator):
             raise ValidationException('Wrong url scheme. Use `postgresql`')
         if self.source.type == source.TYPE_CLICKHOUSE and result.scheme != 'clickhouse':
             raise ValidationException('Wrong url scheme. Use `clickhouse`')
+        if self.source.type == source.TYPE_IMPALA and result.scheme != 'impala':
+            raise ValidationException('Wrong url scheme. Use `impala`')
 
 
 class MssqlValidator(JDBCValidator):
@@ -382,6 +384,7 @@ def get_validator(source_: Source) -> Validator:
         source.TYPE_DATABRICKS: JDBCValidator,
         source.TYPE_ELASTIC: ElasticValidator,
         source.TYPE_HTTP: HttpValidator,
+        source.TYPE_IMPALA: JDBCValidator,
         source.TYPE_INFLUX: InfluxValidator,
         source.TYPE_INFLUX_2: Influx2Validator,
         source.TYPE_KAFKA: KafkaValidator,
