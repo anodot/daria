@@ -7,7 +7,7 @@ from datetime import datetime
 from click.testing import CliRunner
 from agent import di
 from agent.api import main
-from agent.pipeline.pipeline import TestPipeline, PipelineWatermark, PipelineRetries
+from agent.pipeline.pipeline import TestPipeline, PipelineWatermark, PipelineRetries, PipelineOffset
 from agent.pipeline.notifications import NoDataNotifications, PiplineNotifications
 from agent.modules import constants
 
@@ -77,9 +77,15 @@ def test_pipeline() -> TestPipeline:
         pipeline_id=pipeline_.name,
         timestamp=int(datetime.now().timestamp())
     )
+    pipeline_.offset = PipelineOffset(
+        pipeline_id=pipeline_.name,
+        timestamp=int(datetime.now().timestamp()),
+        offset='offset'
+    )
     pipeline_.retries = PipelineRetries(
         pipeline_=pipeline_,
     )
+    pipeline_.dvp_config = {}
     pipeline_.interval = 60
     return pipeline_
 
@@ -90,19 +96,23 @@ def pipeline_builder(test_pipeline: TestPipeline):
         no_data_notification_period=60,
         no_data_notification_sent=False,
         watermark_timestamp=datetime.now().timestamp() - 7200,
+        offset_timestamp=datetime.now().timestamp() - 7200,
         error_notification_enabled=True,
         retries_error_statuses=constants.STREAMSETS_NOTIFY_AFTER_RETRY_ATTEMPTS + 1,
         retries_notification_sent=False,
         retries_last_updated=None,
         no_data_last_updated=None,
+        dvp_config={},
     ):
         test_pipeline.notifications.no_data_notification.notification_period = no_data_notification_period
         test_pipeline.notifications.no_data_notification.notification_sent = no_data_notification_sent
         test_pipeline.notifications.no_data_notification.last_updated = no_data_last_updated
         test_pipeline.watermark.timestamp = watermark_timestamp
+        test_pipeline.offset.timestamp = offset_timestamp
         test_pipeline.error_notification_enabled = lambda: error_notification_enabled
         test_pipeline.retries.number_of_error_statuses = retries_error_statuses
         test_pipeline.retries.notification_sent = retries_notification_sent
         test_pipeline.retries.last_updated = retries_last_updated
+        test_pipeline.dvp_config = dvp_config
         return test_pipeline
     return builder

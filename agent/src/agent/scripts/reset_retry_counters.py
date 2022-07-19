@@ -45,8 +45,7 @@ def _reset_notifications(pipeline_: Pipeline):
         if not pipeline_.notifications.no_data_notification.last_updated:
             pipeline.manager.reset_pipeline_notifications(pipeline_)
         else:
-            last_updated_in_min = int((datetime.now() - pipeline_.notifications.no_data_notification.last_updated).total_seconds() / 60)
-            if last_updated_in_min - constants.STREAMSETS_NOTIFY_RESET_AFTER_MIN > 0:
+            if pipeline_.notifications.no_data_notification.last_updated.timestamp() < pipeline_.offset.timestamp:
                 pipeline.manager.reset_pipeline_notifications(pipeline_)
     except Exception:
         log_error(f'Error resetting pipeline {pipeline_.name} notifications')

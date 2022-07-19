@@ -2,7 +2,7 @@ from agent.pipeline.notifications import PiplineNotifications, NoDataNotificatio
 from agent.modules.db import Session
 
 
-def create_notifications(pipeline_, session: Session):
+def create_notifications(pipeline_):
     if notifies := pipeline_.config.get("notifications"):
         pipeline_.notifications = PiplineNotifications()
         if no_data_notification := notifies.get('no_data'):
@@ -10,5 +10,5 @@ def create_notifications(pipeline_, session: Session):
                 pipeline_,
                 no_data_notification,
             )
-            session.add(pipeline_.notifications.no_data_notification)
-        session.add(pipeline_.notifications)
+            Session.add(pipeline_.notifications.no_data_notification)
+        Session.add(pipeline_.notifications)

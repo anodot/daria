@@ -161,13 +161,13 @@ def update(pipeline_: Pipeline, config_: dict = None):
 
 
 def create(pipeline_: Pipeline, config_: dict = None):
-    with pipeline.repository.SessionManager(pipeline_) as session:
+    with pipeline.repository.SessionManager(pipeline_):
         if config_:
             _load_config(pipeline_, config_)
         extra_setup.do(pipeline_)
         if pipeline_.uses_schema():
             _update_schema(pipeline_)
-        notifications.repository.create_notifications(pipeline_, session)
+        notifications.repository.create_notifications(pipeline_)
         sdc_client.create(pipeline_)
 
 
@@ -336,14 +336,15 @@ def should_send_retries_error_notification(pipeline_: Pipeline) -> bool:
 
 
 def should_send_no_data_error_notification(pipeline_: Pipeline) -> bool:
-    if pipeline_.notifications and pipeline_.notifications.no_data_notification:
+    if pipeline_.notifications and pipeline_.notifications.no_data_notification and pipeline_.offset:
         no_data_notification_period = timedelta(
             minutes=pipeline_.notifications.no_data_notification.notification_period
         ) + timedelta(seconds=pipeline_.interval or 0)
+        no_data_time = datetime.now() - datetime.fromtimestamp(pipeline_.offset.timestamp)
         return should_send_error_notification(pipeline_) \
                and not pipeline_.notifications.no_data_notification.notification_sent \
-               and bool(pipeline_.watermark) \
-               and (datetime.now() - datetime.fromtimestamp(pipeline_.watermark.timestamp)) >= no_data_notification_period
+               and no_data_time >= no_data_notification_period \
+               and (not pipeline_.dvp_config or no_data_time >= timedelta(days=1))
     return False
 
 

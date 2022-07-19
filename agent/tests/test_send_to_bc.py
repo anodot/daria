@@ -28,16 +28,22 @@ def test_send_no_data_notification_condition_for_pipeline_without_notifications(
 
 
 @pytest.mark.parametrize('params, expected_result', [
-    # Case: watermark was created 2 hours ago, notify period 1h, no_data notify wasn't sent
+    # Case: watermark was created 2 hours ago, notify period 1h, dvp is {}, no_data notify wasn't sent
     ({}, True),
     # Case: watermark timestamp == now
-    ({"watermark_timestamp": datetime.now().timestamp()}, False),
+    ({'offset_timestamp': datetime.now().timestamp()}, False),
     # Case: no data notification was sent 30 minutes ago
-    ({"watermark_timestamp": datetime.now().timestamp() - 1800}, False),
+    ({'offset_timestamp': datetime.now().timestamp() - 1800}, False),
     # Case: no data notification was sent
     ({'no_data_notification_sent': True}, False),
     # Case: notifications is disabled
     ({'error_notification_enabled': False}, False),
+    # Case: dvp_config is enabled
+    ({'dvp_config': 'true_value'}, False),
+    # Case: dvp_config is enabled, but last data was send over 12h ago
+    ({'dvp_config': 'true_value', 'offset_timestamp': datetime.now().timestamp() - 3600 * 12}, False),
+    # Case: dvp_config is enabled, but last data was send over 24h ago
+    ({'dvp_config': 'true_value', 'offset_timestamp': datetime.now().timestamp() - 3600 * 24}, True),
 ])
 def test_send_no_data_notification_condition(pipeline_builder, params, expected_result):
     assert pipeline.manager.should_send_no_data_error_notification(pipeline_builder(**params)) == expected_result
