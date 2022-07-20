@@ -117,7 +117,7 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       #      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_CREATE_TOPICS: "test:1:1,test-json:1:1"
+      KAFKA_CREATE_TOPICS: "test:1:1,test-json:1:1,test-partitions:4:1"
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
     #      KAFKA_SSL_KEYSTORE_LOCATION: '/certs/docker.kafka.server.keystore.jks'
     #      KAFKA_SSL_KEYSTORE_PASSWORD: 'kafkadocker'

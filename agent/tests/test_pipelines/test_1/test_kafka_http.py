@@ -13,6 +13,7 @@ class TestKafka(TestPipelineBase):
             {'name': 'test_kfk_kafka_file_short'},
             {'name': 'test_kfk_kafka_file_full'},
             {'name': 'test_csv'},
+            {'name': 'test_partitions'},
             {'name': 'test_kfk_running_counter'},
             {'name': 'test_kfk_running_counter_dynamic_what'},
             {'name': 'test_kfk_running_counter_static_tt'},
@@ -34,6 +35,7 @@ class TestKafka(TestPipelineBase):
             {'name': 'test_kfk_kafka_file_short'},
             {'name': 'test_transform_value_2'},
             {'name': 'test_csv'},
+            {'name': 'test_partitions'},
             {'name': 'test_kfk_kafka_file_full'},
             {'name': 'test_kfk_timestamp_string'}
         ],
@@ -53,6 +55,7 @@ class TestKafka(TestPipelineBase):
             {'name': 'test_transform_value_2', 'output': 'kafka_transform_value_2.json', 'pipeline_type': 'kafka'},
             {'name': 'test_kfk_timestamp_ms', 'output': 'kafka_json_value_property_30.json', 'pipeline_type': 'kafka'},
             {'name': 'test_csv', 'output': 'kafka_json_value_property_tags_schema.json', 'pipeline_type': 'kafka'},
+            {'name': 'test_partitions', 'output': 'kafka_json_value_property_tags_schema.json', 'pipeline_type': 'kafka'},
         ],
         'test_delete_pipeline': [
             {'name': 'test_json_arrays'},
@@ -66,6 +69,7 @@ class TestKafka(TestPipelineBase):
             {'name': 'test_kfk_kafka_file_short'},
             {'name': 'test_transform_value_2'},
             {'name': 'test_csv'},
+            {'name': 'test_partitions'},
             {'name': 'test_kfk_kafka_file_full'},
             {'name': 'test_kfk_timestamp_string'}
         ],
@@ -74,7 +78,8 @@ class TestKafka(TestPipelineBase):
             {'name': 'test_csv'},
             {'name': 'test_kafka_1'},
             {'name': 'test_kfk'},
-            {'name': 'test_running_counters'}
+            {'name': 'test_running_counters'},
+            {'name': 'test-partitions'},
         ],
     }
 

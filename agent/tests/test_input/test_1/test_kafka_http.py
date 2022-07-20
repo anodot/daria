@@ -24,7 +24,6 @@ class TestKafka(TestInputBase):
                 'value': 'y\nclicks\ny\n\n \n ',
                 'timestamp': 'timestamp_unix\nunix',
                 'advanced_options': 'key1:val1\n\n\n\n',
-                'partitions': [1, 2]
             },
             {
                 'source_name': 'test_kfk',
