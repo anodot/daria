@@ -9,6 +9,7 @@ COPY credential-stores.properties ${SDC_CONF}/credential-stores.properties
 COPY lib ${USER_LIBRARIES_DIR}
 COPY configure_image.sh /tmp/configure_image.sh
 COPY custom_entrypoint.sh /
+COPY ImpalaJDBC4.jar /tmp/ImpalaJDBC4.jar
 
 RUN sudo chmod +x /tmp/configure_image.sh && /tmp/configure_image.sh
 
