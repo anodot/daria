@@ -61,7 +61,7 @@
     "timestamp": 1512871200,
     "dimensions": {
       "ver": "1",
-      "Country": "USA",
+      "Country": "US,A",
       "Exchange": "DoubleClick"
     },
     "measurements": {

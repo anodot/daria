@@ -18,6 +18,7 @@
       "type": "unix",
       "name": "timestamp_unix"
     },
+    "watermark_logs_enabled": true,
     "flush_bucket_size": "1h",
     "transform_script": {
       "file": "tests/input_files/directory/transform.py"

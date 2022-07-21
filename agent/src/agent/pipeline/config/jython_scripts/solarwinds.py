@@ -17,7 +17,7 @@ finally:
 
 # single threaded - no entityName because we need only one offset
 entityName = ''
-DATEFORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DATEFORMAT = '%Y-%m-%dT%H:%M:%S'
 LAST_TIMESTAMP = '%last_timestamp%'
 
 
@@ -83,6 +83,11 @@ def main():
                 record = sdc.createRecord('record created ' + str(datetime.now()))
                 record.value = row
                 cur_batch.add(record)
+
+                if cur_batch.size() == sdc.batchSize:
+                    offset = end
+                    cur_batch.process(entityName, str(offset))
+                    cur_batch = sdc.createBatch()
 
             # send batch and save offset
             offset = end

@@ -2,7 +2,7 @@ import os
 import json
 import time
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 
 OUTPUT_DIR = os.environ.get('OUTPUT_DIR', 'log')
 ROLLUP_ID = '123456789'
@@ -154,8 +154,8 @@ def solarwinds_data_example():
         return json.dumps({'error': 'Wrong user or pass'}), 401
     predefined_query = 'SELECT TOP 1000 NodeID, DateTime, Archive, MinLoad, MaxLoad, AvgLoad, TotalMemory,' \
                        ' MinMemoryUsed, MaxMemoryUsed, AvgMemoryUsed, AvgPercentMemoryUsed FROM Orion.CPULoad' \
-                       ' WHERE DateTime > DateTime(\'2021-03-30T00:00:00Z\')' \
-                       ' AND DateTime <= AddSecond(86400, DateTime(\'2021-03-30T00:00:00Z\')) ORDER BY DateTime'
+                       ' WHERE DateTime > DateTime(\'2021-03-30T00:00:00\')' \
+                       ' AND DateTime <= AddSecond(86400, DateTime(\'2021-03-30T00:00:00\')) ORDER BY DateTime'
     if "query" in request.args and request.args["query"] == predefined_query:
         with open('data/solarwinds_data_example.json') as f:
             return json.load(f)
@@ -243,6 +243,17 @@ def topology_load_end(rollup_id):
     if request.headers.get('Authorization') != f'Bearer {AUTH_TOKEN}':
         return json.dumps({'errors': ['Data collection token is invalid']}), 401
     return {}
+
+
+@app.route('/api/v1/prtg/<filename>', methods=['GET'])
+def prtg_xml_sample(filename):
+    file_path = f'data/{filename}'
+    # basic auth admin:admin
+    if request.headers.get('Authorization') != 'Basic YWRtaW46YWRtaW4=':
+        return json.dumps({'error': 'Wrong user or pass'}), 401
+    if not os.path.exists(file_path):
+        return json.dumps({'error': 'No such file'}), 404
+    return send_file(file_path)
 
 
 if __name__ == '__main__':

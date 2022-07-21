@@ -1,0 +1,27 @@
+[
+  {
+    "name": "test_prtg_xml",
+    "type": "prtg",
+    "config": {
+      "url": "http://dummy_destination:80/api/v1/prtg/prtg_table.xml?content=sensortree",
+      "authentication": {
+        "type": "basic",
+        "username": "admin",
+        "password": "admin"
+      },
+      "verify_ssl": false
+    }
+  },
+  {
+    "name": "test_prtg_json",
+    "type": "prtg",
+    "config":{
+      "url": "http://dummy_destination:80/api/v1/prtg/prtg_table.json?content=sensortree",
+      "authentication": {
+        "type": "basic",
+        "username": "admin",
+        "password": "admin"
+      }
+    }
+  }
+]

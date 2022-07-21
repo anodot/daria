@@ -10,7 +10,6 @@ COPY lib ${USER_LIBRARIES_DIR}
 COPY configure_image.sh /tmp/configure_image.sh
 COPY custom_entrypoint.sh /
 
-RUN mkdir -p ${SDC_JAVA_KEYSTORE_PATH}
 RUN sudo chmod +x /tmp/configure_image.sh && /tmp/configure_image.sh
 
 ## This build uses variable sasl.kerberos.domain.name

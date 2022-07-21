@@ -10,6 +10,7 @@ from .kafka import KafkaBuilder
 from .mongo import MongoBuilder
 from .observium import ObserviumBuilder
 from .promql import PromQLBuilder
+from .prtg import PRTGBuilder
 from .rrd import RRDBuilder
 from .sage import SageBuilder
 from .snmp import SNMPBuilder, SNMPRawBuilder
@@ -50,6 +51,7 @@ def _get_builder(pipeline_: Pipeline, config: dict, is_edit: bool) -> IBuilder:
         source.TYPE_ORACLE: JDBCBuilder,
         source.TYPE_POSTGRES: JDBCBuilder,
         source.TYPE_PROMETHEUS: PromQLBuilder,
+        source.TYPE_PRTG: PRTGBuilder,
         source.TYPE_OBSERVIUM: ObserviumBuilder,
         source.TYPE_RRD: RRDBuilder,
         source.TYPE_SAGE: SageBuilder,

@@ -30,4 +30,5 @@ class SageSchemaConfigHandler(SchemaConfigHandler):
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties30,
         'destination': stages.destination.Destination,
         'destination_watermark': stages.destination.WatermarkDestination,
+        'destination_watermark_with_metrics': stages.destination.WatermarkWithMetricsDestination,
     }

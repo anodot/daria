@@ -133,7 +133,7 @@ class TestKafka(TestInputBase):
             'timestamp': 'timestamp_unix',
             'timestamp type': 'unix',
             'required dimensions': ' ',
-            'optional dimensions': 'title subtitle',
+            'optional dimensions': 'title subtitle Country',
             'consumer group': '',
             'additional props': ' ',
             'tags': ' ',

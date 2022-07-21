@@ -14,5 +14,5 @@ def test_kafka_topology():
     })
     res.raise_for_status()
     with gzip.open(os.path.join(conftest.DUMMY_DESTINATION_OUTPUT_PATH, f'topology_{file_type}.gz'), 'r') as f_out:
-        with open(os.path.join(conftest.TEST_DATASETS_PATH, 'test_json_items'), 'r') as f_in:
+        with open(os.path.join(conftest.TEST_DATASETS_PATH, 'test_json_items_for_kafka'), 'r') as f_in:
             assert f_in.read() == f_out.read().decode()

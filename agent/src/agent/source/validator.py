@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import urllib.parse
 import jsonschema
@@ -203,14 +204,21 @@ class MongoValidator(Validator):
 
 
 class SNMPValidator(Validator):
+    VALIDATION_SCHEMA_FILE = 'snmp.json'
+
     def validate(self):
+        super().validate()
+
+    @if_validation_enabled
+    def validate_connection(self):
         errors = []
+        snmp_version = 0 if self.source.version == 'v1' else 1
         for host in self.source.hosts:
             host_ = host if '://' in host else f'//{host}'
             url = urllib.parse.urlparse(host_)
             iterator = getCmd(
                 SnmpEngine(),
-                CommunityData(self.source.read_community, mpModel=0),
+                CommunityData(self.source.read_community, mpModel=snmp_version),
                 UdpTransportTarget((url.hostname, url.port or SNMP_DEFAULT_PORT), timeout=10, retries=0),
                 ContextData(),
                 ObjectType(ObjectIdentity('1.3.6.1.2.1.1.5.0')),
@@ -220,13 +228,9 @@ class SNMPValidator(Validator):
             for response in iterator:
                 if type(response[0]).__name__ == 'RequestTimedOut':
                     errors.append(f'Couldn\'t get response from `{host}`: {type(response[0]).__name__}')
-                    break
-        if errors:
+                    logging.warning(f'Couldn\'t connect to {host}')
+        if len(errors) == len(self.source.hosts):
             raise ValidationException(errors)
-
-    @if_validation_enabled
-    def validate_connection(self):
-        pass
 
 
 class SageValidator(Validator):
@@ -314,6 +318,13 @@ class ObserviumValidator(Validator):
             )
 
 
+class PrtgValidator(HttpValidator):
+    VALIDATION_SCHEMA_FILE = 'http.json'
+
+    def validate_connection(self):
+        pass
+
+
 class ZabbixValidator(Validator):
     VALIDATION_SCHEMA_FILE = 'zabbix.json'
 
@@ -381,6 +392,7 @@ def get_validator(source_: Source) -> Validator:
         source.TYPE_ORACLE: OracleValidator,
         source.TYPE_POSTGRES: JDBCValidator,
         source.TYPE_PROMETHEUS: PromQLValidator,
+        source.TYPE_PRTG: PrtgValidator,
         source.TYPE_RRD: RRDValidator,
         source.TYPE_SAGE: SageValidator,
         source.TYPE_SNMP: SNMPValidator,

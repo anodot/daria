@@ -5,36 +5,63 @@ import sdc_client
 
 from ..conftest import get_output
 from agent import pipeline, source, cli
+from typing import Callable
 
 
 class TestPipelineBase(object):
     __test__ = False
 
+    MAX_TIMES_TO_WAIT = 60
+
     params = {}
+
+    def _wait(self, condition: Callable):
+        i = 0
+        while i < self.MAX_TIMES_TO_WAIT and not condition():
+            time.sleep(2)
+            i += 1
 
     def test_start(self, cli_runner, name: str, sleep: int):
         result = cli_runner.invoke(cli.pipeline.start, [name], catch_exceptions=False)
         assert result.exit_code == 0
-        if not sleep:
-            sleep = 15
-        time.sleep(sleep)
+        # if not sleep:
+        #     sleep = 20
+        # time.sleep(sleep)
 
         pipeline_ = pipeline.repository.get_by_id(name)
-        assert sdc_client.get_pipeline_status(pipeline_) == pipeline.Pipeline.STATUS_RUNNING
+
+        def check_in_streamsets():
+            return sdc_client.get_pipeline_status(pipeline_) == pipeline.Pipeline.STATUS_RUNNING
+
+        self._wait(check_in_streamsets)
+        assert check_in_streamsets()
+
         # give pipelines some time to send data
         # at high load there might be lag before status is updated in the db, so checking after some time
-        assert pipeline_.status == pipeline.Pipeline.STATUS_RUNNING
+
+        def check_in_db():
+            return pipeline.repository.get_by_id_without_session(name).status == pipeline.Pipeline.STATUS_RUNNING
+
+        self._wait(check_in_db)
+        assert check_in_db()
 
     def test_info(self, cli_runner, name):
         result = cli_runner.invoke(cli.pipeline.info, [name], catch_exceptions=False)
         assert result.exit_code == 0
 
-    def test_stop(self, cli_runner, name):
+    def _check_output_file(self, file_name):
+        if file_name:
+            self._wait(lambda: get_output(file_name))
+            assert get_output(file_name)
+
+    def test_stop(self, cli_runner, name, check_output_file_name):
+        self._check_output_file(check_output_file_name)
         result = cli_runner.invoke(cli.pipeline.stop, [name], catch_exceptions=False)
         assert result.exit_code == 0
         assert sdc_client.get_pipeline_status(pipeline.repository.get_by_id(name)) == pipeline.Pipeline.STATUS_STOPPED
 
-    def test_force_stop(self, cli_runner, name):
+    def test_force_stop(self, cli_runner, name, check_output_file_name):
+        self._check_output_file(check_output_file_name)
         result = cli_runner.invoke(cli.pipeline.force_stop, [name], catch_exceptions=False)
         assert result.exit_code == 0
 
@@ -94,3 +121,9 @@ def sort_output(output: list) -> list:
 
 def sort_output_schema(output: list) -> list:
     return sorted(output, key=lambda x: x['timestamp'])
+
+
+def drop_key_value(item: dict, key: str):
+    new_item = item.copy()
+    new_item.pop(key, None)
+    return new_item

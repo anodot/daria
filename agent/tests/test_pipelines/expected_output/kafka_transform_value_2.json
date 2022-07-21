@@ -2,7 +2,8 @@
   {
     "timestamp": 1512867600,
     "dimensions": {
-      "title": "CLICKS_DISPLAY"
+      "title": "CLICKS_DISPLAY",
+      "Country": "中国"
     },
     "measurements": {
       "clicks": 6784.6904
@@ -29,7 +30,8 @@
   {
     "timestamp": 1512871200,
     "dimensions": {
-      "title": "CLICKS_DISPLAY"
+      "title": "CLICKS_DISPLAY",
+      "Country": "USA"
     },
     "measurements": {
       "clicks": 6839
@@ -56,7 +58,8 @@
   {
     "timestamp": 1512874800,
     "dimensions": {
-      "title": "CLICKS_SEARCH"
+      "title": "CLICKS_SEARCH",
+      "Country": "US,A"
     },
     "measurements": {
       "clicks": 6909993404034934004
@@ -83,7 +86,8 @@
   {
     "timestamp": 1512878400,
     "dimensions": {
-      "title": "CLICKS_DISPLAY"
+      "title": "CLICKS_DISPLAY",
+      "Country": "USA"
     },
     "measurements": {
       "clicks": 7158.972598273843
@@ -110,7 +114,8 @@
   {
     "timestamp": 1512882000,
     "dimensions": {
-      "title": "CLICKS_SEARCH"
+      "title": "CLICKS_SEARCH",
+      "Country": "USA"
     },
     "measurements": {
       "clicks": 7235.7574

@@ -44,7 +44,7 @@ class TestCacti(TestPipelineBase):
     def test_start(self, cli_runner, name, sleep):
         super().test_start(cli_runner, name, sleep)
 
-    def test_stop(self, cli_runner, name=None):
+    def test_stop(self, cli_runner, name=None, check_output_file_name=None):
         pytest.skip()
 
     def test_reset(self, cli_runner, name=None):
@@ -56,13 +56,16 @@ class TestCacti(TestPipelineBase):
     def test_output_schema(self, name=None, pipeline_type=None, output=None):
         pytest.skip()
 
-    def test_force_stop(self, cli_runner, name):
-        super().test_force_stop(cli_runner, name)
-
     def test_output(self, name, pipeline_type, output):
-        expected_output = get_expected_output(name, output, pipeline_type)
-        actual_output = get_output(f'{name}_{pipeline_type}.json')
-        if name in ['cacti_dir_flex']:
-            expected_output = sorted(expected_output, key=lambda x: (x['timestamp'], x['value']))
-            actual_output = sorted(actual_output, key=lambda x: (x['timestamp'], x['value']))
-        assert actual_output == expected_output
+        def compare_output():
+            expected_output = get_expected_output(name, output, pipeline_type)
+            actual_output = get_output(f'{name}_{pipeline_type}.json')
+            if name in ['cacti_dir_flex']:
+                expected_output = sorted(expected_output, key=lambda x: (x['timestamp'], x['value']))
+                actual_output = sorted(actual_output, key=lambda x: (x['timestamp'], x['value']))
+            return actual_output == expected_output
+        self._wait(compare_output)
+        assert compare_output()
+
+    def test_force_stop(self, cli_runner, name, check_output_file_name):
+        super().test_force_stop(cli_runner, name, check_output_file_name)

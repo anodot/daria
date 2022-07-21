@@ -1,3 +1,5 @@
+import json
+
 import pytest
 
 from datetime import datetime, timezone
@@ -19,8 +21,7 @@ class TestPromQL(TestPipelineBase):
                 'name': 'test_victoria_a'
             },
             {
-                'name': 'test_victoria_dvp',
-                'sleep': 30
+                'name': 'test_victoria_dvp'
             },
             {
                 'name': 'test_thanos'
@@ -49,7 +50,8 @@ class TestPromQL(TestPipelineBase):
                 'name': 'test_victoria_a'
             },
             {
-                'name': 'test_victoria_dvp'
+                'name': 'test_victoria_dvp',
+                'check_output_file_name': f'{get_schema_id("test_victoria_dvp")}_watermark.json'
             },
             {
                 'name': 'test_thanos'
@@ -58,7 +60,8 @@ class TestPromQL(TestPipelineBase):
                 'name': 'test_prometheus'
             },
             {
-                'name': 'test_promql_schema'
+                'name': 'test_promql_schema',
+                'check_output_file_name': f'{get_schema_id("test_promql_schema")}_watermark.json'
             },
             {
                 'name': 'test_promql_schema_rate'
@@ -157,24 +160,36 @@ class TestPromQL(TestPipelineBase):
     def test_info(self, cli_runner, name=None):
         pytest.skip()
 
-    def test_stop(self, cli_runner, name=None):
+    def test_stop(self, cli_runner, name=None, check_output_file_name=None):
         pytest.skip()
 
     def test_start(self, cli_runner, name: str, sleep: int):
         super().test_start(cli_runner, name, sleep)
 
-    def test_force_stop(self, cli_runner, name):
-        super().test_force_stop(cli_runner, name)
+    def test_watermark_dvp(self):
+        schema_id = get_schema_id('test_victoria_dvp')
+        # current_day = datetime.now(timezone.utc)
+        # month_after_data = current_day.replace(hour=0, minute=0, second=0, microsecond=0).timestamp()
+        months_after_data = datetime(year=2022, month=3, day=1, hour=0, minute=0, second=0, microsecond=0).timestamp()
+
+        def correct_watermark():
+            try:
+                output = get_output(f'{schema_id}_watermark.json')
+            except json.JSONDecodeError:
+                return False
+            if not output:
+                return False
+            return output['watermark'] >= months_after_data
+
+        self._wait(correct_watermark)
+        assert correct_watermark()
+
+    def test_force_stop(self, cli_runner, name, check_output_file_name):
+        super().test_force_stop(cli_runner, name, check_output_file_name)
 
     def test_watermark(self):
         schema_id = get_schema_id('test_promql_schema')
-        assert get_output(f'{schema_id}_watermark.json') == {'watermark': 1594123600, 'schemaId': schema_id}
-
-    def test_watermark_dvp(self):
-        schema_id = get_schema_id('test_victoria_dvp')
-        current_day = datetime.now(timezone.utc)
-        day_start_timestamp = current_day.replace(hour=0, minute=0, second=0, microsecond=0).timestamp()
-        assert get_output(f'{schema_id}_watermark.json') == {'watermark': day_start_timestamp, 'schemaId': schema_id}
+        assert get_output(f'{schema_id}_watermark.json') == {'watermark': 1644117200, 'schemaId': schema_id}
 
     def test_output(self, name, pipeline_type, output):
         super().test_output(name, pipeline_type, output)

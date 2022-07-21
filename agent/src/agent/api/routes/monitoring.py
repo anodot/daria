@@ -64,5 +64,14 @@ def watermark_delta(pipeline_id):
     return jsonify('')
 
 
+@monitoring_bp.route('/monitoring/watermark_sent/<pipeline_id>', methods=['POST'])
+def watermark_sent(pipeline_id):
+    pipeline_ = pipeline.repository.get_by_id(pipeline_id)
+    monitoring.metrics.WATERMARK_SENT\
+        .labels(pipeline_.streamsets.url, pipeline_.name, pipeline_.source.type)\
+        .inc(1)
+    return jsonify('')
+
+
 class MonitoringException(Exception):
     pass

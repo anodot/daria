@@ -66,6 +66,7 @@ class InfluxSchemaConfigHandler(SchemaConfigHandler):
         'filtering': stages.expression_evaluator.Filtering,
         'destination': stages.destination.Destination,
         'destination_watermark': stages.destination.WatermarkDestination,
+        'destination_watermark_with_metrics': stages.destination.WatermarkWithMetricsDestination,
     }
 
 
@@ -78,6 +79,7 @@ class Influx2SchemaConfigHandler(SchemaConfigHandler):
         'filtering': stages.expression_evaluator.Filtering,
         'destination': stages.destination.Destination,
         'destination_watermark': stages.destination.WatermarkDestination,
+        'destination_watermark_with_metrics': stages.destination.WatermarkWithMetricsDestination,
     }
 
 
