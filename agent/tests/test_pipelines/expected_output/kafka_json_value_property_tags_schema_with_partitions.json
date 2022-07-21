@@ -5,7 +5,7 @@
       "ver": "1",
       "Country": "中国",
       "Exchange": "DoubleClick",
-      "topic": "test_partitions",
+      "topic": "test-partitions",
       "static": "dimension"
     },
     "measurements": {
@@ -42,7 +42,7 @@
       "ver": "1",
       "Country": "USA",
       "Exchange": "DoubleClick",
-      "topic": "test_partitions",
+      "topic": "test-partitions",
       "static": "dimension"
     },
     "measurements": {
@@ -79,7 +79,7 @@
       "ver": "1",
       "Country": "USA",
       "Exchange": "DoubleClick",
-      "topic": "test_partitions",
+      "topic": "test-partitions",
       "static": "dimension"
     },
     "measurements": {
