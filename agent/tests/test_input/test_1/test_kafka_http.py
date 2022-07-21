@@ -14,7 +14,6 @@ class TestKafka(TestInputBase):
             {'name': 'test_kfk'},
             {'name': 'test_running_counters'},
             {'name': 'test_json_arrays'},
-            {'name': 'test-partitions'}
         ],
         'test_create': [
             {
