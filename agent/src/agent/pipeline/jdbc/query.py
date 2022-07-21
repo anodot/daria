@@ -71,7 +71,7 @@ class Builder:
             if self.pipeline.source.type == source.TYPE_DATABRICKS:
                 return f"unix_timestamp({self.pipeline.timestamp_path})"
             if self.pipeline.source.type == source.TYPE_IMPALA:
-                return f"CAST({self.pipeline.timestamp_path} AS TIMESTAMP)"
+                return f"UNIX_TIMESTAMP({self.pipeline.timestamp_path})"
 
         if self.pipeline.timestamp_type == pipeline.TimestampType.UNIX_MS:
             return f'{self.pipeline.timestamp_path}/1000'
