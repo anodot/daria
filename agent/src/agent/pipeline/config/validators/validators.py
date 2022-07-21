@@ -34,6 +34,7 @@ class JDBCValidator(Validator):
 def get_config_validator(pipeline_: Pipeline) -> Validator:
     jdbc_sources = [
         source.TYPE_DATABRICKS,
+        source.TYPE_IMPALA,
         source.TYPE_MYSQL,
         source.TYPE_MSSQL,
         source.TYPE_POSTGRES,

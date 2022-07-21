@@ -42,6 +42,7 @@ def _get_builder(pipeline_: Pipeline, config: dict, is_edit: bool) -> IBuilder:
         source.TYPE_DIRECTORY: DirectoryBuilder,
         source.TYPE_DATABRICKS: JDBCBuilder,
         source.TYPE_ELASTIC: ElasticBuilder,
+        source.TYPE_IMPALA: JDBCBuilder,
         source.TYPE_INFLUX: InfluxBuilder,
         source.TYPE_INFLUX_2: Influx2Builder,
         source.TYPE_KAFKA: KafkaBuilder,
