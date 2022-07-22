@@ -13,7 +13,8 @@
     "type": "kafka",
     "name": "test-partitions",
     "config": {
-      "conf.brokerURI": "kafka:29092",
+      "conf.brokerURI": "kafka:9092,kafka2:9092",
+      "conf.numberOfThreads": 2,
       "conf.topicList": ["test-partitions"],
       "conf.dataFormat": "DELIMITED",
       "csv_mapping": {"0": "timestamp_unix", "2": "ver", "4": "Country", "6": "Exchange", "7": "Clicks"}
