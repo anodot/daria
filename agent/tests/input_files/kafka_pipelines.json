@@ -54,7 +54,7 @@
     "pipeline_id": "test_partitions",
     "values": {"Clicks": "gauge"},
     "measurement_names": {"Clicks": "clicks"},
-    "partitions": [0],
+    "partitions": [1],
     "dimensions": {
       "required": ["ver", "Country"],
       "optional": ["Exchange", "optional_dim"]
