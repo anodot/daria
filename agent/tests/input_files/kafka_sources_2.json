@@ -13,7 +13,7 @@
     "type": "kafka",
     "name": "test-partitions",
     "config": {
-      "conf.brokerURI": "kafka:29092",
+      "conf.brokerURI": "kafka:29092,kafka:29092",
       "conf.numberOfThreads": 2,
       "conf.topicList": ["test-partitions"],
       "conf.dataFormat": "DELIMITED",
