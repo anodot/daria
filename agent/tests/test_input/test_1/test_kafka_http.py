@@ -101,6 +101,17 @@ class TestKafka(TestInputBase):
         'test_create_with_file': [{'file_name': 'kafka_pipelines'}],
     }
 
+    @classmethod
+    def setup_class(cls):
+        producer = KafkaProducer(bootstrap_servers=['kafka:29092'],
+                                 value_serializer=lambda x: ','.join(x).encode('utf-8'), api_version=(2, 0))
+        topic = 'test-partitions'
+        with open('/home/test-datasets/test_partitions.csv', 'r') as file:
+            reader = csv.reader(file, delimiter=',')
+            for index, messages in enumerate(reader):
+                producer.send(topic, messages, partition=int(index > 3))
+                producer.flush()
+
     def test_source_create(self, cli_runner, name):
         result = cli_runner.invoke(cli.source.create, catch_exceptions=False,
                                    input=f"kafka\n{name}\nkafka:29092\n{name}\n\n\n")
@@ -157,13 +168,3 @@ class TestKafka(TestInputBase):
             sources = json.load(f)
             for source_ in sources:
                 assert source.repository.exists(f"{source_['name']}")
-
-    def test_upload_data_to_kafka_partitions_topic(self):
-        producer = KafkaProducer(bootstrap_servers=['kafka:29092'],
-                                 value_serializer=lambda x: ','.join(x).encode('utf-8'), api_version=(2, 0))
-        topic = 'test-partitions'
-        with open('/home/test-datasets/test_partitions.csv', 'r') as file:
-            reader = csv.reader(file, delimiter=',')
-            for index, messages in enumerate(reader):
-                producer.send(topic, messages, partition=int(index > 3))
-                producer.flush()
