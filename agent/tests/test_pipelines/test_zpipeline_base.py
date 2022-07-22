@@ -70,11 +70,13 @@ class TestPipelineBase(object):
         assert result.exit_code == 0
 
     def test_output(self, name, pipeline_type, output):
-        expected_output = get_expected_output(name, output, pipeline_type)
-        assert get_output(f'{name}_{pipeline_type}.json') == expected_output
+        def check_output():
+            expected_output = get_expected_output(name, output, pipeline_type)
+            return get_output(f'{name}_{pipeline_type}.json') == expected_output
+        self._wait(check_output)
+        assert check_output()
 
     def test_output_schema(self, name, pipeline_type, output):
-        expected_output = get_expected_schema_output(name, output, pipeline_type)
         assert get_output(f'{name}_{pipeline_type}.json') == expected_output
 
     def test_delete_pipeline(self, cli_runner, name):
