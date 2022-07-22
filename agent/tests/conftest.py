@@ -1,10 +1,12 @@
 import json
 import os
 import pytest
-
+import csv
 from click.testing import CliRunner
 from agent import di
 from agent.api import main
+from kafka import KafkaProducer
+
 
 DUMMY_DESTINATION_OUTPUT_PATH = '/output'
 TEST_DATASETS_PATH = '/home/test-datasets'
@@ -52,3 +54,15 @@ def generate_input(input_: dict) -> str:
         lambda x: str(x),
         input_.values()
     ))
+
+
+@pytest.fixture(scope="session", autouse=True)
+def upload_data_to_kafka_partitions_topic():
+    producer = KafkaProducer(bootstrap_servers=['kafka:29092'],
+                             value_serializer=lambda x: ','.join(x).encode('utf-8'), api_version=(2, 0))
+    topic = 'test-partitions'
+    with open('/home/test-datasets/test_partitions.csv', 'r') as file:
+       reader = csv.reader(file, delimiter=',')
+       for index, messages in enumerate(reader):
+           producer.send(topic, messages, partition=int(index > 3))
+           producer.flush()
