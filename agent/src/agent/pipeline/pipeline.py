@@ -384,6 +384,10 @@ class Pipeline(Entity, sdc_client.IPipeline):
     def dynamic_step(self) -> bool:
         return bool(self.config.get('dynamic_step', False))
 
+    @property
+    def selected_kafka_partitions(self) -> str:
+        return self.config.get('partitions', [])
+
     def get_streamsets_config(self) -> dict:
         return pipeline.manager.create_streamsets_pipeline_config(self)
 

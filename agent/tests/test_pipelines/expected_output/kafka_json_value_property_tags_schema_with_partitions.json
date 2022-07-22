@@ -1,0 +1,113 @@
+[
+  {
+    "timestamp": 1512867600,
+    "dimensions": {
+      "ver": "1",
+      "Country": "中国",
+      "Exchange": "DoubleClick",
+      "topic": "test-partitions",
+      "static": "dimension"
+    },
+    "measurements": {
+      "clicks": 6784.6904
+    },
+    "schemaId": "test_partitions-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_partitions"
+      ],
+      "pipeline_type": [
+        "kafka"
+      ],
+      "tag1": [
+        "tagval"
+      ],
+      "tag2": [
+        "tagval"
+      ]
+    }
+  },
+  {
+    "timestamp": 1512871200,
+    "dimensions": {
+      "ver": "1",
+      "Country": "USA",
+      "Exchange": "DoubleClick",
+      "topic": "test-partitions",
+      "static": "dimension"
+    },
+    "measurements": {
+      "clicks": 6839.0
+    },
+    "schemaId": "test_partitions-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_partitions"
+      ],
+      "pipeline_type": [
+        "kafka"
+      ],
+      "tag1": [
+        "tagval"
+      ],
+      "tag2": [
+        "tagval"
+      ]
+    }
+  },
+  {
+    "timestamp": 1512874800,
+    "dimensions": {
+      "ver": "1",
+      "Country": "USA",
+      "Exchange": "DoubleClick",
+      "topic": "test-partitions",
+      "static": "dimension"
+    },
+    "measurements": {
+      "clicks": 6.909993404034934e+18
+    },
+    "schemaId": "test_partitions-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_partitions"
+      ],
+      "pipeline_type": [
+        "kafka"
+      ],
+      "tag1": [
+        "tagval"
+      ],
+      "tag2": [
+        "tagval"
+      ]
+    }
+  }
+]
