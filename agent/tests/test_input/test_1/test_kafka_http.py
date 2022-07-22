@@ -1,7 +1,9 @@
 import json
 import subprocess
 import traceback
+import csv
 
+from kafka import KafkaProducer
 from agent import cli, source, pipeline
 from ..test_zpipeline_base import TestInputBase
 from ...conftest import get_input_file_path
@@ -155,3 +157,13 @@ class TestKafka(TestInputBase):
             sources = json.load(f)
             for source_ in sources:
                 assert source.repository.exists(f"{source_['name']}")
+
+    def test_upload_data_to_kafka_partitions_topic(self):
+        producer = KafkaProducer(bootstrap_servers=['kafka:29092'],
+                                 value_serializer=lambda x: ','.join(x).encode('utf-8'), api_version=(2, 0))
+        topic = 'test-partitions'
+        with open('/home/test-datasets/test_partitions.csv', 'r') as file:
+            reader = csv.reader(file, delimiter=',')
+            for index, messages in enumerate(reader):
+                producer.send(topic, messages, partition=int(index > 3))
+                producer.flush()
