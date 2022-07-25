@@ -58,6 +58,17 @@ def get_measurements(record):
     return measurements
 
 
+def get_dynamic_tags(record):
+    tags = {}
+    for tag_name, tag_path in sdc.userParams['DYNAMIC_TAGS'].items():
+        tag_value = extract_value(record.value, tag_path)
+        if str(type(tag_value)) == "<type 'java.util.ArrayList'>":
+            tags[tag_name] = tag_value
+        else:
+            tags[tag_name] = [tag_value]
+    return tags or None
+
+
 def main():
     i = -1
     for record in sdc.records:
@@ -75,6 +86,7 @@ def main():
                 'dimensions': get_dimensions(record),
                 'measurements': measurements,
                 'schemaId': '${SCHEMA_ID}',
+                'tags': get_dynamic_tags(record),
             }
             output.write(new_record)
         except Exception as e:

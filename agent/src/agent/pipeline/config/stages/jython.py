@@ -41,6 +41,10 @@ class ConvertToMetrics30(JythonProcessor):
                 'key': 'HEADER_ATTRIBUTES',
                 'value': self.pipeline.header_attributes
             },
+            {
+                'key': 'DYNAMIC_TAGS',
+                'value': {name: value['value_path'] for name, value in self.pipeline.tag_configurations.items()}
+            },
         ]
 
 
