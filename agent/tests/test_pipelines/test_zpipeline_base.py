@@ -54,21 +54,6 @@ class TestPipelineBase(object):
             self._wait(lambda: get_output(file_name))
             assert get_output(file_name)
 
-    def test_reset(self, cli_runner, name):
-        result = cli_runner.invoke(cli.pipeline.reset, [name], catch_exceptions=False)
-        assert result.exit_code == 0
-
-    def test_output(self, name, pipeline_type, output):
-        def check_output():
-            expected_output = get_expected_output(name, output, pipeline_type)
-            return get_output(f'{name}_{pipeline_type}.json') == expected_output
-        self._wait(check_output)
-        assert check_output()
-
-    def test_output_schema(self, name, pipeline_type, output):
-        expected_output = get_expected_schema_output(name, output, pipeline_type)
-        assert get_output(f'{name}_{pipeline_type}.json') == expected_output
-
     def test_stop(self, cli_runner, name, check_output_file_name):
         self._check_output_file(check_output_file_name)
         result = cli_runner.invoke(cli.pipeline.stop, [name], catch_exceptions=False)
@@ -79,6 +64,18 @@ class TestPipelineBase(object):
         self._check_output_file(check_output_file_name)
         result = cli_runner.invoke(cli.pipeline.force_stop, [name], catch_exceptions=False)
         assert result.exit_code == 0
+
+    def test_reset(self, cli_runner, name):
+        result = cli_runner.invoke(cli.pipeline.reset, [name], catch_exceptions=False)
+        assert result.exit_code == 0
+
+    def test_output(self, name, pipeline_type, output):
+        expected_output = get_expected_output(name, output, pipeline_type)
+        assert get_output(f'{name}_{pipeline_type}.json') == expected_output
+
+    def test_output_schema(self, name, pipeline_type, output):
+        expected_output = get_expected_schema_output(name, output, pipeline_type)
+        assert get_output(f'{name}_{pipeline_type}.json') == expected_output
 
     def test_delete_pipeline(self, cli_runner, name):
         result = cli_runner.invoke(cli.pipeline.delete, [name], catch_exceptions=False)

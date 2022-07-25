@@ -82,23 +82,14 @@ class TestInflux(TestPipelineBase):
     def test_start(self, cli_runner, name, sleep):
         super().test_start(cli_runner, name, sleep)
 
-    def test_watermark(self):
-        def check_output_basic():
-            initial_offset = 1552222380
-            interval = 1200000
-            schema_id = get_schema_id('test_basic')
-            return get_output(f'{schema_id}_watermark.json') == {'watermark': initial_offset + interval, 'schemaId': schema_id}
-        self._wait(check_output_basic)
-        assert check_output_basic()
-
-        def check_output_basic_offset():
-            initial_offset = 1552999980
-            interval = 1200000
-            schema_id = get_schema_id('test_basic_offset')
-            return get_output(f'{schema_id}_watermark.json') == {'watermark': initial_offset + interval, 'schemaId': schema_id}
-        self._wait(check_output_basic_offset)
-        assert check_output_basic_offset()
-
     def test_force_stop(self, cli_runner, name, check_output_file_name):
         super().test_force_stop(cli_runner, name, check_output_file_name)
 
+    def test_watermark(self):
+        initial_offset = 1552222380
+        interval = 1200000
+        schema_id = get_schema_id('test_basic')
+        assert get_output(f'{schema_id}_watermark.json') == {'watermark': initial_offset + interval, 'schemaId': schema_id}
+        initial_offset = 1552999980
+        schema_id = get_schema_id('test_basic_offset')
+        assert get_output(f'{schema_id}_watermark.json') == {'watermark': initial_offset + interval, 'schemaId': schema_id}
