@@ -1,6 +1,6 @@
 import pytest
 
-from ..test_zpipeline_base import TestPipelineBase, get_schema_id
+from ..test_zpipeline_base import TestPipelineBase, get_schema_id, get_expected_output
 from ...conftest import get_output
 
 
@@ -19,7 +19,8 @@ class TestInflux(TestPipelineBase):
             {'name': 'test_influx2_file_full'},
             {'name': 'test_influx2_query'},
             {'name': 'influx2_influxql_pipeline'},
-            {'name': 'test_influx_adv'}
+            {'name': 'test_influx_adv'},
+            {'name': 'test_influx_tag'},
         ],
         'test_force_stop': [
             {'name': 'test_basic'},
@@ -32,7 +33,8 @@ class TestInflux(TestPipelineBase):
             {'name': 'test_influx2_file_full'},
             {'name': 'test_influx2_query'},
             {'name': 'influx2_influxql_pipeline'},
-            {'name': 'test_influx_adv'}
+            {'name': 'test_influx_adv'},
+            {'name': 'test_influx_tag'},
         ],
         'test_reset': [{'name': 'test_basic'}],
         'test_output': [
@@ -40,6 +42,7 @@ class TestInflux(TestPipelineBase):
             {'name': 'test_influx_file_full', 'output': 'influx_file_full.json', 'pipeline_type': 'influx'},
             {'name': 'test_influx_adv', 'output': 'influx_adv.json', 'pipeline_type': 'influx'},
             {'name': 'test_influx_file_transform', 'output': 'influx_file_transform.json', 'pipeline_type': 'influx'},
+            {'name': 'test_influx_tag', 'output': 'influx_tag.json', 'pipeline_type': 'influx'},
         ],
         'test_output_schema': [
             {'name': 'test_basic', 'output': 'influx_schema.json', 'pipeline_type': 'influx'},
@@ -62,6 +65,7 @@ class TestInflux(TestPipelineBase):
             {'name': 'test_influx2_query'},
             {'name': 'influx2_influxql_pipeline'},
             {'name': 'test_influx_adv'},
+            {'name': 'test_influx_tag'},
         ],
         'test_source_delete': [
             {'name': 'test_influx'},
@@ -81,6 +85,14 @@ class TestInflux(TestPipelineBase):
 
     def test_start(self, cli_runner, name, sleep):
         super().test_start(cli_runner, name, sleep)
+
+    def test_output(self, name, pipeline_type, output):
+        def compare_output():
+            expected_output = get_expected_output(name, output, pipeline_type)
+            actual_output = get_output(f'{name}_{pipeline_type}.json')
+            return actual_output == expected_output
+        self._wait(compare_output)
+        assert compare_output()
 
     def test_force_stop(self, cli_runner, name, check_output_file_name):
         super().test_force_stop(cli_runner, name, check_output_file_name)
