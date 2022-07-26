@@ -1,11 +1,11 @@
 [
   {
     "tags": {
+      "dynamic_tag_3": [
+        "{u'type':_u'Small'}"
+      ],
       "dynamic_tag_1": [
         "Display"
-      ],
-      "dynamic_tag_2": [
-        "中国"
       ],
       "source": [
         "anodot-agent"
@@ -41,6 +41,9 @@
   },
   {
     "tags": {
+      "dynamic_tag_3": [
+        "{u'type':_u'Small'}"
+      ],
       "dynamic_tag_1": [
         "Display"
       ],
@@ -81,6 +84,9 @@
   },
   {
     "tags": {
+      "dynamic_tag_3": [
+        "{u'type':_u'Small'}"
+      ],
       "dynamic_tag_1": [
         "Search"
       ],
@@ -121,6 +127,9 @@
   },
   {
     "tags": {
+      "dynamic_tag_3": [
+        "{u'type':_u'Small'}"
+      ],
       "dynamic_tag_1": [
         "Display"
       ],
@@ -161,6 +170,9 @@
   },
   {
     "tags": {
+      "dynamic_tag_3": [
+        "{u'type':_u'Small'}"
+      ],
       "dynamic_tag_1": [
         "Search"
       ],
@@ -201,11 +213,11 @@
   },
   {
     "tags": {
+      "dynamic_tag_3": [
+        "{u'type':_u'Small'}"
+      ],
       "dynamic_tag_1": [
         "Display"
-      ],
-      "dynamic_tag_2": [
-        ""
       ],
       "source": [
         "anodot-agent"

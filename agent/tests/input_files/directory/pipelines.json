@@ -100,7 +100,8 @@
     },
     "tag_configurations": {
       "dynamic_tag_1": {"value_path": "AdType"},
-      "dynamic_tag_2": {"value_path": "Country"}
+      "dynamic_tag_2": {"value_path": "Country"},
+      "dynamic_tag_3": {"value_path": "AdSize"}
     },
     "timestamp": {
       "type": "unix",

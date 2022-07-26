@@ -61,11 +61,16 @@ def get_measurements(record):
 def get_dynamic_tags(record):
     tags = {}
     for tag_name, tag_path in sdc.userParams['DYNAMIC_TAGS'].items():
-        tag_value = extract_value(record.value, tag_path)
-        if str(type(tag_value)) == "<type 'java.util.ArrayList'>":
-            tags[tag_name] = tag_value
-        else:
-            tags[tag_name] = [tag_value]
+        try:
+            tag_value = extract_value(record.value, tag_path)
+            if not tag_value:
+                continue
+            tag_value = str(tag_value).strip()
+            if tag_value == '':
+                continue
+            tags[replace_illegal_chars(tag_name)] = [replace_illegal_chars(tag_value)]
+        except Exception as e:
+            sdc.log.error("Can't retrieve tag: " + str(e))
     return tags or None
 
 
