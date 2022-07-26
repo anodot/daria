@@ -15,6 +15,9 @@ class ConvertToMetrics30(JythonProcessor):
     def _get_required_fields(self) -> list:
         return [f'/{f}' for f in [*self.pipeline.required_dimension_paths, self.pipeline.timestamp_path]]
 
+    def _get_tags_config(self) -> dict:
+        return {name: value['value_path'] for name, value in self.pipeline.tag_configurations.items()}
+
     def _get_script_params(self) -> list[dict]:
         return [
             {
@@ -43,7 +46,7 @@ class ConvertToMetrics30(JythonProcessor):
             },
             {
                 'key': 'DYNAMIC_TAGS',
-                'value': {name: value['value_path'] for name, value in self.pipeline.tag_configurations.items()}
+                'value': self._get_tags_config()
             },
         ]
 

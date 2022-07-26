@@ -76,4 +76,4 @@ class TestDirectory(TestPipelineBase):
         }
 
     def test_events_output(self):
-        assert get_output(f'events_directory.json') == get_expected_events_output('events_directory.json')
+        assert get_output('events_directory.json') == get_expected_events_output('events_directory.json')
