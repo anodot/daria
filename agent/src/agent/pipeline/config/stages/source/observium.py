@@ -28,12 +28,16 @@ class ObserviumScript(JythonDataExtractorSource):
                 'key': 'OBSERVIUM_STEP_IN_SECONDS',
                 'value': self.pipeline.config.get('step', '300')
             },
+            {
+                'key': 'DELAY_IN_SECONDS',
+                'value': self.pipeline.config.get('delay', '0')
+            },
         ]
 
     def _get_bucket_size(self) -> str:
         if self.pipeline.interval == 60:
             return '1m'
-        if self.pipeline.interval == 300:
+        elif self.pipeline.interval == 300:
             return '5m'
         elif self.pipeline.interval == 3600:
             return '1h'
