@@ -70,7 +70,7 @@ def main():
             # which is from `now - observium step` to `now - observium step + interval`
             if offset - get_interval() < round_timestamp(get_now(), get_interval()) - get_observium_step():
                 offset = round_timestamp(get_now(), get_interval()) - get_observium_step() + get_interval()
-            # wait_to_timestamp(offset + get_delay())
+            wait_to_timestamp(offset + get_delay())
             try:
                 res = requests.get(sdc.userParams['AGENT_DATA_EXTRACTOR_URL'], params={'offset': offset})
                 res.raise_for_status()
