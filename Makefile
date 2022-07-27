@@ -80,7 +80,7 @@ test-influx: bootstrap run-influx run-influx-2 nap
 	$(DOCKER_TEST) tests/test_input/test_1/test_influx_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_1/test_influx_http.py
 
-test-kafka: bootstrap run-kafka setup-kafka
+test-kafka: bootstrap run-kafka
 	$(DOCKER_TEST) tests/test_input/test_1/test_kafka_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_1/test_kafka_http.py
 
@@ -247,10 +247,11 @@ run-victoria: _run-victoria nap setup-victoria
 _run-victoria:
 	$(DOCKER_COMPOSE_DEV) up -d victoriametrics
 
-run-kafka: run-zookeeper _run-kafka sleep setup-kafka
+run-kafka: run-zookeeper _run-kafka setup-kafka
 
 _run-kafka:
 	$(DOCKER_COMPOSE_DEV) up -d kafka
+	sleep 15
 
 run-zookeeper:
 	$(DOCKER_COMPOSE_DEV) up -d zookeeper

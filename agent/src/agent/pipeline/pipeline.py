@@ -14,6 +14,7 @@ from agent import source, pipeline
 from agent.modules.time import Interval
 from agent.source import Source
 from agent.streamsets import StreamSets
+from agent.pipeline.notifications.notification import PiplineNotifications
 
 TYPE = 'pipeline_type'
 
@@ -80,6 +81,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
     destination = relationship('HttpDestination', cascade="merge")
     streamsets = relationship('StreamSets')
     retries = relationship('PipelineRetries', cascade="delete", uselist=False)
+    notifications = relationship('PiplineNotifications', cascade="delete", uselist=False)
 
     def __init__(self, pipeline_id: str, source_: Source, destination: HttpDestination):
         self.name = pipeline_id
@@ -94,6 +96,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
         self.streamsets_id = None
         self.streamsets = None
         self.type = REGULAR_PIPELINE
+        self.notifications: PiplineNotifications = None
 
     def config_changed(self) -> bool:
         if not hasattr(self, '_previous_config'):
@@ -380,6 +383,10 @@ class Pipeline(Entity, sdc_client.IPipeline):
     @property
     def dynamic_step(self) -> bool:
         return bool(self.config.get('dynamic_step', False))
+
+    @property
+    def selected_kafka_partitions(self) -> str:
+        return self.config.get('partitions', [])
 
     def get_streamsets_config(self) -> dict:
         return pipeline.manager.create_streamsets_pipeline_config(self)

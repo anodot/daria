@@ -1,7 +1,8 @@
-import json
 import traceback
 import requests
 
+from typing import Optional, NoReturn
+from dataclasses import dataclass, asdict
 from agent import pipeline, destination, monitoring
 from agent.destination.anodot_api_client import AnodotApiClient
 from agent.modules.logger import get_logger
@@ -10,14 +11,44 @@ from agent.modules import constants
 if not constants.SEND_TO_BC:
     exit(0)
 
-GENERAL_PIPELINE_ERROR_CODE = 70
+GENERAL_PIPELINE_ERROR_CODE: int = 70
+PIPLINE_NO_DATA_ERROR_CODE: int = 71
 
 logger = get_logger(__name__, stdout=True)
+
+
+@dataclass
+class ErrorNotification:
+    code: int
+    description: str
 
 
 def _update_errors_count(num_of_errors: int):
     monitoring.increase_scheduled_script_error_counter('agent-to-bc')
     return num_of_errors + 1
+
+
+def _get_notification_for_pipeline(pipeline_: pipeline.Pipeline) -> Optional[ErrorNotification]:
+    if pipeline.manager.should_send_retries_error_notification(pipeline_):
+        return ErrorNotification(
+            code=GENERAL_PIPELINE_ERROR_CODE,
+            description='pipeline error',
+        )
+    if pipeline.manager.should_send_no_data_error_notification(pipeline_):
+        no_data_period = int(pipeline_.notifications.no_data_notification.notification_period / 60)
+        return ErrorNotification(
+            code=PIPLINE_NO_DATA_ERROR_CODE,
+            description=f'No data for at least {no_data_period} hours'
+        )
+
+
+def _update_notification_sent(pipeline_: pipeline.Pipeline, notification: ErrorNotification) -> NoReturn:
+    if notification.code == GENERAL_PIPELINE_ERROR_CODE:
+        pipeline_.retries.notification_sent = True
+        pipeline.repository.save(pipeline_.retries)
+    elif notification.code == PIPLINE_NO_DATA_ERROR_CODE:
+        pipeline_.notifications.no_data_notification.notification_sent = True
+        pipeline.repository.save(pipeline_.notifications.no_data_notification)
 
 
 def main():
@@ -32,18 +63,14 @@ def main():
     for pipeline_ in pipelines:
         try:
             pipeline_data = pipeline.manager.transform_for_bc(pipeline_)
-            should_send_error_notification = pipeline.manager.should_send_error_notification(pipeline_)
-            if should_send_error_notification:
-                pipeline_data['notification'] = {
-                    'code': GENERAL_PIPELINE_ERROR_CODE,
-                    'description': 'pipeline error',
-                }
+            error_notification = _get_notification_for_pipeline(pipeline_)
+            if error_notification:
+                pipeline_data['notification'] = asdict(error_notification)
             api_client.send_pipeline_data_to_bc(pipeline_data)
-            if should_send_error_notification:
+            if error_notification:
                 logger.info(f'Error notification sent for pipeline {pipeline_.name}')
                 # set 'notification_sent' flag to True
-                pipeline_.retries.notification_sent = True
-                pipeline.repository.save(pipeline_.retries)
+                _update_notification_sent(pipeline_, error_notification)
         except requests.HTTPError as e:
             if e.response.status_code != 404:
                 num_of_errors = _update_errors_count(num_of_errors)

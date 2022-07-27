@@ -133,6 +133,7 @@
     "source": "observium",
     "pipeline_id": "observium_storage",
     "interval": 3600,
+    "delay": 60,
     "default_values_type": "storage",
     "dimensions": [
       "Storage size",

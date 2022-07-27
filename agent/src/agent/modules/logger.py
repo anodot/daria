@@ -10,7 +10,9 @@ def get_logger(name, level=None, stdout=False):
     level = level or os.environ.get('LOG_LEVEL', logging.INFO)
     logger.setLevel(level)
 
-    file_handler = RotatingFileHandler(os.environ.get('LOG_FILE_PATH', 'agent.log'), maxBytes=2000)
+    file_handler = RotatingFileHandler(os.environ.get('LOG_FILE_PATH', 'agent.log'),
+                                       maxBytes=int(os.environ.get('LOG_MAX_MBYTES', 10)) * 1_000_000,
+                                       backupCount=int(os.environ.get('LOG_BACKUPS', 1)))
     file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
     logger.addHandler(file_handler)
 
