@@ -64,6 +64,24 @@ function get_measurements(record) {
     return measurements
 }
 
+function get_dynamic_tags(record) {
+    var tags = {}
+    for (var tag_name in state['DYNAMIC_TAGS']) {
+        var value_path = state['DYNAMIC_TAGS'][tag_name];
+        var tag_value = extract_value(record.value, value_path);
+        if (tag_value === null) {
+            continue;
+        }
+        tag_value = String(tag_value).trim()
+        if (tag_value === '') {
+            continue;
+        }
+        var tag_correct_name = replace_illegal_chars(tag_name).replace(/[\/]+/g, '_')
+        tags[tag_correct_name] = [replace_illegal_chars(tag_value)]
+    }
+    return tags
+}
+
 function last_timestamp_only(record) {
     var record_keys = [];
     for (var key in record) {
@@ -95,7 +113,7 @@ if (records.length === 1 && last_timestamp_only(records[0].value)) {
                 'dimensions': get_dimensions(records[i]),
                 'measurements': measurements,
                 'schemaId': "${SCHEMA_ID}",
-                'tags': {},
+                'tags': get_dynamic_tags(records[i]),
             };
             if (records[i].value['__tags'] !== null) {
                 newRecord.value['tags'] = records[i].value['__tags']
