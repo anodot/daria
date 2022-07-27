@@ -61,5 +61,21 @@
       "adsize",
       "country"
     ]
+  },
+  {
+    "source": "test_jdbc",
+    "pipeline_id": "test_jdbc_mysql_tag",
+    "values": {"clicks": "gauge", "impressions": "gauge"},
+    "dimensions": ["country"],
+    "interval": 86400,
+    "query": "SELECT * FROM test WHERE {TIMESTAMP_CONDITION}",
+    "timestamp": {
+      "type": "unix_ms",
+      "name": "timestamp_unix_ms"
+    },
+    "tag_configurations": {
+      "tag_exchange": {"value_path": "exchange"},
+      "tag_not_present": {"value_path": "not_real_value"}
+    }
   }
 ]
