@@ -10,16 +10,6 @@
   },
   {
     "source": "test_influx",
-    "pipeline_id": "test_influx_tag",
-    "measurement_name": "cpu_test",
-    "values": {"usage_active": "gauge", "usage_idle": "gauge"},
-    "dimensions": ["cpu", "host"],
-    "interval": 1200000,
-    "uses_schema": false,
-    "tag_configurations": {"tag_zone": {"value_path": "zone"}}
-  },
-  {
-    "source": "test_influx",
     "pipeline_id": "test_influx_adv",
     "measurement_name": "cpu_test",
     "values": {"usage_active": "gauge", "usage_idle": "gauge"},
@@ -138,5 +128,29 @@
     },
     "properties": {"test": "val"},
     "interval": 1200000
+  },
+  {
+    "source": "test_influx",
+    "pipeline_id": "test_influx_tag",
+    "measurement_name": "cpu_test",
+    "values": {"usage_active": "gauge", "usage_idle": "gauge"},
+    "dimensions": ["cpu", "host"],
+    "interval": 1200000,
+    "uses_schema": false,
+    "tag_configurations": {"tag_zone": {"value_path": "zone"}}
+  },
+  {
+    "source": "test_influx",
+    "pipeline_id": "test_influx_schema_tag",
+    "measurement_name": "cpu_test",
+    "values": {"usage_active": "gauge", "usage_idle": "gauge"},
+    "dimensions": ["host"],
+    "interval": 1200000,
+    "tag_configurations": {
+      "tag_zone": {"value_path": "zone"},
+      "tag_cpu": {"value_path": "cpu"},
+      "tag_not_present": {"value_path": "not_real_value"}
+    },
+    "uses_schema": true
   }
 ]

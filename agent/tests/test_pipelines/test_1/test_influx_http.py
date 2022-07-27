@@ -20,6 +20,7 @@ class TestInflux(TestPipelineBase):
             {'name': 'test_influx2_query'},
             {'name': 'influx2_influxql_pipeline'},
             {'name': 'test_influx_adv'},
+            {'name': 'test_influx_schema_tag'},
             {'name': 'test_influx_tag'},
         ],
         'test_force_stop': [
@@ -34,6 +35,7 @@ class TestInflux(TestPipelineBase):
             {'name': 'test_influx2_query'},
             {'name': 'influx2_influxql_pipeline'},
             {'name': 'test_influx_adv'},
+            {'name': 'test_influx_schema_tag'},
             {'name': 'test_influx_tag'},
         ],
         'test_reset': [{'name': 'test_basic'}],
@@ -52,6 +54,7 @@ class TestInflux(TestPipelineBase):
             {'name': 'test_influx2', 'output': 'influx2_schema.json', 'pipeline_type': 'influx2'},
             {'name': 'test_influx2_file_full', 'output': 'influx2_file_schema.json', 'pipeline_type': 'influx2'},
             {'name': 'test_influx2_query', 'output': 'influx2_query.json', 'pipeline_type': 'influx2'},
+            {'name': 'test_influx_schema_tag', 'output': 'influx_schema_tag.json', 'pipeline_type': 'influx'},
         ],
         'test_delete_pipeline': [
             {'name': 'test_basic'},
@@ -65,6 +68,7 @@ class TestInflux(TestPipelineBase):
             {'name': 'test_influx2_query'},
             {'name': 'influx2_influxql_pipeline'},
             {'name': 'test_influx_adv'},
+            {'name': 'test_influx_schema_tag'},
             {'name': 'test_influx_tag'},
         ],
         'test_source_delete': [
