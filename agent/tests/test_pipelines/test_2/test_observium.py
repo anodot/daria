@@ -1,6 +1,9 @@
 import pytest
+import time
 
-from ..test_zpipeline_base import TestPipelineBase
+from ..test_zpipeline_base import TestPipelineBase, get_expected_schema_output
+from ...conftest import get_output
+from agent import cli
 
 
 class TestObservium(TestPipelineBase):
@@ -52,38 +55,38 @@ class TestObservium(TestPipelineBase):
                 'check_output_file_name': 'observium_storage_transform_observium.json'
             },
         ],
-        'test_output_schema': [
-            {
-                'name': 'observium_ports',
-                'output': 'observium_ports_schema.json',
-                'pipeline_type': 'observium'
-            },
-            {
-                'name': 'observium_mempools',
-                'output': 'observium_mempools_schema.json',
-                'pipeline_type': 'observium'
-            },
-            {
-                'name': 'observium_mempools_edit',
-                'output': 'observium_mempools_schema_edit.json',
-                'pipeline_type': 'observium'
-            },
-            {
-                'name': 'observium_processors',
-                'output': 'observium_processors_schema.json',
-                'pipeline_type': 'observium'
-            },
-            {
-                'name': 'observium_storage',
-                'output': 'observium_storage_schema.json',
-                'pipeline_type': 'observium'
-            },
-            {
-                'name': 'observium_storage_transform',
-                'output': 'observium_storage_transform.json',
-                'pipeline_type': 'observium'
-            },
-        ],
+        # 'test_output_schema': [
+        #     {
+        #         'name': 'observium_ports',
+        #         'output': 'observium_ports_schema.json',
+        #         'pipeline_type': 'observium'
+        #     },
+        #     {
+        #         'name': 'observium_mempools',
+        #         'output': 'observium_mempools_schema.json',
+        #         'pipeline_type': 'observium'
+        #     },
+        #     {
+        #         'name': 'observium_mempools_edit',
+        #         'output': 'observium_mempools_schema_edit.json',
+        #         'pipeline_type': 'observium'
+        #     },
+        #     {
+        #         'name': 'observium_processors',
+        #         'output': 'observium_processors_schema.json',
+        #         'pipeline_type': 'observium'
+        #     },
+        #     {
+        #         'name': 'observium_storage',
+        #         'output': 'observium_storage_schema.json',
+        #         'pipeline_type': 'observium'
+        #     },
+        #     {
+        #         'name': 'observium_storage_transform',
+        #         'output': 'observium_storage_transform.json',
+        #         'pipeline_type': 'observium'
+        #     },
+        # ],
         'test_watermark': [
             {
                 'name': 'observium_ports',
@@ -93,22 +96,56 @@ class TestObservium(TestPipelineBase):
                 'name': 'observium_mempools',
                 'timestamp': 1628160603
             },
+            # {
+            #     'name': 'observium_mempools_edit',
+            #     'timestamp': 1628160603
+            # },
+            # {
+            #     'name': 'observium_processors',
+            #     'timestamp': 1633517705
+            # },
+            # {
+            #     'name': 'observium_storage',
+            #     'timestamp': 1633518002
+            # },
+            # {
+            #     'name': 'observium_storage_transform',
+            #     'timestamp': 1633518002
+            # },
+        ],
+        'test_all_in_one': [
             {
-                'name': 'observium_mempools_edit',
-                'timestamp': 1628160603
+                'name': 'observium_ports',
+                'output': 'observium_ports_observium.json',
+                'pipeline_type': 'observium',
+                'expected': 'observium_ports_schema.json',
             },
             {
-                'name': 'observium_processors',
-                'timestamp': 1633517705
+                'name': 'observium_mempools',
+                'output': 'observium_mempools_observium.json',
+                'pipeline_type': 'observium',
+                'expected': 'observium_mempools_schema.json',
             },
-            {
-                'name': 'observium_storage',
-                'timestamp': 1633518002
-            },
-            {
-                'name': 'observium_storage_transform',
-                'timestamp': 1633518002
-            },
+            # {
+            #     'name': 'observium_mempools_edit',
+            #     'output': 'observium_mempools_schema_edit.json',
+            #     'pipeline_type': 'observium'
+            # },
+            # {
+            #     'name': 'observium_processors',
+            #     'output': 'observium_processors_schema.json',
+            #     'pipeline_type': 'observium'
+            # },
+            # {
+            #     'name': 'observium_storage',
+            #     'output': 'observium_storage_schema.json',
+            #     'pipeline_type': 'observium'
+            # },
+            # {
+            #     'name': 'observium_storage_transform',
+            #     'output': 'observium_storage_transform.json',
+            #     'pipeline_type': 'observium'
+            # },
         ],
         'test_delete_pipeline': [
             {
@@ -149,8 +186,17 @@ class TestObservium(TestPipelineBase):
     def test_output(self, name=None, pipeline_type=None, output=None):
         pytest.skip()
 
+    def test_output_schema(self, name=None, pipeline_type=None, output=None):
+        pytest.skip()
+
     def test_start(self, cli_runner, name, sleep):
-        super().test_start(cli_runner, name, sleep)
+        pytest.skip()
 
     def test_force_stop(self, cli_runner, name, check_output_file_name):
+        pytest.skip()
+
+    def test_all_in_one(self, cli_runner, name, check_output_file_name, expected):
+        super().test_start(cli_runner, name, 0)
+        time.sleep(65)
         super().test_force_stop(cli_runner, name, check_output_file_name)
+        super().test_output_schema(name, 'observium', expected)
