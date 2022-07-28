@@ -606,5 +606,309 @@
       "ifInMulticastPkts": 0
     },
     "timestamp": 1628160620
+  },
+  {
+    "tags": {
+      "INTERFACE_ALIAS": [
+        "EthAlias"
+      ],
+      "Static_tag": [
+        "static_tag_value"
+      ],
+      "INTERFACE_SPEED": [
+        "10000000"
+      ],
+      "INTERFACE_DESCRIPTION": [
+        "gst0_300"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "observium_ports"
+      ],
+      "pipeline_type": [
+        "observium"
+      ]
+    },
+    "schemaId": "observium_ports-1234",
+    "dimensions": {
+      "DEST_STATE": "Iowa",
+      "PARENT_ELEMENT_LOCATION": "Anodot",
+      "INTERFACE_SPEED": "10000000",
+      "Location": "SOME-LOC"
+    },
+    "measurements": {
+      "ifInBroadcastPkts": 0,
+      "ifInErrors_rate": 0.0,
+      "ifOctets_rate": 0,
+      "ifOutUcastPkts": 100500,
+      "ifInNUcastPkts": 0,
+      "ifUcastPkts_rate": 0,
+      "ifInDiscards_rate": 0.0,
+      "ifOutNUcastPkts_rate": 0,
+      "ifOutBroadcastPkts_rate": 0,
+      "ifOutMulticastPkts_rate": 0,
+      "ifDiscards_rate": 0.0,
+      "ifInUcastPkts": 0,
+      "ifInOctets_rate": 0,
+      "ifOutErrors": 0,
+      "ifOutNUcastPkts": 0,
+      "ifInOctets_perc": 0,
+      "ifInNUcastPkts_rate": 0,
+      "ifOutUcastPkts_rate": 0,
+      "ifInDiscards": 0,
+      "ifInBroadcastPkts_rate": 0,
+      "ifOutBroadcastPkts": 0,
+      "ifInErrors": 0,
+      "port_mcbc": 1,
+      "ifOutDiscards": 0,
+      "ifOutOctets_rate": 0,
+      "ifOutMulticastPkts": 0,
+      "ifInUcastPkts_rate": 0,
+      "ifOutOctets_perc": 0,
+      "ifOutDiscards_rate": 0.0,
+      "ifOutOctets": 0,
+      "ifInMulticastPkts_rate": 0,
+      "ifInOctets": 0,
+      "ifOutErrors_rate": 0.0,
+      "ifErrors_rate": 0.0,
+      "ifInMulticastPkts": 0
+    },
+    "timestamp": 1628160620
+  },
+  {
+    "tags": {
+      "Static_tag": [
+        "static_tag_value"
+      ],
+      "INTERFACE_ALIAS": [
+        "NULL"
+      ],
+      "INTERFACE_SPEED": [
+        "0"
+      ],
+      "INTERFACE_DESCRIPTION": [
+        "NULL"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "observium_ports"
+      ],
+      "pipeline_type": [
+        "observium"
+      ]
+    },
+    "schemaId": "observium_ports-1234",
+    "dimensions": {
+      "DEST_STATE": "Nevada",
+      "PARENT_ELEMENT_LOCATION": "other",
+      "INTERFACE_SPEED": "0",
+      "Location": "SOME-LOC"
+    },
+    "measurements": {
+      "ifInBroadcastPkts": 0,
+      "ifInErrors_rate": 0.0,
+      "ifOctets_rate": 0,
+      "ifOutUcastPkts": 100400,
+      "ifInNUcastPkts": 0,
+      "ifUcastPkts_rate": 0,
+      "ifInDiscards_rate": 0.0,
+      "ifOutNUcastPkts_rate": 0,
+      "ifOutBroadcastPkts_rate": 0,
+      "ifOutMulticastPkts_rate": 0,
+      "ifDiscards_rate": 0.0,
+      "ifInUcastPkts": 0,
+      "ifInOctets_rate": 0,
+      "ifOutErrors": 0,
+      "ifOutNUcastPkts": 0,
+      "ifInOctets_perc": 0,
+      "ifInNUcastPkts_rate": 0,
+      "ifOutUcastPkts_rate": 0,
+      "ifInDiscards": 0,
+      "ifInBroadcastPkts_rate": 0,
+      "ifOutBroadcastPkts": 0,
+      "ifInErrors": 0,
+      "port_mcbc": 1,
+      "ifOutDiscards": 0,
+      "ifOutOctets_rate": 0,
+      "ifOutMulticastPkts": 0,
+      "ifInUcastPkts_rate": 0,
+      "ifOutOctets_perc": 0,
+      "ifOutDiscards_rate": 0.0,
+      "ifOutOctets": 0,
+      "ifInMulticastPkts_rate": 0,
+      "ifInOctets": 0,
+      "ifOutErrors_rate": 0.0,
+      "ifErrors_rate": 0.0,
+      "ifInMulticastPkts": 0
+    },
+    "timestamp": 1628160620
+  },
+  {
+    "tags": {
+      "Static_tag": [
+        "static_tag_value"
+      ],
+      "INTERFACE_ALIAS": [
+        "NULL"
+      ],
+      "INTERFACE_SPEED": [
+        "0"
+      ],
+      "INTERFACE_DESCRIPTION": [
+        "gst0_300"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "observium_ports"
+      ],
+      "pipeline_type": [
+        "observium"
+      ]
+    },
+    "schemaId": "observium_ports-1234",
+    "dimensions": {
+      "DEST_STATE": "other",
+      "PARENT_ELEMENT_LOCATION": "other",
+      "INTERFACE_SPEED": "0",
+      "Location": "SOME-LOC"
+    },
+    "measurements": {
+      "ifInBroadcastPkts": 0,
+      "ifInErrors_rate": 0.0,
+      "ifOctets_rate": 0,
+      "ifOutUcastPkts": 100400,
+      "ifInNUcastPkts": 0,
+      "ifUcastPkts_rate": 0,
+      "ifInDiscards_rate": 0.0,
+      "ifOutNUcastPkts_rate": 0,
+      "ifOutBroadcastPkts_rate": 0,
+      "ifOutMulticastPkts_rate": 0,
+      "ifDiscards_rate": 0.0,
+      "ifInUcastPkts": 0,
+      "ifInOctets_rate": 0,
+      "ifOutErrors": 0,
+      "ifOutNUcastPkts": 0,
+      "ifInOctets_perc": 0,
+      "ifInNUcastPkts_rate": 0,
+      "ifOutUcastPkts_rate": 0,
+      "ifInDiscards": 0,
+      "ifInBroadcastPkts_rate": 0,
+      "ifOutBroadcastPkts": 0,
+      "ifInErrors": 0,
+      "port_mcbc": 1,
+      "ifOutDiscards": 0,
+      "ifOutOctets_rate": 0,
+      "ifOutMulticastPkts": 0,
+      "ifInUcastPkts_rate": 0,
+      "ifOutOctets_perc": 0,
+      "ifOutDiscards_rate": 0.0,
+      "ifOutOctets": 0,
+      "ifInMulticastPkts_rate": 0,
+      "ifInOctets": 0,
+      "ifOutErrors_rate": 0.0,
+      "ifErrors_rate": 0.0,
+      "ifInMulticastPkts": 0
+    },
+    "timestamp": 1628160620
+  },
+  {
+    "tags": {
+      "Static_tag": [
+        "static_tag_value"
+      ],
+      "INTERFACE_ALIAS": [
+        "NULL"
+      ],
+      "INTERFACE_SPEED": [
+        "0"
+      ],
+      "INTERFACE_DESCRIPTION": [
+        "gst0_300"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "observium_ports"
+      ],
+      "pipeline_type": [
+        "observium"
+      ]
+    },
+    "schemaId": "observium_ports-1234",
+    "dimensions": {
+      "DEST_STATE": "Iowa",
+      "PARENT_ELEMENT_LOCATION": "other",
+      "INTERFACE_SPEED": "0",
+      "Location": "SOME-LOC"
+    },
+    "measurements": {
+      "ifInBroadcastPkts": 0,
+      "ifInErrors_rate": 0.0,
+      "ifOctets_rate": 0,
+      "ifOutUcastPkts": 100400,
+      "ifInNUcastPkts": 0,
+      "ifUcastPkts_rate": 0,
+      "ifInDiscards_rate": 0.0,
+      "ifOutNUcastPkts_rate": 0,
+      "ifOutBroadcastPkts_rate": 0,
+      "ifOutMulticastPkts_rate": 0,
+      "ifDiscards_rate": 0.0,
+      "ifInUcastPkts": 0,
+      "ifInOctets_rate": 0,
+      "ifOutErrors": 0,
+      "ifOutNUcastPkts": 0,
+      "ifInOctets_perc": 0,
+      "ifInNUcastPkts_rate": 0,
+      "ifOutUcastPkts_rate": 0,
+      "ifInDiscards": 0,
+      "ifInBroadcastPkts_rate": 0,
+      "ifOutBroadcastPkts": 0,
+      "ifInErrors": 0,
+      "port_mcbc": 1,
+      "ifOutDiscards": 0,
+      "ifOutOctets_rate": 0,
+      "ifOutMulticastPkts": 0,
+      "ifInUcastPkts_rate": 0,
+      "ifOutOctets_perc": 0,
+      "ifOutDiscards_rate": 0.0,
+      "ifOutOctets": 0,
+      "ifInMulticastPkts_rate": 0,
+      "ifInOctets": 0,
+      "ifOutErrors_rate": 0.0,
+      "ifErrors_rate": 0.0,
+      "ifInMulticastPkts": 0
+    },
+    "timestamp": 1628160620
   }
 ]

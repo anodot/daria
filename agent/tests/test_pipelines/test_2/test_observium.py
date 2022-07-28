@@ -138,10 +138,11 @@ class TestObservium(TestPipelineBase):
             },
         ],
     }
+
     @classmethod
     def setup_class(cls):
         time.sleep(
-            60 - int(datetime.now().timestamp() % 60)
+            60 - datetime.now().second
         )
 
     def test_info(self, cli_runner, name=None):
@@ -153,8 +154,6 @@ class TestObservium(TestPipelineBase):
     def test_stop(self, cli_runner, name=None, check_output_file_name=None):
         pytest.skip()
 
-    def test_output(self, name=None, pipeline_type=None, output=None):
-        pytest.skip()
 
     def test_start(self, cli_runner, name, sleep):
         super().test_start(cli_runner, name, sleep)
