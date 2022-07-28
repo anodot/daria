@@ -1,0 +1,9 @@
+[
+  {
+    "type": "impala",
+    "name": "test_impala_test",
+    "config": {
+      "connection_string": "impala://10.255.3.61:21050/test"
+    }
+  }
+]

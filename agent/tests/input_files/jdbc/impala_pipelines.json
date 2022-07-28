@@ -1,0 +1,33 @@
+[
+  {
+    "source": "test_impala_test",
+    "pipeline_id": "test_impala_test_1",
+    "values": {"clicks": "gauge", "impressions": "gauge"},
+    "dimensions": ["adsize", "country"],
+    "interval": 86400,
+    "query": "SELECT * FROM test WHERE {TIMESTAMP_CONDITION}",
+    "limit": 10,
+    "timestamp": {
+      "type": "unix_ms",
+      "name": "timestamp_unix_ms"
+    }
+  },
+  {
+    "source": "test_impala_test",
+    "pipeline_id": "test_impala_test_2",
+    "values": {
+      "sssr_sa": "gauge",
+      "rrcconnestab": "gauge",
+      "ngsigconnestab": "gauge",
+      "rrc_connected_ue_max": "counter"
+    },
+    "dimensions": ["cell_id", "oss_host", "oss_host", "addinfo1"],
+    "interval": 86400,
+    "query": "SELECT * FROM test5 WHERE {TIMESTAMP_CONDITION}",
+    "limit": 500,
+    "timestamp": {
+      "type": "datetime",
+      "name": "addinfo5"
+    }
+  }
+]
