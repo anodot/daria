@@ -26,11 +26,11 @@ class ObserviumScript(JythonDataExtractorSource):
             },
             {
                 'key': 'OBSERVIUM_STEP_IN_SECONDS',
-                'value': self.pipeline.config.get('step', '300')
+                'value': str(self.pipeline.config.get('step', '300'))
             },
             {
                 'key': 'DELAY_IN_SECONDS',
-                'value': self.pipeline.config.get('delay', '0')
+                'value': str(self.pipeline.config.get('delay', '0'))
             },
         ]
 
