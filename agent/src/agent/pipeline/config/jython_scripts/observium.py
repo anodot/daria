@@ -54,7 +54,7 @@ def main():
     if sdc.lastOffsets.containsKey(entityName):
         offset = int(float(sdc.lastOffsets.get(entityName)))
     else:
-        offset = to_timestamp(datetime.utcnow().replace(minute=0, second=0, microsecond=0))
+        offset = to_timestamp(datetime.utcnow().replace(second=0, microsecond=0))
 
     sdc.log.info('Start offset: ' + str(offset))
 
