@@ -28,9 +28,9 @@ def get_monitoring_metrics() -> list[dict]:
                 continue
             if 'pipeline_id' in sample.labels and sample.labels['pipeline_id'] not in pipelines:
                 continue
-            if streamsets_url := sample.labels.get('streamsets_url') and\
+            if sample.labels.get('streamsets_url') and\
                     pipelines.get(sample.labels.get('pipeline_id')) and\
-                    streamsets_url != pipelines[sample.labels['pipeline_id']].streamsets.url:
+                    sample.labels.get('streamsets_url') != pipelines[sample.labels['pipeline_id']].streamsets.url:
                 continue
             dims = {**sample.labels, 'host_name': constants.HOSTNAME, 'source': 'agent_monitoring'}
             data.append(

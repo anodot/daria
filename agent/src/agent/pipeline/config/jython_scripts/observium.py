@@ -25,6 +25,19 @@ def to_timestamp(date):
     return int((date - epoch).total_seconds())
 
 
+def round_timestamp(timestamp, round_to):
+    return timestamp - (timestamp % round_to)
+
+
+def wait_to_timestamp(timestamp):
+    while get_now() < timestamp:
+        time.sleep(1)
+
+
+def get_delay():
+    return int(sdc.userParams['DELAY_IN_SECONDS'])
+
+
 def get_interval():
     return int(sdc.userParams['INTERVAL_IN_SECONDS'])
 
@@ -55,8 +68,9 @@ def main():
             # we can get data for not earlier then observium step size, usually it's 5 minutes
             # if we already passed that time, we try to get the latest available data
             # which is from `now - observium step` to `now - observium step + interval`
-            if offset - get_interval() < get_now() - get_observium_step():
-                offset = get_now() - get_observium_step() + get_interval()
+            if offset - get_interval() < round_timestamp(get_now(), get_interval()) - get_observium_step():
+                offset = round_timestamp(get_now(), get_interval()) - get_observium_step() + get_interval()
+            wait_to_timestamp(offset + get_delay())
             try:
                 res = requests.get(sdc.userParams['AGENT_DATA_EXTRACTOR_URL'], params={'offset': offset})
                 res.raise_for_status()

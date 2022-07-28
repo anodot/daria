@@ -48,5 +48,27 @@
       "delay": 0
     },
     "properties": {"static": "dimension"}
+  },
+  {
+    "source": "test-partitions",
+    "pipeline_id": "test_partitions",
+    "values": {"Clicks": "gauge"},
+    "measurement_names": {"Clicks": "clicks"},
+    "partitions": [0],
+    "dimensions": {
+      "required": ["ver", "Country"],
+      "optional": ["Exchange", "optional_dim"]
+    },
+    "header_attributes": ["topic"],
+    "timestamp": {
+      "type": "unix",
+      "name": "timestamp_unix"
+    },
+    "tags": {"tag1": ["tagval"], "tag2": ["tagval"]},
+    "periodic_watermark": {
+      "bucket_size": "5m",
+      "delay": 0
+    },
+    "properties": {"static": "dimension"}
   }
 ]
