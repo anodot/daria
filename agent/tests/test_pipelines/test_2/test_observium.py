@@ -1,5 +1,7 @@
+import time
 import pytest
 
+from datetime import datetime
 from ..test_zpipeline_base import TestPipelineBase
 
 
@@ -136,6 +138,11 @@ class TestObservium(TestPipelineBase):
             },
         ],
     }
+    @classmethod
+    def setup_class(cls):
+        time.sleep(
+            60 - int(datetime.now().timestamp() % 60)
+        )
 
     def test_info(self, cli_runner, name=None):
         pytest.skip()
