@@ -5,7 +5,7 @@
     "values": {"clicks": "gauge", "impressions": "gauge"},
     "dimensions": ["adsize", "country"],
     "interval": 86400,
-    "query": "SELECT * FROM test WHERE {TIMESTAMP_CONDITION}",
+    "query": "SELECT * FROM test WHERE {TIMESTAMP_CONDITION} LIMIT 10",
     "limit": 10,
     "timestamp": {
       "type": "unix_ms",
@@ -23,7 +23,7 @@
     },
     "dimensions": ["cell_id", "oss_host", "oss_host", "addinfo1"],
     "interval": 86400,
-    "query": "SELECT * FROM test5 WHERE {TIMESTAMP_CONDITION}",
+    "query": "SELECT * FROM test5 WHERE {TIMESTAMP_CONDITION} LIMIT 10",
     "limit": 500,
     "timestamp": {
       "type": "datetime",

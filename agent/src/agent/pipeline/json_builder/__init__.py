@@ -75,6 +75,8 @@ def _get_raw_builder(pipeline_: Pipeline, config: dict, is_edit: bool) -> IBuild
     loaders = {
         source.TYPE_CLICKHOUSE: JDBCRawBuilder,
         source.TYPE_DATABRICKS: JDBCRawBuilder,
+        source.TYPE_IMPALA: JDBCRawBuilder,
+        source.TYPE_MSSQL: JDBCRawBuilder,
         source.TYPE_MYSQL: JDBCRawBuilder,
         source.TYPE_POSTGRES: JDBCRawBuilder,
         source.TYPE_SNMP: SNMPRawBuilder,

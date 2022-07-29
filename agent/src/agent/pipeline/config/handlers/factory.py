@@ -45,6 +45,8 @@ def _get_raw_handler(pipeline_: Pipeline, base_config: dict) -> ConfigHandler:
     handlers = {
         source.TYPE_CLICKHOUSE: pipeline.config.handlers.jdbc.JDBCRawConfigHandler,
         source.TYPE_DATABRICKS: pipeline.config.handlers.jdbc.JDBCRawConfigHandler,
+        source.TYPE_IMPALA: pipeline.config.handlers.jdbc.JDBCRawConfigHandler,
+        source.TYPE_MSSQL: pipeline.config.handlers.jdbc.JDBCRawConfigHandler,
         source.TYPE_MYSQL: pipeline.config.handlers.jdbc.JDBCRawConfigHandler,
         source.TYPE_ORACLE: pipeline.config.handlers.jdbc.JDBCRawConfigHandler,
         source.TYPE_POSTGRES: pipeline.config.handlers.jdbc.JDBCRawConfigHandler,
