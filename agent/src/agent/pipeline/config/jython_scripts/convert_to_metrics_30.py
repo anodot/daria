@@ -58,6 +58,22 @@ def get_measurements(record):
     return measurements
 
 
+def get_dynamic_tags(record):
+    tags = {}
+    for tag_name, tag_path in sdc.userParams['DYNAMIC_TAGS'].items():
+        try:
+            tag_value = extract_value(record.value, tag_path)
+            if not tag_value:
+                continue
+            tag_value = str(tag_value).strip()
+            if tag_value == '':
+                continue
+            tags[replace_illegal_chars(tag_name)] = [replace_illegal_chars(tag_value)]
+        except Exception as e:
+            sdc.log.error("Can't retrieve tag: " + str(e))
+    return tags or None
+
+
 def main():
     i = -1
     for record in sdc.records:
@@ -75,6 +91,7 @@ def main():
                 'dimensions': get_dimensions(record),
                 'measurements': measurements,
                 'schemaId': '${SCHEMA_ID}',
+                'tags': get_dynamic_tags(record),
             }
             output.write(new_record)
         except Exception as e:

@@ -80,5 +80,33 @@
     "properties": {
       "version": "1"
     }
+  },
+  {
+    "source": "test_dir_json",
+    "pipeline_id": "test_dir_dynamic_tags",
+    "measurement_names": {
+      "Clicks": "clicks"
+    },
+    "values": {
+      "Clicks": "gauge"
+    },
+    "dimensions": [
+      "ver",
+      "metric"
+    ],
+    "tags": {
+      "static_tag_1": ["static_value_1"],
+      "static_tag_2": ["static_value_2"]
+    },
+    "tag_configurations": {
+      "dynamic_tag_1": {"value_path": "AdType"},
+      "dynamic_tag_2": {"value_path": "Country"},
+      "dynamic_tag_3": {"value_path": "AdSize"}
+    },
+    "timestamp": {
+      "type": "unix",
+      "name": "timestamp_unix"
+    },
+    "flush_bucket_size": "1h"
   }
 ]

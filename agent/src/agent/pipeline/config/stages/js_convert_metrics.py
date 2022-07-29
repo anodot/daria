@@ -9,6 +9,7 @@ state['TIMESTAMP_COLUMN'] = '{self.pipeline.timestamp_path}';
 state['DIMENSIONS'] = {self.pipeline.dimension_paths};
 state['DIMENSIONS_NAMES'] = {self.pipeline.dimension_names};
 state['VALUES_COLUMNS'] = {self.pipeline.value_paths};
+state['DYNAMIC_TAGS'] = {self._get_tags_config()};
 // it's used in kafka js metric 2.0
 state['MEASUREMENT_NAMES'] = {self.pipeline.measurement_names_paths};
 state['TARGET_TYPES'] = {self.pipeline.target_types_paths};
@@ -29,6 +30,9 @@ state['metrics'] = {{}}
     def _required_fields(self) -> list:
         return [f'/{f}' for f in [*self.pipeline.required_dimension_paths]]
 
+    def _get_tags_config(self) -> dict:
+        return {name: value['value_path'] for name, value in self.pipeline.tag_configurations.items()}
+
 
 class JSConvertMetrics30(JSConvertMetrics):
     JS_SCRIPT_NAME = 'protocol_3.js'
@@ -43,6 +47,7 @@ state['COUNT_RECORDS_MEASUREMENT_NAME'] = '{self.pipeline.count_records_measurem
 state['INTERVAL'] = {self._get_interval()};
 state['HEADER_ATTRIBUTES'] = {self.pipeline.header_attributes};
 state['SEND_WATERMARK_IF_NO_DATA'] = '{str(bool(self.pipeline.dvp_config))}';
+state['DYNAMIC_TAGS'] = {self._get_tags_config()};
         """
 
     def get_config(self) -> dict:

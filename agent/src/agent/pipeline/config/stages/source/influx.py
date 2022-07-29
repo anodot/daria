@@ -46,7 +46,8 @@ class InfluxSource(InfluxScript):
         else:
             dimensions_to_select = [f'"{d}"::tag' for d in self.pipeline.dimension_paths]
             values_to_select = ['*::field' if v == '*' else f'"{v}"::field' for v in self.pipeline.value_paths]
-            columns = quote_plus(','.join(dimensions_to_select + values_to_select))
+            tags_to_select = [f'\"{v["value_path"]}\"::tag' for v in self.pipeline.tag_configurations.values()]
+            columns = quote_plus(','.join(dimensions_to_select + values_to_select + tags_to_select))
 
             where = self.pipeline.config.get('filtering')
             where = f'AND+%28{quote_plus(where)}%29' if where else ''

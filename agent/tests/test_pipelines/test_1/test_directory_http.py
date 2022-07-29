@@ -14,24 +14,28 @@ class TestDirectory(TestPipelineBase):
             {'name': 'test_dir_log'},
             {'name': 'test_dir_json'},
             {'name': 'events_directory'},
+            {'name': 'test_dir_dynamic_tags'},
         ],
         'test_stop': [
             {'name': 'test_dir_log'},
             {'name': 'test_dir_json'},
             {'name': 'test_dir_csv'},
             {'name': 'events_directory'},
+            {'name': 'test_dir_dynamic_tags'},
         ],
         'test_reset': [{'name': 'test_dir_log'}],
         'test_output_schema': [
             {'name': 'test_dir_csv', 'output': 'directory_csv.json', 'pipeline_type': source.TYPE_DIRECTORY},
             {'name': 'test_dir_json', 'output': 'directory_json.json', 'pipeline_type': source.TYPE_DIRECTORY},
-            {'name': 'test_dir_log', 'output': 'directory_log.json', 'pipeline_type': source.TYPE_DIRECTORY}
+            {'name': 'test_dir_log', 'output': 'directory_log.json', 'pipeline_type': source.TYPE_DIRECTORY},
+            {'name': 'test_dir_dynamic_tags', 'output': 'directory_tags.json', 'pipeline_type': source.TYPE_DIRECTORY},
         ],
         'test_delete_pipeline': [
             {'name': 'test_dir_log'},
             {'name': 'test_dir_json'},
             {'name': 'test_dir_csv'},
             {'name': 'events_directory'},
+            {'name': 'test_dir_dynamic_tags'},
         ],
         'test_source_delete': [
             {'name': 'test_dir_log'},
@@ -72,4 +76,4 @@ class TestDirectory(TestPipelineBase):
         }
 
     def test_events_output(self):
-        assert get_output(f'events_directory.json') == get_expected_events_output('events_directory.json')
+        assert get_output('events_directory.json') == get_expected_events_output('events_directory.json')

@@ -1,0 +1,336 @@
+[
+  {
+    "timestamp": 1552654426,
+    "dimensions": {
+      "host": "msk-air-trn5ґ",
+      "test": "val"
+    },
+    "measurements": {
+      "usage_active": 0.204
+    },
+    "schemaId": "test_influx2_tag-1234",
+    "tags": {
+      "tag_zone": [
+        "GEO"
+      ],
+      "tag_table": [
+        "10"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_tag"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552654426,
+    "dimensions": {
+      "host": "msk-air-trn5ґ",
+      "test": "val"
+    },
+    "measurements": {
+      "usage_idle": 62.53
+    },
+    "schemaId": "test_influx2_tag-1234",
+    "tags": {
+      "tag_zone": [
+        "GEO"
+      ],
+      "tag_table": [
+        "11"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_tag"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552754426,
+    "dimensions": {
+      "host": "msk_a_ir_trn1",
+      "test": "val"
+    },
+    "measurements": {
+      "usage_active": 0.224
+    },
+    "schemaId": "test_influx2_tag-1234",
+    "tags": {
+      "tag_zone": [
+        "GF"
+      ],
+      "tag_table": [
+        "15"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_tag"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552754426,
+    "dimensions": {
+      "host": "msk_a_ir_trn1",
+      "test": "val"
+    },
+    "measurements": {
+      "usage_idle": 14.247
+    },
+    "schemaId": "test_influx2_tag-1234",
+    "tags": {
+      "tag_zone": [
+        "GF"
+      ],
+      "tag_table": [
+        "16"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_tag"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552854426,
+    "dimensions": {
+      "host": "msk_air_trn1",
+      "test": "val"
+    },
+    "measurements": {
+      "usage_active": 0.22432747346756737
+    },
+    "schemaId": "test_influx2_tag-1234",
+    "tags": {
+      "tag_zone": [
+        "GF"
+      ],
+      "tag_table": [
+        "20"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_tag"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552854426,
+    "dimensions": {
+      "host": "msk_air_trn1",
+      "test": "val"
+    },
+    "measurements": {
+      "usage_idle": 14.247
+    },
+    "schemaId": "test_influx2_tag-1234",
+    "tags": {
+      "tag_zone": [
+        "GF"
+      ],
+      "tag_table": [
+        "21"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_tag"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552954426,
+    "dimensions": {
+      "host": "msk-air-trn1",
+      "test": "val"
+    },
+    "measurements": {
+      "usage_active": 0.224
+    },
+    "schemaId": "test_influx2_tag-1234",
+    "tags": {
+      "tag_table": [
+        "0"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_tag"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552954426,
+    "dimensions": {
+      "host": "msk-air-trn1",
+      "test": "val"
+    },
+    "measurements": {
+      "usage_idle": 14.247
+    },
+    "schemaId": "test_influx2_tag-1234",
+    "tags": {
+      "tag_table": [
+        "1"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_tag"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1553154426,
+    "dimensions": {
+      "host": "msk-air-trn1",
+      "test": "val"
+    },
+    "measurements": {
+      "usage_active": 0.504
+    },
+    "schemaId": "test_influx2_tag-1234",
+    "tags": {
+      "tag_zone": [
+        "GEO"
+      ],
+      "tag_table": [
+        "5"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_tag"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1553154426,
+    "dimensions": {
+      "host": "msk-air-trn1",
+      "test": "val"
+    },
+    "measurements": {
+      "usage_idle": 26.0
+    },
+    "schemaId": "test_influx2_tag-1234",
+    "tags": {
+      "tag_zone": [
+        "GEO"
+      ],
+      "tag_table": [
+        "6"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_tag"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  }
+]

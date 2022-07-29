@@ -35,7 +35,8 @@
         "file": {"type": "string"},
         "config": {"type": "string"}
       }
-    }
+    },
+    "tag_configurations": {"type": "object"}
   },
   "required": ["values", "dimensions", "timestamp", "flush_bucket_size"]
 }

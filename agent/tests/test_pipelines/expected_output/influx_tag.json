@@ -1,0 +1,368 @@
+[
+  {
+    "timestamp": 1552654426,
+    "properties": {
+      "target_type": "gauge",
+      "cpu": "cpu-total-usage",
+      "host": "msk-air-trn5ґ",
+      "measurement_category": "cpu_test",
+      "what": "usage_active"
+    },
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx_tag"
+      ],
+      "pipeline_type": [
+        "influx"
+      ],
+      "tag_zone": [
+        "GEO"
+      ]
+    },
+    "value": 0.204
+  },
+  {
+    "timestamp": 1552654426,
+    "properties": {
+      "target_type": "gauge",
+      "cpu": "cpu-total-usage",
+      "host": "msk-air-trn5ґ",
+      "measurement_category": "cpu_test",
+      "what": "usage_idle"
+    },
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx_tag"
+      ],
+      "pipeline_type": [
+        "influx"
+      ],
+      "tag_zone": [
+        "GEO"
+      ]
+    },
+    "value": 62.53
+  },
+  {
+    "timestamp": 1552754426,
+    "properties": {
+      "target_type": "gauge",
+      "cpu": "cpu-total-usage",
+      "host": "msk_a_ir_trn1",
+      "measurement_category": "cpu_test",
+      "what": "usage_active"
+    },
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx_tag"
+      ],
+      "pipeline_type": [
+        "influx"
+      ],
+      "tag_zone": [
+        "GF"
+      ]
+    },
+    "value": 0.224
+  },
+  {
+    "timestamp": 1552754426,
+    "properties": {
+      "target_type": "gauge",
+      "cpu": "cpu-total-usage",
+      "host": "msk_a_ir_trn1",
+      "measurement_category": "cpu_test",
+      "what": "usage_idle"
+    },
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx_tag"
+      ],
+      "pipeline_type": [
+        "influx"
+      ],
+      "tag_zone": [
+        "GF"
+      ]
+    },
+    "value": 14.247
+  },
+  {
+    "timestamp": 1552854426,
+    "properties": {
+      "target_type": "gauge",
+      "cpu": "cpu-total-usage",
+      "host": "msk_air_trn1",
+      "measurement_category": "cpu_test",
+      "what": "usage_active"
+    },
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx_tag"
+      ],
+      "pipeline_type": [
+        "influx"
+      ],
+      "tag_zone": [
+        "GF"
+      ]
+    },
+    "value": 0.22432747346756737
+  },
+  {
+    "timestamp": 1552854426,
+    "properties": {
+      "target_type": "gauge",
+      "cpu": "cpu-total-usage",
+      "host": "msk_air_trn1",
+      "measurement_category": "cpu_test",
+      "what": "usage_idle"
+    },
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx_tag"
+      ],
+      "pipeline_type": [
+        "influx"
+      ],
+      "tag_zone": [
+        "GF"
+      ]
+    },
+    "value": 14.247
+  },
+  {
+    "timestamp": 1552954426,
+    "properties": {
+      "target_type": "gauge",
+      "cpu": "cpu-total-usage",
+      "host": "msk-air-trn1",
+      "measurement_category": "cpu_test",
+      "what": "usage_active"
+    },
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx_tag"
+      ],
+      "pipeline_type": [
+        "influx"
+      ]
+    },
+    "value": 0.224
+  },
+  {
+    "timestamp": 1552954426,
+    "properties": {
+      "target_type": "gauge",
+      "cpu": "cpu-total-usage",
+      "host": "msk-air-trn1",
+      "measurement_category": "cpu_test",
+      "what": "usage_idle"
+    },
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx_tag"
+      ],
+      "pipeline_type": [
+        "influx"
+      ]
+    },
+    "value": 14.247
+  },
+  {
+    "timestamp": 1553054426,
+    "properties": {
+      "target_type": "gauge",
+      "cpu": "cpu-total-usage",
+      "host": "msk-air-trn1",
+      "measurement_category": "cpu_test",
+      "what": "usage_active"
+    },
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx_tag"
+      ],
+      "pipeline_type": [
+        "influx"
+      ],
+      "tag_zone": [
+        "GF"
+      ]
+    },
+    "value": 0.504
+  },
+  {
+    "timestamp": 1553054426,
+    "properties": {
+      "target_type": "gauge",
+      "cpu": "cpu-total-usage",
+      "host": "msk-air-trn1",
+      "measurement_category": "cpu_test",
+      "what": "usage_idle"
+    },
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx_tag"
+      ],
+      "pipeline_type": [
+        "influx"
+      ],
+      "tag_zone": [
+        "GF"
+      ]
+    },
+    "value": 260404905034043060000
+  },
+  {
+    "timestamp": 1553154426,
+    "properties": {
+      "target_type": "gauge",
+      "cpu": "cpu-total-usage",
+      "host": "msk-air-trn1",
+      "measurement_category": "cpu_test",
+      "what": "usage_active"
+    },
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx_tag"
+      ],
+      "pipeline_type": [
+        "influx"
+      ],
+      "tag_zone": [
+        "GEO"
+      ]
+    },
+    "value": 0.504
+  },
+  {
+    "timestamp": 1553154426,
+    "properties": {
+      "target_type": "gauge",
+      "cpu": "cpu-total-usage",
+      "host": "msk-air-trn1",
+      "measurement_category": "cpu_test",
+      "what": "usage_idle"
+    },
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx_tag"
+      ],
+      "pipeline_type": [
+        "influx"
+      ],
+      "tag_zone": [
+        "GEO"
+      ]
+    },
+    "value": 26
+  }
+]

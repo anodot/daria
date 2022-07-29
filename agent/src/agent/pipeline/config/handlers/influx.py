@@ -27,6 +27,7 @@ state['HOST_ID'] = '{host_id}'
 state['HOST_NAME'] = '{host_name}'
 state['PIPELINE_ID'] = '{pipeline_id}'
 state['TAGS'] = {tags}
+state['DYNAMIC_TAGS'] = {dynamic_tags}
 """
 
     def _override_stages(self):
@@ -53,7 +54,8 @@ state['TAGS'] = {tags}
             host_id=self.pipeline.destination.host_id,
             host_name=HOSTNAME,
             pipeline_id=self.pipeline.name,
-            tags=json.dumps(self.pipeline.get_tags())
+            tags=json.dumps(self.pipeline.get_tags()),
+            dynamic_tags=json.dumps({name: value['value_path'] for name, value in self.pipeline.tag_configurations.items()}),
         )
 
 

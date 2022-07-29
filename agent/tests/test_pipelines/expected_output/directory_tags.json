@@ -1,0 +1,254 @@
+[
+  {
+    "tags": {
+      "dynamic_tag_3": [
+        "{u'type':_u'Small'}"
+      ],
+      "dynamic_tag_1": [
+        "Display"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_dir_dynamic_tags"
+      ],
+      "pipeline_type": [
+        "directory"
+      ],
+      "static_tag_1": [
+        "static_value_1"
+      ],
+      "static_tag_2": [
+        "static_value_2"
+      ]
+    },
+    "schemaId": "test_dir_dynamic_tags-1234",
+    "timestamp": 1512867600,
+    "dimensions": {
+      "ver": "1",
+      "metric": "clicks_display"
+    },
+    "measurements": {
+      "clicks": 6784.6904
+    }
+  },
+  {
+    "tags": {
+      "dynamic_tag_3": [
+        "{u'type':_u'Small'}"
+      ],
+      "dynamic_tag_1": [
+        "Display"
+      ],
+      "dynamic_tag_2": [
+        "USA"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_dir_dynamic_tags"
+      ],
+      "pipeline_type": [
+        "directory"
+      ],
+      "static_tag_1": [
+        "static_value_1"
+      ],
+      "static_tag_2": [
+        "static_value_2"
+      ]
+    },
+    "schemaId": "test_dir_dynamic_tags-1234",
+    "timestamp": 1512871200,
+    "dimensions": {
+      "ver": "1",
+      "metric": "clicks_display"
+    },
+    "measurements": {
+      "clicks": 6839
+    }
+  },
+  {
+    "tags": {
+      "dynamic_tag_3": [
+        "{u'type':_u'Small'}"
+      ],
+      "dynamic_tag_1": [
+        "Search"
+      ],
+      "dynamic_tag_2": [
+        "USA"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_dir_dynamic_tags"
+      ],
+      "pipeline_type": [
+        "directory"
+      ],
+      "static_tag_1": [
+        "static_value_1"
+      ],
+      "static_tag_2": [
+        "static_value_2"
+      ]
+    },
+    "schemaId": "test_dir_dynamic_tags-1234",
+    "timestamp": 1512874800,
+    "dimensions": {
+      "ver": "1",
+      "metric": "clicks_search"
+    },
+    "measurements": {
+      "clicks": 6909993404034934004
+    }
+  },
+  {
+    "tags": {
+      "dynamic_tag_3": [
+        "{u'type':_u'Small'}"
+      ],
+      "dynamic_tag_1": [
+        "Display"
+      ],
+      "dynamic_tag_2": [
+        "USA"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_dir_dynamic_tags"
+      ],
+      "pipeline_type": [
+        "directory"
+      ],
+      "static_tag_1": [
+        "static_value_1"
+      ],
+      "static_tag_2": [
+        "static_value_2"
+      ]
+    },
+    "schemaId": "test_dir_dynamic_tags-1234",
+    "timestamp": 1512878400,
+    "dimensions": {
+      "ver": "1",
+      "metric": "clicks_display"
+    },
+    "measurements": {
+      "clicks": 7158.972598273843
+    }
+  },
+  {
+    "tags": {
+      "dynamic_tag_3": [
+        "{u'type':_u'Small'}"
+      ],
+      "dynamic_tag_1": [
+        "Search"
+      ],
+      "dynamic_tag_2": [
+        "USA"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_dir_dynamic_tags"
+      ],
+      "pipeline_type": [
+        "directory"
+      ],
+      "static_tag_1": [
+        "static_value_1"
+      ],
+      "static_tag_2": [
+        "static_value_2"
+      ]
+    },
+    "schemaId": "test_dir_dynamic_tags-1234",
+    "timestamp": 1512882000,
+    "dimensions": {
+      "ver": "1",
+      "metric": "clicks_search"
+    },
+    "measurements": {
+      "clicks": 7235.7574
+    }
+  },
+  {
+    "tags": {
+      "dynamic_tag_3": [
+        "{u'type':_u'Small'}"
+      ],
+      "dynamic_tag_1": [
+        "Display"
+      ],
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_dir_dynamic_tags"
+      ],
+      "pipeline_type": [
+        "directory"
+      ],
+      "static_tag_1": [
+        "static_value_1"
+      ],
+      "static_tag_2": [
+        "static_value_2"
+      ]
+    },
+    "schemaId": "test_dir_dynamic_tags-1234",
+    "timestamp": 1512889200,
+    "dimensions": {
+      "ver": "1",
+      "metric": "clicks_display"
+    },
+    "measurements": {
+      "clicks": 7427.7744
+    }
+  }
+]
