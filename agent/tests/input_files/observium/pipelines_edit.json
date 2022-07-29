@@ -5,7 +5,6 @@
     "dimensions": ["mempool_descr"],
     "interval": 60,
     "delay": 30,
-    "step": 0,
     "default_values_type": "mempools",
     "query": "select m.*, d.sysName, dl.location from mempools m join devices d on d.device_id = m.device_id join devices_locations dl on dl.device_id = m.device_id"
   }
