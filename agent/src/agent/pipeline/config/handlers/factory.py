@@ -22,6 +22,7 @@ def _get_no_schema_handler(pipeline_: Pipeline, base_config: dict) -> NoSchemaCo
     handlers_protocol20 = {
         source.TYPE_CACTI: pipeline.config.handlers.cacti.CactiConfigHandler,
         source.TYPE_ELASTIC: pipeline.config.handlers.elastic.ElasticConfigHandler,
+        source.TYPE_IMPALA: pipeline.config.handlers.jdbc.JDBCConfigHandler,
         source.TYPE_INFLUX: pipeline.config.handlers.influx.InfluxConfigHandler,
         source.TYPE_KAFKA: pipeline.config.handlers.kafka.KafkaConfigHandler,
         source.TYPE_MONGO: pipeline.config.handlers.mongo.MongoConfigHandler,
@@ -44,6 +45,8 @@ def _get_raw_handler(pipeline_: Pipeline, base_config: dict) -> ConfigHandler:
     handlers = {
         source.TYPE_CLICKHOUSE: pipeline.config.handlers.jdbc.JDBCRawConfigHandler,
         source.TYPE_DATABRICKS: pipeline.config.handlers.jdbc.JDBCRawConfigHandler,
+        source.TYPE_IMPALA: pipeline.config.handlers.jdbc.JDBCRawConfigHandler,
+        source.TYPE_MSSQL: pipeline.config.handlers.jdbc.JDBCRawConfigHandler,
         source.TYPE_MYSQL: pipeline.config.handlers.jdbc.JDBCRawConfigHandler,
         source.TYPE_ORACLE: pipeline.config.handlers.jdbc.JDBCRawConfigHandler,
         source.TYPE_POSTGRES: pipeline.config.handlers.jdbc.JDBCRawConfigHandler,
@@ -65,6 +68,7 @@ def _get_schema_handler(pipeline_: Pipeline, base_config: dict) -> SchemaConfigH
         source.TYPE_CLICKHOUSE: pipeline.config.handlers.jdbc.JDBCSchemaConfigHandler,
         source.TYPE_DIRECTORY: pipeline.config.handlers.directory.DirectoryConfigHandler,
         source.TYPE_DATABRICKS: pipeline.config.handlers.jdbc.JDBCSchemaConfigHandler,
+        source.TYPE_IMPALA: pipeline.config.handlers.jdbc.JDBCSchemaConfigHandler,
         source.TYPE_INFLUX: pipeline.config.handlers.influx.InfluxSchemaConfigHandler,
         source.TYPE_INFLUX_2: pipeline.config.handlers.influx.Influx2SchemaConfigHandler,
         source.TYPE_KAFKA: pipeline.config.handlers.kafka.KafkaSchemaConfigHandler,
@@ -91,6 +95,7 @@ def _get_test_handler(pipeline_: Pipeline, base_config: dict) -> ConfigHandler:
         source.TYPE_DATABRICKS: pipeline.config.handlers.jdbc.TestJDBCConfigHandler,
         source.TYPE_ELASTIC: pipeline.config.handlers.elastic.TestElasticConfigHandler,
         source.TYPE_HTTP: pipeline.config.handlers.http.TestHttpConfigHandler,
+        source.TYPE_IMPALA: pipeline.config.handlers.jdbc.TestJDBCConfigHandler,
         source.TYPE_INFLUX: pipeline.config.handlers.influx.TestInfluxConfigHandler,
         source.TYPE_INFLUX_2: pipeline.config.handlers.influx.TestInflux2ConfigHandler,
         source.TYPE_KAFKA: pipeline.config.handlers.kafka.TestKafkaConfigHandler,

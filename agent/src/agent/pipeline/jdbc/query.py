@@ -47,11 +47,15 @@ class Builder:
 
     def _supports_indexed_timestamp_condition(self) -> bool:
         return self.pipeline.timestamp_type in [pipeline.TimestampType.DATETIME, pipeline.TimestampType.STRING] and \
-               self.pipeline.source.type == source.TYPE_MSSQL
+               self.pipeline.source.type in [source.TYPE_MSSQL, source.TYPE_IMPALA]
 
     def _get_indexed_query(self) -> str:
-        return f"{self.pipeline.timestamp_path} BETWEEN DATEADD(second, {self.TIMESTAMP_VALUE}, '1970-01-01') AND " \
-               f"DATEADD(second, {self.TIMESTAMP_VALUE} + {self.pipeline.interval}, '1970-01-01')"
+        if self.pipeline.source.type == source.TYPE_MSSQL:
+            return f"{self.pipeline.timestamp_path} BETWEEN DATEADD(second, {self.TIMESTAMP_VALUE}, '1970-01-01') AND "\
+                   f"DATEADD(second, {self.TIMESTAMP_VALUE} + {self.pipeline.interval}, '1970-01-01')"
+        if self.pipeline.source.type == source.TYPE_IMPALA:
+            return f"{self.pipeline.timestamp_path} BETWEEN CAST(FROM_UNIXTIME({self.TIMESTAMP_VALUE}) as TIMESTAMP) AND " \
+                   f"CAST(FROM_UNIXTIME({self.TIMESTAMP_VALUE}) as TIMESTAMP) + interval {self.pipeline.interval} seconds"
 
     def _get_regular_query(self) -> str:
         return f'{self._timestamp_to_unix()} >= {self.TIMESTAMP_VALUE} AND ' \
@@ -70,6 +74,8 @@ class Builder:
 '{self.pipeline.timezone}')) as date) - TO_DATE('1970-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS')) * 86400"""
             if self.pipeline.source.type == source.TYPE_DATABRICKS:
                 return f"unix_timestamp({self.pipeline.timestamp_path})"
+            if self.pipeline.source.type == source.TYPE_IMPALA:
+                return f"UNIX_TIMESTAMP({self.pipeline.timestamp_path})"
 
         if self.pipeline.timestamp_type == pipeline.TimestampType.UNIX_MS:
             return f'{self.pipeline.timestamp_path}/1000'

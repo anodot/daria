@@ -31,6 +31,7 @@ def supports_schema(pipeline_: Pipeline) -> bool:
         source.TYPE_DATABRICKS: True,
         source.TYPE_ELASTIC: False,
         source.TYPE_HTTP: True,
+        source.TYPE_IMPALA: True,
         source.TYPE_INFLUX: True,
         source.TYPE_INFLUX_2: True,
         source.TYPE_KAFKA: True,

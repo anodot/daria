@@ -30,6 +30,9 @@ function configure_sql_drivers() {
   wget https://databricks-bi-artifacts.s3.us-east-2.amazonaws.com/simbaspark-drivers/jdbc/2.6.21/SimbaSparkJDBC42-${SIMBA_DRIVER_VERSION}.zip \
                       -O ${JDBC_DRIVER_DIR}/SimbaSparkJDBC42-${SIMBA_DRIVER_VERSION}.zip
   unzip ${JDBC_DRIVER_DIR}/SimbaSparkJDBC42-${SIMBA_DRIVER_VERSION}.zip -d ${JDBC_DRIVER_DIR}
+
+  # impala
+  cp /tmp/ImpalaJDBC4.jar ${JDBC_DRIVER_DIR}
 }
 
 function install_stage_libs() {

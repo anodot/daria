@@ -14,6 +14,7 @@ TYPE_DIRECTORY = 'directory'
 TYPE_DATABRICKS = 'databricks'
 TYPE_ELASTIC = 'elastic'
 TYPE_HTTP = 'http'
+TYPE_IMPALA = 'impala'
 TYPE_INFLUX = 'influx'
 TYPE_INFLUX_2 = 'influx2'
 TYPE_KAFKA = 'kafka'
@@ -42,6 +43,7 @@ types = {
     TYPE_DATABRICKS: JDBCSource,
     TYPE_ELASTIC: ElasticSource,
     TYPE_HTTP: APISource,
+    TYPE_IMPALA: JDBCSource,
     TYPE_INFLUX: InfluxSource,
     TYPE_INFLUX_2: Influx2Source,
     TYPE_KAFKA: KafkaSource,
