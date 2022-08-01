@@ -420,7 +420,6 @@ class Pipeline(Entity, sdc_client.IPipeline):
     def get_unit_for_measurement(self, measurement: str):
         return self.config.get('units', {}).get(measurement)
 
-
     def export(self) -> dict:
         return {
             **self.config,
