@@ -417,6 +417,10 @@ class Pipeline(Entity, sdc_client.IPipeline):
     def get_schema_id(self) -> Optional[str]:
         return self.get_schema().get('id')
 
+    def get_unit_for_measurement(self, measurement: str):
+        return self.config.get('units', {}).get(measurement)
+
+
     def export(self) -> dict:
         return {
             **self.config,
