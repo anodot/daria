@@ -306,18 +306,29 @@ def reset(pipeline_id: str):
 
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, required=False)
-def update(pipeline_id: str):
+@click.option('--asynchronous', '-a', is_flag=True, default=False, help="Asynchronous mode")
+def update(pipeline_id: str, asynchronous: bool):
     """
     Update all pipelines configuration, recreate and restart them
     """
     pipelines = [pipeline.repository.get_by_id(pipeline_id)] if pipeline_id else pipeline.repository.get_all()
-    for p in pipelines:
+    if asynchronous:
         try:
-            sdc_client.update(p)
-            click.secho(f'Pipeline {p.name} updated', fg='green')
-        except streamsets.manager.StreamsetsException as e:
+            if click.confirm('It is recommended to perform backup before asynchronous update.'
+                             'Are you sure you want to continue?'):
+                sdc_client.update_async(pipelines)
+                click.secho('Pipelines update finished', fg='green')
+        except sdc_client.StreamsetsException as e:
             click.echo(str(e))
-            continue
+            click.echo('Use `agent pipeline restore` to rollback all pipelines')
+    else:
+        for p in pipelines:
+            try:
+                sdc_client.update(p)
+                click.secho(f'Pipeline {p.name} updated', fg='green')
+            except streamsets.manager.StreamsetsException as e:
+                click.echo(str(e))
+                continue
 
 
 @click.command()

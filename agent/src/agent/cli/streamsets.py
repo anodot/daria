@@ -76,7 +76,8 @@ def delete(url):
 
 
 @click.command()
-def balance():
+@click.option('--asynchronous', '-a', is_flag=True, default=False, help="Asynchronous mode")
+def balance(asynchronous):
     streamsets_ = streamsets.repository.get_all()
     if len(streamsets_) == 1:
         logger.info('You have only one streamsets instance, can\'t balance')
@@ -84,8 +85,16 @@ def balance():
     elif len(streamsets_) == 0:
         logger.info('You don\'t have any streamsets instances, can\'t balance')
         return
-    sdc_client.StreamsetsBalancer().balance()
-    click.secho('Done', fg='green')
+    try:
+        if asynchronous and click.confirm('It is recommended to perform backup before asynchronous balancing. '
+                                          'Are you sure you want to continue?'):
+            sdc_client.StreamsetsBalancerAsync().balance()
+        else:
+            sdc_client.StreamsetsBalancer().balance()
+        click.secho('Done', fg='green')
+    except sdc_client.StreamsetsException as e:
+        click.echo(str(e))
+        click.echo('Use `agent pipeline restore` to rollback all pipelines')
 
 
 @click.command()

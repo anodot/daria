@@ -25,7 +25,8 @@ def test_create_streamsets_2_again(cli_runner):
 
 def test_balance_streamsets(cli_runner):
     result = cli_runner.invoke(cli.streamsets.balance, catch_exceptions=False)
-    assert sdc_client.StreamsetsBalancer().is_balanced()
+    balancer = sdc_client.StreamsetsBalancer()
+    assert sdc_client.StreamsetsBalancer.is_balanced(balancer.streamsets_pipelines)
     assert _is_balanced()
     assert result.exit_code == 0
 
