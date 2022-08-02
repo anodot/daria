@@ -7,6 +7,9 @@
       "dynamic_tag_1": [
         "Display"
       ],
+      "dynamic_tag_2": [
+        "中国"
+      ],
       "source": [
         "anodot-agent"
       ],
@@ -33,7 +36,8 @@
     "timestamp": 1512867600,
     "dimensions": {
       "ver": "1",
-      "metric": "clicks_display"
+      "metric": "clicks_display",
+      "Country": "中国"
     },
     "measurements": {
       "clicks": 6784.6904
@@ -76,7 +80,8 @@
     "timestamp": 1512871200,
     "dimensions": {
       "ver": "1",
-      "metric": "clicks_display"
+      "metric": "clicks_display",
+      "Country": "USA"
     },
     "measurements": {
       "clicks": 6839
@@ -119,7 +124,8 @@
     "timestamp": 1512874800,
     "dimensions": {
       "ver": "1",
-      "metric": "clicks_search"
+      "metric": "clicks_search",
+      "Country": "USA"
     },
     "measurements": {
       "clicks": 6909993404034934004
@@ -162,7 +168,8 @@
     "timestamp": 1512878400,
     "dimensions": {
       "ver": "1",
-      "metric": "clicks_display"
+      "metric": "clicks_display",
+      "Country": "USA"
     },
     "measurements": {
       "clicks": 7158.972598273843
@@ -205,7 +212,8 @@
     "timestamp": 1512882000,
     "dimensions": {
       "ver": "1",
-      "metric": "clicks_search"
+      "metric": "clicks_search",
+      "Country": "USA"
     },
     "measurements": {
       "clicks": 7235.7574

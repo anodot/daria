@@ -65,10 +65,8 @@ def get_dynamic_tags(record):
             tag_value = extract_value(record.value, tag_path)
             if not tag_value:
                 continue
-            tag_value = str(tag_value).strip()
-            if tag_value == '':
-                continue
-            tags[replace_illegal_chars(tag_name)] = [replace_illegal_chars(tag_value)]
+            tag_value = replace_illegal_chars(tag_value)
+            tags[replace_illegal_chars(tag_name)] = [tag_value]
         except Exception as e:
             sdc.log.error("Can't retrieve tag: " + str(e))
     return tags or None

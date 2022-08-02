@@ -92,7 +92,8 @@
     },
     "dimensions": [
       "ver",
-      "metric"
+      "metric",
+      "Country"
     ],
     "tags": {
       "static_tag_1": ["static_value_1"],
