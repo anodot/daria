@@ -28,7 +28,7 @@ class Influx2Source(InfluxScript):
             },
             {
                 'key': 'TIMEOUT',
-                'value': self.pipeline.source.query_timeout
+                'value': str(self.pipeline.source.query_timeout)
             },
             {
                 'key': 'MONITORING_URL',
@@ -52,7 +52,7 @@ class Influx2Source(InfluxScript):
                f'from(bucket:"{self.pipeline.source.config["bucket"]}") ' \
                '|> {TIMESTAMP_CONDITION} ' \
                f'|> filter(fn: (r) => {self._get_filter_condition()}")'
-        return query.replace(TIMESTAMP_CONDITION, 'range(start: {}, stop: {})')
+        return query.replace(TIMESTAMP_CONDITION, 'range(start: %d, stop: %d)')
 
     def _get_filter_condition(self) -> str:
         filter_condition = f'r._measurement == "{self.pipeline.config["measurement_name"]}'
