@@ -13,8 +13,11 @@ def create(
     proxy_username: str = None,
     proxy_password: str = None,
     host_id: str = None,
+    use_jks_truststore: bool = False,
 ) -> Result[HttpDestination, str]:
-    result = _build(HttpDestination(), token, url, access_key, proxy_host, proxy_username, proxy_password, host_id)
+    destination_ = HttpDestination()
+    destination_.use_jks_truststore = use_jks_truststore
+    result = _build(destination_, token, url, access_key, proxy_host, proxy_username, proxy_password, host_id)
     if not result.is_err():
         # todo duplicate code, try to avoid it
         auth_token = destination.AuthenticationToken(result.value.id, AnodotApiClient(result.value).get_new_token())
