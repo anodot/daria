@@ -54,23 +54,9 @@ class TestInflux:
                         "wrong": "gauge"
                     }
                 },
-                "destination": {
-                    "conf.client.proxy.password": "",
-                    "conf.client.proxy.uri": "http://squid:3128",
-                    "conf.client.proxy.username": "",
-                    "conf.client.useProxy": True,
-                    "token": "correct_token",
-                    "url": "http://dummy_destination"
-                },
                 "id": "test_influx",
                 "override_source": {},
-                "schema": {},
-                "source": {
-                    "db": "test",
-                    "host": "http://influx:8086",
-                    "password": "admin",
-                    "username": "admin"
-                }
+                "schema": {}
             }]
         }],
         'test_edit': [{
@@ -111,23 +97,9 @@ class TestInflux:
                         "usage_active": "gauge"
                     }
                 },
-                "destination": {
-                    "conf.client.proxy.password": "",
-                    "conf.client.proxy.uri": "http://squid:3128",
-                    "conf.client.proxy.username": "",
-                    "conf.client.useProxy": True,
-                    "token": "correct_token",
-                    "url": "http://dummy_destination"
-                },
                 "id": "test_influx",
                 "override_source": {},
-                "schema": {},
-                "source": {
-                    "db": "test",
-                    "host": "http://influx:8086",
-                    "password": "admin",
-                    "username": "admin"
-                }
+                "schema": {}
             }]
         }],
     }
