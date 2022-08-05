@@ -19,7 +19,7 @@ class StreamSets(Entity, sdc_client.IStreamSets):
 
     pipelines = relationship('Pipeline', back_populates='streamsets')
 
-    def __init__(self, url: str, username: str, password: str, agent_external_url: str, preferred_type: str):
+    def __init__(self, url: str, username: str, password: str, agent_external_url: str, preferred_type: str = None):
         self.url = url
         self.username = username
         self.password = password
