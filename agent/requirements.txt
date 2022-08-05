@@ -54,7 +54,7 @@ alembic==1.4.2
 regex==2020.11.13
 inject==4.3.1
 prometheus-client==0.9.0
-git+https://github.com/anodot/sdc-client.git@1.2.2
+git+https://github.com/anodot/sdc-client.git@b94cff62c8226947c6c39de157e5e6d7e671fc8a
 rrdtool==0.1.15
 pysnmp==4.4.12
 psycopg2==2.9.1

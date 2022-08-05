@@ -317,6 +317,10 @@ class Pipeline(Entity, sdc_client.IPipeline):
     def query(self) -> Optional[str]:
         return self.config.get('query')
 
+    @property
+    def type(self) -> str:
+        return self.source_.type
+
     @query.setter
     def query(self, query: str):
         self.config['query'] = query

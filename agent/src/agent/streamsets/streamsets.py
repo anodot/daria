@@ -15,14 +15,16 @@ class StreamSets(Entity, sdc_client.IStreamSets):
     username = Column(String)
     password = Column(String)
     agent_external_url = Column(String)
+    preferred_type = Column(String, nullable=True)
 
     pipelines = relationship('Pipeline', back_populates='streamsets')
 
-    def __init__(self, url: str, username: str, password: str, agent_external_url: str):
+    def __init__(self, url: str, username: str, password: str, agent_external_url: str, preferred_type: str):
         self.url = url
         self.username = username
         self.password = password
         self.agent_external_url = agent_external_url
+        self.preferred_type = preferred_type
 
     def get_id(self) -> int:
         return self.id
@@ -36,12 +38,16 @@ class StreamSets(Entity, sdc_client.IStreamSets):
     def get_password(self) -> str:
         return self.password
 
+    def get_preferred_type(self) -> str:
+        return self.preferred_type
+
     def to_dict(self) -> dict:
         return {
             'url': self.url,
             'username': self.username,
             'password': self.password,
             'agent_external_url': self.agent_external_url,
+            'preferred_type': self.preferred_type,
         }
 
 
