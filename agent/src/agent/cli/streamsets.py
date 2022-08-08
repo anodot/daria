@@ -35,11 +35,11 @@ def list_():
 @click.option('--password', type=click.STRING, default='admin')
 @click.option('--agent-ext-url', type=click.STRING, default='http://anodot-agent')
 @click.option('--preferred-type', type=click.STRING, default=None)
-def add(url, username, password, agent_ext_url, preferred_type=None):
+def add(url, username, password, agent_ext_url, preferred_type):
     if url:
         _validate_streamsets_url(url)
         _validate_agent_external_url(agent_ext_url)
-        streamsets_ = StreamSets(url, username, password, agent_ext_url)
+        streamsets_ = StreamSets(url, username, password, agent_ext_url, preferred_type)
         _validate_streamsets(streamsets_)
     else:
         streamsets_ = _prompt_streamsets(StreamSets(_prompt_url(), '', '', ''))
@@ -51,8 +51,7 @@ def add(url, username, password, agent_ext_url, preferred_type=None):
 @click.command()
 @click.argument('url', autocompletion=get_url_complete)
 @click.option('--update-pipelines/--no-update-pipelines', default=False)
-@click.option('--preferred-type', type=click.STRING, default=None)
-def edit(url, update_pipelines=False, preferred_type=None):
+def edit(url, update_pipelines=False):
     try:
         s = streamsets.repository.get_by_url(url)
     except streamsets.repository.StreamsetsNotExistsException as e:

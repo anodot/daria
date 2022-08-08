@@ -160,6 +160,7 @@ test-raw-pipelines:
 	$(DOCKER_TEST_PARALLEL) tests/test_raw/test_pipelines
 
 test-streamsets-2:
+	$(DOCKER_TEST) tests/test_streamsets_with preferred_type.py
 	$(DOCKER_TEST) tests/test_streamsets_2.py
 
 test-input:
