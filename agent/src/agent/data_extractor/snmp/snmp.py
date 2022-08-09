@@ -1,12 +1,13 @@
 import time
 
 from pysnmp.entity.engine import SnmpEngine
-from pysnmp.hlapi import getCmd, CommunityData, UdpTransportTarget, ContextData
+from pysnmp.hlapi import getCmd, nextCmd, CommunityData, UdpTransportTarget, ContextData
 from pysnmp.smi.rfc1902 import ObjectType, ObjectIdentity
 from agent.data_extractor.snmp.delta_calculator import DeltaCalculator
 from agent.modules import logger
 from agent.modules.constants import SNMP_DEFAULT_PORT
 from agent.pipeline import Pipeline
+from itertools import chain
 from urllib.parse import urlparse
 
 logger_ = logger.get_logger(__name__, stdout=True)
@@ -23,6 +24,13 @@ def extract_metrics(pipeline_: Pipeline) -> list:
         var_binds = _get_var_binds(response, host)
         if metric := _create_metric(pipeline_, var_binds):
             metrics.append(metric)
+
+    if 'table_oids' in pipeline_.config:
+        for response, host in _fetch_table_data(pipeline_):
+            var_binds = _get_var_binds(response, host)
+            if metric := _create_metric(pipeline_, var_binds):
+                metrics.append(metric)
+
     return metrics
 
 
@@ -34,7 +42,7 @@ def fetch_raw_data(pipeline_: Pipeline) -> dict:
             k = str(var_bind[0])
             v = str(var_bind[1])
             if k in data:
-                raise Exception(f'`{k}` already exists')
+                raise SNMPError(f'`{k}` already exists')
             data[k] = v
     return data
 
@@ -72,6 +80,27 @@ def _fetch_data(pipeline_: Pipeline):
             yield i, host
 
 
+def _fetch_table_data(pipeline_: Pipeline):
+    snmp_version = 0 if pipeline_.source.version == 'v1' else 1
+    for host in pipeline_.source.hosts:
+        host_ = host if '://' in host else f'//{host}'
+        url = urlparse(host_)
+        iterators = []
+        for table_oid, mib, names in pipeline_.config['table_oids']:
+            iterator = nextCmd(
+                SnmpEngine(),
+                CommunityData(pipeline_.source.read_community, mpModel=snmp_version),
+                UdpTransportTarget((url.hostname, url.port or SNMP_DEFAULT_PORT), timeout=pipeline_.source.query_timeout, retries=0),
+                ContextData(),
+                *[ObjectType(ObjectIdentity(mib, name)) for name in names],
+                lexicographicMode=False,
+                lookupMib=True
+            )
+            iterators.append(iterator)
+        for i in chain(*iterators):
+            yield i, host
+
+
 def _create_metric(pipeline_: Pipeline, var_binds: list) -> dict:
     metric = {
         'measurements': {},
@@ -82,12 +111,12 @@ def _create_metric(pipeline_: Pipeline, var_binds: list) -> dict:
 
     for var_bind in var_binds:
         logger_.debug(f'Processing OID: {str(var_bind[0])}')
-        if _is_value(str(var_bind[0]), pipeline_):
+        if _is_value(var_bind[0], pipeline_):
             measurement_name = _get_measurement_name(var_bind[0], pipeline_)
             measurement_value = _get_value(var_bind, pipeline_)
             metric['measurements'][measurement_name] = measurement_value
             logger_.debug(f'Measurement `{measurement_name}` with a value: {measurement_value}')
-        elif _is_dimension(str(var_bind[0]), pipeline_):
+        elif _is_dimension(var_bind[0], pipeline_):
             dimension_name = _get_dimension_name(var_bind[0], pipeline_)
             metric['dimensions'][dimension_name] = str(var_bind[1])
             logger_.debug(f'Dimension `{dimension_name}` with a value: {str(var_bind[1])}')
@@ -98,16 +127,18 @@ def _create_metric(pipeline_: Pipeline, var_binds: list) -> dict:
     return metric
 
 
-def _is_value(key: str, pipeline_: Pipeline) -> bool:
-    return key in pipeline_.values
+def _is_value(oid: ObjectIdentity, pipeline_: Pipeline) -> bool:
+    return str(oid) in pipeline_.values or oid.getMibNode().label in pipeline_.values
 
 
-def _is_dimension(key: str, pipeline_: Pipeline) -> bool:
-    return key in pipeline_.dimension_paths
+def _is_dimension(oid: ObjectIdentity, pipeline_: Pipeline) -> bool:
+    return str(oid) in pipeline_.dimension_paths or oid.getMibNode().label in pipeline_.dimension_paths
 
 
-def _get_dimension_name(dim_path: ObjectIdentity, pipeline_: Pipeline) -> str:
-    return pipeline_.dimension_paths_with_names[str(dim_path)]
+def _get_dimension_name(oid: ObjectIdentity, pipeline_: Pipeline) -> str:
+    if str(oid) in pipeline_.dimension_paths_with_names:
+        return pipeline_.dimension_paths_with_names[str(oid)]
+    return oid.getMibNode().label
 
 
 def _get_measurement_name(oid: ObjectIdentity, pipeline_: Pipeline) -> str:
@@ -116,14 +147,20 @@ def _get_measurement_name(oid: ObjectIdentity, pipeline_: Pipeline) -> str:
     return oid.getMibNode().label
 
 
+def _get_value_oid_name(oid: ObjectIdentity, pipeline_: Pipeline) -> str:
+    return str(oid) if str(oid) in pipeline_.values else oid.getMibNode().label
+
+
 def _get_value(var_bind, pipeline_: Pipeline):
     if _is_running_counter(var_bind, pipeline_):
-        return delta_calculator.delta(str(var_bind[0]), float(var_bind[1]))
+        value_name = _get_value_oid_name(var_bind[0], pipeline_)
+        return delta_calculator.delta(value_name, float(var_bind[1]))
     return float(var_bind[1])
 
 
 def _is_running_counter(var_bind, pipeline_) -> bool:
-    return pipeline_.values[str(var_bind[0])] == Pipeline.RUNNING_COUNTER
+    value_name = _get_value_oid_name(var_bind[0], pipeline_)
+    return pipeline_.values[value_name] == Pipeline.RUNNING_COUNTER
 
 
 class SNMPError(Exception):
