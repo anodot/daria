@@ -5,11 +5,12 @@ import click
 import requests
 import sdc_client
 
-from agent import streamsets, pipeline
+from agent import streamsets, pipeline, source
 from agent.modules.logger import get_logger
 from agent.streamsets import StreamSets
 from agent.modules import constants, validator
 from agent.modules.tools import infinite_retry
+
 
 logger = get_logger(__name__, stdout=True)
 
@@ -44,6 +45,7 @@ def add(url, username, password, agent_ext_url, preferred_type):
     else:
         streamsets_ = _prompt_streamsets(StreamSets(_prompt_url(), '', '', ''))
         streamsets_.agent_external_url = _prompt_agent_external_url(streamsets_)
+        streamsets_.preferred_type = _prompt_preferred_type(streamsets_)
     streamsets.manager.create_streamsets(streamsets_)
     click.secho('StreamSets instance added to the agent', fg='green')
 
@@ -59,6 +61,7 @@ def edit(url, update_pipelines=False):
     streamsets_ = _prompt_streamsets(s)
     old_external_url = streamsets_.agent_external_url
     streamsets_.agent_external_url = _prompt_agent_external_url(streamsets_)
+    streamsets_.preferred_type = _prompt_preferred_type(streamsets_)
     streamsets.repository.save(streamsets_)
     if update_pipelines and old_external_url != streamsets_.agent_external_url:
         for pipeline_ in pipeline.repository.get_by_streamsets_id(streamsets_.id):
@@ -165,6 +168,18 @@ def _prompt_agent_external_url(streamsets_: StreamSets) -> str:
     url = click.prompt('Agent external URL', default)
     _validate_agent_external_url(url)
     return url
+
+
+@infinite_retry
+def _prompt_preferred_type(streamsets_: StreamSets) -> str:
+    type_ = click.prompt('Enter streamsets preferred type', type=click.STRING)
+    validate_preferred_type(type_)
+    return type_
+
+
+def validate_preferred_type(type_):
+    if type_ not in source.types:
+        raise click.ClickException(f'{type_} not in {list(source.types.keys())}')
 
 
 streamsets_group.add_command(list_)
