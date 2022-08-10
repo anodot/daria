@@ -20,17 +20,15 @@ HOSTNAME_PATH = 'sysName'
 
 def extract_metrics(pipeline_: Pipeline) -> list:
     metrics = []
-    for response, host in _fetch_data(pipeline_):
-        var_binds = _get_var_binds(response, host)
+    var_binds_group = _fetch_data(pipeline_)
+    for var_binds in var_binds_group:
         if metric := _create_metric(pipeline_, var_binds):
             metrics.append(metric)
-
     if 'table_oids' in pipeline_.config:
-        for response, host in _fetch_table_data(pipeline_):
-            var_binds = _get_var_binds(response, host)
+        var_binds_group = _fetch_table_data(pipeline_)
+        for var_binds in var_binds_group:
             if metric := _create_metric(pipeline_, var_binds):
                 metrics.append(metric)
-
     return metrics
 
 
@@ -47,45 +45,79 @@ def fetch_raw_data(pipeline_: Pipeline) -> dict:
     return data
 
 
-def _get_var_binds(response, host):
-    error_indication, error_status, error_index, var_binds = response
-    if error_indication:
-        logger_.warning(f'{error_indication} for the {host}')
-        return []
-    elif error_status:
-        message = '%s at %s' % (
-            error_status.prettyPrint(),
-            error_index and var_binds[int(error_index) - 1][0] or '?'
-        )
-        logger_.warning(f'{message} for the {host}')
-        return []
-    return var_binds
+def _get_var_binds(iterator, host):
+    var_binds_groups = []
+    for error_indication, error_status, error_index, var_binds in iterator:
+        if error_indication:
+            logger_.warning(f'{error_indication} for the {host}')
+            continue
+        elif error_status:
+            message = '%s at %s' % (
+                error_status.prettyPrint(),
+                error_index and var_binds[int(error_index) - 1][0] or '?'
+            )
+            logger_.warning(f'{message} for the {host}')
+            continue
+        else:
+            var_binds_groups.append(var_binds)
+    return var_binds_groups
 
 
-def _fetch_data(pipeline_: Pipeline):
+def _fetch_data(pipeline_: Pipeline) -> list:
     snmp_version = 0 if pipeline_.source.version == 'v1' else 1
+    var_binds_groups = []
     for host in pipeline_.source.hosts:
         host_ = host if '://' in host else f'//{host}'
         url = urlparse(host_)
+
+        # request dimensions
         iterator = getCmd(
             SnmpEngine(),
             CommunityData(pipeline_.source.read_community, mpModel=snmp_version),
             UdpTransportTarget((url.hostname, url.port or SNMP_DEFAULT_PORT), timeout=pipeline_.source.query_timeout, retries=0),
             ContextData(),
-            *[ObjectType(ObjectIdentity(mib)) for mib in pipeline_.config['oids']],
+            *[ObjectType(ObjectIdentity(mib)) for mib in pipeline_.config['dimension_oids']],
             lookupNames=True,
             lookupMib=True
         )
-        for i in iterator:
-            yield i, host
+        dimension_var_binds = _get_var_binds(iterator, host)
+        # request measurements
+        iterator = getCmd(
+            SnmpEngine(),
+            CommunityData(pipeline_.source.read_community, mpModel=snmp_version),
+            UdpTransportTarget((url.hostname, url.port or SNMP_DEFAULT_PORT), timeout=pipeline_.source.query_timeout, retries=0),
+            ContextData(),
+            *[ObjectType(ObjectIdentity(mib)) for mib in pipeline_.config['values_oids']],
+            lookupNames=True,
+            lookupMib=True
+        )
+        values_var_binds = _get_var_binds(iterator, host)
+        var_binds_groups.extend(group + dimension_var_binds[0] for group in values_var_binds)
+
+    return var_binds_groups
 
 
-def _fetch_table_data(pipeline_: Pipeline):
+def _fetch_table_data(pipeline_: Pipeline) -> list:
     snmp_version = 0 if pipeline_.source.version == 'v1' else 1
+    var_binds_groups = []
     for host in pipeline_.source.hosts:
         host_ = host if '://' in host else f'//{host}'
         url = urlparse(host_)
-        iterators = []
+
+        # request dimensions
+        iterator = getCmd(
+            SnmpEngine(),
+            CommunityData(pipeline_.source.read_community, mpModel=snmp_version),
+            UdpTransportTarget((url.hostname, url.port or SNMP_DEFAULT_PORT), timeout=pipeline_.source.query_timeout,
+                               retries=0),
+            ContextData(),
+            *[ObjectType(ObjectIdentity(mib)) for mib in pipeline_.config['dimension_oids']],
+            lookupNames=True,
+            lookupMib=True
+        )
+        dimension_var_binds = _get_var_binds(iterator, host)
+        # request measurements from table
+
         for table_oid, mib, names in pipeline_.config['table_oids']:
             iterator = nextCmd(
                 SnmpEngine(),
@@ -96,9 +128,15 @@ def _fetch_table_data(pipeline_: Pipeline):
                 lexicographicMode=False,
                 lookupMib=True
             )
-            iterators.append(iterator)
-        for i in chain(*iterators):
-            yield i, host
+
+            table_var_binds = _get_var_binds(iterator, host)
+            var_binds_groups.extend(group + dimension_var_binds[0] for group in table_var_binds)
+
+    return var_binds_groups
+
+
+# def _execute_cmd(cmd, **kwargs):
+# pass
 
 
 def _create_metric(pipeline_: Pipeline, var_binds: list) -> dict:
