@@ -1,4 +1,5 @@
 import requests
+import requests.packages.urllib3
 import urllib.parse
 
 from typing import Optional
@@ -6,6 +7,10 @@ from agent.destination import HttpDestination, AuthenticationToken
 from agent.modules import proxy
 from agent.modules.logger import get_logger
 from agent import destination
+
+from urllib3.exceptions import InsecureRequestWarning
+
+requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 
 logger = get_logger(__name__)
 
