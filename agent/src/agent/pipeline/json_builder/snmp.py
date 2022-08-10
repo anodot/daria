@@ -23,6 +23,8 @@ class SNMPBuilder(Builder):
         self.config['values_oids'] = list(self.config['values'].keys())
 
     def _add_table_oids(self):
+        if 'oid_table' not in self.config:
+            return
         self.config['table_oids'] = []
         for k, v in self.config['oid_table'].items():
             oid_names = set()
