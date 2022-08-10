@@ -33,7 +33,8 @@ for record in sdc.records:
 
         res = requests.post(
             sdc.userParams['WATERMARK_URL'],
-            json=record.value, proxies=sdc.userParams['PROXIES'], timeout=30, verify=sdc.userParams['VERIFY_SSL']
+            json=record.value, proxies=sdc.userParams['PROXIES'], timeout=30,
+            verify=sdc.userParams['VERIFY_SSL'] == 'True'
         )
         res.raise_for_status()
         err_msg = res.json().get('errors')
