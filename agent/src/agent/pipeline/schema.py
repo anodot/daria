@@ -2,6 +2,7 @@ from typing import Optional
 from agent import destination
 from agent.destination.anodot_api_client import AnodotApiClient
 from agent.pipeline import Pipeline
+from anodot import Measurement, Aggregation
 
 
 def build(pipeline: Pipeline) -> dict:
@@ -24,22 +25,24 @@ def build(pipeline: Pipeline) -> dict:
 
 def _get_measurements(pipeline: Pipeline) -> dict:
     measurements = {
-        measurement_name: {
-            'aggregation': _get_aggregation_type(target_type),
-            'countBy': 'none',
-        }
+        measurement_name: Measurement(
+            name=measurement_name,
+            aggregation=_get_aggregation_type(target_type),
+            units=pipeline.get_unit_for_measurement(measurement_name)
+        ).to_dict()
         for measurement_name, target_type in pipeline.measurement_names_with_target_types.items()
     }
     if pipeline.count_records:
-        measurements[pipeline.count_records_measurement_name] = {
-            'aggregation': 'sum',
-            'countBy': 'none'
-        }
+        measurements[pipeline.count_records_measurement_name] = Measurement(
+                name=pipeline.count_records_measurement_name,
+                aggregation=Aggregation.SUM,
+                units=pipeline.get_unit_for_measurement(pipeline.count_records_measurement_name)
+            ).to_dict()
     return measurements
 
 
-def _get_aggregation_type(target_type: str) -> str:
-    return 'sum' if target_type in [Pipeline.COUNTER, Pipeline.RUNNING_COUNTER] else 'average'
+def _get_aggregation_type(target_type: str) -> Aggregation:
+    return Aggregation.SUM if target_type in [Pipeline.COUNTER, Pipeline.RUNNING_COUNTER] else Aggregation.AVERAGE
 
 
 def equal(old_schema, new_schema) -> bool:

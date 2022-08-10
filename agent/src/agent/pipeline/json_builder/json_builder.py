@@ -142,6 +142,9 @@ def _validate_configs_for_create(configs: list):
                     'minLength': 1,
                     'maxLength': 100
                 },
+                'units': {
+                    'type': 'object',
+                },
                 'notifications': {
                     'type': 'object',
                     'properties': {
@@ -168,6 +171,9 @@ def _validate_config_for_create(config: dict):
                 'type': 'string',
                 'minLength': 1,
                 'maxLength': 100
+            },
+            'units': {
+                'type': 'object',
             },
             'notifications': {
                 'type': 'object',
