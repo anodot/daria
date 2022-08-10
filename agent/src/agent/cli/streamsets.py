@@ -172,13 +172,16 @@ def _prompt_agent_external_url(streamsets_: StreamSets) -> str:
 
 @infinite_retry
 def _prompt_preferred_type(streamsets_: StreamSets) -> str:
-    type_ = click.prompt('Enter streamsets preferred type', type=click.STRING)
+    default = streamsets_.preferred_type or 'None'
+    type_ = click.prompt('Enter streamsets preferred type', default)
+    if type_ == 'None':
+        type_ = None
     validate_preferred_type(type_)
     return type_
 
 
 def validate_preferred_type(type_):
-    if type_ not in source.types:
+    if type_ and type_ not in source.types:
         raise click.ClickException(f'{type_} not in {list(source.types.keys())}')
 
 

@@ -1,6 +1,7 @@
 import json
 import os
 import pytest
+import contextlib
 
 from agent import cli, streamsets, pipeline, destination, source
 from agent.cli.run_test_pipeline import _add_source
@@ -22,7 +23,7 @@ except streamsets.repository.StreamsetsNotExistsException:
 
 def test_streamsets(cli_runner):
     for streamsets_url in streamsets_to_create:
-        args = ['--url', url]
+        args = ['--url', streamsets_url]
         if streamsets_url == url:
             args.extend(['--preferred-type', 'directory'])
         print(args)
@@ -36,6 +37,7 @@ def test_edit_streamsets(cli_runner):
         'username': '',
         'password': '',
         'agent_external_url': '',
+        'preferred_type': '',
     }
     result = cli_runner.invoke(cli.streamsets.edit, [url], catch_exceptions=False, input=generate_input(input_))
     streamsets.repository.get_by_url(url)
@@ -63,15 +65,8 @@ def test_delete_streamsets(cli_runner):
 
 
 def perform_cleanup():
-    try:
+    with contextlib.suppress(destination.repository.DestinationNotExists, pipeline.PipelineException):
         pipeline.manager.force_delete(constants.TEST_RUN_PIPELINE_NAME)
-    except (destination.repository.DestinationNotExists, pipeline.PipelineException):
-        pass
-    try:
         pipeline.manager.force_delete(constants.TEST_RUN_PIPELINE_NAME + '_1')
-    except (destination.repository.DestinationNotExists, pipeline.PipelineException):
-        pass
-    try:
+    with contextlib.suppress(source.repository.SourceNotExists):
         source.repository.delete_by_name(constants.TEST_RUN_PIPELINE_NAME)
-    except source.repository.SourceNotExists:
-        pass
