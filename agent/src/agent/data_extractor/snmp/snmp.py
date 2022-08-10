@@ -32,8 +32,8 @@ def extract_metrics(pipeline_: Pipeline) -> list:
 
 def fetch_raw_data(pipeline_: Pipeline) -> dict:
     data = {}
-    for response, host in _fetch_data(pipeline_):
-        var_binds = _get_var_binds(response, host)
+    var_binds_group = _fetch_raw_data(pipeline_)
+    for var_binds in var_binds_group:
         for var_bind in var_binds:
             k = str(var_bind[0])
             v = str(var_bind[1])
@@ -55,6 +55,18 @@ def _get_var_binds(iterator, host):
             continue
         else:
             var_binds_groups.append(var_binds)
+    return var_binds_groups
+
+
+def _fetch_raw_data(pipeline_: Pipeline) -> list:
+    snmp_version = 0 if pipeline_.source.version == 'v1' else 1
+    var_binds_groups = []
+    for host in pipeline_.source.hosts:
+        host_ = host if '://' in host else f'//{host}'
+        url = urlparse(host_)
+        iterator = _execute_get_cmd(pipeline_, snmp_version, url, 'raw_oids')
+        var_binds = _get_var_binds(iterator, host)
+        var_binds_groups.extend(var_binds)
     return var_binds_groups
 
 
@@ -105,6 +117,8 @@ def _execute_get_cmd(pipeline_, snmp_version, url, name_oid):
         var_binds = [ObjectType(ObjectIdentity(mib)) for mib in pipeline_.config['dimension_oids']]
     elif name_oid == 'values_oids':
         var_binds = [ObjectType(ObjectIdentity(mib)) for mib in pipeline_.config['values_oids']]
+    elif name_oid == 'raw_oids':
+        var_binds = [ObjectType(ObjectIdentity(mib)) for mib in pipeline_.config['oids']]
     else:
         return []
 
