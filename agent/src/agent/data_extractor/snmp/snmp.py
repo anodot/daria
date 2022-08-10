@@ -50,10 +50,7 @@ def _get_var_binds(iterator, host):
             logger_.warning(f'{error_indication} for the {host}')
             continue
         elif error_status:
-            message = '%s at %s' % (
-                error_status.prettyPrint(),
-                error_index and var_binds[int(error_index) - 1][0] or '?'
-            )
+            message = f'{error_status.prettyPrint()} at {error_index and var_binds[int(error_index) - 1][0] or "?"}'
             logger_.warning(f'{message} for the {host}')
             continue
         else:
@@ -89,23 +86,15 @@ def _fetch_table_data(pipeline_: Pipeline) -> list:
         host_ = host if '://' in host else f'//{host}'
         url = urlparse(host_)
 
-        # request dimensions
         iterator = _execute_get_cmd(pipeline_, snmp_version, url, 'dimension_oids')
         dimension_var_binds = _get_var_binds(iterator, host)
-        # request measurements from table
+        if not dimension_var_binds:
+            continue
 
         for table_oid, mib, names in pipeline_.config['table_oids']:
-            iterator = nextCmd(
-                SnmpEngine(),
-                CommunityData(pipeline_.source.read_community, mpModel=snmp_version),
-                UdpTransportTarget((url.hostname, url.port or SNMP_DEFAULT_PORT), timeout=pipeline_.source.query_timeout, retries=0),
-                ContextData(),
-                *[ObjectType(ObjectIdentity(mib, name)) for name in names],
-                lexicographicMode=False,
-                lookupMib=True
-            )
-
+            iterator = _execute_next_cmd(pipeline_, snmp_version, url, mib, names)
             table_var_binds = _get_var_binds(iterator, host)
+
             var_binds_groups.extend(group + dimension_var_binds[0] for group in table_var_binds)
 
     return var_binds_groups
@@ -119,7 +108,7 @@ def _execute_get_cmd(pipeline_, snmp_version, url, name_oid):
     else:
         return []
 
-    iterator = getCmd(
+    return getCmd(
         SnmpEngine(),
         CommunityData(pipeline_.source.read_community, mpModel=snmp_version),
         UdpTransportTarget((url.hostname, url.port or SNMP_DEFAULT_PORT),
@@ -130,7 +119,20 @@ def _execute_get_cmd(pipeline_, snmp_version, url, name_oid):
         lookupNames=True,
         lookupMib=True,
         )
-    return iterator
+
+
+def _execute_next_cmd(pipeline_, snmp_version, url, mib, names):
+    return nextCmd(
+        SnmpEngine(),
+        CommunityData(pipeline_.source.read_community, mpModel=snmp_version),
+        UdpTransportTarget((url.hostname, url.port or SNMP_DEFAULT_PORT),
+                           timeout=pipeline_.source.query_timeout,
+                           retries=0),
+        ContextData(),
+        *[ObjectType(ObjectIdentity(mib, name)) for name in names],
+        lexicographicMode=False,
+        lookupMib=True
+    )
 
 
 def _create_metric(pipeline_: Pipeline, var_binds: list) -> dict:
