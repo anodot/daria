@@ -18,11 +18,13 @@ class NoDataNotifications(Entity):
     notification_id: int = Column(Integer, ForeignKey('pipeline_notifications.id'), primary_key=True)
 
     notification_period: int = Column(Integer, nullable=False)  # In minutes
+    dvp_notification_period: int = Column(Integer, nullable=False)  # In minutes
     notification_sent: bool = Column(Boolean, default=False)
 
     last_updated = Column(TIMESTAMP(timezone=True), default=func.now(), onupdate=func.now())
 
-    def __init__(self, pipeline_, notification_period: str):
+    def __init__(self, pipeline_, notification_period: str, dvp_notification_period: str):
         self.pipeline_id = pipeline_.name
         self.notification_period = get_period_in_minutes(notification_period)
+        self.dvp_notification_period = get_period_in_minutes(dvp_notification_period)
         self.notification_sent = False

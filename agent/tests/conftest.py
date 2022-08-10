@@ -72,6 +72,7 @@ def test_pipeline() -> TestPipeline:
         no_data_notification=NoDataNotifications(
             pipeline_=pipeline_,
             notification_period="60m",
+            dvp_notification_period="24h"
         )
     )
     pipeline_.watermark = PipelineWatermark(
