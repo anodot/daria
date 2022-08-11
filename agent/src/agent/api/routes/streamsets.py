@@ -69,6 +69,7 @@ def add():
             config.get('username', constants.DEFAULT_STREAMSETS_USERNAME),
             config.get('password', constants.DEFAULT_STREAMSETS_PASSWORD),
             config['agent_external_url'],
+            config.get('preferred_type'),
         )
         try:
             stream_sets.validator.validate(streamsets_)
