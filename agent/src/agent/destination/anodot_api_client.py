@@ -1,4 +1,5 @@
 import requests
+import requests.packages.urllib3
 import urllib.parse
 
 from typing import Optional
@@ -6,6 +7,10 @@ from agent.destination import HttpDestination, AuthenticationToken
 from agent.modules import proxy
 from agent.modules.logger import get_logger
 from agent import destination
+
+from urllib3.exceptions import InsecureRequestWarning
+
+requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 
 logger = get_logger(__name__)
 
@@ -49,11 +54,12 @@ class AnodotUrlBuilder:
 
 
 class MonitoringApiClient:
-    def __init__(self, destination_url: str, access_token: str, proxy_: destination.Proxy):
+    def __init__(self, destination_url: str, access_token: str, proxy_: destination.Proxy, verify_ssl=True):
         self.access_token = access_token
         self.proxies = proxy.get_config(proxy_)
         self.url_builder = AnodotUrlBuilder(destination_url)
         self.params = {'token': access_token, 'protocol': destination.HttpDestination.PROTOCOL_20}
+        self.verify_ssl = verify_ssl
 
     @v1endpoint
     def send_to_client(self, data: list[dict]):
@@ -62,6 +68,7 @@ class MonitoringApiClient:
             json=data,
             params=self.params,
             proxies=self.proxies,
+            verify=self.verify_ssl
         )
 
     @v1endpoint
@@ -71,6 +78,7 @@ class MonitoringApiClient:
             json=data,
             params=self.params,
             proxies=self.proxies,
+            verify=self.verify_ssl
         )
 
 
@@ -81,7 +89,9 @@ class AnodotApiClient:
         self.api_token = destination_.token
         self.proxies = proxy.get_config(destination_.proxy)
         self.url_builder = AnodotUrlBuilder(destination_.url)
+        self.verify_ssl = not destination_.use_jks_truststore
         self.session = requests.Session()
+        self.session.verify = self.verify_ssl
         self.auth_token: Optional[AuthenticationToken] = destination_.auth_token
         if self.auth_token:
             self.session.headers.update({'Authorization': 'Bearer ' + self.auth_token.authentication_token})
@@ -94,7 +104,10 @@ class AnodotApiClient:
 
     def get_new_token(self):
         response = requests.post(
-            self.get_refresh_token_url(), json={'refreshToken': self.access_key}, proxies=self.proxies
+            self.get_refresh_token_url(),
+            json={'refreshToken': self.access_key},
+            proxies=self.proxies,
+            verify=self.verify_ssl
         )
         response.raise_for_status()
         return response.text.replace('"', '')
@@ -109,6 +122,7 @@ class AnodotApiClient:
             self.url_builder.build('stream-schemas', 'internal', api_version='v1'),
             json=schema,
             proxies=self.proxies,
+            verify=self.verify_ssl,
             params={
                 'token': self.api_token,
                 'id': schema["id"]
@@ -119,6 +133,7 @@ class AnodotApiClient:
     def send_watermark(self, data):
         return requests.post(
             self.url_builder.build('metrics', 'watermark', api_version='v1'),
+            verify=self.verify_ssl,
             json=data,
             proxies=self.proxies,
             params={

@@ -1,5 +1,6 @@
 import urllib.parse
 import uuid
+import os
 
 from datetime import datetime
 from typing import Dict, Optional
@@ -32,6 +33,11 @@ class HttpDestination(Entity):
     CONFIG_PROXY_PASSWORD = 'conf.client.proxy.password'
     CONFIG_PROXY_URI = 'conf.client.proxy.uri'
     CONFIG_ENABLE_REQUEST_LOGGING = 'conf.client.requestLoggingConfig.enableRequestLogging'
+    CONFIG_USE_JKS_TRUSTSTORE = 'conf.client.tlsConfig.tlsEnabled'
+    CONFIG_KEYSTORE_FILE_PATH = 'conf.client.tlsConfig.keyStoreFilePath'
+    CONFIG_KEYSTORE_PASSWORD = 'conf.client.tlsConfig.keyStorePassword'
+    CONFIG_TRUSTSTORE_FILE_PATH = 'conf.client.tlsConfig.trustStoreFilePath'
+    CONFIG_TRUSTSTORE_PASSWORD = 'conf.client.tlsConfig.trustStorePassword'
 
     PROTOCOL_20 = 'anodot20'
     PROTOCOL_30 = 'anodot30'
@@ -52,6 +58,18 @@ class HttpDestination(Entity):
     @classmethod
     def generate_host_id(cls, length: int = 10) -> str:
         return str(uuid.uuid4()).replace('-', '')[:length].upper()
+
+    @property
+    def use_jks_truststore(self):
+        return self.config.get(self.CONFIG_USE_JKS_TRUSTSTORE, False)
+
+    @use_jks_truststore.setter
+    def use_jks_truststore(self, value=False):
+        self.config[self.CONFIG_USE_JKS_TRUSTSTORE] = value
+        self.config[self.CONFIG_KEYSTORE_FILE_PATH] = os.environ.get('JKS_KEYSTORE_FILE_PATH', '/data/truststore.jks')
+        self.config[self.CONFIG_KEYSTORE_PASSWORD] = os.environ.get('JKS_KEYSTORE_PASSWORD', 'changeit')
+        self.config[self.CONFIG_TRUSTSTORE_FILE_PATH] = os.environ.get('JKS_TRUSTSTORE_FILE_PATH', '/data/truststore.jks')
+        self.config[self.CONFIG_TRUSTSTORE_PASSWORD] = os.environ.get('JKS_TRUSTSTORE_PASSWORD', 'changeit')
 
     @property
     def url(self):

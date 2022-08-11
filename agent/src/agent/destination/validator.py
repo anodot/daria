@@ -12,10 +12,10 @@ class ValidationException(Exception):
 
 
 @if_validation_enabled
-def is_valid_destination_url(url: str, proxy_obj: proxy.Proxy = None) -> bool:
+def is_valid_destination_url(url: str, proxy_obj: proxy.Proxy = None, verify_ssl=True) -> bool:
     status_url = urllib.parse.urljoin(url, HttpDestination.STATUS_URL)
     try:
-        response = requests.get(status_url, proxies=proxy.get_config(proxy_obj), timeout=5)
+        response = requests.get(status_url, proxies=proxy.get_config(proxy_obj), timeout=5, verify=verify_ssl)
         response.raise_for_status()
     except (
         ConnectionError, requests.HTTPError, requests.exceptions.ConnectionError, requests.exceptions.ProxyError
@@ -25,8 +25,8 @@ def is_valid_destination_url(url: str, proxy_obj: proxy.Proxy = None) -> bool:
 
 
 @if_validation_enabled
-def is_valid_resource_url(resource_url: str, proxy_obj: proxy.Proxy = None) -> bool:
-    response = requests.post(resource_url, json=[], proxies=proxy.get_config(proxy_obj), timeout=5)
+def is_valid_resource_url(resource_url: str, proxy_obj: proxy.Proxy = None, verify_ssl=True) -> bool:
+    response = requests.post(resource_url, json=[], proxies=proxy.get_config(proxy_obj), timeout=5, verify=verify_ssl)
     if response.status_code != 401:
         response.raise_for_status()
     return response.status_code != 401

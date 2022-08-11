@@ -31,14 +31,16 @@ for record in sdc.records:
         if sdc.userParams['WATERMARK_LOGS'] == 'True':
             sdc.log.info('Sending watermark: ' + str(record.value['watermark']))
 
-        res = requests.post(
-            sdc.userParams['WATERMARK_URL'],
-            json=record.value, proxies=sdc.userParams['PROXIES'], timeout=30
-        )
-        res.raise_for_status()
-        err_msg = res.json().get('errors')
-        if err_msg:
-            raise requests.RequestException(err_msg)
+        if not sdc.isPreview():
+            res = requests.post(
+                sdc.userParams['WATERMARK_URL'],
+                json=record.value, proxies=sdc.userParams['PROXIES'], timeout=30,
+                verify=sdc.userParams['VERIFY_SSL'] == 'True'
+            )
+            res.raise_for_status()
+            err_msg = res.json().get('errors')
+            if err_msg:
+                raise requests.RequestException(err_msg)
 
         # send Watermark Metrics
         watermark_delta = _get_watermark_delta(record.value['watermark'])

@@ -437,9 +437,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
             'id': self.name,
             'config': self.config,
             'schema': self.get_schema(),
-            'override_source': self.override_source,
-            'source': self.source.config,
-            'destination': self.destination.config,
+            'override_source': self.override_source
         }
 
     def _get_property_path(self, property_value: str) -> str:
