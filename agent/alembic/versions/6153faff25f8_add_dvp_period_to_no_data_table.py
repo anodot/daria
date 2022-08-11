@@ -1,7 +1,7 @@
 """add_dvp_period_to_no_data_table
 
 Revision ID: 6153faff25f8
-Revises: 0684b9e43e95
+Revises: f6e29156129d
 Create Date: 2022-08-10 14:51:49.403014
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = '6153faff25f8'
-down_revision = '0684b9e43e95'
+down_revision = 'f6e29156129d'
 branch_labels = None
 depends_on = None
 
