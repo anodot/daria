@@ -64,6 +64,10 @@ class WatermarkWithMetricsDestination(JythonProcessor):
                 'key': 'WATERMARK_LOGS',
                 'value': str(self.pipeline.watermark_logs_enabled)
             },
+            {
+                'key': 'VERIFY_SSL',
+                'value': str(not self.pipeline.destination.use_jks_truststore)
+            }
         ]
 
 

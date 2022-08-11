@@ -317,6 +317,10 @@ class Pipeline(Entity, sdc_client.IPipeline):
     def query(self) -> Optional[str]:
         return self.config.get('query')
 
+    @property
+    def source_type(self) -> str:
+        return self.source_.type
+
     @query.setter
     def query(self, query: str):
         self.config['query'] = query
@@ -433,9 +437,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
             'id': self.name,
             'config': self.config,
             'schema': self.get_schema(),
-            'override_source': self.override_source,
-            'source': self.source.config,
-            'destination': self.destination.config,
+            'override_source': self.override_source
         }
 
     def _get_property_path(self, property_value: str) -> str:

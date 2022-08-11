@@ -60,27 +60,10 @@ class TestElastic:
                     'uses_schema': False,
                     'values': {'Clicks': 'gauge'}
                 },
-                'destination': {
-                    'conf.client.proxy.password': '',
-                    'conf.client.proxy.uri': 'http://squid:3128',
-                    'conf.client.proxy.username': '',
-                    'conf.client.useProxy': True,
-                    'token': 'correct_token',
-                    'url': 'http://dummy_destination'
-                },
                 'id': 'test_elastic_api',
                 'override_source': {
                     'conf.query': '{\n                    "sort": [{"timestamp_unix_ms": {"order": "asc"}}],\n                    "query": {"range": {"timestamp_unix_ms": {"gt": ${OFFSET}}}}\n                }'},
-                'schema': {},
-                'source': {
-                    'conf.httpUris': ['es:9200'],
-                    'conf.index': 'test',
-                    'conf.initialOffset': f'now-{days_to_backfill}d',
-                    'conf.isIncrementalMode': True,
-                    'conf.offsetField': 'timestamp_unix_ms',
-                    'conf.queryInterval': '${1 * SECONDS}',
-                    'query_interval_sec': 1
-                }
+                'schema': {}
             }],
         }],
     }

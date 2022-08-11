@@ -12,6 +12,7 @@ def send_monitoring_data(destination_: HttpDestination) -> list:
         constants.MONITORING_URL or destination_.url,
         constants.MONITORING_TOKEN or destination_.token,
         destination_.proxy,
+        verify_ssl=not destination_.use_jks_truststore
     )
 
     errors = []

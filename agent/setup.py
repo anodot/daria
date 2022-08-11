@@ -3,7 +3,7 @@ import os
 
 from setuptools import setup, find_packages
 
-app_version = '3.45.1'
+app_version = '3.46.0-beta'
 
 
 def build_time():

@@ -1,6 +1,7 @@
 import click
 from .schemaless import SchemalessPrompter
 from agent import source
+from agent.modules import constants
 
 
 class KafkaPrompter(SchemalessPrompter):
@@ -27,4 +28,4 @@ class KafkaPrompter(SchemalessPrompter):
     def _get_default_consumer_group(self) -> str:
         if source.KafkaSource.CONFIG_CONSUMER_GROUP in self.config['override_source']:
             return self.config['override_source'][source.KafkaSource.CONFIG_CONSUMER_GROUP]
-        return "agent_" + self.pipeline.name
+        return constants.KAFKA_CONSUMER_GROUP_PREFIX + self.pipeline.name
