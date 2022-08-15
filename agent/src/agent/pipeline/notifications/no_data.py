@@ -5,7 +5,6 @@ from sqlalchemy.dialects.postgresql import TIMESTAMP
 
 
 def get_period_in_minutes(param: str) -> int:
-    print(param)
     hours = re.findall("(\d+)h", param)
     minutes = re.findall("(\d+)m", param)
     return (int(hours[0]) * 60 if hours else 0) + (int(minutes[0]) if minutes else 0)

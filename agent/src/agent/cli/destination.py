@@ -10,14 +10,14 @@ from agent.modules import proxy, validator
 
 @click.command()
 @click.option('-t', '--token', type=click.STRING, default=None)
-@click.option('--proxy/--no-proxy', default=False)
 @click.option('--proxy-host', type=click.STRING, default=None)
 @click.option('--proxy-user', type=click.STRING, default=None)
 @click.option('--proxy-password', type=click.STRING, default=None)
 @click.option('--host-id', type=click.STRING, default=None)
 @click.option('--access-key', type=click.STRING, default=None)
 @click.option('--url', type=click.STRING, default=None)
-def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, access_key, url):
+@click.option('--use-jks-truststore', is_flag=True, default=False)
+def destination(token, proxy_host, proxy_user, proxy_password, host_id, access_key, url, use_jks_truststore):
     """
     Data destination config.
     Anodot API token - You can copy it from Settings > API tokens > Data Collection in your Anodot account
@@ -25,14 +25,16 @@ def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, a
     """
     # take all data from the command arguments if token is provided, otherwise ask for input
     if token:
-        result = agent.destination.manager.create(token, url, access_key, proxy_host, proxy_user, proxy_password, host_id)
+        result = agent.destination.manager.create(token, url, access_key, proxy_host, proxy_user, proxy_password,
+                                                  host_id, use_jks_truststore)
         if result.is_err():
             raise click.ClickException(result.value)
     else:
-        destination_ = agent.destination.repository.get()\
-            if agent.destination.repository.exists()\
+        destination_ = agent.destination.repository.get() \
+            if agent.destination.repository.exists() \
             else HttpDestination()
         _prompt_proxy(destination_)
+        destination_.use_jks_truststore = click.confirm('Use jks truststore with a custom ssl certificate?')
         _prompt_url(destination_)
         _prompt_token(destination_)
         _prompt_access_key(destination_)
@@ -40,7 +42,8 @@ def destination(token, proxy, proxy_host, proxy_user, proxy_password, host_id, a
         # todo code duplicate, try to avoid it
         if destination_.auth_token:
             agent.destination.repository.delete_auth_token(destination_.auth_token)
-        auth_token = agent.destination.AuthenticationToken(destination_.id, AnodotApiClient(destination_).get_new_token())
+        auth_token = agent.destination.AuthenticationToken(destination_.id,
+                                                           AnodotApiClient(destination_).get_new_token())
         agent.destination.repository.save_auth_token(auth_token)
 
         click.secho('Connection to Anodot established')
@@ -82,7 +85,7 @@ def _prompt_url(dest: HttpDestination):
         except validator.ValidationException as e:
             raise click.ClickException(str(e))
         try:
-            agent.destination.validator.is_valid_destination_url(url, dest.proxy)
+            agent.destination.validator.is_valid_destination_url(url, dest.proxy, not dest.use_jks_truststore)
         except agent.destination.validator.ValidationException as e:
             raise click.ClickException('Destination url validation failed: ' + str(e))
     except requests.exceptions.ProxyError as e:
@@ -94,7 +97,7 @@ def _prompt_url(dest: HttpDestination):
 def _prompt_token(dest: HttpDestination):
     token = click.prompt('Anodot api data collection token', type=click.STRING, default=dest.token)
     dest.token = token
-    if not agent.destination.validator.is_valid_resource_url(dest.metrics_url, dest.proxy):
+    if not agent.destination.validator.is_valid_resource_url(dest.metrics_url, dest.proxy, not dest.use_jks_truststore):
         raise click.ClickException('Data collection token is invalid')
 
 

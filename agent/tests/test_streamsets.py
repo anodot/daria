@@ -10,6 +10,7 @@ def test_streamsets_1(cli_runner):
         'username': '',
         'password': '',
         'agent_external_url': '',
+        'preferred_type': '',
     }
     result = cli_runner.invoke(cli.streamsets.add, catch_exceptions=False, input=generate_input(input_))
     streamsets.repository.get_by_url(url)
@@ -21,6 +22,7 @@ def test_edit_streamsets(cli_runner):
         'username': '',
         'password': '',
         'agent_external_url': '',
+        'preferred_type': '',
     }
     result = cli_runner.invoke(cli.streamsets.edit, [url], catch_exceptions=False, input=generate_input(input_))
     streamsets.repository.get_by_url(url)

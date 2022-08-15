@@ -17,7 +17,7 @@
     "timestamp":{
       "name":"Date",
       "type":"string",
-      "format":"%m/%d/%Y"
+      "format":"mm/dd/YYYY"
     },
     "dimensions":{
       "required":[

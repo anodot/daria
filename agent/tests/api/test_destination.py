@@ -32,7 +32,16 @@ class TestDestination:
                 'data_collection_token': 'correct_token',
                 'host_id': 'ABCDEF',
                 'access_key': 'correct_key',
-                'er': {"access_key": "correct_key", "config": {"conf.client.useProxy": False, "token": "correct_token", "url": "http://dummy_destination"}, "host_id": "ABCDEF", "type": "http"},
+                'er': {"access_key": "correct_key", "config": {
+                    "conf.client.useProxy": False,
+                    "token": "correct_token",
+                    "url": "http://dummy_destination",
+                    "conf.client.tlsConfig.tlsEnabled": False,
+                    "conf.client.tlsConfig.keyStoreFilePath": "/data/truststore.jks",
+                    "conf.client.tlsConfig.keyStorePassword": "changeit",
+                    "conf.client.tlsConfig.trustStoreFilePath": "/data/truststore.jks",
+                    "conf.client.tlsConfig.trustStorePassword": "changeit"
+                }, "host_id": "ABCDEF", "type": "http"},
                 'status_code': 200,
             },
         ],
@@ -46,7 +55,19 @@ class TestDestination:
         'test_create_with_proxy': [
             {
                 'proxy_uri': 'http://squid:3128',
-                'er': {"access_key": "correct_key", "config": {"conf.client.proxy.password": "", "conf.client.proxy.uri": "http://squid:3128", "conf.client.proxy.username": "", "conf.client.useProxy": True, "token": "correct_token", "url": "http://dummy_destination"}, "host_id": "ABCDEF", "type": "http"},
+                'er': {"access_key": "correct_key", "config": {
+                    "conf.client.proxy.password": "",
+                    "conf.client.proxy.uri": "http://squid:3128",
+                    "conf.client.proxy.username": "",
+                    "conf.client.useProxy": True,
+                    "token": "correct_token",
+                    "url": "http://dummy_destination",
+                    "conf.client.tlsConfig.tlsEnabled": False,
+                    "conf.client.tlsConfig.keyStoreFilePath": "/data/truststore.jks",
+                    "conf.client.tlsConfig.keyStorePassword": "changeit",
+                    "conf.client.tlsConfig.trustStoreFilePath": "/data/truststore.jks",
+                    "conf.client.tlsConfig.trustStorePassword": "changeit"
+                }, "host_id": "ABCDEF", "type": "http"},
                 'status_code': 200
             }
         ]
