@@ -1,5 +1,6 @@
 from agent import source
 from agent.pipeline.json_builder import Builder
+from agent.modules import constants
 
 
 class KafkaBuilder(Builder):
@@ -12,5 +13,5 @@ class KafkaBuilder(Builder):
             self.config['timestamp'] = {'name': 'kafka_timestamp', 'type': 'unix_ms'}
         if source.KafkaSource.CONFIG_CONSUMER_GROUP not in self.config['override_source']:
             self.config['override_source'][source.KafkaSource.CONFIG_CONSUMER_GROUP] = \
-                "agent_" + self.config['pipeline_id']
+                constants.KAFKA_CONSUMER_GROUP_PREFIX + self.config['pipeline_id']
         return self.config
