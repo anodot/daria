@@ -1,0 +1,934 @@
+[
+  {
+    "timestamp": 1552654426,
+    "dimensions": {
+      "host": "msk-air-trn5ґ",
+      "zone": "US",
+      "test": "val"
+    },
+    "measurements": {
+      "usage_active": 0.204,
+      "hdd_idle": 1.0
+    },
+    "schemaId": "test_influx2_query_join-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_query_join"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552654426,
+    "dimensions": {
+      "host": "msk-air-trn5ґ",
+      "zone": "US",
+      "test": "val"
+    },
+    "measurements": {
+      "usage_active": 0.204
+    },
+    "schemaId": "test_influx2_query_join-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_query_join"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552654426,
+    "dimensions": {
+      "host": "msk-air-trn5ґ",
+      "zone": "US",
+      "test": "val"
+    },
+    "measurements": {
+      "usage_active": 0.204
+    },
+    "schemaId": "test_influx2_query_join-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_query_join"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552654426,
+    "dimensions": {
+      "host": "msk-air-trn5ґ",
+      "zone": "US",
+      "test": "val"
+    },
+    "measurements": {
+      "usage_active": 0.204
+    },
+    "schemaId": "test_influx2_query_join-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_query_join"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552654426,
+    "dimensions": {
+      "host": "msk-air-trn5ґ",
+      "zone": "US",
+      "test": "val"
+    },
+    "measurements": {
+      "hdd_idle": 1.0
+    },
+    "schemaId": "test_influx2_query_join-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_query_join"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552654426,
+    "dimensions": {
+      "host": "msk-air-trn5ґ",
+      "zone": "US",
+      "test": "val"
+    },
+    "measurements": {
+      "hdd_idle": 1.0
+    },
+    "schemaId": "test_influx2_query_join-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_query_join"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552654426,
+    "dimensions": {
+      "host": "msk-air-trn5ґ",
+      "zone": "US",
+      "test": "val"
+    },
+    "measurements": {
+      "hdd_idle": 1.0
+    },
+    "schemaId": "test_influx2_query_join-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_query_join"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552654426,
+    "dimensions": {
+      "host": "msk-air-trn5ґ",
+      "zone": "US",
+      "test": "val"
+    },
+    "measurements": {
+      "hdd_idle": 1.0
+    },
+    "schemaId": "test_influx2_query_join-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_query_join"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552754426,
+    "dimensions": {
+      "host": "msk_a_ir_trn1",
+      "zone": "US",
+      "test": "val"
+    },
+    "measurements": {
+      "usage_active": 0.224,
+      "hdd_idle": 2.0
+    },
+    "schemaId": "test_influx2_query_join-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_query_join"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552754426,
+    "dimensions": {
+      "host": "msk_a_ir_trn1",
+      "zone": "US",
+      "test": "val"
+    },
+    "measurements": {
+      "usage_active": 0.224
+    },
+    "schemaId": "test_influx2_query_join-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_query_join"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552754426,
+    "dimensions": {
+      "host": "msk_a_ir_trn1",
+      "zone": "US",
+      "test": "val"
+    },
+    "measurements": {
+      "usage_active": 0.224
+    },
+    "schemaId": "test_influx2_query_join-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_query_join"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552754426,
+    "dimensions": {
+      "host": "msk_a_ir_trn1",
+      "zone": "US",
+      "test": "val"
+    },
+    "measurements": {
+      "usage_active": 0.224
+    },
+    "schemaId": "test_influx2_query_join-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_query_join"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552754426,
+    "dimensions": {
+      "host": "msk_a_ir_trn1",
+      "zone": "US",
+      "test": "val"
+    },
+    "measurements": {
+      "hdd_idle": 2.0
+    },
+    "schemaId": "test_influx2_query_join-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_query_join"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552754426,
+    "dimensions": {
+      "host": "msk_a_ir_trn1",
+      "zone": "US",
+      "test": "val"
+    },
+    "measurements": {
+      "hdd_idle": 2.0
+    },
+    "schemaId": "test_influx2_query_join-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_query_join"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552754426,
+    "dimensions": {
+      "host": "msk_a_ir_trn1",
+      "zone": "US",
+      "test": "val"
+    },
+    "measurements": {
+      "hdd_idle": 2.0
+    },
+    "schemaId": "test_influx2_query_join-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_query_join"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552754426,
+    "dimensions": {
+      "host": "msk_a_ir_trn1",
+      "zone": "US",
+      "test": "val"
+    },
+    "measurements": {
+      "hdd_idle": 2.0
+    },
+    "schemaId": "test_influx2_query_join-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_query_join"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552854426,
+    "dimensions": {
+      "host": "msk_air_trn1",
+      "zone": "US",
+      "test": "val"
+    },
+    "measurements": {
+      "usage_active": 0.22432747346756737,
+      "hdd_idle": 3.0
+    },
+    "schemaId": "test_influx2_query_join-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_query_join"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552854426,
+    "dimensions": {
+      "host": "msk_air_trn1",
+      "zone": "US",
+      "test": "val"
+    },
+    "measurements": {
+      "usage_active": 0.22432747346756737
+    },
+    "schemaId": "test_influx2_query_join-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_query_join"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552854426,
+    "dimensions": {
+      "host": "msk_air_trn1",
+      "zone": "US",
+      "test": "val"
+    },
+    "measurements": {
+      "usage_active": 0.22432747346756737
+    },
+    "schemaId": "test_influx2_query_join-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_query_join"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552854426,
+    "dimensions": {
+      "host": "msk_air_trn1",
+      "zone": "US",
+      "test": "val"
+    },
+    "measurements": {
+      "usage_active": 0.22432747346756737
+    },
+    "schemaId": "test_influx2_query_join-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_query_join"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552854426,
+    "dimensions": {
+      "host": "msk_air_trn1",
+      "zone": "US",
+      "test": "val"
+    },
+    "measurements": {
+      "hdd_idle": 3.0
+    },
+    "schemaId": "test_influx2_query_join-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_query_join"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552854426,
+    "dimensions": {
+      "host": "msk_air_trn1",
+      "zone": "US",
+      "test": "val"
+    },
+    "measurements": {
+      "hdd_idle": 3.0
+    },
+    "schemaId": "test_influx2_query_join-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_query_join"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552854426,
+    "dimensions": {
+      "host": "msk_air_trn1",
+      "zone": "US",
+      "test": "val"
+    },
+    "measurements": {
+      "hdd_idle": 3.0
+    },
+    "schemaId": "test_influx2_query_join-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_query_join"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552854426,
+    "dimensions": {
+      "host": "msk_air_trn1",
+      "zone": "US",
+      "test": "val"
+    },
+    "measurements": {
+      "hdd_idle": 3.0
+    },
+    "schemaId": "test_influx2_query_join-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_query_join"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552954426,
+    "dimensions": {
+      "host": "msk-air-trn1",
+      "zone": "US",
+      "test": "val"
+    },
+    "measurements": {
+      "usage_active": 0.224,
+      "hdd_idle": 4.0
+    },
+    "schemaId": "test_influx2_query_join-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_query_join"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552954426,
+    "dimensions": {
+      "host": "msk-air-trn1",
+      "zone": "US",
+      "test": "val"
+    },
+    "measurements": {
+      "usage_active": 0.224
+    },
+    "schemaId": "test_influx2_query_join-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_query_join"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552954426,
+    "dimensions": {
+      "host": "msk-air-trn1",
+      "zone": "US",
+      "test": "val"
+    },
+    "measurements": {
+      "usage_active": 0.224
+    },
+    "schemaId": "test_influx2_query_join-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_query_join"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552954426,
+    "dimensions": {
+      "host": "msk-air-trn1",
+      "zone": "US",
+      "test": "val"
+    },
+    "measurements": {
+      "usage_active": 0.224
+    },
+    "schemaId": "test_influx2_query_join-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_query_join"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552954426,
+    "dimensions": {
+      "host": "msk-air-trn1",
+      "zone": "US",
+      "test": "val"
+    },
+    "measurements": {
+      "hdd_idle": 4.0
+    },
+    "schemaId": "test_influx2_query_join-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_query_join"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552954426,
+    "dimensions": {
+      "host": "msk-air-trn1",
+      "zone": "US",
+      "test": "val"
+    },
+    "measurements": {
+      "hdd_idle": 4.0
+    },
+    "schemaId": "test_influx2_query_join-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_query_join"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552954426,
+    "dimensions": {
+      "host": "msk-air-trn1",
+      "zone": "US",
+      "test": "val"
+    },
+    "measurements": {
+      "hdd_idle": 4.0
+    },
+    "schemaId": "test_influx2_query_join-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_query_join"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552954426,
+    "dimensions": {
+      "host": "msk-air-trn1",
+      "zone": "US",
+      "test": "val"
+    },
+    "measurements": {
+      "hdd_idle": 4.0
+    },
+    "schemaId": "test_influx2_query_join-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx2_query_join"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  }
+]
