@@ -44,7 +44,7 @@ class Influx2Source(InfluxScript):
         return {
             'Authorization': f'Token {self.pipeline.source.config["token"]}',
             'Accept': 'application/csv',
-            'Content-type': 'application/vnd.flux',
+            'Content-type': 'application/json',
         }
 
     def _get_query(self) -> str:
