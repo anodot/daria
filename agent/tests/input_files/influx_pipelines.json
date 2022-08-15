@@ -169,5 +169,21 @@
       "tag_table": {"value_path": "table"},
       "tag_not_present": {"value_path": "not_real_value"}
     }
+  },
+  {
+    "source": "test_influx2_file",
+    "pipeline_id": "test_influx2_query_join",
+    "values": {"usage_active": "gauge", "hdd_user": "counter", "hdd_idle": "counter"},
+    "dimensions": {
+      "required": [],
+      "optional": ["host", "zone"]
+    },
+    "query": "import \"strings\"\nres_cpu = from(bucket:\"test\") \n    |> {TIMESTAMP_CONDITION}\n    |> filter(fn: (r) => r._measurement == \"cpu_test\")\nres_hdd = from(bucket:\"test\") \n    |> range(start: 1552222380, stop: now())\n    |> filter(fn: (r) => r._measurement == \"hdd_test\")\njoin(tables: {res_cpu: res_cpu, \"res_hdd\": res_hdd}, on: [\"_time\", \"host\"], method: \"inner\")\n    |> filter(fn: (r) => exists r._time)",
+    "variables": ["res_cpu", "res_hdd"],
+    "transform": {
+      "file": "/home/test-datasets/influx_schema_transform.csv"
+    },
+    "properties": {"test": "val"},
+    "interval": 1200000
   }
 ]

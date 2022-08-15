@@ -23,6 +23,7 @@ class TestInflux(TestPipelineBase):
             {'name': 'test_influx_schema_tag'},
             {'name': 'test_influx_tag'},
             {'name': 'test_influx2_tag'},
+            {'name': 'test_influx2_query_join'},
         ],
         'test_force_stop': [
             {'name': 'test_basic'},
@@ -39,6 +40,7 @@ class TestInflux(TestPipelineBase):
             {'name': 'test_influx_schema_tag'},
             {'name': 'test_influx_tag'},
             {'name': 'test_influx2_tag'},
+            {'name': 'test_influx2_query_join'},
         ],
         'test_reset': [{'name': 'test_basic'}],
         'test_output': [
@@ -74,6 +76,7 @@ class TestInflux(TestPipelineBase):
             {'name': 'test_influx_schema_tag'},
             {'name': 'test_influx_tag'},
             {'name': 'test_influx2_tag'},
+            {'name': 'test_influx2_query_join'},
         ],
         'test_source_delete': [
             {'name': 'test_influx'},
