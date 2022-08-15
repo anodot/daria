@@ -102,6 +102,9 @@ class TestInflux(TestPipelineBase):
         self._wait(compare_output)
         assert compare_output()
 
+    def test_output_schema(self, name, pipeline_type, output):
+        super().test_output_schema(name, pipeline_type, output)
+
     def test_force_stop(self, cli_runner, name, check_output_file_name):
         super().test_force_stop(cli_runner, name, check_output_file_name)
 
