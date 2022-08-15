@@ -18,6 +18,7 @@
     "delay": {"type": "string"},
     "interval": {"type": "integer"},
     "query": {"type": "string"},
+    "variables": {"type": "array"},
     "transform": {
       "type": "object",
       "properties": {
