@@ -10,6 +10,7 @@ class SNMPBuilder(Builder):
         self.config['uses_schema'] = True
         self._add_default_dimensions()
         self._add_default_oids()
+        self._add_table_oids()
         return self.config
 
     def _add_default_dimensions(self):
@@ -18,10 +19,21 @@ class SNMPBuilder(Builder):
         self.config['dimensions'] = list(dimensions)
 
     def _add_default_oids(self):
-        oids = set(self.config.get('oids', []))
-        oids = oids.union(self.config['dimension_value_paths'].values())
-        oids = oids.union(self.config['values'].keys())
-        self.config['oids'] = list(oids)
+        self.config['dimension_oids'] = list(self.config['dimension_value_paths'].values())
+        self.config['values_oids'] = list(self.config['values'].keys())
+
+    def _add_table_oids(self):
+        if 'oid_table' not in self.config:
+            return
+        self.config['table_oids'] = []
+        for k, v in self.config['oid_table'].items():
+            oid_names = set()
+            oid_names = oid_names.union(v['values'].keys())
+            oid_names = oid_names.union(v['dimensions'])
+            self.config['table_oids'].append((k, v['mib'], list(oid_names)))
+
+            self.config['dimensions'].extend(v['dimensions'])
+            self.config['values'].update(v['values'])
 
 
 class SNMPRawBuilder(Builder):

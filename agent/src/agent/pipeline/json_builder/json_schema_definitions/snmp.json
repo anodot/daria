@@ -10,6 +10,7 @@
     "interval": {"type": "string", "enum": ["1m", "5m", "1h"]},
     "pipeline_id": {"type": "string"},
     "oids": {"type": "array", "items": {"type": "string"}},
+    "oid_table": {"type":  "object"},
     "values": {"type": "object"},
     "measurement_names": {"type": "object"},
     "dimension_value_paths": {"type": "object"},
