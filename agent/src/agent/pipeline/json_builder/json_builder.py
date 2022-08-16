@@ -149,6 +149,8 @@ def _validate_configs_for_create(configs: list):
                     'type': 'object',
                     'properties': {
                         'no_data':
+                            {'type': 'string', 'pattern': r'(?![0])\d{1,}[hm]'},
+                        'no_data_dvp':
                             {'type': 'string', 'pattern': r'(?![0])\d{1,}[hm]'}
                     },
                 },
@@ -179,6 +181,8 @@ def _validate_config_for_create(config: dict):
                 'type': 'object',
                 'properties': {
                     'no_data':
+                        {'type': 'string', 'pattern': r'(?![0])\d{1,}[hm]'},
+                    'no_data_dvp':
                         {'type': 'string', 'pattern': r'(?![0])\d{1,}[hm]'}
                 },
             },

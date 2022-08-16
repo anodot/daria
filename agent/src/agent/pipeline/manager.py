@@ -338,10 +338,11 @@ def should_send_no_data_error_notification(pipeline_: Pipeline) -> bool:
             minutes=pipeline_.notifications.no_data_notification.notification_period
         ) + timedelta(seconds=pipeline_.interval or 0)
         no_data_time = datetime.now() - datetime.fromtimestamp(pipeline_.offset.timestamp)
+        dvp_notification_period = pipeline_.notifications.no_data_notification.dvp_notification_period
         return should_send_error_notification(pipeline_) \
                and not pipeline_.notifications.no_data_notification.notification_sent \
                and no_data_time >= no_data_notification_period \
-               and (not pipeline_.dvp_config or no_data_time >= timedelta(days=1))
+               and (not pipeline_.dvp_config or no_data_time >= timedelta(minutes=dvp_notification_period))
     return False
 
 
