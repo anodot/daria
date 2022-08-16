@@ -2,6 +2,7 @@ global sdc
 
 try:
     sdc.importLock()
+    import json
     import time
     from datetime import datetime, timedelta
     import sys
@@ -75,9 +76,13 @@ def main():
         session.headers = sdc.userParams['HEADERS']
         for i in range(1, N_REQUESTS_TRIES + 1):
             try:
+                payload = json.dumps({
+                    "query": sdc.userParams['QUERY'] % (start, stop),
+                    "type": "flux"
+                })
                 res = session.post(
                     sdc.userParams['URL'],
-                    data=sdc.userParams['QUERY'].format(start, stop),
+                    data=payload,
                     timeout=sdc.userParams['TIMEOUT']
                 )
                 res.raise_for_status()

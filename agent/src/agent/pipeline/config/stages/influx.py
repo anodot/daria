@@ -33,7 +33,10 @@ class JythonTransformRecords(JythonProcessor):
     JYTHON_SCRIPT = 'influx2_transform_records.py'
 
     def _get_script_params(self) -> list[dict]:
-        return [{'key': 'TIMESTAMP_COLUMN', 'value': self.pipeline.config['timestamp']['name']}]
+        return [
+            {'key': 'TIMESTAMP_COLUMN', 'value': self.pipeline.config['timestamp']['name']},
+            {'key': 'VARIABLES', 'value': self.pipeline.config.get('variables', [])},
+        ]
 
 
 def _convert_to_seconds(string):

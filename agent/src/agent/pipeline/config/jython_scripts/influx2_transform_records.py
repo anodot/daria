@@ -22,7 +22,15 @@ def to_timestamp(date):
 records = []
 for record in sdc.records:
     timestamp = to_timestamp(datetime.strptime(record.value[sdc.userParams['TIMESTAMP_COLUMN']], DATEFORMAT))
-    record.value[record.value['_field']] = record.value['_value']
+    if '_field' in record.value.keys():
+        record.value[record.value['_field']] = record.value['_value']
+    else:
+        for name in sdc.userParams['VARIABLES']:
+            field_name = '_field_' + name
+            value_name = '_value_' + name
+            if not sdc.getFieldNull(record, '/' + field_name) or not sdc.getFieldNull(record, '/' + value_name):
+                continue
+            record.value[record.value[field_name]] = record.value[value_name]
     record.value[sdc.userParams['TIMESTAMP_COLUMN']] = timestamp
     records.append(record.value)
 

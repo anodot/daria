@@ -23,6 +23,7 @@ class TestInflux(TestPipelineBase):
             {'name': 'test_influx_schema_tag'},
             {'name': 'test_influx_tag'},
             {'name': 'test_influx2_tag'},
+            {'name': 'test_influx2_query_join'},
         ],
         'test_force_stop': [
             {'name': 'test_basic'},
@@ -39,6 +40,7 @@ class TestInflux(TestPipelineBase):
             {'name': 'test_influx_schema_tag'},
             {'name': 'test_influx_tag'},
             {'name': 'test_influx2_tag'},
+            {'name': 'test_influx2_query_join'},
         ],
         'test_reset': [{'name': 'test_basic'}],
         'test_output': [
@@ -58,6 +60,7 @@ class TestInflux(TestPipelineBase):
             {'name': 'test_influx2_query', 'output': 'influx2_query.json', 'pipeline_type': 'influx2'},
             {'name': 'test_influx_schema_tag', 'output': 'influx_schema_tag.json', 'pipeline_type': 'influx'},
             {'name': 'test_influx2_tag', 'output': 'influx2_tag.json', 'pipeline_type': 'influx2'},
+            {'name': 'test_influx2_query_join', 'output': 'influx2_query_join.json', 'pipeline_type': 'influx2'},
         ],
         'test_delete_pipeline': [
             {'name': 'test_basic'},
@@ -74,6 +77,7 @@ class TestInflux(TestPipelineBase):
             {'name': 'test_influx_schema_tag'},
             {'name': 'test_influx_tag'},
             {'name': 'test_influx2_tag'},
+            {'name': 'test_influx2_query_join'},
         ],
         'test_source_delete': [
             {'name': 'test_influx'},
@@ -101,6 +105,9 @@ class TestInflux(TestPipelineBase):
             return actual_output == expected_output
         self._wait(compare_output)
         assert compare_output()
+
+    def test_output_schema(self, name, pipeline_type, output):
+        super().test_output_schema(name, pipeline_type, output)
 
     def test_force_stop(self, cli_runner, name, check_output_file_name):
         super().test_force_stop(cli_runner, name, check_output_file_name)
