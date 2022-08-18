@@ -5,7 +5,7 @@
     "name": {"type": "object"},
     "type": {"type": "object"},
     "siteId": {"type": "object"},
-    "keywords": {"type": "object"},
+    "keyword": {"type": "object"},
     "domain": {"type": "object"},
     "description": {"type": "object"},
     "status": {"type": "object"},
@@ -14,6 +14,5 @@
     "customer": {"type": "object"},
     "relatedNodeId": {"type": "object"}
   },
-  "required": ["id", "name", "siteId", "keywords"],
-  "additionalProperties": false
+  "required": ["id", "name", "siteId", "keyword"]
 }

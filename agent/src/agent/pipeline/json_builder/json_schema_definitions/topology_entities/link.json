@@ -12,6 +12,5 @@
     "description": {"type": "object"},
     "customer": {"type": "object"}
   },
-  "required": ["id", "name", "sourceNodeId", "destNodeId"],
-  "additionalProperties": false
+  "required": ["id", "name", "sourceNodeId", "destNodeId"]
 }

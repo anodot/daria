@@ -12,6 +12,5 @@
     "zipcode": {"type": "object"},
     "customer": {"type": "object"}
   },
-  "required": ["id", "name"],
-  "additionalProperties": false
+  "required": ["id", "name"]
 }

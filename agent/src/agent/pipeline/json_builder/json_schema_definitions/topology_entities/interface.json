@@ -10,6 +10,5 @@
     "ip": {"type": "object"},
     "customer": {"type": "object"}
   },
-  "required": ["id", "name", "relatedNodeId"],
-  "additionalProperties": false
+  "required": ["id", "name", "relatedNodeId"]
 }

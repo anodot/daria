@@ -18,6 +18,5 @@
     "tilt": {"type": "object"},
     "description": {"type": "object"}
   },
-  "required": ["id", "name", "relatedNodeId", "azimuth"],
-  "additionalProperties": false
+  "required": ["id", "name", "relatedNodeId", "azimuth"]
 }
