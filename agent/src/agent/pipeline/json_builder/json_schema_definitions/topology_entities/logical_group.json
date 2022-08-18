@@ -8,6 +8,5 @@
     "relatedEntityId": {"type": "object"},
     "description": {"type": "object"}
   },
-  "required": ["id", "name", "relatedEntityType", "relatedEntityId"],
-  "additionalProperties": false
+  "required": ["id", "name", "relatedEntityType", "relatedEntityId"]
 }

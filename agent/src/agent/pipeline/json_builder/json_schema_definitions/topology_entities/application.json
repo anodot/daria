@@ -7,6 +7,5 @@
     "relatedNodeId": {"type": "object"},
     "description": {"type": "object"}
   },
-  "required": ["id", "name"],
-  "additionalProperties": false
+  "required": ["id", "name"]
 }

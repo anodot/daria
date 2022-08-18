@@ -9,6 +9,5 @@
     "description": {"type": "object"},
     "customer": {"type": "object"}
   },
-  "required": ["id", "name", "relatedEntityType", "relatedEntityId"],
-  "additionalProperties": false
+  "required": ["id", "name", "relatedEntityType", "relatedEntityId"]
 }
