@@ -135,7 +135,7 @@ class SessionManager:
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
         if exc_value:
-            self.session.expunge(self.entity)
+            self.session.rollback()
             return False
         self.session.commit()
         return True
