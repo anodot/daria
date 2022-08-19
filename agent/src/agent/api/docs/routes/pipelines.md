@@ -470,21 +470,3 @@ curl -X POST http://localhost:8080/pipelines/test_influx/reset
 ```
 **Response:**
 Status: 200 OK
-
-```json
-[{
-    "source": "cacti",
-    "pipeline_id": "cacti_file",
-    "step": 300,
-    "interval": 300,
-    "rename_dimensions_mapping": {
-        "dimension_name": "dimension_alias"
-    },
-    "values": {
-      "value_name": "value_nickname"
-    },
-    "units": {
-      "value_name": "value_units"
-    }
-}]
-```
