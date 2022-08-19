@@ -116,6 +116,7 @@ curl -X POST http://localhost:8080/pipelines \
         "pipeline_id": "elastic_pipeline",
         "measurement_names": {"Clicks":  "clicks"},
         "values": {"Clicks":  "gauge"},
+        "units": {"Clicks": "per time"},
         "dimensions": ["_source/ver", "_source/Country"],
         "timestamp": {
             "type": "unix",
@@ -150,7 +151,10 @@ curl -X POST http://localhost:8080/pipelines \
             "uses_schema": false,
             "values": {
                 "Clicks": "gauge"
-            }
+            },
+            "units": {
+    	    	"Clicks": "per time"
+	    }
         },
         "destination": {
             "conf.client.proxy.password": "",
@@ -405,6 +409,9 @@ curl -X GET http://localhost:8080/pipelines/mssql_pipeline
         "values": {
             "clicks": "gauge",
             "impressions": "gauge"
+        }
+        "units": {
+            "clicks": "per time"
         }
     },
     "destination": {
