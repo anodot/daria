@@ -60,7 +60,12 @@ curl -X POST http://localhost:8080/pipelines \
         "source": "influx",
         "pipeline_id": "test_influx",
         "measurement_name": "cpu_test",
-        "value": ["usage_active"],
+        "values": {
+            "usage_active" : "gauge"
+        },
+        "units": {
+            "usage_active": "activity units"
+        }
         "dimensions": {
             "required": [],
             "optional": ["cpu", "host", "zone"]
@@ -95,12 +100,11 @@ curl -X POST http://localhost:8080/pipelines \
             "name": "influx"
         },
         "target_type": "gauge",
-        "value": {
-            "constant": "1",
-            "type": "property",
-            "values": [
-                "usage_active"
-            ]
+        "values": {
+            "usage_active" : "gauge"
+        },
+        "units": {
+            "usage_active": "activity units"
         }
     }
 ]
@@ -154,7 +158,7 @@ curl -X POST http://localhost:8080/pipelines \
             },
             "units": {
     	    	"Clicks": "per time"
-	    }
+            }
         },
         "destination": {
             "conf.client.proxy.password": "",
@@ -198,7 +202,9 @@ curl -X PUT http://localhost:8080/pipelines \
         "source": "influx",
         "pipeline_id": "test_influx",
         "measurement_name": "different_measurment",
-        "value": ["usage_active"],
+        "values": {
+            "usage_active" : "gauge"
+        }
         "dimensions": {
             "required": [],
             "optional": ["cpu", "host", "zone"]
@@ -233,12 +239,8 @@ curl -X PUT http://localhost:8080/pipelines \
             "name": "influx"
         },
         "target_type": "gauge",
-        "value": {
-            "constant": "1",
-            "type": "property",
-            "values": [
-                "usage_active"
-            ]
+        "values": {
+            "usage_active" : "gauge"
         }
     }
 ]
@@ -411,7 +413,8 @@ curl -X GET http://localhost:8080/pipelines/mssql_pipeline
             "impressions": "gauge"
         }
         "units": {
-            "clicks": "per time"
+            "clicks": "per time",
+            "impressions": "impressions units"
         }
     },
     "destination": {
@@ -467,3 +470,21 @@ curl -X POST http://localhost:8080/pipelines/test_influx/reset
 ```
 **Response:**
 Status: 200 OK
+
+```json
+[{
+    "source": "cacti",
+    "pipeline_id": "cacti_file",
+    "step": 300,
+    "interval": 300,
+    "rename_dimensions_mapping": {
+        "dimension_name": "dimension_alias"
+    },
+    "values": {
+      "value_name": "value_nickname"
+    },
+    "units": {
+      "value_name": "value_units"
+    }
+}]
+```
