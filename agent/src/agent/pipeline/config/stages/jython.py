@@ -145,6 +145,10 @@ class TopologyDestination(JythonProcessor):
                 'key': 'PROXIES',
                 'value': proxy.get_config(self.pipeline.destination.proxy)
             },
+            {
+                'key': 'LOG_EVERYTHING',
+                'value': 'true' if self.pipeline.log_everything else 'false'
+            },
         ]
 
 
