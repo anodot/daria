@@ -60,7 +60,12 @@ curl -X POST http://localhost:8080/pipelines \
         "source": "influx",
         "pipeline_id": "test_influx",
         "measurement_name": "cpu_test",
-        "value": ["usage_active"],
+        "values": {
+            "usage_active" : "gauge"
+        },
+        "units": {
+            "usage_active": "activity units"
+        }
         "dimensions": {
             "required": [],
             "optional": ["cpu", "host", "zone"]
@@ -95,12 +100,11 @@ curl -X POST http://localhost:8080/pipelines \
             "name": "influx"
         },
         "target_type": "gauge",
-        "value": {
-            "constant": "1",
-            "type": "property",
-            "values": [
-                "usage_active"
-            ]
+        "values": {
+            "usage_active" : "gauge"
+        },
+        "units": {
+            "usage_active": "activity units"
         }
     }
 ]
@@ -116,6 +120,7 @@ curl -X POST http://localhost:8080/pipelines \
         "pipeline_id": "elastic_pipeline",
         "measurement_names": {"Clicks":  "clicks"},
         "values": {"Clicks":  "gauge"},
+        "units": {"Clicks": "per time"},
         "dimensions": ["_source/ver", "_source/Country"],
         "timestamp": {
             "type": "unix",
@@ -150,6 +155,9 @@ curl -X POST http://localhost:8080/pipelines \
             "uses_schema": false,
             "values": {
                 "Clicks": "gauge"
+            },
+            "units": {
+    	    	"Clicks": "per time"
             }
         },
         "destination": {
@@ -194,7 +202,9 @@ curl -X PUT http://localhost:8080/pipelines \
         "source": "influx",
         "pipeline_id": "test_influx",
         "measurement_name": "different_measurment",
-        "value": ["usage_active"],
+        "values": {
+            "usage_active" : "gauge"
+        }
         "dimensions": {
             "required": [],
             "optional": ["cpu", "host", "zone"]
@@ -229,12 +239,8 @@ curl -X PUT http://localhost:8080/pipelines \
             "name": "influx"
         },
         "target_type": "gauge",
-        "value": {
-            "constant": "1",
-            "type": "property",
-            "values": [
-                "usage_active"
-            ]
+        "values": {
+            "usage_active" : "gauge"
         }
     }
 ]
@@ -405,6 +411,10 @@ curl -X GET http://localhost:8080/pipelines/mssql_pipeline
         "values": {
             "clicks": "gauge",
             "impressions": "gauge"
+        }
+        "units": {
+            "clicks": "per time",
+            "impressions": "impressions units"
         }
     },
     "destination": {
