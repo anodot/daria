@@ -14,5 +14,5 @@
     "customer": {"type": "object"},
     "relatedNodeId": {"type": "object"}
   },
-  "required": ["id", "name", "siteId", "keyword"]
+  "required": ["id", "name", "siteId", "keyword", "domain"]
 }

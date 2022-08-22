@@ -68,12 +68,15 @@ def build_entities(base_entity, entities, bulk_ser_number):
 
 
 def send_data(client, data, rollup_id):
+    if sdc.userParams['LOG_EVERYTHING']:
+        sdc.log.info(json.dumps(data))
     res = client.send_topology_data(data, rollup_id)
     if res.status_code != 200:
         sdc.log.error('ERROR SENDING DATA')
         sdc.log.error(str(res.text))
         sdc.log.error('status code ' + str(res.status_code))
     res.raise_for_status()
+    return res.json()
 
 
 def retry(func):
@@ -101,6 +104,7 @@ def main():
     client = AnodotApiClient(
         sdc.state, sdc.userParams['ANODOT_URL'], sdc.userParams['ACCESS_TOKEN'], sdc.userParams['PROXIES']
     )
+    bulk_ser_number_ = 1
     with RollupProvider(client) as rollup_id:
         for record in sdc.records:
             oe = [(entity_type, entities) for entity_type, entities in record.value.items()]
@@ -112,13 +116,19 @@ def main():
                 }
                 for i, chunk in enumerate(chunks(entities, MAX_ENTITY_ROWS)):
                     # i starts from 0 and bulkSerNumber starts from 1 so + 1
-                    data = build_entities(base, chunk, i + 1)
+                    data = build_entities(base, chunk, bulk_ser_number_)
                     if not sdc.isPreview():
-                        send_data(client, data, rollup_id)
+                        res = send_data(client, data, rollup_id)
+                        new_record = sdc.createRecord(str(i))
+                        new_record.value = data
+                        if res['validationErrors'] or res['insertErrors'] or res['missingIds']:
+                            sdc.log.error('ERROR SENDING DATA')
+                            sdc.log.error(json.dumps(res))
+                            sdc.error.write(new_record, 'Error sending data, please check logs for more derailed info')
+                        else:
+                            output.write(new_record)
 
-                    new_record = sdc.createRecord(str(i))
-                    new_record.value = data
-                    output.write(new_record)
+                        bulk_ser_number_ += 1
 
 
 if len(sdc.records) > 0:
