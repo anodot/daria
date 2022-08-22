@@ -15,6 +15,9 @@ finally:
 
 MAX_ENTITY_ROWS = 500
 
+ENTITIES = ['REGION', 'SITE', 'NODE', 'CARD', 'INTERFACE', 'CELL', 'LINK', 'SERVICE', 'LOGICAL_GROUP', 'APPLICATION']
+_entities_order = {x: i for i, x in enumerate(ENTITIES)}
+
 
 class RollupProvider:
     def __init__(self, client):
@@ -100,7 +103,8 @@ def main():
     )
     with RollupProvider(client) as rollup_id:
         for record in sdc.records:
-            for entity_type, entities in record.value.items():
+            oe = [(entity_type, entities) for entity_type, entities in record.value.items()]
+            for entity_type, entities in sorted(oe, key=lambda e: _entities_order[e[0]]):
                 base = {
                     "type": entity_type,
                     "rollupId": rollup_id,
