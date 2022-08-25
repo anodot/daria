@@ -1,3 +1,5 @@
+import base64
+import json
 import urllib.parse
 import uuid
 import os
@@ -152,8 +154,10 @@ class AuthenticationToken(Entity):
         self.created_at = datetime.now()
 
     def is_expired(self) -> bool:
+        res = base64.b64decode(self.authentication_token.split('.')[1] + '==')
+        expiration_timestamp = json.loads(res)['exp']
         # leave 100 sec gap just to be sure we're not using expired token
-        return (datetime.now() - self.created_at).total_seconds() > self.EXPIRATION_PERIOD_IN_SECONDS - 100
+        return expiration_timestamp < datetime.now().timestamp() - 100
 
 
 class DummyHttpDestination(HttpDestination):
