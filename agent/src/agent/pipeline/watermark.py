@@ -84,7 +84,7 @@ class PeriodicWatermarkManager:
         """
         Calculates the timestamp relatively to the provided timezone.
         """
-        dt = datetime.now(timezone.utc)
+        dt = datetime.utcnow()
         return int((dt - self.timezone_.utcoffset(dt)).timestamp())
 
 
