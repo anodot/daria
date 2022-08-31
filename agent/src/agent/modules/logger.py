@@ -18,7 +18,7 @@ def get_logger(name, level=None, stdout=False):
 
     if stdout:
         handler = logging.StreamHandler(sys.stdout)
-        handler.setLevel(logging.INFO)
+        handler.setLevel(level)
         handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
         logger.addHandler(handler)
 
