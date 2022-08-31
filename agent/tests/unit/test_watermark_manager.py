@@ -53,7 +53,7 @@ def test_should_send_watermark(now, watermark, offset, watermark_delay, bucket_s
     pipeline_ = _set_watermark_and_offset_mock(pipeline_, watermark, offset)
 
     watermark_manager = pipeline.watermark.PeriodicWatermarkManager(pipeline_)
-    watermark_manager._get_local_now_timestamp = Mock(return_value=now)
+    watermark_manager._get_now_timestamp = Mock(return_value=now)
     assert watermark_manager.should_send_watermark() == er
 
 
@@ -108,7 +108,7 @@ def test_calculate_watermark(now, watermark, offset, watermark_delay, bucket_siz
         pipeline_.offset = None
 
     watermark_manager = pipeline.watermark.PeriodicWatermarkManager(pipeline_)
-    watermark_manager._get_local_now_timestamp = Mock(return_value=now)
+    watermark_manager._get_now_timestamp = Mock(return_value=now)
     assert watermark_manager.get_latest_bucket_start() == er
 
 
@@ -126,7 +126,7 @@ def test_calculate_timezone_watermark():
     pipeline_.offset.timestamp = (now - tz.utcoffset(now)).timestamp()
 
     ar = pipeline.watermark.PeriodicWatermarkManager(pipeline_).get_latest_bucket_start()
-    er = int((now.replace(minute=0, second=0, microsecond=0) - tz.utcoffset(now) + timedelta(hours=1)).timestamp())
+    er = int((now.replace(minute=0, second=0, microsecond=0)).timestamp())
     assert ar == er
     # it should be equal 0 because bucket size is 1h and timezone is Etc/GMT-1 which is 1 hour ahead of UTC
     assert datetime.fromtimestamp(ar, timezone.utc).hour - now.hour == 0
@@ -138,6 +138,7 @@ def test_calculate_timezone_watermark():
 ])
 def test_should_send_watermark_with_timezone(watermark, offset):
     tz_name = 'Asia/Dubai'
+    now = datetime.utcnow()
 
     pipeline_ = Mock()
     pipeline_.timezone = tz_name
@@ -148,4 +149,8 @@ def test_should_send_watermark_with_timezone(watermark, offset):
     pipeline_.uses_schema = Mock(return_value=True)
     pipeline_ = _set_watermark_and_offset_mock(pipeline_, watermark, offset)
     pipeline_.has_offset = Mock(return_value=True)
-    assert pipeline.watermark.PeriodicWatermarkManager(pipeline_).should_send_watermark()
+    wm = pipeline.watermark.PeriodicWatermarkManager(pipeline_)
+    assert wm.should_send_watermark()
+
+    er = int((now.replace(minute=0, second=0, microsecond=0)).timestamp())
+    assert wm.get_latest_bucket_start() == er
