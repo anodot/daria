@@ -27,6 +27,7 @@ class TestSNMP(TestPipelineBase):
             {'name': 'snmp'},
             {'name': 'snmp_multi'},
             {'name': 'snmp_table'},
+            {'name': 'snmp_table_filter'},
         ],
         'test_source_delete': [
             {'name': 'snmp'},
