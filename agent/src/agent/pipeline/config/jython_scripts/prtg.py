@@ -121,7 +121,7 @@ def main():
             offset = get_now() + get_interval()
 
         try:
-            res = session.get(sdc.userParams['URL'], verify=sdc.userParams['VERIFY_SSL'])
+            res = session.get(sdc.userParams['URL'], verify=bool(sdc.userParams['VERIFY_SSL']))
             res.raise_for_status()
             url_parsed = urlparse(sdc.userParams['URL'])
             if url_parsed.path.endswith('.xml'):
