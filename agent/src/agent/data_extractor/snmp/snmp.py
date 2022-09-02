@@ -1,4 +1,5 @@
 import time
+from itertools import product
 from urllib.parse import urlparse
 from pysnmp.entity.engine import SnmpEngine
 from pysnmp.hlapi import CommunityData, ContextData, UdpTransportTarget, getCmd, nextCmd
@@ -64,7 +65,8 @@ def _fetch_raw_data(pipeline_: Pipeline) -> list:
     for host in pipeline_.source.hosts:
         host_ = host if '://' in host else f'//{host}'
         url = urlparse(host_)
-        iterator = _execute_get_cmd(pipeline_, snmp_version, url, 'raw_oids')
+        request_var_binds = [ObjectType(ObjectIdentity(oid)) for oid in pipeline_.config['oids']]
+        iterator = _execute_get_cmd(pipeline_, snmp_version, url, request_var_binds)
         var_binds = _get_var_binds(iterator, host)
         var_binds_groups.extend(var_binds)
     return var_binds_groups
@@ -77,17 +79,16 @@ def _fetch_data(pipeline_: Pipeline) -> list:
         host_ = host if '://' in host else f'//{host}'
         url = urlparse(host_)
 
-        iterator = _execute_get_cmd(pipeline_, snmp_version, url, 'dimension_oids')
-        dimension_var_binds = _get_var_binds(iterator, host)
-        if not dimension_var_binds:
-            continue
-
-        iterator = _execute_get_cmd(pipeline_, snmp_version, url, 'values_oids')
+        request_var_binds = [ObjectType(ObjectIdentity(oid)) for oid in pipeline_.config['values_oids']]
+        iterator = _execute_get_cmd(pipeline_, snmp_version, url, request_var_binds)
         values_var_binds = _get_var_binds(iterator, host)
-        if not values_var_binds:
+        if not any(values_var_binds):
             continue
 
-        var_binds_groups.extend(group + dimension_var_binds[0] for group in values_var_binds)
+        request_var_binds = [ObjectType(ObjectIdentity(oid)) for oid in pipeline_.config['dimension_oids']]
+        iterator = _execute_get_cmd(pipeline_, snmp_version, url, request_var_binds)
+        if dimension_var_binds := _get_var_binds(iterator, host):
+            var_binds_groups.extend(group + dimension_var_binds[0] for group in values_var_binds)
     return var_binds_groups
 
 
@@ -98,29 +99,31 @@ def _fetch_table_data(pipeline_: Pipeline) -> list:
         host_ = host if '://' in host else f'//{host}'
         url = urlparse(host_)
 
-        iterator = _execute_get_cmd(pipeline_, snmp_version, url, 'dimension_oids')
+        request_var_binds = [ObjectType(ObjectIdentity(mib)) for mib in pipeline_.config['dimension_oids']]
+        iterator = _execute_get_cmd(pipeline_, snmp_version, url, request_var_binds)
         dimension_var_binds = _get_var_binds(iterator, host)
         if not dimension_var_binds:
             continue
 
-        for table_oid, mib, names in pipeline_.config['table_oids']:
-            iterator = _execute_next_cmd(pipeline_, snmp_version, url, mib, names)
+        for table_oid, mib, names, use_indexes in pipeline_.config['table_oids']:
+            object_id_args = list(product([mib], names, use_indexes)) if use_indexes else list(product([mib], names))
+            request_var_binds = [ObjectType(ObjectIdentity(*args)) for args in object_id_args]
+            iterator = _execute_get_cmd(pipeline_, snmp_version, url, request_var_binds) if use_indexes else _execute_next_cmd(pipeline_, snmp_version, url, request_var_binds)
             table_var_binds = _get_var_binds(iterator, host)
-
             var_binds_groups.extend(group + dimension_var_binds[0] for group in table_var_binds)
 
     return var_binds_groups
 
 
-def _execute_get_cmd(pipeline_, snmp_version, url, name_oid):
-    if name_oid == 'dimension_oids':
-        var_binds = [ObjectType(ObjectIdentity(mib)) for mib in pipeline_.config['dimension_oids']]
-    elif name_oid == 'values_oids':
-        var_binds = [ObjectType(ObjectIdentity(mib)) for mib in pipeline_.config['values_oids']]
-    elif name_oid == 'raw_oids':
-        var_binds = [ObjectType(ObjectIdentity(mib)) for mib in pipeline_.config['oids']]
-    else:
-        return []
+def _execute_get_cmd(pipeline_, snmp_version, url, var_binds):
+    # if name_oid == 'dimension_oids':
+    #     var_binds = [ObjectType(ObjectIdentity(mib)) for mib in pipeline_.config['dimension_oids']]
+    # elif name_oid == 'values_oids':
+    #     var_binds = [ObjectType(ObjectIdentity(mib)) for mib in pipeline_.config['values_oids']]
+    # elif name_oid == 'raw_oids':
+    #     var_binds = [ObjectType(ObjectIdentity(mib)) for mib in pipeline_.config['oids']]
+    # else:
+    #     return []
 
     return getCmd(
         SnmpEngine(),
@@ -135,7 +138,7 @@ def _execute_get_cmd(pipeline_, snmp_version, url, name_oid):
         )
 
 
-def _execute_next_cmd(pipeline_, snmp_version, url, mib, names):
+def _execute_next_cmd(pipeline_, snmp_version, url, var_binds):
     return nextCmd(
         SnmpEngine(),
         CommunityData(pipeline_.source.read_community, mpModel=snmp_version),
@@ -143,7 +146,7 @@ def _execute_next_cmd(pipeline_, snmp_version, url, mib, names):
                            timeout=pipeline_.source.query_timeout,
                            retries=0),
         ContextData(),
-        *[ObjectType(ObjectIdentity(mib, name)) for name in names],
+        *var_binds,
         lexicographicMode=False,
         lookupMib=True
     )

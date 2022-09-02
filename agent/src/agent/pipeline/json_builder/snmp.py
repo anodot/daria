@@ -35,7 +35,8 @@ class SNMPBuilder(Builder):
             oid_names = set()
             oid_names = oid_names.union(v['values'].keys())
             oid_names = oid_names.union(v['dimensions'])
-            self.config['table_oids'].append((k, v['mib'], list(oid_names)))
+            use_indexes = v.get('use_indexes', [])
+            self.config['table_oids'].append((k, v['mib'], list(oid_names), use_indexes))
             self.config['dimensions'].extend(v['dimensions'])
             self.config['values'].update(v['values'])
 
