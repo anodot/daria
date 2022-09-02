@@ -5,14 +5,25 @@
     "source": {"type": "string"},
     "tags": {
       "type": "object",
-      "patternProperties":  {"[^ \\.]+": {"type": "array", "items": {"type": "string"}}}
+      "patternProperties": {"[^ \\.]+": {"type": "array", "items": {"type": "string"}}}
     },
     "interval": {"type": "string", "enum": ["1m", "5m", "1h"]},
     "pipeline_id": {"type": "string"},
     "oids": {"type": "array", "items": {"type": "string"}},
     "oid_table": {
       "type":  "object",
-      "patternProperties":  {"[^ \\.]+": {"type": "object", "required": ["mib", "values", "dimensions"]}}
+      "patternProperties": {
+        "[^ \\.]+": {
+          "type": "object",
+          "properties": {
+            "mib": {"type": "string"},
+            "values": {"type": "object"},
+            "dimensions": {"type": "array"},
+            "use_indexes": {"type": "array", "items": {"type": "number"}, "uniqueItems": true}
+          },
+          "required": ["mib", "values", "dimensions"]
+        }
+      }
     },
     "values": {"type": "object"},
     "measurement_names": {"type": "object"},
