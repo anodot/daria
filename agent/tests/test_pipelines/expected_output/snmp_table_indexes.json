@@ -1,0 +1,33 @@
+[
+  {
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "snmp_table_indexes"
+      ],
+      "pipeline_type": [
+        "snmp"
+      ]
+    },
+    "schemaId": "snmp_table_indexes-1234",
+    "dimensions": {
+      "ifType": "ethernetCsmacd",
+      "ifDescr": "eth0",
+      "system_location": "San Francisco, California, United States",
+      "system_description": "Linux zeus 4.8.6.5-smp #2 SMP Sun Nov 13 14:58:11 CDT 2016 i686",
+      "host_name": null
+    },
+    "measurements": {
+      "ifMtu": 1500.0,
+      "ifSpeed": 1.0E8
+    }
+  }
+]
