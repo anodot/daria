@@ -191,6 +191,8 @@ def _get_value_oid_name(oid: ObjectIdentity, pipeline_: Pipeline) -> str:
 
 
 def _get_value(var_bind, pipeline_: Pipeline):
+    if not str(var_bind[1]):
+        return None
     if _is_running_counter(var_bind, pipeline_):
         value_name = _get_value_oid_name(var_bind[0], pipeline_)
         return delta_calculator.delta(value_name, float(var_bind[1]))
