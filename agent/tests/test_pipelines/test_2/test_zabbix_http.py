@@ -1,7 +1,6 @@
 import pytest
 
-from ..test_zpipeline_base import TestPipelineBase, get_expected_output
-from ...conftest import get_output
+from ..test_zpipeline_base import TestPipelineBase
 
 
 class TestZabbix(TestPipelineBase):
@@ -32,8 +31,8 @@ class TestZabbix(TestPipelineBase):
     def test_start(self, cli_runner, name, sleep):
         super().test_start(cli_runner, name, sleep)
 
-    def test_force_stop(self, cli_runner, name, check_output_file_name):
-        super().test_force_stop(cli_runner, name, check_output_file_name)
-
     def test_output(self, name, pipeline_type, output):
         super().test_output(name, pipeline_type, output)
+
+    def test_force_stop(self, cli_runner, name, check_output_file_name):
+        super().test_force_stop(cli_runner, name, check_output_file_name)
