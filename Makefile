@@ -212,9 +212,9 @@ run-dev:
 bootstrap: clean-docker-volumes run-base-services-dev test-streamsets test-destination
 
 clean-docker-volumes:
-	rm -rf sdc-data/*
-	rm -rf sdc-data2/*
-	rm -rf agent/output/*
+	sudo rm -rf sdc-data/*
+	sudo rm -rf sdc-data2/*
+	sudo rm -rf agent/output/*
 	$(DOCKER_COMPOSE_DEV) down -v --remove-orphans
 
 
@@ -313,6 +313,15 @@ half-sleep:
 
 nap:
 	sleep $(NAP)
+
+kibana:
+	$(DOCKER_COMPOSE_DEV) up -d kibana
+
+kibana-restart:
+	$(DOCKER_COMPOSE_DEV) restart elastic-kibana
+	$(DOCKER_COMPOSE_DEV) down kibana
+	$(DOCKER_COMPOSE_DEV) build kibana
+	$(DOCKER_COMPOSE_DEV) up -d kibana
 
 show-all-logs:
 	docker logs anodot-agent;

@@ -65,6 +65,7 @@ services:
       - ./agent:/usr/src/app
 #      - ./scripts:/usr/src/app/scripts
       - ./test-datasets:/home/test-datasets
+#      - ./logs/agent:/var/log/agent
     ports:
       - "80:80"
 
@@ -281,6 +282,54 @@ services:
     container_name: snmpsim
     ports:
       - "1161:1161/udp"
+
+  elastic-kibana:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.3.3
+    container_name: elastic-kibana
+    environment:
+      ELASTIC_PASSWORD: "password"
+      KIBANA_PASSWORD: "password"
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - ./kibana.yml:/usr/share/kibana/config/kibana.yml
+
+  kibana:
+    build: containers/kibana
+    container_name: kibana
+    depends_on:
+      - elastic-kibana
+    environment:
+      ELASTICSEARCH_HOSTS: "http://localhost:9200"
+      KBN_PATH_CONF: /home/kibana/config ./bin/kibana
+    ports:
+      - "5601:5601"
+#    volumes:
+#      - ./logs/agent:./logs/agent
+#      - .containers/kibana.yml:/usr/share/kibana/config/kibana.yml
+#      - ./kibana.yml:./config/kibana.yml
+
+  elk:
+    image: sebp/elk
+    volumes:
+      - ./logs/agent:/var/log/agent
+    ports:
+      - "5601:5601"
+      - "9200:9200"
+      - "5044:5044"
+
+  log-shipper:
+    container_name: filebeat
+    image: docker.elastic.co/beats/filebeat:7.12.0
+    entrypoint: filebeat -e -strict.perms=false
+    depends_on:
+      - elk
+    user: root
+    volumes:
+      - ./filebeat.docker.yml:/usr/share/filebeat/filebeat.yml
+      - ./logs/agent:/var/log/agent
+
 
 volumes:
   agent-data:
