@@ -15,23 +15,28 @@ class SNMPBuilder(Builder):
 
     def _add_default_dimensions(self):
         dimensions = set(self.config.get('dimensions', []))
-        dimensions = dimensions.union(self.config['dimension_value_paths'])
+        dimensions = dimensions.union(self.config.get('dimension_value_paths', {}))
         self.config['dimensions'] = list(dimensions)
 
     def _add_default_oids(self):
-        self.config['dimension_oids'] = list(self.config['dimension_value_paths'].values())
-        self.config['values_oids'] = list(self.config['values'].keys())
+        self.config['dimension_oids'] = list(self.config.get('dimension_value_paths', {}).values())
+        self.config['values_oids'] = list(self.config.get('values', {}).keys())
 
     def _add_table_oids(self):
         if 'oid_table' not in self.config:
             return
         self.config['table_oids'] = []
+        if 'dimensions' not in self.config:
+            self.config['dimensions'] = []
+        if 'values' not in self.config:
+            self.config['values'] = {}
+
         for k, v in self.config['oid_table'].items():
             oid_names = set()
             oid_names = oid_names.union(v['values'].keys())
             oid_names = oid_names.union(v['dimensions'])
-            self.config['table_oids'].append((k, v['mib'], list(oid_names)))
-
+            use_indexes = v.get('use_indexes', [])
+            self.config['table_oids'].append((k, v['mib'], list(oid_names), use_indexes))
             self.config['dimensions'].extend(v['dimensions'])
             self.config['values'].update(v['values'])
 

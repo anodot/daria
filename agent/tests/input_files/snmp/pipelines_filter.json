@@ -1,0 +1,52 @@
+[
+  {
+    "source": "snmp",
+    "pipeline_id": "snmp_table_filter",
+    "oid_table": {
+      "ifTable": {
+        "mib": "IF-MIB",
+        "values": {
+          "ifMtu": "counter",
+          "ifSpeed": "gauge"
+        },
+        "dimensions": ["ifDescr", "ifType"]
+      }
+    },
+    "dimensions": ["system_description", "system_location"],
+    "dimension_value_paths": {
+      "system_description": "1.3.6.1.2.1.1.1.0",
+      "system_location": "1.3.6.1.2.1.1.6.0"
+    },
+    "transform": {
+      "config": "dimensions/host_name,zeus.snmplabs.com,'dimensions/host_name' == 'value=zeus.snmplabs.com (you can change this!)'"
+    },
+    "filter": {
+      "condition": "('dimensions/ifDescr' matches '^eth[0-9]+')"
+    },
+    "interval": "5m"
+  },
+  {
+    "source": "snmp",
+    "pipeline_id": "snmp_table_indexes",
+    "oid_table": {
+      "ifTable": {
+        "mib": "IF-MIB",
+        "use_indexes": [2],
+        "values": {
+          "ifMtu": "counter",
+          "ifSpeed": "gauge"
+        },
+        "dimensions": ["ifDescr", "ifType"]
+      }
+    },
+    "dimensions": ["system_description", "system_location"],
+    "dimension_value_paths": {
+      "system_description": "1.3.6.1.2.1.1.1.0",
+      "system_location": "1.3.6.1.2.1.1.6.0"
+    },
+    "transform": {
+      "config": "dimensions/host_name,zeus.snmplabs.com,'dimensions/host_name' == 'value=zeus.snmplabs.com (you can change this!)'"
+    },
+    "interval": "5m"
+  }
+]
