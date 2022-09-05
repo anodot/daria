@@ -1,0 +1,13 @@
+[
+  {
+    "source": "test_kafka_raw",
+    "pipeline_id": "test_kafka_raw",
+    "measurement_names": {"Clicks":  "clicks"},
+    "values": {"Clicks":  "gauge"},
+    "dimensions": ["ver", "Country"],
+    "timestamp": {
+      "type": "unix",
+      "name": "timestamp_unix"
+    }
+  }
+]

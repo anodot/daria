@@ -1,0 +1,10 @@
+[
+  {
+    "type": "kafka",
+    "name": "test_kafka_raw",
+    "config": {
+      "conf.brokerURI": "kafka:29092",
+      "conf.topicList": ["test_raw"]
+    }
+  }
+]

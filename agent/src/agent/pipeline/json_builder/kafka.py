@@ -15,3 +15,8 @@ class KafkaBuilder(Builder):
             self.config['override_source'][source.KafkaSource.CONFIG_CONSUMER_GROUP] = \
                 constants.KAFKA_CONSUMER_GROUP_PREFIX + self.config['pipeline_id']
         return self.config
+
+
+class KafkaRawBuilder(Builder):
+    VALIDATION_SCHEMA_FILE_NAME = 'kafka'
+    VALIDATION_SCHEMA_DIR_NAME = 'json_schema_definitions/raw'
