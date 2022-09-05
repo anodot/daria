@@ -170,7 +170,7 @@ class TestPromQL(TestPipelineBase):
         schema_id = get_schema_id('test_victoria_dvp')
         # current_day = datetime.now(timezone.utc)
         # month_after_data = current_day.replace(hour=0, minute=0, second=0, microsecond=0).timestamp()
-        months_after_data = datetime(year=2022, month=3, day=1, hour=0, minute=0, second=0, microsecond=0).timestamp()
+        months_after_data = datetime(year=2022, month=1, day=1, hour=0, minute=0, second=0, microsecond=0).timestamp()
 
         def correct_watermark():
             try:
