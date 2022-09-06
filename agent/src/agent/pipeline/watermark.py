@@ -46,7 +46,7 @@ class PeriodicWatermarkManager:
     #            - pipeline.FlushBucketSize(self.pipeline.periodic_watermark_config['bucket_size']).total_seconds()
 
     def _watermark_delay_passed(self) -> bool:
-        return self._get_local_now_timestamp() >= self.pipeline.watermark.timestamp \
+        return self._get_now_timestamp() >= self.pipeline.watermark.timestamp \
                + pipeline.FlushBucketSize(self.pipeline.periodic_watermark_config['bucket_size']).total_seconds() \
                + self.pipeline.watermark_delay
 
@@ -54,7 +54,7 @@ class PeriodicWatermarkManager:
         next_bucket_start = get_next_bucket_start(
             self.pipeline.periodic_watermark_config['bucket_size'], self.pipeline.offset.timestamp
         )
-        return self._get_local_now_timestamp() >= next_bucket_start.timestamp() + self.pipeline.watermark_delay
+        return self._get_now_timestamp() >= next_bucket_start.timestamp() + self.pipeline.watermark_delay
 
     def get_latest_bucket_start(self) -> int:
         delay = self.pipeline.watermark_delay
@@ -78,14 +78,11 @@ class PeriodicWatermarkManager:
 
     def _is_latest_watermark(self, watermark: int, delay: int, bucket_size: int):
         # everything is in seconds
-        return self._get_local_now_timestamp() - delay - watermark < bucket_size
+        return self._get_now_timestamp() - delay - watermark < bucket_size
 
-    def _get_local_now_timestamp(self) -> int:
-        """
-        Calculates the timestamp relatively to the provided timezone.
-        """
+    def _get_now_timestamp(self) -> int:
         dt = datetime.utcnow()
-        return int((dt - self.timezone_.utcoffset(dt)).timestamp())
+        return int(dt.timestamp())
 
 
 def get_next_bucket_start(bs: str, offset: float) -> datetime:
