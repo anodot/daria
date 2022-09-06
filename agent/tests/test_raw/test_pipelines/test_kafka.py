@@ -6,7 +6,7 @@ class TestRawKafka(TestRawPipelineBase):
     params = {
         'test_start': [{'name': 'test_kafka_raw'}],
         'test_force_stop': [
-            {'name': 'test_kafka_raw', 'check_output_file_name': 'test_kafka_raw.csv'},
+            {'name': 'test_kafka_raw', 'check_output_file_name': 'test_kafka_raw.json'},
         ],
         'test_output': [
             {'file_name': 'test_kafka_raw.json', 'output_file': 'kafka.json', 'pipeline_type': 'kafka'},
