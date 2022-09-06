@@ -3,9 +3,9 @@
     "schemaVersion" : 6,
     "version" : 19,
     "pipelineId" : "jdbchttp7bdc1f99-ed91-4c40-b9ef-a7cf05720170",
-    "title" : "mysql_raw_csv",
+    "title" : "test_kafka_raw",
     "description" : "",
-    "uuid" : "c01c2a0c-ab41-4631-805b-59e76c269ae9",
+    "uuid" : "18ef93a8-ae06-4858-b37f-38a2d9eebae3",
     "configuration" : [ {
       "name" : "executionMode",
       "value" : "STANDALONE"
@@ -401,7 +401,7 @@
     },
     "fragments" : [ ],
     "stages" : [ {
-      "instanceName" : "KafkaMultitopicConsumer_01",
+      "instanceName" : "source",
       "library" : "streamsets-datacollector-apache-kafka_2_0-lib",
       "stageName" : "com_streamsets_pipeline_stage_origin_multikafka_MultiKafkaDSource",
       "stageVersion" : "6",
@@ -638,7 +638,7 @@
         "value" : "DELIMITED"
       }, {
         "name" : "conf.brokerURI",
-        "value" : "kafka:29092"
+        "value" : "kafka:9092"
       }, {
         "name" : "conf.consumerGroup",
         "value" : "streamsetsDataCollector"
@@ -843,7 +843,7 @@
         "value" : null
       }, {
         "name" : "conf.dataFormat",
-        "value" : "DELIMITED"
+        "value" : "JSON"
       }, {
         "name" : "conf.resourceUrl",
         "value" : "${AGENT_URL}/destination/local_fs/${pipeline:id()}"
@@ -1079,25 +1079,25 @@
       "services" : [ ]
     },
     "info" : {
-      "pipelineId" : "mysql_raw_csv",
-      "title" : "mysql_raw_csv",
+      "pipelineId" : "test_kafka_raw",
+      "title" : "test_kafka_raw",
       "description" : "",
-      "created" : 1662385020710,
-      "lastModified" : 1662387752342,
+      "created" : 1662468276492,
+      "lastModified" : 1662469668710,
       "creator" : "admin",
       "lastModifier" : "admin",
       "lastRev" : "0",
-      "uuid" : "c01c2a0c-ab41-4631-805b-59e76c269ae9",
+      "uuid" : "18ef93a8-ae06-4858-b37f-38a2d9eebae3",
       "valid" : true,
       "metadata" : {
-        "labels" : [ "mysql", "http" ]
+        "labels" : [ "kafka", "http" ]
       },
-      "name" : "mysql_raw_csv",
+      "name" : "test_kafka_raw",
       "sdcVersion" : "3.18.0",
-      "sdcId" : "4b4e39f4-2d1e-11ed-941c-81166668b2c1"
+      "sdcId" : "842cf614-2ddb-11ed-bd6a-dbaeb67ef92f"
     },
     "metadata" : {
-      "labels" : [ "mysql", "http" ]
+      "labels" : [ "kafka", "http" ]
     },
     "statsAggregatorStage" : {
       "instanceName" : "statsAggregatorStageInstance",
@@ -1435,7 +1435,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1662385020723,
+      "timestamp" : 1662468276504,
       "valid" : true
     }, {
       "id" : "stageErrorAlertID",
@@ -1446,7 +1446,7 @@
       "condition" : "${value() > 100}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1662385020723,
+      "timestamp" : 1662468276504,
       "valid" : true
     }, {
       "id" : "idleGaugeID",
@@ -1457,7 +1457,7 @@
       "condition" : "${time:now() - value() > 120000}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1662385020723,
+      "timestamp" : 1662468276504,
       "valid" : true
     }, {
       "id" : "batchTimeAlertID",
@@ -1468,12 +1468,12 @@
       "condition" : "${value() > 200}",
       "sendEmail" : false,
       "enabled" : false,
-      "timestamp" : 1662385020723,
+      "timestamp" : 1662468276504,
       "valid" : true
     } ],
     "dataRuleDefinitions" : [ ],
     "driftRuleDefinitions" : [ ],
-    "uuid" : "89a4720c-1e16-455c-8fad-c16f5195d189",
+    "uuid" : "f3942b09-eef4-4a5c-9324-cb09990be16d",
     "configuration" : [ {
       "name" : "emailIDs",
       "value" : null
