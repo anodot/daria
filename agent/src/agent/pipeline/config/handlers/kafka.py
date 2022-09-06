@@ -34,7 +34,6 @@ class KafkaSchemaConfigHandler(SchemaConfigHandler):
 class KafkaRawConfigHandler(RawConfigHandler):
     stages_to_override = {
         'source': stages.source.Source,
-        'destination': stages.destination.HttpDestination
     }
 
 
