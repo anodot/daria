@@ -168,4 +168,3 @@ def move_to_streamsets_async(rebalance_map: Dict[IPipeline, IStreamSets]):
         asyncio.run(start_async(pipelines_running))
     except Exception as e:
         raise StreamsetsException(f'StreamSets could not be balanced due to the errors: {str(e)}') from e
-
