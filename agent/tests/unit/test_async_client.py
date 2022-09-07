@@ -4,7 +4,7 @@ import aiohttp
 from unittest.mock import AsyncMock
 from sdc_client import async_client as client
 from sdc_client.base_api_client import UnauthorizedException
-from conftest import MockAsyncResponse, StreamSetsMock
+from ..conftest import MockAsyncResponse, StreamSetsMock
 
 
 class TestGetJMXAsync(unittest.TestCase):

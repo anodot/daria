@@ -2,7 +2,7 @@ import unittest
 import inject
 
 from sdc_client import balancer
-from conftest import StreamSetsMock, PipelineMock, instance
+from ..conftest import StreamSetsMock, PipelineMock, instance
 
 
 class TestBalancer(unittest.TestCase):

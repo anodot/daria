@@ -4,7 +4,7 @@ import requests
 from unittest.mock import MagicMock
 from sdc_client import client
 from sdc_client.base_api_client import UnauthorizedException
-from conftest import MockResponse, StreamSetsMock
+from ..conftest import MockResponse, StreamSetsMock
 
 
 class TestGetJMX(unittest.TestCase):
