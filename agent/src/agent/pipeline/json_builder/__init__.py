@@ -6,7 +6,7 @@ from .directory import DirectoryBuilder, DirectoryEventsBuilder
 from .elastic import ElasticBuilder
 from .influx import InfluxBuilder, Influx2Builder
 from .jdbc import JDBCBuilder, JDBCRawBuilder
-from .kafka import KafkaBuilder
+from .kafka import KafkaBuilder, KafkaRawBuilder
 from .mongo import MongoBuilder
 from .observium import ObserviumBuilder
 from .promql import PromQLBuilder
@@ -80,7 +80,7 @@ def _get_raw_builder(pipeline_: Pipeline, config: dict, is_edit: bool) -> IBuild
         source.TYPE_MYSQL: JDBCRawBuilder,
         source.TYPE_POSTGRES: JDBCRawBuilder,
         source.TYPE_SNMP: SNMPRawBuilder,
-        source.TYPE_KAFKA: KafkaBuilder,
+        source.TYPE_KAFKA: KafkaRawBuilder,
     }
     return loaders[pipeline_.source.type](pipeline_, config, is_edit)
 
