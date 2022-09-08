@@ -23,6 +23,5 @@
         "delay": {"type": "integer"}
       }
     }
-  },
-  "required": ["values", "dimensions", "timestamp"]
+  }
 }

@@ -726,7 +726,7 @@
       "eventLanes" : [ ],
       "services" : [ ]
     }, {
-      "instanceName" : "destination",
+      "instanceName" : "HTTPClient_01",
       "library" : "streamsets-datacollector-basic-lib",
       "stageName" : "com_streamsets_pipeline_stage_destination_http_HttpClientDTarget",
       "stageVersion" : "6",
