@@ -11,7 +11,7 @@ from typing import Callable
 class TestPipelineBase(object):
     __test__ = False
 
-    MAX_TIMES_TO_WAIT = 60
+    MAX_TIMES_TO_WAIT = 120
 
     params = {}
 
