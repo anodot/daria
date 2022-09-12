@@ -1,5 +1,5 @@
 import time
-from itertools import product
+from itertools import product, groupby
 from urllib.parse import urlparse
 from pysnmp.entity.engine import SnmpEngine
 from pysnmp.hlapi import CommunityData, ContextData, UdpTransportTarget, getCmd, nextCmd
@@ -110,10 +110,15 @@ def _fetch_table_data(pipeline_: Pipeline) -> list:
             cmd_name = 'get' if use_indexes else 'next'
             request_var_binds = [ObjectType(ObjectIdentity(*args)) for args in object_id_args]
             iterator = _execute_cmd(cmd_name, pipeline_, snmp_version, url, request_var_binds)
-            table_var_binds = _get_var_binds(iterator, host)
+            table_var_binds = _group_by_indexes(_get_var_binds(iterator, host)) if use_indexes else _get_var_binds(iterator, host)
             var_binds_groups.extend(group + dimension_var_binds[0] for group in table_var_binds)
 
     return var_binds_groups
+
+
+def _group_by_indexes(table_var_binds):
+    sorted_table = sorted(table_var_binds[0], key=lambda x: str(x[0])[-1])
+    return [list(g) for k, g in groupby(sorted_table, key=lambda x: str(x[0])[-1])]
 
 
 def _execute_cmd(name, pipeline_, snmp_version, url, var_binds):
