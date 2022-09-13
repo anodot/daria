@@ -51,6 +51,7 @@ def _get_raw_handler(pipeline_: Pipeline, base_config: dict) -> ConfigHandler:
         source.TYPE_ORACLE: pipeline.config.handlers.jdbc.JDBCRawConfigHandler,
         source.TYPE_POSTGRES: pipeline.config.handlers.jdbc.JDBCRawConfigHandler,
         source.TYPE_SNMP: pipeline.config.handlers.snmp.SNMPRawConfigHandler,
+        source.TYPE_KAFKA: pipeline.config.handlers.kafka.KafkaRawConfigHandler,
     }
     return handlers[pipeline_.source.type](pipeline_, base_config)
 

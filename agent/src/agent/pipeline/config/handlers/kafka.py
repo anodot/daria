@@ -1,6 +1,11 @@
 from agent.modules.logger import get_logger
 from agent.pipeline.config import stages
-from agent.pipeline.config.handlers.base import TestConfigHandler, NoSchemaConfigHandler, SchemaConfigHandler
+from agent.pipeline.config.handlers.base import (
+    TestConfigHandler,
+    NoSchemaConfigHandler,
+    SchemaConfigHandler,
+    RawConfigHandler,
+)
 
 logger = get_logger(__name__)
 
@@ -23,6 +28,13 @@ class KafkaSchemaConfigHandler(SchemaConfigHandler):
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties30,
         'ExpressionEvaluator_03': stages.expression_evaluator.Filtering,
         'destination': stages.destination.Destination
+    }
+
+
+class KafkaRawConfigHandler(RawConfigHandler):
+    stages_to_override = {
+        'source': stages.source.Source,
+        'HTTPClient_01': stages.destination.HttpDestination,
     }
 
 

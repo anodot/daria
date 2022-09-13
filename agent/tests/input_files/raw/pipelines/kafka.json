@@ -1,0 +1,20 @@
+[
+  {
+    "source": "test_kafka_raw_csv",
+    "pipeline_id": "kafka_raw_csv",
+    "timestamp": {
+      "type": "unix",
+      "name": "timestamp_unix"
+    },
+    "send_data_format": "DELIMITED"
+  },
+  {
+    "source": "test_kafka_raw_json",
+    "pipeline_id": "kafka_raw_json",
+    "timestamp": {
+      "type": "unix",
+      "name": "timestamp_unix"
+    },
+    "send_data_format": "JSON"
+  }
+]

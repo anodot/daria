@@ -1,0 +1,27 @@
+{
+  "type": "object",
+  "properties": {
+    "static_what": {"type": "boolean"},
+    "count_records": {"type": "boolean"},
+    "values": {"type": "object"},
+    "measurement_names": {"type": "object"},
+
+    "max_number_of_metrics": {"type": "integer"},
+    "logging_of_queries_enabled": {"type": "boolean"},
+    "send_data_format": {"type": "string", "enum": ["JSON", "DELIMITED"]},
+
+    "timestamp": {"type":  "object", "properties": {
+      "name": {"type": "string", "minLength": 1},
+      "type": {"type":  "string", "enum": ["datetime", "string", "unix", "unix_ms"]},
+      "format": {"type": "string", "minLength": 1}
+    }, "required": ["name", "type"]},
+    "timezone": {"type": "string"},
+    "periodic_watermark": {
+      "type": "object",
+      "properties":  {
+        "bucket_size": {"type": "string", "enum": ["1m", "5m", "1h", "1d"]},
+        "delay": {"type": "integer"}
+      }
+    }
+  }
+}
