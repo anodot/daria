@@ -2,7 +2,7 @@ import unittest
 
 from unittest.mock import MagicMock, Mock
 from sdc_client import StreamsetsBalancer, client, balancer
-from mocks import StreamSetsMock, PipelineMock
+from .mocks import StreamSetsMock, PipelineMock
 
 
 class TestStreamSetsBalancer(unittest.TestCase):
