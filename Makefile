@@ -15,7 +15,7 @@ build-all: get-streamsets-libs build-docker
 
 test-all: test-general test-pipelines-1 test-pipelines-2
 
-test-general: run-base-services run-unit-tests test-flask-app test-streamsets run-general-test-services test-raw-input test-raw-pipelines test-destination test-run-test-pipeline test-apply test-api test-api-scripts test-export-sources test-streamsets-2 test-send-to-bc test-monitoring-metrics
+test-general: run-base-services run-unit-tests test-sdc-client test-flask-app test-streamsets run-general-test-services test-raw-input test-raw-pipelines test-destination test-run-test-pipeline test-apply test-api test-api-scripts test-export-sources test-streamsets-2 test-send-to-bc test-monitoring-metrics
 
 test-pipelines-1: bootstrap-test-pipelines run-services-for-test-1
 	$(DOCKER_TEST_PARALLEL) tests/test_input/test_1
@@ -186,6 +186,9 @@ test-api-scripts:
 
 test-flask-app:
 	$(DOCKER_TEST) tests/api/test_flask_app.py
+
+test-sdc-client:
+	$(DOCKER_TEST) tests/test_sdc_client
 
 run-unit-tests:
 	$(DOCKER_TEST_PARALLEL) tests/unit/

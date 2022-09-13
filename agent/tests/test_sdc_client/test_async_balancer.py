@@ -2,7 +2,7 @@ import unittest
 import inject
 
 from sdc_client import async_balancer, balancer
-from ..conftest import StreamSetsMock, PipelineMock, instance
+from mocks import StreamSetsMock, PipelineMock, instance
 from unittest.mock import patch
 
 
