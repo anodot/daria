@@ -1,0 +1,60 @@
+filebeat.config:
+  modules:
+    path: ${path.config}/modules.d/*.yml
+    reload.enabled: true
+
+filebeat.inputs:
+  - type: aws-s3
+    id: sqs-sdc-log
+    bucket_list_interval: 10m
+    access_key_id: access_key_id
+    secret_access_key: secret_access_key
+    queue_url: queue_url
+    file_selectors:
+      - regex: '(sdc\.log*)'
+        parsers:
+          - multiline:
+              type: pattern
+              pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2} '
+              negate: true
+              match: after
+    tags: ['sdc_log']
+  - type: aws-s3
+    id: sqs-agent-log
+    bucket_list_interval: 10m
+    access_key_id: access_key_id
+    secret_access_key: secret_access_key
+    queue_url: queue_url
+    file_selectors:
+      - regex: '(agent\.log*)'
+        parsers:
+          - multiline:
+              type: pattern
+              pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2} '
+              negate: true
+              match: after
+    tags: ['agent_log']
+  - type: aws-s3
+    id: sqs-docker-log
+    bucket_list_interval: 10m
+    access_key_id: access_key_id
+    secret_access_key: secret_access_key
+    queue_url: queue_url
+    file_selectors:
+      - regex: '(agent-docker\.log*)'
+        parsers:
+          - multiline:
+              type: pattern
+              pattern: '^[[:space:]]'
+              negate: false
+              match: after
+    tags: ['agent_docker_log']
+
+output.logstash:
+  hosts: ["10.255.4.228:5045"]
+
+
+setup.kibana:
+  host: "http://elk:5601"
+
+logging.level: debug

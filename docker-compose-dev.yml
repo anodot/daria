@@ -282,6 +282,20 @@ services:
     ports:
       - "1161:1161/udp"
 
+  logstash:
+    build: containers/logstash
+    container_name: logstash
+    ports:
+      - "5045:5044"
+
+  filebeat:
+    container_name: filebeat
+    image: docker.elastic.co/beats/filebeat:7.17.0
+    entrypoint: filebeat -e -strict.perms=false
+    user: root
+    volumes:
+      - ./containers/logstash/settings/filebeat.docker.yml:/usr/share/filebeat/filebeat.yml
+
 volumes:
   agent-data:
   db-data:
