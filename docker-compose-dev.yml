@@ -149,6 +149,7 @@ services:
 #      INFLUXDB_ADMIN_PASSWORD: admin
 #      INFLUXDB_READ_USER: ro
 #      INFLUXDB_READ_USER_PASSWORD: roro
+      INFLUXDB_HTTP_FLUX_ENABLED: 'true'
 
   influx-2:
     image: influxdb:2.0.7
