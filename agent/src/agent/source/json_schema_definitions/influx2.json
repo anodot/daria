@@ -12,6 +12,6 @@
   },
   "oneOf": [
     {"required": ["host", "bucket", "org", "token"]},
-    {"required": ["host", "bucket", "org", "username", "password"]}
+    {"required": ["host", "bucket", "username", "password"]}
   ]
 }

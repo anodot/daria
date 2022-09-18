@@ -39,7 +39,10 @@ class Influx2Source(InfluxScript):
         return params
 
     def _get_url(self) -> str:
-        return urljoin(self.pipeline.source.config['host'], f'/api/v2/query?org={self.pipeline.source.config["org"]}')
+        api_endpoint = '/api/v2/query'
+        if org_param := self.pipeline.source.config.get('org'):
+            api_endpoint += f'?org={org_param}'
+        return urljoin(self.pipeline.source.config['host'], api_endpoint)
 
     def _get_headers(self) -> dict:
         if self.pipeline.source.config.get('token'):
