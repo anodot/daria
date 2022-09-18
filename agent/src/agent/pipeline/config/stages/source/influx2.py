@@ -56,16 +56,6 @@ class Influx2Source(InfluxScript):
             'Content-type': 'application/json',
         }
 
-    # def _get_auth_header(self):
-    #     if self.pipeline.source.config.get('token'):
-    #         return {'Authorization': f'Token {self.pipeline.source.config.get("token")}'}
-    #     else:
-    #         return {
-    #             'conf.client.authType': 'BASIC',
-    #             'conf.client.basicAuth.username': self.pipeline.source.config.get('username'),
-    #             'conf.client.basicAuth.password': self.pipeline.source.config.get('password', '')
-    #         }
-
     def _get_query(self) -> str:
         query = self.pipeline.query or \
                f'from(bucket:"{self.pipeline.source.config["bucket"]}") ' \
