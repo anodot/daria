@@ -30,6 +30,10 @@ def _filter(list_):
     return list(filter(lambda x: bool(x), list_))
 
 
+def _filter_comment(list_):
+    return list(filter(lambda x: not x.startswith('#'), list_))
+
+
 def csv_to_json(csv_data, last_timestamp):
     if not str(csv_data.encode('utf-8')).strip():
         return []
@@ -37,9 +41,10 @@ def csv_to_json(csv_data, last_timestamp):
     data = []
     for result in results:
         rows = result.split('\r\n')
+        rows = _filter_comment(rows)
         header = _filter(rows.pop(0).split(','))
         for row in rows:
-            rec = dict(zip(header, _filter(row.split(','))))
+            rec = dict(zip(reversed(header), reversed(_filter(row.split(',')))))
             rec['last_timestamp'] = last_timestamp
             data.append(rec)
     return data
