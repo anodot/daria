@@ -1,7 +1,7 @@
 [
   {
     "source": "test_jdbc",
-    "pipeline_id": "events_jdbc",
+    "pipeline_id": "test_etest_events_jdbcvents_jdbc",
     "pipeline_type": "events_pipeline",
     "query": "SELECT * FROM events WHERE {TIMESTAMP_CONDITION}",
     "timestamp": {
