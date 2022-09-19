@@ -185,5 +185,17 @@
     },
     "properties": {"test": "val"},
     "interval": 1200000
+  },
+  {
+    "source": "test_influx1_basic_auth",
+    "pipeline_id": "test_influx1_basic_auth",
+    "measurement_name": "cpu_test",
+    "values": {"usage_active": "gauge"},
+    "dimensions": {
+      "required": [],
+      "optional": ["cpu", "host", "zone"]
+    },
+    "properties": {"test": "val"},
+    "interval": 1200000
   }
 ]
