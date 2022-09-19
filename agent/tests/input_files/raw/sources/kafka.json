@@ -1,0 +1,20 @@
+[
+  {
+    "type": "kafka",
+    "name": "test_kafka_raw_csv",
+    "config": {
+      "conf.brokerURI": "kafka:29092",
+      "conf.topicList": ["test_raw_csv"],
+      "conf.dataFormat": "DELIMITED"
+    }
+  },
+  {
+    "type": "kafka",
+    "name": "test_kafka_raw_json",
+    "config": {
+      "conf.brokerURI": "kafka:29092",
+      "conf.topicList": ["test_raw_json"],
+      "conf.dataFormat": "JSON"
+    }
+  }
+]
