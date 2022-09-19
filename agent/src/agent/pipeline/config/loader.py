@@ -101,6 +101,12 @@ class EventsConfigLoader(ConfigLoader):
     def _get_config_file(cls, pipeline: Pipeline) -> str:
         return {
             source.TYPE_DIRECTORY: 'directory.json',
+            source.TYPE_CLICKHOUSE: 'jdbc.json',
+            source.TYPE_DATABRICKS: 'jdbc.json',
+            source.TYPE_IMPALA: 'jdbc.json',
+            source.TYPE_MSSQL: 'jdbc.json',
+            source.TYPE_MYSQL: 'jdbc.json',
+            source.TYPE_POSTGRES: 'jdbc.json',
         }[pipeline.source.type]
 
 

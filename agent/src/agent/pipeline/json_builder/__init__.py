@@ -5,7 +5,7 @@ from .cacti import CactiBuilder
 from .directory import DirectoryBuilder, DirectoryEventsBuilder
 from .elastic import ElasticBuilder
 from .influx import InfluxBuilder, Influx2Builder
-from .jdbc import JDBCBuilder, JDBCRawBuilder
+from .jdbc import JDBCBuilder, JDBCRawBuilder, JDBCEventBuilder
 from .kafka import KafkaBuilder
 from .mongo import MongoBuilder
 from .observium import ObserviumBuilder
@@ -87,5 +87,11 @@ def _get_raw_builder(pipeline_: Pipeline, config: dict, is_edit: bool) -> IBuild
 def _get_events_builder(pipeline_: Pipeline, config: dict, is_edit: bool) -> IBuilder:
     loaders = {
         source.TYPE_DIRECTORY: DirectoryEventsBuilder,
+        source.TYPE_CLICKHOUSE: JDBCEventBuilder,
+        source.TYPE_DATABRICKS: JDBCEventBuilder,
+        source.TYPE_IMPALA: JDBCEventBuilder,
+        source.TYPE_MSSQL: JDBCEventBuilder,
+        source.TYPE_MYSQL: JDBCEventBuilder,
+        source.TYPE_POSTGRES: JDBCEventBuilder,
     }
     return loaders[pipeline_.source.type](pipeline_, config, is_edit)

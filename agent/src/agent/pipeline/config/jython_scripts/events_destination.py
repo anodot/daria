@@ -17,7 +17,16 @@ REQUEST_RETRIES = 3
 def main():
     for record in sdc.records:
         send_event(record)
+        send_offset(record.value['offset'])
         sdc.output.write(record)
+
+
+def send_offset(offset):
+    try:
+        res = requests.post(sdc.userParams['AGENT_OFFSET_URL'], json={'offset': offset})
+        res.raise_for_status()
+    except (requests.ConnectionError, requests.HTTPError) as e:
+        sdc.error.write(str(e))
 
 
 def send_event(record):
@@ -28,7 +37,7 @@ def send_event(record):
     while True:
         i += 1
         try:
-            res = client.send_events(record.value)
+            res = client.send_events({'event': record.value['event']})
             res.raise_for_status()
         except (requests.ConnectionError, requests.HTTPError) as e:
             if isinstance(e, requests.exceptions.HTTPError) and 400 <= res.status_code < 500:
