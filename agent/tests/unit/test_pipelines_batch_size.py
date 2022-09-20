@@ -29,6 +29,8 @@ def _check_file(file_path, batch_size):
                     print(f'Checked `{file_path}` batch size')
                     return
                 elif configuration['name'] == 'conf.batchSize':
+                    if configuration['value'] == 1:
+                        t = 1
                     assert configuration['value'] == batch_size
                     print(f'Checked `{file_path}` batch size')
                     return
