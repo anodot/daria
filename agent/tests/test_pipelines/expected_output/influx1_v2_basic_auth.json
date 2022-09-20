@@ -1,0 +1,181 @@
+[
+  {
+    "timestamp": 1552654426,
+    "dimensions": {
+      "cpu": "cpu-total-usage",
+      "host": "msk-air-trn5ґ",
+      "zone": "GEO",
+      "test": "val"
+    },
+    "measurements": {
+      "usage_active": 0.204
+    },
+    "schemaId": "test_influx1_basic_auth-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx1_basic_auth"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552754426,
+    "dimensions": {
+      "cpu": "cpu-total-usage",
+      "host": "msk_a_ir_trn1",
+      "zone": "GF",
+      "test": "val"
+    },
+    "measurements": {
+      "usage_active": 0.224
+    },
+    "schemaId": "test_influx1_basic_auth-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx1_basic_auth"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552854426,
+    "dimensions": {
+      "cpu": "cpu-total-usage",
+      "host": "msk_air_trn1",
+      "zone": "GF",
+      "test": "val"
+    },
+    "measurements": {
+      "usage_active": 0.22432747346756737
+    },
+    "schemaId": "test_influx1_basic_auth-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx1_basic_auth"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1552954426,
+    "dimensions": {
+      "cpu": "cpu-total-usage",
+      "host": "msk-air-trn1",
+      "test": "val"
+    },
+    "measurements": {
+      "usage_active": 0.224
+    },
+    "schemaId": "test_influx1_basic_auth-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx1_basic_auth"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1553054426,
+    "dimensions": {
+      "cpu": "cpu-total-usage",
+      "host": "msk-air-trn1",
+      "zone": "GF",
+      "test": "val"
+    },
+    "measurements": {
+      "usage_active": 0.504
+    },
+    "schemaId": "test_influx1_basic_auth-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx1_basic_auth"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  },
+  {
+    "timestamp": 1553154426,
+    "dimensions": {
+      "cpu": "cpu-total-usage",
+      "host": "msk-air-trn1",
+      "zone": "GEO",
+      "test": "val"
+    },
+    "measurements": {
+      "usage_active": 0.504
+    },
+    "schemaId": "test_influx1_basic_auth-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_influx1_basic_auth"
+      ],
+      "pipeline_type": [
+        "influx2"
+      ]
+    }
+  }
+]

@@ -1,5 +1,6 @@
 import os
 
+from base64 import b64encode
 from urllib.parse import urljoin
 from agent import monitoring
 from agent.pipeline.config.stages.influx import InfluxScript
@@ -38,11 +39,19 @@ class Influx2Source(InfluxScript):
         return params
 
     def _get_url(self) -> str:
-        return urljoin(self.pipeline.source.config['host'], f'/api/v2/query?org={self.pipeline.source.config["org"]}')
+        api_endpoint = '/api/v2/query'
+        if org_param := self.pipeline.source.config.get('org'):
+            api_endpoint += f'?org={org_param}'
+        return urljoin(self.pipeline.source.config['host'], api_endpoint)
 
     def _get_headers(self) -> dict:
+        if self.pipeline.source.config.get('token'):
+            auth_header = f'Token {self.pipeline.source.config.get("token")}'
+        else:
+            auth_key = f'{self.pipeline.source.config.get("username")}:{self.pipeline.source.config.get("password")}'
+            auth_header = f'Basic {b64encode(auth_key.encode()).decode("ascii")}'
         return {
-            'Authorization': f'Token {self.pipeline.source.config["token"]}',
+            'Authorization': auth_header,
             'Accept': 'application/csv',
             'Content-type': 'application/json',
         }

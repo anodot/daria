@@ -3,10 +3,15 @@
   "properties": {
     "host": {"type": "string"},
     "token": {"type": "string"},
+    "username": {"type": "string"},
+    "password": {"type": "string"},
     "bucket": {"type": "string"},
     "org": {"type": "string"},
     "offset": {"type": "string"},
     "query_timeout": {"type": "integer"}
   },
-  "required": ["host", "token", "bucket", "org"]
+  "oneOf": [
+    {"required": ["host", "bucket", "org", "token"]},
+    {"required": ["host", "bucket", "username", "password"]}
+  ]
 }

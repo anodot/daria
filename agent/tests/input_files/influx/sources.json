@@ -4,6 +4,8 @@
     "name": "test_influx_1",
     "config": {
       "host": "http://influx:8086",
+      "username": "ro",
+      "password": "roro",
       "db": "test"
     }
   },
@@ -12,8 +14,8 @@
     "name": "test_influx",
     "config": {
       "host": "http://influx:8086",
-      "username": "test",
-      "password": "test",
+      "username": "ro",
+      "password": "roro",
       "db": "test",
       "offset": "10/03/2019 12:53"
     }
@@ -23,8 +25,8 @@
     "name": "test_influx_offset",
     "config": {
       "host": "http://influx:8086",
-      "username": "test",
-      "password": "test",
+      "username": "ro",
+      "password": "roro",
       "db": "test",
       "offset": "19/03/2019 12:53"
     }
@@ -58,6 +60,17 @@
       "host": "http://influx2:8086",
       "token": "token",
       "org": "test",
+      "bucket": "test",
+      "offset": "10/03/2019 12:53"
+    }
+  },
+    {
+    "type": "influx2",
+    "name": "test_influx1_basic_auth",
+    "config": {
+      "host": "http://influx:8086",
+      "username": "ro",
+      "password": "roro",
       "bucket": "test",
       "offset": "10/03/2019 12:53"
     }
