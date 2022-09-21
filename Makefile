@@ -41,7 +41,7 @@ run-base-services:
 	docker-compose up -d agent dc dc2 squid dummy_destination
 	sleep 60
 
-run-general-test-services: _run-general-test-services half-sleep setup-elastic setup-kafka
+run-general-test-services: _run-general-test-services sleep setup-elastic setup-kafka
 _run-general-test-services:
 	docker-compose up -d es influx mongo sage mysql snmpsim kafka
 
