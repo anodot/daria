@@ -236,7 +236,7 @@ _build-base-services:
 run-dc2:
 	$(DOCKER_COMPOSE_DEV) up -d dc2
 
-run-elastic: _run-elastic half-sleep setup-elastic
+run-elastic: _run-elastic sleep setup-elastic
 
 _run-elastic:
 	$(DOCKER_COMPOSE_DEV) up -d es
