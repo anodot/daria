@@ -2,7 +2,7 @@ import prometheus_client
 import sdc_client
 import re
 
-from typing import List
+from typing import List, Dict
 from agent import streamsets, pipeline, source
 from agent.monitoring import metrics
 from agent.modules import constants
@@ -79,7 +79,19 @@ def pull_metrics():
     )
 
 
-def _process_pipeline_metrics(pipelines: List[pipeline.Pipeline], asynchronous: bool = False) -> None:
+def get_metrics():
+    streamsets_ = streamsets.repository.get_all()
+    pipelines = pipeline.repository.get_all()
+    return _get_pipeline_metrics(
+        pipelines=pipelines,
+        asynchronous=len(pipelines) >= 2
+    ) + _get_streamsets_metrics(
+        streamsets_=streamsets_,
+        asynchronous=len(streamsets_) >= 2
+    )
+
+
+def _get_pipeline_metrics(pipelines: List[pipeline.Pipeline], asynchronous: bool = False) -> List[Dict]:
     if not asynchronous:
         jmxes = [sdc_client.get_jmx(pipeline_.streamsets, f'metrics:name=sdc.pipeline.{pipeline_.name}.*')
                  for pipeline_ in pipelines]
@@ -87,12 +99,17 @@ def _process_pipeline_metrics(pipelines: List[pipeline.Pipeline], asynchronous: 
         jmxes = sdc_client.get_jmxes_async([
             (pipeline_.streamsets, f'metrics:name=sdc.pipeline.{pipeline_.name}.*',)
             for pipeline_ in pipelines], return_exceptions=True)
+    return jmxes
+
+
+def _process_pipeline_metrics(pipelines: List[pipeline.Pipeline], asynchronous: bool = False) -> None:
+    jmxes = _get_pipeline_metrics(pipelines, asynchronous)
     for pipeline_, jmx in zip(pipelines, jmxes):
         _pull_pipeline_metrics(pipeline_, jmx) if not isinstance(jmx, Exception) \
             else logger_.error(f"Error: {jmx} for pipeline {pipeline_.name}")
 
 
-def _process_streamsets_metrics(streamsets_: List[streamsets.StreamSets], asynchronous: bool = False) -> None:
+def _get_streamsets_metrics(streamsets_: List[streamsets.StreamSets], asynchronous: bool = False) -> List[Dict]:
     sys_queries = [(streamset_, 'java.lang:type=*',) for streamset_ in streamsets_]
     kafka_queries = [
         (streamset_, 'kafka.consumer:type=consumer-fetch-manager-metrics,client-id=*,topic=*,partition=*',)
@@ -101,6 +118,11 @@ def _process_streamsets_metrics(streamsets_: List[streamsets.StreamSets], asynch
         jmxes = [sdc_client.get_jmx(streamset_, query) for streamset_, query in sys_queries + kafka_queries]
     else:
         jmxes = sdc_client.get_jmxes_async(sys_queries + kafka_queries, return_exceptions=True)
+    return jmxes
+
+
+def _process_streamsets_metrics(streamsets_: List[streamsets.StreamSets], asynchronous: bool = False) -> None:
+    jmxes = _get_streamsets_metrics(streamsets_, asynchronous)
     for index, streamset_ in enumerate(streamsets_):
         _pull_system_metrics(streamset_, jmxes[index]) if not isinstance(jmxes[index], Exception) \
             else logger_.error(f"Error: {jmxes[index]} for streamset {streamset_.url}")
