@@ -107,6 +107,7 @@ class EventsConfigLoader(ConfigLoader):
             source.TYPE_MSSQL: 'jdbc.json',
             source.TYPE_MYSQL: 'jdbc.json',
             source.TYPE_POSTGRES: 'jdbc.json',
+            source.TYPE_ORACLE: 'jdbc.json',
         }[pipeline.source.type]
 
 

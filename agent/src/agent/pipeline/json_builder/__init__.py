@@ -94,5 +94,6 @@ def _get_events_builder(pipeline_: Pipeline, config: dict, is_edit: bool) -> IBu
         source.TYPE_MSSQL: JDBCEventBuilder,
         source.TYPE_MYSQL: JDBCEventBuilder,
         source.TYPE_POSTGRES: JDBCEventBuilder,
+        source.TYPE_ORACLE: JDBCEventBuilder,
     }
     return loaders[pipeline_.source.type](pipeline_, config, is_edit)

@@ -127,6 +127,7 @@ def _get_events_handler(pipeline_: Pipeline, base_config: dict) -> ConfigHandler
         source.TYPE_MSSQL: pipeline.config.handlers.jdbc.JDBCEventsConfigHandler,
         source.TYPE_MYSQL: pipeline.config.handlers.jdbc.JDBCEventsConfigHandler,
         source.TYPE_POSTGRES: pipeline.config.handlers.jdbc.JDBCEventsConfigHandler,
+        source.TYPE_ORACLE: pipeline.config.handlers.jdbc.JDBCEventsConfigHandler,
     }
     return handlers[pipeline_.source.type](pipeline_, base_config)
 
