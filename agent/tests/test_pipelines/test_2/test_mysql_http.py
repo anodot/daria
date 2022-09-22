@@ -32,7 +32,10 @@ class TestMySQL(TestPipelineBase):
             },
             {'name': 'test_jdbc_no_timestamp_condition'},
             {'name': 'test_jdbc_mysql_tag'},
-            {'name': 'test_events_jdbc'},
+            {
+                'name': 'test_events_jdbc',
+                'check_output_file_name': 'test_events_jdbc.json',
+            },
         ],
         'test_output': [
             {'name': 'test_mysql_no_schema', 'output': 'jdbc_file_full_no_schema.json', 'pipeline_type': 'mysql'},
