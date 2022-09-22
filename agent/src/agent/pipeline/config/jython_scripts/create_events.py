@@ -24,5 +24,5 @@ for rec in sdc.records:
     # these are hardcoded for all events for now
     event['source'] = 'Agent'
     event['type'] = 'SUPPRESS'
-    record.value = {'event': event, 'offset': rec.value.get('last_timestamp', rec.attributes['offset'])}
+    record.value = {'event': event, 'offset': rec.value.get('last_timestamp', rec.attributes.get('offset'))}
     sdc.output.write(record)
