@@ -48,7 +48,7 @@ class TestMySQL(TestPipelineBase):
             {'name': 'test_watermark_local_timezone', 'output': 'jdbc_timezone.json', 'pipeline_type': 'mysql'},
             {'name': 'test_mysql_advanced', 'output': 'jdbc_file_full.json', 'pipeline_type': 'mysql'},
             {'name': 'test_jdbc_mysql_tag', 'output': 'jdbc_mysql_tags.json', 'pipeline_type': 'mysql'},
-            {'name': 'test_events_jdbc_mysql', 'output': 'events_jdbc.json', 'pipeline_type': 'mysql'},
+            {'name': 'test_events_jdbc', 'output': 'events_jdbc.json', 'pipeline_type': 'mysql'},
         ],
         'test_delete_pipeline': [{'name': 'test_mysql'}, {'name': 'test_mysql_timestamp_ms'},
                                  {'name': 'test_mysql_timestamp_datetime'},
