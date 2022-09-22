@@ -44,7 +44,7 @@ class TestMySQL(TestInputBase):
         assert result.exit_code == 0
 
     def test_create_events_pipeline_with_file(self, cli_runner, file_name, override_config: dict):
-        super()._test_create_with_file(cli_runner, file_name, override_config, cli.pipeline.create_events)
+        self._test_create_with_file(cli_runner, file_name, override_config, cli.pipeline.create_events)
 
     def test_create_advanced_no_schema(self, cli_runner):
         pipeline_id = 'test_mysql_no_schema'
