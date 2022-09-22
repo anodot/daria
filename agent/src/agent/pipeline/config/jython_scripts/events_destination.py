@@ -20,12 +20,12 @@ def main():
         sdc.output.write(record)
 
 
-def send_offset(offset):
+def send_offset(record):
     try:
-        res = requests.post(sdc.userParams['AGENT_OFFSET_URL'], json={'offset': offset})
+        res = requests.post(sdc.userParams['AGENT_OFFSET_URL'], json={'offset': record.value['offset']})
         res.raise_for_status()
     except (requests.ConnectionError, requests.HTTPError) as e:
-        sdc.error.write(str(e))
+        sdc.error.write(record, str(e))
 
 
 def send_event(record):
