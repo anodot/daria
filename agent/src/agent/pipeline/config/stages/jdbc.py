@@ -1,3 +1,4 @@
+from urllib.parse import urljoin
 from agent import pipeline
 from agent.pipeline.config.stages.base import JythonSource, JythonProcessor
 
@@ -26,6 +27,14 @@ class JDBCOffsetScript(JythonSource):
             {
                 'key': 'TIMEZONE',
                 'value': str(self.pipeline.timezone),
+            },
+            {
+                'key': 'TRACK_MISSED_INTERVALS',
+                'value': 'True' if self.pipeline.config.get('track_missed_intervals', False) else ''
+            },
+            {
+                'key': 'PIPELINE_OFFSET_ENDPOINT',
+                'value': urljoin(self.pipeline.streamsets.agent_external_url, f'/pipeline-offset/{self.pipeline.name}')
             },
         ]
 
