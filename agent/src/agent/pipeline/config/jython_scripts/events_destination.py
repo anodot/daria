@@ -38,7 +38,7 @@ def send_event(record):
         try:
             res = client.send_events({'event': record.value['event']})
             res.raise_for_status()
-            send_offset(record.value['offset'])
+            send_offset(record)
         except (requests.ConnectionError, requests.HTTPError) as e:
             if isinstance(e, requests.exceptions.HTTPError) and 400 <= res.status_code < 500:
                 message = str(e)
