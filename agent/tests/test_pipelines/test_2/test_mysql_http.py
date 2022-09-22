@@ -13,7 +13,7 @@ class TestMySQL(TestPipelineBase):
                        {'name': 'test_jdbc_file_full_mysql'}, {'name': 'test_mysql_timezone_datetime'},
                        {'name': 'test_mysql_no_schema'}, {'name': 'test_watermark_local_timezone'},
                        {'name': 'test_jdbc_no_timestamp_condition'}, {'name': 'test_jdbc_mysql_tag'},
-                       {'name': 'test_events_jdbc'}],
+                       {'name': 'test_events_jdbc_mysql'}],
         'test_reset': [{'name': 'test_mysql'}],
         'test_force_stop': [
             {'name': 'test_mysql'},
@@ -33,8 +33,8 @@ class TestMySQL(TestPipelineBase):
             {'name': 'test_jdbc_no_timestamp_condition'},
             {'name': 'test_jdbc_mysql_tag'},
             {
-                'name': 'test_events_jdbc',
-                'check_output_file_name': 'test_events_jdbc.json',
+                'name': 'test_events_jdbc_mysql',
+                'check_output_file_name': 'test_events_jdbc_mysql.json',
             },
         ],
         'test_output': [
@@ -48,7 +48,7 @@ class TestMySQL(TestPipelineBase):
             {'name': 'test_watermark_local_timezone', 'output': 'jdbc_timezone.json', 'pipeline_type': 'mysql'},
             {'name': 'test_mysql_advanced', 'output': 'jdbc_file_full.json', 'pipeline_type': 'mysql'},
             {'name': 'test_jdbc_mysql_tag', 'output': 'jdbc_mysql_tags.json', 'pipeline_type': 'mysql'},
-            {'name': 'test_events_jdbc', 'output': 'events_jdbc.json', 'pipeline_type': 'mysql'},
+            {'name': 'test_events_jdbc_mysql', 'output': 'events_jdbc.json', 'pipeline_type': 'mysql'},
         ],
         'test_delete_pipeline': [{'name': 'test_mysql'}, {'name': 'test_mysql_timestamp_ms'},
                                  {'name': 'test_mysql_timestamp_datetime'},
@@ -56,7 +56,7 @@ class TestMySQL(TestPipelineBase):
                                  {'name': 'test_jdbc_file_full_mysql'}, {'name': 'test_mysql_timezone_datetime'},
                                  {'name': 'test_mysql_no_schema'}, {'name': 'test_watermark_local_timezone'},
                                  {'name': 'test_jdbc_no_timestamp_condition'}, {'name': 'test_jdbc_mysql_tag'},
-                                 {'name': 'test_events_jdbc'}],
+                                 {'name': 'test_events_jdbc_mysql'}],
         'test_source_delete': [{'name': 'test_jdbc'}, {'name': 'test_mysql_1'}]
     }
 
