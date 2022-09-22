@@ -9,6 +9,7 @@ try:
 
     sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))
     import pytz
+    import requests
 finally:
     sdc.importUnlock()
 
@@ -28,6 +29,36 @@ def get_now_with_delay():
 def to_timestamp(date):
     epoch = datetime(1970, 1, 1)
     return int((date - epoch).total_seconds())
+
+
+def check_missing_intervals(cur_offset, interval):
+    db_offset = get_db_offset()
+    if not db_offset:
+        return
+    while ((cur_offset - db_offset) / interval.total_seconds()) > 1:
+        sdc.log.debug(
+            'PROCESSING MISSED DATA: '
+            'from ' + str(db_offset) + ' to ' + str(db_offset + interval.total_seconds())
+        )
+        cur_batch = sdc.createBatch()
+        record = sdc.createRecord('record created ' + str(datetime.now()))
+        record.value = {'last_timestamp': int(db_offset)}
+        db_offset += interval.total_seconds()
+        cur_batch.add(record)
+        cur_batch.process(entityName, str(db_offset))
+
+
+def get_db_offset():
+    try:
+        res = requests.get(sdc.userParams['PIPELINE_OFFSET_ENDPOINT'])
+        res.raise_for_status()
+        data = res.json()
+        if not data or type(data) == str:
+            raise ValueError('No offset found in DB')
+        return int(float(list(data['offsets'].values())[-1]))
+    except (requests.ConnectionError, requests.HTTPError, ValueError) as e:
+        sdc.log.error(str(e))
+        return None
 
 
 entityName = ''
@@ -52,6 +83,10 @@ def main():
             time.sleep(2)
             if sdc.isStopped():
                 return
+
+        if sdc.userParams['TRACK_MISSED_INTERVALS'] == 'True':
+            check_missing_intervals(int(offset), interval)
+
         cur_batch = sdc.createBatch()
         record = sdc.createRecord('record created ' + str(datetime.now()))
         record.value = {'last_timestamp': int(offset)}
