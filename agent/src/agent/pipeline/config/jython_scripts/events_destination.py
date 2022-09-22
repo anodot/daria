@@ -17,7 +17,6 @@ REQUEST_RETRIES = 3
 def main():
     for record in sdc.records:
         send_event(record)
-        send_offset(record.value['offset'])
         sdc.output.write(record)
 
 
@@ -39,6 +38,7 @@ def send_event(record):
         try:
             res = client.send_events({'event': record.value['event']})
             res.raise_for_status()
+            send_offset(record.value['offset'])
         except (requests.ConnectionError, requests.HTTPError) as e:
             if isinstance(e, requests.exceptions.HTTPError) and 400 <= res.status_code < 500:
                 message = str(e)
