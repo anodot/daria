@@ -43,8 +43,7 @@ def main():
             time.sleep(1)
             if sdc.isStopped():
                 return
-        offset = now + get_interval()
-
+        offset += get_interval()
         batch = sdc.createBatch()
 
         res = requests.get(sdc.userParams['SNMP_SOURCE_URL'], timeout=60)
@@ -60,10 +59,7 @@ def main():
                 batch = sdc.createBatch()
 
         event = sdc.createEvent('interval_processed', 1)
-        event.value = {
-            'watermark': now,
-            'schemaId': sdc.userParams['SCHEMA_ID']
-        }
+        event.value = {'watermark': now, 'schemaId': sdc.userParams['SCHEMA_ID']}
         batch.addEvent(event)
         batch.process(entityName, str(offset))
 
