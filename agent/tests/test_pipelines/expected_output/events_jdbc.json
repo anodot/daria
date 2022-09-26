@@ -1,0 +1,1 @@
+{"event": {"source": "Agent", "title": "deployment started on myServer", "type": "SUPPRESS", "category": "deployments", "startDate": 1663210000, "properties": [{"value": "open", "key": "status"}, {"value": "deadly", "key": "Impact_Type"}, {"value": "test_events_jdbc_mysql", "key": "pipeline_id"}]}}

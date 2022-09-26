@@ -181,7 +181,7 @@ def update_source_pipelines(source_: Source):
 def update_pipeline_offset(pipeline_: Pipeline, timestamp: float):
     offset = sdc_client.get_pipeline_offset(pipeline_)
     if not offset:
-        return
+        offset = '{}'
     if pipeline_.offset:
         pipeline_.offset.offset = offset
         pipeline_.offset.timestamp = timestamp

@@ -89,6 +89,11 @@ class AnodotEventsDestination(JythonProcessor):
         }, {
             'key': 'PROXIES',
             'value': proxy.get_config(self.pipeline.destination.proxy)
+        }, {
+            'key': 'AGENT_OFFSET_URL',
+            'value': urllib.parse.urljoin(
+                    self.pipeline.streamsets.agent_external_url, f'/pipeline-offset/{self.pipeline.name}'
+            ),
         }]
 
 
