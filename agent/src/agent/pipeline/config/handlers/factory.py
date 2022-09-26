@@ -121,6 +121,13 @@ def _get_test_handler(pipeline_: Pipeline, base_config: dict) -> ConfigHandler:
 def _get_events_handler(pipeline_: Pipeline, base_config: dict) -> ConfigHandler:
     handlers = {
         source.TYPE_DIRECTORY: pipeline.config.handlers.directory.DirectoryEventsConfigHandler,
+        source.TYPE_CLICKHOUSE: pipeline.config.handlers.jdbc.JDBCEventsConfigHandler,
+        source.TYPE_DATABRICKS: pipeline.config.handlers.jdbc.JDBCEventsConfigHandler,
+        source.TYPE_IMPALA: pipeline.config.handlers.jdbc.JDBCEventsConfigHandler,
+        source.TYPE_MSSQL: pipeline.config.handlers.jdbc.JDBCEventsConfigHandler,
+        source.TYPE_MYSQL: pipeline.config.handlers.jdbc.JDBCEventsConfigHandler,
+        source.TYPE_POSTGRES: pipeline.config.handlers.jdbc.JDBCEventsConfigHandler,
+        source.TYPE_ORACLE: pipeline.config.handlers.jdbc.JDBCEventsConfigHandler,
     }
     return handlers[pipeline_.source.type](pipeline_, base_config)
 

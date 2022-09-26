@@ -41,7 +41,7 @@ run-base-services:
 	docker-compose up -d agent dc dc2 squid dummy_destination
 	sleep 60
 
-run-general-test-services: _run-general-test-services half-sleep setup-elastic setup-kafka
+run-general-test-services: _run-general-test-services sleep setup-elastic setup-kafka
 _run-general-test-services:
 	docker-compose up -d es influx mongo sage mysql snmpsim kafka
 
@@ -236,7 +236,7 @@ _build-base-services:
 run-dc2:
 	$(DOCKER_COMPOSE_DEV) up -d dc2
 
-run-elastic: _run-elastic half-sleep setup-elastic
+run-elastic: _run-elastic sleep setup-elastic
 
 _run-elastic:
 	$(DOCKER_COMPOSE_DEV) up -d es
@@ -323,3 +323,4 @@ show-all-logs:
 	echo "DC 2 logs"; docker logs dc2;
 	echo "Dummy logs"; docker logs dummy_destination;
 	echo "Agent logs"; docker exec -i anodot-agent cat /var/log/agent/agent.log;
+	echo "Elastic logs"; docker logs agent-es;

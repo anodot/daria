@@ -4,6 +4,7 @@ from ..test_zpipeline_base import TestInputBase
 from ...conftest import generate_input
 
 days_to_backfill = (datetime.now() - datetime(year=2017, month=12, day=10)).days
+days_to_backfill_events = (datetime.now() - datetime(year=2022, month=9, day=15)).days
 
 
 class TestMySQL(TestInputBase):
@@ -16,6 +17,9 @@ class TestMySQL(TestInputBase):
         'test_create_timezone': [{'name': 'test_mysql_timezone_datetime', 'source': 'test_jdbc', 'timestamp_type': 'datetime', 'timezone': 'Europe/Berlin', 'timestamp_name': 'timestamp_datetime'}],
         'test_create_advanced': [{'name': 'test_mysql_advanced', 'source': 'test_jdbc'}],
         'test_create_with_file': [{'file_name': 'jdbc/pipelines', 'override_config': {'days_to_backfill': days_to_backfill}}],
+        'test_create_events_pipeline_with_file': [
+            {'file_name': 'jdbc/event_pipelines', 'override_config': {'days_to_backfill': days_to_backfill_events}}
+        ],
         'test_create_source_with_file': [{'file_name': 'jdbc/mysql_sources'}],
     }
 
@@ -38,6 +42,9 @@ class TestMySQL(TestInputBase):
         result = cli_runner.invoke(cli.pipeline.create, ['-a'], catch_exceptions=False,
                                    input=f'{source}\n{name}\nSELECT * FROM test WHERE {{TIMESTAMP_CONDITION}} AND not country is NULL\n\n86400\n{days_to_backfill}\n1\ntimestamp_unix\nunix\ny\ntest\nclicks:gauge impressions:gauge\nadsize country\nkey1:val1 key2:val2\n\n\n\n\n')
         assert result.exit_code == 0
+
+    def test_create_events_pipeline_with_file(self, cli_runner, file_name, override_config: dict):
+        self._test_create_with_file(cli_runner, file_name, override_config, cli.pipeline.create_events)
 
     def test_create_advanced_no_schema(self, cli_runner):
         pipeline_id = 'test_mysql_no_schema'

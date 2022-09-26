@@ -20,6 +20,14 @@ def main():
         sdc.output.write(record)
 
 
+def send_offset(record):
+    try:
+        res = requests.post(sdc.userParams['AGENT_OFFSET_URL'], json={'offset': record.value['offset']})
+        res.raise_for_status()
+    except (requests.ConnectionError, requests.HTTPError) as e:
+        sdc.error.write(record, str(e))
+
+
 def send_event(record):
     client = AnodotApiClient(
         sdc.state, sdc.userParams['ANODOT_URL'], sdc.userParams['ACCESS_TOKEN'], sdc.userParams['PROXIES']
@@ -28,8 +36,9 @@ def send_event(record):
     while True:
         i += 1
         try:
-            res = client.send_events(record.value)
+            res = client.send_events({'event': record.value['event']})
             res.raise_for_status()
+            send_offset(record)
         except (requests.ConnectionError, requests.HTTPError) as e:
             if isinstance(e, requests.exceptions.HTTPError) and 400 <= res.status_code < 500:
                 message = str(e)

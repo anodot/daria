@@ -1,7 +1,7 @@
 from agent.modules.logger import get_logger
 from agent.pipeline.config import stages
 from agent.pipeline.config.handlers.base import NoSchemaConfigHandler, RawConfigHandler
-from agent.pipeline.config.handlers.base import TestConfigHandler, SchemaConfigHandler
+from agent.pipeline.config.handlers.base import TestConfigHandler, SchemaConfigHandler, ConfigHandler
 
 logger = get_logger(__name__)
 
@@ -36,6 +36,18 @@ class JDBCRawConfigHandler(RawConfigHandler):
         'JythonEvaluator_01': stages.jdbc.JDBCRawTransformScript,
         'HTTPClient_01': stages.destination.HttpDestination,
     }
+
+
+class JDBCEventsConfigHandler(ConfigHandler):
+    stages_to_override = {
+        'offset': stages.jdbc.JDBCOffsetScript,
+        'source': stages.source.jdbc.JDBCSource,
+        'JythonEvaluator_01': stages.jython.CreateEvents,
+        'JythonEvaluator_02': stages.destination.AnodotEventsDestination,
+    }
+
+    def _check_pipeline(self):
+        pass
 
 
 class TestJDBCConfigHandler(TestConfigHandler):

@@ -122,8 +122,9 @@ def get_expected_events_output(expected_output_file: str) -> list:
 
 def get_expected_schema_output(pipeline_id: str, expected_output_file: str, pipeline_type: str) -> list:
     expected_output = get_expected_output(pipeline_id, expected_output_file, pipeline_type)
-    for record in expected_output:
-        record['schemaId'] = get_schema_id(pipeline_id)
+    if isinstance(expected_output, list):
+        for record in expected_output:
+            record['schemaId'] = get_schema_id(pipeline_id)
     return expected_output
 
 
