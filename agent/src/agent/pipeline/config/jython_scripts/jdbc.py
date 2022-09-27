@@ -18,6 +18,10 @@ def get_interval():
     return int(sdc.userParams['INTERVAL_IN_SECONDS'])
 
 
+def get_interval_missing_data():
+    return int(sdc.userParams['QUERY_MISSING_DATA_INTERVAL'])
+
+
 def get_now_with_delay():
     if sdc.userParams['WATERMARK_IN_LOCAL_TIMEZONE'] == 'True':
         now = int(time.mktime(datetime.now(pytz.timezone(sdc.userParams['TIMEZONE'])).timetuple()))
@@ -31,7 +35,7 @@ def to_timestamp(date):
     return int((date - epoch).total_seconds())
 
 
-def check_missing_intervals(cur_offset, interval):
+def query_missing_data(cur_offset, interval):
     db_offset = get_db_offset()
     if not db_offset:
         return
@@ -84,8 +88,8 @@ def main():
             if sdc.isStopped():
                 return
 
-        if sdc.userParams['TRACK_MISSED_INTERVALS'] == 'True':
-            check_missing_intervals(int(offset), interval)
+        if sdc.userParams['QUERY_MISSING_DATA'] == 'True':
+            query_missing_data(int(offset), interval)
 
         cur_batch = sdc.createBatch()
         record = sdc.createRecord('record created ' + str(datetime.now()))

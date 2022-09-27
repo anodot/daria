@@ -29,8 +29,12 @@ class JDBCOffsetScript(JythonSource):
                 'value': str(self.pipeline.timezone),
             },
             {
-                'key': 'TRACK_MISSED_INTERVALS',
-                'value': 'True' if self.pipeline.config.get('track_missed_intervals', False) else ''
+                'key': 'QUERY_MISSING_DATA',
+                'value': 'True' if self.pipeline.config.get('query_missing_data', False) else ''
+            },
+            {
+                'key': 'QUERY_MISSING_DATA_INTERVAL',
+                'value': str(self.pipeline.config.get('query_missing_data_interval', ''))
             },
             {
                 'key': 'PIPELINE_OFFSET_ENDPOINT',
