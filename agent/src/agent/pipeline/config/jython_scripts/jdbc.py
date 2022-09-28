@@ -88,7 +88,7 @@ def main():
             if sdc.isStopped():
                 return
 
-        if sdc.userParams['QUERY_MISSING_DATA'] == 'True':
+        if sdc.userParams['QUERY_MISSING_DATA_INTERVAL']:
             query_missing_data(int(offset), interval)
 
         cur_batch = sdc.createBatch()
