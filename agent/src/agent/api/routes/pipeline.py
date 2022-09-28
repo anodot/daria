@@ -162,18 +162,22 @@ def pipeline_status_change(pipeline_id: str):
     return jsonify('')
 
 
-@pipelines.route('/pipeline-offset/<pipeline_id>', methods=['POST', 'GET'])
+@pipelines.route('/pipeline-offset/<pipeline_id>', methods=['POST'])
 @needs_pipeline
 def pipeline_offset_changed(pipeline_id: str):
+    offset_ = float(request.get_json()['offset'])
     pipeline_ = pipeline.repository.get_by_id(pipeline_id)
-    if request.method == 'POST':
-        offset_ = float(request.get_json()['offset'])
-        labels_ = (pipeline_.streamsets.url, pipeline_.name, pipeline_.source.type)
-        pipeline.manager.update_pipeline_offset(pipeline_, offset_)
-        monitoring.metrics.PIPELINE_AVG_LAG.labels(*labels_).set(datetime.now().timestamp() - offset_)
-        return jsonify('')
-    elif request.method == 'GET':
-        return pipeline_.offset.offset if pipeline_.offset else jsonify({})
+    labels_ = (pipeline_.streamsets.url, pipeline_.name, pipeline_.source.type)
+    pipeline.manager.update_pipeline_offset(pipeline_, offset_)
+    monitoring.metrics.PIPELINE_AVG_LAG.labels(*labels_).set(datetime.now().timestamp() - offset_)
+    return jsonify('')
+
+
+@pipelines.route('/pipeline-offset/<pipeline_id>', methods=['GET'])
+@needs_pipeline
+def pipeline_offset_get(pipeline_id: str):
+    pipeline_ = pipeline.repository.get_by_id(pipeline_id)
+    return pipeline_.offset.offset if pipeline_.offset else jsonify({})
 
 
 @pipelines.route('/pipelines/<pipeline_id>/watermark', methods=['POST'])
