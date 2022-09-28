@@ -35,19 +35,19 @@ def to_timestamp(date):
     return int((date - epoch).total_seconds())
 
 
-def query_missing_data(cur_offset, interval):
+def query_missing_data(main_offset, main_interval):
     db_offset = get_db_offset()
     if not db_offset:
         return
-    while ((cur_offset - db_offset) / interval.total_seconds()) > 1:
-        sdc.log.debug(
-            'PROCESSING MISSED DATA: '
-            'from ' + str(db_offset) + ' to ' + str(db_offset + interval.total_seconds())
-        )
+
+    tmp_offset = db_offset
+    tmp_interval = get_interval_missing_data()
+    while main_offset > tmp_offset:
+        sdc.log.debug('PROCESSING MISSED DATA: ' 'from ' + str(db_offset) + ' to ' + str(db_offset + main_interval))
         cur_batch = sdc.createBatch()
         record = sdc.createRecord('record created ' + str(datetime.now()))
         record.value = {'last_timestamp': int(db_offset)}
-        db_offset += interval.total_seconds()
+        tmp_offset += tmp_interval
         cur_batch.add(record)
         cur_batch.process(entityName, str(db_offset))
 
@@ -89,7 +89,7 @@ def main():
                 return
 
         if sdc.userParams['QUERY_MISSING_DATA_INTERVAL']:
-            query_missing_data(int(offset), interval)
+            query_missing_data(int(offset), interval.total_seconds())
 
         cur_batch = sdc.createBatch()
         record = sdc.createRecord('record created ' + str(datetime.now()))
