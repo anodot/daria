@@ -43,14 +43,12 @@ def main():
             time.sleep(1)
             if sdc.isStopped():
                 return
-        offset = now + get_interval()
 
         batch = sdc.createBatch()
-
         res = requests.get(sdc.userParams['SNMP_SOURCE_URL'], timeout=60)
         res.raise_for_status()
         for metric in res.json():
-            metric['timestamp'] = now
+            metric['timestamp'] = offset
             record = sdc.createRecord('record created ' + str(datetime.now()))
             record.value = metric
             batch.add(record)
@@ -60,12 +58,10 @@ def main():
                 batch = sdc.createBatch()
 
         event = sdc.createEvent('interval_processed', 1)
-        event.value = {
-            'watermark': now,
-            'schemaId': sdc.userParams['SCHEMA_ID']
-        }
+        event.value = {'watermark': offset, 'schemaId': sdc.userParams['SCHEMA_ID']}
         batch.addEvent(event)
         batch.process(entityName, str(offset))
+        offset += get_interval()
 
 
 main()
