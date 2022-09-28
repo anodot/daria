@@ -16,7 +16,7 @@ def send_monitoring_data(destination_: HttpDestination) -> list:
     )
 
     errors = []
-    for chunk in tools.chunks(monitoring.streamsets.get_metrics(), BATCH_SIZE):
+    for chunk in tools.chunks(monitoring.get_monitoring_metrics(), BATCH_SIZE):
         if constants.MONITORING_SEND_TO_CLIENT:
             try:
                 monitoring_api_client.send_to_client(chunk)

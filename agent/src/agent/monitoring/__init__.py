@@ -20,23 +20,19 @@ def get_monitoring_metrics() -> list[dict]:
     pull_latest()
     data = []
     pipelines = pipeline.repository.get_all()
-    pipelines: Dict[str, Pipeline] = dict(zip({p.name for p in pipelines}, pipelines))
-    for metric in metrics.registry.collect():
-        target_type = anodot.TargetType.COUNTER if metric.type == 'counter' else anodot.TargetType.GAUGE
-        for sample in metric.samples:
-            if sample.name.endswith('_created'):
-                continue
-            if 'pipeline_id' in sample.labels and sample.labels['pipeline_id'] not in pipelines:
-                continue
-            if sample.labels.get('streamsets_url') and\
-                    pipelines.get(sample.labels.get('pipeline_id')) and\
-                    sample.labels.get('streamsets_url') != pipelines[sample.labels['pipeline_id']].streamsets.url:
-                continue
-            dims = {**sample.labels, 'host_name': constants.HOSTNAME, 'source': 'agent_monitoring'}
-            data.append(
-                anodot.Metric20(sample.name, sample.value, target_type, datetime.utcnow(), dimensions=dims).to_dict()
-            )
+    # pipelines: Dict[str, Pipeline] = dict(zip({p.name for p in pipelines}, pipelines))
+    for metric in streamsets.get_metrics():
+        for bean in metric['beans']:
+            for key in bean.keys():
+                target_type = anodot.TargetType.COUNTER if key.endswith('Count') else anodot.TargetType.GAUGE
+                if 'MemoryUsage' in key:
+                    bean[key] = bean[key]['used']
+                if isinstance(bean[key], (str, list)):
+                    continue
 
+                data.append(
+                    anodot.Metric20(key, bean[key], target_type, datetime.utcnow()).to_dict()
+                )
     return data
 
 
