@@ -9,12 +9,17 @@ try:
 
     sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))
     import pytz
+    import requests
 finally:
     sdc.importUnlock()
 
 
 def get_interval():
     return int(sdc.userParams['INTERVAL_IN_SECONDS'])
+
+
+def get_interval_missing_data():
+    return int(sdc.userParams['QUERY_MISSING_DATA_INTERVAL'])
 
 
 def get_now_with_delay():
@@ -28,6 +33,36 @@ def get_now_with_delay():
 def to_timestamp(date):
     epoch = datetime(1970, 1, 1)
     return int((date - epoch).total_seconds())
+
+
+def query_missing_data(main_offset, main_interval):
+    db_offset = get_db_offset()
+    if not db_offset:
+        return
+
+    tmp_offset = db_offset
+    tmp_interval = get_interval_missing_data()
+    while main_offset > tmp_offset:
+        sdc.log.debug('PROCESSING MISSED DATA: ' 'from ' + str(db_offset) + ' to ' + str(db_offset + main_interval))
+        cur_batch = sdc.createBatch()
+        record = sdc.createRecord('record created ' + str(datetime.now()))
+        record.value = {'last_timestamp': int(db_offset)}
+        tmp_offset += tmp_interval
+        cur_batch.add(record)
+        cur_batch.process(entityName, str(db_offset))
+
+
+def get_db_offset():
+    try:
+        res = requests.get(sdc.userParams['PIPELINE_OFFSET_ENDPOINT'])
+        res.raise_for_status()
+        data = res.json()
+        if not data or type(data) == str:
+            raise ValueError('No offset found in DB')
+        return int(float(list(data['offsets'].values())[-1]))
+    except (requests.ConnectionError, requests.HTTPError, ValueError) as e:
+        sdc.log.error(str(e))
+        return None
 
 
 entityName = ''
@@ -52,6 +87,10 @@ def main():
             time.sleep(2)
             if sdc.isStopped():
                 return
+
+        if sdc.userParams['QUERY_MISSING_DATA_INTERVAL']:
+            query_missing_data(int(offset), interval.total_seconds())
+
         cur_batch = sdc.createBatch()
         record = sdc.createRecord('record created ' + str(datetime.now()))
         record.value = {'last_timestamp': int(offset)}
