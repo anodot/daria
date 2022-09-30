@@ -1,6 +1,6 @@
 from prometheus_client import (Info,
-    Counter as PrometeusCounter,
-    Gauge as PrometeusGauge,
+    Counter as PrometheusCounter,
+    Gauge as PrometheusGauge,
     CollectorRegistry,
 )
 from agent import version
@@ -74,14 +74,14 @@ PIPELINE_STATUS = Counter(
 
 KAFKA_CONSUMER_LAG = Gauge('kafka_consumer_lag', 'Kafka consumer lag', ['topic'], multiprocess_mode='max')
 
-SOURCE_HTTP_ERRORS = PrometeusCounter('source_http_errors', 'Source HTTP errors', ['pipeline_id', 'pipeline_type', 'code'])
-SOURCE_MYSQL_ERRORS = PrometeusCounter('source_mysql_errors', 'Source MySQL errors', ['pipeline_id'])
-SCHEDULED_SCRIPTS_ERRORS = PrometeusCounter('scheduled_scripts_errors', 'Scheduled scripts errors', ['script_name'])
-SCHEDULED_SCRIPT_EXECUTION_TIME = PrometeusGauge(
+SOURCE_HTTP_ERRORS = PrometheusCounter('source_http_errors', 'Source HTTP errors', ['pipeline_id', 'pipeline_type', 'code'])
+SOURCE_MYSQL_ERRORS = PrometheusCounter('source_mysql_errors', 'Source MySQL errors', ['pipeline_id'])
+SCHEDULED_SCRIPTS_ERRORS = PrometheusCounter('scheduled_scripts_errors', 'Scheduled scripts errors', ['script_name'])
+SCHEDULED_SCRIPT_EXECUTION_TIME = PrometheusGauge(
     'scheduled_script_execution_time', 'Time to execute a scheduled script', ['script_name'], multiprocess_mode='max'
 )
 
-DIRECTORY_FILE_PROCESSED = PrometeusCounter(
+DIRECTORY_FILE_PROCESSED = PrometheusCounter(
     'directory_file_processed', 'Finished processing one file', ['streamsets_url', 'pipeline_id']
 )
 
@@ -91,7 +91,7 @@ WATERMARK_DELTA = Gauge(
     multiprocess_mode='max'
 )
 
-WATERMARK_SENT = PrometeusCounter(
+WATERMARK_SENT = PrometheusCounter(
     'watermark_sent', 'Number of sent watermarks', ['streamsets_url', 'pipeline_id', 'pipeline_type']
 )
 
