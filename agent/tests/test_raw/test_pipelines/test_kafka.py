@@ -3,6 +3,7 @@ from .test_base import TestRawPipelineBase
 
 class TestRawKafka(TestRawPipelineBase):
     __test__ = True
+    MAX_TIMES_TO_WAIT = 600
     params = {
         'test_start': [
             {'name': 'kafka_raw_csv'},
