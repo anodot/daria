@@ -1,4 +1,8 @@
-from prometheus_client import Info, CollectorRegistry
+from prometheus_client import (Info,
+    Counter as PrometeusCounter,
+    Gauge as PrometeusGauge,
+    CollectorRegistry,
+)
 from agent import version
 from agent.monitoring.dataclasses import Counter, Gauge
 
@@ -70,14 +74,14 @@ PIPELINE_STATUS = Counter(
 
 KAFKA_CONSUMER_LAG = Gauge('kafka_consumer_lag', 'Kafka consumer lag', ['topic'], multiprocess_mode='max')
 
-SOURCE_HTTP_ERRORS = Counter('source_http_errors', 'Source HTTP errors', ['pipeline_id', 'pipeline_type', 'code'])
-SOURCE_MYSQL_ERRORS = Counter('source_mysql_errors', 'Source MySQL errors', ['pipeline_id'])
-SCHEDULED_SCRIPTS_ERRORS = Counter('scheduled_scripts_errors', 'Scheduled scripts errors', ['script_name'])
-SCHEDULED_SCRIPT_EXECUTION_TIME = Gauge(
+SOURCE_HTTP_ERRORS = PrometeusCounter('source_http_errors', 'Source HTTP errors', ['pipeline_id', 'pipeline_type', 'code'])
+SOURCE_MYSQL_ERRORS = PrometeusCounter('source_mysql_errors', 'Source MySQL errors', ['pipeline_id'])
+SCHEDULED_SCRIPTS_ERRORS = PrometeusCounter('scheduled_scripts_errors', 'Scheduled scripts errors', ['script_name'])
+SCHEDULED_SCRIPT_EXECUTION_TIME = PrometeusGauge(
     'scheduled_script_execution_time', 'Time to execute a scheduled script', ['script_name'], multiprocess_mode='max'
 )
 
-DIRECTORY_FILE_PROCESSED = Counter(
+DIRECTORY_FILE_PROCESSED = PrometeusCounter(
     'directory_file_processed', 'Finished processing one file', ['streamsets_url', 'pipeline_id']
 )
 
@@ -87,21 +91,20 @@ WATERMARK_DELTA = Gauge(
     multiprocess_mode='max'
 )
 
-WATERMARK_SENT = Counter(
+WATERMARK_SENT = PrometeusCounter(
     'watermark_sent', 'Number of sent watermarks', ['streamsets_url', 'pipeline_id', 'pipeline_type']
 )
 
-METRICS = [
-    *registry.collect(),
-    STREAMSETS_CPU, STREAMSETS_HEAP_MEMORY, STREAMSETS_NON_HEAP_MEMORY,
-    PIPELINE_INCOMING_RECORDS, PIPELINE_OUTGOING_RECORDS, PIPELINE_ERROR_RECORDS,
-    PIPELINE_AVG_LAG, PIPELINE_DESTINATION_LATENCY, PIPELINE_SOURCE_LATENCY,
-    PIPELINE_STAGE_BATCH_PROCESSING_TIME_AVG, PIPELINE_STAGE_BATCH_PROCESSING_TIME_50th,
-    PIPELINE_STAGE_BATCH_PROCESSING_TIME_999th, PIPELINE_STATUS, KAFKA_CONSUMER_LAG,
-    SOURCE_HTTP_ERRORS, SOURCE_MYSQL_ERRORS, SCHEDULED_SCRIPTS_ERRORS,
-    SCHEDULED_SCRIPT_EXECUTION_TIME, DIRECTORY_FILE_PROCESSED, WATERMARK_DELTA,
-    WATERMARK_SENT,
-]
+
+def collect_metrics():
+    return [
+        *registry.collect(),
+        STREAMSETS_CPU, STREAMSETS_HEAP_MEMORY, STREAMSETS_NON_HEAP_MEMORY,
+        PIPELINE_INCOMING_RECORDS, PIPELINE_OUTGOING_RECORDS, PIPELINE_ERROR_RECORDS,
+        PIPELINE_AVG_LAG, PIPELINE_DESTINATION_LATENCY, PIPELINE_SOURCE_LATENCY,
+        PIPELINE_STAGE_BATCH_PROCESSING_TIME_AVG, PIPELINE_STAGE_BATCH_PROCESSING_TIME_50th,
+        PIPELINE_STAGE_BATCH_PROCESSING_TIME_999th, PIPELINE_STATUS, KAFKA_CONSUMER_LAG,
+    ]
 # # Not for every endpoint
 # AGENT_API_REQUESTS_LATENCY = Gauge('agent_api_requests_latency_seconds', 'Agent API requests time in seconds',
 #                                    ['endpoint'], registry=registry)

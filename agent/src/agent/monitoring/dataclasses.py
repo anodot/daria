@@ -65,6 +65,7 @@ class Gauge(Metric):
             documentation=documentation,
             labelnames=labelnames,
         )
+        self.type = 'gauge'
 
 
 class Counter(Metric):
@@ -77,3 +78,4 @@ class Counter(Metric):
             documentation=documentation,
             labelnames=labelnames,
         )
+        self.type = 'counter'

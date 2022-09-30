@@ -22,8 +22,8 @@ def get_monitoring_metrics() -> List[Dict]:
     data = []
     pipelines = pipeline.repository.get_all()
     pipelines: Dict[str, Pipeline] = dict(zip({p.name for p in pipelines}, pipelines))
-    for metric in metrics.METRICS:
-        target_type = anodot.TargetType.COUNTER if isinstance(metric, Counter) else anodot.TargetType.GAUGE
+    for metric in metrics.collect_metrics():
+        target_type = anodot.TargetType.COUNTER if metric.type == 'counter' else anodot.TargetType.GAUGE
         for sample in metric.samples:
             if sample.name.endswith('_created'):
                 continue
