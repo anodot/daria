@@ -4,6 +4,7 @@ import urllib.parse
 
 from . import metrics, streamsets, sender
 from agent.modules import constants, logger
+from agent.monitoring.dataclasses import Counter
 from datetime import datetime
 from agent import pipeline
 from agent.pipeline import Pipeline
@@ -16,13 +17,13 @@ def pull_latest():
     streamsets.pull_metrics()
 
 
-def _get_registry_metrics():
+def get_monitoring_metrics():
     data = []
     pull_latest()
     pipelines = pipeline.repository.get_all()
     pipelines: Dict[str, Pipeline] = dict(zip({p.name for p in pipelines}, pipelines))
-    for metric in metrics.registry.collect():
-        target_type = anodot.TargetType.COUNTER if metric.type == 'counter' else anodot.TargetType.GAUGE
+    for metric in metrics.METRICS:
+        target_type = anodot.TargetType.COUNTER if isinstance(metric, Counter) else anodot.TargetType.GAUGE
         for sample in metric.samples:
             if sample.name.endswith('_created'):
                 continue
@@ -37,27 +38,6 @@ def _get_registry_metrics():
                 anodot.Metric20(sample.name, sample.value, target_type, datetime.utcnow(), dimensions=dims).to_dict()
             )
     return data
-
-
-def _get_raw_metrics():
-    data = []
-    for metric in streamsets.get_metrics():
-        for bean in metric['beans']:
-            for key in bean.keys():
-                target_type = anodot.TargetType.COUNTER if key.endswith('Count') else anodot.TargetType.GAUGE
-                if 'MemoryUsage' in key:
-                    bean[key] = bean[key]['used']
-                if isinstance(bean[key], (str, list)):
-                    continue
-
-                data.append(
-                    anodot.Metric20(key, bean[key], target_type, datetime.utcnow()).to_dict()
-                )
-    return data
-
-
-def get_monitoring_metrics() -> list[dict]:
-    return _get_registry_metrics() + _get_raw_metrics()
 
 
 def increase_scheduled_script_error_counter(script_name):

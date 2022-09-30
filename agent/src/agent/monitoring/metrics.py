@@ -1,5 +1,6 @@
-from prometheus_client import Info, Gauge, Counter, CollectorRegistry
+from prometheus_client import Info, CollectorRegistry
 from agent import version
+from agent.monitoring.dataclasses import Counter, Gauge
 
 registry = CollectorRegistry()
 
@@ -90,6 +91,17 @@ WATERMARK_SENT = Counter(
     'watermark_sent', 'Number of sent watermarks', ['streamsets_url', 'pipeline_id', 'pipeline_type']
 )
 
+METRICS = [
+    *registry.collect(),
+    STREAMSETS_CPU, STREAMSETS_HEAP_MEMORY, STREAMSETS_NON_HEAP_MEMORY,
+    PIPELINE_INCOMING_RECORDS, PIPELINE_OUTGOING_RECORDS, PIPELINE_ERROR_RECORDS,
+    PIPELINE_AVG_LAG, PIPELINE_DESTINATION_LATENCY, PIPELINE_SOURCE_LATENCY,
+    PIPELINE_STAGE_BATCH_PROCESSING_TIME_AVG, PIPELINE_STAGE_BATCH_PROCESSING_TIME_50th,
+    PIPELINE_STAGE_BATCH_PROCESSING_TIME_999th, PIPELINE_STATUS, KAFKA_CONSUMER_LAG,
+    SOURCE_HTTP_ERRORS, SOURCE_MYSQL_ERRORS, SCHEDULED_SCRIPTS_ERRORS,
+    SCHEDULED_SCRIPT_EXECUTION_TIME, DIRECTORY_FILE_PROCESSED, WATERMARK_DELTA,
+    WATERMARK_SENT,
+]
 # # Not for every endpoint
 # AGENT_API_REQUESTS_LATENCY = Gauge('agent_api_requests_latency_seconds', 'Agent API requests time in seconds',
 #                                    ['endpoint'], registry=registry)

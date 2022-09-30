@@ -79,18 +79,6 @@ def pull_metrics():
     )
 
 
-def get_metrics():
-    streamsets_ = streamsets.repository.get_all()
-    pipelines = pipeline.repository.get_all()
-    return _get_pipeline_metrics(
-        pipelines=pipelines,
-        asynchronous=len(pipelines) >= 2
-    ) + _get_streamsets_metrics(
-        streamsets_=streamsets_,
-        asynchronous=len(streamsets_) >= 2
-    )
-
-
 def _get_pipeline_metrics(pipelines: List[pipeline.Pipeline], asynchronous: bool = False) -> List[Dict]:
     if not asynchronous:
         jmxes = [sdc_client.get_jmx(pipeline_.streamsets, f'metrics:name=sdc.pipeline.{pipeline_.name}.*')
