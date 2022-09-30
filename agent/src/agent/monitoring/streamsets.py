@@ -2,9 +2,10 @@ import prometheus_client
 import sdc_client
 import re
 
-from typing import List, Dict
+from typing import List, Dict, Union
 from agent import streamsets, pipeline, source
 from agent.monitoring import metrics
+from agent.monitoring.dataclasses import Counter
 from agent.modules import constants
 from agent.modules import logger
 
@@ -21,7 +22,7 @@ def _pull_system_metrics(streamsets_: streamsets.StreamSets, jmx: dict):
             metrics.STREAMSETS_CPU.labels(streamsets_.url).set(bean['ProcessCpuLoad'])
 
 
-def _increase_counter(total: int, metric: prometheus_client.Counter):
+def _increase_counter(total: int, metric: Union[prometheus_client.Counter, Counter]):
     # TODO: do not access private property
     val = total - metric._value.get()
     if val > 0:

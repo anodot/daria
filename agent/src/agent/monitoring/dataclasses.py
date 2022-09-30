@@ -7,16 +7,16 @@ class Sample:
 
 class MetricValue:
     def __init__(self):
-        self.value = 0.0
+        self._value = 0.0
 
     def inc(self, value=1):
-        self.value += value
+        self._value += value
 
     def dec(self, value=1):
-        self.value -= value
+        self._value -= value
 
     def set(self, value):
-        self.value = value
+        self._value = value
 
 
 class Metric:
