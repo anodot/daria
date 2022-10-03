@@ -1,8 +1,9 @@
 class Sample:
-    def __init__(self, name, value, labels):
+    def __init__(self, name, value, labels, timestamp=None):
         self.name = name
         self.value = value
         self.labels = labels
+        self.timestamp = timestamp
 
 
 class MetricValue:
@@ -17,6 +18,10 @@ class MetricValue:
 
     def set(self, value):
         self._value = value
+
+    @property
+    def value(self):
+        return self._value
 
 
 class Metric:
@@ -48,10 +53,12 @@ class Metric:
 
     @property
     def samples(self):
+        print(self._metrics)
         return [Sample(
             name=self.name,
             value=self._metrics[labelvalues].value,
-            labels=dict(zip(self._labelnames, labelvalues))
+            labels=dict(zip(self._labelnames, labelvalues)),
+            # timestamp=self.
         ) for labelvalues in self._metrics]
 
 
