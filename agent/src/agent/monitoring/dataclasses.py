@@ -53,7 +53,6 @@ class Metric:
 
     @property
     def samples(self):
-        print(self._metrics)
         return [Sample(
             name=self.name,
             value=self._metrics[labelvalues].value,

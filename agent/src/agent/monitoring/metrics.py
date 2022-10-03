@@ -85,7 +85,7 @@ DIRECTORY_FILE_PROCESSED = PrometheusCounter(
     'directory_file_processed', 'Finished processing one file', ['streamsets_url', 'pipeline_id']
 )
 
-WATERMARK_DELTA = Gauge(
+WATERMARK_DELTA = PrometheusGauge(
     'watermark_delta',
     'Difference between time.now() and watermark timestamp', ['streamsets_url', 'pipeline_id', 'pipeline_type'],
     multiprocess_mode='max'

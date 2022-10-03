@@ -25,7 +25,6 @@ def get_monitoring_metrics() -> List[Dict]:
     for metric in metrics.collect_metrics():
         target_type = anodot.TargetType.COUNTER if metric.type == 'counter' else anodot.TargetType.GAUGE
         for sample in metric.samples:
-            print(sample)
             if sample.name.endswith('_created'):
                 continue
             if 'pipeline_id' in sample.labels and sample.labels['pipeline_id'] not in pipelines:
