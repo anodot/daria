@@ -19,6 +19,9 @@ class MetricValue:
     def set(self, value):
         self._value = value
 
+    def get(self):
+        return self._value
+
     @property
     def value(self):
         return self._value
