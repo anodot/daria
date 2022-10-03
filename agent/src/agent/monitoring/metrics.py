@@ -85,13 +85,13 @@ DIRECTORY_FILE_PROCESSED = PrometheusCounter(
     'directory_file_processed', 'Finished processing one file', ['streamsets_url', 'pipeline_id']
 )
 
-WATERMARK_DELTA = PrometheusGauge(
+WATERMARK_DELTA = Gauge(
     'watermark_delta',
     'Difference between time.now() and watermark timestamp', ['streamsets_url', 'pipeline_id', 'pipeline_type'],
     multiprocess_mode='max'
 )
 
-WATERMARK_SENT = PrometheusCounter(
+WATERMARK_SENT = Counter(
     'watermark_sent', 'Number of sent watermarks', ['streamsets_url', 'pipeline_id', 'pipeline_type']
 )
 
@@ -104,6 +104,7 @@ def collect_metrics():
         PIPELINE_AVG_LAG, PIPELINE_DESTINATION_LATENCY, PIPELINE_SOURCE_LATENCY,
         PIPELINE_STAGE_BATCH_PROCESSING_TIME_AVG, PIPELINE_STAGE_BATCH_PROCESSING_TIME_50th,
         PIPELINE_STAGE_BATCH_PROCESSING_TIME_999th, PIPELINE_STATUS, KAFKA_CONSUMER_LAG,
+        WATERMARK_SENT, WATERMARK_DELTA
     ]
 # # Not for every endpoint
 # AGENT_API_REQUESTS_LATENCY = Gauge('agent_api_requests_latency_seconds', 'Agent API requests time in seconds',
