@@ -27,7 +27,7 @@
     },
     "measurements": {
       "ifMtu": 1500.0,
-      "ifSpeed": 1.0E8
+      "speed": 1.0E8
     }
   }
 ]

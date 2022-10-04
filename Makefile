@@ -131,6 +131,10 @@ test-mssql: bootstrap
 test-databricks: bootstrap
 	$(DOCKER_TEST) tests/test_input/test_1/test_databricks.py
 
+test-snmp: bootstrap run-snmpsim
+	$(DOCKER_TEST) tests/test_input/test_2/test_snmp.py
+	$(DOCKER_TEST) tests/test_pipelines/test_2/test_snmp.py
+
 ##---------------------------
 ## RELEASE DEPENDENCY TARGETS
 ##---------------------------
@@ -215,9 +219,9 @@ run-dev:
 bootstrap: clean-docker-volumes run-base-services-dev test-streamsets test-destination
 
 clean-docker-volumes:
-	sudo rm -rf sdc-data/*
-	sudo rm -rf sdc-data2/*
-	sudo rm -rf agent/output/*
+	rm -rf sdc-data/*
+	rm -rf sdc-data2/*
+	rm -rf agent/output/*
 	$(DOCKER_COMPOSE_DEV) down -v --remove-orphans
 
 
