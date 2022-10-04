@@ -131,6 +131,10 @@ test-mssql: bootstrap
 test-databricks: bootstrap
 	$(DOCKER_TEST) tests/test_input/test_1/test_databricks.py
 
+test-snmp: bootstrap run-snmpsim
+	$(DOCKER_TEST) tests/test_input/test_2/test_snmp.py
+	$(DOCKER_TEST) tests/test_pipelines/test_2/test_snmp.py
+
 ##---------------------------
 ## RELEASE DEPENDENCY TARGETS
 ##---------------------------

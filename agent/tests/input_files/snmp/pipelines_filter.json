@@ -12,6 +12,7 @@
         "dimensions": ["ifDescr", "ifType"]
       }
     },
+    "measurement_names": {"ifSpeed": "speed"},
     "dimensions": ["system_description", "system_location"],
     "dimension_value_paths": {
       "system_description": "1.3.6.1.2.1.1.1.0",

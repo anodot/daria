@@ -19,9 +19,9 @@
     },
     "schemaId": "snmp_multi-1234",
     "dimensions": {
-      "system_location": "San Francisco, California, United States",
-      "hostname": "zeus.snmplabs.com",
-      "system_description": "Linux zeus 4.8.6.5-smp #2 SMP Sun Nov 13 14:58:11 CDT 2016 i686"
+      "system_location": "San_Francisco,_California,_United_States",
+      "hostname": "zeus_snmplabs_com",
+      "system_description": "Linux_zeus_4_8_6_5-smp_#2_SMP_Sun_Nov_13_14:58:11_CDT_2016_i686"
     },
     "measurements": {
       "icmp_in_msgs": 324.0,
@@ -48,9 +48,9 @@
     },
     "schemaId": "snmp_multi-1234",
     "dimensions": {
-      "system_location": "San Francisco, California, United States",
-      "hostname": "zeus.snmplabs.com",
-      "system_description": "Linux zeus 4.8.6.5-smp #2 SMP Sun Nov 13 14:58:11 CDT 2016 i686"
+      "system_location": "San_Francisco,_California,_United_States",
+      "hostname": "zeus_snmplabs_com",
+      "system_description": "Linux_zeus_4_8_6_5-smp_#2_SMP_Sun_Nov_13_14:58:11_CDT_2016_i686"
     },
     "measurements": {
       "icmp_in_msgs": 324.0,

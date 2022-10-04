@@ -243,8 +243,8 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return list(self.values.values())
 
     @property
-    def measurement_paths_with_names(self) -> dict:
-        return dict(zip(self.config.get('measurement_names', {}).keys(), self.measurement_names))
+    def measurement_name_for_each_value(self) -> dict:
+        return dict(zip(self.values.keys(), self.measurement_names))
 
     @property
     def measurement_names(self) -> list:
