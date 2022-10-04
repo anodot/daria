@@ -4,10 +4,11 @@ import urllib.parse
 
 from . import metrics, streamsets, sender
 from agent.modules import constants, logger
+from agent.monitoring.dataclasses import Counter
 from datetime import datetime
 from agent import pipeline
 from agent.pipeline import Pipeline
-from typing import Dict
+from typing import Dict, List
 
 logger_ = logger.get_logger(__name__)
 
@@ -16,12 +17,12 @@ def pull_latest():
     streamsets.pull_metrics()
 
 
-def get_monitoring_metrics() -> list[dict]:
+def get_monitoring_metrics() -> List[Dict]:
     pull_latest()
     data = []
     pipelines = pipeline.repository.get_all()
     pipelines: Dict[str, Pipeline] = dict(zip({p.name for p in pipelines}, pipelines))
-    for metric in metrics.registry.collect():
+    for metric in metrics.collect_metrics():
         target_type = anodot.TargetType.COUNTER if metric.type == 'counter' else anodot.TargetType.GAUGE
         for sample in metric.samples:
             if sample.name.endswith('_created'):
@@ -36,7 +37,6 @@ def get_monitoring_metrics() -> list[dict]:
             data.append(
                 anodot.Metric20(sample.name, sample.value, target_type, datetime.utcnow(), dimensions=dims).to_dict()
             )
-
     return data
 
 

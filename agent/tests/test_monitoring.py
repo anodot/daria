@@ -1,4 +1,6 @@
 import pytest
+import requests
+
 from .test_input.test_zpipeline_base import TestInputBase
 from .test_pipelines.test_zpipeline_base import TestPipelineBase
 
@@ -58,9 +60,9 @@ class TestMonitoringMetrics(TestInputBase, TestPipelineBase):
     def test_output_schema(self, name=None, pipeline_type=None, output=None):
         pytest.skip()
 
-    def test_monitoring_metrics(self, api_client, name, metric_type):
-        response = api_client.get('/metrics')
+    def test_monitoring_metrics(self, name, metric_type):
+        response = requests.get('http://localhost/metrics')
         assert response.status_code == 200
-        metrics = response.data.decode('utf-8').split('\n')
-        metric_found = any(i.startswith(metric_type) and i.find(name) != -1 for i in metrics)
+        metrics = response.json()
+        metric_found = any(i['properties'].get('pipeline_id') == name and i['properties']['what'] == metric_type for i in metrics)
         assert metric_found
