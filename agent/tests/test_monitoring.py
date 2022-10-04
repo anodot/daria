@@ -23,7 +23,7 @@ class TestMonitoringMetrics(TestInputBase, TestPipelineBase):
         'test_monitoring_metrics': [
             {'name': 'test_dir_monitoring_csv', 'metric_type': 'pipeline_avg_lag_seconds'},
             {'name': 'test_dir_monitoring_csv', 'metric_type': 'watermark_delta'},
-            {'name': 'test_dir_monitoring_csv', 'metric_type': 'watermark_sent'},
+            {'name': 'test_dir_monitoring_csv', 'metric_type': 'watermark_sent_total'},
         ],
         'test_delete_pipeline': [
             {'name': 'test_dir_monitoring_csv'},

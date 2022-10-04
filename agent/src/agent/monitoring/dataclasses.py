@@ -60,7 +60,6 @@ class Metric:
             name=self.name,
             value=self._metrics[labelvalues].value,
             labels=dict(zip(self._labelnames, labelvalues)),
-            # timestamp=self.
         ) for labelvalues in self._metrics]
 
 
@@ -88,3 +87,11 @@ class Counter(Metric):
             labelnames=labelnames,
         )
         self.type = 'counter'
+
+    @property
+    def samples(self):
+        return [Sample(
+            name=self.name + '_total',
+            value=self._metrics[labelvalues].value,
+            labels=dict(zip(self._labelnames, labelvalues)),
+        ) for labelvalues in self._metrics]
