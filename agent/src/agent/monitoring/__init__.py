@@ -114,6 +114,8 @@ def generate_latest():
 
             om_samples = {}
             for s in metric.samples:
+                if isinstance(metric, Counter):
+                    s.name += '_total'
                 for suffix in ['_created', '_gsum', '_gcount']:
                     if s.name == metric.name + suffix:
                         # OpenMetrics specific sample, put in a gauge at the end.

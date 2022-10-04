@@ -24,7 +24,10 @@ def _pull_system_metrics(streamsets_: streamsets.StreamSets, jmx: dict):
 
 def _increase_counter(total: int, metric: Union[prometheus_client.Counter, Counter]):
     # TODO: do not access private property
-    val = total - metric._value.get()
+    if isinstance(metric, prometheus_client.Counter):
+         val = total - metric._value.get()
+    else:
+        val = total - metric.value
     if val > 0:
         metric.inc(val)
 
