@@ -183,20 +183,14 @@ def _get_dimension_name(oid: ObjectIdentity, pipeline_: Pipeline) -> str:
     if str(oid) in pipeline_.dimension_paths_with_names:
         return pipeline_.dimension_paths_with_names[str(oid)]
     label = oid.getMibNode().label
-    if label in pipeline_.dimension_paths_with_names:
-        return pipeline_.dimension_paths_with_names[label]
-    return oid.getMibNode().label
+    return pipeline_.dimension_paths_with_names.get(label, label)
 
 
 def _get_measurement_name(oid: ObjectIdentity, pipeline_: Pipeline) -> str:
     if str(oid) in pipeline_.measurement_name_for_each_value:
         return pipeline_.measurement_name_for_each_value[str(oid)]
     label = oid.getMibNode().label
-    logger_.debug(str(label))
-    logger_.debug(str(pipeline_.measurement_name_for_each_value))
-    if label in pipeline_.measurement_name_for_each_value:
-        return pipeline_.measurement_name_for_each_value[label]
-    return label
+    return pipeline_.measurement_name_for_each_value.get(label, label)
 
 
 def _get_value_oid_name(oid: ObjectIdentity, pipeline_: Pipeline) -> str:
