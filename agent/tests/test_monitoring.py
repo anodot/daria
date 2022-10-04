@@ -23,7 +23,7 @@ class TestMonitoringMetrics(TestInputBase, TestPipelineBase):
         'test_monitoring_metrics': [
             {'name': 'test_dir_monitoring_csv', 'metric_type': 'pipeline_avg_lag_seconds'},
             {'name': 'test_dir_monitoring_csv', 'metric_type': 'watermark_delta'},
-            {'name': 'test_dir_monitoring_csv', 'metric_type': 'watermark_sent_total'},
+            {'name': 'test_dir_monitoring_csv', 'metric_type': 'watermark_sent'},
         ],
         'test_delete_pipeline': [
             {'name': 'test_dir_monitoring_csv'},
@@ -60,9 +60,9 @@ class TestMonitoringMetrics(TestInputBase, TestPipelineBase):
     def test_output_schema(self, name=None, pipeline_type=None, output=None):
         pytest.skip()
 
-    def test_monitoring_metrics(self, api_client, name, metric_type):
+    def test_monitoring_metrics(self, name, metric_type):
         response = requests.get('http://localhost/metrics')
         assert response.status_code == 200
-        metrics = response.content.decode('utf-8').split('\n')
-        metric_found = any(i.startswith(metric_type) and i.find(name) != -1 for i in metrics)
+        metrics = response.json()
+        metric_found = any(i['properties'].get('pipeline_id') == name and i['properties']['what'] == metric_type for i in metrics)
         assert metric_found

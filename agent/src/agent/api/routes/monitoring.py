@@ -9,7 +9,8 @@ monitoring_bp = Blueprint('monitoring', __name__)
 @monitoring_bp.route('/metrics', methods=['GET'])
 def metrics():
     monitoring.pull_latest()
-    return monitoring.generate_latest()
+    return jsonify(monitoring.get_monitoring_metrics())
+    # return monitoring.generate_latest()
 
 
 @monitoring_bp.route('/monitoring', methods=['GET'])
