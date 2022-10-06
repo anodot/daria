@@ -176,7 +176,7 @@ class AnodotApiClient:
             ]
         }
         return self.session.delete(
-            self.url_builder.build('metrics'),
+            self.url_builder.build('metrics', api_version='v1'),
             proxies=self.proxies,
             json=data,
             params={
