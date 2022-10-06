@@ -53,7 +53,7 @@ def edit():
 def delete(pipeline_id: str):
     pipeline.manager.delete_by_id(
         pipeline_id=pipeline_id,
-        delete_metrics=bool(request.args.get('metrics', False))
+        delete_metrics=bool(request.args.get('delete-metrics', False))
     )
     return jsonify('')
 
@@ -63,7 +63,7 @@ def delete(pipeline_id: str):
 def force_delete(pipeline_id: str):
     return jsonify(pipeline.manager.force_delete(
         pipeline_id=pipeline_id,
-        delete_metrics=bool(request.args.get('metrics', False))
+        delete_metrics=bool(request.args.get('delete-metrics', False))
     ))
 
 

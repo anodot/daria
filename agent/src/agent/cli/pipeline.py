@@ -171,7 +171,8 @@ def force_stop(pipeline_id: str):
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, required=False)
 @click.option('-f', '--file', type=click.File())
-def delete(pipeline_id: str, file):
+@click.option('--delete-metrics', is_flag=True)
+def delete(pipeline_id: str, file, delete_metrics: bool):
     """
     Delete a Pipeline by its name (safely stopping before deletion)
     """
@@ -179,7 +180,7 @@ def delete(pipeline_id: str, file):
         raise click.UsageError('Specify pipeline id or file')
     for pipeline_id in _get_pipeline_ids(pipeline_id, file):
         try:
-            pipeline.manager.delete_by_id(pipeline_id)
+            pipeline.manager.delete_by_id(pipeline_id, delete_metrics=delete_metrics)
             click.echo(f'Pipeline {pipeline_id} deleted')
         except (
                 sdc_client.ApiClientException, pipeline.PipelineException,
@@ -191,11 +192,12 @@ def delete(pipeline_id: str, file):
 
 @click.command()
 @click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
-def force_delete(pipeline_id: str):
+@click.option('--delete-metrics', is_flag=True)
+def force_delete(pipeline_id: str, delete_metrics: bool):
     """
     Forcing to delete a Pipeline
     """
-    errors = pipeline.manager.force_delete(pipeline_id)
+    errors = pipeline.manager.force_delete(pipeline_id, delete_metrics=delete_metrics)
     if errors:
         for e in errors:
             click.secho(e, err=True, fg='red')
