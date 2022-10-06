@@ -257,7 +257,10 @@ def force_delete(pipeline_id: str, delete_metrics: bool = False) -> list:
     if pipeline.repository.exists(pipeline_id):
         pipeline_ = pipeline.repository.get_by_id(pipeline_id)
         if delete_metrics:
-            _delete_pipeline_metrics(pipeline_id)
+            try:
+                _delete_pipeline_metrics(pipeline_id)
+            except Exception as e:
+                exceptions.append(str(e))
         _delete_pipeline_retries(pipeline_)
         try:
             _delete_schema(pipeline_)
