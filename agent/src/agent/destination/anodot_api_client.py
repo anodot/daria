@@ -163,6 +163,28 @@ class AnodotApiClient:
                 return self._delete_schema_old_api(schema_id)
             raise
 
+    @v1endpoint
+    def delete_metrics(self, pipeline_id):
+        data = {
+            'expression': [
+                {
+                    'type': 'property',
+                    'key': '#pipeline_id',
+                    'value': f'{pipeline_id}',
+                    'isExact': 'true'
+                }
+            ]
+        }
+        return self.session.delete(
+            self.url_builder.build('metrics'),
+            proxies=self.proxies,
+            json=data,
+            params={
+                'token': self.api_token,
+                'protocol': HttpDestination.PROTOCOL_20
+            }
+        )
+
     @v2endpoint
     def send_topology_data(self, data_type, data):
         return self.session.post(
