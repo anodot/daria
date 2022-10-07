@@ -1,8 +1,14 @@
+import anodot
 import pytz
+import time
 
 from datetime import datetime, timezone, timedelta
-from agent import pipeline
+from agent import pipeline, destination, monitoring
 from agent.pipeline import Pipeline
+from agent.destination.anodot_api_client import AnodotApiClient
+from agent.modules.logger import get_logger
+
+logger = get_logger(__name__, stdout=True)
 
 
 class PeriodicWatermarkManager:
@@ -67,7 +73,7 @@ class PeriodicWatermarkManager:
 
     def _get_current_watermark(self) -> int:
         if self.pipeline.watermark:
-            return self.pipeline.watermark.timestamp
+            return int(self.pipeline.watermark.timestamp)
         elif self.pipeline.offset:
             return int(get_next_bucket_start(
                 self.pipeline.periodic_watermark_config['bucket_size'], self.pipeline.offset.timestamp
@@ -86,6 +92,17 @@ class PeriodicWatermarkManager:
         """
         dt = datetime.utcnow()
         return int((dt - self.timezone_.utcoffset(dt)).timestamp())
+
+
+def send_to_anodot(pipeline_, next_bucket_start):
+    watermark = anodot.Watermark(pipeline_.get_schema_id(), datetime.fromtimestamp(next_bucket_start))
+    api_client = AnodotApiClient(destination.repository.get())
+    api_client.send_watermark(watermark.to_dict())
+    api_client.session.close()
+    logger.debug(f'Sent watermark for `{pipeline_.name}`, value: {next_bucket_start}')
+
+    monitoring.set_watermark_delta(pipeline_.name, time.time() - next_bucket_start)
+    monitoring.set_watermark_sent(pipeline_.name)
 
 
 def get_next_bucket_start(bs: str, offset: float) -> datetime:
