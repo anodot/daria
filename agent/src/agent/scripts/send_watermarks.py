@@ -1,10 +1,6 @@
-import time
 import traceback
-import anodot
 
-from datetime import datetime
-from agent import pipeline, destination, monitoring, di
-from agent.destination.anodot_api_client import AnodotApiClient
+from agent import pipeline, monitoring, di
 from agent.modules.logger import get_logger
 from agent.modules import constants
 
@@ -23,7 +19,6 @@ def main():
         raise
 
     num_of_errors = 0
-    api_client = AnodotApiClient(destination.repository.get())
     for pipeline_ in pipelines:
         try:
             watermark_manager = pipeline.watermark.PeriodicWatermarkManager(pipeline_)
@@ -32,14 +27,8 @@ def main():
 
             with pipeline.repository.SessionManager(pipeline_):
                 next_bucket_start = watermark_manager.get_latest_bucket_start()
+                pipeline.watermark.send_to_anodot(pipeline_, next_bucket_start)
                 pipeline.manager.update_pipeline_watermark(pipeline_, next_bucket_start)
-
-                watermark = anodot.Watermark(pipeline_.get_schema_id(), datetime.fromtimestamp(next_bucket_start))
-                api_client.send_watermark(watermark.to_dict())
-
-                logger.debug(f'Sent watermark for `{pipeline_.name}`, value: {pipeline_.watermark.timestamp}')
-                monitoring.set_watermark_delta(pipeline_.name, time.time() - pipeline_.watermark.timestamp)
-                monitoring.set_watermark_sent(pipeline_.name)
         except Exception:
             num_of_errors = _update_errors_count(num_of_errors)
             logger.error(f'Error sending pipeline watermark {pipeline_.name}')

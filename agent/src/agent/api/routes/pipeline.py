@@ -201,3 +201,21 @@ def calculate_watermark(pipeline_id: str):
             pipeline_.flush_bucket_size.value, pipeline_.offset.timestamp
         ).timestamp()
     })
+
+
+@pipelines.route('/pipelines/<pipeline_id>/send-watermark', methods=['POST'])
+@needs_pipeline
+def send_watermark(pipeline_id: str):
+    pipeline_ = pipeline.repository.get_by_id(pipeline_id)
+
+    if pipeline_.offset:
+        next_bucket_start = pipeline.watermark.get_next_bucket_start(
+            pipeline_.flush_bucket_size.value, pipeline_.offset.timestamp
+        ).timestamp()
+        with pipeline.repository.SessionManager(pipeline_):
+            pipeline.watermark.send_to_anodot(pipeline_, next_bucket_start)
+            pipeline.manager.update_pipeline_watermark(pipeline_, next_bucket_start)
+    else:
+        next_bucket_start = None
+
+    return jsonify({'watermark': next_bucket_start})
