@@ -51,14 +51,20 @@ def edit():
 @pipelines.route('/pipelines/<pipeline_id>', methods=['DELETE'])
 @needs_pipeline
 def delete(pipeline_id: str):
-    pipeline.manager.delete_by_id(pipeline_id)
+    pipeline.manager.delete_by_id(
+        pipeline_id=pipeline_id,
+        delete_metrics=bool(request.args.get('delete-metrics', False))
+    )
     return jsonify('')
 
 
 @pipelines.route('/pipelines/force-delete/<pipeline_id>', methods=['DELETE'])
 @needs_pipeline
 def force_delete(pipeline_id: str):
-    return jsonify(pipeline.manager.force_delete(pipeline_id))
+    return jsonify(pipeline.manager.force_delete(
+        pipeline_id=pipeline_id,
+        delete_metrics=bool(request.args.get('delete-metrics', False))
+    ))
 
 
 @pipelines.route('/pipelines/<pipeline_id>/start', methods=['POST'])

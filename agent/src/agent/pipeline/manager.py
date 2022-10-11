@@ -14,6 +14,7 @@ from agent.modules.logger import get_logger
 from agent.pipeline.config.handlers.factory import get_config_handler
 from agent.source import Source
 from agent.pipeline import notifications
+from agent.destination.anodot_api_client import AnodotApiClient
 
 logger_ = get_logger(__name__, stdout=True)
 
@@ -214,6 +215,10 @@ def _delete_schema(pipeline_: Pipeline):
         pipeline_.schema = {}
 
 
+def _delete_pipeline_metrics(pipeline_id: str):
+    AnodotApiClient(destination.repository.get()).delete_metrics(pipeline_id)
+
+
 def _update_schema(pipeline_: Pipeline):
     new_schema = schema.build(pipeline_)
     if old_schema := pipeline_.get_schema():
@@ -223,7 +228,9 @@ def _update_schema(pipeline_: Pipeline):
     pipeline_.schema = schema.create(new_schema)
 
 
-def delete(pipeline_: Pipeline):
+def delete(pipeline_: Pipeline, delete_metrics: bool = False):
+    if delete_metrics:
+        _delete_pipeline_metrics(pipeline_.name)
     _delete_schema(pipeline_)
     try:
         sdc_client.delete(pipeline_)
@@ -233,19 +240,27 @@ def delete(pipeline_: Pipeline):
     pipeline.repository.add_deleted_pipeline_id(pipeline_.name)
 
 
-def delete_by_id(pipeline_id: str):
+def delete_by_id(pipeline_id: str, delete_metrics: bool = False):
+    if delete_metrics:
+        _delete_pipeline_metrics(pipeline_id)
     delete(pipeline.repository.get_by_id(pipeline_id))
 
 
-def force_delete(pipeline_id: str) -> list:
+def force_delete(pipeline_id: str, delete_metrics: bool = False) -> list:
     """
     Try do delete everything related to the pipeline
     :param pipeline_id: string
+    :param delete_metrics: boolean
     :return: list of errors that occurred during deletion
     """
     exceptions = []
     if pipeline.repository.exists(pipeline_id):
         pipeline_ = pipeline.repository.get_by_id(pipeline_id)
+        if delete_metrics:
+            try:
+                _delete_pipeline_metrics(pipeline_id)
+            except Exception as e:
+                exceptions.append(str(e))
         _delete_pipeline_retries(pipeline_)
         try:
             _delete_schema(pipeline_)
