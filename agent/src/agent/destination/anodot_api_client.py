@@ -163,7 +163,7 @@ class AnodotApiClient:
                 return self._delete_schema_old_api(schema_id)
             raise
 
-    @v2endpoint
+    @v1endpoint
     def delete_metrics(self, pipeline_id):
         data = {
             'expression': [
@@ -175,7 +175,7 @@ class AnodotApiClient:
                 }
             ]
         }
-        return self.session.delete(
+        return requests.delete(
             self.url_builder.build('metrics/', api_version='v1'),
             proxies=self.proxies,
             json=data,
