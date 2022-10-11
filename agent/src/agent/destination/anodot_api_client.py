@@ -61,10 +61,10 @@ class MonitoringApiClient:
         self.params = {'token': access_token, 'protocol': destination.HttpDestination.PROTOCOL_20}
         self.verify_ssl = verify_ssl
 
-    @v2endpoint
+    @v1endpoint
     def send_to_client(self, data: list[dict]):
         return requests.post(
-            self.url_builder.build('metrics/', api_version='v1'),
+            self.url_builder.build('metrics', api_version='v1'),
             json=data,
             params=self.params,
             proxies=self.proxies,
@@ -163,7 +163,7 @@ class AnodotApiClient:
                 return self._delete_schema_old_api(schema_id)
             raise
 
-    @v1endpoint
+    @v2endpoint
     def delete_metrics(self, pipeline_id):
         data = {
             'expression': [
@@ -176,7 +176,7 @@ class AnodotApiClient:
             ]
         }
         return self.session.delete(
-            self.url_builder.build('metrics', api_version='v1'),
+            self.url_builder.build('metrics/', api_version='v1'),
             proxies=self.proxies,
             json=data,
             params={
