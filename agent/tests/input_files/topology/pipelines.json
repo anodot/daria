@@ -17,6 +17,28 @@
           "type": "constant",
           "value": "Province"
         }
+      },
+      "subregion": {
+        "id": {
+          "type": "variable",
+          "value_path": [
+            "Full Name",
+            "Full Name"
+          ],
+          "concat_by": ""
+        },
+        "name": {
+          "type": "variable",
+          "value_path": "Full Name"
+        },
+        "type": {
+          "type": "constant",
+          "value": "Province"
+        },
+        "parentRegionId" : {
+          "type": "variable",
+          "value_path": "Full Name"
+        }
       }
     }
   },
