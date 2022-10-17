@@ -327,4 +327,3 @@ show-all-logs:
 	echo "DC 2 logs"; docker logs dc2;
 	echo "Dummy logs"; docker logs dummy_destination;
 	echo "Agent logs"; docker exec -i anodot-agent cat /var/log/agent/agent.log;
-	echo "Elastic logs"; docker logs agent-es;

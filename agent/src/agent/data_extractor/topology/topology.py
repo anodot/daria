@@ -29,11 +29,15 @@ class Entity(ABC):
 
 
 def _create_topology_records(entities: list[Entity], data: dict) -> dict:
-    return {
-        entity_.name: [field.extract_fields(entity_.fields, row) for row in data]
-        for entity_ in entities
-    }
+    records = {}
+    for entity_ in entities:
+        new_records = [field.extract_fields(entity_.fields, row) for row in data]
+        if entity_.name in records:
+            records[entity_.name].extend(new_records)
+        else:
+            records[entity_.name] = new_records
+    return records
 
 
 def _create_entities(pipeline_: Pipeline) -> list[Entity]:
-    return [Entity(name.upper(), entity_config) for name, entity_config in pipeline_.config['entity'].items()]
+    return [Entity(entity['type'].upper(), entity['mapping']) for entity in pipeline_.config['entity']]

@@ -3,29 +3,58 @@
     "source": "topology_region_source",
     "pipeline_id": "topology_region",
     "interval": 300,
-    "entity": {
-      "region": {
-        "id": {
-          "type": "variable",
-          "value_path": "Full Name"
-        },
-        "name": {
-          "type": "variable",
-          "value_path": "Full Name"
-        },
-        "type": {
-          "type": "constant",
-          "value": "Province"
+    "entity": [
+      {
+        "type": "region",
+        "mapping": {
+          "id": {
+            "type": "variable",
+            "value_path": "Full Name"
+          },
+          "name": {
+            "type": "variable",
+            "value_path": "Full Name"
+          },
+          "type": {
+            "type": "constant",
+            "value": "Province"
+          }
+        }
+      },
+      {
+        "type" : "region",
+        "mapping" : {
+          "id": {
+            "type": "variable",
+            "value_path": [
+              "Full Name",
+              "Full Name"
+            ],
+            "concat_by": ""
+          },
+          "name": {
+            "type": "variable",
+            "value_path": "Full Name"
+          },
+          "type": {
+            "type": "constant",
+            "value": "Province"
+          },
+          "parentRegionId" : {
+            "type": "variable",
+            "value_path": "Full Name"
+          }
         }
       }
-    }
+    ]
   },
   {
     "source": "topology_site_source",
     "pipeline_id": "topology_site",
     "interval": 300,
-    "entity": {
-      "site": {
+    "entity": [{
+      "type": "site",
+      "mapping": {
         "id": {
           "type": "variable",
           "value_path": "attributes.name"
@@ -79,7 +108,7 @@
           "concat_by": ", "
         }
       }
-    },
+    }],
     "lookups": {
       "region": {
         "type": "file",

@@ -10,16 +10,16 @@ from agent.pipeline.config.validators import Validator, validators
 class TopologyValidator(Validator):
     def validate(self, pipeline_: Pipeline):
         errors = []
-        for entity_type, entity in pipeline_.config['entity'].items():
-            if entity_type.upper() not in topology.ENTITIES:
-                errors.append(f'Invalid entity type: {entity_type}')
+        for entity in pipeline_.config['entity']:
+            if entity['type'].upper() not in topology.ENTITIES:
+                errors.append(f'Invalid entity type: {entity["type"]}')
                 continue
-            with open(self._get_validation_file_path(entity_type)) as schema_file:
+            with open(self._get_validation_file_path(entity['type'])) as schema_file:
                 json_schema = json.load(schema_file)
                 try:
-                    jsonschema.validate(entity, json_schema)
+                    jsonschema.validate(entity['mapping'], json_schema)
                 except jsonschema.ValidationError as e:
-                    errors.append(f'Invalid entity config for {entity_type}: {e}')
+                    errors.append(f'Invalid entity config for {entity["type"]}: {e}')
         if errors:
             raise validators.ValidationException('\n'.join(errors))
 

@@ -2,7 +2,7 @@
   "type": "object",
   "properties": {
     "interval": {"type": "integer"},
-    "entity": {"type": "object"},
+    "entity": {"type": "array"},
     "lookups": {"type": "object"}
   },
   "required": ["interval", "entity"]
