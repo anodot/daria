@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-set -e
 
 function check_cmd() {
     cmd=$(echo $1 | awk ' { print $1; } ')
@@ -10,16 +9,27 @@ function check_cmd() {
     fi
 }
 
-# checks to make sure docker and docker-compose are available   
+# checks to make sure docker is available
 check_cmd "docker version"
-check_cmd "docker-compose --version"
+
+# If compose is included in docker, then uses it, else uses docker-compose
+$(docker compose version)
+if [[ $? == 0 ]]; then
+  COMPOSE=(docker compose)
+else
+  check_cmd "docker-compose --version"
+  COMPOSE=(docker-compose)
+fi
+echo "Using \"$COMPOSE\" for script"
+
+set -e
 
 if [[ $1 == 'install' ]]; then
-  docker-compose pull && docker-compose up -d
+  $COMPOSE pull && docker compose up -d
 elif [[ $1 == 'upgrade' ]]; then
-  docker-compose pull && docker-compose up -d && sleep 30 && docker exec -i anodot-agent agent pipeline update
+  $COMPOSE pull && docker compose up -d && sleep 30 && docker exec -i anodot-agent agent pipeline update
 elif [[ $1 == 'run' ]]; then
-    docker-compose up -d && docker exec -it anodot-agent bash
+  $COMPOSE up -d && docker exec -it anodot-agent bash
 elif [[ $1 == 'set-heap-size' ]]; then
   if ! [[ $2 =~ ^[0-9]+$ ]]; then
     echo "Please use only integers to set the heap size"
