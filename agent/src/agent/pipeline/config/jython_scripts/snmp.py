@@ -26,15 +26,10 @@ def get_now():
 
 
 def main():
-    if sdc.lastOffsets.containsKey(entityName):
-        offset = int(float(sdc.lastOffsets.get(entityName)))
-    else:
-        offset = get_now()
-
+    offset = get_now()
     sdc.log.info('OFFSET: ' + str(offset))
 
     while True:
-        now = get_now()
         if sdc.isStopped():
             return
         while offset > get_now():
@@ -45,7 +40,7 @@ def main():
                 return
 
         batch = sdc.createBatch()
-        res = requests.get(sdc.userParams['SNMP_SOURCE_URL'], timeout=60)
+        res = requests.get(sdc.userParams['SNMP_SOURCE_URL'], timeout=45)
         res.raise_for_status()
         for metric in res.json():
             metric['timestamp'] = offset
