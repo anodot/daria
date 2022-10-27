@@ -15,7 +15,7 @@
       "hosts": ["snmpsim:1161", "snmpsim:1161", "1.2.3.4:161"],
       "version": "v2c",
       "read_community": "public",
-      "query_timeout": 30
+      "query_timeout": 10
     }
   }
 ]
