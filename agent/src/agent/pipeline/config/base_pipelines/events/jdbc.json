@@ -606,7 +606,7 @@
         "value" : [ ]
       }, {
         "name" : "stageOnRecordError",
-        "value" : "TO_ERROR"
+        "value" : "DISCARD"
       }, {
         "name" : "stageRequiredFields",
         "value" : [ ]
