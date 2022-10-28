@@ -21,6 +21,10 @@ services:
       SDC_CONF_RUNNER_THREAD_POOL_SIZE: "2000"
   #    extra_hosts:
   #      - "daria-test2:10.0.0.28"
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
 
   #  creating second streamsets to run tests on multiple instances
   dc2:
@@ -37,6 +41,10 @@ services:
       SDC_JAVA_OPTS: "-Xmx4096m -Xms4096m -server"
       SDC_CONF_PRODUCTION_MAXBATCHSIZE: "50"
       SDC_CONF_RUNNER_THREAD_POOL_SIZE: "2000"
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
 
   agent:
     build: agent
@@ -66,6 +74,10 @@ services:
       #      - ./scripts:/usr/src/app/scripts
       - dummy-destination-data:/output
       - ./test-datasets:/home/test-datasets
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
 
   db:
     container_name: db
@@ -79,6 +91,10 @@ services:
       POSTGRES_DB: agent
     volumes:
       - /var/lib/postgresql/data
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
 
   mongo:
     image: mongo:4.4.1
@@ -92,6 +108,10 @@ services:
       - /data/db
       - ./test-datasets:/home
       - ./volumes/mongo-initdb:/docker-entrypoint-initdb.d
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
 
   zookeeper:
     image: wurstmeister/zookeeper
@@ -133,6 +153,10 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./test-datasets:/home
   #      - ./certs:/certs
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
 
   influx:
     image: influxdb:1.8.3
@@ -149,6 +173,10 @@ services:
       INFLUXDB_READ_USER: ro
       INFLUXDB_READ_USER_PASSWORD: roro
       INFLUXDB_HTTP_FLUX_ENABLED: 'true'
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
 
   influx-2:
     image: influxdb:2.0.7
@@ -165,11 +193,19 @@ services:
       DOCKER_INFLUXDB_INIT_ORG: test
       DOCKER_INFLUXDB_INIT_BUCKET: test
       DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: token
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
 
   squid:
     image: datadog/squid
     extra_hosts:
       - "daria-test2:10.0.0.28"
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
 
   mysql:
     image: mysql:8.0.21
@@ -184,6 +220,10 @@ services:
     volumes:
       - /var/lib/mysql
       - ./volumes/mysql-initdb:/docker-entrypoint-initdb.d
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
 
   postgres:
     image: postgres:9.6.19
@@ -193,6 +233,10 @@ services:
     volumes:
       - /var/lib/postgresql/data
       - ./volumes/postgres-initdb:/docker-entrypoint-initdb.d
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
 
   es:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
@@ -206,15 +250,27 @@ services:
       - /usr/share/elasticsearch/data
     ports:
       - "9200:9200"
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
 
   dummy_destination:
     build: containers/dummy_destination
     container_name: dummy_destination
     volumes:
       - dummy-destination-data:/app/log
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
 
   sage:
     build: containers/sage_mock
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
 
   victoriametrics:
     container_name: victoriametrics
@@ -228,6 +284,10 @@ services:
       - '--httpListenAddr=:8428'
       - '--retentionPeriod=600'
     restart: always
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
 
   zabbix-server:
     image: zabbix/zabbix-server-mysql:alpine-4.4.10
@@ -237,6 +297,10 @@ services:
       DB_SERVER_HOST: mysql
       MYSQL_USER: "user"
       MYSQL_PASSWORD: "password"
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
 
   zabbix-web:
     image: zabbix/zabbix-web-nginx-mysql:alpine-4.4.10
@@ -248,24 +312,40 @@ services:
       DB_SERVER_HOST: mysql
       MYSQL_USER: "user"
       MYSQL_PASSWORD: "password"
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
 
   zabbix-agent:
     image: zabbix/zabbix-agent:alpine-4.4.10
     hostname: zabbixagent
     depends_on:
       - zabbix-server
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
 
   clickhouse:
     image: yandex/clickhouse-server
     volumes:
       - /var/lib/clickhouse
       - ./volumes/clickhouse-initdb:/docker-entrypoint-initdb.d
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
 
   snmpsim:
     build: containers/snmpsim
     container_name: snmpsim
     ports:
       - "1161:1161/udp"
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
 
 volumes:
   sdc-data:
