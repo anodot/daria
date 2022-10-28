@@ -11,7 +11,7 @@ def validate_event(event, record):
     keys = [key for key in event]
     if len(keys) == 0:
         return False
-    for required_key in sdc.userParams["REQUIRED_FIELDS"]:
+    for required_key in sdc.userParams.get("REQUIRED_FIELDS", []):
         if required_key not in keys:
             sdc.error.write(record, "Record Error: {} is required".format(sdc.userParams["REQUIRED_FIELDS"]))
             return False
