@@ -25,9 +25,9 @@ echo "Using \"$COMPOSE\" for script"
 set -e
 
 if [[ $1 == 'install' ]]; then
-  $COMPOSE pull && docker compose up -d
+  $COMPOSE pull && $COMPOSE up -d
 elif [[ $1 == 'upgrade' ]]; then
-  $COMPOSE pull && docker compose up -d && sleep 30 && docker exec -i anodot-agent agent pipeline update
+  $COMPOSE pull && $COMPOSE up -d && sleep 30 && docker exec -i anodot-agent agent pipeline update
 elif [[ $1 == 'run' ]]; then
   $COMPOSE up -d && docker exec -it anodot-agent bash
 elif [[ $1 == 'set-heap-size' ]]; then
