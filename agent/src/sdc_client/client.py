@@ -130,7 +130,8 @@ def get_all_pipeline_statuses() -> dict:
     statuses = {}
     for streamsets in inject.instance(IStreamSetsProvider).get_all():
         client = _StreamSetsApiClient(streamsets)
-        statuses = {**statuses, **client.get_pipeline_statuses()}
+        with contextlib.suppress(Exception):
+            statuses = {**statuses, **client.get_pipeline_statuses()}
     return statuses
 
 
