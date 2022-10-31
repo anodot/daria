@@ -119,6 +119,9 @@ class _BaseStreamSetsApiClient(ABC):
             params={'stageInstanceName': stage_name}
         )
 
+    def system_stats(self):
+        return self.session.get(self._build_url('system', 'stats'))
+
 
 class ApiClientException(Exception):
     def __init__(self, message: str, exception_type: str = ''):
