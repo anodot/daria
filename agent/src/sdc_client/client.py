@@ -1,3 +1,4 @@
+import contextlib
 import json
 import re
 import time
@@ -112,8 +113,17 @@ def get_all_pipelines() -> List[dict]:
     pipelines = []
     for streamsets in inject.instance(IStreamSetsProvider).get_all():
         client = _StreamSetsApiClient(streamsets)
-        pipelines += client.get_pipelines()
+        with contextlib.suppress(Exception):
+            pipelines += client.get_pipelines()
     return pipelines
+
+
+def get_pipeline_streamsets_stat(pipeline: IPipeline) -> dict:
+    try:
+        stat = _client(pipeline).system_stats()
+    except Exception:
+        stat = None
+    return stat
 
 
 def get_all_pipeline_statuses() -> dict:

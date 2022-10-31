@@ -50,6 +50,9 @@ def _restore_pipelines():
     existing, not_existing = _get_pipelines()
     for pipeline_ in not_existing:
         click.echo(f'Creating pipeline `{pipeline_.name}`')
+        if not sdc_client.get_pipeline_streamsets_stat(pipeline_):
+            click.secho(f'StreamSets `{pipeline_.streamsets.get_url()}` not available', err=True, fg='red')
+            continue
         pipeline.manager.create(pipeline_)
         _update_status(pipeline_)
         click.secho('Success', fg='green')
