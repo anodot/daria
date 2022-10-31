@@ -6,7 +6,7 @@ import inject
 
 from enum import Enum
 from datetime import datetime
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Union
 from sdc_client import balancer
 from sdc_client.api_client import _StreamSetsApiClient, ApiClientException, PipelineFreezeException
 from sdc_client.interfaces import ILogger, IStreamSets, IStreamSetsProvider, IPipeline
@@ -118,12 +118,10 @@ def get_all_pipelines() -> List[dict]:
     return pipelines
 
 
-def get_pipeline_streamsets_stat(pipeline: IPipeline) -> dict:
-    try:
-        stat = _client(pipeline).system_stats()
-    except Exception:
-        stat = None
-    return stat
+def get_pipeline_streamsets_stat(pipeline: IPipeline) -> Union[dict, None]:
+    with contextlib.suppress(Exception):
+        return _client(pipeline).system_stats()
+    return None
 
 
 def get_all_pipeline_statuses() -> dict:
