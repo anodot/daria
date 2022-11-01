@@ -168,7 +168,7 @@ services:
       DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: token
 
   squid:
-    image: datadog/squid
+    image: ubuntu/squid
     container_name: squid
     extra_hosts:
       - "daria-test2:10.0.0.28"
