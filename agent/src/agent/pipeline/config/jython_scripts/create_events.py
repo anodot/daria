@@ -8,12 +8,17 @@ finally:
 
 
 def validate_event(event, record):
-    keys = [key for key in event]
+    keys = list(event)
     if len(keys) == 0:
         return False
     for required_key in sdc.userParams.get("REQUIRED_FIELDS", []):
         if required_key not in keys:
-            sdc.error.write(record, "Record Error: {} is required".format(sdc.userParams["REQUIRED_FIELDS"]))
+            sdc.error.write(
+                record,
+                "Record Error: missing {} field. {} fields are required".format(
+                    required_key, sdc.userParams["REQUIRED_FIELDS"]
+                )
+            )
             return False
     return True
 
