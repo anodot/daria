@@ -14,6 +14,10 @@ services:
       nofile:
         soft: 32768
         hard: 32768
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
 
   agent:
     image: anodot/daria:latest
@@ -34,6 +38,10 @@ services:
       - 8080:8080
     volumes:
       - ./backup-data:/usr/src/app/backup-data
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
 
   db:
     image: postgres
@@ -44,6 +52,10 @@ services:
       POSTGRES_DB: agent
     volumes:
       - agent-data:/var/lib/postgresql/data
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
 
 volumes:
   sdc-data:
