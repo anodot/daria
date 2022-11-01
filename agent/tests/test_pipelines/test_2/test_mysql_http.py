@@ -1,5 +1,6 @@
 import pytest
-
+from datetime import datetime
+from pytz import timezone
 from ..test_zpipeline_base import TestPipelineBase, get_schema_id
 from ...conftest import get_output
 
@@ -73,8 +74,15 @@ class TestMySQL(TestPipelineBase):
         super().test_force_stop(cli_runner, name, check_output_file_name)
 
     def test_watermark(self):
+        # 1512950400 - marks end of interval (end of the day) in UTC
         schema_id = get_schema_id('test_mysql_advanced')
         assert get_output(f'{schema_id}_watermark.json') == {'watermark': 1512950400.0, 'schemaId': schema_id}
         schema_id = get_schema_id('test_watermark_local_timezone')
         # 1512943200 is 2 hours earlier than 1512950400
         assert get_output(f'{schema_id}_watermark.json') == {'watermark': 1512943200.0, 'schemaId': schema_id}
+        # 1512943200 is 2 hours earlier than 1512950400 - end of the day 'Europe/Berlin', UTC+2 if DST is in effect
+        # 1512946800 is 1 hours earlier than 1512950400 - end of the day 'Europe/Berlin', UTC+1 if DST is not in effect
+        end_day = datetime.fromtimestamp(1512950400.0).astimezone(timezone('UTC'))
+        utc_offset = datetime.now().astimezone(timezone('Europe/Berlin')).utcoffset()
+        expect_watermark = (end_day - utc_offset).timestamp()
+        assert get_output(f'{schema_id}_watermark.json') == {'watermark': expect_watermark, 'schemaId': schema_id}
