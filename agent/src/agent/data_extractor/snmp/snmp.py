@@ -63,6 +63,7 @@ def _fetch_raw_data(pipeline_: Pipeline) -> list:
     snmp_version = 0 if pipeline_.source.version == 'v1' else 1
     var_binds_groups = []
     for host in pipeline_.source.hosts:
+        logger_.debug(f'_fetch_raw_data at {str(time.asctime())} in {host}')
         host_ = host if '://' in host else f'//{host}'
         url = urlparse(host_)
         request_var_binds = [ObjectType(ObjectIdentity(oid)) for oid in pipeline_.config['oids']]
@@ -76,6 +77,7 @@ def _fetch_data(pipeline_: Pipeline) -> list:
     snmp_version = 0 if pipeline_.source.version == 'v1' else 1
     var_binds_groups = []
     for host in pipeline_.source.hosts:
+        logger_.debug(f'_fetch_data at {str(time.asctime())} in {host}')
         host_ = host if '://' in host else f'//{host}'
         url = urlparse(host_)
 
@@ -96,6 +98,7 @@ def _fetch_table_data(pipeline_: Pipeline) -> list:
     snmp_version = 0 if pipeline_.source.version == 'v1' else 1
     var_binds_groups = []
     for host in pipeline_.source.hosts:
+        logger_.debug(f'_fetch_table_data at {str(time.asctime())} in {host}')
         host_ = host if '://' in host else f'//{host}'
         url = urlparse(host_)
 
