@@ -40,7 +40,7 @@ def main():
                 return
 
         batch = sdc.createBatch()
-        res = requests.get(sdc.userParams['SNMP_SOURCE_URL'], timeout=45)
+        res = requests.get(sdc.userParams['SNMP_SOURCE_URL'], timeout=int(sdc.userParams['QUERY_TIMEOUT']))
         res.raise_for_status()
         for metric in res.json():
             metric['timestamp'] = offset

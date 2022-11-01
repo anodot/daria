@@ -135,7 +135,7 @@ def _execute_cmd(name, pipeline_, snmp_version, url, var_binds):
         SnmpEngine(),
         CommunityData(pipeline_.source.read_community, mpModel=snmp_version),
         UdpTransportTarget((url.hostname, url.port or SNMP_DEFAULT_PORT),
-                           timeout=pipeline_.source.query_timeout,
+                           timeout=pipeline_.source.snmp_timeout,
                            retries=0),
         ContextData(),
         *var_binds,
