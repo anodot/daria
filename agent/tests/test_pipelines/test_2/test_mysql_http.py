@@ -82,7 +82,7 @@ class TestMySQL(TestPipelineBase):
         assert get_output(f'{schema_id}_watermark.json') == {'watermark': 1512943200.0, 'schemaId': schema_id}
         # 1512943200 is 2 hours earlier than 1512950400 - end of the day 'Europe/Berlin', UTC+2 if DST is in effect
         # 1512946800 is 1 hours earlier than 1512950400 - end of the day 'Europe/Berlin', UTC+1 if DST is not in effect
-        end_day = datetime.fromtimestamp(1512950400.0).astimezone(timezone('UTC'))
+        end_day = datetime.fromtimestamp(1512950400).astimezone(timezone('UTC'))
         utc_offset = datetime.now().astimezone(timezone('Europe/Berlin')).utcoffset()
         expect_watermark = (end_day - utc_offset).timestamp()
         assert get_output(f'{schema_id}_watermark.json') == {'watermark': expect_watermark, 'schemaId': schema_id}
