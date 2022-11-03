@@ -183,7 +183,7 @@ def pipeline_offset_changed(pipeline_id: str):
 @needs_pipeline
 def pipeline_offset_get(pipeline_id: str):
     pipeline_ = pipeline.repository.get_by_id(pipeline_id)
-    return pipeline_.offset.offset if pipeline_.offset else jsonify({})
+    return jsonify({'timestamp': pipeline_.offset.timestamp}) if pipeline_.offset else jsonify({})
 
 
 @pipelines.route('/pipelines/<pipeline_id>/watermark', methods=['POST'])
