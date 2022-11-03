@@ -51,6 +51,9 @@ def populate_pipeline_from_file(file):
         try:
             if 'pipeline_id' not in config:
                 raise Exception(f'Pipeline configs must contain a `pipeline_id` field, check {file.name}')
+            if config.get('transform'):
+                with open(config['transform']['file'], 'w+') as f:
+                    f.write(config['transform']['config'])
             if pipeline.repository.exists(config['pipeline_id']):
                 pipeline.json_builder.edit(config)
             else:

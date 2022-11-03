@@ -111,7 +111,7 @@ def export(dir_path):
 
     if streamsets.repository.get_all():
         with open(os.path.join(dir_path, 'streamsets.json'), 'w+') as f:
-            json.dump([ss.to_dict() for ss in streamsets.repository.get_all()], f)
+            json.dump([ss.to_dict() for ss in streamsets.repository.get_all()], f, indent=4)
 
     click.echo(f'All streamsets exported to the `{dir_path}` directory')
 

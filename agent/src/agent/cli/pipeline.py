@@ -346,7 +346,7 @@ def export(dir_path):
 
     for pipeline_ in pipeline.repository.get_all():
         with open(os.path.join(dir_path, f'{pipeline_.name}.json'), 'w+') as f:
-            json.dump([pipeline_.export()], f)
+            json.dump([pipeline_.export()], f, indent=4)
 
     click.echo(f'All pipelines exported to the `{dir_path}` directory')
 
