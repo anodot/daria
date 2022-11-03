@@ -42,8 +42,8 @@ def query_missing_data(main_offset, main_interval):
 
     tmp_offset = db_offset
     tmp_interval = get_interval_missing_data()
-    while main_offset > tmp_offset:
-        sdc.log.debug('PROCESSING MISSED DATA: ' 'from ' + str(db_offset) + ' to ' + str(db_offset + main_interval))
+    while tmp_offset < main_offset:
+        sdc.log.info('PROCESSING MISSED DATA: ' 'from ' + str(tmp_offset) + ' to ' + str(tmp_offset + tmp_interval))
         cur_batch = sdc.createBatch()
         record = sdc.createRecord('record created ' + str(datetime.now()))
         record.value = {'last_timestamp': int(db_offset)}
@@ -59,7 +59,7 @@ def get_db_offset():
         data = res.json()
         if not data or type(data) == str:
             raise ValueError('No offset found in DB')
-        return int(float(list(data['offsets'].values())[-1]))
+        return int(float(data['timestamp']))
     except (requests.ConnectionError, requests.HTTPError, ValueError) as e:
         sdc.log.error(str(e))
         return None
@@ -83,13 +83,14 @@ def main():
     while True:
         if sdc.isStopped():
             break
+
+        if sdc.userParams['QUERY_MISSING_DATA_INTERVAL'] and not sdc.isPreview():
+            query_missing_data(int(offset), interval.total_seconds())
+
         while offset > get_now_with_delay() - interval.total_seconds():
             time.sleep(2)
             if sdc.isStopped():
                 return
-
-        if sdc.userParams['QUERY_MISSING_DATA_INTERVAL']:
-            query_missing_data(int(offset), interval.total_seconds())
 
         cur_batch = sdc.createBatch()
         record = sdc.createRecord('record created ' + str(datetime.now()))
