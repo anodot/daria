@@ -5,6 +5,7 @@ try:
     import time
     import os
     import sys
+    import math
     from datetime import datetime, timedelta
 
     sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))
@@ -40,16 +41,18 @@ def query_missing_data(main_offset, main_interval):
     if not db_offset:
         return
 
-    tmp_offset = db_offset
-    tmp_interval = get_interval_missing_data()
-    while tmp_offset < main_offset:
-        sdc.log.info('PROCESSING MISSED DATA: ' 'from ' + str(tmp_offset) + ' to ' + str(tmp_offset + tmp_interval))
+    # compute start timestamp of the bucket where the latest db_offset is
+    start = main_offset - main_interval * math.ceil((main_offset - db_offset) / main_interval)
+
+    # search missing data points by buckets
+    while start < main_offset - main_interval:
+        sdc.log.info('Processing missed data: from {} to {}'.format(str(datetime.fromtimestamp(start)), str(datetime.fromtimestamp(start + main_interval))))
         cur_batch = sdc.createBatch()
         record = sdc.createRecord('record created ' + str(datetime.now()))
-        record.value = {'last_timestamp': int(db_offset)}
-        tmp_offset += tmp_interval
+        record.value = {'last_timestamp': int(start)}
         cur_batch.add(record)
-        cur_batch.process(entityName, str(db_offset))
+        cur_batch.process(entityName, str(start))
+        start += main_interval
 
 
 def get_db_offset():
@@ -94,6 +97,7 @@ def main():
 
         cur_batch = sdc.createBatch()
         record = sdc.createRecord('record created ' + str(datetime.now()))
+        sdc.log.debug('last_timestamp: {}-{}'.format(str(datetime.fromtimestamp(int(offset))), str(offset)))
         record.value = {'last_timestamp': int(offset)}
         offset += interval.total_seconds()
         cur_batch.add(record)
