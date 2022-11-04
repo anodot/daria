@@ -53,6 +53,9 @@ class Validator:
     def validate_connection(self):
         self.connection_validator.validate(self.source)
 
+    def validate_query(self, query):
+        pass
+
 
 class InfluxValidator(Validator):
     VALIDATION_SCHEMA_FILE = 'influx.json'
@@ -259,6 +262,33 @@ class SageValidator(Validator):
 
 class PromQLValidator(Validator):
     VALIDATION_SCHEMA_FILE = 'promql.json'
+
+    def validate_connection(self):
+        try:
+            url = urllib.parse.urljoin(
+                self.source.config['url'],
+                'api/v1/labels'
+            )
+            response = requests.get(url)
+            response.raise_for_status()
+        except Exception as e:
+            raise ValidationException(
+                f'Failed to connect to the {self.source.config["url"]}. Make sure you provided correct url\n'
+                + str(e)
+            )
+
+    def validate_query(self, query):
+        try:
+            url = self.source.config["url"] + '/api/v1/query?' + urllib.parse.urlencode({
+                'query': query.encode('utf-8'),
+            })
+            response = requests.get(url)
+            response.raise_for_status()
+        except Exception as e:
+            raise ValidationException(
+                f'Failed the query: "{query}". Make sure you provided correct query\n'
+                + str(e)
+            )
 
 
 class RRDValidator(Validator):
