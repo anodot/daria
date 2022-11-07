@@ -20,15 +20,19 @@ def get_interval():
 
 
 def get_interval_missing_data():
-    return int(sdc.userParams['QUERY_MISSING_DATA_INTERVAL'])
+    return int(sdc.userParams['QUERY_MISSING_DATA_INTERVAL'] or 0)
 
 
-def get_now_with_delay():
+def get_now():
     if sdc.userParams['WATERMARK_IN_LOCAL_TIMEZONE'] == 'True':
         now = int(time.mktime(datetime.now(pytz.timezone(sdc.userParams['TIMEZONE'])).timetuple()))
     else:
         now = int(time.time())
-    return now - int(sdc.userParams['DELAY_IN_SECONDS'])
+    return now
+
+
+def get_now_with_delay():
+    return get_now() - int(sdc.userParams['DELAY_IN_SECONDS'])
 
 
 def to_timestamp(date):
@@ -37,9 +41,11 @@ def to_timestamp(date):
 
 
 def query_missing_data(main_offset, main_interval):
+    now = get_now()
+    sdc.log.info('Start query_missing_data at: {}'.format(str(datetime.fromtimestamp(now))))
     db_offset = get_db_offset()
     if not db_offset:
-        return
+        return now
 
     # compute start timestamp of the bucket where the latest db_offset is
     start = main_offset - main_interval * math.ceil((main_offset - db_offset) / main_interval)
@@ -53,6 +59,8 @@ def query_missing_data(main_offset, main_interval):
         cur_batch.add(record)
         cur_batch.process(entityName, str(start))
         start += main_interval
+
+    return now
 
 
 def get_db_offset():
@@ -73,6 +81,8 @@ entityName = ''
 
 def main():
     interval = timedelta(seconds=get_interval())
+    missing_data_last_ts = 0
+    missing_data_interval = get_interval_missing_data()
 
     if sdc.lastOffsets.containsKey(entityName):
         offset = int(float(sdc.lastOffsets.get(entityName)))
@@ -87,10 +97,10 @@ def main():
         if sdc.isStopped():
             break
 
-        if sdc.userParams['QUERY_MISSING_DATA_INTERVAL'] and not sdc.isPreview():
-            query_missing_data(int(offset), interval.total_seconds())
-
         while offset > get_now_with_delay() - interval.total_seconds():
+            if missing_data_interval and get_now() > missing_data_last_ts + missing_data_interval and not sdc.isPreview():
+                missing_data_last_ts = query_missing_data(int(offset), interval.total_seconds())
+
             time.sleep(2)
             if sdc.isStopped():
                 return
