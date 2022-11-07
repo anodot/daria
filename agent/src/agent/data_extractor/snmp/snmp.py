@@ -63,6 +63,7 @@ def _fetch_raw_data(pipeline_: Pipeline) -> list:
     snmp_version = 0 if pipeline_.source.version == 'v1' else 1
     var_binds_groups = []
     for host in pipeline_.source.hosts:
+        logger_.debug(f'_fetch_raw_data at {str(time.asctime())} in {host}')
         host_ = host if '://' in host else f'//{host}'
         url = urlparse(host_)
         request_var_binds = [ObjectType(ObjectIdentity(oid)) for oid in pipeline_.config['oids']]
@@ -76,6 +77,7 @@ def _fetch_data(pipeline_: Pipeline) -> list:
     snmp_version = 0 if pipeline_.source.version == 'v1' else 1
     var_binds_groups = []
     for host in pipeline_.source.hosts:
+        logger_.debug(f'_fetch_data at {str(time.asctime())} in {host}')
         host_ = host if '://' in host else f'//{host}'
         url = urlparse(host_)
 
@@ -96,6 +98,7 @@ def _fetch_table_data(pipeline_: Pipeline) -> list:
     snmp_version = 0 if pipeline_.source.version == 'v1' else 1
     var_binds_groups = []
     for host in pipeline_.source.hosts:
+        logger_.debug(f'_fetch_table_data at {str(time.asctime())} in {host}')
         host_ = host if '://' in host else f'//{host}'
         url = urlparse(host_)
 
@@ -135,7 +138,7 @@ def _execute_cmd(name, pipeline_, snmp_version, url, var_binds):
         SnmpEngine(),
         CommunityData(pipeline_.source.read_community, mpModel=snmp_version),
         UdpTransportTarget((url.hostname, url.port or SNMP_DEFAULT_PORT),
-                           timeout=pipeline_.source.query_timeout,
+                           timeout=pipeline_.source.snmp_timeout,
                            retries=0),
         ContextData(),
         *var_binds,
