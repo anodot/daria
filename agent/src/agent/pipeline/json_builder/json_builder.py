@@ -55,7 +55,6 @@ def _build_multiple(configs: list, build_func: Callable) -> List[Pipeline]:
 
 def build(config: dict) -> Pipeline:
     _validate_config_for_create(config)
-    source_ = source.repository.get_by_name(config.get('source'))
     pipeline_ = pipeline.manager.create_pipeline(config['pipeline_id'], config['source'])
     return _build(config, pipeline_)
 
