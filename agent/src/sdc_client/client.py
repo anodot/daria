@@ -36,21 +36,24 @@ def _get_client(streamsets: IStreamSets) -> _StreamSetsApiClient:
     return _clients[streamsets.get_id()]
 
 
-def _get_streamsets_for_pipeline(pipeline: IPipeline):
+def get_streamsets_for_pipeline(pipeline: IPipeline):
     streamsets_pipelines = balancer.get_streamsets_pipelines()
-
-    streamsets_with_preferred_type = {streamsets_: streamsets_pipelines[streamsets_]
-                                      for streamsets_ in streamsets_pipelines
-                                      if streamsets_.get_preferred_type() == pipeline.source_type
+    streamsets_with_preferred_type = {
+        streamsets_: streamsets_pipelines[streamsets_] for streamsets_ in streamsets_pipelines
+        if streamsets_.get_preferred_type() == pipeline.source_type
     }
     streamsets_to_get = streamsets_with_preferred_type or streamsets_pipelines
-    return balancer.least_loaded_streamsets(streamsets_to_get)
+    available_streamsets = {
+        streamsets_: streamsets_to_get[streamsets_] for streamsets_ in streamsets_to_get
+        if get_streamsets_stat(streamsets_)
+    }
+    return balancer.least_loaded_streamsets(available_streamsets)
 
 
 def create(pipeline: IPipeline):
     # todo remove this if check and make streamsets mandatory after that fix todos above
     if not pipeline.get_streamsets():
-        pipeline.set_streamsets(_get_streamsets_for_pipeline(pipeline))
+        pipeline.set_streamsets(get_streamsets_for_pipeline(pipeline))
     try:
         _client(pipeline).create_pipeline(pipeline.get_id())
     except ApiClientException as e:
@@ -121,6 +124,12 @@ def get_all_pipelines() -> List[dict]:
 def get_pipeline_streamsets_stat(pipeline: IPipeline) -> Union[dict, None]:
     with contextlib.suppress(Exception):
         return _client(pipeline).system_stats()
+    return None
+
+
+def get_streamsets_stat(streamsets: IStreamSets) -> Union[dict, None]:
+    with contextlib.suppress(Exception):
+        return _get_client(streamsets).system_stats()
     return None
 
 

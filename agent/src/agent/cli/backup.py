@@ -38,21 +38,25 @@ def database(dump_file):
 
 
 @restore.command()
-def streamsets():
+@click.option('--use-available', is_flag=True, default=False)
+def streamsets(use_available: bool):
     """
     Restore StreamSets states with its pipelines from DataBase.
     """
-    _restore_pipelines()
+    _restore_pipelines(use_available)
     click.secho('StreamSets pipelines successfully restored', fg='green')
 
 
-def _restore_pipelines():
+def _restore_pipelines(use_available):
     existing, not_existing = _get_pipelines()
     for pipeline_ in not_existing:
         click.echo(f'Creating pipeline `{pipeline_.name}`')
         if not sdc_client.get_pipeline_streamsets_stat(pipeline_):
-            click.secho(f'StreamSets `{pipeline_.streamsets.get_url()}` not available', err=True, fg='red')
-            continue
+            if use_available:
+                pipeline_.set_streamsets(sdc_client.get_streamsets_for_pipeline(pipeline_))
+            else:
+                click.secho(f'StreamSets `{pipeline_.streamsets.get_url()}` not available', err=True, fg='red')
+                continue
         pipeline.manager.create(pipeline_)
         _update_status(pipeline_)
         click.secho('Success', fg='green')
