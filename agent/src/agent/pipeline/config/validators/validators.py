@@ -3,6 +3,9 @@ from agent.pipeline.config import validators
 from agent.pipeline.validators import elastic_query, jdbc_query
 from agent import source, pipeline
 
+import requests
+import urllib
+
 
 class Validator:
     @staticmethod
@@ -31,6 +34,23 @@ class JDBCValidator(Validator):
             raise ValidationException(errors)
 
 
+class PromQLValidator(Validator):
+    @staticmethod
+    def validate(pipeline_):
+        try:
+            query = pipeline_.config['query']
+            url = pipeline_.source_.config["url"] + '/api/v1/query?' + urllib.parse.urlencode({
+                'query': query.encode('utf-8'),
+            })
+            response = requests.get(url)
+            response.raise_for_status()
+        except Exception as e:
+            raise ValidationException(
+                f'Failed the query: "{query}". Make sure you provided correct query\n'
+                + str(e)
+            )
+
+
 def get_config_validator(pipeline_: Pipeline) -> Validator:
     jdbc_sources = [
         source.TYPE_DATABRICKS,
@@ -48,6 +68,8 @@ def get_config_validator(pipeline_: Pipeline) -> Validator:
         return ElasticValidator()
     if pipeline_.source.type in jdbc_sources:
         return JDBCValidator()
+    if pipeline_.source.type == source.TYPE_VICTORIA:
+        return PromQLValidator()
     return Validator()
 
 

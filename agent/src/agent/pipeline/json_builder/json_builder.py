@@ -12,11 +12,6 @@ from agent.pipeline import Pipeline, TopologyPipeline
 
 logger_ = get_logger(__name__, stdout=True)
 
-# List of souses than required to validate query before create pipeline
-SOURCES_VALIDATE_QUERY = [
-    source.PromQLSource,
-]
-
 
 def build_using_file(file) -> List[Pipeline]:
     return build_multiple(extract_configs(file))
@@ -61,8 +56,6 @@ def _build_multiple(configs: list, build_func: Callable) -> List[Pipeline]:
 def build(config: dict) -> Pipeline:
     _validate_config_for_create(config)
     source_ = source.repository.get_by_name(config.get('source'))
-    if source_.__class__ in SOURCES_VALIDATE_QUERY:
-        source.validator.get_validator(source_).validate_query(config['query'])
     pipeline_ = pipeline.manager.create_pipeline(config['pipeline_id'], config['source'])
     return _build(config, pipeline_)
 
