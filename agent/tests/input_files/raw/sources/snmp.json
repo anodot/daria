@@ -5,7 +5,8 @@
     "config": {
       "hosts": ["http://snmpsim:1161"],
       "read_community": "public",
-      "query_timeout": 30
+      "query_timeout": 30,
+      "snmp_timeout": 10
     }
   }
 ]
