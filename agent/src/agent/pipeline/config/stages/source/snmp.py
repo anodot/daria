@@ -19,6 +19,10 @@ class SNMP(JythonDataExtractorSource):
                 'key': 'SCHEMA_ID',
                 'value': str(self.pipeline.get_schema_id())
             },
+            {
+                'key': 'QUERY_TIMEOUT',
+                'value': str(self.pipeline.source.query_timeout)
+            },
         ]
 
 
@@ -35,5 +39,9 @@ class SNMPRaw(JythonDataExtractorSource):
             {
                 'key': 'INTERVAL_IN_SECONDS',
                 'value': str(self.pipeline.interval)
+            },
+            {
+                'key': 'QUERY_TIMEOUT',
+                'value': str(self.pipeline.source.query_timeout)
             },
         ]

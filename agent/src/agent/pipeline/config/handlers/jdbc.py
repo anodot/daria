@@ -42,7 +42,7 @@ class JDBCEventsConfigHandler(ConfigHandler):
     stages_to_override = {
         'offset': stages.jdbc.JDBCOffsetScript,
         'source': stages.source.jdbc.JDBCSource,
-        'JythonEvaluator_01': stages.jython.CreateEvents,
+        'JythonEvaluator_01': stages.jython.JDBCCreateEvents,
         'JythonEvaluator_02': stages.destination.AnodotEventsDestination,
     }
 

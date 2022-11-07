@@ -6,6 +6,23 @@ try:
 finally:
     sdc.importUnlock()
 
+
+def validate_event(event, record):
+    keys = list(event)
+    if len(keys) == 0:
+        return False
+    for required_key in sdc.userParams.get("REQUIRED_FIELDS", []):
+        if required_key not in keys:
+            sdc.error.write(
+                record,
+                "Record Error: missing {} field. {} fields are required".format(
+                    required_key, sdc.userParams["REQUIRED_FIELDS"]
+                )
+            )
+            return False
+    return True
+
+
 for rec in sdc.records:
     record = sdc.createRecord('record created ' + str(datetime.now()))
     event = {}
@@ -13,6 +30,8 @@ for rec in sdc.records:
         if v not in rec.value:
             continue
         event[k] = rec.value[v]
+    if not validate_event(event, record):
+        continue
     event['properties'] = []
     for prop in sdc.userParams['properties']:
         prop = {
