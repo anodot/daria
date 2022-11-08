@@ -29,6 +29,9 @@ pymongo==3.11.2
 pyparsing==2.3.1
 pyrsistent==0.15.1
 pytest==7.2.0
+pytest-order==1.0.1
+pytest-reverse==1.5.0
+pytest-xdist==3.0.2
 python-anodot==2.0.3
 python-dateutil==2.8.0
 pytz==2018.9
@@ -44,7 +47,6 @@ SQLAlchemy==1.4.26
 tabulate==0.8.9
 texttable==1.6.0
 urllib3==1.26.5
-pytest-xdist==3.0.2
 flask==2.0.2
 werkzeug==2.0.3
 Flask-WTF==1.0.0
