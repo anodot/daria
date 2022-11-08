@@ -43,7 +43,7 @@ while True:
 
     batch = sdc.createBatch()
 
-    res = requests.get(sdc.userParams['SNMP_SOURCE_URL'], timeout=60)
+    res = requests.get(sdc.userParams['SNMP_SOURCE_URL'], timeout=int(sdc.userParams['QUERY_TIMEOUT']))
     res.raise_for_status()
     record = sdc.createRecord('record created ' + str(datetime.now()))
     record.value = sdc.createMap(True)

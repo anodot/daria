@@ -120,6 +120,20 @@ class CreateEvents(JythonProcessor):
         return [f'/{field}' for field in self.REQUIRED_EVENT_FIELDS]
 
 
+class JDBCCreateEvents(CreateEvents):
+    def _get_script_params(self) -> list[dict]:
+        return [
+            *super(JDBCCreateEvents, self)._get_script_params(),
+            {
+                'key': "REQUIRED_FIELDS",
+                'value': [field for field in self.REQUIRED_EVENT_FIELDS]
+            }
+        ]
+
+    def _get_required_fields(self) -> list:
+        return []
+
+
 class TopologyDestination(JythonProcessor):
     JYTHON_SCRIPT = 'topology/destination.py'
 
