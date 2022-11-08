@@ -31,8 +31,9 @@ class Order(IntEnum):
     PIPELINE_RESET = 6
     PIPELINE_OUTPUT = 7
 
-    PIPELINE_DELETE = 8
-    SOURCE_DELETE = 9
+    OTHER = 8
+    PIPELINE_DELETE = 9
+    SOURCE_DELETE = 10
 
 
 @pytest.fixture(scope="session")

@@ -64,6 +64,7 @@ class TestMonitoringMetrics(TestInputBase, TestPipelineBase):
     def test_output_schema(self, name=None, pipeline_type=None, output=None):
         pytest.skip()
 
+    @pytest.mark.order(Order.OTHER)
     def test_monitoring_metrics(self, name, metric_type):
         response = requests.get('http://localhost/metrics')
         assert response.status_code == 200
