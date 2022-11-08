@@ -1,6 +1,7 @@
 import json
 import os
 import pytest
+from enum import IntEnum
 
 from unittest.mock import Mock
 from datetime import datetime
@@ -16,6 +17,22 @@ DUMMY_DESTINATION_OUTPUT_PATH = '/output'
 TEST_DATASETS_PATH = '/home/test-datasets'
 
 INPUT_FILES_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'input_files')
+
+
+class Order(IntEnum):
+    SOURCE_CREATE = 0
+    SOURCE_EDIT = 1
+
+    PIPELINE_CREATE = 2
+    PIPELINE_EDIT = 4
+
+    PIPELINE_START = 4
+    PIPELINE_STOP = 5
+    PIPELINE_RESET = 6
+    PIPELINE_OUTPUT = 7
+
+    PIPELINE_DELETE = 8
+    SOURCE_DELETE = 9
 
 
 @pytest.fixture(scope="session")
