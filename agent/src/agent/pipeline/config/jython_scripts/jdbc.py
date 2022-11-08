@@ -51,7 +51,7 @@ def query_missing_data(main_offset, main_interval):
     start = main_offset - main_interval * math.ceil((main_offset - db_offset) / main_interval)
 
     # search missing data points by buckets
-    while start < main_offset - main_interval:
+    while start < main_offset - main_interval and not sdc.isStopped():
         sdc.log.info('Processing missed data: from {} to {}'.format(str(datetime.fromtimestamp(start)), str(datetime.fromtimestamp(start + main_interval))))
         cur_batch = sdc.createBatch()
         record = sdc.createRecord('record created ' + str(datetime.now()))
