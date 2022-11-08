@@ -2,8 +2,9 @@ import json
 import os
 import time
 import sdc_client
+import pytest
 
-from ..conftest import get_output
+from ..conftest import get_output, Order
 from agent import pipeline, source, cli
 from typing import Callable
 
@@ -21,6 +22,7 @@ class TestPipelineBase(object):
             time.sleep(2)
             i += 1
 
+    @pytest.mark.order(Order.PIPELINE_START)
     def test_start(self, cli_runner, name: str, sleep: int):
         result = cli_runner.invoke(cli.pipeline.start, [name], catch_exceptions=False)
         assert result.exit_code == 0
@@ -54,25 +56,25 @@ class TestPipelineBase(object):
             self._wait(lambda: get_output(file_name))
             assert get_output(file_name)
 
+    @pytest.mark.order(Order.PIPELINE_STOP)
     def test_stop(self, cli_runner, name, check_output_file_name):
         self._check_output_file(check_output_file_name)
         result = cli_runner.invoke(cli.pipeline.stop, [name], catch_exceptions=False)
         assert result.exit_code == 0
         assert sdc_client.get_pipeline_status(pipeline.repository.get_by_id(name)) == pipeline.Pipeline.STATUS_STOPPED
 
+    @pytest.mark.order(Order.PIPELINE_STOP)
     def test_force_stop(self, cli_runner, name, check_output_file_name):
         self._check_output_file(check_output_file_name)
         result = cli_runner.invoke(cli.pipeline.force_stop, [name], catch_exceptions=False)
         assert result.exit_code == 0
 
+    @pytest.mark.order(Order.PIPELINE_RESET)
     def test_reset(self, cli_runner, name):
         result = cli_runner.invoke(cli.pipeline.reset, [name], catch_exceptions=False)
         assert result.exit_code == 0
 
-    # def test_output(self, name, pipeline_type, output):
-    #     expected_output = get_expected_output(name, output, pipeline_type)
-    #     assert get_output(f'{name}_{pipeline_type}.json') == expected_output
-    #
+    @pytest.mark.order(Order.PIPELINE_OUTPUT)
     def test_output(self, name, pipeline_type, output):
         def compare_output():
             expected_output = get_expected_output(name, output, pipeline_type)
@@ -81,10 +83,7 @@ class TestPipelineBase(object):
         self._wait(compare_output)
         assert compare_output()
 
-    # def test_output_schema(self, name, pipeline_type, output):
-    #     expected_output = get_expected_schema_output(name, output, pipeline_type)
-    #     assert get_output(f'{name}_{pipeline_type}.json') == expected_output
-    #
+    @pytest.mark.order(Order.PIPELINE_OUTPUT)
     def test_output_schema(self, name, pipeline_type, output):
         def compare_output():
             expected_output = get_expected_schema_output(name, output, pipeline_type)
@@ -93,12 +92,14 @@ class TestPipelineBase(object):
         self._wait(compare_output)
         assert compare_output()
 
+    @pytest.mark.order(Order.PIPELINE_DELETE)
     def test_delete_pipeline(self, cli_runner, name):
         result = cli_runner.invoke(cli.pipeline.delete, [name], catch_exceptions=False)
         assert result.exit_code == 0
         assert not sdc_client.exists(name)
         assert not pipeline.repository.exists(name)
 
+    @pytest.mark.order(Order.SOURCE_DELETE)
     def test_source_delete(self, cli_runner, name):
         result = cli_runner.invoke(cli.source.delete, [name], catch_exceptions=False)
         assert result.exit_code == 0
