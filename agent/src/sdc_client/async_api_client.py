@@ -154,5 +154,9 @@ class _AsyncStreamSetsApiClient(_BaseStreamSetsApiClient):
         return await super().get_preview_status(pipeline_id, previewer_id)
 
     @async_endpoint
+    async def system_stats(self):
+        return await super().system_stats()
+
+    @async_endpoint
     async def get_jmx(self, query: str):
         return await super().get_jmx(query)
