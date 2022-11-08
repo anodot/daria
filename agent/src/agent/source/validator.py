@@ -266,7 +266,7 @@ class PromQLValidator(Validator):
                 self.source.config['url'],
                 'api/v1/labels'
             )
-            response = requests.get(url)
+            response = requests.get(url, timeout=5)
             response.raise_for_status()
         except Exception as e:
             raise ValidationException(

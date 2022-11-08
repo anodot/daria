@@ -42,7 +42,7 @@ class PromQLValidator(Validator):
             url = pipeline_.source_.config["url"] + '/api/v1/query?' + urllib.parse.urlencode({
                 'query': query.encode('utf-8'),
             })
-            response = requests.get(url)
+            response = requests.get(url, timeout=5)
             response.raise_for_status()
         except Exception as e:
             raise ValidationException(
