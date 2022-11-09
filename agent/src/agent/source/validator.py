@@ -260,6 +260,20 @@ class SageValidator(Validator):
 class PromQLValidator(Validator):
     VALIDATION_SCHEMA_FILE = 'promql.json'
 
+    def validate_connection(self):
+        try:
+            url = urllib.parse.urljoin(
+                self.source.config['url'],
+                'api/v1/labels'
+            )
+            response = requests.get(url, timeout=5)
+            response.raise_for_status()
+        except Exception as e:
+            raise ValidationException(
+                f'Failed to connect to the {self.source.config["url"]}. Make sure you provided correct url\n'
+                + str(e)
+            )
+
 
 class RRDValidator(Validator):
     VALIDATION_SCHEMA_FILE = 'rrd.json'
