@@ -143,6 +143,10 @@ class _StreamSetsApiClient(_BaseStreamSetsApiClient):
     def get_preview_status(self, pipeline_id: str, previewer_id: str):
         return super().get_preview_status(pipeline_id, previewer_id)
 
+    @endpoint
+    def system_stats(self):
+        return super().system_stats()
+
     def wait_for_preview(self, pipeline_id: str, preview_id: str) -> (list, list):
         tries = 6
         initial_delay = 2
