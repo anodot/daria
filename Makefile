@@ -4,7 +4,8 @@ THREADS = 2
 DOCKER_COMPOSE_DEV_FILE = docker-compose-dev.yml
 DOCKER_COMPOSE_DEV = docker-compose -f $(DOCKER_COMPOSE_DEV_FILE)
 DOCKER_TEST = docker exec -i anodot-agent pytest -x -vv --disable-pytest-warnings
-DOCKER_TEST_PARALLEL = $(DOCKER_TEST) -n $(THREADS) --dist=loadfile
+DOCKER_TEST_PIPELINES = docker exec -i anodot-agent pytest -x -vv --reverse --disable-pytest-warnings
+DOCKER_TEST_PARALLEL = $(DOCKER_TEST_PIPELINES) -n $(THREADS) --dist=loadfile
 
 ##---------
 ## RELEASE
@@ -65,75 +66,75 @@ stop: clean-docker-volumes
 ## TEST SEPARATE SOURCES
 ##-----------------------
 test-directory: bootstrap
-	$(DOCKER_TEST) tests/test_input/test_1/test_directory_http.py
-	$(DOCKER_TEST) tests/test_pipelines/test_1/test_directory_http.py
+	$(DOCKER_TEST_PIPELINES) tests/test_input/test_1/test_directory_http.py
+	$(DOCKER_TEST_PIPELINES) tests/test_pipelines/test_1/test_directory_http.py
 
 test-elastic: bootstrap run-elastic setup-elastic
-	$(DOCKER_TEST) tests/test_input/test_2/test_elastic_http.py
-	$(DOCKER_TEST) tests/test_pipelines/test_2/test_elastic_http.py
+	$(DOCKER_TEST_PIPELINES) tests/test_input/test_2/test_elastic_http.py
+	$(DOCKER_TEST_PIPELINES) tests/test_pipelines/test_2/test_elastic_http.py
 
 test-promql: bootstrap run-victoria
-	$(DOCKER_TEST) tests/test_input/test_1/test_promql_http.py
-	$(DOCKER_TEST) tests/test_pipelines/test_1/test_promql_http.py
+	$(DOCKER_TEST_PIPELINES) tests/test_input/test_1/test_promql_http.py
+	$(DOCKER_TEST_PIPELINES) tests/test_pipelines/test_1/test_promql_http.py
 
 test-influx: bootstrap run-influx run-influx-2 nap
-	$(DOCKER_TEST) tests/test_input/test_1/test_influx_http.py
-	$(DOCKER_TEST) tests/test_pipelines/test_1/test_influx_http.py
+	$(DOCKER_TEST_PIPELINES) tests/test_input/test_1/test_influx_http.py
+	$(DOCKER_TEST_PIPELINES) tests/test_pipelines/test_1/test_influx_http.py
 
 test-kafka: bootstrap run-kafka
-	$(DOCKER_TEST) tests/test_input/test_1/test_kafka_http.py
-	$(DOCKER_TEST) tests/test_pipelines/test_1/test_kafka_http.py
+	$(DOCKER_TEST_PIPELINES) tests/test_input/test_1/test_kafka_http.py
+	$(DOCKER_TEST_PIPELINES) tests/test_pipelines/test_1/test_kafka_http.py
 
 test-mongo: bootstrap run-mongo
 	docker exec -i dc bash -c '$$SDC_DIST/bin/streamsets stagelib-cli jks-credentialstore add -i jks -n testmongopass -c root'
-	$(DOCKER_TEST) tests/test_input/test_1/test_mongo_http.py
-	$(DOCKER_TEST) tests/test_pipelines/test_1/test_mongo_http.py
+	$(DOCKER_TEST_PIPELINES) tests/test_input/test_1/test_mongo_http.py
+	$(DOCKER_TEST_PIPELINES) tests/test_pipelines/test_1/test_mongo_http.py
 
 test-mysql: bootstrap run-mysql sleep
-	$(DOCKER_TEST) tests/test_input/test_2/test_mysql_http.py
-	$(DOCKER_TEST) tests/test_pipelines/test_2/test_mysql_http.py
+	$(DOCKER_TEST_PIPELINES) tests/test_input/test_2/test_mysql_http.py
+	$(DOCKER_TEST_PIPELINES) tests/test_pipelines/test_2/test_mysql_http.py
 
 test-postgres: bootstrap run-postgres sleep
-	$(DOCKER_TEST) tests/test_input/test_1/test_postgres_http.py
-	$(DOCKER_TEST) tests/test_pipelines/test_1/test_postgres_http.py
+	$(DOCKER_TEST_PIPELINES) tests/test_input/test_1/test_postgres_http.py
+	$(DOCKER_TEST_PIPELINES) tests/test_pipelines/test_1/test_postgres_http.py
 
 test-clickhouse: bootstrap run-clickhouse sleep
 	$(DOCKER_TEST) tests/test_input/test_2/test_clickhouse.py
 	$(DOCKER_TEST) tests/test_pipelines/test_2/test_clickhouse.py
 
 test-tcp: bootstrap
-	$(DOCKER_TEST) tests/test_input/test_1/test_tcp_http.py
-	$(DOCKER_TEST) tests/test_pipelines/test_1/test_tcp_http.py
+	$(DOCKER_TEST_PIPELINES) tests/test_input/test_1/test_tcp_http.py
+	$(DOCKER_TEST_PIPELINES) tests/test_pipelines/test_1/test_tcp_http.py
 
 test-sage: bootstrap run-sage
-	$(DOCKER_TEST) tests/test_input/test_2/test_sage_http.py
-	$(DOCKER_TEST) tests/test_pipelines/test_2/test_sage_http.py
+	$(DOCKER_TEST_PIPELINES) tests/test_input/test_2/test_sage_http.py
+	$(DOCKER_TEST_PIPELINES) tests/test_pipelines/test_2/test_sage_http.py
 
 test-zabbix: bootstrap run-zabbix
-	$(DOCKER_TEST) tests/test_input/test_2/test_zabbix_http.py
-	$(DOCKER_TEST) tests/test_pipelines/test_2/test_zabbix_http.py
+	$(DOCKER_TEST_PIPELINES) tests/test_input/test_2/test_zabbix_http.py
+	$(DOCKER_TEST_PIPELINES) tests/test_pipelines/test_2/test_zabbix_http.py
 
 test-cacti: bootstrap run-mysql half-sleep
-	$(DOCKER_TEST) tests/test_input/test_2/test_cacti.py
-	$(DOCKER_TEST) tests/test_pipelines/test_2/test_cacti.py
+	$(DOCKER_TEST_PIPELINES) tests/test_input/test_2/test_cacti.py
+	$(DOCKER_TEST_PIPELINES) tests/test_pipelines/test_2/test_cacti.py
 
 test-oracle: bootstrap
-	$(DOCKER_TEST) tests/test_input/test_2/test_oracle.py
+	$(DOCKER_TEST_PIPELINES) tests/test_input/test_2/test_oracle.py
 
 test-observium: bootstrap run-mysql half-sleep
-	$(DOCKER_TEST) tests/test_input/test_2/test_observium.py
+	$(DOCKER_TEST_PIPELINES) tests/test_input/test_2/test_observium.py
 	$(DOCKER_TEST) tests/test_pipelines/test_2/test_observium.py
 
 test-mssql: bootstrap
 	docker exec -i dc bash -c '$$SDC_DIST/bin/streamsets stagelib-cli jks-credentialstore add -i jks -n testmssql -c UserTest123$$'
-	$(DOCKER_TEST) tests/test_input/test_1/test_mssql.py
+	$(DOCKER_TEST_PIPELINES) tests/test_input/test_1/test_mssql.py
 
 test-databricks: bootstrap
-	$(DOCKER_TEST) tests/test_input/test_1/test_databricks.py
+	$(DOCKER_TEST_PIPELINES) tests/test_input/test_1/test_databricks.py
 
 test-snmp: bootstrap run-snmpsim
-	$(DOCKER_TEST) tests/test_input/test_2/test_snmp.py
-	$(DOCKER_TEST) tests/test_pipelines/test_2/test_snmp.py
+	$(DOCKER_TEST_PIPELINES) tests/test_input/test_2/test_snmp.py
+	$(DOCKER_TEST_PIPELINES) tests/test_pipelines/test_2/test_snmp.py
 
 ##---------------------------
 ## RELEASE DEPENDENCY TARGETS
