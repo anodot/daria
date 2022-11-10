@@ -1,6 +1,7 @@
+import pytest
 from datetime import datetime
 from ..test_zpipeline_base import TestInputBase
-from ...conftest import get_input_file_path
+from ...conftest import get_input_file_path, Order
 from agent import cli
 from agent import source
 
@@ -18,6 +19,7 @@ class TestElastic(TestInputBase):
         'test_create_with_file': [{'file_name': 'elastic_pipelines'}],
     }
 
+    @pytest.mark.order(Order.SOURCE_CREATE)
     def test_source_create(self, cli_runner):
         days_to_backfill = (datetime.now() - datetime(year=2017, month=12, day=10)).days + 1
         result = cli_runner.invoke(cli.source.create, catch_exceptions=False,
@@ -25,12 +27,14 @@ class TestElastic(TestInputBase):
         assert result.exit_code == 0
         assert source.repository.exists('test_es')
 
+    @pytest.mark.order(Order.PIPELINE_CREATE)
     def test_create(self, cli_runner, name, options, value, timestamp, advanced_options):
         query_file_path = get_input_file_path('elastic_query.json')
         result = cli_runner.invoke(cli.pipeline.create, options, catch_exceptions=False,
                                    input=f"test_es\n{name}\n{query_file_path}\n\n{value}\n{timestamp}\n_source/ver _source/Country\n_source/Exchange optional_dim ad_type ADTYPE GEN\n{advanced_options}\n")
         assert result.exit_code == 0
 
+    @pytest.mark.order(Order.PIPELINE_EDIT)
     def test_edit(self, cli_runner, options, value):
         result = cli_runner.invoke(cli.pipeline.edit, options, catch_exceptions=False,
                                    input=f"\n\n{value}\n\n\n\n\n\n\n\n\n\n\n\n")
