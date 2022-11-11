@@ -38,7 +38,7 @@ class TestRawPipelineBase(TestPipelineBase):
         # give Streamsets time to send status change to agent
         time.sleep(1)
 
-    @pytest.mark.order(Order.PIPELINE_OUTPUT)
+    @pytest.mark.order(Order.PIPELINE_RAW_OUTPUT)
     def test_output(self, file_name, pipeline_type, output_file):
         expected_output = \
             read_file(os.path.join(os.path.dirname(os.path.realpath(__file__)), f'expected_output/{output_file}'))

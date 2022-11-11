@@ -22,18 +22,18 @@ INPUT_FILES_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'inp
 class Order(IntEnum):
     SOURCE_CREATE = 0
     SOURCE_EDIT = 1
-
     PIPELINE_CREATE = 2
     PIPELINE_EDIT = 4
 
-    PIPELINE_START = 4
-    PIPELINE_OUTPUT = 5
-    PIPELINE_STOP = 6
-    PIPELINE_RESET = 7
+    PIPELINE_START = 5
+    PIPELINE_OUTPUT = 6
+    PIPELINE_STOP = 7
+    PIPELINE_RAW_OUTPUT = 8
+    PIPELINE_RESET = 9
 
-    OTHER = 8
-    PIPELINE_DELETE = 9
-    SOURCE_DELETE = 10
+    OTHER = 10
+    PIPELINE_DELETE = 11
+    SOURCE_DELETE = 12
 
 
 @pytest.fixture(scope="session")
