@@ -2,6 +2,7 @@ import click
 import json
 import os
 import sdc_client
+import shutil
 
 from typing import Optional
 from agent import pipeline, source, streamsets
@@ -339,12 +340,29 @@ def export(dir_path):
     """
     Export pipelines' config into file
     """
+
+    def _export_file(path, pipeline_name):
+        destination = os.path.join(os.path.dirname(dir_path), 'processing_files', pipeline_name)
+        if not os.path.isdir(destination):
+            os.mkdir(destination)
+        if os.path.dirname(path) == os.path.normpath(destination):
+            return path
+        shutil.copy(path, destination)
+        return os.path.join(destination, os.path.basename(path))
+
     if not dir_path:
         dir_path = 'pipelines'
     if not os.path.isdir(dir_path):
         os.mkdir(dir_path)
 
     for pipeline_ in pipeline.repository.get_all():
+        pipeline_config = pipeline_.export()
+        if file_ := pipeline_config.get('transform', {}).get('file'):
+            pipeline_config['transform']['file'] = _export_file(file_, pipeline_.name)
+        if file_ := pipeline_config.get('transform_script', {}).get('file'):
+            pipeline_config['transform_script']['file'] = _export_file(file_, pipeline_.name)
+        if file_ := pipeline_config.get('query_file'):
+            pipeline_config['query_file'] = _export_file(file_, pipeline_.name)
         with open(os.path.join(dir_path, f'{pipeline_.name}.json'), 'w+') as f:
             json.dump([pipeline_.export()], f, indent=4)
 
