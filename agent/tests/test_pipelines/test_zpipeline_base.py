@@ -47,6 +47,7 @@ class TestPipelineBase(object):
         self._wait(check_in_db)
         assert check_in_db()
 
+    @pytest.mark.order(Order.PIPELINE_OUTPUT)
     def test_info(self, cli_runner, name):
         result = cli_runner.invoke(cli.pipeline.info, [name], catch_exceptions=False)
         assert result.exit_code == 0
