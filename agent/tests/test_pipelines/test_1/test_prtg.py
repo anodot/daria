@@ -62,7 +62,7 @@ class TestPrtg(TestPipelineBase):
         timestamp = watermark_output.get('watermark')
         assert int(time.time()) - timestamp < 300
 
-    @pytest.mark.order(Order.PIPELINE_OUTPUT)
+    @pytest.mark.order(Order.PIPELINE_RAW_OUTPUT)
     def test_output_schema(self, name, pipeline_type, output):
         expected_output = get_expected_schema_output(name, output, pipeline_type)
         actual_output = get_output(f'{name}_{pipeline_type}.json')
