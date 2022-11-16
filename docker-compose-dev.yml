@@ -70,7 +70,7 @@ services:
 
   db:
     container_name: db
-    image: postgres:9.6.19
+    image: postgres:15
     restart: always
     environment:
       POSTGRES_USER: agent
