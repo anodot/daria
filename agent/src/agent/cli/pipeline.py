@@ -342,15 +342,13 @@ def export(dir_path):
     Export pipelines' config into file
     """
 
-    def _export_file(path, pipeline_name):
-        destination = os.path.join(dir_path, pipeline_name)
-        click.echo(destination)
-        if not os.path.exists(destination):
-            os.mkdir(destination)
-        if os.path.dirname(path) == os.path.normpath(destination):
-            return path
-        shutil.copy(path, destination)
-        return os.path.join(destination, os.path.basename(path))
+    def _export_config_to_file(path, config):
+        if os.path.exists(path):
+            return
+        if not os.path.isdir(os.path.dirname(path)):
+            os.makedirs(os.path.dirname(path))
+        with open(path, 'w+') as file_:
+            file_.write(config)
 
     if not dir_path:
         dir_path = 'pipelines'
@@ -359,12 +357,21 @@ def export(dir_path):
 
     for pipeline_ in pipeline.repository.get_all():
         pipeline_config = pipeline_.export()
-        if file_ := pipeline_config.get('transform', {}).get('file'):
-            pipeline_config['transform']['file'] = _export_file(file_, pipeline_.name)
-        if file_ := pipeline_config.get('transform_script', {}).get('file'):
-            pipeline_config['transform_script']['file'] = _export_file(file_, pipeline_.name)
-        if file_ := pipeline_config.get('query_file'):
-            pipeline_config['query_file'] = _export_file(file_, pipeline_.name)
+        if pipeline_config.get('transform', {}).get('file'):
+            _export_config_to_file(
+                pipeline_config['transform']['file'],
+                pipeline_config['transform']['config']
+            )
+        if pipeline_config.get('transform_script', {}).get('file'):
+            _export_config_to_file(
+                pipeline_config['transform_script']['file'],
+                pipeline_config['transform_script']['config']
+            )
+        if pipeline_config.get('query_file'):
+            _export_config_to_file(
+                pipeline_config['query_file'],
+                pipeline_config['query']
+            )
         with open(os.path.join(dir_path, f'{pipeline_.name}.json'), 'w+') as f:
             json.dump([pipeline_.export()], f, indent=4)
 
