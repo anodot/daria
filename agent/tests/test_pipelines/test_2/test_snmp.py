@@ -73,7 +73,7 @@ class TestSNMP(TestPipelineBase):
 
             return timestamp and int(time.time()) - timestamp < 120
 
-        self._wait(check_output)
+        assert self._wait(check_output)
         actual_output = get_output(f'{name}_{pipeline_type}.json')
         timestamp = actual_output[0].get('timestamp')
         for output in actual_output:
