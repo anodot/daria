@@ -1,9 +1,8 @@
 import pytest
 import socket
-import sdc_client
 
-from agent import cli
 from ..test_zpipeline_base import TestPipelineBase
+from ...conftest import Order
 from agent import pipeline, source
 
 
@@ -22,6 +21,7 @@ class TestTCPServer(TestPipelineBase):
         'test_source_delete': [{'name': 'test_tcp_log'}, {'name': 'test_tcp_json'}, {'name': 'test_tcp_csv'}],
     }
 
+    @pytest.mark.order(Order.PIPELINE_START)
     def test_start(self, cli_runner, name, sleep):
         super().test_start(cli_runner, name, sleep)
 

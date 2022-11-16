@@ -2,6 +2,7 @@ import pytest
 
 from agent import source
 from ..test_zpipeline_base import TestPipelineBase
+from ...conftest import Order
 
 
 class TestSolarWinds(TestPipelineBase):
@@ -22,6 +23,7 @@ class TestSolarWinds(TestPipelineBase):
     def test_info(self, cli_runner, name=None):
         pytest.skip()
 
+    @pytest.mark.order(Order.PIPELINE_START)
     def test_start(self, cli_runner, name, sleep):
         super().test_start(cli_runner, name, sleep)
 
@@ -34,6 +36,7 @@ class TestSolarWinds(TestPipelineBase):
     def test_watermark(self):
         pytest.skip()
 
+    @pytest.mark.order(Order.PIPELINE_STOP)
     def test_force_stop(self, cli_runner, name, check_output_file_name):
         super().test_force_stop(cli_runner, name, check_output_file_name)
 
