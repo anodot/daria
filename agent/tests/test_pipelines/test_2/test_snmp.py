@@ -69,15 +69,17 @@ class TestSNMP(TestPipelineBase):
         def check_output():
             actual_output = get_output(f'{name}_{pipeline_type}.json')
             # we send current timestamp, it's hard to test, so I check only that data was sent during the last two minutes
-            timestamp = actual_output[0].get('timestamp')
-            for output in actual_output:
-                output.pop('timestamp')
-            return int(time.time()) - timestamp < 120 and actual_output == expected_output
+            timestamp = None if not actual_output else actual_output[0].get('timestamp')
+
+            return timestamp and int(time.time()) - timestamp < 120
 
         self._wait(check_output)
-        # actual_output = get_output(f'{name}_{pipeline_type}.json')
-        # timestamp = actual_output[0].get('timestamp')
+        actual_output = get_output(f'{name}_{pipeline_type}.json')
+        timestamp = actual_output[0].get('timestamp')
+        for output in actual_output:
+            output.pop('timestamp')
+        assert actual_output == expected_output
         schema_id = get_schema_id(name)
         watermark = get_output(f'{schema_id}_watermark.json')
         assert schema_id == watermark['schemaId']
-        # assert timestamp == watermark['watermark']
+        assert timestamp == watermark['watermark']
