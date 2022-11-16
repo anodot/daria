@@ -79,6 +79,6 @@ class TestDirectory(TestPipelineBase):
             }
         }
 
-    @pytest.mark.order(Order.PIPELINE_OUTPUT)
+    @pytest.mark.order(Order.PIPELINE_RAW_OUTPUT)
     def test_events_output(self):
         assert get_output('events_directory.json') == get_expected_events_output('events_directory.json')
