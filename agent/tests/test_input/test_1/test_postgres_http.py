@@ -1,6 +1,9 @@
+import pytest
+
 from datetime import datetime
 from agent import source, cli
 from ..test_zpipeline_base import TestInputBase
+from ...conftest import Order
 
 
 class TestPostgreSQL(TestInputBase):
@@ -18,18 +21,21 @@ class TestPostgreSQL(TestInputBase):
         'test_create_source_with_file': [{'file_name': 'jdbc/postgres_sources'}],
     }
 
+    @pytest.mark.order(Order.SOURCE_CREATE)
     def test_source_create(self, cli_runner, name, type, conn):
         result = cli_runner.invoke(cli.source.create, catch_exceptions=False,
                                    input=f"{type}\n{name}\n{conn}\npostgres\npassword\n\n")
         assert result.exit_code == 0
         assert source.repository.exists(name)
 
+    @pytest.mark.order(Order.PIPELINE_CREATE)
     def test_create(self, cli_runner, name, source, timestamp_type, timestamp_name):
         days_to_backfill = (datetime.now() - datetime(year=2017, month=12, day=10)).days + 1
         result = cli_runner.invoke(cli.pipeline.create, catch_exceptions=False,
                                    input=f'{source}\n{name}\nSELECT * FROM test WHERE {{TIMESTAMP_CONDITION}}\n\n86400\n{days_to_backfill}\n1\n{timestamp_name}\n{timestamp_type}\n\nclicks:gauge impressions:gauge\nadsize country\n\n\n\n')
         assert result.exit_code == 0
 
+    @pytest.mark.order(Order.PIPELINE_CREATE)
     def test_create_advanced(self, cli_runner, name, source):
         days_to_backfill = (datetime.now() - datetime(year=2017, month=12, day=10)).days + 1
         result = cli_runner.invoke(cli.pipeline.create, ['-a'], catch_exceptions=False,

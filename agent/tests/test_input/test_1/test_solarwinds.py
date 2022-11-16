@@ -1,6 +1,7 @@
+import pytest
 from datetime import datetime
 from ..test_zpipeline_base import TestInputBase
-from ...conftest import generate_input
+from ...conftest import generate_input, Order
 from agent import cli, source, pipeline
 
 
@@ -11,6 +12,7 @@ class TestSolarwinds(TestInputBase):
         'test_create_with_file': [{'file_name': 'solarwinds_pipelines'}],
     }
 
+    @pytest.mark.order(Order.SOURCE_CREATE)
     def test_source_create(self, cli_runner):
         source_name = 'solarwinds'
         input_ = {
@@ -24,6 +26,7 @@ class TestSolarwinds(TestInputBase):
         assert result.exit_code == 0
         assert source.repository.exists(source_name)
 
+    @pytest.mark.order(Order.PIPELINE_CREATE)
     def test_pipeline_create(self, cli_runner):
         offset = datetime.fromtimestamp(1617062400)
         pipeline_id = 'solarwinds'

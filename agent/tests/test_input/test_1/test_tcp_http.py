@@ -1,7 +1,8 @@
 import traceback
+import pytest
 
 from ..test_zpipeline_base import TestInputBase
-from ...conftest import get_input_file_path
+from ...conftest import get_input_file_path, Order
 from agent import source, cli
 
 
@@ -12,6 +13,7 @@ class TestTCPServer(TestInputBase):
         'test_create_with_file': [{'file_name': 'tcp_pipelines'}],
     }
 
+    @pytest.mark.order(Order.SOURCE_CREATE)
     def test_source_create(self, cli_runner):
         grok_file_path = get_input_file_path('grok_patterns.txt')
         result = cli_runner.invoke(cli.source.create, catch_exceptions=False,
@@ -20,6 +22,7 @@ class TestTCPServer(TestInputBase):
         assert result.exit_code == 0
         assert source.repository.exists('test_tcp_log')
 
+    @pytest.mark.order(Order.PIPELINE_CREATE)
     def test_create(self, cli_runner):
         pipeline_id = 'test_tcp_log'
         result = cli_runner.invoke(cli.pipeline.create, catch_exceptions=False,
