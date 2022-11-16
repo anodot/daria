@@ -64,12 +64,9 @@ class TestSage(TestPipelineBase):
     def test_force_stop(self, cli_runner, name, check_output_file_name):
         super().test_force_stop(cli_runner, name, check_output_file_name)
 
-    @pytest.mark.order(Order.PIPELINE_OUTPUT)
+    @pytest.mark.order(Order.PIPELINE_RAW_OUTPUT)
     def test_watermark(self):
         schema_id = get_schema_id('test_sage_schema_file_dvp')
         current_day = datetime.now(timezone.utc)
         day_start_timestamp = current_day.replace(hour=0, minute=0, second=0, microsecond=0).timestamp()
-
-        def check_output():
-            return get_output(f'{schema_id}_watermark.json') == {'watermark': day_start_timestamp, 'schemaId': schema_id}
-        assert self._wait(check_output)
+        assert get_output(f'{schema_id}_watermark.json') == {'watermark': day_start_timestamp, 'schemaId': schema_id}
