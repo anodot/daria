@@ -52,7 +52,7 @@ class TestTopology(TestPipelineBase):
     def test_force_stop(self, cli_runner, name, check_output_file_name):
         super().test_force_stop(cli_runner, name, check_output_file_name)
 
-    @pytest.mark.order(Order.PIPELINE_OUTPUT)
+    @pytest.mark.order(Order.PIPELINE_RAW_OUTPUT)
     def test_output(self, name, pipeline_type, output_file):
         actual_output = get_output(f'{name}_{pipeline_type}.json')
         expected_output = get_expected_output(name, output_file)

@@ -62,7 +62,7 @@ class TestSNMP(TestPipelineBase):
     def test_force_stop(self, cli_runner, name, check_output_file_name):
         super().test_force_stop(cli_runner, name, check_output_file_name)
 
-    @pytest.mark.order(Order.PIPELINE_OUTPUT)
+    @pytest.mark.order(Order.PIPELINE_RAW_OUTPUT)
     def test_output_schema(self, name, pipeline_type, output):
         expected_output = get_expected_schema_output(name, output, pipeline_type)
 
