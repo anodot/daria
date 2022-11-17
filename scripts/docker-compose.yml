@@ -44,7 +44,7 @@ services:
         max-file: "10"
 
   db:
-    image: postgres
+    image: postgres:15
     restart: always
     environment:
       POSTGRES_USER: agent
