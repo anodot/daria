@@ -65,19 +65,12 @@ class TestSNMP(TestPipelineBase):
     @pytest.mark.order(Order.PIPELINE_RAW_OUTPUT)
     def test_output_schema(self, name, pipeline_type, output):
         expected_output = get_expected_schema_output(name, output, pipeline_type)
-
-        def check_output():
-            actual_output = get_output(f'{name}_{pipeline_type}.json')
-            # we send current timestamp, it's hard to test, so I check only that data was sent during the last two minutes
-            timestamp = None if not actual_output else actual_output[0].get('timestamp')
-
-            return timestamp and int(time.time()) - timestamp < 120
-
-        assert self._wait(check_output)
         actual_output = get_output(f'{name}_{pipeline_type}.json')
+        # we send current timestamp, it's hard to test, so I check only that data was sent during the last two minutes
         timestamp = actual_output[0].get('timestamp')
         for output in actual_output:
             output.pop('timestamp')
+        assert int(time.time()) - timestamp < 180
         assert actual_output == expected_output
         schema_id = get_schema_id(name)
         watermark = get_output(f'{schema_id}_watermark.json')
