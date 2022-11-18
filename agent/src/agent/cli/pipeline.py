@@ -2,7 +2,9 @@ import click
 import json
 import os
 import sdc_client
+import shutil
 
+from pathlib import Path
 from typing import Optional
 from agent import pipeline, source, streamsets
 from agent.modules.tools import infinite_retry
@@ -339,14 +341,45 @@ def export(dir_path):
     """
     Export pipelines' config into file
     """
+
+    def _export_config_to_file(filename, config, pipeline_name):
+        destination_folder = os.path.join(dir_path, pipeline_name)
+        if not os.path.exists(destination_folder):
+            os.mkdir(destination_folder)
+        file_path = os.path.join(destination_folder, filename)
+        if isinstance(config, dict):
+            config = json.dumps(config, indent=4)
+        with open(file_path, 'w+') as file_:
+            file_.write(config)
+        return file_path
+
     if not dir_path:
         dir_path = 'pipelines'
     if not os.path.isdir(dir_path):
         os.mkdir(dir_path)
 
     for pipeline_ in pipeline.repository.get_all():
+        pipeline_config = pipeline_.export()
+        if pipeline_config.get('transform', {}).get('file'):
+            pipeline_config['transform']['file'] = _export_config_to_file(
+                filename=os.path.basename(pipeline_config['transform']['file']),
+                config=pipeline_config['transform']['config'],
+                pipeline_name=pipeline_.name,
+            )
+        if pipeline_config.get('transform_script', {}).get('file'):
+            pipeline_config['transform_script']['config'] = _export_config_to_file(
+                filename=os.path.basename(pipeline_config['transform_script']['file']),
+                config=pipeline_config['transform_script']['config'],
+                pipeline_name=pipeline_.name,
+            )
+        if pipeline_config.get('query_file'):
+            pipeline_config['query_file'] = _export_config_to_file(
+                filename=os.path.basename(pipeline_config['query_file']),
+                config=pipeline_config['query'],
+                pipeline_name=pipeline_.name,
+            )
         with open(os.path.join(dir_path, f'{pipeline_.name}.json'), 'w+') as f:
-            json.dump([pipeline_.export()], f)
+            json.dump([pipeline_.export()], f, indent=4)
 
     click.echo(f'All pipelines exported to the `{dir_path}` directory')
 

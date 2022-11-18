@@ -81,7 +81,7 @@ def export(dir_path, plain_text_credentials):
         if not plain_text_credentials:
             config = source.sensitive_data.mask(config)
         with open(os.path.join(dir_path, f'{source_.name}.json'), 'w+') as f:
-            json.dump([config], f)
+            json.dump([config], f, indent=4)
 
     click.echo(f'All sources exported to the `{dir_path}` directory')
 
