@@ -31,6 +31,7 @@ def _set_watermark_and_offset_mock(pipeline_: pipeline.Pipeline, watermark: int 
         (100, None, None, 10, '5m', False, False),
         (1200, 1200 - 450, 1000, 100, '5m', False, False),
         (1200, 1200 - 450, 1000, 100, '5m', True, True),
+        (1800, 1200 - 450, 1000, 600, '5m', True, True),
         (1200, 1200 - 300, 1000, 10, '5m', True, False),
         (1200, None, 1200 - 300, 10, '5m', True, False),
         (1200, None, 1200 - 310, 10, '5m', True, True),

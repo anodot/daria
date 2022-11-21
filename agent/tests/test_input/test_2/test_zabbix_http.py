@@ -1,10 +1,10 @@
 import sdc_client
-
+import pytest
 from datetime import datetime
 from agent import cli
 from agent import source, pipeline
 from ..test_zpipeline_base import TestInputBase
-from ...conftest import generate_input, get_input_file_path
+from ...conftest import generate_input, get_input_file_path, Order
 from agent.pipeline import PipelineOffset
 
 
@@ -16,6 +16,7 @@ class TestZabbix(TestInputBase):
         'test_edit_advanced': [{'pipeline_id': 'test_zabbix'}, {'pipeline_id': 'test_zabbix_edit_query'}],
     }
 
+    @pytest.mark.order(Order.SOURCE_CREATE)
     def test_source_create(self, cli_runner):
         name = 'test_zabbix'
         input_ = {
@@ -29,6 +30,7 @@ class TestZabbix(TestInputBase):
         assert result.exit_code == 0
         assert source.repository.exists(name)
 
+    @pytest.mark.order(Order.PIPELINE_CREATE)
     def test_create(self, cli_runner):
         pipeline_id = 'test_zabbix'
         input_ = {
@@ -51,6 +53,7 @@ class TestZabbix(TestInputBase):
         assert result.exit_code == 0
         assert sdc_client.exists(pipeline_id)
 
+    @pytest.mark.order(Order.PIPELINE_CREATE)
     def test_create_edit_query(self, cli_runner):
         input_file_path = get_input_file_path('zabbix_pipelines_edit_query.json')
         result = cli_runner.invoke(cli.pipeline.create, ['-f', input_file_path], catch_exceptions=False)
@@ -60,6 +63,7 @@ class TestZabbix(TestInputBase):
         sdc_client.update(pipeline_)
         pipeline.repository.save(pipeline_.offset)
 
+    @pytest.mark.order(Order.PIPELINE_EDIT)
     def test_edit_advanced(self, cli_runner, pipeline_id: str):
         days_to_backfill = (datetime.now() - datetime(year=2021, month=1, day=22)).days
         query_file = ''

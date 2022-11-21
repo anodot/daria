@@ -2,7 +2,7 @@ import pytest
 from datetime import datetime
 from pytz import timezone
 from ..test_zpipeline_base import TestPipelineBase, get_schema_id
-from ...conftest import get_output
+from ...conftest import get_output, Order
 
 
 class TestMySQL(TestPipelineBase):
@@ -67,12 +67,15 @@ class TestMySQL(TestPipelineBase):
     def test_stop(self, cli_runner, name=None, check_output_file_name=None):
         pytest.skip()
 
+    @pytest.mark.order(Order.PIPELINE_START)
     def test_start(self, cli_runner, name, sleep):
         super().test_start(cli_runner, name, sleep)
 
+    @pytest.mark.order(Order.PIPELINE_STOP)
     def test_force_stop(self, cli_runner, name, check_output_file_name):
         super().test_force_stop(cli_runner, name, check_output_file_name)
 
+    @pytest.mark.order(Order.PIPELINE_OUTPUT)
     def test_watermark(self):
         # 1512950400 - marks end of interval (end of the day) in UTC
         schema_id = get_schema_id('test_mysql_advanced')

@@ -1,7 +1,7 @@
 import json
 import pytest
 
-from ...conftest import get_output
+from ...conftest import get_output, Order
 from ..test_zpipeline_base import TestPipelineBase, get_schema_id, get_expected_events_output
 from agent import source, pipeline
 
@@ -48,12 +48,15 @@ class TestDirectory(TestPipelineBase):
     def test_info(self, cli_runner, name=None):
         pytest.skip()
 
+    @pytest.mark.order(Order.PIPELINE_START)
     def test_start(self, cli_runner, name, sleep):
         super().test_start(cli_runner, name, sleep)
 
+    @pytest.mark.order(Order.PIPELINE_STOP)
     def test_stop(self, cli_runner, name, check_output_file_name):
         super().test_stop(cli_runner, name, check_output_file_name)
 
+    @pytest.mark.order(Order.PIPELINE_RAW_OUTPUT)
     def test_watermark(self):
         schema_id = get_schema_id('test_dir_json')
         assert get_output(f'{schema_id}_watermark.json') == {'watermark': 1512889200.0 + 3600, 'schemaId': schema_id}
@@ -64,6 +67,7 @@ class TestDirectory(TestPipelineBase):
     def test_output(self, name=None, pipeline_type=None, output=None):
         pytest.skip()
 
+    @pytest.mark.order(Order.PIPELINE_OUTPUT)
     def test_offset(self):
         pipeline_ = pipeline.repository.get_by_id('test_dir_csv')
         assert pipeline_.offset
@@ -75,5 +79,6 @@ class TestDirectory(TestPipelineBase):
             }
         }
 
+    @pytest.mark.order(Order.PIPELINE_RAW_OUTPUT)
     def test_events_output(self):
         assert get_output('events_directory.json') == get_expected_events_output('events_directory.json')

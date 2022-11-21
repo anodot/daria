@@ -1,6 +1,7 @@
 import json
 import os
 import pytest
+from enum import IntEnum
 
 from unittest.mock import Mock
 from datetime import datetime
@@ -16,6 +17,23 @@ DUMMY_DESTINATION_OUTPUT_PATH = '/output'
 TEST_DATASETS_PATH = '/home/test-datasets'
 
 INPUT_FILES_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'input_files')
+
+
+class Order(IntEnum):
+    SOURCE_CREATE = 0
+    SOURCE_EDIT = 1
+    PIPELINE_CREATE = 2
+    PIPELINE_EDIT = 4
+
+    PIPELINE_START = 5
+    PIPELINE_OUTPUT = 6
+    PIPELINE_STOP = 7
+    PIPELINE_RESET = 8
+    PIPELINE_RAW_OUTPUT = 9
+
+    OTHER = 10
+    PIPELINE_DELETE = 11
+    SOURCE_DELETE = 12
 
 
 @pytest.fixture(scope="session")
@@ -45,12 +63,14 @@ def get_input_file_path(name):
 
 def pytest_generate_tests(metafunc):
     # called once per each test function
+    # print(metafunc.__dict__)
     if metafunc.cls is None or not hasattr(metafunc.cls, 'params') or metafunc.function.__name__ not in metafunc.cls.params:
         return
     funcarglist = metafunc.cls.params[metafunc.function.__name__]
     function_argnames = set(metafunc.function.__code__.co_varnames[:metafunc.function.__code__.co_argcount])
     params = sorted(list(function_argnames - {'self', 'cli_runner', 'api_client'}))
     metafunc.parametrize(params, [[funcargs.get(name, None) for name in params] for funcargs in funcarglist])
+    # metafunc.order
 
 
 def generate_input(input_: dict) -> str:

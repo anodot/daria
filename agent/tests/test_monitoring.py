@@ -1,7 +1,7 @@
 import pytest
 import requests
 
-from .test_input.test_zpipeline_base import TestInputBase
+from .test_input.test_zpipeline_base import TestInputBase, Order
 from .test_pipelines.test_zpipeline_base import TestPipelineBase
 
 
@@ -33,15 +33,19 @@ class TestMonitoringMetrics(TestInputBase, TestPipelineBase):
         ],
     }
 
+    @pytest.mark.order(Order.SOURCE_CREATE)
     def test_create_source_with_file(self, cli_runner, file_name):
         super().test_create_source_with_file(cli_runner, file_name)
 
+    @pytest.mark.order(Order.PIPELINE_CREATE)
     def test_create_with_file(self, cli_runner, file_name, override_config):
         super().test_create_with_file(cli_runner, file_name, override_config)
 
+    @pytest.mark.order(Order.PIPELINE_START)
     def test_start(self, cli_runner, name, sleep):
         super().test_start(cli_runner, name, sleep)
 
+    @pytest.mark.order(Order.PIPELINE_STOP)
     def test_stop(self, cli_runner, name, check_output_file_name):
         super().test_stop(cli_runner, name, check_output_file_name)
 
@@ -60,6 +64,7 @@ class TestMonitoringMetrics(TestInputBase, TestPipelineBase):
     def test_output_schema(self, name=None, pipeline_type=None, output=None):
         pytest.skip()
 
+    @pytest.mark.order(Order.OTHER)
     def test_monitoring_metrics(self, name, metric_type):
         response = requests.get('http://localhost/metrics')
         assert response.status_code == 200

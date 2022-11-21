@@ -2,7 +2,7 @@ import time
 import pytest
 
 from ..test_zpipeline_base import TestPipelineBase, get_expected_schema_output, get_schema_id
-from ...conftest import get_output
+from ...conftest import get_output, Order
 
 
 class TestSNMP(TestPipelineBase):
@@ -54,20 +54,25 @@ class TestSNMP(TestPipelineBase):
     def test_output(self, name=None, pipeline_type=None, output=None):
         pytest.skip()
 
+    @pytest.mark.order(Order.PIPELINE_START)
     def test_start(self, cli_runner, name, sleep):
         super().test_start(cli_runner, name, sleep)
 
+    @pytest.mark.order(Order.PIPELINE_STOP)
     def test_force_stop(self, cli_runner, name, check_output_file_name):
         super().test_force_stop(cli_runner, name, check_output_file_name)
 
+    @pytest.mark.order(Order.PIPELINE_RAW_OUTPUT)
     def test_output_schema(self, name, pipeline_type, output):
         expected_output = get_expected_schema_output(name, output, pipeline_type)
+        self._wait(lambda: get_output(f'{name}_{pipeline_type}.json'))
         actual_output = get_output(f'{name}_{pipeline_type}.json')
+        assert actual_output
         # we send current timestamp, it's hard to test, so I check only that data was sent during the last two minutes
         timestamp = actual_output[0].get('timestamp')
         for output in actual_output:
             output.pop('timestamp')
-        assert int(time.time()) - timestamp < 120
+        assert int(time.time()) - timestamp < 180
         assert actual_output == expected_output
         schema_id = get_schema_id(name)
         watermark = get_output(f'{schema_id}_watermark.json')

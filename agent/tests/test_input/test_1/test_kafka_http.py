@@ -1,12 +1,13 @@
 import json
 import subprocess
 import traceback
+import pytest
 import csv
 
 from kafka import KafkaProducer
 from agent import cli, source, pipeline
 from ..test_zpipeline_base import TestInputBase
-from ...conftest import get_input_file_path
+from ...conftest import get_input_file_path, Order
 
 
 class TestKafka(TestInputBase):
@@ -112,12 +113,14 @@ class TestKafka(TestInputBase):
                 producer.send(topic, messages, partition=int(index > 3))
                 producer.flush()
 
+    @pytest.mark.order(Order.SOURCE_CREATE)
     def test_source_create(self, cli_runner, name):
         result = cli_runner.invoke(cli.source.create, catch_exceptions=False,
                                    input=f"kafka\n{name}\nkafka:29092\n{name}\n\n\n")
         assert result.exit_code == 0
         assert source.repository.exists(name)
 
+    @pytest.mark.order(Order.PIPELINE_CREATE)
     def test_create(self, cli_runner, source_name, name, options, value, timestamp, advanced_options):
         result = cli_runner.invoke(
             cli.pipeline.create, options, catch_exceptions=False,
@@ -128,11 +131,13 @@ class TestKafka(TestInputBase):
         pipeline_ = pipeline.repository.get_by_id(name)
         assert bool(pipeline_.override_source)
 
+    @pytest.mark.order(Order.PIPELINE_EDIT)
     def test_edit(self, cli_runner, options, value):
         result = cli_runner.invoke(cli.pipeline.edit, options, catch_exceptions=False,
                                    input=f"\n{value}\n\n\n\n\n\n\n\n\n\n\n\n")
         assert result.exit_code == 0
 
+    @pytest.mark.order(Order.PIPELINE_CREATE)
     def test_create_transform_value(self, cli_runner, pipeline_id: str, transform_file: dict):
         input_ = {
             'source name': 'test_kfk',
@@ -158,6 +163,7 @@ class TestKafka(TestInputBase):
         assert result.exit_code == 0
 
     # I guess it's testing di.init() for cli, cli_runner doesn't run click app, and subprocess runs it
+    @pytest.mark.order(Order.SOURCE_CREATE)
     def test_create_subprocess(self):
         input_file_path = get_input_file_path('kafka_sources_2.json')
         try:

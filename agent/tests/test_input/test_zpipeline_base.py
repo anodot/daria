@@ -1,11 +1,12 @@
 import json
 import os.path
+import pytest
 import shutil
 
 import sdc_client
 
 from typing import Callable
-from ..conftest import get_input_file_path
+from ..conftest import get_input_file_path, Order
 from agent import source, cli
 
 
@@ -13,8 +14,9 @@ class TestInputBase(object):
     __test__ = False
     params = {}
 
+    @pytest.mark.order(Order.SOURCE_CREATE)
     def test_create_source_with_file(self, cli_runner, file_name):
-        input_file_path = get_input_file_path(file_name + '.json')
+        input_file_path = get_input_file_path(f'{file_name}.json')
         result = cli_runner.invoke(cli.source.create, ['-f', input_file_path], catch_exceptions=False)
         assert result.exit_code == 0
         with open(input_file_path) as f:
@@ -22,11 +24,12 @@ class TestInputBase(object):
             for source_ in sources:
                 assert source.repository.exists(f"{source_['name']}")
 
+    @pytest.mark.order(Order.PIPELINE_CREATE)
     def test_create_with_file(self, cli_runner, file_name, override_config: dict):
         self._test_create_with_file(cli_runner, file_name, override_config, cli.pipeline.create)
 
     def _test_create_with_file(self, cli_runner, file_name, override_config: dict, create_function: Callable):
-        input_file_path = get_input_file_path(file_name + '.json')
+        input_file_path = get_input_file_path(f'{file_name}.json')
         input_file_path = _replace_config_in_file(input_file_path, override_config)
         result = cli_runner.invoke(create_function, ['-f', input_file_path], catch_exceptions=False)
         assert result.exit_code == 0

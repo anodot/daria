@@ -1,6 +1,7 @@
+import pytest
 from agent import cli, pipeline
 from ..test_zpipeline_base import TestInputBase
-from ...conftest import get_input_file_path
+from ...conftest import get_input_file_path, Order
 
 
 class TestObservium(TestInputBase):
@@ -17,16 +18,20 @@ class TestObservium(TestInputBase):
         }],
     }
 
+    @pytest.mark.order(Order.SOURCE_CREATE)
     def test_create_source_with_file(self, cli_runner, file_name):
         super().test_create_source_with_file(cli_runner, file_name)
 
+    @pytest.mark.order(Order.PIPELINE_CREATE)
     def test_create_with_file(self, cli_runner, file_name, override_config):
         super().test_create_with_file(cli_runner, file_name, override_config)
 
+    @pytest.mark.order(Order.PIPELINE_EDIT)
     def test_edit_with_file(self, cli_runner, file_name):
         result = cli_runner.invoke(cli.pipeline.edit, ['-f', get_input_file_path(file_name)], catch_exceptions=False)
         assert result.exit_code == 0
 
+    @pytest.mark.order(Order.PIPELINE_OUTPUT)
     def test_schema(self):
         assert pipeline.repository.get_by_id('observium_storage').schema == {
             "version": "1",
