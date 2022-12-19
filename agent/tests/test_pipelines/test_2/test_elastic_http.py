@@ -7,16 +7,19 @@ class TestElastic(TestPipelineBase):
     __test__ = True
     params = {
         'test_start': [{'name': 'test_es_value_const'}, {'name': 'test_es_timestamp_ms'},
-                       {'name': 'test_es_file_short'}, {'name': 'test_es_file_full'}],
+                       {'name': 'test_es_file_short'}, {'name': 'test_es_file_full'},
+                       {'name': 'test_es_file_with_schema'}],
         'test_reset': [{'name': 'test_es_value_const'}],
         'test_stop': [{'name': 'test_es_value_const'}, {'name': 'test_es_timestamp_ms'},
-                      {'name': 'test_es_file_short'}, {'name': 'test_es_file_full'}],
+                      {'name': 'test_es_file_short'}, {'name': 'test_es_file_full'},
+                      {'name': 'test_es_file_with_schema'}],
         'test_output': [{'name': 'test_es_value_const', 'output': 'json_value_const_adv.json',
                          'pipeline_type': 'elastic'},
                         {'name': 'test_es_timestamp_ms', 'output': 'json_value_property.json',
                          'pipeline_type': 'elastic'}],
         'test_delete_pipeline': [{'name': 'test_es_value_const'}, {'name': 'test_es_timestamp_ms'},
-                                 {'name': 'test_es_file_short'}, {'name': 'test_es_file_full'}],
+                                 {'name': 'test_es_file_short'}, {'name': 'test_es_file_full'},
+                                 {'name': 'test_es_file_with_schema'}],
         'test_source_delete': [{'name': 'test_es'}],
     }
 
