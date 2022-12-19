@@ -9,7 +9,8 @@
       "type": "unix",
       "name": "_source/timestamp_unix"
     },
-    "query_file": "/usr/src/app/tests/input_files/elastic_query.json"
+    "query_file": "/usr/src/app/tests/input_files/elastic_query.json",
+    "uses_schema": false
   },
   {
     "source": "test_es",
@@ -27,6 +28,7 @@
       "format": "M/d/yyyy H:mm:ss"
     },
     "properties": {"test": "val"},
-    "query_file": "/usr/src/app/tests/input_files/elastic_query.json"
+    "query_file": "/usr/src/app/tests/input_files/elastic_query.json",
+    "uses_schema": false
   }
 ]
