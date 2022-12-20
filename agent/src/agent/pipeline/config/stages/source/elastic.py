@@ -7,6 +7,11 @@ from agent.pipeline.config.stages.base import JythonSource
 class ElasticScript(JythonSource):
     JYTHON_SCRIPT = 'elastic_loader.py'
 
+    def _load_query_from_file(self):
+        with open(self.pipeline.config['query_file']) as f:
+            query = f.read()
+            return query.replace('${OFFSET}', '"OFFSET"')
+
     def _get_script_params(self) -> list[dict]:
         return [
             {
@@ -42,6 +47,10 @@ class ElasticScript(JythonSource):
                 'key': 'MONITORING_URL',
                 'value': monitoring.get_monitoring_source_error_url(self.pipeline)
             },
+            {
+                'key': "QUERY",
+                'value': self._load_query_from_file()
+            }
         ]
 
 

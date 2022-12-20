@@ -11,6 +11,7 @@ try:
     import time
     import urllib
     import re
+    import json
     from datetime import datetime
 finally:
     sdc.importUnlock()
@@ -110,15 +111,7 @@ def get_base_url():
 
 
 def get_query_params(offset):
-    return {
-        "sort": [{
-            "timestamp_unix_ms": {
-                "order": "asc"
-            }
-        }],
-        "query": {
-            "range": {"timestamp_unix_ms": {"gt": offset}}
-        }
-    }
+    qq = str(sdc.userParams['QUERY']).replace('"OFFSET"', str(offset))
+    return json.loads(qq)
 
 main()
