@@ -41,7 +41,12 @@ def make_request(client, index, params={}, scroll=None):
     for i in range(1, N_REQUESTS_TRIES + 1):
         try:
             sdc.log.debug(index)
-            res = client.search(body=params, index=index)
+            res = client.search(
+                body=params,
+                index=index,
+                scroll=scroll,
+                timeout=sdc.userParams['QUERY_TIMEOUT']
+            )
         except elasticsearch.exceptions.HTTP_EXCEPTIONS as e:
             requests.post(sdc.userParams['MONITORING_URL'] + str(e.response.status_code))
             sdc.log.error(str(e))
@@ -105,12 +110,12 @@ def main():
 
 def get_client():
     return elasticsearch.Elasticsearch(
-        sdc.userParams['URLs'][0]
+        sdc.userParams['URLs']
     )
 
 
 def get_query_params(offset):
-    return json.loads(str(sdc.userParams['QUERY']).replace('$OFFSET', str(offset)))
+    return json.loads(str(sdc.userParams['QUERY']).replace('"$OFFSET"', str(offset)))
 
 
 main()

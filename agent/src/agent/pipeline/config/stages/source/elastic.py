@@ -39,7 +39,7 @@ class ElasticScript(JythonSource):
             },
             {
                 'key': 'SCROLL_TIMEOUT',
-                'value': str(self.pipeline.source.config.get('scroll_timeout'))
+                'value': str(self.pipeline.source.config.get('scroll_timeout', '5m'))
             },
             {
                 'key': 'MONITORING_URL',
