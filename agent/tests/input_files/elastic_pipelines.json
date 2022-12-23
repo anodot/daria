@@ -25,16 +25,12 @@
     "count_records_measurement_name": "clicks",
     "count_records": true,
     "values": {},
-    "dimensions": {
-      "required": [
+    "dimensions": [
         "_source/ver",
-        "_source/Country"
-      ],
-      "optional": [
+        "_source/Country",
         "_source/Exchange",
         "optional_dim"
-      ]
-    },
+    ],
     "timestamp": {
       "type": "string",
       "name": "_source/timestamp_string",
@@ -52,25 +48,18 @@
     "count_records_measurement_name": "clicks",
     "count_records": true,
     "values": {},
-    "dimensions": {
-      "required": [
+    "dimensions": [
         "_source/ver",
-        "_source/Country"
-      ],
-      "optional": [
+        "_source/Country",
         "_source/Exchange",
         "optional_dim"
-      ]
-    },
+    ],
     "timestamp": {
       "type": "string",
       "name": "_source/timestamp_string",
       "format": "M/d/yyyy H:mm:ss"
     },
-    "properties": {
-      "test": "val"
-    },
-    "query_file": "/usr/src/app/tests/input_files/elastic_query.json",
+    "query_file": "/usr/src/app/tests/input_files/elastic_query_schema.json",
     "uses_schema": true
   }
 ]

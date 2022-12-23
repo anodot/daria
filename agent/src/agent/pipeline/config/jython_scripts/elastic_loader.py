@@ -13,6 +13,7 @@ try:
     import re
     import json
     from datetime import datetime
+    import elasticsearch
 finally:
     sdc.importUnlock()
 
@@ -36,19 +37,12 @@ def get_interval():
     return int(sdc.userParams['INTERVAL'])
 
 
-def make_request(url_, params={}):
+def make_request(client, index, params={}, scroll=None):
     for i in range(1, N_REQUESTS_TRIES + 1):
         try:
-            sdc.log.debug(url_)
-            res = requests.post(
-                url_,
-                json=params,
-                stream=True,
-                headers={'Content-Type': 'application/json'},
-                # timeout=sdc.userParams['QUERY_TIMEOUT']
-            )
-            res.raise_for_status()
-        except requests.HTTPError as e:
+            sdc.log.debug(index)
+            res = client.search(body=params, index=index)
+        except elasticsearch.exceptions.HTTP_EXCEPTIONS as e:
             requests.post(sdc.userParams['MONITORING_URL'] + str(e.response.status_code))
             sdc.log.error(str(e))
             if i == N_REQUESTS_TRIES:
@@ -62,9 +56,8 @@ def make_request(url_, params={}):
 def process_batch(result_, end_):
     batch = sdc.createBatch()
     for res in result_['hits']['hits']:
-        # res['sort'] = [res['_source']['timestamp_unix_ms']]
-        del res['_score']
         record = dict(res.items())
+        record['last_timestamp'] = end_ - get_interval()
         sdc_record = sdc.createRecord('record created ' + str(get_now_with_delay()))
         sdc_record.value = record
         batch.add(sdc_record)
@@ -78,17 +71,21 @@ def process_batch(result_, end_):
 def main():
     interval = get_interval()
     end = get_backfill_offset() + interval
+    client = get_client()
     while True:
         try:
-            curr_url = get_base_url()
             while end > get_now_with_delay():
                 time.sleep(2)
                 if sdc.isStopped():
                     return
             if sdc.isStopped():
                 break
-            sdc.log.debug(curr_url)
-            res = make_request(curr_url, get_query_params(end)).json()
+            res = make_request(
+                client,
+                sdc.userParams['INDEX'],
+                get_query_params(end),
+                sdc.userParams.get('SCROLL_TIMEOUT')
+            )
             sdc.log.debug(str(res))
             if res['hits']['total']['value']:
                 process_batch(res, end)
@@ -96,7 +93,8 @@ def main():
                 # records with last_timestamp only
                 batch = sdc.createBatch()
                 record = sdc.createRecord('record created ' + str(datetime.now()))
-                record.value = dict(res['hits']['hits'])
+                record.value = dict()
+                record.value['last_timestamp'] = end - get_interval()
                 batch.add(record)
                 batch.process(entityName, str(end))
             end += interval
@@ -105,13 +103,14 @@ def main():
             raise
 
 
-def get_base_url():
-    return sdc.userParams['URLs'][0] + '/' + sdc.userParams['INDEX'] + "//_search?scroll=" \
-           + sdc.userParams['SCROLL_TIMEOUT']
+def get_client():
+    return elasticsearch.Elasticsearch(
+        sdc.userParams['URLs'][0]
+    )
 
 
 def get_query_params(offset):
-    qq = str(sdc.userParams['QUERY']).replace('"OFFSET"', str(offset))
-    return json.loads(qq)
+    return json.loads(str(sdc.userParams['QUERY']).replace('$OFFSET', str(offset)))
+
 
 main()

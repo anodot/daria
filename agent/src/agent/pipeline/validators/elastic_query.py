@@ -1,11 +1,14 @@
 import re
 
 
-def get_errors(query: str, offset_field: str):
+def get_errors(query: str, offset_field: str, schema: bool):
     errors = []
     if not is_valid_timestamp(query, offset_field):
         errors.append(f'The query must have ascending ordering by the `{offset_field}`')
-    if not is_valid_offset(query):
+    if schema:
+        if 'OFFSET' not in query:
+            errors.append('Please use "OFFSET" with a gt condition (not gte)')
+    elif not is_valid_offset(query):
         errors.append('Please use ${OFFSET} with a gt condition (not gte)')
     return errors
 
