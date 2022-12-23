@@ -30,8 +30,8 @@ pyparsing==2.3.1
 pyrsistent==0.15.1
 pytest==7.2.0
 pytest-order==1.0.1
-pytest-xdist==3.0.2
-python-anodot==2.0.3
+pytest-xdist==3.1.0
+python-anodot==2.0.4
 python-dateutil==2.8.0
 pytz==2018.9
 PyYAML==5.4
