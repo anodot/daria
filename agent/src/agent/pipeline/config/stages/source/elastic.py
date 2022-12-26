@@ -1,6 +1,6 @@
 import os
 
-from agent import source, monitoring
+from agent import monitoring
 from agent.pipeline.config.stages.base import JythonSource
 
 
@@ -27,7 +27,7 @@ class ElasticScript(JythonSource):
             },
             {
                 'key': 'INTERVAL',
-                'value': str(self.pipeline.source.config.get('query_interval_sec', 1))
+                'value': str(self.pipeline.source.config.get('query_interval_sec', 1000))
             },
             {
                 'key': 'DELAY_IN_MINUTES',
@@ -35,7 +35,7 @@ class ElasticScript(JythonSource):
             },
             {
                 'key': 'QUERY_TIMEOUT',
-                'value': str(self.pipeline.source.query_timeout)
+                'value': str(self.pipeline.source.query_timeout) + 's'
             },
             {
                 'key': 'SCROLL_TIMEOUT',

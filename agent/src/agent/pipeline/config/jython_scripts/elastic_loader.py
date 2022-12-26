@@ -40,13 +40,20 @@ def get_interval():
 def make_request(client, index, params={}, scroll=None):
     for i in range(1, N_REQUESTS_TRIES + 1):
         try:
-            sdc.log.debug(index)
-            res = client.search(
+            page = client.search(
                 body=params,
                 index=index,
                 scroll=scroll,
                 timeout=sdc.userParams['QUERY_TIMEOUT']
             )
+            sid = page['_scroll_id']
+            scroll_size = page['hits']['total']['value']
+            yield page
+            while scroll_size:
+                page = client.scroll(scroll_id=sid, scroll=scroll)
+                sid = page['_scroll_id']
+                scroll_size = len(page['hits']['hits'])
+                yield page
         except elasticsearch.exceptions.HTTP_EXCEPTIONS as e:
             requests.post(sdc.userParams['MONITORING_URL'] + str(e.response.status_code))
             sdc.log.error(str(e))
@@ -55,7 +62,6 @@ def make_request(client, index, params={}, scroll=None):
             time.sleep(i**2)
             continue
         break
-    return res
 
 
 def process_batch(result_, end_):
@@ -85,24 +91,24 @@ def main():
                     return
             if sdc.isStopped():
                 break
-            res = make_request(
-                client,
-                sdc.userParams['INDEX'],
-                get_query_params(end),
-                sdc.userParams.get('SCROLL_TIMEOUT')
-            )
-            sdc.log.debug(str(res))
-            if res['hits']['total']['value']:
-                process_batch(res, end)
-            elif sdc.userParams['DVP_ENABLED'] == 'True':
-                # records with last_timestamp only
-                batch = sdc.createBatch()
-                record = sdc.createRecord('record created ' + str(datetime.now()))
-                record.value = dict()
-                record.value['last_timestamp'] = end - get_interval()
-                batch.add(record)
-                batch.process(entityName, str(end))
-            end += interval
+            for batch in make_request(
+                    client,
+                    sdc.userParams['INDEX'],
+                    get_query_params(end),
+                    sdc.userParams.get('SCROLL_TIMEOUT')
+                ):
+                sdc.log.debug(str(batch))
+                if batch['hits']['total']['value']:
+                    process_batch(batch, end)
+                elif sdc.userParams['DVP_ENABLED'] == 'True':
+                    # records with last_timestamp only
+                    batch = sdc.createBatch()
+                    record = sdc.createRecord('record created ' + str(datetime.now()))
+                    record.value = dict()
+                    record.value['last_timestamp'] = end - get_interval()
+                    batch.add(record)
+                    batch.process(entityName, str(end))
+                end += interval
         except Exception:
             sdc.log.error(traceback.format_exc())
             raise
