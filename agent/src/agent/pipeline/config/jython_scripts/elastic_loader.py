@@ -48,12 +48,12 @@ def make_request(client, index, params={}, scroll=None):
             )
             sid = page['_scroll_id']
             scroll_size = page['hits']['total']['value']
-            yield page
             while scroll_size:
+                yield page
                 page = client.scroll(scroll_id=sid, scroll=scroll)
                 sid = page['_scroll_id']
                 scroll_size = len(page['hits']['hits'])
-                yield page
+            client.clear_scroll(scroll_id=sid)
         except elasticsearch.exceptions.HTTP_EXCEPTIONS as e:
             requests.post(sdc.userParams['MONITORING_URL'] + str(e.response.status_code))
             sdc.log.error(str(e))
@@ -98,7 +98,7 @@ def main():
                     sdc.userParams.get('SCROLL_TIMEOUT')
                 ):
                 sdc.log.debug(str(batch))
-                if batch['hits']['total']['value']:
+                if len(batch['hits']['hits']):
                     process_batch(batch, end)
                 elif sdc.userParams['DVP_ENABLED'] == 'True':
                     # records with last_timestamp only
@@ -108,7 +108,7 @@ def main():
                     record.value['last_timestamp'] = end - get_interval()
                     batch.add(record)
                     batch.process(entityName, str(end))
-                end += interval
+            end += interval
         except Exception:
             sdc.log.error(traceback.format_exc())
             raise
