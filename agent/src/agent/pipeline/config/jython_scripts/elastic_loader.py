@@ -43,7 +43,6 @@ def retry_request(func):
             try:
                 return func(*args, **kwargs)
             except elasticsearch.exceptions.ElasticsearchException as e:
-                requests.post(sdc.userParams['MONITORING_URL'] + str(e.response.status_code))
                 sdc.log.error(str(e))
                 if i == N_REQUESTS_TRIES:
                     raise
