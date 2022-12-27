@@ -38,6 +38,7 @@ class TestElastic:
                 "measurement_names": {"Clicks":  "clicks"},
                 "values": {"Clicks":  "gauge"},
                 "dimensions": ["_source/ver", "_source/Country"],
+                "uses_schema": False,
                 "timestamp": {
                     "type": "unix",
                     "name": "_source/timestamp_unix"
