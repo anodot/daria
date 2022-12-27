@@ -94,7 +94,7 @@ def main():
             for batch in make_request(
                     client,
                     sdc.userParams['INDEX'],
-                    get_query_params(end),
+                    get_query_params(end, interval),
                     sdc.userParams.get('SCROLL_TIMEOUT')
                 ):
                 sdc.log.debug(str(batch))
@@ -120,8 +120,14 @@ def get_client():
     )
 
 
-def get_query_params(offset):
-    return json.loads(str(sdc.userParams['QUERY']).replace('"$OFFSET"', str(offset)))
+def get_query_params(offset, interval):
+    return json.loads(
+        str(sdc.userParams['QUERY']
+            ).replace(
+            '"$OFFSET+$INTERVAL"', str(offset + interval)
+        ).replace(
+            '"$OFFSET"', str(offset))
+    )
 
 
 main()
