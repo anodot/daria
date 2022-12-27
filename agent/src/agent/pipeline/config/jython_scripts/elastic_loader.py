@@ -37,31 +37,52 @@ def get_interval():
     return int(sdc.userParams['INTERVAL'])
 
 
-def make_request(client, index, params={}, scroll=None):
-    for i in range(1, N_REQUESTS_TRIES + 1):
-        try:
-            page = client.search(
+def retry_request(func):
+    def wrap(*args, **kwargs):
+        for i in range(1, N_REQUESTS_TRIES + 1):
+            try:
+                return func(*args, **kwargs)
+            except (
+                    elasticsearch.exceptions.HTTP_EXCEPTIONS[400], elasticsearch.exceptions.HTTP_EXCEPTIONS[401],
+                    elasticsearch.exceptions.HTTP_EXCEPTIONS[403], elasticsearch.exceptions.HTTP_EXCEPTIONS[404],
+                    elasticsearch.exceptions.HTTP_EXCEPTIONS[409], elasticsearch.exceptions.TransportError) as e:
+                requests.post(sdc.userParams['MONITORING_URL'] + str(e.response.status_code))
+                sdc.log.error(str(e))
+                if i == N_REQUESTS_TRIES:
+                    raise
+                time.sleep(i ** 2)
+                continue
+
+    return wrap
+
+
+@retry_request
+def make_search(client, index, params={}, scroll=None):
+    return client.search(
                 body=params,
                 index=index,
                 scroll=scroll,
                 timeout=sdc.userParams['QUERY_TIMEOUT']
             )
-            sid = page['_scroll_id']
-            scroll_size = page['hits']['total']['value']
-            while scroll_size:
-                yield page
-                page = client.scroll(scroll_id=sid, scroll=scroll)
-                sid = page['_scroll_id']
-                scroll_size = len(page['hits']['hits'])
-            client.clear_scroll(scroll_id=sid)
-        except elasticsearch.exceptions.HTTP_EXCEPTIONS as e:
-            requests.post(sdc.userParams['MONITORING_URL'] + str(e.response.status_code))
-            sdc.log.error(str(e))
-            if i == N_REQUESTS_TRIES:
-                raise
-            time.sleep(i**2)
-            continue
-        break
+
+
+@retry_request
+def make_scroll(client, sid, scroll):
+    return client.scroll(scroll_id=sid, scroll=scroll)
+
+
+def make_request(client, index, params={}, scroll=None):
+    page = make_search(client, index, params, scroll)
+    sid = page['_scroll_id']
+    scroll_size = page['hits']['total']['value']
+    yield page
+    while scroll_size:
+        page = make_scroll(client, sid, scroll)
+        sid = page['_scroll_id']
+        scroll_size = len(page['hits']['hits'])
+        if scroll_size:
+            yield page
+    client.clear_scroll(scroll_id=sid)
 
 
 def process_batch(result_, end_):
