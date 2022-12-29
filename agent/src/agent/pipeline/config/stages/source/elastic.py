@@ -1,6 +1,4 @@
-import os
-
-from agent import monitoring
+from agent import monitoring, source
 from agent.pipeline.config.stages.base import JythonSource
 
 
@@ -15,11 +13,23 @@ class ElasticScript(JythonSource):
         return [
             {
                 'key': 'URLs',
-                'value': self.pipeline.source.config['conf.httpUris']
+                'value': self.pipeline.source.config[source.ElasticSource.CONFIG_HTTP_URIS]
+            },
+            {
+                'key': 'USERNAME',
+                'value': self.pipeline.source.config.get(source.ElasticSource.USERNAME, '')
+            },
+            {
+                'key': 'PASSWORD',
+                'value': self.pipeline.source.config.get(source.ElasticSource.PASSWORD, '')
+            },
+            {
+                'key': 'VERIFY_SSL',
+                'value': '1' if self.pipeline.source.config.get(source.ElasticSource.VERIFY_SSL, True) else ''
             },
             {
                 'key': 'INDEX',
-                'value': self.pipeline.source.config['conf.index']
+                'value': self.pipeline.source.config[source.ElasticSource.CONFIG_INDEX]
             },
             {
                 'key': 'INITIAL_TIMESTAMP',
@@ -27,7 +37,7 @@ class ElasticScript(JythonSource):
             },
             {
                 'key': 'INTERVAL',
-                'value': str(self.pipeline.source.config.get('query_interval_sec', 1000))
+                'value': str(self.pipeline.interval)
             },
             {
                 'key': 'DELAY_IN_MINUTES',

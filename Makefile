@@ -299,6 +299,7 @@ setup-kafka:
 	./scripts/upload-test-data-to-kafka.sh
 
 setup-elastic:
+	sleep 30
 	./scripts/upload-test-data-to-elastic.sh
 
 setup-victoria:

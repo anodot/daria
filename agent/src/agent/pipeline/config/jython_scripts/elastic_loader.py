@@ -132,8 +132,11 @@ def main():
 
 
 def get_client():
+    basic_auth = None if not sdc.userParams['USERNAME'] else (sdc.userParams['USERNAME'], sdc.userParams['PASSWORD'])
     return elasticsearch.Elasticsearch(
-        sdc.userParams['URLs']
+        sdc.userParams['URLs'],
+        basic_auth=basic_auth,
+        verify_certs=bool(sdc.userParams['VERIFY_SSL'])
     )
 
 
