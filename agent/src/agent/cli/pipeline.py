@@ -2,9 +2,8 @@ import click
 import json
 import os
 import sdc_client
-import shutil
 
-from pathlib import Path
+from agent.source import TYPE_ELASTIC, ElasticSource
 from typing import Optional
 from agent import pipeline, source, streamsets
 from agent.modules.tools import infinite_retry
@@ -373,9 +372,13 @@ def export(dir_path):
                 pipeline_name=pipeline_.name,
             )
         if pipeline_config.get('query_file'):
+            if pipeline_.source.type == TYPE_ELASTIC:
+                query_file_config = pipeline_config['override_source'][ElasticSource.CONFIG_QUERY]
+            else:
+                query_file_config = pipeline_config['query']
             pipeline_config['query_file'] = _export_config_to_file(
                 filename=os.path.basename(pipeline_config['query_file']),
-                config=pipeline_config['query'],
+                config=query_file_config,
                 pipeline_name=pipeline_.name,
             )
         with open(os.path.join(dir_path, f'{pipeline_.name}.json'), 'w+') as f:
