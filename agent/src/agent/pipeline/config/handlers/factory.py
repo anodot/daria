@@ -69,6 +69,7 @@ def _get_schema_handler(pipeline_: Pipeline, base_config: dict) -> SchemaConfigH
         source.TYPE_CLICKHOUSE: pipeline.config.handlers.jdbc.JDBCSchemaConfigHandler,
         source.TYPE_DIRECTORY: pipeline.config.handlers.directory.DirectoryConfigHandler,
         source.TYPE_DATABRICKS: pipeline.config.handlers.jdbc.JDBCSchemaConfigHandler,
+        source.TYPE_ELASTIC: pipeline.config.handlers.elastic.ElasticSchemaConfigHandler,
         source.TYPE_IMPALA: pipeline.config.handlers.jdbc.JDBCSchemaConfigHandler,
         source.TYPE_INFLUX: pipeline.config.handlers.influx.InfluxSchemaConfigHandler,
         source.TYPE_INFLUX_2: pipeline.config.handlers.influx.Influx2SchemaConfigHandler,

@@ -372,7 +372,8 @@ def export(dir_path):
                 pipeline_name=pipeline_.name,
             )
         if pipeline_config.get('query_file'):
-            if pipeline_.source.type == TYPE_ELASTIC:
+            if pipeline_.source.type == TYPE_ELASTIC and pipeline_config['override_source']:
+                # This line needed for old pipelines
                 query_file_config = pipeline_config['override_source'][ElasticSource.CONFIG_QUERY]
             else:
                 query_file_config = pipeline_config['query']

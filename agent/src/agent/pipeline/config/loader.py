@@ -66,6 +66,7 @@ class SchemaConfigLoader(ConfigLoader):
             source.TYPE_CLICKHOUSE: 'jdbc_schema.json',
             source.TYPE_DIRECTORY: 'directory_schema.json',
             source.TYPE_DATABRICKS: 'jdbc_schema.json',
+            source.TYPE_ELASTIC: 'elastic_schema.json',
             source.TYPE_IMPALA: 'jdbc_schema.json',
             source.TYPE_INFLUX: 'influx_schema.json',
             source.TYPE_INFLUX_2: 'influx2_schema.json',

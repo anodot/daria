@@ -50,26 +50,6 @@ class Source(Entity):
         return int(self.config.get('snmp_timeout', 10))
 
 
-class ElasticSource(Source):
-    CONFIG_INDEX = 'conf.index'
-    CONFIG_MAPPING = 'conf.mapping'
-    CONFIG_IS_INCREMENTAL = 'conf.isIncrementalMode'
-    CONFIG_QUERY_INTERVAL = 'conf.queryInterval'
-    CONFIG_OFFSET_FIELD = 'conf.offsetField'
-    CONFIG_INITIAL_OFFSET = 'conf.initialOffset'
-    CONFIG_QUERY = 'conf.query'
-    CONFIG_CURSOR_TIMEOUT = 'conf.cursorTimeout'
-    CONFIG_BATCH_SIZE = 'conf.maxBatchSize'
-    CONFIG_HTTP_URIS = 'conf.httpUris'
-
-    def set_config(self, config):
-        super().set_config(config)
-        if 'query_interval_sec' in self.config:
-            self.config[ElasticSource.CONFIG_QUERY_INTERVAL] = \
-                '${' + str(self.config['query_interval_sec']) + ' * SECONDS}'
-        self.config[ElasticSource.CONFIG_IS_INCREMENTAL] = True
-
-
 class JDBCSource(Source):
     CONFIG_CONNECTION_STRING = 'connection_string'
     CONFIG_USE_CREDENTIALS = 'hikariConfigBean.useCredentials'
@@ -286,6 +266,26 @@ class InfluxSource(Source):
 
 class Influx2Source(InfluxSource):
     pass
+
+
+class ElasticSource(APISource):
+    CONFIG_INDEX = 'conf.index'
+    CONFIG_MAPPING = 'conf.mapping'
+    CONFIG_IS_INCREMENTAL = 'conf.isIncrementalMode'
+    CONFIG_QUERY_INTERVAL = 'conf.queryInterval'
+    CONFIG_OFFSET_FIELD = 'conf.offsetField'
+    CONFIG_INITIAL_OFFSET = 'conf.initialOffset'
+    CONFIG_QUERY = 'conf.query'
+    CONFIG_CURSOR_TIMEOUT = 'conf.cursorTimeout'
+    CONFIG_BATCH_SIZE = 'conf.maxBatchSize'
+    CONFIG_HTTP_URIS = 'conf.httpUris'
+
+    def set_config(self, config):
+        super().set_config(config)
+        if 'query_interval_sec' in self.config:
+            self.config[ElasticSource.CONFIG_QUERY_INTERVAL] = \
+                '${' + str(self.config['query_interval_sec']) + ' * SECONDS}'
+        self.config[ElasticSource.CONFIG_IS_INCREMENTAL] = True
 
 
 class SourceException(Exception):

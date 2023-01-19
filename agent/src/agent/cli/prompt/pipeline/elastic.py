@@ -26,8 +26,8 @@ class ElasticPrompter(SchemalessPrompter):
         with open(self.config['query_file']) as f:
             query = f.read()
             offset_field = self.pipeline.source.config[source.ElasticSource.CONFIG_OFFSET_FIELD]
-            errors = elastic_query.get_errors(query, offset_field)
+            errors = elastic_query.get_errors(query, offset_field, self.pipeline.uses_schema())
             if errors:
                 raise click.ClickException(errors)
 
-            self.config['override_source'][source.ElasticSource.CONFIG_QUERY] = query
+            self.config['query'] = query
