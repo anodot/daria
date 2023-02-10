@@ -1,26 +1,6 @@
 [
   {
-    "source": "test_es",
-    "pipeline_id": "test_es_file_short",
-    "measurement_names": {
-      "Clicks": "clicks"
-    },
-    "values": {
-      "Clicks": "gauge"
-    },
-    "dimensions": [
-      "_source/ver",
-      "_source/Country"
-    ],
-    "timestamp": {
-      "type": "unix",
-      "name": "_source/timestamp_unix"
-    },
-    "query_file": "/usr/src/app/tests/input_files/elastic_query.json",
-    "uses_schema": false
-  },
-  {
-    "source": "test_es",
+    "source": "elastic_old",
     "pipeline_id": "test_es_file_full",
     "count_records_measurement_name": "clicks",
     "count_records": true,
@@ -34,7 +14,7 @@
     "timestamp": {
       "type": "string",
       "name": "_source/timestamp_string",
-      "format": "M/d/yyyy H:mm:ss"
+      "format": "yyyy-MM-dd'T'HH:mm:ss"
     },
     "properties": {
       "test": "val"
@@ -43,23 +23,25 @@
     "uses_schema": false
   },
   {
-    "source": "test_es",
+    "source": "test_elastic_1",
     "pipeline_id": "test_es_file_with_schema",
     "count_records_measurement_name": "clicks",
     "count_records": true,
     "values": {},
+    "interval": 3600,
     "dimensions": [
         "_source/ver",
         "_source/Country",
-        "_source/Exchange",
-        "optional_dim"
+        "_source/Exchange"
     ],
     "timestamp": {
       "type": "string",
       "name": "_source/timestamp_string",
-      "format": "M/d/yyyy H:mm:ss"
+      "format": "yyyy-MM-dd'T'HH:mm:ss"
     },
     "query_file": "/usr/src/app/tests/input_files/elastic_query_schema.json",
-    "uses_schema": true
+    "uses_schema": true,
+    "log_everything": true,
+    "days_to_backfill": 1
   }
 ]

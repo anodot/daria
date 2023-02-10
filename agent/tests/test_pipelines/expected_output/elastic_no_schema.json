@@ -1,0 +1,204 @@
+[
+  {
+    "timestamp": 1665536400,
+    "properties": {
+      "ver": "1",
+      "Country": "\u4e2d\u56fd",
+      "Exchange": "DoubleClick",
+      "what": "clicks",
+      "target_type": "counter",
+      "test": "val"
+    },
+    "value": 1.0,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_es_file_full"
+      ],
+      "pipeline_type": [
+        "elastic"
+      ]
+    }
+  },
+  {
+    "timestamp": 1665540000,
+    "properties": {
+      "ver": "1",
+      "Country": "USA",
+      "Exchange": "DoubleClick",
+      "what": "clicks",
+      "target_type": "counter",
+      "test": "val"
+    },
+    "value": 1.0,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_es_file_full"
+      ],
+      "pipeline_type": [
+        "elastic"
+      ]
+    }
+  },
+  {
+    "timestamp": 1665543600,
+    "properties": {
+      "ver": "1",
+      "Country": "USA",
+      "Exchange": "DoubleClick",
+      "what": "clicks",
+      "target_type": "counter",
+      "test": "val"
+    },
+    "value": 1.0,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_es_file_full"
+      ],
+      "pipeline_type": [
+        "elastic"
+      ]
+    }
+  },
+  {
+    "timestamp": 1665547200,
+    "properties": {
+      "ver": "1",
+      "Country": "USA",
+      "Exchange": "DoubleClick",
+      "what": "clicks",
+      "target_type": "counter",
+      "test": "val"
+    },
+    "value": 1.0,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_es_file_full"
+      ],
+      "pipeline_type": [
+        "elastic"
+      ]
+    }
+  },
+  {
+    "timestamp": 1665550800,
+    "properties": {
+      "ver": "1",
+      "Country": "USA",
+      "Exchange": "DoubleClick",
+      "what": "clicks",
+      "target_type": "counter",
+      "test": "val"
+    },
+    "value": 1.0,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_es_file_full"
+      ],
+      "pipeline_type": [
+        "elastic"
+      ]
+    }
+  },
+  {
+    "timestamp": 1665554400,
+    "properties": {
+      "ver": "1",
+      "Country": "USA",
+      "Exchange": "DoubleClick",
+      "what": "clicks",
+      "target_type": "counter",
+      "test": "val"
+    },
+    "value": 1.0,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_es_file_full"
+      ],
+      "pipeline_type": [
+        "elastic"
+      ]
+    }
+  },
+  {
+    "timestamp": 1665558000,
+    "properties": {
+      "ver": "1",
+      "Exchange": "DoubleClick",
+      "what": "clicks",
+      "target_type": "counter",
+      "test": "val"
+    },
+    "value": 1.0,
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_es_file_full"
+      ],
+      "pipeline_type": [
+        "elastic"
+      ]
+    }
+  }
+]

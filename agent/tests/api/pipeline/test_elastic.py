@@ -3,7 +3,7 @@ from time import sleep
 
 
 class TestElastic:
-    days_to_backfill = (datetime.now() - datetime(year=2017, month=12, day=10)).days + 1
+    offset = (datetime.now() - datetime(year=2017, month=12, day=10)).total_seconds()
     params = {
         'test_source_create': [{
             'data': [{
@@ -14,7 +14,7 @@ class TestElastic:
                     'conf.isIncrementalMode': True,
                     'conf.index': 'test',
                     'conf.offsetField': 'timestamp_unix_ms',
-                    'conf.initialOffset': f'now-{days_to_backfill}d',
+                    'conf.initialOffset': str(offset),
                     'query_interval_sec': 1,
                     'conf.queryInterval': '${1 * SECONDS}'
                 }
@@ -23,7 +23,7 @@ class TestElastic:
                 'config': {
                     'conf.httpUris': ['es:9200'],
                     'conf.index': 'test',
-                    'conf.initialOffset': f'now-{days_to_backfill}d',
+                    'conf.initialOffset': str(offset),
                     'conf.isIncrementalMode': True,
                     'conf.offsetField': 'timestamp_unix_ms',
                     'conf.queryInterval': '${1 * SECONDS}',
@@ -40,8 +40,8 @@ class TestElastic:
                 "dimensions": ["_source/ver", "_source/Country"],
                 "uses_schema": False,
                 "timestamp": {
-                    "type": "unix",
-                    "name": "_source/timestamp_unix"
+                    "type": "unix_ms",
+                    "name": "_source/timestamp_unix_ms"
                 },
                 "query": """{
                     "sort": [{"timestamp_unix_ms": {"order": "asc"}}],
@@ -57,12 +57,15 @@ class TestElastic:
                     'measurement_names': {'Clicks': 'clicks'},
                     'pipeline_id': 'test_elastic_api',
                     'query': '{\n                    "sort": [{"timestamp_unix_ms": {"order": "asc"}}],\n                    "query": {"range": {"timestamp_unix_ms": {"gt": ${OFFSET}}}}\n                }',
-                    'timestamp': {'name': '_source/timestamp_unix', 'type': 'unix'},
+                    'timestamp': {'name': '_source/timestamp_unix_ms', 'type': 'unix_ms'},
                     'uses_schema': False,
                     'values': {'Clicks': 'gauge'}
                 },
                 'id': 'test_elastic_api',
-                'override_source': {},
+                'override_source': {
+                    'conf.query': '{\n                    "sort": [{"timestamp_unix_ms": {"order": "asc"}}],\n                    "query": {"range": {"timestamp_unix_ms": {"gt": ${OFFSET}}}}\n                }'
+
+            },
                 'schema': {}
             }],
         }],

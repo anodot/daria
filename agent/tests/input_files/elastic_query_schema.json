@@ -1,4 +1,4 @@
 {
-  "sort": [{"timestamp_unix_ms": {"order": "asc"}}],
-  "query": {"range": {"timestamp_unix": {"gte": "$OFFSET", "lt": "$OFFSET+$INTERVAL"}}}
+  "sort": [{"timestamp_string": {"order": "asc"}}],
+  "query": {"range": {"timestamp_string": {"gte": "$OFFSET", "lt": "$OFFSET+$INTERVAL"}}}
 }

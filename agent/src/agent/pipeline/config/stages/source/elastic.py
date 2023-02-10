@@ -1,4 +1,4 @@
-from agent import monitoring, source
+from agent import monitoring, source, pipeline
 from agent.pipeline.config.stages.base import JythonSource
 
 
@@ -58,5 +58,13 @@ class ElasticScript(JythonSource):
             {
                 'key': 'DVP_ENABLED',
                 'value': str(bool(self.pipeline.dvp_config))
+            },
+            {
+                'key': 'LOG_EVERYTHING',
+                'value': '1' if self.pipeline.log_everything else ''
+            },
+            {
+                'key': 'TIMESTAMP_FORMAT',
+                'value': self.pipeline.timestamp_format
             },
         ]

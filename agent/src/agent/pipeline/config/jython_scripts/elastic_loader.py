@@ -19,6 +19,7 @@ finally:
 
 entityName = ''
 N_REQUESTS_TRIES = 3
+LOG_EVERYTHING = sdc.userParams['LOG_EVERYTHING']
 
 
 def get_now_with_delay():
@@ -67,7 +68,9 @@ def make_scroll(client, sid, scroll):
     return client.scroll(scroll_id=sid, scroll=scroll)
 
 
-def make_request(client, index, params={}, scroll=None):
+def make_request(client, index, params, scroll=None):
+    if LOG_EVERYTHING:
+        sdc.log.info(str(params))
     page = make_search(client, index, params, scroll)
     sid = page['_scroll_id']
     scroll_size = page['hits']['total']['value']
@@ -92,14 +95,15 @@ def process_batch(result_, end_):
         if batch.size == sdc.batchSize:
             batch.process(entityName, str(end_))
             batch = sdc.createBatch()
-    if batch.size > 0:
-        batch.process(entityName, str(end_))
+    batch.process(entityName, str(end_))
 
 
 def main():
     interval = get_interval()
     end = get_backfill_offset() + interval
     client = get_client()
+    sdc.log.info('INTERVAL: ' + str(interval))
+    sdc.log.info('OFFSET: ' + str(end))
     while True:
         try:
             while end > get_now_with_delay():
@@ -114,7 +118,8 @@ def main():
                     get_query_params(end, interval),
                     sdc.userParams.get('SCROLL_TIMEOUT')
                 ):
-                sdc.log.debug(str(batch))
+                if LOG_EVERYTHING:
+                    sdc.log.info(str(batch))
                 if len(batch['hits']['hits']):
                     process_batch(batch, end)
                 elif sdc.userParams['DVP_ENABLED'] == 'True':
@@ -135,18 +140,32 @@ def get_client():
     basic_auth = None if not sdc.userParams['USERNAME'] else (sdc.userParams['USERNAME'], sdc.userParams['PASSWORD'])
     return elasticsearch.Elasticsearch(
         sdc.userParams['URLs'],
-        basic_auth=basic_auth,
+        http_auth=basic_auth,
         verify_certs=bool(sdc.userParams['VERIFY_SSL'])
     )
 
 
+def _convert_java_date_format_to_python(format_str):
+    template = [("'", ""), ("yyyy", "%Y"), ("yy", "%y"), ("MM", "%m"), ("dd", "%d"), ("HH", "%H"), ("mm", "%M"),
+                ("S", "0"), ("ss", "%S")]
+    for j, p in template:
+        format_str = format_str.replace(j, p)
+    return format_str
+
+
 def get_query_params(offset, interval):
+    time_from = offset + interval
+    time_to = offset
+    if sdc.userParams['TIMESTAMP_FORMAT']:
+        format_str = _convert_java_date_format_to_python(sdc.userParams['TIMESTAMP_FORMAT'])
+        time_from = '"' + datetime.fromtimestamp(time_from).strftime(format_str) + '"'
+        time_to = '"' + datetime.fromtimestamp(time_to).strftime(format_str) + '"'
     return json.loads(
         str(sdc.userParams['QUERY']
             ).replace(
-            '"$OFFSET+$INTERVAL"', str(offset + interval)
+            '"$OFFSET+$INTERVAL"', str(time_from)
         ).replace(
-            '"$OFFSET"', str(offset))
+            '"$OFFSET"', str(time_to))
     )
 
 

@@ -1,41 +1,19 @@
-import pytest
-from datetime import datetime
 from ..test_zpipeline_base import TestInputBase
-from ...conftest import get_input_file_path, Order
-from agent import cli
-from agent import source
+from datetime import datetime
+
+
+def _get_days_to_backfill():
+    return (datetime.now() - datetime(year=2022, month=10, day=12)).days + 1
 
 
 class TestElastic(TestInputBase):
     __test__ = True
     params = {
-        'test_create': [
-            {'name': 'test_es_value_const', 'options': ['-a'], 'value': 'y\nclicksS\ny\n\n \n ',
-             'timestamp': '_source/timestamp_unix\nunix', 'advanced_options': 'key1:val1\n\n\n'},
-            {'name': 'test_es_timestamp_ms', 'options': [], 'value': 'n\n_source/Clicks:gauge\n_source/Clicks:clicks',
-             'timestamp': '_source/timestamp_unix_ms\nunix_ms', 'advanced_options': '\n\n'}],
-        'test_edit': [{'options': ['-a', 'test_es_value_const'], 'value': 'y\nclicks\n\n\n\n'}],
         'test_create_source_with_file': [{'file_name': 'elastic_sources'}],
-        'test_create_with_file': [{'file_name': 'elastic_pipelines'}],
+        'test_create_with_file': [{
+            'file_name': 'elastic_pipelines',
+            'override_config': {
+                'days_to_backfill': _get_days_to_backfill()
+            }
+        }],
     }
-
-    @pytest.mark.order(Order.SOURCE_CREATE)
-    def test_source_create(self, cli_runner):
-        days_to_backfill = (datetime.now() - datetime(year=2017, month=12, day=10)).days + 1
-        result = cli_runner.invoke(cli.source.create, catch_exceptions=False,
-                                   input=f"elastic\ntest_es\nhttp://es:9200\ntest\ntimestamp_unix_ms\nnow-{days_to_backfill}d\n\n")
-        assert result.exit_code == 0
-        assert source.repository.exists('test_es')
-
-    @pytest.mark.order(Order.PIPELINE_CREATE)
-    def test_create(self, cli_runner, name, options, value, timestamp, advanced_options):
-        query_file_path = get_input_file_path('elastic_query.json')
-        result = cli_runner.invoke(cli.pipeline.create, options, catch_exceptions=False,
-                                   input=f"test_es\n{name}\n{query_file_path}\n\n{value}\n{timestamp}\n_source/ver _source/Country\n_source/Exchange optional_dim ad_type ADTYPE GEN\n{advanced_options}\n")
-        assert result.exit_code == 0
-
-    @pytest.mark.order(Order.PIPELINE_EDIT)
-    def test_edit(self, cli_runner, options, value):
-        result = cli_runner.invoke(cli.pipeline.edit, options, catch_exceptions=False,
-                                   input=f"\n\n{value}\n\n\n\n\n\n\n\n\n\n\n\n")
-        assert result.exit_code == 0
