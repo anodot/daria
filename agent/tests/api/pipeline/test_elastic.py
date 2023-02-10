@@ -57,7 +57,7 @@ class TestElastic:
                     'measurement_names': {'Clicks': 'clicks'},
                     'pipeline_id': 'test_elastic_api',
                     'query': '{\n                    "sort": [{"timestamp_unix_ms": {"order": "asc"}}],\n                    "query": {"range": {"timestamp_unix_ms": {"gt": ${OFFSET}}}}\n                }',
-                    'timestamp': {'name': '_source/timestamp_unix', 'type': 'unix'},
+                    'timestamp': {'name': '_source/timestamp_unix_ms', 'type': 'unix_ms'},
                     'uses_schema': False,
                     'values': {'Clicks': 'gauge'}
                 },
