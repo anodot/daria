@@ -3,7 +3,7 @@ from time import sleep
 
 
 class TestElastic:
-    days_to_backfill = (datetime.now() - datetime(year=2017, month=12, day=10)).days + 1
+    offset = (datetime.now() - datetime(year=2017, month=12, day=10)).total_seconds()
     params = {
         'test_source_create': [{
             'data': [{
@@ -14,7 +14,7 @@ class TestElastic:
                     'conf.isIncrementalMode': True,
                     'conf.index': 'test',
                     'conf.offsetField': 'timestamp_unix_ms',
-                    'conf.initialOffset': f'now-{days_to_backfill}d',
+                    'conf.initialOffset': str(offset),
                     'query_interval_sec': 1,
                     'conf.queryInterval': '${1 * SECONDS}'
                 }
@@ -23,7 +23,7 @@ class TestElastic:
                 'config': {
                     'conf.httpUris': ['es:9200'],
                     'conf.index': 'test',
-                    'conf.initialOffset': f'now-{days_to_backfill}d',
+                    'conf.initialOffset': str(offset),
                     'conf.isIncrementalMode': True,
                     'conf.offsetField': 'timestamp_unix_ms',
                     'conf.queryInterval': '${1 * SECONDS}',
