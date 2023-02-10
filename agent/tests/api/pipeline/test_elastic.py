@@ -62,7 +62,10 @@ class TestElastic:
                     'values': {'Clicks': 'gauge'}
                 },
                 'id': 'test_elastic_api',
-                'override_source': {},
+                'override_source': {
+                    'conf.query': '{\n                    "sort": [{"timestamp_unix_ms": {"order": "asc"}}],\n                    "query": {"range": {"timestamp_unix_ms": {"gt": ${OFFSET}}}}\n                }'
+
+            },
                 'schema': {}
             }],
         }],
