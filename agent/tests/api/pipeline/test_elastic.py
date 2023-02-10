@@ -40,8 +40,8 @@ class TestElastic:
                 "dimensions": ["_source/ver", "_source/Country"],
                 "uses_schema": False,
                 "timestamp": {
-                    "type": "unix",
-                    "name": "_source/timestamp_unix"
+                    "type": "unix_ms",
+                    "name": "_source/timestamp_unix_ms"
                 },
                 "query": """{
                     "sort": [{"timestamp_unix_ms": {"order": "asc"}}],
