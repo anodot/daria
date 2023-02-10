@@ -1,0 +1,204 @@
+[
+  {
+    "timestamp": 1665536400,
+    "dimensions": {
+      "_source_ver": "1",
+      "_source_Country": "\u4e2d\u56fd",
+      "_source_Exchange": "DoubleClick"
+    },
+    "measurements": {
+      "clicks": 1
+    },
+    "schemaId": "test_es_file_with_schema-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_es_file_with_schema"
+      ],
+      "pipeline_type": [
+        "elastic"
+      ]
+    }
+  },
+  {
+    "timestamp": 1665540000,
+    "dimensions": {
+      "_source_ver": "1",
+      "_source_Country": "USA",
+      "_source_Exchange": "DoubleClick"
+    },
+    "measurements": {
+      "clicks": 1
+    },
+    "schemaId": "test_es_file_with_schema-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_es_file_with_schema"
+      ],
+      "pipeline_type": [
+        "elastic"
+      ]
+    }
+  },
+  {
+    "timestamp": 1665543600,
+    "dimensions": {
+      "_source_ver": "1",
+      "_source_Country": "USA",
+      "_source_Exchange": "DoubleClick"
+    },
+    "measurements": {
+      "clicks": 1
+    },
+    "schemaId": "test_es_file_with_schema-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_es_file_with_schema"
+      ],
+      "pipeline_type": [
+        "elastic"
+      ]
+    }
+  },
+  {
+    "timestamp": 1665547200,
+    "dimensions": {
+      "_source_ver": "1",
+      "_source_Country": "USA",
+      "_source_Exchange": "DoubleClick"
+    },
+    "measurements": {
+      "clicks": 1
+    },
+    "schemaId": "test_es_file_with_schema-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_es_file_with_schema"
+      ],
+      "pipeline_type": [
+        "elastic"
+      ]
+    }
+  },
+  {
+    "timestamp": 1665550800,
+    "dimensions": {
+      "_source_ver": "1",
+      "_source_Country": "USA",
+      "_source_Exchange": "DoubleClick"
+    },
+    "measurements": {
+      "clicks": 1
+    },
+    "schemaId": "test_es_file_with_schema-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_es_file_with_schema"
+      ],
+      "pipeline_type": [
+        "elastic"
+      ]
+    }
+  },
+  {
+    "timestamp": 1665554400,
+    "dimensions": {
+      "_source_ver": "1",
+      "_source_Country": "USA",
+      "_source_Exchange": "DoubleClick"
+    },
+    "measurements": {
+      "clicks": 1
+    },
+    "schemaId": "test_es_file_with_schema-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_es_file_with_schema"
+      ],
+      "pipeline_type": [
+        "elastic"
+      ]
+    }
+  },
+  {
+    "timestamp": 1665558000,
+    "dimensions": {
+      "_source_ver": "1",
+      "_source_Exchange": "DoubleClick"
+    },
+    "measurements": {
+      "clicks": 1
+    },
+    "schemaId": "test_es_file_with_schema-1234",
+    "tags": {
+      "source": [
+        "anodot-agent"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "source_host_name": [
+        "agent"
+      ],
+      "pipeline_id": [
+        "test_es_file_with_schema"
+      ],
+      "pipeline_type": [
+        "elastic"
+      ]
+    }
+  }
+]

@@ -1,10 +1,21 @@
 [
   {
     "type": "elastic",
+    "name": "elastic_old",
+    "config": {
+      "conf.httpUris": ["es:9200"],
+      "conf.index": "test",
+      "conf.offsetField": "timestamp_string",
+      "conf.queryInterval": "${24 * HOURS}",
+      "conf.initialOffset": "now-200d"
+    }
+  },
+  {
+    "type": "elastic",
     "name": "test_elastic_1",
     "config": {
       "conf.httpUris": ["es:9200"],
-      "conf.index": "timestamp_unix"
+      "conf.index": "test"
     }
   }
 ]
