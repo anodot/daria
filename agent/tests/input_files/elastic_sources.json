@@ -9,7 +9,8 @@
       "conf.queryInterval": "${24 * HOURS}",
       "conf.initialOffset": "now-200d",
       "conf.securityConfig.securityUser": "elastic",
-      "conf.securityConfig.securityPassword": "password"
+      "conf.securityConfig.securityPassword": "password",
+      "conf.useSecurity": true
     }
   },
   {

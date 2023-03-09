@@ -16,7 +16,10 @@ class TestElastic:
                     'conf.offsetField': 'timestamp_unix_ms',
                     'conf.initialOffset': str(offset),
                     'query_interval_sec': 1,
-                    'conf.queryInterval': '${1 * SECONDS}'
+                    'conf.queryInterval': '${1 * SECONDS}',
+                    "conf.securityConfig.securityUser": "elastic",
+                    "conf.securityConfig.securityPassword": "password",
+                    "conf.useSecurity": True,
                 }
             }],
             'er': [{
@@ -27,6 +30,9 @@ class TestElastic:
                     'conf.isIncrementalMode': True,
                     'conf.offsetField': 'timestamp_unix_ms',
                     'conf.queryInterval': '${1 * SECONDS}',
+                    "conf.securityConfig.securityUser": "elastic",
+                    "conf.securityConfig.securityPassword": "password",
+                    "conf.useSecurity": True,
                     'query_interval_sec': 1},
                 'name': 'test_elastic_src',
                 'type': 'elastic'}]
