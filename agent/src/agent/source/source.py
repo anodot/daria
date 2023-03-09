@@ -268,7 +268,19 @@ class Influx2Source(InfluxSource):
     pass
 
 
-class ElasticSource(APISource):
+class ElasticLegacySource(APISource):
+    CONFIG_USERNAME = 'conf.securityConfig.securityUser'
+    CONFIG_PASSWORD = 'conf.securityConfig.securityPassword'
+
+    def set_config(self, config) -> dict:
+        super().set_config(config)
+        if ElasticSource.CONFIG_USERNAME not in self.config and APISource.USERNAME in self.config:
+            self.config[ElasticSource.CONFIG_USERNAME] = self.config[APISource.USERNAME]
+        if ElasticSource.CONFIG_PASSWORD not in self.config and APISource.PASSWORD in self.config:
+            self.config[ElasticSource.CONFIG_PASSWORD] = self.config[APISource.PASSWORD]
+
+
+class ElasticSource(ElasticLegacySource):
     CONFIG_INDEX = 'conf.index'
     CONFIG_MAPPING = 'conf.mapping'
     CONFIG_IS_INCREMENTAL = 'conf.isIncrementalMode'

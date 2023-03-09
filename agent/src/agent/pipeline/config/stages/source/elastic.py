@@ -1,5 +1,6 @@
 from agent import monitoring, source, pipeline
 from agent.pipeline.config.stages.base import JythonSource
+from agent.modules import logger
 
 
 class ElasticScript(JythonSource):
@@ -13,11 +14,11 @@ class ElasticScript(JythonSource):
             },
             {
                 'key': 'USERNAME',
-                'value': self.pipeline.source.config.get(source.ElasticSource.USERNAME, '')
+                'value': self.pipeline.source.config.get(source.ElasticSource.CONFIG_USERNAME, '')
             },
             {
                 'key': 'PASSWORD',
-                'value': self.pipeline.source.config.get(source.ElasticSource.PASSWORD, '')
+                'value': self.pipeline.source.config.get(source.ElasticSource.CONFIG_PASSWORD, '')
             },
             {
                 'key': 'VERIFY_SSL',

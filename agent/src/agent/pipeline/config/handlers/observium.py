@@ -8,7 +8,7 @@ logger = get_logger(__name__)
 class ObserviumConfigHandler(SchemaConfigHandler):
     stages_to_override = {
         'source': stages.source.observium.ObserviumScript,
-        'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties,
+        'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties30,
         'replace_illegal_chars': stages.jython.ReplaceIllegalChars,
         'destination': stages.destination.Destination,
         'destination_watermark': stages.destination.WatermarkDestination,

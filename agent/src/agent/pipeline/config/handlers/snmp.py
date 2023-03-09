@@ -9,7 +9,7 @@ class SNMPConfigHandler(SchemaConfigHandler):
     stages_to_override = {
         'source': stages.source.snmp.SNMP,
         'ExpressionEvaluator_02': stages.expression_evaluator.Filtering,
-        'ExpressionEvaluator_01': stages.expression_evaluator.AddProperties,
+        'ExpressionEvaluator_01': stages.expression_evaluator.AddProperties30,
         'replace_illegal_chars': stages.jython.ReplaceIllegalChars,
         'destination': stages.destination.Destination,
         'destination_watermark': stages.destination.WatermarkDestination,

@@ -19,7 +19,7 @@ class ElasticSchemaConfigHandler(SchemaConfigHandler):
     stages_to_override = {
         'source': stages.source.elastic.ElasticScript,
         'JavaScriptEvaluator_01': stages.js_convert_metrics.JSConvertMetrics30,
-        'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties,
+        'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties30,
         'ExpressionEvaluator_03': stages.expression_evaluator.Filtering,
         'destination': stages.destination.Destination,
         'destination_watermark': stages.destination.WatermarkDestination,
