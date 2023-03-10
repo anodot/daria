@@ -291,7 +291,8 @@ class ElasticSource(APISource):
         self.config[ElasticSource.CONFIG_IS_INCREMENTAL] = True
 
     def _update_legacy_fields(self):
-        # Provide support parameters like conf.* and general `username` and `password` fields for source
+        # We want the same source to be used for both schema and no schema pipelines.
+        # Schema pipelines require keys ‘username’ and ‘password’ and no schema require keys like ‘conf.*’ so we check both
         if ElasticSource.CONFIG_USERNAME not in self.config and APISource.USERNAME in self.config:
             self.config[ElasticSource.CONFIG_USERNAME] = self.config[APISource.USERNAME]
         if ElasticSource.CONFIG_PASSWORD not in self.config and APISource.PASSWORD in self.config:
