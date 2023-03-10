@@ -290,7 +290,8 @@ class ElasticSource(APISource):
                 '${' + str(self.config['query_interval_sec']) + ' * SECONDS}'
         self.config[ElasticSource.CONFIG_IS_INCREMENTAL] = True
 
-    def _update_legacy_fields(self) -> dict:
+    def _update_legacy_fields(self):
+        # Provide support parameters like conf.* and general `username` and `password` fields for source
         if ElasticSource.CONFIG_USERNAME not in self.config and APISource.USERNAME in self.config:
             self.config[ElasticSource.CONFIG_USERNAME] = self.config[APISource.USERNAME]
         if ElasticSource.CONFIG_PASSWORD not in self.config and APISource.PASSWORD in self.config:

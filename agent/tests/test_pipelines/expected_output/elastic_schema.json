@@ -4,7 +4,8 @@
     "dimensions": {
       "_source_ver": "1",
       "_source_Country": "\u4e2d\u56fd",
-      "_source_Exchange": "DoubleClick"
+      "_source_Exchange": "DoubleClick",
+      "version": "1"
     },
     "measurements": {
       "clicks": 1
@@ -33,7 +34,8 @@
     "dimensions": {
       "_source_ver": "1",
       "_source_Country": "USA",
-      "_source_Exchange": "DoubleClick"
+      "_source_Exchange": "DoubleClick",
+      "version": "1"
     },
     "measurements": {
       "clicks": 1
@@ -62,7 +64,8 @@
     "dimensions": {
       "_source_ver": "1",
       "_source_Country": "USA",
-      "_source_Exchange": "DoubleClick"
+      "_source_Exchange": "DoubleClick",
+      "version": "1"
     },
     "measurements": {
       "clicks": 1
@@ -91,7 +94,8 @@
     "dimensions": {
       "_source_ver": "1",
       "_source_Country": "USA",
-      "_source_Exchange": "DoubleClick"
+      "_source_Exchange": "DoubleClick",
+      "version": "1"
     },
     "measurements": {
       "clicks": 1
@@ -120,7 +124,8 @@
     "dimensions": {
       "_source_ver": "1",
       "_source_Country": "USA",
-      "_source_Exchange": "DoubleClick"
+      "_source_Exchange": "DoubleClick",
+      "version": "1"
     },
     "measurements": {
       "clicks": 1
@@ -149,7 +154,8 @@
     "dimensions": {
       "_source_ver": "1",
       "_source_Country": "USA",
-      "_source_Exchange": "DoubleClick"
+      "_source_Exchange": "DoubleClick",
+      "version": "1"
     },
     "measurements": {
       "clicks": 1
@@ -177,7 +183,8 @@
     "timestamp": 1665558000,
     "dimensions": {
       "_source_ver": "1",
-      "_source_Exchange": "DoubleClick"
+      "_source_Exchange": "DoubleClick",
+      "version": "1"
     },
     "measurements": {
       "clicks": 1
