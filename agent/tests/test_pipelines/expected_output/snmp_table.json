@@ -21,7 +21,8 @@
     "dimensions": {
       "system_location": "San_Francisco,_California,_United_States",
       "host_name": "zeus_snmplabs_com",
-      "system_description": "Linux_zeus_4_8_6_5-smp_#2_SMP_Sun_Nov_13_14:58:11_CDT_2016_i686"
+      "system_description": "Linux_zeus_4_8_6_5-smp_#2_SMP_Sun_Nov_13_14:58:11_CDT_2016_i686",
+      "version" : 1
     },
     "measurements": {
       "icmp_in_msgs": 324.0,
@@ -52,7 +53,8 @@
       "ifDescr": "lo",
       "system_location": "San_Francisco,_California,_United_States",
       "host_name": "zeus_snmplabs_com",
-      "system_description": "Linux_zeus_4_8_6_5-smp_#2_SMP_Sun_Nov_13_14:58:11_CDT_2016_i686"
+      "system_description": "Linux_zeus_4_8_6_5-smp_#2_SMP_Sun_Nov_13_14:58:11_CDT_2016_i686",
+      "version" : 1
     },
     "measurements": {
       "ifMtu": 16436.0,
@@ -83,7 +85,8 @@
       "ifDescr": "eth0",
       "system_location": "San_Francisco,_California,_United_States",
       "host_name": "zeus_snmplabs_com",
-      "system_description": "Linux_zeus_4_8_6_5-smp_#2_SMP_Sun_Nov_13_14:58:11_CDT_2016_i686"
+      "system_description": "Linux_zeus_4_8_6_5-smp_#2_SMP_Sun_Nov_13_14:58:11_CDT_2016_i686",
+      "version" : 1
     },
     "measurements": {
       "ifMtu": 1500.0,

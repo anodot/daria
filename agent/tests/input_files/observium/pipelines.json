@@ -18,6 +18,7 @@
       "DEST_STATE",
       "PARENT_ELEMENT_LOCATION"
     ],
+    "properties": {"version": 1},
     "dimension_configurations": {
       "INTERFACE_SPEED": {
         "value_path": "ifSpeed"

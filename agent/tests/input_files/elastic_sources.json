@@ -19,8 +19,8 @@
     "config": {
       "conf.httpUris": ["es:9200"],
       "conf.index": "test",
-      "conf.securityConfig.securityUser": "elastic",
-      "conf.securityConfig.securityPassword": "password"
+      "username": "elastic",
+      "password": "password"
     }
   }
 ]

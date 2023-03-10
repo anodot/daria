@@ -34,7 +34,8 @@
       "DEST_STATE": "Iowa",
       "PARENT_ELEMENT_LOCATION": "Anodot",
       "INTERFACE_SPEED": "10000000",
-      "Location": "SOME-LOC"
+      "Location": "SOME-LOC",
+      "version" : 1
     },
     "measurements": {
       "ifInBroadcastPkts": 0,
@@ -186,7 +187,8 @@
       "DEST_STATE": "other",
       "PARENT_ELEMENT_LOCATION": "other",
       "INTERFACE_SPEED": "0",
-      "Location": "SOME-LOC"
+      "Location": "SOME-LOC",
+      "version" : 1
     },
     "measurements": {
       "ifInBroadcastPkts": 0,
@@ -262,7 +264,8 @@
       "DEST_STATE": "Iowa",
       "PARENT_ELEMENT_LOCATION": "other",
       "INTERFACE_SPEED": "0",
-      "Location": "SOME-LOC"
+      "Location": "SOME-LOC",
+      "version" : 1
     },
     "measurements": {
       "ifInBroadcastPkts": 0,
