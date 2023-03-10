@@ -4,7 +4,7 @@
     "dimensions": {
       "location": "VictoriaMetrics/app/vmstorage/main_go:86",
       "job": "victoriametrics",
-      "version": 1
+      "version": '1'
     },
     "measurements": {
       "name": 0.2
@@ -33,7 +33,7 @@
       "instance": "victoriametrics:8428",
       "location": "VictoriaMetrics/app/vmstorage/main_go:86",
       "job": "victoriametrics",
-      "version": 1
+      "version": '1'
     },
     "measurements": {
       "name": 0.2

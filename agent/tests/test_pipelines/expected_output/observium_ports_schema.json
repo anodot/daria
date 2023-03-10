@@ -35,7 +35,7 @@
       "PARENT_ELEMENT_LOCATION": "Anodot",
       "INTERFACE_SPEED": "10000000",
       "Location": "SOME-LOC",
-      "version" : 1
+      "version": 1
     },
     "measurements": {
       "ifInBroadcastPkts": 0,
@@ -111,7 +111,8 @@
       "DEST_STATE": "Nevada",
       "PARENT_ELEMENT_LOCATION": "other",
       "INTERFACE_SPEED": "0",
-      "Location": "SOME-LOC"
+      "Location": "SOME-LOC",
+      "version": 1
     },
     "measurements": {
       "ifInBroadcastPkts": 0,
@@ -188,7 +189,7 @@
       "PARENT_ELEMENT_LOCATION": "other",
       "INTERFACE_SPEED": "0",
       "Location": "SOME-LOC",
-      "version" : 1
+      "version": 1
     },
     "measurements": {
       "ifInBroadcastPkts": 0,
@@ -265,7 +266,7 @@
       "PARENT_ELEMENT_LOCATION": "other",
       "INTERFACE_SPEED": "0",
       "Location": "SOME-LOC",
-      "version" : 1
+      "version": 1
     },
     "measurements": {
       "ifInBroadcastPkts": 0,
