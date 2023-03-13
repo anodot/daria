@@ -279,13 +279,24 @@ class ElasticSource(APISource):
     CONFIG_CURSOR_TIMEOUT = 'conf.cursorTimeout'
     CONFIG_BATCH_SIZE = 'conf.maxBatchSize'
     CONFIG_HTTP_URIS = 'conf.httpUris'
+    CONFIG_USERNAME = 'conf.securityConfig.securityUser'
+    CONFIG_PASSWORD = 'conf.securityConfig.securityPassword'
 
     def set_config(self, config):
         super().set_config(config)
+        self._update_legacy_fields()
         if 'query_interval_sec' in self.config:
             self.config[ElasticSource.CONFIG_QUERY_INTERVAL] = \
                 '${' + str(self.config['query_interval_sec']) + ' * SECONDS}'
         self.config[ElasticSource.CONFIG_IS_INCREMENTAL] = True
+
+    def _update_legacy_fields(self):
+        # We want the same source to be used for both schema and no schema pipelines.
+        # Schema pipelines require keys ‘username’ and ‘password’ and no schema require keys like ‘conf.*’ so we check both
+        if ElasticSource.CONFIG_USERNAME not in self.config and APISource.USERNAME in self.config:
+            self.config[ElasticSource.CONFIG_USERNAME] = self.config[APISource.USERNAME]
+        if ElasticSource.CONFIG_PASSWORD not in self.config and APISource.PASSWORD in self.config:
+            self.config[ElasticSource.CONFIG_PASSWORD] = self.config[APISource.PASSWORD]
 
 
 class SourceException(Exception):

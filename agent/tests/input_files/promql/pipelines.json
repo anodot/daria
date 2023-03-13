@@ -66,6 +66,7 @@
     "days_to_backfill": 361,
     "interval": 10000,
     "aggregated_metric_name": "name",
+    "properties": {"version": 1},
     "dimensions": [
       "instance",
       "location",

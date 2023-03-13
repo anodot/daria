@@ -1,11 +1,11 @@
 [
   {
     "tags": {
-      "source": [
-        "anodot-agent"
-      ],
       "source_host_id": [
         "ABCDEF"
+      ],
+      "source": [
+        "anodot-agent"
       ],
       "source_host_name": [
         "agent"
@@ -20,8 +20,9 @@
     "schemaId": "snmp_table-1234",
     "dimensions": {
       "system_location": "San_Francisco,_California,_United_States",
+      "system_description": "Linux_zeus_4_8_6_5-smp_#2_SMP_Sun_Nov_13_14:58:11_CDT_2016_i686",
       "host_name": "zeus_snmplabs_com",
-      "system_description": "Linux_zeus_4_8_6_5-smp_#2_SMP_Sun_Nov_13_14:58:11_CDT_2016_i686"
+      "version": "1"
     },
     "measurements": {
       "icmp_in_msgs": 324.0,
@@ -30,11 +31,11 @@
   },
   {
     "tags": {
-      "source": [
-        "anodot-agent"
-      ],
       "source_host_id": [
         "ABCDEF"
+      ],
+      "source": [
+        "anodot-agent"
       ],
       "source_host_name": [
         "agent"
@@ -51,21 +52,22 @@
       "ifType": "softwareLoopback",
       "ifDescr": "lo",
       "system_location": "San_Francisco,_California,_United_States",
+      "system_description": "Linux_zeus_4_8_6_5-smp_#2_SMP_Sun_Nov_13_14:58:11_CDT_2016_i686",
       "host_name": "zeus_snmplabs_com",
-      "system_description": "Linux_zeus_4_8_6_5-smp_#2_SMP_Sun_Nov_13_14:58:11_CDT_2016_i686"
+      "version": "1"
     },
     "measurements": {
       "ifMtu": 16436.0,
-      "ifSpeed": 1.0E7
+      "ifSpeed": 10000000.0
     }
   },
   {
     "tags": {
-      "source": [
-        "anodot-agent"
-      ],
       "source_host_id": [
         "ABCDEF"
+      ],
+      "source": [
+        "anodot-agent"
       ],
       "source_host_name": [
         "agent"
@@ -82,12 +84,13 @@
       "ifType": "ethernetCsmacd",
       "ifDescr": "eth0",
       "system_location": "San_Francisco,_California,_United_States",
+      "system_description": "Linux_zeus_4_8_6_5-smp_#2_SMP_Sun_Nov_13_14:58:11_CDT_2016_i686",
       "host_name": "zeus_snmplabs_com",
-      "system_description": "Linux_zeus_4_8_6_5-smp_#2_SMP_Sun_Nov_13_14:58:11_CDT_2016_i686"
+      "version": "1"
     },
     "measurements": {
       "ifMtu": 1500.0,
-      "ifSpeed": 1.0E8
+      "ifSpeed": 100000000.0
     }
   }
 ]

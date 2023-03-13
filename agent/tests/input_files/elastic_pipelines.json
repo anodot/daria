@@ -28,6 +28,7 @@
     "count_records_measurement_name": "clicks",
     "count_records": true,
     "values": {},
+    "properties": {"version": 1},
     "interval": 3600,
     "dimensions": [
         "_source/ver",

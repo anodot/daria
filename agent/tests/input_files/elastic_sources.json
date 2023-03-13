@@ -7,7 +7,10 @@
       "conf.index": "test",
       "conf.offsetField": "timestamp_string",
       "conf.queryInterval": "${24 * HOURS}",
-      "conf.initialOffset": "now-200d"
+      "conf.initialOffset": "now-200d",
+      "conf.securityConfig.securityUser": "elastic",
+      "conf.securityConfig.securityPassword": "password",
+      "conf.useSecurity": true
     }
   },
   {
@@ -15,7 +18,9 @@
     "name": "test_elastic_1",
     "config": {
       "conf.httpUris": ["es:9200"],
-      "conf.index": "test"
+      "conf.index": "test",
+      "username": "elastic",
+      "password": "password"
     }
   }
 ]

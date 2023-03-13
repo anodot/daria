@@ -3,7 +3,8 @@
     "timestamp": 1644117200,
     "dimensions": {
       "location": "VictoriaMetrics/app/vmstorage/main_go:86",
-      "job": "victoriametrics"
+      "job": "victoriametrics",
+      "version": "1"
     },
     "measurements": {
       "name": 0.2
@@ -31,7 +32,8 @@
     "dimensions": {
       "instance": "victoriametrics:8428",
       "location": "VictoriaMetrics/app/vmstorage/main_go:86",
-      "job": "victoriametrics"
+      "job": "victoriametrics",
+      "version": "1"
     },
     "measurements": {
       "name": 0.2
