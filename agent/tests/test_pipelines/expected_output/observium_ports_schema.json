@@ -4,20 +4,20 @@
       "INTERFACE_ALIAS": [
         "EthAlias"
       ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
       "Static_tag": [
         "static_tag_value"
       ],
       "INTERFACE_SPEED": [
         "10000000"
       ],
-      "INTERFACE_DESCRIPTION": [
-        "gst0_300"
-      ],
       "source": [
         "anodot-agent"
       ],
-      "source_host_id": [
-        "ABCDEF"
+      "INTERFACE_DESCRIPTION": [
+        "gst0_300"
       ],
       "source_host_name": [
         "agent"
@@ -35,7 +35,7 @@
       "PARENT_ELEMENT_LOCATION": "Anodot",
       "INTERFACE_SPEED": "10000000",
       "Location": "SOME-LOC",
-      "version": 1
+      "version": "1"
     },
     "measurements": {
       "ifInBroadcastPkts": 0,
@@ -78,23 +78,23 @@
   },
   {
     "tags": {
-      "Static_tag": [
-        "static_tag_value"
-      ],
       "INTERFACE_ALIAS": [
         "NULL"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "Static_tag": [
+        "static_tag_value"
       ],
       "INTERFACE_SPEED": [
         "0"
       ],
-      "INTERFACE_DESCRIPTION": [
-        "NULL"
-      ],
       "source": [
         "anodot-agent"
       ],
-      "source_host_id": [
-        "ABCDEF"
+      "INTERFACE_DESCRIPTION": [
+        "NULL"
       ],
       "source_host_name": [
         "agent"
@@ -112,7 +112,7 @@
       "PARENT_ELEMENT_LOCATION": "other",
       "INTERFACE_SPEED": "0",
       "Location": "SOME-LOC",
-      "version": 1
+      "version": "1"
     },
     "measurements": {
       "ifInBroadcastPkts": 0,
@@ -155,23 +155,23 @@
   },
   {
     "tags": {
-      "Static_tag": [
-        "static_tag_value"
-      ],
       "INTERFACE_ALIAS": [
         "NULL"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "Static_tag": [
+        "static_tag_value"
       ],
       "INTERFACE_SPEED": [
         "0"
       ],
-      "INTERFACE_DESCRIPTION": [
-        "gst0_300"
-      ],
       "source": [
         "anodot-agent"
       ],
-      "source_host_id": [
-        "ABCDEF"
+      "INTERFACE_DESCRIPTION": [
+        "gst0_300"
       ],
       "source_host_name": [
         "agent"
@@ -189,7 +189,7 @@
       "PARENT_ELEMENT_LOCATION": "other",
       "INTERFACE_SPEED": "0",
       "Location": "SOME-LOC",
-      "version": 1
+      "version": "1"
     },
     "measurements": {
       "ifInBroadcastPkts": 0,
@@ -232,23 +232,23 @@
   },
   {
     "tags": {
-      "Static_tag": [
-        "static_tag_value"
-      ],
       "INTERFACE_ALIAS": [
         "NULL"
+      ],
+      "source_host_id": [
+        "ABCDEF"
+      ],
+      "Static_tag": [
+        "static_tag_value"
       ],
       "INTERFACE_SPEED": [
         "0"
       ],
-      "INTERFACE_DESCRIPTION": [
-        "gst0_300"
-      ],
       "source": [
         "anodot-agent"
       ],
-      "source_host_id": [
-        "ABCDEF"
+      "INTERFACE_DESCRIPTION": [
+        "gst0_300"
       ],
       "source_host_name": [
         "agent"
@@ -266,7 +266,7 @@
       "PARENT_ELEMENT_LOCATION": "other",
       "INTERFACE_SPEED": "0",
       "Location": "SOME-LOC",
-      "version": 1
+      "version": "1"
     },
     "measurements": {
       "ifInBroadcastPkts": 0,
