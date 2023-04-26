@@ -7,6 +7,7 @@
       "host": "msk-air-trn5ґ",
       "zone": "US",
       "measurement_category": "cpu_test",
+      "tag_to_group_by": "dummy_value1",
       "what": "usage_active"
     },
     "tags": {
@@ -36,6 +37,7 @@
       "host": "msk_a_ir_trn1",
       "zone": "US",
       "measurement_category": "cpu_test",
+      "tag_to_group_by": "dummy_value2",
       "what": "usage_active"
     },
     "tags": {
@@ -65,6 +67,7 @@
       "host": "msk_air_trn1",
       "zone": "US",
       "measurement_category": "cpu_test",
+      "tag_to_group_by": "dummy_value3",
       "what": "usage_active"
     },
     "tags": {
@@ -94,6 +97,7 @@
       "host": "msk-air-trn1",
       "zone": "US",
       "measurement_category": "cpu_test",
+      "tag_to_group_by": "dummy_value4",
       "what": "usage_active"
     },
     "tags": {
@@ -123,6 +127,7 @@
       "host": "msk-air-trn1",
       "zone": "US",
       "measurement_category": "cpu_test",
+      "tag_to_group_by": "dummy_value5",
       "what": "usage_active"
     },
     "tags": {
@@ -152,6 +157,7 @@
       "host": "msk-air-trn1",
       "zone": "US",
       "measurement_category": "cpu_test",
+      "tag_to_group_by": "dummy_value6",
       "what": "usage_active"
     },
     "tags": {
