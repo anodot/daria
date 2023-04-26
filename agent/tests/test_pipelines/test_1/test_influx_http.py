@@ -9,109 +9,42 @@ class TestInflux(TestPipelineBase):
 
     params = {
         'test_start': [
-            {
-                'name': 'test_basic'
-            },
-            {
-                'name': 'test_basic_offset'
-            },
-            {
-                'name': 'test_influx_file_short'
-            },
-            {
-                'name': 'test_influx_file_full'
-            },
-            {
-                'name': 'test_influx_file_transform'
-            },
-            {
-                'name': 'test_influx_schema_query'
-            },
-            {
-                'name': 'test_influx2'
-            },
-            {
-                'name': 'test_influx2_file_full'
-            },
-            {
-                'name': 'test_influx2_query'
-            },
-            {
-                'name': 'influx2_influxql_pipeline'
-            },
-            {
-                'name': 'test_influx_adv'
-            },
-            {
-                'name': 'test_influx_schema_tag'
-            },
-            {
-                'name': 'test_influx_tag'
-            },
-            {
-                'name': 'test_influx2_tag'
-            },
-            {
-                'name': 'test_influx2_query_join'
-            },
-            {
-                'name': 'test_influx1_basic_auth'
-            },
+            {'name': 'test_basic'},
+            {'name': 'test_basic_offset'},
+            {'name': 'test_influx_file_short'},
+            {'name': 'test_influx_file_full'},
+            {'name': 'test_influx_file_transform'},
+            {'name': 'test_influx_schema_query'},
+            {'name': 'test_influx2'},
+            {'name': 'test_influx2_file_full'},
+            {'name': 'test_influx2_query'},
+            {'name': 'influx2_influxql_pipeline'},
+            {'name': 'test_influx_adv'},
+            {'name': 'test_influx_schema_tag'},
+            {'name': 'test_influx_tag'},
+            {'name': 'test_influx2_tag'},
+            {'name': 'test_influx2_query_join'},
+            {'name': 'test_influx1_basic_auth'},
         ],
         'test_force_stop': [
-            {
-                'name': 'test_basic'
-            },
-            {
-                'name': 'test_basic_offset'
-            },
-            {
-                'name': 'test_influx_file_short'
-            },
-            {
-                'name': 'test_influx_file_full'
-            },
-            {
-                'name': 'test_influx_file_transform'
-            },
-            {
-                'name': 'test_influx_schema_query'
-            },
-            {
-                'name': 'test_influx2',
-                'check_output_file_name': 'test_influx2_influx2.json'
-            },
-            {
-                'name': 'test_influx2_file_full'
-            },
-            {
-                'name': 'test_influx2_query'
-            },
-            {
-                'name': 'influx2_influxql_pipeline'
-            },
-            {
-                'name': 'test_influx_adv'
-            },
-            {
-                'name': 'test_influx_schema_tag'
-            },
-            {
-                'name': 'test_influx_tag'
-            },
-            {
-                'name': 'test_influx2_tag'
-            },
-            {
-                'name': 'test_influx2_query_join'
-            },
-            {
-                'name': 'test_influx1_basic_auth'
-            },
+            {'name': 'test_basic'},
+            {'name': 'test_basic_offset'},
+            {'name': 'test_influx_file_short'},
+            {'name': 'test_influx_file_full'},
+            {'name': 'test_influx_file_transform'},
+            {'name': 'test_influx_schema_query'},
+            {'name': 'test_influx2', 'check_output_file_name': 'test_influx2_influx2.json'},
+            {'name': 'test_influx2_file_full'},
+            {'name': 'test_influx2_query'},
+            {'name': 'influx2_influxql_pipeline'},
+            {'name': 'test_influx_adv'},
+            {'name': 'test_influx_schema_tag'},
+            {'name': 'test_influx_tag'},
+            {'name': 'test_influx2_tag'},
+            {'name': 'test_influx2_query_join'},
+            {'name': 'test_influx1_basic_auth'},
         ],
-        'test_reset': [{
-            'name': 'test_basic'
-        }],
+        'test_reset': [{'name': 'test_basic'}],
         'test_output': [
             {
                 'name': 'test_influx_file_short',
@@ -197,77 +130,31 @@ class TestInflux(TestPipelineBase):
             },
         ],
         'test_delete_pipeline': [
-            {
-                'name': 'test_basic'
-            },
-            {
-                'name': 'test_basic_offset'
-            },
-            {
-                'name': 'test_influx_file_short'
-            },
-            {
-                'name': 'test_influx_file_full'
-            },
-            {
-                'name': 'test_influx_file_transform'
-            },
-            {
-                'name': 'test_influx_schema_query'
-            },
-            {
-                'name': 'test_influx2'
-            },
-            {
-                'name': 'test_influx2_file_full'
-            },
-            {
-                'name': 'test_influx2_query'
-            },
-            {
-                'name': 'influx2_influxql_pipeline'
-            },
-            {
-                'name': 'test_influx_adv'
-            },
-            {
-                'name': 'test_influx_schema_tag'
-            },
-            {
-                'name': 'test_influx_tag'
-            },
-            {
-                'name': 'test_influx2_tag'
-            },
-            {
-                'name': 'test_influx2_query_join'
-            },
-            {
-                'name': 'test_influx1_basic_auth'
-            },
+            {'name': 'test_basic'},
+            {'name': 'test_basic_offset'},
+            {'name': 'test_influx_file_short'},
+            {'name': 'test_influx_file_full'},
+            {'name': 'test_influx_file_transform'},
+            {'name': 'test_influx_schema_query'},
+            {'name': 'test_influx2'},
+            {'name': 'test_influx2_file_full'},
+            {'name': 'test_influx2_query'},
+            {'name': 'influx2_influxql_pipeline'},
+            {'name': 'test_influx_adv'},
+            {'name': 'test_influx_schema_tag'},
+            {'name': 'test_influx_tag'},
+            {'name': 'test_influx2_tag'},
+            {'name': 'test_influx2_query_join'},
+            {'name': 'test_influx1_basic_auth'},
         ],
         'test_source_delete': [
-            {
-                'name': 'test_influx'
-            },
-            {
-                'name': 'test_influx_offset'
-            },
-            {
-                'name': 'test_influx_1'
-            },
-            {
-                'name': 'test_influx2'
-            },
-            {
-                'name': 'test_influx2_file'
-            },
-            {
-                'name': 'influx2_influxql_source'
-            },
-            {
-                'name': 'test_influx1_basic_auth'
-            },
+            {'name': 'test_influx'},
+            {'name': 'test_influx_offset'},
+            {'name': 'test_influx_1'},
+            {'name': 'test_influx2'},
+            {'name': 'test_influx2_file'},
+            {'name': 'influx2_influxql_source'},
+            {'name': 'test_influx1_basic_auth'},
         ],
     }
 
