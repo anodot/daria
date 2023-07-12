@@ -19,7 +19,7 @@ COPY streamsets-datacollector-kafka_multisource-protolib-3.18.0.jar  ${SDC_DIST}
 COPY log4j-core-2.20.0.jar ${SDC_DIST}/streamsets-libs/streamsets-datacollector-elasticsearch_5-lib/lib/log4j-core-2.20.0.jar
 COPY log4j-api-2.20.0.jar  ${SDC_DIST}/streamsets-libs/streamsets-datacollector-elasticsearch_5-lib/lib/log4j-api-2.20.0.jar
 
-RUN rm -rf ${SDC_DIST}/streamsets-libs/streamsets-datacollector-elasticsearch_5-lib/lib/log4j-api-2.12.1.jar
+RUN rm -rf ${SDC_DIST}/streamsets-libs/streamsets-datacollector-elasticsearch_5-lib/lib/log4j-*-2.12.1.jar
 
 ## This is needed for run-test-pipeline command
 COPY daily-website-visitors.csv /home/sdc/tmp/daily-website-visitors.csv
