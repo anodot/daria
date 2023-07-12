@@ -32,5 +32,34 @@ VOLUME /data
 ENTRYPOINT ["/custom_entrypoint.sh"]
 CMD ["dc", "-exec"]
 
+
+##################
 FROM scratch
+
+ENV PATH=/opt/java/openjdk/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+    JAVA_VERSION=jdk8u202-b08 \
+    JAVA_HOME=/opt/java/openjdk \
+    SDC_CONF=/etc/sdc \
+    SDC_DATA=/data \
+    SDC_DIST=/opt/streamsets-datacollector-3.18.0 \
+    SDC_HOME=/opt/streamsets-datacollector-3.18.0 \
+    SDC_LOG=/logs \
+    SDC_RESOURCES=/resources \
+    USER_LIBRARIES_DIR=/opt/streamsets-datacollector-user-libs \
+    STREAMSETS_LIBRARIES_EXTRA_DIR=/opt/streamsets-datacollector-3.18.0/streamsets-libs-extras \
+    SDC_JAVA_OPTS="-Dfile.encoding=UTF-8 -Dsun.jnu.encoding=UTF-8"
+
+
+ENV SDC_CONF_PARSER_LIMIT=5048576 SDC_CONF_RUNNER_THREAD_POOL_SIZE="100" STREAMSETS_LIBRARIES_EXTRA_DIR="/opt/sdc-extras/" \
+SDC_LOG="/data/logs" SDC_JAVA_KEYSTORE_PATH="${SDC_DATA}/security/"
+
+USER sdc
+
+EXPOSE 18630
+
 COPY --from=needs-squashing / /
+
+VOLUME /data
+
+ENTRYPOINT ["/custom_entrypoint.sh"]
+CMD ["dc", "-exec"]
