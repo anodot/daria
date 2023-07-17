@@ -7,7 +7,7 @@
       "conf.index": "test",
       "conf.offsetField": "timestamp_string",
       "conf.queryInterval": "${24 * HOURS}",
-      "conf.initialOffset": "now-200d",
+      "conf.initialOffset": "now-600d",
       "conf.securityConfig.securityUser": "elastic",
       "conf.securityConfig.securityPassword": "password",
       "conf.useSecurity": true
