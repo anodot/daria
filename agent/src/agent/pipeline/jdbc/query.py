@@ -6,11 +6,13 @@ TIMESTAMP_COLUMN = '{TIMESTAMP_COLUMN}'
 LAST_TIMESTAMP_VALUE = '{LAST_TIMESTAMP_VALUE}'
 INTERVAL = '{INTERVAL}'
 LAST_TIMESTAMP = '${record:value("/last_timestamp")}'
+LAST_TIMESTAMP_ISO = '${record:value("/last_timestamp_iso")}'
 LAST_TIMESTAMP_TEMPLATE = '%last_timestamp%'
 
 
 class Builder:
     TIMESTAMP_VALUE = LAST_TIMESTAMP
+    TIMESTAMP_VALUE_ISO = LAST_TIMESTAMP_ISO
 
     def __init__(self, pipeline_: Pipeline):
         self.pipeline = pipeline_
@@ -47,9 +49,12 @@ class Builder:
 
     def _supports_indexed_timestamp_condition(self) -> bool:
         return self.pipeline.timestamp_type in [pipeline.TimestampType.DATETIME, pipeline.TimestampType.STRING] and \
-               self.pipeline.source.type in [source.TYPE_MSSQL, source.TYPE_IMPALA]
+               self.pipeline.source.type in [source.TYPE_MSSQL, source.TYPE_IMPALA, source.TYPE_DRUID]
 
     def _get_indexed_query(self) -> str:
+        if self.pipeline.source.type == source.TYPE_DRUID:
+            return f'TIME_IN_INTERVAL("{self.pipeline.timestamp_path}", ' \
+                   f'\'{self.TIMESTAMP_VALUE_ISO}/PT{self.pipeline.interval}S\')'
         if self.pipeline.source.type == source.TYPE_MSSQL:
             return f"{self.pipeline.timestamp_path} BETWEEN DATEADD(second, {self.TIMESTAMP_VALUE}, '1970-01-01') AND "\
                    f"DATEADD(second, {self.TIMESTAMP_VALUE} + {self.pipeline.interval}, '1970-01-01')"

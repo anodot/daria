@@ -12,6 +12,7 @@ TYPE_CACTI = 'cacti'
 TYPE_CLICKHOUSE = 'clickhouse'
 TYPE_DIRECTORY = 'directory'
 TYPE_DATABRICKS = 'databricks'
+TYPE_DRUID = 'druid'
 TYPE_ELASTIC = 'elastic'
 TYPE_HTTP = 'http'
 TYPE_IMPALA = 'impala'
@@ -41,6 +42,7 @@ types = {
     TYPE_CLICKHOUSE: JDBCSource,
     TYPE_DIRECTORY: DirectorySource,
     TYPE_DATABRICKS: JDBCSource,
+    TYPE_DRUID: JDBCSource,
     TYPE_ELASTIC: ElasticSource,
     TYPE_HTTP: APISource,
     TYPE_IMPALA: JDBCSource,

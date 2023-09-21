@@ -1,0 +1,10 @@
+[
+  {
+    "type": "druid",
+    "name": "test_druid",
+    "config": {
+      "connection_string": "avatica:remote:url=http://router:8888/druid/v2/sql/avatica/",
+      "hikariConfigBean.autoCommit": true
+    }
+  }
+]

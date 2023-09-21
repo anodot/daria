@@ -36,6 +36,10 @@ class JDBCOffsetScript(JythonSource):
                 'key': 'PIPELINE_OFFSET_ENDPOINT',
                 'value': urljoin(self.pipeline.streamsets.agent_external_url, f'/pipeline-offset/{self.pipeline.name}')
             },
+            {
+                'key':  'CONVERT_TIME_STAMP_TO_ISO_STRING',
+                'value': str(self.pipeline.convert_timestamp_to_iso_string)
+            }
         ]
 
 

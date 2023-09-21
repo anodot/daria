@@ -389,6 +389,10 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return bool(self.config.get('dynamic_step', False))
 
     @property
+    def convert_timestamp_to_iso_string(self) -> bool:
+        return self.source.type == source.TYPE_DRUID
+
+    @property
     def selected_kafka_partitions(self) -> str:
         return self.config.get('partitions', [])
 

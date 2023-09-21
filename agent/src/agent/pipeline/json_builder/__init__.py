@@ -41,6 +41,7 @@ def _get_builder(pipeline_: Pipeline, config: dict, is_edit: bool) -> IBuilder:
         source.TYPE_CLICKHOUSE: JDBCBuilder,
         source.TYPE_DIRECTORY: DirectoryBuilder,
         source.TYPE_DATABRICKS: JDBCBuilder,
+        source.TYPE_DRUID: JDBCBuilder,
         source.TYPE_ELASTIC: ElasticBuilder,
         source.TYPE_IMPALA: JDBCBuilder,
         source.TYPE_INFLUX: InfluxBuilder,
@@ -75,6 +76,7 @@ def _get_raw_builder(pipeline_: Pipeline, config: dict, is_edit: bool) -> IBuild
     loaders = {
         source.TYPE_CLICKHOUSE: JDBCRawBuilder,
         source.TYPE_DATABRICKS: JDBCRawBuilder,
+        source.TYPE_DRUID: JDBCRawBuilder,
         source.TYPE_IMPALA: JDBCRawBuilder,
         source.TYPE_MSSQL: JDBCRawBuilder,
         source.TYPE_MYSQL: JDBCRawBuilder,
@@ -90,6 +92,7 @@ def _get_events_builder(pipeline_: Pipeline, config: dict, is_edit: bool) -> IBu
         source.TYPE_DIRECTORY: DirectoryEventsBuilder,
         source.TYPE_CLICKHOUSE: JDBCEventBuilder,
         source.TYPE_DATABRICKS: JDBCEventBuilder,
+        source.TYPE_DRUID: JDBCEventBuilder,
         source.TYPE_IMPALA: JDBCEventBuilder,
         source.TYPE_MSSQL: JDBCEventBuilder,
         source.TYPE_MYSQL: JDBCEventBuilder,

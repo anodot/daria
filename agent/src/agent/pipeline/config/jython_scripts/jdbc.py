@@ -108,7 +108,10 @@ def main():
         cur_batch = sdc.createBatch()
         record = sdc.createRecord('record created ' + str(datetime.now()))
         sdc.log.debug('last_timestamp: {}-{}'.format(str(datetime.fromtimestamp(int(offset))), str(offset)))
+        val = int(offset)
         record.value = {'last_timestamp': int(offset)}
+        if sdc.userParams['CONVERT_TIME_STAMP_TO_ISO_STRING'] == 'True':
+            record.value['last_timestamp_iso'] = datetime.fromtimestamp(val).isoformat()
         offset += interval.total_seconds()
         cur_batch.add(record)
         cur_batch.process(entityName, str(offset))
