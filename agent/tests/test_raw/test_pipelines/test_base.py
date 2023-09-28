@@ -66,5 +66,5 @@ def read_file(file: str) -> list:
     lines = []
     with open(file) as f:
         for line in f.readlines():
-            lines = line
+            lines.append(line)
     return lines
