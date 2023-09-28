@@ -25,7 +25,3 @@ class TestRawMySQL(TestRawPipelineBase):
             {'name': 'mysql_raw'},
         ]
     }
-
-    def test_output(self, file_name, pipeline_type, output_file):
-        # TODO: fix the test
-        pytest.skip()
