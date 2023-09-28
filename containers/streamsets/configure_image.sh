@@ -8,11 +8,18 @@ function configure_sql_drivers() {
   local  MYSQL_CONNECTOR_VERSION=8.0.18
   local  CLICKHOUSE_DRIVER_VERSION=0.3.0
   local  ORACLE_DRIVER_VERSION=19.11.0.0
+  local  AVATICA_DRIVER_VERSION=1.20.0
 
   sudo mkdir -p ${JDBC_DRIVER_DIR}
   sudo chown -R sdc:sdc /opt/sdc-extras
   wget https://repo1.maven.org/maven2/mysql/mysql-connector-java/${MYSQL_CONNECTOR_VERSION}/mysql-connector-java-${MYSQL_CONNECTOR_VERSION}.jar -O ${JDBC_DRIVER_DIR}/${MYSQL_CONNECTOR_VERSION}.jar
   wget https://repo1.maven.org/maven2/com/oracle/database/jdbc/ojdbc8/${ORACLE_DRIVER_VERSION}/ojdbc8-${ORACLE_DRIVER_VERSION}.jar -O ${JDBC_DRIVER_DIR}/${ORACLE_DRIVER_VERSION}.jar
+
+  # avatica driver dependencies
+  wget https://repo1.maven.org/maven2/org/apache/calcite/avatica/avatica-core/${AVATICA_DRIVER_VERSION}/avatica-core-${AVATICA_DRIVER_VERSION}.jar -O ${JDBC_DRIVER_DIR}/${AVATICA_DRIVER_VERSION}.jar
+  wget https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.10.0/jackson-annotations-2.10.0.jar -O ${JDBC_DRIVER_DIR}/jackson-annotations-2.10.0.jar
+  wget https://repo1.maven.org/maven2/com/google/protobuf/protobuf-java/3.17.1/protobuf-java-3.17.1.jar -O ${JDBC_DRIVER_DIR}/protobuf-java-3.17.1.jar
+  wget https://repo1.maven.org/maven2/org/apache/calcite/avatica/avatica-metrics/1.20.0/avatica-metrics-1.20.0.jar -O ${JDBC_DRIVER_DIR}/avatica-metrics-1.20.0.jar
 
   # clickhouse dependencies
   wget https://repo1.maven.org/maven2/ru/yandex/clickhouse/clickhouse-jdbc/${CLICKHOUSE_DRIVER_VERSION}/clickhouse-jdbc-${CLICKHOUSE_DRIVER_VERSION}.jar -O ${JDBC_DRIVER_DIR}/clickhouse-jdbc-${CLICKHOUSE_DRIVER_VERSION}.jar

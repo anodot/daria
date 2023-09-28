@@ -1,0 +1,15 @@
+[
+  {
+    "source": "test_druid",
+    "pipeline_id": "test_jdbc_file_short_druid",
+    "values": {"delta": "gauge", "added": "gauge"},
+    "dimensions": ["cityName", "countryName"],
+    "interval": 3600,
+    "query": "SELECT * FROM \"wikiticker-2015-09-12-sampled\" WHERE {TIMESTAMP_CONDITION}",
+    "timestamp": {
+      "type": "datetime",
+      "name": "__time"
+    },
+    "days_to_backfill": 2931
+  }
+]

@@ -1,4 +1,5 @@
 from .test_base import TestRawPipelineBase
+import pytest
 
 
 class TestRawMySQL(TestRawPipelineBase):

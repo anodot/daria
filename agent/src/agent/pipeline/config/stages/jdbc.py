@@ -35,7 +35,7 @@ class JDBCOffsetScript(JythonSource):
             {
                 'key': 'PIPELINE_OFFSET_ENDPOINT',
                 'value': urljoin(self.pipeline.streamsets.agent_external_url, f'/pipeline-offset/{self.pipeline.name}')
-            },
+            }
         ]
 
 

@@ -140,6 +140,23 @@ class JDBCValidator(Validator):
             raise ValidationException('Wrong url scheme. Use `impala`')
 
 
+class AvaticaDriverValidator(JDBCValidator):
+    @if_validation_enabled
+    def validate_connection_string(self):
+        conn_str = self.source.config[source.JDBCSource.CONFIG_CONNECTION_STRING].split('=')
+        error_msg = 'Wrong connection string  format. Use `avatica:remote:url=http://BROKER:8082/druid/v2/sql/avatica/`'
+
+        if len(conn_str) != 2:
+            raise ValidationException(error_msg)
+        if conn_str[0] != 'avatica:remote:url':
+            raise ValidationException(error_msg)
+
+        try:
+            validator.validate_url_format_with_port(conn_str[1])
+        except validator.ValidationException:
+            raise ValidationException(error_msg)
+
+
 class MssqlValidator(JDBCValidator):
     @if_validation_enabled
     def validate_connection_string(self):
@@ -396,6 +413,7 @@ def get_validator(source_: Source) -> Validator:
         source.TYPE_CLICKHOUSE: JDBCValidator,
         source.TYPE_DIRECTORY: DirectoryValidator,
         source.TYPE_DATABRICKS: JDBCValidator,
+        source.TYPE_DRUID: AvaticaDriverValidator,
         source.TYPE_ELASTIC: ElasticValidator,
         source.TYPE_HTTP: HttpValidator,
         source.TYPE_IMPALA: JDBCValidator,
