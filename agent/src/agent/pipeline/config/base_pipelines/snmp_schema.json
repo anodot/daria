@@ -1149,7 +1149,7 @@
         "value" : 0
       }, {
         "name" : "conf.maxRequestCompletionSecs",
-        "value" : 60
+        "value" : 300
       }, {
         "name" : "conf.responseConf.sendResponseToOrigin",
         "value" : false
@@ -1182,7 +1182,7 @@
         "value" : null
       }, {
         "name" : "conf.maxSendResponseWait",
-        "value" : 60000
+        "value" : 300000
       }, {
         "name" : "conf.agentWatermarkUrl",
         "value" : null
