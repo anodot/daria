@@ -23,7 +23,8 @@ def create():
     form = DestinationForm.from_json(request.get_json())
     if not form.validate():
         return form.errors, 400
-    result = destination.manager.create(
+    destination_obj = destination.manager.build(
+        destination.HttpDestination(),
         form.data_collection_token.data,
         form.destination_url.data,
         form.access_key.data,
@@ -32,6 +33,7 @@ def create():
         form.proxy_password.data,
         form.host_id.data,
     )
+    result = destination.manager.save(destination_obj)
     if result.is_err():
         return result.value, 400
     return result.value.to_dict(), 200
@@ -44,7 +46,7 @@ def edit():
     form = EditDestinationForm.from_json(request.get_json())
     if not form.validate():
         return form.errors, 400
-    result = destination.manager.edit(
+    destination_obj = destination.manager.build(
         destination.repository.get(),
         form.data_collection_token.data,
         form.destination_url.data,
@@ -54,6 +56,7 @@ def edit():
         form.proxy_password,
         form.host_id.data,
     )
+    result = destination.manager.save(destination_obj)
     if result.is_err():
         return result.value, 400
     return result.value.to_dict(), 200
