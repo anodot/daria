@@ -45,17 +45,18 @@ def build(
 
 
 def validate(destination_: HttpDestination) -> Result[HttpDestination, str]:
-    if not destination.validator.is_valid_resource_url(destination_.metrics_url):
-        return Err('Data collection token is invalid')
-
     if destination_.proxy:
         if not proxy.is_valid(destination_.proxy):
             return Err('Proxy data is invalid')
+
     if destination_.url:
         try:
             destination.validator.is_valid_destination_url(destination_.url, destination_.proxy)
         except destination.validator.ValidationException as e:
             return Err('Destination url validation failed: ' + str(e))
+
+    if not destination.validator.is_valid_resource_url(destination_.metrics_url):
+        return Err('Data collection token is invalid')
 
     if destination_.access_key:
         if not destination.validator.is_valid_access_key(destination_):
