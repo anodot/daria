@@ -1,5 +1,5 @@
 import json
-
+import jsonschema
 import click
 import requests
 import agent.destination
@@ -33,22 +33,10 @@ def destination(token, filepath, proxy_host, proxy_user, proxy_password, host_id
     if token:
         destination_ = agent.destination.manager.build(destination_, token, url, access_key, proxy_host, proxy_user,
                                                        proxy_password, host_id, use_jks_truststore)
-
     elif filepath:
-        with open(filepath, 'w') as f:
-            # TODO: validate json
-            # TODO: write tests
-            conf = json.load(f)
-        destination_.config = conf['config']
-        destination_.access_key = conf['access_key']
-        if 'host_id' in conf:
-            destination_.host_id = conf['host_id']
+        destination_ = _build_from_file(destination_, filepath)
     else:
-        _prompt_proxy(destination_)
-        destination_.use_jks_truststore = click.confirm('Use jks truststore with a custom ssl certificate?')
-        _prompt_url(destination_)
-        _prompt_token(destination_)
-        _prompt_access_key(destination_)
+        destination_ = _build_from_prompt(destination_)
 
     result = agent.destination.manager.save(destination_)
 
@@ -56,6 +44,47 @@ def destination(token, filepath, proxy_host, proxy_user, proxy_password, host_id
         raise click.ClickException(result.value)
 
     click.secho('Destination configured', fg='green')
+
+
+def _build_from_file(destination_: HttpDestination, filepath: str):
+    file_schema = {
+        "type": "object",
+        "properties": {
+            "host_id": {"type": "string", "minLength": 1},
+            "access_key": {"type": "string", "minLength": 1},
+            "config": {
+                "type": "object",
+                "properties": {
+                    "url": {"type": "string", "minLength": 1},
+                    "token": {"type": "string", "minLength": 1},
+                },
+                "required": ["url", "token"]
+            },
+        },
+        "required": ["config", "access_key", "host_id"]
+    }
+    with open(filepath) as f:
+        config = json.load(f)
+
+    try:
+        jsonschema.validate(config, file_schema)
+    except jsonschema.exceptions.ValidationError as e:
+        raise click.ClickException(e.message)
+
+    destination_.config = config['config']
+    destination_.access_key = config['access_key']
+    if 'host_id' in config:
+        destination_.host_id = config['host_id']
+    return destination_
+
+
+def _build_from_prompt(destination_: HttpDestination):
+    _prompt_proxy(destination_)
+    destination_.use_jks_truststore = click.confirm('Use jks truststore with a custom ssl certificate?')
+    _prompt_url(destination_)
+    _prompt_token(destination_)
+    _prompt_access_key(destination_)
+    return destination_
 
 
 @click.command()
