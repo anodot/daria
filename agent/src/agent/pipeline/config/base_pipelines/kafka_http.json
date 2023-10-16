@@ -1104,7 +1104,7 @@
         "value" : 0
       }, {
         "name" : "conf.maxRequestCompletionSecs",
-        "value" : 60
+        "value" : 300
       }, {
         "name" : "conf.responseConf.sendResponseToOrigin",
         "value" : false
@@ -1120,6 +1120,9 @@
       }, {
         "name" : "stageRecordPreconditions",
         "value" : [ ]
+      }, {
+        "name" : "conf.maxSendResponseWait",
+        "value" : 300000
       } ],
       "uiInfo" : {
         "description" : "",

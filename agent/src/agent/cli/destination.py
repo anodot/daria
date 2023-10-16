@@ -1,15 +1,17 @@
+import json
+import jsonschema
 import click
 import requests
 import agent.destination
 
 from agent.destination import HttpDestination
-from agent.destination.anodot_api_client import AnodotApiClient
 from agent.modules.tools import infinite_retry
 from agent.modules import proxy, validator
 
 
 @click.command()
 @click.option('-t', '--token', type=click.STRING, default=None)
+@click.option('-f', '--filepath', type=click.STRING, default=None)
 @click.option('--proxy-host', type=click.STRING, default=None)
 @click.option('--proxy-user', type=click.STRING, default=None)
 @click.option('--proxy-password', type=click.STRING, default=None)
@@ -17,37 +19,86 @@ from agent.modules import proxy, validator
 @click.option('--access-key', type=click.STRING, default=None)
 @click.option('--url', type=click.STRING, default=None)
 @click.option('--use-jks-truststore', is_flag=True, default=False)
-def destination(token, proxy_host, proxy_user, proxy_password, host_id, access_key, url, use_jks_truststore):
+def destination(token, filepath, proxy_host, proxy_user, proxy_password, host_id, access_key, url, use_jks_truststore):
     """
     Data destination config.
     Anodot API token - You can copy it from Settings > API tokens > Data Collection in your Anodot account
     Proxy for connecting to Anodot
     """
+    destination_ = agent.destination.repository.get() \
+        if agent.destination.repository.exists() \
+        else HttpDestination()
+
     # take all data from the command arguments if token is provided, otherwise ask for input
     if token:
-        result = agent.destination.manager.create(token, url, access_key, proxy_host, proxy_user, proxy_password,
-                                                  host_id, use_jks_truststore)
-        if result.is_err():
-            raise click.ClickException(result.value)
+        destination_ = agent.destination.manager.build(destination_, token, url, access_key, proxy_host, proxy_user,
+                                                       proxy_password, host_id, use_jks_truststore)
+    elif filepath:
+        destination_ = _build_from_file(destination_, filepath)
     else:
-        destination_ = agent.destination.repository.get() \
-            if agent.destination.repository.exists() \
-            else HttpDestination()
-        _prompt_proxy(destination_)
-        destination_.use_jks_truststore = click.confirm('Use jks truststore with a custom ssl certificate?')
-        _prompt_url(destination_)
-        _prompt_token(destination_)
-        _prompt_access_key(destination_)
-        agent.destination.repository.save(destination_)
-        # todo code duplicate, try to avoid it
-        if destination_.auth_token:
-            agent.destination.repository.delete_auth_token(destination_.auth_token)
-        auth_token = agent.destination.AuthenticationToken(destination_.id,
-                                                           AnodotApiClient(destination_).get_new_token())
-        agent.destination.repository.save_auth_token(auth_token)
+        destination_ = _build_from_prompt(destination_)
 
-        click.secho('Connection to Anodot established')
+    result = agent.destination.manager.save(destination_)
+
+    if result.is_err():
+        raise click.ClickException(result.value)
+
     click.secho('Destination configured', fg='green')
+
+
+def _build_from_file(destination_: HttpDestination, filepath: str):
+    file_schema = {
+        "type": "object",
+        "properties": {
+            "host_id": {"type": "string", "minLength": 1},
+            "access_key": {"type": "string", "minLength": 1},
+            "config": {
+                "type": "object",
+                "properties": {
+                    "url": {"type": "string", "minLength": 1},
+                    "token": {"type": "string", "minLength": 1},
+                },
+                "required": ["url", "token"]
+            },
+        },
+        "required": ["config", "access_key", "host_id"]
+    }
+    with open(filepath) as f:
+        config = json.load(f)
+
+    try:
+        jsonschema.validate(config, file_schema)
+    except jsonschema.exceptions.ValidationError as e:
+        raise click.ClickException(e.message)
+
+    destination_.config = config['config']
+    destination_.access_key = config['access_key']
+    if 'host_id' in config:
+        destination_.host_id = config['host_id']
+    return destination_
+
+
+def _build_from_prompt(destination_: HttpDestination):
+    _prompt_proxy(destination_)
+    destination_.use_jks_truststore = click.confirm('Use jks truststore with a custom ssl certificate?')
+    _prompt_url(destination_)
+    _prompt_token(destination_)
+    _prompt_access_key(destination_)
+    return destination_
+
+
+@click.command()
+@click.option('-f', '--filepath', type=click.STRING, default=None)
+def destination_export(filepath):
+    destination_ = agent.destination.repository.get()
+    if not destination_:
+        raise click.ClickException('Destination doesn\'t exist')
+
+    if not filepath:
+        filepath = 'destination.json'
+    with open(filepath, 'w') as f:
+        json.dump(destination_.to_dict(), f, indent=4)
+    click.secho(f'Destination config exported to {filepath}', fg='green')
 
 
 @infinite_retry

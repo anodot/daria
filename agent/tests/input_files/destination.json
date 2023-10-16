@@ -1,0 +1,19 @@
+{
+    "config": {
+        "conf.client.useProxy": true,
+        "conf.client.proxy.uri": "http://squid:3128",
+        "conf.client.proxy.username": "",
+        "conf.client.proxy.password": "",
+        "conf.client.tlsConfig.tlsEnabled": false,
+        "conf.client.tlsConfig.keyStoreFilePath": "/data/truststore.jks",
+        "conf.client.tlsConfig.keyStorePassword": "changeit",
+        "conf.client.tlsConfig.trustStoreFilePath": "/data/truststore.jks",
+        "conf.client.tlsConfig.trustStorePassword": "changeit",
+        "conf.maxRequestCompletionSecs": 500,
+        "url": "http://dummy_destination",
+        "token": "correct_token"
+    },
+    "type": "http",
+    "host_id": "ABCDEF",
+    "access_key": "correct_key"
+}

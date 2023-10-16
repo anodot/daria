@@ -5,7 +5,21 @@ from agent.modules import proxy
 from result import Result, Ok, Err
 
 
-def create(
+def save(destination_: HttpDestination) -> Result[HttpDestination, str]:
+    result = validate(destination_)
+    if result.is_err():
+        return result
+
+    destination.repository.save(destination_)
+    if destination_.auth_token:
+        destination.repository.delete_auth_token(destination_.auth_token)
+    auth_token = destination.AuthenticationToken(result.value.id, AnodotApiClient(result.value).get_new_token())
+    destination.repository.save_auth_token(auth_token)
+    return result
+
+
+def build(
+    destination_: HttpDestination,
     token: str,
     url: str,
     access_key: str = None,
@@ -14,70 +28,39 @@ def create(
     proxy_password: str = None,
     host_id: str = None,
     use_jks_truststore: bool = False,
-) -> Result[HttpDestination, str]:
-    destination_ = HttpDestination()
+) -> HttpDestination:
+    destination_.token = token
+    destination_.url = url.rstrip('/')
     destination_.use_jks_truststore = use_jks_truststore
-    result = _build(destination_, token, url, access_key, proxy_host, proxy_username, proxy_password, host_id)
-    if not result.is_err():
-        # todo duplicate code, try to avoid it
-        auth_token = destination.AuthenticationToken(result.value.id, AnodotApiClient(result.value).get_new_token())
-        destination.repository.save_auth_token(auth_token)
-    return result
+    if proxy_host:
+        destination_.proxy = proxy.Proxy(proxy_host, proxy_username, proxy_password)
 
-
-def edit(
-    destination_: HttpDestination,
-    token: str,
-    url: str,
-    access_key: str = None,
-    proxy_host: str = None,
-    proxy_username: str = None,
-    proxy_password: str = None,
-    host_id: str = None,
-) -> Result[HttpDestination, str]:
-    result = _build(destination_, token, url, access_key, proxy_host, proxy_username, proxy_password, host_id)
-    if not result.is_err():
-        if destination_.auth_token:
-            destination.repository.delete_auth_token(destination_.auth_token)
-        # todo duplicate code, try to avoid it
-        auth_token = destination.AuthenticationToken(result.value.id, AnodotApiClient(result.value).get_new_token())
-        destination.repository.save_auth_token(auth_token)
-    return result
-
-
-def _build(
-    destination_: HttpDestination,
-    token: str,
-    url: str,
-    access_key: str = None,
-    proxy_host: str = None,
-    proxy_username: str = None,
-    proxy_password: str = None,
-    host_id: str = None,
-) -> Result[HttpDestination, str]:
-    proxy_ = proxy.Proxy(proxy_host, proxy_username, proxy_password) if proxy_host else None
-    if proxy_:
-        if not proxy.is_valid(proxy_):
-            return Err('Proxy data is invalid')
-        destination_.proxy = proxy_
-    if url:
-        url = url.rstrip('/')
-        try:
-            destination.validator.is_valid_destination_url(url, destination_.proxy)
-        except destination.validator.ValidationException as e:
-            return Err('Destination url validation failed: ' + str(e))
-        destination_.url = url
-    if token:
-        destination_.token = token
-        if not destination.validator.is_valid_resource_url(destination_.metrics_url):
-            return Err('Data collection token is invalid')
     if access_key:
         destination_.access_key = access_key
-        if not destination.validator.is_valid_access_key(destination_):
-            return Err('Access key is invalid')
+
     if host_id:
         destination_.host_id = host_id
-    destination.repository.save(destination_)
+
+    return destination_
+
+
+def validate(destination_: HttpDestination) -> Result[HttpDestination, str]:
+    if destination_.proxy:
+        if not proxy.is_valid(destination_.proxy):
+            return Err('Proxy data is invalid')
+
+    if destination_.url:
+        try:
+            destination.validator.is_valid_destination_url(destination_.url, destination_.proxy)
+        except destination.validator.ValidationException as e:
+            return Err('Destination url validation failed: ' + str(e))
+
+    if not destination.validator.is_valid_resource_url(destination_.metrics_url):
+        return Err('Data collection token is invalid')
+
+    if destination_.access_key:
+        if not destination.validator.is_valid_access_key(destination_):
+            return Err('Access key is invalid')
     return Ok(destination_)
 
 
