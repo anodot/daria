@@ -20,10 +20,10 @@ class WatermarkDestination(Stage):
     def get_config(self) -> dict:
         body = {
             "schemaId": "${SCHEMA_ID}",
-            "watermark": "record:value('/watermark')"
+            "watermark": "${record:value('/watermark')}"
         }
         if self.pipeline.watermark_in_local_timezone:
-            body['watermark'] = self._convert_watermark_to_timezone()
+            body['watermark'] = '${' + self._convert_watermark_to_timezone() + '}'
 
         return {
             self.pipeline.destination.CONFIG_ENABLE_REQUEST_LOGGING: self.pipeline.watermark_logs_enabled,
