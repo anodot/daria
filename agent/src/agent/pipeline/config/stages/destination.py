@@ -38,7 +38,7 @@ class WatermarkDestination(Stage):
     def _convert_watermark_to_timezone(self):
         timezone = pytz.timezone(self.pipeline.timezone)
         offset = timezone.utcoffset(datetime.utcnow()).total_seconds()
-        return f'record:value("/watermark") + ({int(offset)})'
+        return f'record:value("/watermark") - ({int(offset)})'
 
 
 class EventsDestination(Stage):
