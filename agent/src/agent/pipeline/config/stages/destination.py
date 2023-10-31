@@ -1,5 +1,6 @@
-import json
+import pytz
 import urllib.parse
+from datetime import datetime
 
 from agent.modules import proxy
 from .base import Stage, JythonProcessor
@@ -35,7 +36,9 @@ class WatermarkDestination(Stage):
         }
 
     def _convert_watermark_to_timezone(self):
-        return f"(record:value('/watermark') * 1000 - time:timeZoneOffset('{self.pipeline.timezone}')) / 1000"
+        timezone = pytz.timezone(self.pipeline.timezone)
+        offset = timezone.utcoffset(datetime.utcnow()).total_seconds()
+        return f'record:value("/watermark") + ({int(offset)})'
 
 
 class EventsDestination(Stage):
