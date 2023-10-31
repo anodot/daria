@@ -101,8 +101,7 @@ def send_to_anodot(pipeline_, next_bucket_start):
     api_client.session.close()
     logger.debug(f'Sent watermark for `{pipeline_.name}`, value: {next_bucket_start}')
 
-    monitoring.set_watermark_delta(pipeline_.name, time.time() - next_bucket_start)
-    monitoring.set_watermark_sent(pipeline_.name)
+    monitoring.set_watermark_sent(pipeline_.name, watermark.timestamp)
 
 
 def get_next_bucket_start(bs: str, offset: float) -> datetime:

@@ -59,17 +59,6 @@ def directory_file_processed(pipeline_id):
     return jsonify('')
 
 
-@monitoring_bp.route('/monitoring/watermark_delta/<pipeline_id>', methods=['POST'])
-def watermark_delta(pipeline_id):
-    delta = request.args.get('delta')
-    assert delta or delta == 0
-    pipeline_ = pipeline.repository.get_by_id(pipeline_id)
-    monitoring.metrics.WATERMARK_DELTA\
-        .labels(pipeline_.streamsets.url, pipeline_.name, pipeline_.source.type)\
-        .set(delta)
-    return jsonify('')
-
-
 @monitoring_bp.route('/monitoring/watermark_sent/<pipeline_id>', methods=['POST'])
 def watermark_sent(pipeline_id):
     data = request.get_json()
