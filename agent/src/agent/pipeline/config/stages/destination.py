@@ -1,3 +1,4 @@
+import json
 import urllib.parse
 
 from agent.modules import proxy
@@ -17,10 +18,21 @@ class Destination(Stage):
 
 class WatermarkDestination(Stage):
     def get_config(self) -> dict:
+        body = {
+            "schemaId": "${SCHEMA_ID}",
+            "watermark": "record:value('/watermark')"
+        }
+        if self.pipeline.watermark_in_local_timezone:
+            body['watermark'] = self._convert_watermark_to_timezone()
+
         return {
             self.pipeline.destination.CONFIG_ENABLE_REQUEST_LOGGING: self.pipeline.watermark_logs_enabled,
+            'conf.requestBody': json.dumps(body),
             **self.pipeline.destination.config,
         }
+
+    def _convert_watermark_to_timezone(self):
+        return f"(record:value('/watermark') * 1000 - time:timeZoneOffset('{self.pipeline.timezone}')) / 1000"
 
 
 class EventsDestination(Stage):
@@ -44,7 +56,7 @@ class AnodotEventsDestination(JythonProcessor):
         }, {
             'key': 'AGENT_OFFSET_URL',
             'value': urllib.parse.urljoin(
-                    self.pipeline.streamsets.agent_external_url, f'/pipeline-offset/{self.pipeline.name}'
+                self.pipeline.streamsets.agent_external_url, f'/pipeline-offset/{self.pipeline.name}'
             ),
         }]
 
