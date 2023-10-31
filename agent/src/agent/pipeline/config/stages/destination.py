@@ -18,16 +18,19 @@ class Destination(Stage):
 
 class WatermarkDestination(Stage):
     def get_config(self) -> dict:
-        body = {
+        body = """{
             "schemaId": "${SCHEMA_ID}",
-            "watermark": "${record:value('/watermark')}"
-        }
+            "watermark": WATERMARK_EXPRESSION
+        }"""
+        watermark_expression = "${record:value('/watermark')}"
         if self.pipeline.watermark_in_local_timezone:
-            body['watermark'] = '${' + self._convert_watermark_to_timezone() + '}'
+            watermark_expression = '${' + self._convert_watermark_to_timezone() + '}'
+
+        body.replace('WATERMARK_EXPRESSION', watermark_expression)
 
         return {
             self.pipeline.destination.CONFIG_ENABLE_REQUEST_LOGGING: self.pipeline.watermark_logs_enabled,
-            'conf.requestBody': json.dumps(body),
+            'conf.requestBody': body,
             **self.pipeline.destination.config,
         }
 
