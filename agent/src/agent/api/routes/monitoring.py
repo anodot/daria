@@ -1,6 +1,11 @@
+import calendar
+import pytz
+
+from datetime import datetime
+
 from flask import jsonify, Blueprint, request
 from agent import monitoring, destination, pipeline
-from prometheus_client import generate_latest, multiprocess
+from prometheus_client import multiprocess
 
 multiprocess.MultiProcessCollector(monitoring.metrics.registry)
 monitoring_bp = Blueprint('monitoring', __name__)
@@ -67,10 +72,24 @@ def watermark_delta(pipeline_id):
 
 @monitoring_bp.route('/monitoring/watermark_sent/<pipeline_id>', methods=['POST'])
 def watermark_sent(pipeline_id):
+    data = request.get_json()
+    if type(data) is not dict or 'watermark' not in data:
+        return jsonify({'errors': 'wrong data format'}), 400
+
     pipeline_ = pipeline.repository.get_by_id(pipeline_id)
+    if not pipeline_:
+        return jsonify({}), 404
+
+    tz = pipeline_.timezone if pipeline_.watermark_in_local_timezone and pipeline_.timezone else 'UTC'
+    delta = str(calendar.timegm(datetime.now(pytz.timezone(tz)).timetuple()) - data['watermark'])
+
+    monitoring.metrics.WATERMARK_DELTA \
+        .labels(pipeline_.streamsets.url, pipeline_.name, pipeline_.source.type) \
+        .set(delta)
     monitoring.metrics.WATERMARK_SENT\
         .labels(pipeline_.streamsets.url, pipeline_.name, pipeline_.source.type)\
         .inc(1)
+
     return jsonify('')
 
 

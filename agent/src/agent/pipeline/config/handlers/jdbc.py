@@ -14,7 +14,6 @@ class JDBCSchemaConfigHandler(SchemaConfigHandler):
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties30,
         'ExpressionEvaluator_03': stages.expression_evaluator.ProcessWatermark,
         'destination': stages.destination.Destination,
-        'destination_watermark_with_metrics': stages.destination.WatermarkWithMetricsDestination,
         'destination_watermark': stages.destination.WatermarkDestination,
     }
 
