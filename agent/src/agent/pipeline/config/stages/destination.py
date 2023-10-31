@@ -26,7 +26,7 @@ class WatermarkDestination(Stage):
         if self.pipeline.watermark_in_local_timezone:
             watermark_expression = '${' + self._convert_watermark_to_timezone() + '}'
 
-        body.replace('WATERMARK_EXPRESSION', watermark_expression)
+        body = body.replace('WATERMARK_EXPRESSION', watermark_expression)
 
         return {
             self.pipeline.destination.CONFIG_ENABLE_REQUEST_LOGGING: self.pipeline.watermark_logs_enabled,
