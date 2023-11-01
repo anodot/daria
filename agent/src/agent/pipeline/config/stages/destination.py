@@ -1,4 +1,6 @@
+import pytz
 import urllib.parse
+from datetime import datetime
 
 from agent.modules import proxy
 from .base import Stage, JythonProcessor
@@ -17,58 +19,26 @@ class Destination(Stage):
 
 class WatermarkDestination(Stage):
     def get_config(self) -> dict:
+        body = """{
+            "schemaId": "${SCHEMA_ID}",
+            "watermark": WATERMARK_EXPRESSION
+        }"""
+        watermark_expression = "${record:value('/watermark')}"
+        if self.pipeline.watermark_in_local_timezone:
+            watermark_expression = '${' + self._convert_watermark_to_timezone() + '}'
+
+        body = body.replace('WATERMARK_EXPRESSION', watermark_expression)
+
         return {
-            'conf.agentWatermarkUrl': urllib.parse.urljoin(
-                self.pipeline.streamsets.agent_external_url, f'/pipelines/{self.pipeline.name}/watermark'
-            ),
+            self.pipeline.destination.CONFIG_ENABLE_REQUEST_LOGGING: self.pipeline.watermark_logs_enabled,
+            'conf.requestBody': body,
             **self.pipeline.destination.config,
         }
 
-
-class WatermarkWithMetricsDestination(JythonProcessor):
-    JYTHON_SCRIPT = 'send_watermark_and_monitoring_metrics.py'
-
-    def _get_script_params(self) -> list[dict]:
-        return [
-            {
-                'key': 'PROXIES',
-                'value': proxy.get_config(self.pipeline.destination.proxy)
-            },
-            {
-                'key': 'WATERMARK_URL',
-                'value': urllib.parse.urljoin(
-                    self.pipeline.destination.url,
-                    f'/api/v1/metrics/watermark'
-                    f'?token={self.pipeline.destination.token}&protocol={self.pipeline.destination.PROTOCOL_30}',
-                    )
-            },
-            {
-                'key': 'WATERMARK_DELTA_MONITORING_ENDPOINT',
-                'value': urllib.parse.urljoin(
-                    self.pipeline.streamsets.agent_external_url, f'/monitoring/watermark_delta/{self.pipeline.name}')
-            },
-            {
-                'key': 'WATERMARK_SENT_MONITORING_ENDPOINT',
-                'value': urllib.parse.urljoin(
-                    self.pipeline.streamsets.agent_external_url, f'/monitoring/watermark_sent/{self.pipeline.name}')
-            },
-            {
-                'key': 'WATERMARK_IN_LOCAL_TIMEZONE',
-                'value': str(self.pipeline.watermark_in_local_timezone),
-            },
-            {
-                'key': 'TIMEZONE',
-                'value': str(self.pipeline.timezone),
-            },
-            {
-                'key': 'WATERMARK_LOGS',
-                'value': str(self.pipeline.watermark_logs_enabled)
-            },
-            {
-                'key': 'VERIFY_SSL',
-                'value': str(not self.pipeline.destination.use_jks_truststore)
-            }
-        ]
+    def _convert_watermark_to_timezone(self):
+        timezone = pytz.timezone(self.pipeline.timezone)
+        offset = timezone.utcoffset(datetime.utcnow()).total_seconds()
+        return f'record:value("/watermark") - ({int(offset)})'
 
 
 class EventsDestination(Stage):
@@ -92,7 +62,7 @@ class AnodotEventsDestination(JythonProcessor):
         }, {
             'key': 'AGENT_OFFSET_URL',
             'value': urllib.parse.urljoin(
-                    self.pipeline.streamsets.agent_external_url, f'/pipeline-offset/{self.pipeline.name}'
+                self.pipeline.streamsets.agent_external_url, f'/pipeline-offset/{self.pipeline.name}'
             ),
         }]
 

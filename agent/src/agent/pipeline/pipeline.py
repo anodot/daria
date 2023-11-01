@@ -342,7 +342,7 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return self.config.get('delay', '0')
 
     @property
-    def watermark_in_local_timezone(self) -> str:
+    def watermark_in_local_timezone(self) -> bool:
         return self.config.get('watermark_in_local_timezone', False)
 
     @property

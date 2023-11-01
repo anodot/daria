@@ -28,16 +28,6 @@ class AddProperties(Stage):
         }
 
 
-class ProcessWatermark(Stage):
-    def get_config(self) -> dict:
-        expressions = [get_value('/schemaId', 'SCHEMA_ID')]
-        if self.pipeline.watermark_in_local_timezone:
-            expressions.append(get_value('/watermark', _convert_watermark_to_timezone(self.pipeline.timezone)))
-        return {
-            'expressionProcessorConfigs': expressions
-        }
-
-
 class Filtering(Stage):
     def _get_transformations(self) -> list:
         transformations = []
@@ -85,10 +75,6 @@ def _get_convert_timestamp_to_unix_expression(
     elif timestamp_type == pipeline.TimestampType.UNIX_MS:
         return f"{timestamp_value}/1000"
     return timestamp_value
-
-
-def _convert_watermark_to_timezone(timezone: str):
-    return f"(record:value('/watermark') * 1000 - time:timeZoneOffset('{timezone}')) / 1000"
 
 
 def _get_tags_expressions(pipeline_: Pipeline) -> list:

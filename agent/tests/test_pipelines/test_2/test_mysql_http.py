@@ -86,4 +86,4 @@ class TestMySQL(TestPipelineBase):
         end_day = datetime.fromtimestamp(1512950400.0).astimezone(timezone('UTC'))
         utc_offset = datetime.now().astimezone(timezone('Europe/Berlin')).utcoffset()
         expect_watermark = (end_day - utc_offset).timestamp()
-        assert get_output(f'{schema_id}_watermark.json') == {'watermark': expect_watermark, 'schemaId': schema_id}
+        assert get_output(f'{schema_id}_watermark.json') == {'watermark': int(expect_watermark), 'schemaId': schema_id}

@@ -24,8 +24,7 @@ class PromQLSchemaConfigHandler(SchemaConfigHandler):
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties30,
         'JythonEvaluator_01': stages.jython.ReplaceIllegalChars,
         'destination': stages.destination.Destination,
-        'destination_watermark': stages.destination.WatermarkDestination,
-        'destination_watermark_with_metrics': stages.destination.WatermarkWithMetricsDestination,
+        'destination_watermark': stages.destination.WatermarkDestination
     }
 
 

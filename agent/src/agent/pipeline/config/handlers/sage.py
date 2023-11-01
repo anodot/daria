@@ -29,6 +29,5 @@ class SageSchemaConfigHandler(SchemaConfigHandler):
         'JavaScriptEvaluator_01': stages.js_convert_metrics.SageJSConvertMetrics30,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties30,
         'destination': stages.destination.Destination,
-        'destination_watermark': stages.destination.WatermarkDestination,
-        'destination_watermark_with_metrics': stages.destination.WatermarkWithMetricsDestination,
+        'destination_watermark': stages.destination.WatermarkDestination
     }
