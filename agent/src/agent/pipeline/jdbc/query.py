@@ -39,7 +39,7 @@ class Builder:
         if not self.pipeline.query:
             # dummy query for validating source connection in streamsets
             return 'SELECT * FROM t'
-        query = self.pipeline.query.replace(f'{TIMESTAMP_CONDITION}', '1=1')
+        query = self.pipeline.query.replace(TIMESTAMP_CONDITION, '1=1')
         return f'{query} LIMIT {pipeline.manager.MAX_SAMPLE_RECORDS}'
 
     def _get_timestamp_condition(self) -> str:
