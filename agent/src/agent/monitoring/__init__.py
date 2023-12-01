@@ -4,7 +4,7 @@ import urllib.parse
 
 from . import metrics, streamsets, sender
 from agent.modules import constants, logger
-from agent.monitoring.dataclasses import Counter
+from agent.monitoring.dataclasses import Counter, Metric
 from datetime import datetime
 from agent import pipeline
 from agent.pipeline import Pipeline
@@ -17,7 +17,7 @@ def pull_latest():
     streamsets.pull_metrics()
 
 
-def get_monitoring_metrics() -> List[Dict]:
+def get_monitoring_metrics_for_anodot() -> List[Dict]:
     pull_latest()
     data = []
     pipelines = pipeline.repository.get_all()

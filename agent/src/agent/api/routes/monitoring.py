@@ -5,7 +5,7 @@ from datetime import datetime
 
 from flask import jsonify, Blueprint, request
 from agent import monitoring, destination, pipeline
-from prometheus_client import multiprocess
+from prometheus_client import multiprocess, generate_latest
 
 multiprocess.MultiProcessCollector(monitoring.metrics.registry)
 monitoring_bp = Blueprint('monitoring', __name__)
@@ -14,8 +14,16 @@ monitoring_bp = Blueprint('monitoring', __name__)
 @monitoring_bp.route('/metrics', methods=['GET'])
 def metrics():
     monitoring.pull_latest()
-    return jsonify(monitoring.get_monitoring_metrics())
-    # return monitoring.generate_latest()
+
+    def to_prometheus_format(metric):
+        values = ''
+        for sample in metric.samples:
+            values += f'\n{sample.name}'
+            if sample.labels:
+                values += '{' + ','.join([f'{name}="{val}"' for name, val in sample.labels.items()]) + '}'
+            values += f' {sample.value}'
+        return f"# HELP {metric.name} {metric.documentation}\n# TYPE {metric.name} {metric.type}{values}"
+    return '\n'.join([to_prometheus_format(metric) for metric in monitoring.metrics.collect_metrics()])
 
 
 @monitoring_bp.route('/monitoring', methods=['GET'])

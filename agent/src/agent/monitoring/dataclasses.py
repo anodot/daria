@@ -36,6 +36,7 @@ class Metric:
         self.documentation = documentation
         self._labelnames = labelnames
         self._metrics = {}
+        self.type = ''
 
     def labels(self, *labelvalues, **labelkwargs):
         if labelvalues and labelkwargs:

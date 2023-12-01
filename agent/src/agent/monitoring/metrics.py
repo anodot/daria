@@ -1,14 +1,14 @@
 from prometheus_client import (Info,
-    Counter as PrometheusCounter,
-    Gauge as PrometheusGauge,
-    CollectorRegistry,
-)
+                               Counter as PrometheusCounter,
+                               Gauge as PrometheusGauge,
+                               CollectorRegistry,
+                               )
 from agent import version
 from agent.monitoring.dataclasses import Counter, Gauge
 
 registry = CollectorRegistry()
 
-VERSION = Info('version', 'Agent version', registry=registry)
+VERSION = Info('version', 'Agent version')
 VERSION.info({'version': version.__version__})
 
 STREAMSETS_CPU = Gauge('streamsets_cpu', 'Streamsets CPU utilization', ['streamsets_url'], multiprocess_mode='max')
