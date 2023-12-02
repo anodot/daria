@@ -66,7 +66,7 @@ class TestMonitoringMetrics(TestInputBase, TestPipelineBase):
 
     @pytest.mark.order(Order.OTHER)
     def test_monitoring_metrics(self, name, metric_type):
-        response = requests.get('http://localhost/metrics')
+        response = requests.get('http://localhost/metrics_json')
         assert response.status_code == 200
         metrics = response.json()
         metric_found = any(i['properties'].get('pipeline_id') == name and i['properties']['what'] == metric_type for i in metrics)
