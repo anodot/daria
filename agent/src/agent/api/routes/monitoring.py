@@ -14,7 +14,7 @@ monitoring_bp = Blueprint('monitoring', __name__)
 @monitoring_bp.route('/metrics_json', methods=['GET'])
 def metrics_json():
     monitoring.pull_latest()
-    return monitoring.get_monitoring_metrics_for_anodot()
+    return jsonify(monitoring.get_monitoring_metrics_for_anodot())
 
 
 @monitoring_bp.route('/metrics', methods=['GET'])
