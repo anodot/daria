@@ -47,7 +47,7 @@ Request fields:
 | Field                 | Type     | Description                                                                                                                                          |
 |-----------------------|----------|------------------------------------------------------------------------------------------------------------------------------------------------------|
 | data_collection_token | required | Anodot data collection token                                                                                                                         |
-| destination_url       | optional | A url of an Anodot application where all data will be transferred. If the value is not provided, default value 'https://api.anodot.com' will be used |
+| destination_url       | required | An url of an Anodot application where all data will be transferred. Example: 'https://api.anodot.com' |
 | access_key            | optional | Anodot access key                                                                                                                                    |
 | proxy_uri             | optional | URI of a proxy that will be used to connect to the destination                                                                                       |
 | proxy_username        | optional | Username for proxy authentication                                                                                                                    |
