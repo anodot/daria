@@ -54,7 +54,7 @@ class Builder:
     def _get_indexed_query(self) -> str:
         if self.pipeline.source.type == source.TYPE_DRUID:
             # if timestamp alias is set then we assume an aggregation function is used and we don't need quotes
-            ts = self.pipeline.timestamp_path if self.pipeline.timestamp_alias else f"{self.pipeline.timestamp_path}"
+            ts = self.pipeline.timestamp_path if self.pipeline.timestamp_alias else f'"{self.pipeline.timestamp_path}"'
             return f'TIME_IN_INTERVAL({ts}, ' \
                    f'\'{self.TIMESTAMP_VALUE_ISO}/PT{self.pipeline.interval}S\')'
         if self.pipeline.source.type == source.TYPE_MSSQL:
