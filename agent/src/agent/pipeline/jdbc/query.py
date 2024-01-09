@@ -53,7 +53,11 @@ class Builder:
 
     def _get_indexed_query(self) -> str:
         if self.pipeline.source.type == source.TYPE_DRUID:
-            return f'TIME_IN_INTERVAL("{self.pipeline.timestamp_path}", ' \
+            timestamp = self.pipeline.timestamp_path
+            if self.pipeline.timestamp_path != '__time':
+                # if timestamp is not default then we assume an aggregation function is used and we don't need quotes
+                timestamp = f"{self.pipeline.timestamp_path}"
+            return f'TIME_IN_INTERVAL({timestamp}, ' \
                    f'\'{self.TIMESTAMP_VALUE_ISO}/PT{self.pipeline.interval}S\')'
         if self.pipeline.source.type == source.TYPE_MSSQL:
             return f"{self.pipeline.timestamp_path} BETWEEN DATEADD(second, {self.TIMESTAMP_VALUE}, '1970-01-01') AND "\
