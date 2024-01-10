@@ -213,6 +213,10 @@ class Pipeline(Entity, sdc_client.IPipeline):
         return self._get_property_path(self.config['timestamp']['name'])
 
     @property
+    def timestamp_alias(self) -> str:
+        return self._get_property_path(self.config['timestamp'].get('alias'))
+
+    @property
     def timezone(self) -> str:
         return self.config.get('timezone', 'UTC')
 

@@ -39,7 +39,7 @@ class JSConvertMetrics30(JSConvertMetrics):
 
     def get_js_vars(self):
         return f"""
-state['TIMESTAMP_COLUMN'] = '{self.pipeline.timestamp_path}';
+state['TIMESTAMP_COLUMN'] = '{self.pipeline.timestamp_alias or self.pipeline.timestamp_path}';
 state['DIMENSIONS'] = {self.pipeline.dimension_paths_with_names};
 state['MEASUREMENTS'] = {self.pipeline.value_paths_with_names};
 state['COUNT_RECORDS'] = {int(self.pipeline.count_records)};
