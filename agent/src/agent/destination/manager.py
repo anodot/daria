@@ -55,7 +55,8 @@ def validate(destination_: HttpDestination) -> Result[HttpDestination, str]:
         except destination.validator.ValidationException as e:
             return Err('Destination url validation failed: ' + str(e))
 
-    if not destination.validator.is_valid_resource_url(destination_.metrics_url):
+    if not destination.validator.is_valid_resource_url(destination_.metrics_url, destination_.proxy,
+                                                       not destination_.use_jks_truststore):
         return Err('Data collection token is invalid')
 
     if destination_.access_key:
