@@ -56,6 +56,7 @@ def query_missing_data(main_offset, main_interval):
         cur_batch = sdc.createBatch()
         record = sdc.createRecord('record created ' + str(datetime.now()))
         record.value = {'last_timestamp': int(start)}
+        record.value = {'last_timestamp_iso': datetime.fromtimestamp(int(start)).isoformat()}
         cur_batch.add(record)
         cur_batch.process(entityName, str(start))
         start += main_interval
