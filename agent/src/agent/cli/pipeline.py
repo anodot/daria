@@ -14,10 +14,6 @@ from sdc_client import Severity
 from agent.pipeline import Pipeline, check_raw_prerequisites
 
 
-def get_pipelines_ids_complete(ctx, args, incomplete):
-    return [p.name for p in pipeline.repository.get_all() if incomplete in p.name]
-
-
 @click.command(name='list')
 def list_pipelines():
     """
@@ -86,7 +82,7 @@ def create_topology(file):
 
 
 @click.command()
-@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, required=False)
+@click.argument('pipeline_id', required=False)
 @click.option('-a', '--advanced', is_flag=True)
 @click.option('-f', '--file', type=click.File())
 @click.option('-p', '--result-preview', is_flag=True)
@@ -111,7 +107,7 @@ def _check_raw_prerequisites():
 
 
 @click.command()
-@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, required=False)
+@click.argument('pipeline_id',  required=False)
 @click.option('-f', '--file', type=click.File())
 def start(pipeline_id: str, file):
     """
@@ -131,7 +127,7 @@ def start(pipeline_id: str, file):
 
 
 @click.command()
-@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, required=False)
+@click.argument('pipeline_id', required=False)
 @click.option('-f', '--file', type=click.File())
 def stop(pipeline_id: str, file):
     """
@@ -155,7 +151,7 @@ def _get_pipeline_ids(pipeline_id, file):
 
 
 @click.command()
-@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
+@click.argument('pipeline_id')
 def force_stop(pipeline_id: str):
     """
     Forcing a Pipeline to stop (often stops processes before they complete, which can lead to unexpected results)
@@ -170,7 +166,7 @@ def force_stop(pipeline_id: str):
 
 
 @click.command()
-@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, required=False)
+@click.argument('pipeline_id', required=False)
 @click.option('-f', '--file', type=click.File())
 @click.option('--delete-metrics', is_flag=True)
 def delete(pipeline_id: str, file, delete_metrics: bool):
@@ -192,7 +188,7 @@ def delete(pipeline_id: str, file, delete_metrics: bool):
 
 
 @click.command()
-@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
+@click.argument('pipeline_id')
 @click.option('--delete-metrics', is_flag=True)
 def force_delete(pipeline_id: str, delete_metrics: bool):
     """
@@ -208,7 +204,7 @@ def force_delete(pipeline_id: str, delete_metrics: bool):
 
 # todo severity is not working
 @click.command()
-@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
+@click.argument('pipeline_id')
 @click.option('-l', '--lines', type=click.INT, default=10)
 @click.option('-s', '--severity', type=click.Choice([Severity.INFO.value, Severity.ERROR.value]), default=None)
 def logs(pipeline_id: str, lines: int, severity: Optional[Severity]):
@@ -224,7 +220,7 @@ def logs(pipeline_id: str, lines: int, severity: Optional[Severity]):
 
 
 @click.command()
-@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
+@click.argument('pipeline_id')
 @click.option('--enable/--disable', default=False)
 def destination_logs(pipeline_id: str, enable: bool):
     """
@@ -242,7 +238,7 @@ def destination_logs(pipeline_id: str, enable: bool):
 
 
 @click.command()
-@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
+@click.argument('pipeline_id')
 @click.option('-l', '--lines', type=click.INT, default=10)
 def info(pipeline_id: str, lines: int):
     """
@@ -294,7 +290,7 @@ def print_info(info_: dict):
 
 
 @click.command()
-@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete)
+@click.argument('pipeline_id')
 def reset(pipeline_id: str):
     """
     Reset pipeline's offset
@@ -308,7 +304,7 @@ def reset(pipeline_id: str):
 
 
 @click.command()
-@click.argument('pipeline_id', autocompletion=get_pipelines_ids_complete, required=False)
+@click.argument('pipeline_id', required=False)
 @click.option('--asynchronous', '-a', is_flag=True, default=False, help="Asynchronous mode")
 def update(pipeline_id: str, asynchronous: bool):
     """

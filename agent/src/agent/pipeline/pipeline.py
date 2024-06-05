@@ -83,6 +83,11 @@ class Pipeline(Entity, sdc_client.IPipeline):
     retries = relationship('PipelineRetries', cascade="delete", uselist=False)
     notifications = relationship('PiplineNotifications', cascade="delete", uselist=False)
 
+    __mapper_args__ = {
+        'polymorphic_identity': 'regular_pipeline',
+        'polymorphic_on': type
+    }
+
     def __init__(self, pipeline_id: str, source_: Source, destination: HttpDestination):
         self.name = pipeline_id
         self._previous_config = {}
@@ -469,18 +474,30 @@ class Pipeline(Entity, sdc_client.IPipeline):
 
 
 class RawPipeline(Pipeline):
+    __mapper_args__ = {
+        'polymorphic_identity': 'raw_pipeline',
+    }
+
     def __init__(self, pipeline_id: str, source_: Source):
         super(RawPipeline, self).__init__(pipeline_id, source_, DummyHttpDestination())
         self.type = RAW_PIPELINE
 
 
 class TopologyPipeline(Pipeline):
+    __mapper_args__ = {
+        'polymorphic_identity': 'topology_pipeline',
+    }
+
     def __init__(self, pipeline_id: str, source_: Source, destination_: HttpDestination):
         super(TopologyPipeline, self).__init__(pipeline_id, source_, destination_)
         self.type = TOPOLOGY_PIPELINE
 
 
 class EventsPipeline(Pipeline):
+    __mapper_args__ = {
+        'polymorphic_identity': 'events_pipeline',
+    }
+
     def __init__(self, pipeline_id: str, source_: Source, destination_: HttpDestination):
         super(EventsPipeline, self).__init__(pipeline_id, source_, destination_)
         self.type = EVENTS_PIPELINE

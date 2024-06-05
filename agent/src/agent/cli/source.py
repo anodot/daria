@@ -8,10 +8,6 @@ from jsonschema import ValidationError, SchemaError
 from agent.cli import prompt
 
 
-def autocomplete(ctx, args, incomplete) -> list:
-    return list(map(lambda s: s.name, source.repository.find_by_name_beginning(incomplete)))
-
-
 @click.group(name='source')
 def source_group():
     pass
@@ -32,7 +28,7 @@ def create(advanced, file):
 
 
 @click.command()
-@click.argument('name', autocompletion=autocomplete, required=False)
+@click.argument('name', required=False)
 @click.option('-a', '--advanced', is_flag=True)
 @click.option('-f', '--file', type=click.File())
 def edit(name, advanced, file):
@@ -57,7 +53,7 @@ def check_prerequisites():
 
 
 @click.command()
-@click.argument('name', autocompletion=autocomplete)
+@click.argument('name')
 def delete(name):
     try:
         source.repository.delete_by_name(name)

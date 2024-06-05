@@ -11,7 +11,7 @@ class TCPPrompter(SchemalessPrompter):
     @infinite_retry
     def prompt_ports(self, default_config):
         self.source.config[self.CONFIG_PORTS] = \
-            click.prompt('Port', type=click.STRING, value_proc=lambda x: x.split(','),
+            click.prompt('Port', type=click.STRING,
                          default=default_config.get(self.CONFIG_PORTS))
         for port in self.source.config[self.CONFIG_PORTS]:
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:

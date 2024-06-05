@@ -57,18 +57,19 @@ class Prompter:
         return value
 
     @infinite_retry
-    def prompt_dimensions(self, text: str, default_value: list) -> list:
+    def prompt_dimensions(self, text: str, default_value: str) -> list:
         dimensions = click.prompt(text, type=click.STRING, value_proc=lambda x: x.split(), default=default_value)
         self.validate_properties_names(dimensions, self.pipeline.source.sample_data)
         return dimensions
 
     def set_dimensions(self):
         self.config['dimensions'] = self.default_config.get('dimensions', {})
-        self.config['dimensions']['required'] = self.prompt_dimensions('Required dimensions',
-                                                                       self.config['dimensions'].get('required', []))
+        default_val = self.config['dimensions'].get('required', [])
+        self.config['dimensions']['required'] = self.prompt_dimensions('Required dimensions', ' '.join(default_val))
+        default_val_optional = self.config['dimensions'].get('optional', [])
         self.config['dimensions']['optional'] = click.prompt('Optional dimensions', type=click.STRING,
                                                              value_proc=lambda x: x.split(),
-                                                             default=self.config['dimensions'].get('optional', []))
+                                                             default=' '.join(default_val_optional))
 
     @infinite_retry
     def set_timezone(self):
@@ -132,7 +133,7 @@ class Prompter:
 
     @if_validation_enabled
     def data_preview(self):
-        if click.confirm('Would you like to see the data preview?', default=True):
+        if click.confirm('Would you like to see the data preview?', default=False):
             test_pipeline = pipeline.manager.build_test_pipeline(self.pipeline.source)
             test_pipeline.config = self.config
             test_pipeline.config['uses_schema'] = False

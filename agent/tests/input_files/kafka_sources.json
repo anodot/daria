@@ -1,10 +1,26 @@
 [
   {
     "type": "kafka",
-    "name": "test_kafka_1",
+    "name": "test_kfk",
     "config": {
       "conf.brokerURI": "kafka:29092",
-      "conf.topicList": ["test"]
+      "conf.topicList": ["test_kfk"]
+    }
+  },
+  {
+    "type": "kafka",
+    "name": "test_running_counters",
+    "config": {
+      "conf.brokerURI": "kafka:29092",
+      "conf.topicList": ["test_running_counters"]
+    }
+  },
+  {
+    "type": "kafka",
+    "name": "test_json_arrays",
+    "config": {
+      "conf.brokerURI": "kafka:29092",
+      "conf.topicList": ["test_json_arrays"]
     }
   }
 ]

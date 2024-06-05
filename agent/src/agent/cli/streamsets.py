@@ -51,7 +51,7 @@ def add(url, username, password, agent_ext_url, preferred_type):
 
 
 @click.command()
-@click.argument('url', autocompletion=get_url_complete)
+@click.argument('url')
 @click.option('--update-pipelines/--no-update-pipelines', default=False)
 def edit(url, update_pipelines=False):
     try:
@@ -70,7 +70,7 @@ def edit(url, update_pipelines=False):
 
 
 @click.command()
-@click.argument('url', autocompletion=get_url_complete)
+@click.argument('url')
 def delete(url):
     try:
         streamsets.manager.delete_streamsets(streamsets.repository.get_by_url(url))

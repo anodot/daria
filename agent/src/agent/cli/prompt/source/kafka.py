@@ -9,7 +9,7 @@ class KafkaBuilder(SchemalessPrompter):
     def prompt(self, default_config, advanced=False):
         self.prompt_connection(default_config, advanced)
         self.source.config[source.KafkaSource.CONFIG_TOPIC_LIST] = \
-            click.prompt('Topic list', type=click.STRING, value_proc=lambda x: x.split(','),
+            click.prompt('Topic list', type=click.STRING,
                          default=default_config.get(source.KafkaSource.CONFIG_TOPIC_LIST))
         self.source.config[source.KafkaSource.CONFIG_N_THREADS] = \
             click.prompt('Number of threads', type=click.INT,

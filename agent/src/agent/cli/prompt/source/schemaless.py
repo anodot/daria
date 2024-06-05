@@ -31,7 +31,7 @@ class SchemalessPrompter(Prompter, metaclass=ABCMeta):
 
     def prompt_avro_registry(self, default_config):
         self.source.config[source.SchemalessSource.CONFIG_AVRO_SCHEMA_REGISTRY_URLS] = \
-            click.prompt('Registry Urls', type=click.STRING, value_proc=lambda x: x.split(','),
+            click.prompt('Registry Urls', type=click.STRING,
                          default=default_config.get(source.SchemalessSource.CONFIG_AVRO_SCHEMA_REGISTRY_URLS))
         self.source.config[source.SchemalessSource.CONFIG_AVRO_SCHEMA_LOOKUP_MODE] = \
             click.prompt('Lookup mode', type=click.Choice(source.SchemalessSource.avro_lookup_modes),

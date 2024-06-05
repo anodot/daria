@@ -13,11 +13,6 @@ from ...conftest import get_input_file_path, Order
 class TestKafka(TestInputBase):
     __test__ = True
     params = {
-        'test_source_create': [
-            {'name': 'test_kfk'},
-            {'name': 'test_running_counters'},
-            {'name': 'test_json_arrays'},
-        ],
         'test_create': [
             {
                 'source_name': 'test_kfk',
@@ -112,13 +107,6 @@ class TestKafka(TestInputBase):
             for index, messages in enumerate(reader):
                 producer.send(topic, messages, partition=int(index > 3))
                 producer.flush()
-
-    @pytest.mark.order(Order.SOURCE_CREATE)
-    def test_source_create(self, cli_runner, name):
-        result = cli_runner.invoke(cli.source.create, catch_exceptions=False,
-                                   input=f"kafka\n{name}\nkafka:29092\n{name}\n\n\n")
-        assert result.exit_code == 0
-        assert source.repository.exists(name)
 
     @pytest.mark.order(Order.PIPELINE_CREATE)
     def test_create(self, cli_runner, source_name, name, options, value, timestamp, advanced_options):
