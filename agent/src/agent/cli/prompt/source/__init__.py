@@ -14,13 +14,11 @@ def get_prompter(source_: source.Source) -> Prompter:
     types = {
         source.TYPE_CLICKHOUSE: JDBCPrompter,
         source.TYPE_ELASTIC: ElasticPrompter,
-        source.TYPE_KAFKA: KafkaBuilder,
         source.TYPE_MONGO: MongoPrompter,
         source.TYPE_MSSQL: JDBCPrompter,
         source.TYPE_MYSQL: JDBCPrompter,
         source.TYPE_POSTGRES: JDBCPrompter,
         source.TYPE_SAGE: SagePrompter,
-        source.TYPE_SPLUNK: TCPPrompter,
         source.TYPE_SOLARWINDS: SolarWindsPrompter,
         source.TYPE_ZABBIX: ZabbixPrompter,
     }

@@ -3,7 +3,7 @@ from agent import source
 from agent.data_extractor.cacti.cacher import CactiCache
 from agent.modules import db as agent_db
 from agent.pipeline import Pipeline
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 
@@ -38,12 +38,12 @@ class CactiCacher:
         self._get_item_cdef_items()
 
     def _get_graph_titles(self):
-        res = self.session.execute(f"""
+        res = self.session.execute(text(f"""
             SELECT gtg.local_graph_id, gtg.title, gl.host_id
             FROM graph_templates_graph gtg
             JOIN graph_local gl ON gtg.local_graph_id = gl.id
             WHERE local_graph_id != 0 {self._filter_by_graph_ids('gtg.local_graph_id')}
-        """)
+        """))
         for row in res:
             if row['local_graph_id'] not in self.graphs:
                 continue
@@ -51,7 +51,7 @@ class CactiCacher:
             self.graphs[row['local_graph_id']]['host_id'] = str(row['host_id'])
 
     def _get_graph_variables(self):
-        res = self.session.execute(f"""
+        res = self.session.execute(text(f"""
             SELECT gl.id, field_name, field_value
             FROM host_snmp_cache hsc FORCE INDEX (`PRIMARY`)
             JOIN graph_local gl
@@ -59,7 +59,7 @@ class CactiCacher:
             AND gl.snmp_index = hsc.snmp_index
             AND gl.snmp_query_id = hsc.snmp_query_id
             WHERE 1 {self._filter_by_graph_ids('gl.id')}
-        """)
+        """))
         for row in res:
             local_graph_id = row['id']
             if local_graph_id not in self.graphs:
@@ -69,7 +69,7 @@ class CactiCacher:
             self.graphs[local_graph_id]['variables'][row['field_name']] = row['field_value']
 
     def _get_graph_items(self):
-        res = self.session.execute(f"""
+        res = self.session.execute(text(f"""
             SELECT gti.id as item_id, gti.local_graph_id, dtr.data_source_name, gti.text_format as item_title, 
                     dtd.data_source_path, gti.graph_type_id
             FROM graph_templates_item gti
@@ -79,7 +79,7 @@ class CactiCacher:
             WHERE gtg.local_graph_id != 0
             AND dtd.data_source_path IS NOT NULL
             {self._filter_by_graph_ids('gti.local_graph_id')}
-        """)
+        """))
         for row in res:
             local_graph_id = row['local_graph_id']
             if local_graph_id not in self.graphs:
@@ -95,7 +95,7 @@ class CactiCacher:
             self.graphs[local_graph_id]['items'][row['item_id']]['graph_type_id'] = row['graph_type_id']
 
     def _get_items_variables(self):
-        res = self.session.execute(f"""
+        res = self.session.execute(text(f"""
             SELECT gti.id AS item_id, gti.local_graph_id, hsc.field_name, hsc.field_value, hsc.host_id
             FROM graph_templates_item AS gti
                 JOIN data_template_rrd AS dtr ON gti.task_item_id = dtr.id
@@ -105,7 +105,7 @@ class CactiCacher:
             AND hsc.snmp_query_id = dl.snmp_query_id
             AND hsc.snmp_index = dl.snmp_index
             {self._filter_by_graph_ids('gti.local_graph_id')}
-        """)
+        """))
         for row in res:
             local_graph_id = row['local_graph_id']
             item_id = row['item_id']
@@ -120,16 +120,16 @@ class CactiCacher:
             self.graphs[local_graph_id]['items'][item_id]['variables'][row['field_name']] = row['field_value']
 
     def _get_hosts(self):
-        res = self.session.execute("""
+        res = self.session.execute(text("""
             SELECT id, description, hostname, snmp_community, snmp_version, snmp_username, snmp_password, snmp_auth_protocol,
              snmp_priv_passphrase, snmp_context, snmp_port, snmp_timeout, ping_retries, max_oids
             FROM host
-        """)
+        """))
         for row in res:
             self.hosts[row['id']] = dict(row)
 
     def _get_item_cdef_items(self):
-        res = self.session.execute(f"""
+        res = self.session.execute(text(f"""
             SELECT gti.id as item_id, gti.local_graph_id, ci.sequence, ci.value
             FROM cdef_items ci
             JOIN graph_templates_item gti on gti.cdef_id = ci.cdef_id
@@ -137,7 +137,7 @@ class CactiCacher:
             AND gti.local_graph_id != 0
             {self._filter_by_graph_ids('gti.local_graph_id')}
             ORDER BY item_id, sequence
-        """)
+        """))
         for row in res:
             if row['local_graph_id'] not in self.graphs:
                 continue

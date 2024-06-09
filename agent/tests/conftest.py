@@ -44,7 +44,9 @@ def cli_runner():
 
 @pytest.fixture
 def api_client():
-    main.app.testing = True
+    main.app.config.update({
+        "TESTING": True,
+    })
     with main.app.test_client() as client:
         di.init()
         yield client
