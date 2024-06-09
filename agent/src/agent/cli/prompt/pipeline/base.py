@@ -57,15 +57,16 @@ class Prompter:
         return value
 
     @infinite_retry
-    def prompt_dimensions(self, text: str, default_value: str) -> list:
-        dimensions = click.prompt(text, type=click.STRING, value_proc=lambda x: x.split(), default=default_value)
+    def prompt_dimensions(self, text: str, default_value: list) -> list:
+        dimensions = click.prompt(text, type=click.STRING, value_proc=lambda x: x.split(),
+                                  default= ' '.join(default_value))
         self.validate_properties_names(dimensions, self.pipeline.source.sample_data)
         return dimensions
 
     def set_dimensions(self):
         self.config['dimensions'] = self.default_config.get('dimensions', {})
         default_val = self.config['dimensions'].get('required', [])
-        self.config['dimensions']['required'] = self.prompt_dimensions('Required dimensions', ' '.join(default_val))
+        self.config['dimensions']['required'] = self.prompt_dimensions('Required dimensions', default_val)
         default_val_optional = self.config['dimensions'].get('optional', [])
         self.config['dimensions']['optional'] = click.prompt('Optional dimensions', type=click.STRING,
                                                              value_proc=lambda x: x.split(),

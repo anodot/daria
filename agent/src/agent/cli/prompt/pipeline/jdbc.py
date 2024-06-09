@@ -42,5 +42,4 @@ class JDBCPrompter(Prompter):
             raise click.UsageError('Set value columns or count records flag')
 
     def set_dimensions(self):
-        self.config['dimensions'] = self.prompt_dimensions('Dimensions',
-                                                           ' '.join(self.default_config.get('dimensions', [])))
+        self.config['dimensions'] = self.prompt_dimensions('Dimensions', self.default_config.get('dimensions', []))

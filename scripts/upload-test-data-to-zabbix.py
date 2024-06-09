@@ -1,4 +1,5 @@
 from sqlalchemy import create_engine
+from sqlalchemy.sql import text
 from agent.modules import zabbix
 
 
@@ -72,7 +73,9 @@ memory_values = [
 cpu_values = ','.join(map(lambda x: '(' + ','.join(x) + ')', cpu_values))
 memory_values = ','.join(map(lambda x: '(' + ','.join(x) + ')', memory_values))
 
-mysql_conn = create_engine('mysql+mysqlconnector://root@mysql/zabbix')
-mysql_conn.execute(f'INSERT INTO history (itemid, clock, value, ns) VALUES {cpu_values};')
-mysql_conn.execute(f'INSERT INTO history_uint (itemid, clock, value, ns) VALUES {memory_values};')
-print('history inserted')
+engine = create_engine('mysql+mysqlconnector://root@mysql/zabbix')
+with engine.connect() as mysql_conn:
+    mysql_conn.execute(text(f'INSERT INTO history (itemid, clock, value, ns) VALUES {cpu_values};'))
+    mysql_conn.execute(text(f'INSERT INTO history_uint (itemid, clock, value, ns) VALUES {memory_values};'))
+    mysql_conn.commit()
+    print('history inserted')

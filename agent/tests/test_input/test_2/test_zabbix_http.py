@@ -75,7 +75,7 @@ class TestZabbix(TestInputBase):
             'histories batch size': 50,
             'days to backfill': days_to_backfill,
             'query interval': '',
-            'data preview': 'y',
+            'data preview': 'n',
             'count': '',
             'counter name': '',
             'value props': '',
