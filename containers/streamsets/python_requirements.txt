@@ -1,3 +1,4 @@
+charset-normalizer==2.1.1
 requests==2.32.3
 pytz
 certifi==2024.6.2
