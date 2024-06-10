@@ -45,10 +45,10 @@ class CactiCacher:
             WHERE local_graph_id != 0 {self._filter_by_graph_ids('gtg.local_graph_id')}
         """))
         for row in res:
-            if row['local_graph_id'] not in self.graphs:
+            if row.local_graph_id not in self.graphs:
                 continue
-            self.graphs[row['local_graph_id']]['title'] = row['title']
-            self.graphs[row['local_graph_id']]['host_id'] = str(row['host_id'])
+            self.graphs[row.local_graph_id]['title'] = row.title
+            self.graphs[row.local_graph_id]['host_id'] = str(row.host_id)
 
     def _get_graph_variables(self):
         res = self.session.execute(text(f"""
@@ -61,12 +61,12 @@ class CactiCacher:
             WHERE 1 {self._filter_by_graph_ids('gl.id')}
         """))
         for row in res:
-            local_graph_id = row['id']
+            local_graph_id = row.id
             if local_graph_id not in self.graphs:
                 continue
             if 'variables' not in self.graphs[local_graph_id]:
                 self.graphs[local_graph_id]['variables'] = {}
-            self.graphs[local_graph_id]['variables'][row['field_name']] = row['field_value']
+            self.graphs[local_graph_id]['variables'][row.field_name] = row.field_value
 
     def _get_graph_items(self):
         res = self.session.execute(text(f"""
@@ -81,18 +81,18 @@ class CactiCacher:
             {self._filter_by_graph_ids('gti.local_graph_id')}
         """))
         for row in res:
-            local_graph_id = row['local_graph_id']
+            local_graph_id = row.local_graph_id
             if local_graph_id not in self.graphs:
                 self.graphs[local_graph_id] = {}
             if 'items' not in self.graphs[local_graph_id]:
                 self.graphs[local_graph_id]['items'] = {}
-            if row['item_id'] not in self.graphs[local_graph_id]['items']:
-                self.graphs[local_graph_id]['items'][row['item_id']] = {}
+            if row.item_id not in self.graphs[local_graph_id]['items']:
+                self.graphs[local_graph_id]['items'][row.item_id] = {}
 
-            self.graphs[local_graph_id]['items'][row['item_id']]['data_source_path'] = row['data_source_path']
-            self.graphs[local_graph_id]['items'][row['item_id']]['data_source_name'] = row['data_source_name']
-            self.graphs[local_graph_id]['items'][row['item_id']]['item_title'] = row['item_title']
-            self.graphs[local_graph_id]['items'][row['item_id']]['graph_type_id'] = row['graph_type_id']
+            self.graphs[local_graph_id]['items'][row.item_id]['data_source_path'] = row.data_source_path
+            self.graphs[local_graph_id]['items'][row.item_id]['data_source_name'] = row.data_source_name
+            self.graphs[local_graph_id]['items'][row.item_id]['item_title'] = row.item_title
+            self.graphs[local_graph_id]['items'][row.item_id]['graph_type_id'] = row.graph_type_id
 
     def _get_items_variables(self):
         res = self.session.execute(text(f"""
@@ -107,8 +107,8 @@ class CactiCacher:
             {self._filter_by_graph_ids('gti.local_graph_id')}
         """))
         for row in res:
-            local_graph_id = row['local_graph_id']
-            item_id = row['item_id']
+            local_graph_id = row.local_graph_id
+            item_id = row.item_id
             if local_graph_id not in self.graphs:
                 continue
             if item_id not in self.graphs[local_graph_id]['items']:
@@ -116,8 +116,8 @@ class CactiCacher:
             if 'variables' not in self.graphs[local_graph_id]['items'][item_id]:
                 self.graphs[local_graph_id]['items'][item_id]['variables'] = {}
 
-            self.graphs[local_graph_id]['items'][item_id]['host_id'] = str(row['host_id'])
-            self.graphs[local_graph_id]['items'][item_id]['variables'][row['field_name']] = row['field_value']
+            self.graphs[local_graph_id]['items'][item_id]['host_id'] = str(row.host_id)
+            self.graphs[local_graph_id]['items'][item_id]['variables'][row.field_name] = row.field_value
 
     def _get_hosts(self):
         res = self.session.execute(text("""
@@ -126,7 +126,7 @@ class CactiCacher:
             FROM host
         """))
         for row in res:
-            self.hosts[row['id']] = dict(row)
+            self.hosts[row.id] = dict(row._mapping)
 
     def _get_item_cdef_items(self):
         res = self.session.execute(text(f"""
@@ -139,15 +139,15 @@ class CactiCacher:
             ORDER BY item_id, sequence
         """))
         for row in res:
-            if row['local_graph_id'] not in self.graphs:
+            if row.local_graph_id not in self.graphs:
                 continue
-            graph = self.graphs[row['local_graph_id']]
-            if row['item_id'] not in graph['items']:
+            graph = self.graphs[row.local_graph_id]
+            if row.item_id not in graph['items']:
                 continue
-            item = graph['items'][row['item_id']]
+            item = graph['items'][row.item_id]
             if 'cdef_items' not in item:
                 item['cdef_items'] = {}
-            item['cdef_items'][row['sequence']] = row['value']
+            item['cdef_items'][row.sequence] = row.value
 
     def _filter_by_graph_ids(self, field_name):
         graph_ids = self.pipeline.config.get('graph_ids')
