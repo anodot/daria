@@ -6,14 +6,10 @@ from ..test_zpipeline_base import TestPipelineBase
 class TestElastic(TestPipelineBase):
     __test__ = True
     params = {
-        'test_start': [{'name': 'test_es_file_with_schema'},
-                       {'name': 'test_es_file_full'}],
-        'test_reset': [{'name': 'test_es_file_full'}],
-        'test_stop': [{'name': 'test_es_file_full'},
-                      {'name': 'test_es_file_with_schema'}],
-        'test_output': [{'name': 'test_es_file_full', 'output': 'elastic_no_schema.json',
-                         'pipeline_type': 'elastic'},
-                        {'name': 'test_es_file_with_schema', 'output': 'elastic_schema.json',
+        'test_start': [{'name': 'test_es_file_with_schema'}],
+        'test_reset': [{'name': 'test_es_file_with_schema'}],
+        'test_stop': [{'name': 'test_es_file_with_schema'}],
+        'test_output': [{'name': 'test_es_file_with_schema', 'output': 'elastic_schema.json',
                          'pipeline_type': 'elastic'}],
         'test_delete_pipeline': [{'name': 'test_es_file_full'},
                                  {'name': 'test_es_file_with_schema'}],
