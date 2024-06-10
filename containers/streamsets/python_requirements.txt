@@ -1,6 +1,5 @@
-charset-normalizer==2.1.1
-requests==2.32.3
+requests==2.25.0
 pytz
-certifi==2024.6.2
+certifi==2021.10.08
 elasticsearch==7.14.0
 ./containers/streamsets/custom_libs/anodot_api_client
