@@ -46,7 +46,7 @@ for j in range(0, 2):
     memory_item_id = memory_item['itemids'][0]
     print(str(j) + ' Memory item created')
 
-    mysql_conn = create_engine(f'mysql+mysqlconnector://root@agent-mysql:3306/zabbix')
+
     cpu_values = []
     memory_values = []
     for i in range(0, N_RECORDS):
@@ -61,7 +61,10 @@ for j in range(0, 2):
     # cpu_values = ','.join(map(lambda x: '(' + ','.join(x) + ')', cpu_values))
     memory_values = ','.join(map(lambda x: '(' + ','.join(x) + ')', memory_values))
 
-    # mysql_conn.execute(f'INSERT INTO history (itemid, clock, value, ns) VALUES {cpu_values};')
-    mysql_conn.execute(f'INSERT INTO history_uint (itemid, clock, value, ns) VALUES {memory_values};')
+    engine = create_engine(f'mysql+mysqlconnector://root@agent-mysql:3306/zabbix')
+    with engine.connect() as mysql_conn:
+        # mysql_conn.execute(f'INSERT INTO history (itemid, clock, value, ns) VALUES {cpu_values};')
+        mysql_conn.execute(f'INSERT INTO history_uint (itemid, clock, value, ns) VALUES {memory_values};')
+        mysql_conn.commit()
 
 print('history inserted')

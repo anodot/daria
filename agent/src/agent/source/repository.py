@@ -88,13 +88,14 @@ def get_last_edited(source_type: str) -> Optional[Source]:
 
 
 def get_by_name_without_session(source_name: str) -> Source:
-    query_result = engine.execute(Query(Source).filter(Source.name == source_name).statement)
+    with engine.connect() as connection:
+        query_result = connection.execute(Query(Source).filter(Source.name == source_name).statement)
 
-    sources = [i for i in query_result]
-    if not sources:
-        raise SourceNotExists
+        sources = [i for i in query_result]
+        if not sources:
+            raise SourceNotExists
 
-    return sources[0]
+        return sources[0]
 
 
 def is_modified(source_: Source) -> bool:

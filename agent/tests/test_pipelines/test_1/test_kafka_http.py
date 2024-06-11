@@ -77,7 +77,6 @@ class TestKafka(TestPipelineBase):
         'test_source_delete': [
             {'name': 'test_json_arrays'},
             {'name': 'test_csv'},
-            {'name': 'test_kafka_1'},
             {'name': 'test_kfk'},
             {'name': 'test_running_counters'},
             {'name': 'test-partitions'},

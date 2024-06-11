@@ -3,7 +3,8 @@ import sdc_client
 
 from datetime import datetime
 from jsonschema import ValidationError
-from flask import jsonify, Blueprint, request, escape
+from flask import jsonify, Blueprint, request
+from markupsafe import escape
 from agent.api import routes
 from agent.api.routes import needs_pipeline
 from agent import pipeline, source, streamsets, monitoring

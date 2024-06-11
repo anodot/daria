@@ -54,7 +54,7 @@ class SchemalessPrompter(Prompter):
         self.config['values_array_filter_metrics'] = click.prompt('Filter metrics',
                                                                   type=click.STRING,
                                                                   value_proc=lambda x: x.split(','),
-                                                                  default=default_val)
+                                                                  default=','.join(default_val))
 
     @infinite_retry
     def set_values(self):

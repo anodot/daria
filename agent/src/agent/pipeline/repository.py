@@ -5,6 +5,7 @@ from agent.destination import HttpDestination
 from agent.modules.db import Session, engine, Entity
 from agent.pipeline import PipelineOffset, Pipeline, PipelineRetries
 from sqlalchemy.orm import Query
+from sqlalchemy import text
 
 
 def typed(func):
@@ -33,12 +34,13 @@ def get_by_id(pipeline_id: str) -> Pipeline:
 
 
 def get_by_id_without_session(pipeline_id: str) -> Pipeline:
-    query_result = engine.execute(Query(Pipeline).filter(Pipeline.name == pipeline_id).statement)
+    with engine.connect() as connection:
+        query_result = connection.execute(Query(Pipeline).filter(Pipeline.name == pipeline_id).statement)
 
-    pipelines_ = [i for i in query_result]
-    if not pipelines_:
-        raise PipelineNotExistsException(f"Pipeline {pipeline_id} doesn't exist")
-    return pipelines_[0]
+        pipelines_ = [i for i in query_result]
+        if not pipelines_:
+            raise PipelineNotExistsException(f"Pipeline {pipeline_id} doesn't exist")
+        return pipelines_[0]
 
 
 def get_by_type(type_: str) -> List[Pipeline]:
@@ -82,17 +84,17 @@ def get_by_streamsets_url(streamsets_url: str) -> List[Pipeline]:
 
 
 def add_deleted_pipeline_id(pipeline_id: str):
-    Session.execute(f"INSERT INTO deleted_pipelines VALUES ('{pipeline_id}') ON CONFLICT DO NOTHING")
+    Session.execute(text(f"INSERT INTO deleted_pipelines VALUES ('{pipeline_id}') ON CONFLICT DO NOTHING"))
     Session.commit()
 
 
 def remove_deleted_pipeline_id(pipeline_id: str):
-    Session.execute(f"DELETE FROM deleted_pipelines WHERE pipeline_id = '{pipeline_id}'")
+    Session.execute(text(f"DELETE FROM deleted_pipelines WHERE pipeline_id = '{pipeline_id}'"))
     Session.commit()
 
 
 def get_deleted_pipeline_ids() -> list:
-    return Session.execute('SELECT * FROM deleted_pipelines')
+    return Session.execute(text('SELECT * FROM deleted_pipelines'))
 
 
 def delete_pipeline_retries(pipeline_retries: PipelineRetries):

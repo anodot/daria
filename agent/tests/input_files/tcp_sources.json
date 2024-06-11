@@ -15,5 +15,15 @@
       "conf.dataFormat": "DELIMITED",
       "csv_mapping": {"0": "timestamp_unix", "2": "ver", "4": "Country", "6": "Exchange", "7": "Clicks"}
     }
+  },
+  {
+    "type": "splunk",
+    "name": "test_tcp_log",
+    "config": {
+      "conf.ports": ["9999"],
+      "conf.dataFormat": "LOG",
+      "grok_definition_file": "/usr/src/app/tests/input_files/grok_patterns.txt",
+      "conf.dataFormatConfig.grokPattern": "%{NONNEGINT:timestamp_unix_ms} %{TIMESTAMP:timestamp_string} %{NONNEGINT:ver} %{WORD} %{WORD:Country} %{WORD:AdType} %{WORD:Exchange} %{NUMBER:Clicks}"
+    }
   }
 ]

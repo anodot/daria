@@ -1,9 +1,11 @@
 from sqlalchemy.dialects.postgresql import TIMESTAMP
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Mapped
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy import Column, Integer, String, JSON, func
 from agent import source
 from agent.modules.db import Entity
+
+from typing import List
 
 
 class Source(Entity):
@@ -16,7 +18,7 @@ class Source(Entity):
     created_at = Column(TIMESTAMP(timezone=True), default=func.now())
     last_edited = Column(TIMESTAMP(timezone=True), default=func.now(), onupdate=func.now())
 
-    pipelines = relationship('Pipeline', back_populates='source_')
+    pipelines: Mapped[List["Pipeline"]] = relationship(back_populates='source_')
 
     def __init__(self, name: str, source_type: str, config: dict):
         self._previous_config = {}
