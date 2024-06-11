@@ -1,4 +1,4 @@
-requests==2.32.0
+requests==2.25.0
 pytz
 certifi==2023.7.22
 elasticsearch==7.14.0
