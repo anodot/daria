@@ -68,6 +68,10 @@ test-directory: bootstrap
 	$(DOCKER_TEST) tests/test_input/test_1/test_directory_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_1/test_directory_http.py
 
+test-prtg: bootstrap
+	$(DOCKER_TEST) tests/test_input/test_1/test_prtg.py
+	$(DOCKER_TEST) tests/test_pipelines/test_1/test_prtg.py
+
 test-elastic: bootstrap run-elastic setup-elastic
 	$(DOCKER_TEST) tests/test_input/test_2/test_elastic_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_2/test_elastic_http.py

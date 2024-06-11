@@ -1,6 +1,7 @@
 import json
 import os
 import pytest
+import logging
 from enum import IntEnum
 
 from unittest.mock import Mock
@@ -56,7 +57,10 @@ def get_output(file_name) -> list:
     for filename in os.listdir(DUMMY_DESTINATION_OUTPUT_PATH):
         if filename == file_name:
             with open(os.path.join(DUMMY_DESTINATION_OUTPUT_PATH, filename)) as f:
-                return json.load(f)
+                try:
+                    return json.load(f)
+                except json.JSONDecodeError as e:
+                    logging.exception(e)
 
 
 def get_input_file_path(name):
