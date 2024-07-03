@@ -26,6 +26,7 @@ def supports_schema(pipeline_: Pipeline) -> bool:
     if isinstance(pipeline_, (TestPipeline, RawPipeline, EventsPipeline, TopologyPipeline)):
         return False
     supported = {
+        source.TYPE_ACTIAN: True,
         source.TYPE_CACTI: False,
         source.TYPE_CLICKHOUSE: True,
         source.TYPE_DIRECTORY: True,

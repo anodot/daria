@@ -301,6 +301,10 @@ class ElasticSource(APISource):
             self.config[ElasticSource.CONFIG_PASSWORD] = self.config[APISource.PASSWORD]
 
 
+class ActianSource(Source):
+    CONNECTION_STRING = 'connection_string'
+
+
 class SourceException(Exception):
     pass
 

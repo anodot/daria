@@ -29,6 +29,7 @@ class ConfigLoader(ABC):
     @classmethod
     def _get_config_file(cls, pipeline: Pipeline) -> str:
         return {
+            source.ActianSource: 'actian.json',
             source.TYPE_CACTI: 'cacti.json',
             source.TYPE_CLICKHOUSE: 'jdbc.json',
             source.TYPE_ELASTIC: 'elastic.json',
