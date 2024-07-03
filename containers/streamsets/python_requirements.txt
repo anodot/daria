@@ -1,5 +1,5 @@
 requests==2.25.0
 pytz
-certifi==2021.10.08
+certifi==2023.7.22
 elasticsearch==7.14.0
 ./containers/streamsets/custom_libs/anodot_api_client
