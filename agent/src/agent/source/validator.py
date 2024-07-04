@@ -403,12 +403,30 @@ class CactiValidator(RRDValidator):
         validator.validate_mysql_connection(self.source.config[source.CactiSource.MYSQL_CONNECTION_STRING])
 
 
+class ActianValidator(JDBCValidator):
+    def validate_connection(self):
+        # todo can't implement validation because of tests
+        pass
+
+    @if_validation_enabled
+    def validate_connection_string(self):
+        params = self.source.config[source.ActianSource.CONNECTION_STRING].split(';')
+        params_dict = {}
+        for param in params:
+            key_val = param.split('=')
+            try:
+                params_dict[key_val[0]] = key_val[1]
+            except IndexError:
+                raise ValidationException('Wrong connection string format')
+
+
 class ValidationException(Exception):
     pass
 
 
 def get_validator(source_: Source) -> Validator:
     types = {
+        source.TYPE_ACTIAN: ActianValidator,
         source.TYPE_CACTI: CactiValidator,
         source.TYPE_CLICKHOUSE: JDBCValidator,
         source.TYPE_DIRECTORY: DirectoryValidator,

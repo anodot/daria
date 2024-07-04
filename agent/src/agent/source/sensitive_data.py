@@ -20,6 +20,7 @@ def _recursive_mask(dict_: dict, keywords: list):
 
 def _get_keywords(source_type: str) -> List[str]:
     types = {
+        source.TYPE_ACTIAN: ['connection_string'],
         source.TYPE_CACTI: ['mysql_connection_string'],
         source.TYPE_CLICKHOUSE: ['connection_string', 'hikariConfigBean.username', 'hikariConfigBean.password'],
         source.TYPE_DIRECTORY: [],

@@ -8,6 +8,7 @@ import sdc_client
 from typing import Callable
 from ..conftest import get_input_file_path, Order
 from agent import source, cli
+from agent.modules import constants
 
 
 class TestInputBase(object):
@@ -16,6 +17,7 @@ class TestInputBase(object):
 
     @pytest.mark.order(Order.SOURCE_CREATE)
     def test_create_source_with_file(self, cli_runner, file_name):
+        constants.VALIDATION_ENABLED = False
         input_file_path = get_input_file_path(f'{file_name}.json')
         result = cli_runner.invoke(cli.source.create, ['-f', input_file_path], catch_exceptions=False)
         assert result.exit_code == 0

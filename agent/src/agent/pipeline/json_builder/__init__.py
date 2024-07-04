@@ -37,6 +37,7 @@ def get(pipeline_: Pipeline, config: dict, is_edit=False) -> IBuilder:
 
 def _get_builder(pipeline_: Pipeline, config: dict, is_edit: bool) -> IBuilder:
     loaders = {
+        source.TYPE_ACTIAN: JDBCBuilder,
         source.TYPE_CACTI: CactiBuilder,
         source.TYPE_CLICKHOUSE: JDBCBuilder,
         source.TYPE_DIRECTORY: DirectoryBuilder,

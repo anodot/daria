@@ -1,8 +1,9 @@
+import urllib.parse
 from agent import monitoring
-from agent.pipeline.config.stages.base import JythonDataExtractorSource
+from agent.pipeline.config.stages.base import JythonProcessor
 
 
-class ActianScript(JythonDataExtractorSource):
+class ActianSource(JythonProcessor):
     JYTHON_SCRIPT = 'actian.py'
     DATA_EXTRACTOR_API_ENDPOINT = 'data_extractors/actian'
 
@@ -10,22 +11,19 @@ class ActianScript(JythonDataExtractorSource):
         return [
             {
                 'key': 'AGENT_DATA_EXTRACTOR_URL',
-                'value': self._get_source_url()
+                'value': urllib.parse.urljoin(
+                    self.pipeline.streamsets.agent_external_url, '/'.join([
+                        self.DATA_EXTRACTOR_API_ENDPOINT,
+                        '${pipeline:id()}',
+                    ])
+                )
             },
             {
-                'key': 'INTERVAL_IN_SECONDS',
-                'value': str(self.pipeline.interval)
-            },
-            {
-                'key': 'BUCKET_SIZE',
-                'value': self._get_bucket_size(),
+                'key': 'TIMEOUT',
+                'value': str(self.pipeline.source.query_timeout)
             },
             {
                 'key': 'MONITORING_URL',
                 'value': monitoring.get_monitoring_source_error_url(self.pipeline)
-            },
-            {
-                'key': 'DELAY_IN_SECONDS',
-                'value': self.pipeline.config.get('delay', '0')
             },
         ]

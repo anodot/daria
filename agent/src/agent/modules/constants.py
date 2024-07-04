@@ -14,7 +14,7 @@ STREAMSETS_NOTIFY_RESET_AFTER_MIN = int(os.environ.get('STREAMSETS_NOTIFY_RESET_
 VALIDATION_ENABLED = os.environ.get('VALIDATION_ENABLED', 'true') == 'true'
 DISABLE_PIPELINE_ERROR_NOTIFICATIONS = os.environ.get('DISABLE_PIPELINE_ERROR_NOTIFICATIONS', 'false') == 'true'
 
-AGENT_DEFAULT_URL = os.environ.get('AGENT_URL', 'http://anodot-agent')
+AGENT_DEFAULT_URL = os.environ.get('AGENT_URL', 'http://agent:8080')
 
 ROOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 

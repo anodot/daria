@@ -1,0 +1,15 @@
+[
+  {
+    "source": "test_actian",
+    "pipeline_id": "test_jdbc_file_short_actian2",
+    "values": {"depdelay": "gauge", "arrdelay": "gauge"},
+    "dimensions": ["reporting_airline"],
+    "interval": 86400,
+    "query": "SELECT UNIX_TIMESTAMP(TIMESTAMPADD(YEAR, 6, flightdate)) as flightdate, reporting_airline, depdelay, arrdelay FROM sample.ontime WHERE {TIMESTAMP_CONDITION} ORDER BY flightdate ASC",
+    "timestamp": {
+      "type": "unix",
+      "name": "flightdate"
+    },
+    "days_to_backfill": 2305
+  }
+]

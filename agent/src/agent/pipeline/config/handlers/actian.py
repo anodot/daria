@@ -1,15 +1,16 @@
 from agent.modules.logger import get_logger
 from agent.pipeline.config import stages
-from agent.pipeline.config.handlers.base import SchemaConfigHandler, TestConfigHandler
+from agent.pipeline.config.handlers.base import SchemaConfigHandler
 
 logger = get_logger(__name__)
 
 
 class ActianConfigHandler(SchemaConfigHandler):
     stages_to_override = {
-        'source': stages.source.actian.ActianScript,
+        'offset': stages.jdbc.JDBCOffsetScript,
+        'source': stages.source.actian.ActianSource,
+        'JavaScriptEvaluator_01': stages.js_convert_metrics.JSConvertMetrics30,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties30,
-        'replace_illegal_chars': stages.jython.ReplaceIllegalChars,
         'destination': stages.destination.Destination,
-        'destination_watermark': stages.destination.WatermarkDestination
+        'destination_watermark': stages.destination.WatermarkDestination,
     }

@@ -12,7 +12,7 @@
     "query_missing_data_interval": {"type": "number"},
     "timestamp": {"type":  "object", "properties": {
       "name": {"type": "string", "minLength": 1},
-      "type": {"type":  "string", "enum": ["datetime", "unix", "unix_ms"]}
+      "type": {"type":  "string", "enum": ["datetime", "unix", "unix_ms", "string"]}
     }, "required": ["name", "type"]},
     "properties": {"type": "object"},
     "tags": {

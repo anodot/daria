@@ -54,6 +54,7 @@ class PromQLValidator(Validator):
 
 def get_config_validator(pipeline_: Pipeline) -> Validator:
     jdbc_sources = [
+        source.TYPE_ACTIAN,
         source.TYPE_DATABRICKS,
         source.TYPE_DRUID,
         source.TYPE_IMPALA,

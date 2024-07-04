@@ -23,4 +23,4 @@ RUN groupadd -g 10001 agent && useradd -r -u 10001 -g agent agent
 RUN mkdir /var/log/agent /opt/metrics
 
 ENTRYPOINT ["/custom_entrypoint.sh"]
-CMD flask run --host=0.0.0.0 --port=80
+CMD flask run --host=0.0.0.0 --port=8080
