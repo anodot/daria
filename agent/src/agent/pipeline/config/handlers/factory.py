@@ -67,6 +67,7 @@ def _get_topology_handler(pipeline_: Pipeline, base_config: dict) -> ConfigHandl
 
 def _get_schema_handler(pipeline_: Pipeline, base_config: dict) -> SchemaConfigHandler:
     handlers_protocol30 = {
+        source.TYPE_ACTIAN: pipeline.config.handlers.actian.ActianConfigHandler,
         source.TYPE_CLICKHOUSE: pipeline.config.handlers.jdbc.JDBCSchemaConfigHandler,
         source.TYPE_DIRECTORY: pipeline.config.handlers.directory.DirectoryConfigHandler,
         source.TYPE_DATABRICKS: pipeline.config.handlers.jdbc.JDBCSchemaConfigHandler,

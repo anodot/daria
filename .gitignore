@@ -12,3 +12,4 @@ version.py
 sdc-data*/
 containers/streamsets/python-libs/
 agent/backup-data/
+/agent/actian_config/actian-client/

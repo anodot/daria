@@ -2,6 +2,7 @@ version: '3.1'
 
 services:
   dc:
+    platform: linux/amd64
     build: containers/streamsets
     container_name: dc
     ports:
@@ -24,6 +25,7 @@ services:
 
   #  creating second streamsets to run tests on multiple instances
   dc2:
+    platform: linux/amd64
     build: containers/streamsets
     container_name: dc2
     ports:
@@ -39,6 +41,7 @@ services:
       SDC_CONF_RUNNER_THREAD_POOL_SIZE: "2000"
 
   agent:
+    platform: linux/amd64
     build: agent
     restart: always
     container_name: anodot-agent

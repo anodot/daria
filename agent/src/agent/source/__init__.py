@@ -8,6 +8,8 @@ from . import db
 from . import json_builder
 from . import sensitive_data
 
+
+TYPE_ACTIAN = 'actian'
 TYPE_CACTI = 'cacti'
 TYPE_CLICKHOUSE = 'clickhouse'
 TYPE_DIRECTORY = 'directory'
@@ -38,6 +40,7 @@ TYPE_VICTORIA = 'victoria'
 TYPE_ZABBIX = 'zabbix'
 
 types = {
+    TYPE_ACTIAN: ActianSource,
     TYPE_CACTI: CactiSource,
     TYPE_CLICKHOUSE: JDBCSource,
     TYPE_DIRECTORY: DirectorySource,

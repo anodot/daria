@@ -1,0 +1,9 @@
+[
+  {
+    "type": "actian",
+    "name": "test_actian",
+    "config": {
+      "connection_string": "driver=Ingres;servertype=ingres;server=@localhost,tcp_ip,27832;uid=anodot;pwd=1111;database=db"
+    }
+  }
+]

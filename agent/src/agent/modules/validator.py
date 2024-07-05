@@ -1,6 +1,7 @@
 import os
 import sqlalchemy
 import subprocess
+import pyodbc
 
 from urllib.parse import urlparse
 from agent.modules.tools import if_validation_enabled
@@ -34,6 +35,10 @@ def validate_mysql_connection(connection_string: str):
     # todo raise validation exception
     eng = sqlalchemy.create_engine(connection_string)
     eng.connect()
+
+
+def validate_actian_connection(connection_string: str):
+    pyodbc.connect(connection_string)
 
 
 def validate_python_file(file: str):

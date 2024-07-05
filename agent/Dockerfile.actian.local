@@ -16,6 +16,14 @@ ENV STREAMSETS_USERNAME="admin" STREAMSETS_PASSWORD="admin" STREAMSETS_URL="http
     GIT_SHA1=local-build VALIDATION_ENABLED="true" FLASK_APP="/usr/src/app/src/agent/api/main.py" FLASK_DEBUG=1 \
     prometheus_multiproc_dir="/opt/metrics"
 
+# actian dependencies
+RUN apt-get update && apt-get install sudo
+COPY ./actian_config/actian-client /tmp/actian-client
+RUN /tmp/actian-client/client_install.sh -express
+COPY ./actian_config/odbcinst.ini /etc/odbcinst.ini
+ENV II_ODBC_WCHAR_SIZE=2 II_SYSTEM="/opt/Actian/Actian_Client" \
+    LD_LIBRARY_PATH=/lib:/usr/lib:/opt/Actian/Actian_Client/ingres/lib:/opt/Actian/Actian_Client/ingres/lib/lp32
+
 RUN ./install_requirements.sh
 RUN python setup.py develop
 

@@ -63,6 +63,7 @@ class SchemaConfigLoader(ConfigLoader):
     @classmethod
     def _get_config_file(cls, pipeline: Pipeline) -> str:
         return {
+            source.TYPE_ACTIAN: 'actian.json',
             source.TYPE_CLICKHOUSE: 'jdbc_schema.json',
             source.TYPE_DIRECTORY: 'directory_schema.json',
             source.TYPE_DATABRICKS: 'jdbc_schema.json',
