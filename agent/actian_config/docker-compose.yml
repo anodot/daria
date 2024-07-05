@@ -20,18 +20,9 @@ services:
       dockerfile: Dockerfile.actian
     restart: always
     environment:
-      STREAMSETS_USERNAME: 'admin'
-      STREAMSETS_PASSWORD: 'admin'
-      STREAMSETS_URL: 'http://dc:18630'
-      ENV_PROD: 'false'
       AGENT_DB_HOST: 'db'
       AGENT_DB_USER: 'agent'
       AGENT_DB_PASSWORD: 'agent'
-      GIT_SHA1: 'local'
-      AGENT_URL: 'http://anodot-agent'
-      PGPASSWORD: 'agent'
-      TLS_VERSION: '1.1'
-      LOG_LEVEL: 'DEBUG'
     depends_on:
       - dc
       - db
