@@ -1,8 +1,7 @@
 services:
   dc:
     platform: linux/amd64
-    build:
-      context: ../../containers/streamsets
+    image: anodot/streamsets:latest
     ports:
       - "18630:18630"
     restart: on-failure
@@ -18,7 +17,7 @@ services:
     platform: linux/amd64
     build:
       context: ..
-      dockerfile: Dockerfile.actian.local
+      dockerfile: Dockerfile.actian
     restart: always
     environment:
       STREAMSETS_USERNAME: 'admin'
@@ -36,12 +35,6 @@ services:
     depends_on:
       - dc
       - db
-    volumes:
-      - ../backup-data:/usr/src/app/backup-data
-      - ../output:/output
-      - ../:/usr/src/app
-    ports:
-      - "80:80"
 
   db:
     image: postgres:15
