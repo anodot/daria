@@ -79,10 +79,10 @@ jobs:
 
     - if: ${{ !contains(github.ref, 'beta') && !contains(github.ref, 'release') }}
       name: Tag latest
-      run: docker image tag daria_agent:latest anodot/daria:latest && docker image tag daria_dc:latest anodot/streamsets:latest
+      run: docker image tag daria-agent:latest anodot/daria:latest && docker image tag daria-dc:latest anodot/streamsets:latest
 
     - name: Tag version
-      run: VERSION=${GITHUB_REF/refs\/tags\//} && docker image tag daria_agent:latest anodot/daria:$VERSION && docker image tag daria_dc:latest anodot/streamsets:$VERSION
+      run: VERSION=${GITHUB_REF/refs\/tags\//} && docker image tag daria-agent:latest anodot/daria:$VERSION && docker image tag daria-dc:latest anodot/streamsets:$VERSION
 
     - name: Docker login
       run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
