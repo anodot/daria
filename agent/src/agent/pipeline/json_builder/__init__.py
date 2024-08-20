@@ -6,6 +6,7 @@ from .directory import DirectoryBuilder, DirectoryEventsBuilder
 from .elastic import ElasticBuilder
 from .influx import InfluxBuilder, Influx2Builder
 from .jdbc import JDBCBuilder, JDBCRawBuilder, JDBCEventBuilder
+from .agent_data_extractor_sql_builder import AgentDataExtractorSQLBuilder
 from .kafka import KafkaBuilder, KafkaRawBuilder
 from .mongo import MongoBuilder
 from .observium import ObserviumBuilder
@@ -37,7 +38,7 @@ def get(pipeline_: Pipeline, config: dict, is_edit=False) -> IBuilder:
 
 def _get_builder(pipeline_: Pipeline, config: dict, is_edit: bool) -> IBuilder:
     loaders = {
-        source.TYPE_ACTIAN: JDBCBuilder,
+        source.TYPE_ACTIAN: AgentDataExtractorSQLBuilder,
         source.TYPE_CACTI: CactiBuilder,
         source.TYPE_CLICKHOUSE: JDBCBuilder,
         source.TYPE_DIRECTORY: DirectoryBuilder,
@@ -53,6 +54,7 @@ def _get_builder(pipeline_: Pipeline, config: dict, is_edit: bool) -> IBuilder:
         source.TYPE_MYSQL: JDBCBuilder,
         source.TYPE_ORACLE: JDBCBuilder,
         source.TYPE_POSTGRES: JDBCBuilder,
+        source.TYPE_POSTGRES_PY: AgentDataExtractorSQLBuilder,
         source.TYPE_PROMETHEUS: PromQLBuilder,
         source.TYPE_PRTG: PRTGBuilder,
         source.TYPE_OBSERVIUM: ObserviumBuilder,

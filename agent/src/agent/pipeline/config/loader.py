@@ -63,7 +63,7 @@ class SchemaConfigLoader(ConfigLoader):
     @classmethod
     def _get_config_file(cls, pipeline: Pipeline) -> str:
         return {
-            source.TYPE_ACTIAN: 'actian.json',
+            source.TYPE_ACTIAN: 'agent_data_extractor_sql.json',
             source.TYPE_CLICKHOUSE: 'jdbc_schema.json',
             source.TYPE_DIRECTORY: 'directory_schema.json',
             source.TYPE_DATABRICKS: 'jdbc_schema.json',
@@ -78,6 +78,7 @@ class SchemaConfigLoader(ConfigLoader):
             source.TYPE_ORACLE: 'jdbc_schema.json',
             source.TYPE_OBSERVIUM: 'observium_schema.json',
             source.TYPE_POSTGRES: 'jdbc_schema.json',
+            source.TYPE_POSTGRES_PY: 'agent_data_extractor_sql.json',
             source.TYPE_PROMETHEUS: 'promql_schema.json',
             source.TYPE_PRTG: 'prtg_schema.json',
             source.TYPE_SAGE: 'sage_schema.json',

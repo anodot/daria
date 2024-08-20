@@ -19,3 +19,4 @@ from . import promql
 from . import prtg
 from . import zabbix
 from . import actian
+from . import postgres

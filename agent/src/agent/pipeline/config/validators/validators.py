@@ -53,7 +53,7 @@ class PromQLValidator(Validator):
 
 
 def get_config_validator(pipeline_: Pipeline) -> Validator:
-    jdbc_sources = [
+    sql_sources = [
         source.TYPE_ACTIAN,
         source.TYPE_DATABRICKS,
         source.TYPE_DRUID,
@@ -61,6 +61,7 @@ def get_config_validator(pipeline_: Pipeline) -> Validator:
         source.TYPE_MYSQL,
         source.TYPE_MSSQL,
         source.TYPE_POSTGRES,
+        source.TYPE_POSTGRES_PY,
         source.TYPE_CLICKHOUSE,
         source.TYPE_ORACLE,
     ]
@@ -69,7 +70,7 @@ def get_config_validator(pipeline_: Pipeline) -> Validator:
         return validators.TopologyValidator()
     if pipeline_.source.type == source.TYPE_ELASTIC:
         return ElasticValidator()
-    if pipeline_.source.type in jdbc_sources:
+    if pipeline_.source.type in sql_sources:
         return JDBCValidator()
     if pipeline_.source.type == source.TYPE_VICTORIA:
         return PromQLValidator()

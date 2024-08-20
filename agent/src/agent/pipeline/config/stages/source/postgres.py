@@ -3,9 +3,9 @@ from agent import monitoring
 from agent.pipeline.config.stages.base import JythonProcessor
 
 
-class ActianSource(JythonProcessor):
+class PostgresPySource(JythonProcessor):
     JYTHON_SCRIPT = 'agent_data_extractor_sql.py'
-    DATA_EXTRACTOR_API_ENDPOINT = 'data_extractors/actian'
+    DATA_EXTRACTOR_API_ENDPOINT = 'data_extractors/postgresql'
 
     def _get_script_params(self) -> list[dict]:
         return [

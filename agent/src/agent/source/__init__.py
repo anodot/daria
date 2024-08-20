@@ -27,6 +27,7 @@ TYPE_MYSQL = 'mysql'
 TYPE_ORACLE = 'oracle'
 TYPE_OBSERVIUM = 'observium'
 TYPE_POSTGRES = 'postgres'
+TYPE_POSTGRES_PY = 'postgres-py'
 TYPE_PROMETHEUS = 'prometheus'
 TYPE_PRTG = 'prtg'
 TYPE_RRD = 'rrd'
@@ -58,6 +59,7 @@ types = {
     TYPE_OBSERVIUM: ObserviumSource,
     TYPE_ORACLE: JDBCSource,
     TYPE_POSTGRES: JDBCSource,
+    TYPE_POSTGRES_PY: PostgresPySource,
     TYPE_PROMETHEUS: PromQLSource,
     TYPE_PRTG: PRTGSource,
     TYPE_RRD: RRDSource,

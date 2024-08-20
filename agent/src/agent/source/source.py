@@ -305,6 +305,10 @@ class ActianSource(Source):
     CONNECTION_STRING = 'connection_string'
 
 
+class PostgresPySource(Source):
+    CONNECTION_STRING = 'connection_string'
+
+
 class SourceException(Exception):
     pass
 

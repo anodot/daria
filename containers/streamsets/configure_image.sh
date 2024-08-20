@@ -66,6 +66,10 @@ function set_permissions() {
 }
 
 ############################################### execution start here #################################################
+
+# adding psql for debugging connection issues
+sudo apk add postgresql && sudo apk add postgresql-contrib
+
 configure_sql_drivers
 install_stage_libs
 make_sdc_copy
