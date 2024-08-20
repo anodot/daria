@@ -2,7 +2,7 @@ NAP = 15
 SLEEP = 60
 THREADS = 2
 DOCKER_COMPOSE_DEV_FILE = docker-compose-dev.yml
-DOCKER_COMPOSE_DEV = docker-compose -f $(DOCKER_COMPOSE_DEV_FILE)
+DOCKER_COMPOSE_DEV = docker compose -f $(DOCKER_COMPOSE_DEV_FILE)
 DOCKER_TEST = docker exec -i anodot-agent pytest -x -vv --disable-pytest-warnings
 DOCKER_TEST_PARALLEL = $(DOCKER_TEST) -n $(THREADS) --dist=loadfile
 
@@ -31,19 +31,19 @@ bootstrap-test-pipelines: run-base-services test-streamsets test-destination
 
 run-services-for-test-1: _run-services-for-test-1 half-sleep setup-victoria setup-kafka
 _run-services-for-test-1:
-	docker-compose up -d mongo zookeeper kafka influx influx-2 postgres victoriametrics
+	docker compose up -d mongo zookeeper kafka influx influx-2 postgres victoriametrics
 
 run-services-for-test-2: _run-services-for-test-2 sleep setup-elastic setup-zabbix
 _run-services-for-test-2:
-	docker-compose up -d mysql es zabbix-server zabbix-web zabbix-agent clickhouse snmpsim sage
+	docker compose up -d mysql es zabbix-server zabbix-web zabbix-agent clickhouse snmpsim sage
 
 run-base-services:
-	docker-compose up -d agent dc dc2 squid dummy_destination
+	docker compose up -d agent dc dc2 squid dummy_destination
 	sleep 60
 
 run-general-test-services: _run-general-test-services sleep setup-elastic setup-kafka
 _run-general-test-services:
-	docker-compose up -d es influx mongo sage mysql snmpsim kafka
+	docker compose up -d es influx mongo sage mysql snmpsim kafka
 
 ##-------------
 ## DEVELOPMENT
@@ -146,11 +146,11 @@ test-snmp: bootstrap run-snmpsim
 ## RELEASE DEPENDENCY TARGETS
 ##---------------------------
 build-docker:
-	docker-compose down -v
-	docker-compose build --build-arg GIT_SHA1="$(git describe --tags --dirty --always)"
+	docker compose down -v
+	docker compose build --build-arg GIT_SHA1="$(git describe --tags --dirty --always)"
 
 run-all:
-	docker-compose up -d
+	docker compose up -d
 
 test-apply:
 	$(DOCKER_TEST) tests/test_apply.py
