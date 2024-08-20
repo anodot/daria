@@ -1,0 +1,32 @@
+[
+  {
+    "source": "test_postgres_py",
+    "pipeline_id": "test_postgres_py_file_short",
+    "values": {"clicks": "gauge", "impressions": "gauge"},
+    "dimensions": ["adsize", "country"],
+    "timestamp": {
+      "type": "unix",
+      "name": "timestamp_unix"
+    },
+    "interval": 86400,
+    "query": "SELECT * FROM test WHERE {TIMESTAMP_CONDITION}",
+    "days_to_backfill": 2305
+  },
+  {
+    "source": "test_postgres_py",
+    "pipeline_id": "test_postgres_py_file_full",
+    "values": {"clicks": "gauge", "impressions": "gauge"},
+    "count_records": true,
+    "count_records_measurement_name": "test",
+    "dimensions": ["adsize", "country"],
+    "timestamp": {
+      "type": "unix",
+      "name": "extract(epoch from timestamp_datetime)",
+      "alias": "timestamp_unix_converted"
+    },
+    "properties": {"key1": "val1", "key2":  "val2"},
+    "interval": 86400,
+    "query": "SELECT extract(epoch from timestamp_datetime) as timestamp_unix_converted, adsize, country, clicks, impressions FROM test WHERE {TIMESTAMP_CONDITION} AND not country is NULL",
+    "days_to_backfill": 2305
+  }
+]

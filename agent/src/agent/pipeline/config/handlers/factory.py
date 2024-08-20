@@ -82,6 +82,7 @@ def _get_schema_handler(pipeline_: Pipeline, base_config: dict) -> SchemaConfigH
         source.TYPE_OBSERVIUM: pipeline.config.handlers.observium.ObserviumConfigHandler,
         source.TYPE_ORACLE: pipeline.config.handlers.jdbc.JDBCSchemaConfigHandler,
         source.TYPE_POSTGRES: pipeline.config.handlers.jdbc.JDBCSchemaConfigHandler,
+        source.TYPE_POSTGRES_PY: pipeline.config.handlers.postgres.PostgresPyConfigHandler,
         source.TYPE_PROMETHEUS: pipeline.config.handlers.promql.PromQLSchemaConfigHandler,
         source.TYPE_PRTG: pipeline.config.handlers.prtg.PRTGSchemaConfigHandler,
         source.TYPE_SAGE: pipeline.config.handlers.sage.SageSchemaConfigHandler,

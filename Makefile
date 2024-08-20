@@ -101,6 +101,10 @@ test-postgres: bootstrap run-postgres sleep
 	$(DOCKER_TEST) tests/test_input/test_1/test_postgres_http.py
 	$(DOCKER_TEST) tests/test_pipelines/test_1/test_postgres_http.py
 
+test-postgres-py: bootstrap run-postgres sleep
+	$(DOCKER_TEST) tests/test_input/test_1/test_postgres_py.py
+	$(DOCKER_TEST) tests/test_pipelines/test_1/test_postgres_py.py
+
 test-clickhouse: bootstrap run-clickhouse sleep
 	$(DOCKER_TEST) tests/test_input/test_2/test_clickhouse.py
 	$(DOCKER_TEST) tests/test_pipelines/test_2/test_clickhouse.py

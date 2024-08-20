@@ -420,6 +420,14 @@ class ActianValidator(JDBCValidator):
                 raise ValidationException('Wrong connection string format')
 
 
+class PostgresPyValidator(JDBCValidator):
+    def validate_connection(self):
+        pass
+
+    def validate_connection_string(self):
+        pass
+
+
 class ValidationException(Exception):
     pass
 
@@ -444,6 +452,7 @@ def get_validator(source_: Source) -> Validator:
         source.TYPE_OBSERVIUM: ObserviumValidator,
         source.TYPE_ORACLE: OracleValidator,
         source.TYPE_POSTGRES: JDBCValidator,
+        source.TYPE_POSTGRES_PY: PostgresPyValidator,
         source.TYPE_PROMETHEUS: PromQLValidator,
         source.TYPE_PRTG: PrtgValidator,
         source.TYPE_RRD: RRDValidator,

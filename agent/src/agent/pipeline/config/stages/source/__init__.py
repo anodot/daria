@@ -14,3 +14,4 @@ from . import prtg
 from . import zabbix
 from . import elastic
 from . import actian
+from . import postgres
