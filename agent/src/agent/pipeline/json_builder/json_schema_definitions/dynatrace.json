@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "properties": {
+    "count_records": {"type": "boolean"},
+    "values": {"type": "object"},
+    "measurement_names": {"type": "object"},
+    "dimensions": {"type": "array", "items": {"type": "string"}},
+    "properties": {"type": "object"},
+    "tags": {
+      "type": "object",
+      "patternProperties":  {"[^ \\.]+": {"type": "array", "items": {"type": "string"}}}
+    },
+    "interval": {"type":  "number"},
+    "delay": {"type":  "integer"},
+    "days_to_backfill": {"type":  "integer"},
+    "batch_size": {"type":  "integer"}
+  },
+  "required": ["values", "dimensions", "interval"]
+}

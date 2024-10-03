@@ -1,6 +1,7 @@
 from . import base
 from . import cacti
 from . import directory
+from . import dynatrace
 from . import elastic
 from . import factory
 from . import http
