@@ -10,10 +10,12 @@
       "type": "object",
       "patternProperties":  {"[^ \\.]+": {"type": "array", "items": {"type": "string"}}}
     },
+    "query": {"type": "string"},
+    "resolution": {"type": "string"},
     "interval": {"type":  "number"},
     "delay": {"type":  "integer"},
     "days_to_backfill": {"type":  "integer"},
     "batch_size": {"type":  "integer"}
   },
-  "required": ["values", "dimensions", "interval"]
+  "required": ["values", "dimensions", "interval", "query"]
 }

@@ -20,6 +20,14 @@ class DynatraceScript(JythonSource):
                 'value': self.pipeline.source.config[source.SageSource.URL]
             },
             {
+                'key': 'QUERY',
+                'value': str(self.pipeline.query)
+            },
+            {
+                'key': 'RESOLUTION',
+                'value': str(self.pipeline.resolution)
+            },
+            {
                 'key': 'INTERVAL_IN_MINUTES',
                 'value': str(self.pipeline.interval)
             },

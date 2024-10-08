@@ -7,6 +7,7 @@ try:
     import time
     import traceback
     import re
+    from urllib import urlencode
     from urlparse import urljoin
 
     sys.path.append(os.path.join(os.environ['SDC_DIST'], 'python-libs'))
@@ -41,9 +42,14 @@ def date_to_str(date):
     return date.strftime(DATEFORMAT)
 
 
-def build_url(base_url):
-    url = urljoin(base_url, "api/v2/metrics")
-    return url
+def build_url():
+    base_url = urljoin(sdc.userParams['DYNATRACE_URL'], "api/v2/metrics/query")
+    params = {
+        "metricSelector": sdc.userParams['QUERY'],
+        "resolution": sdc.userParams['RESOLUTION'],
+    }
+    query_string = urlencode(params)
+    return base_url + "?" + query_string
 
 
 def main():
@@ -58,7 +64,7 @@ def main():
     sdc.log.info('Start offset: ' + str(offset))
 
     cur_batch = sdc.createBatch()
-    dynatrace_url = build_url(sdc.userParams['DYNATRACE_URL'])
+    dynatrace_url = build_url()
     sdc.log.debug("Dynatrace query URL: " + dynatrace_url)
 
     while True:

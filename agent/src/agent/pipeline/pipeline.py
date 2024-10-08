@@ -401,6 +401,10 @@ class Pipeline(Entity, sdc_client.IPipeline):
     def selected_kafka_partitions(self) -> str:
         return self.config.get('partitions', [])
 
+    @property
+    def resolution(self) -> str:
+        return self.config.get('resolution', '1m')
+
     def get_streamsets_config(self) -> dict:
         return pipeline.manager.create_streamsets_pipeline_config(self)
 
