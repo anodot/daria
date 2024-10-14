@@ -108,23 +108,21 @@ def main():
                 if skip:
                     break
 
-                data = res.json()
-                sdc.log.debug("totalCount" + str(data.get("totalCount", -1)))
-                if data["metrics"]:
-                    # records with data
-                    for metric in data["metrics"]:
-                        if '@timestamp' not in metric:
-                            metric['@timestamp'] = offset
-                        metric['@timestamp'] = re.sub(r'(\.[0-9]+)', '', metric['@timestamp'])
-                        metric['last_timestamp'] = watermark_ts
+                response = res.json()
+                sdc.log.debug("totalCount" + str(response.get("totalCount", 0)))
+                for result in response["result"]:
+                    if not result["data"] and sdc.userParams['DVP_ENABLED'] == 'True':
+                        # records with last_timestamp only
                         record = sdc.createRecord('record created ' + str(datetime.now()))
-                        record.value = metric
+                        record.value = {'last_timestamp': watermark_ts}
                         cur_batch.add(record)
-                elif sdc.userParams['DVP_ENABLED'] == 'True':
-                    # records with last_timestamp only
-                    record = sdc.createRecord('record created ' + str(datetime.now()))
-                    record.value = {'last_timestamp': watermark_ts}
-                    cur_batch.add(record)
+                    else:
+                        # records with data
+                        for metric in result["data"]:
+                            metric['last_timestamp'] = watermark_ts
+                            record = sdc.createRecord('record created ' + str(datetime.now()))
+                            record.value = metric
+                            cur_batch.add(record)
                 break
 
             # send batch and save offset
