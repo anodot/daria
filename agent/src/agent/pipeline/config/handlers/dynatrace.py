@@ -8,7 +8,7 @@ logger = get_logger(__name__)
 class DynatraceSchemaConfigHandler(SchemaConfigHandler):
     stages_to_override = {
         'source': stages.source.dynatrace.DynatraceScript,
-        'JavaScriptEvaluator_01': stages.js_convert_metrics.SageJSConvertMetrics30,
+        'JavaScriptEvaluator_01': stages.js_convert_metrics.JSConvertMetrics30,
         'ExpressionEvaluator_02': stages.expression_evaluator.AddProperties30,
         'destination': stages.destination.Destination,
         'destination_watermark': stages.destination.WatermarkDestination
