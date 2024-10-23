@@ -26,6 +26,7 @@ def _get_keywords(source_type: str) -> List[str]:
         source.TYPE_DIRECTORY: [],
         source.TYPE_DATABRICKS: ['connection_string', 'hikariConfigBean.username', 'hikariConfigBean.password'],
         source.TYPE_DRUID: ['connection_string', 'hikariConfigBean.username', 'hikariConfigBean.password'],
+        source.TYPE_DYNATRACE: ['token'],
         source.TYPE_ELASTIC: [],
         source.TYPE_HTTP: ['username', 'password'],
         source.TYPE_IMPALA: ['connection_string', 'hikariConfigBean.username', 'hikariConfigBean.password'],
