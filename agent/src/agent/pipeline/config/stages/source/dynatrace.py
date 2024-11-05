@@ -13,11 +13,11 @@ class DynatraceScript(JythonSource):
             },
             {
                 'key': 'DYNATRACE_TOKEN',
-                'value': self.pipeline.source.config[source.SageSource.TOKEN]
+                'value': self.pipeline.source.config[source.DynatraceSource.TOKEN]
             },
             {
                 'key': 'DYNATRACE_URL',
-                'value': self.pipeline.source.config[source.SageSource.URL]
+                'value': self.pipeline.source.config[source.DynatraceSource.URL]
             },
             {
                 'key': 'QUERY',

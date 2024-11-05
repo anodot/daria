@@ -309,7 +309,7 @@ class PostgresPySource(Source):
     CONNECTION_STRING = 'connection_string'
 
 
-class DynatraceSource(Source):
+class DynatraceSource(APISource):
     URL = 'url'
     TOKEN = 'token'
 

@@ -1,0 +1,10 @@
+[
+  {
+    "type": "dynatrace",
+    "name": "test_dynatrace_source",
+    "config": {
+      "url": "https://owv65387.live.dynatrace.com/",
+      "token": "token.test"
+    }
+  }
+]
