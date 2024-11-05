@@ -1,0 +1,12 @@
+[
+  {
+    "source": "test_dynatrace_source",
+    "pipeline_id": "test_dynatrace_schema",
+    "measurement_names": {"Clicks":  "clicks"},
+    "query": "builtin:apps.custom.reportedErrorCount",
+    "values": {"Clicks":  "gauge"},
+    "dimensions": ["value"],
+    "interval": 1440,
+    "days_to_backfill": 1499
+  }
+]
