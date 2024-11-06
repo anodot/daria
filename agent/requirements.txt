@@ -43,7 +43,7 @@ tabulate==0.8.9
 texttable==1.6.0
 urllib3==2.2.2
 flask==3.0.3
-werkzeug==3.0.3
+werkzeug==3.0.6
 Flask-WTF==1.2.1
 result==0.5.0
 alembic==1.13.1
