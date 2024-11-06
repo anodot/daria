@@ -3,6 +3,7 @@ from agent.pipeline import Pipeline
 from .json_builder import Builder, IBuilder
 from .cacti import CactiBuilder
 from .directory import DirectoryBuilder, DirectoryEventsBuilder
+from .dynatrace import DynatraceBuilder
 from .elastic import ElasticBuilder
 from .influx import InfluxBuilder, Influx2Builder
 from .jdbc import JDBCBuilder, JDBCRawBuilder, JDBCEventBuilder
@@ -44,6 +45,7 @@ def _get_builder(pipeline_: Pipeline, config: dict, is_edit: bool) -> IBuilder:
         source.TYPE_DIRECTORY: DirectoryBuilder,
         source.TYPE_DATABRICKS: JDBCBuilder,
         source.TYPE_DRUID: JDBCBuilder,
+        source.TYPE_DYNATRACE: DynatraceBuilder,
         source.TYPE_ELASTIC: ElasticBuilder,
         source.TYPE_IMPALA: JDBCBuilder,
         source.TYPE_INFLUX: InfluxBuilder,

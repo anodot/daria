@@ -15,6 +15,7 @@ TYPE_CLICKHOUSE = 'clickhouse'
 TYPE_DIRECTORY = 'directory'
 TYPE_DATABRICKS = 'databricks'
 TYPE_DRUID = 'druid'
+TYPE_DYNATRACE = 'dynatrace'
 TYPE_ELASTIC = 'elastic'
 TYPE_HTTP = 'http'
 TYPE_IMPALA = 'impala'
@@ -47,6 +48,7 @@ types = {
     TYPE_DIRECTORY: DirectorySource,
     TYPE_DATABRICKS: JDBCSource,
     TYPE_DRUID: JDBCSource,
+    TYPE_DYNATRACE: DynatraceSource,
     TYPE_ELASTIC: ElasticSource,
     TYPE_HTTP: APISource,
     TYPE_IMPALA: JDBCSource,

@@ -428,6 +428,26 @@ class PostgresPyValidator(JDBCValidator):
         pass
 
 
+class DynatraceValidator(Validator):
+    VALIDATION_SCHEMA_FILE = 'dynatrace.json'
+
+    def validate(self):
+        self.validate_json()
+        self.validate_url()
+        self.validate_token()
+
+    @if_validation_enabled
+    def validate_url(self):
+        try:
+            validator.validate_url_format(self.source.config[source.DynatraceSource.URL])
+        except validator.ValidationException as e:
+            raise ValidationException(str(e))
+
+    @if_validation_enabled
+    def validate_token(self):
+        # TODO: check token
+        pass
+
 class ValidationException(Exception):
     pass
 
@@ -440,6 +460,7 @@ def get_validator(source_: Source) -> Validator:
         source.TYPE_DIRECTORY: DirectoryValidator,
         source.TYPE_DATABRICKS: JDBCValidator,
         source.TYPE_DRUID: AvaticaDriverValidator,
+        source.TYPE_DYNATRACE: DynatraceValidator,
         source.TYPE_ELASTIC: ElasticValidator,
         source.TYPE_HTTP: HttpValidator,
         source.TYPE_IMPALA: JDBCValidator,

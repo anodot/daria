@@ -15,3 +15,4 @@ from . import zabbix
 from . import elastic
 from . import actian
 from . import postgres
+from . import dynatrace

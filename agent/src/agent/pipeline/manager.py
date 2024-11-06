@@ -32,6 +32,7 @@ def supports_schema(pipeline_: Pipeline) -> bool:
         source.TYPE_DIRECTORY: True,
         source.TYPE_DATABRICKS: True,
         source.TYPE_DRUID: True,
+        source.TYPE_DYNATRACE: True,
         source.TYPE_ELASTIC: True,
         source.TYPE_HTTP: True,
         source.TYPE_IMPALA: True,
