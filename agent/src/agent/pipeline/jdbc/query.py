@@ -58,11 +58,11 @@ class Builder:
             return f'TIME_IN_INTERVAL({ts}, ' \
                    f'\'{self.TIMESTAMP_VALUE_ISO}/PT{self.pipeline.interval}S\')'
         if self.pipeline.source.type == source.TYPE_MSSQL:
-            return f"{self.pipeline.timestamp_path} BETWEEN DATEADD(second, {self.TIMESTAMP_VALUE}, '1970-01-01') AND " \
-                   f"DATEADD(second, {self.TIMESTAMP_VALUE} + {self.pipeline.interval}, '1970-01-01')"
+            return f"{self.pipeline.timestamp_path} >= DATEADD(second, {self.TIMESTAMP_VALUE}, '1970-01-01') AND " \
+                   f"{self.pipeline.timestamp_path} < DATEADD(second, {self.TIMESTAMP_VALUE} + {self.pipeline.interval}, '1970-01-01')"
         if self.pipeline.source.type == source.TYPE_IMPALA:
-            return f"{self.pipeline.timestamp_path} BETWEEN CAST(FROM_UNIXTIME({self.TIMESTAMP_VALUE}) as TIMESTAMP) AND " \
-                   f"CAST(FROM_UNIXTIME({self.TIMESTAMP_VALUE}) as TIMESTAMP) + interval {self.pipeline.interval} seconds"
+            return f"{self.pipeline.timestamp_path} >= CAST(FROM_UNIXTIME({self.TIMESTAMP_VALUE}) as TIMESTAMP) AND " \
+                   f"{self.pipeline.timestamp_path} < CAST(FROM_UNIXTIME({self.TIMESTAMP_VALUE}) as TIMESTAMP) + interval {self.pipeline.interval} seconds"
 
     def _get_regular_query(self) -> str:
         return f'{self._timestamp_to_unix()} >= {self.TIMESTAMP_VALUE} AND ' \
