@@ -149,7 +149,7 @@ def main():
 
 
 def get_base_url():
-    return sdc.userParams['URL'] + '/api/v1/query?' + urllib.urlencode({
+    return sdc.userParams['URL'].rstrip('/') + '/api/v1/query?' + urllib.urlencode({
         'query': sdc.userParams['QUERY'].encode('utf-8'),
         'timeout': sdc.userParams['QUERY_TIMEOUT'],
     })
