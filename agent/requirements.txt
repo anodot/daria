@@ -15,7 +15,7 @@ Jinja2>=2.10.1
 jsonschema==3.0.1
 kafka-python==1.4.6
 more-itertools==5.0.0
-mysql-connector-python==8.0.20
+mysql-connector-python==9.1.0
 ordered-set==3.1
 packaging==19.0
 pbr==5.1.3
