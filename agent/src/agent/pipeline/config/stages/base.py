@@ -17,7 +17,7 @@ class Stage(ABC):
         pass
 
     def get_initial_timestamp(self) -> datetime:
-        midnight = datetime.now(pytz.timezone('UTC')).replace(hour=0, minute=0, second=0, microsecond=0)
+        midnight = datetime.now(pytz.timezone(self.pipeline.timezone)).replace(hour=0, minute=0, second=0, microsecond=0)
         return midnight - timedelta(days=int(self.pipeline.days_to_backfill))
 
 

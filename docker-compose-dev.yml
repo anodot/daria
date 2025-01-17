@@ -180,6 +180,7 @@ services:
 
   mysql:
     image: mysql:8.0.21
+    platform: linux/amd64
     container_name: agent-mysql
     command: --default-authentication-plugin=mysql_native_password
     environment:

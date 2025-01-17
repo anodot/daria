@@ -10,7 +10,7 @@ class JDBCOffsetScript(JythonSource):
         return [
             {
                 'key': 'INITIAL_OFFSET',
-                'value': self.get_initial_timestamp().strftime('%d/%m/%Y %H:%M'),
+                'value': str(self.get_initial_timestamp().timestamp()),
             },
             {
                 'key': 'INTERVAL_IN_SECONDS',

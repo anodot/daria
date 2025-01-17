@@ -15,6 +15,8 @@ finally:
     sdc.importUnlock()
 
 
+pipeline_timezone = pytz.timezone(sdc.userParams['TIMEZONE'])
+
 def get_interval():
     return int(sdc.userParams['INTERVAL_IN_SECONDS'])
 
@@ -24,8 +26,8 @@ def get_interval_missing_data():
 
 
 def get_now():
-    if sdc.userParams['WATERMARK_IN_LOCAL_TIMEZONE'] == 'True':
-        now = int(time.mktime(datetime.now(pytz.timezone(sdc.userParams['TIMEZONE'])).timetuple()))
+    if sdc.userParams['TIMEZONE'] != 'UTC':
+        now = int(time.mktime(datetime.now(pipeline_timezone).timetuple()))
     else:
         now = int(time.time())
     return now
@@ -36,7 +38,7 @@ def get_now_with_delay():
 
 
 def to_timestamp(date):
-    epoch = datetime(1970, 1, 1)
+    epoch = datetime(1970, 1, 1).replace(tzinfo=pytz.UTC)
     return int((date - epoch).total_seconds())
 
 
@@ -88,9 +90,9 @@ def main():
     if sdc.lastOffsets.containsKey(entityName):
         offset = int(float(sdc.lastOffsets.get(entityName)))
     elif sdc.userParams['INITIAL_OFFSET']:
-        offset = to_timestamp(datetime.strptime(sdc.userParams['INITIAL_OFFSET'], '%d/%m/%Y %H:%M'))
+        offset = int(float(sdc.userParams['INITIAL_OFFSET']))
     else:
-        offset = to_timestamp(datetime.utcnow().replace(second=0, microsecond=0) - interval)
+        offset = get_now() - get_interval()
 
     sdc.log.info('OFFSET: ' + str(offset))
 
