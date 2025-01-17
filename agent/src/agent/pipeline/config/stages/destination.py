@@ -21,7 +21,7 @@ class WatermarkDestination(Stage):
     def get_config(self) -> dict:
         body = """{
             "schemaId": "${SCHEMA_ID}",
-            "watermark": "${record:value('/watermark')}"
+            "watermark": ${record:value('/watermark')}
         }"""
 
         return {
@@ -29,11 +29,6 @@ class WatermarkDestination(Stage):
             'conf.requestBody': body,
             **self.pipeline.destination.config,
         }
-
-    def _convert_watermark_to_timezone(self):
-        timezone = pytz.timezone(self.pipeline.timezone)
-        offset = timezone.utcoffset(datetime.utcnow()).total_seconds()
-        return f'record:value("/watermark") - ({int(offset)})'
 
 
 class EventsDestination(Stage):
