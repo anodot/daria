@@ -21,24 +21,14 @@ class WatermarkDestination(Stage):
     def get_config(self) -> dict:
         body = """{
             "schemaId": "${SCHEMA_ID}",
-            "watermark": WATERMARK_EXPRESSION
+            "watermark": ${record:value('/watermark')}
         }"""
-        watermark_expression = "${record:value('/watermark')}"
-        if self.pipeline.watermark_in_local_timezone:
-            watermark_expression = '${' + self._convert_watermark_to_timezone() + '}'
-
-        body = body.replace('WATERMARK_EXPRESSION', watermark_expression)
 
         return {
             self.pipeline.destination.CONFIG_ENABLE_REQUEST_LOGGING: self.pipeline.watermark_logs_enabled,
             'conf.requestBody': body,
             **self.pipeline.destination.config,
         }
-
-    def _convert_watermark_to_timezone(self):
-        timezone = pytz.timezone(self.pipeline.timezone)
-        offset = timezone.utcoffset(datetime.utcnow()).total_seconds()
-        return f'record:value("/watermark") - ({int(offset)})'
 
 
 class EventsDestination(Stage):
