@@ -30,9 +30,10 @@ class ElasticValidator(Validator):
 
 class JDBCValidator(Validator):
     @staticmethod
-    def validate(pipeline_):
-        if errors := jdbc_query.get_errors(pipeline_.query):
-            raise ValidationException(errors)
+    def validate(pipeline_: Pipeline):
+        if not pipeline_.disable_backfill:
+            if errors := jdbc_query.get_errors(pipeline_.query):
+                raise ValidationException(errors)
 
 
 class PromQLValidator(Validator):

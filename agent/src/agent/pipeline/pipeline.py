@@ -405,6 +405,10 @@ class Pipeline(Entity, sdc_client.IPipeline):
     def resolution(self) -> str:
         return self.config.get('resolution', '1m')
 
+    @property
+    def disable_backfill(self) -> bool:
+        return self.config.get('disable_backfill', False)
+
     def get_streamsets_config(self) -> dict:
         return pipeline.manager.create_streamsets_pipeline_config(self)
 
