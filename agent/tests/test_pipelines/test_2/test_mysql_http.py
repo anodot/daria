@@ -59,7 +59,7 @@ class TestMySQL(TestPipelineBase):
                                  {'name': 'test_mysql_no_schema'}, {'name': 'test_watermark_local_timezone'},
                                  {'name': 'test_jdbc_no_timestamp_condition'}, {'name': 'test_jdbc_mysql_tag'},
                                  {'name': 'test_events_jdbc_mysql'},
-                                 # {'name': 'test_jdbc_no_backfill'}
+                                 {'name': 'test_jdbc_no_backfill'}
                                  ],
         'test_source_delete': [{'name': 'test_jdbc'}, {'name': 'test_mysql_1'}]
     }
