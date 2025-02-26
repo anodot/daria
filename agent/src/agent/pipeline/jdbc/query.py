@@ -22,6 +22,9 @@ class Builder:
             return self._get_preview_query()
 
         query = self.pipeline.query
+        if self.pipeline.disable_backfill:
+            return query
+
         if TIMESTAMP_CONDITION in self.pipeline.query:
             query = f'{query} ORDER BY {self.pipeline.timestamp_path}'
             replacements = {

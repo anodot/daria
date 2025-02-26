@@ -23,6 +23,19 @@
       "name": "timestamp_datetime"
     }
   },
+   {
+    "source": "test_jdbc",
+    "pipeline_id": "test_jdbc_no_backfill",
+    "values": {"clicks": "gauge", "impressions": "gauge"},
+    "dimensions": ["adsize", "country"],
+    "interval": 300,
+    "query": "SELECT * FROM test ",
+    "timestamp": {
+      "type": "datetime",
+      "name": "timestamp_datetime"
+    },
+     "disable_backfill": true
+  },
   {
     "source": "test_jdbc",
     "pipeline_id": "test_jdbc_file_full_mysql",

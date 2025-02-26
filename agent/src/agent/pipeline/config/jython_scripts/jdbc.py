@@ -21,6 +21,10 @@ def get_interval():
     return int(sdc.userParams['INTERVAL_IN_SECONDS'])
 
 
+def disable_backfill():
+    return bool(int(sdc.userParams['DISABLE_BACKFILL']))
+
+
 def get_interval_missing_data():
     return int(sdc.userParams['QUERY_MISSING_DATA_INTERVAL'] or 0)
 
@@ -122,4 +126,33 @@ def main():
         cur_batch.process(entityName, str(offset))
 
 
-main()
+def main_no_backfill():
+    interval_seconds = get_interval()
+    while True:
+        if sdc.isStopped():
+            break
+        current_time = get_now()
+
+        # Calculate the next execution time aligned to the interval
+        next_execution_time = (current_time // interval_seconds + 1) * interval_seconds
+
+        # if preview - send query instantly
+        if not sdc.isPreview():
+            time.sleep(next_execution_time - current_time)
+
+        sdc.log.info("Executing query at: " + time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime()))
+        cur_batch = sdc.createBatch()
+        record = sdc.createRecord('record created ' + str(datetime.now()))
+        val = next_execution_time - interval_seconds  # we need to send last queried timestamp
+        record.value = {
+            'last_timestamp': val,
+            'last_timestamp_iso': datetime.fromtimestamp(val).isoformat()
+        }
+        cur_batch.add(record)
+        cur_batch.process(entityName, str(get_now()))
+
+
+if disable_backfill():
+    main_no_backfill()
+else:
+    main()
